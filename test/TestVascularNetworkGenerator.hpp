@@ -31,7 +31,7 @@ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-*/
+ */
 
 #ifndef TESTVASCULARNETWORKGENERATOR_HPP_
 #define TESTVASCULARNETWORKGENERATOR_HPP_
@@ -68,34 +68,50 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CellProliferativeTypesCountWriter.hpp"
 #include "CellProliferativePhasesCountWriter.hpp"
 
+#include "VascularNetworkGenerator.hpp"
+
 #include "PetscSetupAndFinalize.hpp"
 
-class TESTVASCULARNETWORKGENERATOR : public AbstractCellBasedTestSuite
+class TestVascularNetworkGenerator : public AbstractCellBasedTestSuite
 {
 public:
 
-    void TestConstructorWithMultipleCellsPerSite() throw(Exception)
+    void TestVascularNetworkGeneratorWithHexagonallyTesselatedVesselNetwork() throw(Exception)
     {
-        // Create a simple 2D PottsMesh
-        unsigned width = 25;
-        unsigned height = 25;
-        PottsMeshGenerator<2> generator(width, 0, 0, height, 0, 0);
-        PottsMesh<2>* p_mesh = generator.GetMesh();
 
-        VascularNetworkGenerator vascularNetworkGenerator();
+        try
+        {
 
-        std::vector<unsigned> location_indices = vascularNetworkGenerator.GenerateHexagonallyTesselatedVascularNetwork(*p_mesh,width,height);
+            // Create a simple 2D PottsMesh
+            unsigned width = 50;
+            unsigned height = 25;
+            PottsMeshGenerator<2> generator(width, 0, 0, height, 0, 0);
+            PottsMesh<2>* p_mesh = generator.GetMesh();
 
-        // Create cells
-        std::vector<CellPtr> cells;
-        MAKE_PTR(DefaultCellProliferativeType, p_diff_type);
-        // Create 2D cell generator
-        CellsGenerator<FixedDurationGenerationBasedCellCycleModel, 2> cells_generator;
-        // Fill up cells vector with [location_indices.size()] cells
-        cells_generator.GenerateBasic(cells, location_indices.size(), p_diff_type);
+            boost::shared_ptr<CaVessel<2> > prototypeVessel(new CaVessel<2>());
+            prototypeVessel->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(0.0,"unitless"),3.0*pow(10.0,(-6)));
+            VascularNetworkGenerator<2> vascularNetworkGenerator(prototypeVessel);
 
-        // Create 2D cell population with carrying capacity 3
-        CaBasedCellPopulation<2> cell_population(*p_mesh, cells, location_indices, 3);
+            boost::shared_ptr<CaVascularNetwork<2> > vascularNetwork = vascularNetworkGenerator.GenerateHexagonallyTesselatedVascularNetwork(p_mesh,width,height);
+
+            // write vascular cell data out to file
+
+            std::string output_directory = "TestVascularNetworkGenerator";
+            std::string filename;
+            std::stringstream sstm;
+            OutputFileHandler output_file_handler(output_directory, false);
+
+            sstm << output_file_handler.GetOutputDirectoryFullPath() << "HexagonallyTessellatedVesselNetwork.vtk";
+
+            filename = sstm.str();
+
+            vascularNetwork->SaveVasculatureDataToFile(filename);
+
+        }
+        catch(Exception &e)
+        {
+            std::cout << e.GetMessage() << std::endl;
+        }
 
     }
 
