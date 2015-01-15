@@ -261,26 +261,31 @@ boost::shared_ptr<CaVascularNetwork<SPATIAL_DIM> > VascularNetworkGenerator<SPAT
 			m_pointLocations.push_back(ChastePoint<SPATIAL_DIM>(pointCoords[0],pointCoords[1],pointCoords[2]));
 		}
 	}
-
-	std::cout << "2" << std::endl;
-
+	std::cout << "1" << std::endl;
 	// Extract radii corresponding to each node from the VTK Polydata and store them in a list.
 	vtkCellData *p_info = p_polydata->GetCellData();
 	std::string radiusLabel = "Radius";
 	for(vtkIdType i = 0; i < p_info->GetNumberOfArrays(); i++)
 	{
+	    std::cout << "number of arrays" << p_info->GetNumberOfArrays() << std::endl;
 		std::string arrayName = p_info->GetArrayName(i);
-
+		std::cout << arrayName << std::endl;
 		if(arrayName.compare(radiusLabel) == 0)
 		{
-			for(vtkIdType j = 0; j < p_info->GetArray(i)->GetSize(); j++)
+		    std::cout << "1" << std::endl;
+            vtkDoubleArray* scalars = vtkDoubleArray::SafeDownCast(p_info->GetArray(i));
+            std::cout << "2" << std::endl;
+
+			for(vtkIdType j = 0; j < scalars->GetNumberOfTuples(); j++)
 			{
-				m_radii.push_back(p_info->GetArray(i)->GetTuple(j)[0]);
+			    std::cout << scalars->GetValue(j) << std::endl;
+
+				m_radii.push_back(scalars->GetValue(j));
 			}
 		}
 	}
 
-	std::cout << "3" << std::endl;
+	std::cout << "1" << std::endl;
 
 	// Extract vessels from the VTK Polydata. This is done by iterating over a VTK CellArray object which
 	// returns a 'pointList' vtkIdList object. This object contains the point IDs of the nodes which make up
@@ -297,15 +302,6 @@ boost::shared_ptr<CaVascularNetwork<SPATIAL_DIM> > VascularNetworkGenerator<SPAT
 
 		p_cellArray->GetNextCell(num_segments, segList);
 
-		std::cout << "numseg " << num_segments << std::endl;
-
-		for (int z = 0; z < num_segments; z++)
-		{
-			std::cout << segList[z] << std::endl;
-		}
-
-		std::cout << "size of m_pointLocations " << m_pointLocations.size() << std::endl;
-
 		// Set the vessel start and end nodes
 		V->SetNode1Location(m_pointLocations[segList[0]]);
 		V->SetNode2Location(m_pointLocations[segList[num_segments - 1]]);
@@ -321,8 +317,6 @@ boost::shared_ptr<CaVascularNetwork<SPATIAL_DIM> > VascularNetworkGenerator<SPAT
 		// Add the resulting vessel to the network
 		VN->AddVessel(V);
 	}
-
-	std::cout << "5" << std::endl;
 
 	VN->SetArterialHaematocritLevel(mArterialHaematocritLevel);
 	VN->SetArterialInputPressure(mArterialInputPressure);

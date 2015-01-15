@@ -7,6 +7,7 @@
 
 #include "CaVascularNetworkNode.hpp"
 #include "CaVessel.hpp"
+#include "Exception.hpp"
 #include <cassert>
 
 
@@ -80,6 +81,7 @@ template<unsigned SPATIAL_DIM>
 void CaVascularNetworkNode<SPATIAL_DIM>::AddAdjoiningVessel(boost::shared_ptr<CaVessel<SPATIAL_DIM> > vessel)
 {
 
+
     // same vessel may be adjoint to a single node twice but that node must be both node1 and node2 of the doubly adjoint vessel
 
     int numberOfTimeVesselIsAlreadyAttachedToNode = 0;
@@ -92,7 +94,10 @@ void CaVascularNetworkNode<SPATIAL_DIM>::AddAdjoiningVessel(boost::shared_ptr<Ca
         }
     }
 
-    assert(numberOfTimeVesselIsAlreadyAttachedToNode <= 2);
+    if (numberOfTimeVesselIsAlreadyAttachedToNode == 2)
+    {
+        throw Exception("Vessel is already attached to node twice (at both ends). Cannot attach vessel to same node again.","CaVascularNetworkNode.hpp",101);
+    }
 
     if (numberOfTimeVesselIsAlreadyAttachedToNode == 0)
     {
@@ -104,8 +109,10 @@ void CaVascularNetworkNode<SPATIAL_DIM>::AddAdjoiningVessel(boost::shared_ptr<Ca
     }
     else
     {
-        // vessel is already attached to node correctly (once or twice)
+        throw Exception("Vessels and nodes in inconsistent state.","CaVascularNetworkNode.hpp",114);
     }
+
+
 
     /*
         todo should check that vessel being adjoined to node has not got an actively migrating tip located at this node
@@ -118,18 +125,24 @@ template<unsigned SPATIAL_DIM>
 void CaVascularNetworkNode<SPATIAL_DIM>::RemoveAdjoiningVessel(boost::shared_ptr<CaVessel<SPATIAL_DIM> > vessel)
 {
 
+
+    bool attachedToVessel = false;
+
     for(unsigned i = 0; i < pAdjoiningVessels.size(); i++)
     {
         if (pAdjoiningVessels[i].lock() == vessel)
         {
+            attachedToVessel = true;
             pAdjoiningVessels.erase(pAdjoiningVessels.begin() + i);
             i--;
         }
     }
 
-    /*
-     * todo perhaps should raise a warning if vessel is not attached to this node
-     */
+    if (!attachedToVessel)
+    {
+        throw Exception("Warning: vessel is not attached to node. Cannot remove vessel from node.","CaVascularNetworkNode.hpp",152);
+    }
+
 
 }
 
@@ -144,7 +157,10 @@ bool CaVascularNetworkNode<SPATIAL_DIM>::IsAttachedToVessel(boost::shared_ptr<Ca
     {
         if (pAdjoiningVessels[i].lock() == vessel)
         {
-            assert(vessel->GetNode1() == shared() || vessel->GetNode2() == shared());
+            if (vessel->GetNode1() != shared() && vessel->GetNode2() != shared())
+            {
+                throw Exception("Vessel is not properly attached to node; vessels and nodes are in an inconsistent state.","CaVascularNetworkNode.hpp",162);
+            }
             vesselIsAttachedToNode = true;
             break;
         }

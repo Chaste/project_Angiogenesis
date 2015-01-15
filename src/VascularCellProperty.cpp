@@ -35,7 +35,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "VascularCellProperty.hpp"
 
-VascularCellProperty::VascularCellProperty(unsigned colour=5)
+VascularCellProperty::VascularCellProperty(unsigned colour)
 : AbstractCellProperty(),
   mColour(colour)
 {

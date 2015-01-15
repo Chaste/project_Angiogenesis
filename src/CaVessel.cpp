@@ -448,7 +448,6 @@ void CaVessel<SPATIAL_DIM>::SetNextVesselSegmentCoordinate(ChastePoint<SPATIAL_D
         SetLength(1);
     }
 
-    std::cout << "print" << std::endl;
 
 }
 
