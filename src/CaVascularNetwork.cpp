@@ -966,11 +966,11 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
 }
 
 
-template <unsigned SPATIAL_DIM>
-void CaVascularNetwork<SPATIAL_DIM>::UpdateVascularNetwork(CaBasedCellPopulation<SPATIAL_DIM>& cell_population)
-{
-
-}
+//template <unsigned SPATIAL_DIM>
+//void CaVascularNetwork<SPATIAL_DIM>::UpdateVascularNetwork(CaBasedCellPopulation<SPATIAL_DIM>& cell_population)
+//{
+//
+//}
 
 
 

@@ -10,8 +10,7 @@
 
 #include "CaVessel.hpp"
 #include "CaVascularNetworkNode.hpp"
-#include "SpatialCoordinate.hpp"
-#include "CaBasedCellPopulation.hpp"
+#include "SmartPointers.hpp"
 
 #include <vector>
 #include <iostream>
@@ -19,7 +18,6 @@
 #include <iomanip>
 #include <algorithm>
 
-#include <boost/shared_ptr.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/multi_array.hpp>
@@ -326,7 +324,7 @@ public:
      */
     void SaveVasculatureDataToFile(string filename);
 
-    void UpdateVascularNetwork(CaBasedCellPopulation<SPATIAL_DIM>& cell_population);
+    //void UpdateVascularNetwork(CaBasedCellPopulation<SPATIAL_DIM>& cell_population);
 
 };
 

@@ -36,6 +36,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef VASCULARCELL_HPP_
 #define VASCULARCELL_HPP_
 
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
 #include "AbstractCellProperty.hpp"
 
 class VascularCellProperty : public AbstractCellProperty
