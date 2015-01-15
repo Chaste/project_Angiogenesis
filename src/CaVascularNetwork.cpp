@@ -22,11 +22,11 @@
 #include <boost/config.hpp>
 #include <algorithm>
 #include <utility>
+#include <boost/graph/visitors.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/breadth_first_search.hpp>
 
 #include <boost/pending/indirect_cmp.hpp>
-#include <boost/range/irange.hpp>
 
 
 
@@ -49,11 +49,11 @@ boost::shared_ptr<CaVascularNetwork<SPATIAL_DIM> > CaVascularNetwork<SPATIAL_DIM
 }
 
 template <unsigned SPATIAL_DIM>
-int CaVascularNetwork<SPATIAL_DIM>::GetVesselID(boost::shared_ptr<CaVessel<SPATIAL_DIM> > vessel)
+unsigned CaVascularNetwork<SPATIAL_DIM>::GetVesselID(boost::shared_ptr<CaVessel<SPATIAL_DIM> > vessel)
 {
 
     bool vesselFound = false;
-    int i = 0;
+    unsigned i = 0;
 
     for (i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
@@ -71,11 +71,11 @@ int CaVascularNetwork<SPATIAL_DIM>::GetVesselID(boost::shared_ptr<CaVessel<SPATI
 
 
 template <unsigned SPATIAL_DIM>
-int CaVascularNetwork<SPATIAL_DIM>::GetNodeID(boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > node)
+unsigned CaVascularNetwork<SPATIAL_DIM>::GetNodeID(boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > node)
 {
 
     bool nodeFound = false;
-    int i = 0;
+    unsigned i = 0;
 
     for (i = 0; i < GetNumberOfNodesInNetwork(); i++)
     {
@@ -93,27 +93,27 @@ int CaVascularNetwork<SPATIAL_DIM>::GetNodeID(boost::shared_ptr<CaVascularNetwor
 }
 
 template <unsigned SPATIAL_DIM>
-int CaVascularNetwork<SPATIAL_DIM>::GetNumberOfVesselsInNetwork()
+unsigned CaVascularNetwork<SPATIAL_DIM>::GetNumberOfVesselsInNetwork()
 {
     return mVesselArray.size();
 }
 
 template <unsigned SPATIAL_DIM>
-int CaVascularNetwork<SPATIAL_DIM>::GetNumberOfNodesInNetwork()
+unsigned CaVascularNetwork<SPATIAL_DIM>::GetNumberOfNodesInNetwork()
 {
     return mNodeArray.size();
 }
 
 
 template <unsigned SPATIAL_DIM>
-int CaVascularNetwork<SPATIAL_DIM>::GetNumberOfVesselsAtLocation(ChastePoint<SPATIAL_DIM> coord)
+unsigned CaVascularNetwork<SPATIAL_DIM>::GetNumberOfVesselsAtLocation(ChastePoint<SPATIAL_DIM> coord)
 {
 
-    int numberOfVesselsAtLocation = 0;
+	unsigned numberOfVesselsAtLocation = 0;
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
-        for (int j = 0; j < GetVessel(i)->GetNumberOfSegments(); j++)
+        for (unsigned j = 0; j < GetVessel(i)->GetNumberOfSegments(); j++)
         {
             if (GetVessel(i)->GetSegmentCoordinate(j).IsSamePoint(coord))
             {
@@ -138,9 +138,9 @@ boost::shared_ptr<CaVessel<SPATIAL_DIM> > CaVascularNetwork<SPATIAL_DIM>::GetVes
     int numberOfVesselsAtLocation = 0;
     int vesselID = 0;
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
-        for (int j = 0; j < GetVessel(i)->GetNumberOfSegments(); j++)
+        for (unsigned j = 0; j < GetVessel(i)->GetNumberOfSegments(); j++)
         {
             if (GetVessel(i)->GetSegmentCoordinate(j).IsSamePoint(coord))
             {
@@ -177,7 +177,7 @@ boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > CaVascularNetwork<SPATIAL
     assert(NumberOfNodesPresentAtLocation(location) == 1);
 
     int nodeID;
-    for (int i = 0; i < GetNumberOfNodesInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfNodesInNetwork(); i++)
     {
         if (mNodeArray[i]->GetLocation().IsSamePoint(location))
         {
@@ -214,7 +214,7 @@ double CaVascularNetwork<SPATIAL_DIM>::GetMeanVesselLengthOfNeovasculature()
     double totalVesselLength = 0;
     int numberofNewVessels = 0;
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         if (GetVessel(i)->IsPartOfNeovasculature())
         {
@@ -232,7 +232,7 @@ int CaVascularNetwork<SPATIAL_DIM>::GetNumberOfVesselsByLength(double lowerBound
 {
     int numberOfVesselsInsideRange = 0;
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         if (GetVessel(i)->GetLength() > lowerBoundLength && GetVessel(i)->GetLength() <= upperBoundLength)
         {
@@ -248,7 +248,7 @@ int CaVascularNetwork<SPATIAL_DIM>::GetNumberOfVesselsByRadius(double lowerBound
 {
     int numberOfVesselsInsideRange = 0;
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         if (GetVessel(i)->GetRadius() > lowerBoundRadius && GetVessel(i)->GetRadius() <= upperBoundRadius)
         {
@@ -264,7 +264,7 @@ int CaVascularNetwork<SPATIAL_DIM>::GetNumberOfVesselsByTortuosity(double lowerB
 {
     int numberOfVesselsInsideRange = 0;
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         if (GetVessel(i)->GetTortuosity() > lowerBoundTortuosity && GetVessel(i)->GetTortuosity() <= upperBoundTortuosity)
         {
@@ -281,7 +281,7 @@ double CaVascularNetwork<SPATIAL_DIM>::GetMeanVesselRadiusOfNeovasculature()
     double totalVesselRadius = 0;
     int numberofNewVessels = 0;
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         if (GetVessel(i)->IsPartOfNeovasculature())
         {
@@ -300,7 +300,7 @@ double CaVascularNetwork<SPATIAL_DIM>::GetMeanVesselTortuosityOfNeovasculature()
     double totalVesselTortuosity = 0;
     int numberofNewVessels = 0;
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         if (std::isinf(GetVessel(i)->GetTortuosity()))
         {
@@ -348,7 +348,7 @@ bool CaVascularNetwork<SPATIAL_DIM>::NodePresentAtLocation(ChastePoint<SPATIAL_D
 {
     bool nodePresentAtLocation = false;
 
-    for (int i = 0; i < GetNumberOfNodesInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfNodesInNetwork(); i++)
     {
         if (mNodeArray[i]->GetLocation().IsSamePoint(location))
         {
@@ -361,11 +361,11 @@ bool CaVascularNetwork<SPATIAL_DIM>::NodePresentAtLocation(ChastePoint<SPATIAL_D
 }
 
 template <unsigned SPATIAL_DIM>
-int CaVascularNetwork<SPATIAL_DIM>::NumberOfNodesPresentAtLocation(ChastePoint<SPATIAL_DIM> location)
+unsigned CaVascularNetwork<SPATIAL_DIM>::NumberOfNodesPresentAtLocation(ChastePoint<SPATIAL_DIM> location)
 {
-    int numberOfNodesPresentAtLocation = 0;
+	unsigned numberOfNodesPresentAtLocation = 0;
 
-    for (int i = 0; i < GetNumberOfNodesInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfNodesInNetwork(); i++)
     {
         if (mNodeArray[i]->GetLocation().IsSamePoint(location))
         {
@@ -396,7 +396,7 @@ void CaVascularNetwork<SPATIAL_DIM>::AddVessel(boost::shared_ptr<CaVessel<SPATIA
 
     bool node1OfVesselAlreadyPresentInNetwork = false;
 
-    for (int i = 0; i < GetNumberOfNodesInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfNodesInNetwork(); i++)
     {
         if (GetNode(i)->GetLocation().IsSamePoint(vessel->GetNode1()->GetLocation())) // assume nodes are the same if they have the same location
         {
@@ -422,7 +422,7 @@ void CaVascularNetwork<SPATIAL_DIM>::AddVessel(boost::shared_ptr<CaVessel<SPATIA
 
     bool node2OfVesselAlreadyPresentInNetwork = false;
 
-    for (int i = 0; i < GetNumberOfNodesInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfNodesInNetwork(); i++)
     {
         if (GetNode(i)->GetLocation().IsSamePoint(vessel->GetNode2()->GetLocation())) // assume nodes are the same if they have the same location
         {
@@ -453,7 +453,7 @@ bool CaVascularNetwork<SPATIAL_DIM>::VesselIsInNetwork(boost::shared_ptr<CaVesse
 {
     bool vesselIsInNetwork = false;
 
-    int i = 0;
+    unsigned i = 0;
 
     for (i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
@@ -473,7 +473,7 @@ bool CaVascularNetwork<SPATIAL_DIM>::NodeIsInNetwork(boost::shared_ptr<CaVascula
 {
     bool nodeIsInNetwork = false;
 
-    int i = 0;
+    unsigned i = 0;
 
     for (i = 0; i < GetNumberOfNodesInNetwork(); i++)
     {
@@ -518,7 +518,7 @@ bool CaVascularNetwork<SPATIAL_DIM>::Connected(boost::shared_ptr<CaVascularNetwo
 
     Graph G;
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         add_edge(GetNodeID(GetVessel(i)->GetNode1()),GetNodeID(GetVessel(i)->GetNode2()),G);
     }
@@ -537,7 +537,7 @@ bool CaVascularNetwork<SPATIAL_DIM>::Connected(boost::shared_ptr<CaVascularNetwo
     // this assigns a discovery time to dTime for each node (index relates to nodeID)
     // dTime is zero for node1 and all other nodes that are not connected to node1
     // dTime is nonzero for all nodes that are connected to node1 (except node 1 itself)
-    breadth_first_search(G,vertex(GetNodeID(node1),G), visitor(vis));
+    breadth_first_search(G,vertex(GetNodeID(node1),G), boost::visitor(vis));
 
     return (dtime[GetNodeID(node2)] > 0);
 
@@ -558,7 +558,7 @@ bool CaVascularNetwork<SPATIAL_DIM>::ConnectedToInputNode(boost::shared_ptr<CaVa
 
     Graph G;
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         add_edge(GetNodeID(GetVessel(i)->GetNode1()),GetNodeID(GetVessel(i)->GetNode2()),G);
     }
@@ -569,7 +569,7 @@ bool CaVascularNetwork<SPATIAL_DIM>::ConnectedToInputNode(boost::shared_ptr<CaVa
 
     int connectedToInputNode = 0;
 
-    for (int j = 0; j < GetNumberOfNodesInNetwork(); j++)
+    for (unsigned j = 0; j < GetNumberOfNodesInNetwork(); j++)
     {
 
         if (GetNode(j)->IsInputNode())
@@ -584,7 +584,7 @@ bool CaVascularNetwork<SPATIAL_DIM>::ConnectedToInputNode(boost::shared_ptr<CaVa
             // this assigns a discovery time to dTime for each node (index relates to nodeID)
             // dTime is zero for node1 and all other nodes that are not connected to node1
             // dTime is nonzero for all nodes that are connected to node1 (except node 1 itself)
-            breadth_first_search(G,vertex(j,G), visitor(vis));
+            breadth_first_search(G,vertex(j,G), boost::visitor(vis));
 
             if (dtime[GetNodeID(node)] > 0)
             {
@@ -615,7 +615,7 @@ bool CaVascularNetwork<SPATIAL_DIM>::ConnectedToOutputNode(boost::shared_ptr<CaV
 
     Graph G;
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         add_edge(GetNodeID(GetVessel(i)->GetNode1()),GetNodeID(GetVessel(i)->GetNode2()),G);
     }
@@ -626,7 +626,7 @@ bool CaVascularNetwork<SPATIAL_DIM>::ConnectedToOutputNode(boost::shared_ptr<CaV
 
     int connectedToOutputNode = 0;
 
-    for (int j = 0; j < GetNumberOfNodesInNetwork(); j++)
+    for (unsigned j = 0; j < GetNumberOfNodesInNetwork(); j++)
     {
 
         if (GetNode(j)->IsOutputNode())
@@ -641,7 +641,7 @@ bool CaVascularNetwork<SPATIAL_DIM>::ConnectedToOutputNode(boost::shared_ptr<CaV
             // this assigns a discovery time to dTime for each node (index relates to nodeID)
             // dTime is zero for node1 and all other nodes that are not connected to node1
             // dTime is nonzero for all nodes that are connected to node1 (except node 1 itself)
-            breadth_first_search(G,vertex(j,G), visitor(vis));
+            breadth_first_search(G,vertex(j,G), boost::visitor(vis));
 
             if (dtime[GetNodeID(node)] > 0)
             {
@@ -682,7 +682,7 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
 
     int NumberOfPoints = 0;
 
-    for(int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for(unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         NumberOfPoints += GetVessel(i)->GetNumberOfSegments();
     }
@@ -691,9 +691,9 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
     out << "DATASET POLYDATA\n";
     out << "POINTS " << NumberOfPoints <<" float\n";
 
-    for(int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for(unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
-        for (int j = 0; j < GetVessel(i)->GetNumberOfSegments(); j++)
+        for (unsigned j = 0; j < GetVessel(i)->GetNumberOfSegments(); j++)
         {
             out << (GetVessel(i)->GetSegmentCoordinate(j)[0]) << " " << (GetVessel(i)->GetSegmentCoordinate(j)[1]) << " ";
             if (SPATIAL_DIM > 2)
@@ -714,10 +714,10 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
 
     int NumberOfPointsUsed = 0;
 
-    for(int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for(unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         out << GetVessel(i)->GetNumberOfSegments() << " ";
-        for (int j = 0; j < GetVessel(i)->GetNumberOfSegments(); j++)
+        for (unsigned j = 0; j < GetVessel(i)->GetNumberOfSegments(); j++)
         {
             out << NumberOfPointsUsed << " ";
             NumberOfPointsUsed++;
@@ -732,7 +732,7 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
     out << "\n";
     out << "Radius" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         out << GetVessel(i)->GetRadius();
         out << "\n";
@@ -741,7 +741,7 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
     out << "\n";
     out << "UpstreamConductedStimulus" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         out << GetVessel(i)->GetUpstreamConductedStimulus();
         out << "\n";
@@ -750,7 +750,7 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
     out << "\n";
     out << "DownstreamConductedStimulus" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         out << GetVessel(i)->GetDownstreamConductedStimulus();
         out << "\n";
@@ -759,7 +759,7 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
     out << "\n";
     out << "ShrinkingStimulus" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         out << GetVessel(i)->GetShrinkingStimulus();
         out << "\n";
@@ -768,7 +768,7 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
     out << "\n";
     out << "MetabolicStimulus" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         out << GetVessel(i)->GetMetabolicStimulus();
         out << "\n";
@@ -777,7 +777,7 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
     out << "\n";
     out << "MechanicalStimulus" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         out << GetVessel(i)->GetMechanicalStimulus();
         out << "\n";
@@ -786,7 +786,7 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
     out << "\n";
     out << "Viscosity" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         out << GetVessel(i)->GetViscosity();
         out << "\n";
@@ -795,7 +795,7 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
     out << "\n";
     out << "Impedance" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         out << GetVessel(i)->GetImpedance();
         out << "\n";
@@ -804,7 +804,7 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
     out << "\n";
     out << "WallShearStress" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         out << GetVessel(i)->GetWallShearStress();
         out << "\n";
@@ -813,7 +813,7 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
     out << "\n";
     out << "FlowVelocity" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         out << GetVessel(i)->GetFlowVelocity();
         out << "\n";
@@ -822,7 +822,7 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
     out << "\n";
     out << "FlowRate" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         out << GetVessel(i)->GetFlowRate();
         out << "\n";
@@ -831,7 +831,7 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
     out << "\n";
     out << "AbsFlowVelocity" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         out << fabs(GetVessel(i)->GetFlowVelocity());
         out << "\n";
@@ -840,7 +840,7 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
     out << "\n";
     out << "AbsFlowRate" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         out << fabs(GetVessel(i)->GetFlowRate());
         out << "\n";
@@ -849,7 +849,7 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
     out << "\n";
     out << "HaematocritLevel" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         out << GetVessel(i)->GetHaematocritLevel();
         out << "\n";
@@ -858,7 +858,7 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
     out << "\n";
     out << "Length" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         out << GetVessel(i)->GetLength();
         out << "\n";
@@ -867,7 +867,7 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
     out << "\n";
     out << "Pressure" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         out << 0.5*(GetVessel(i)->GetNode1()->GetPressure() + GetVessel(i)->GetNode2()->GetPressure());
         out << "\n";
@@ -876,7 +876,7 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
     out << "\n";
     out << "Tortuosity" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         if (std::isinf(GetVessel(i)->GetTortuosity()))
         {
@@ -895,7 +895,7 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
     out << "\n";
     out << "HasActiveTipCell" << " 1 " << GetNumberOfVesselsInNetwork() << " int\n";
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         out << GetVessel(i)->HasActiveTipCell();
         out << "\n";
@@ -904,7 +904,7 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
     out << "\n";
     out << "TimeWithLowWallShearStress" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         out << GetVessel(i)->GetTimeWithLowWallShearStress();
         out << "\n";
@@ -915,7 +915,7 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
     out << "\n";
     out << "IsPartOfNeovasculature" << " 1 " << GetNumberOfVesselsInNetwork() << " int\n";
 
-    for (int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
 
         if (GetVessel(i)->IsPartOfNeovasculature() == true)
@@ -934,12 +934,12 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
     if (GetVessel(0)->GetNumberOfIntraVascularChemicals() > 0)
     {
 
-        for (int chemsIndex = 0; chemsIndex < GetVessel(0)->GetNumberOfIntraVascularChemicals(); chemsIndex++)
+        for (unsigned chemsIndex = 0; chemsIndex < GetVessel(0)->GetNumberOfIntraVascularChemicals(); chemsIndex++)
         {
             out << "\n";
             out << GetVessel(0)->GetCollectionOfIntraVascularChemicals().GetIntraVascularChemicalCollection()[chemsIndex].GetChemicalName() << "Concentration 1 " << GetNumberOfVesselsInNetwork() << " float\n";
 
-            for(int i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+            for(unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
             {
 
                 if (GetVessel(i)->GetCollectionOfIntraVascularChemicals().GetIntraVascularChemicalCollection()[chemsIndex].GetConcentration() > 1e-15)

@@ -43,77 +43,93 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <algorithm>
 
-#include "CellsGenerator.hpp"
-#include "CaBasedCellPopulation.hpp"
-#include "VolumeConstraintPottsUpdateRule.hpp"
-#include "PottsMeshGenerator.hpp"
-#include "FixedDurationGenerationBasedCellCycleModel.hpp"
-#include "DiffusionCaUpdateRule.hpp"
-#include "AbstractCellBasedTestSuite.hpp"
-#include "ArchiveOpener.hpp"
-#include "WildTypeCellMutationState.hpp"
+#include "FileFinder.hpp"
 #include "SmartPointers.hpp"
-#include "CellLabel.hpp"
-#include "FileComparison.hpp"
-
-// Cell writers
-#include "CellAgesWriter.hpp"
-#include "CellAncestorWriter.hpp"
-#include "CellProliferativePhasesWriter.hpp"
-#include "CellVolumesWriter.hpp"
-#include "CellMutationStatesWriter.hpp"
-
-// Cell population writers
-#include "CellMutationStatesCountWriter.hpp"
-#include "CellProliferativeTypesCountWriter.hpp"
-#include "CellProliferativePhasesCountWriter.hpp"
-
+#include "AbstractCellBasedTestSuite.hpp"
 #include "VascularNetworkGenerator.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
 
-class TestVascularNetworkGenerator : public AbstractCellBasedTestSuite
+class TestVascularNetworkGenerator : public CxxTest::TestSuite
 {
 public:
 
-    void TestVascularNetworkGeneratorWithHexagonallyTesselatedVesselNetwork() throw(Exception)
-    {
+	void TestVascularNetworkGeneratorWithHexagonallyTesselatedVesselNetwork() throw(Exception)
+	{
 
-        try
-        {
+		try
+		{
 
-            // Create a simple 2D PottsMesh
-            unsigned width = 50;
-            unsigned height = 25;
-            PottsMeshGenerator<2> generator(width, 0, 0, height, 0, 0);
-            PottsMesh<2>* p_mesh = generator.GetMesh();
+			// Create a simple 2D PottsMesh
+			unsigned width = 50;
+			unsigned height = 25;
+			unsigned vessel_length = 5;
 
-            boost::shared_ptr<CaVessel<2> > prototypeVessel(new CaVessel<2>());
-            prototypeVessel->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(0.0,"unitless"),3.0*pow(10.0,(-6)));
-            VascularNetworkGenerator<2> vascularNetworkGenerator(prototypeVessel);
+			boost::shared_ptr<CaVessel<2> > prototypeVessel(new CaVessel<2>());
+			prototypeVessel->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(0.0,"unitless"),3.0*pow(10.0,(-6)));
+			VascularNetworkGenerator<2> vascularNetworkGenerator(prototypeVessel);
 
-            boost::shared_ptr<CaVascularNetwork<2> > vascularNetwork = vascularNetworkGenerator.GenerateHexagonallyTesselatedVascularNetwork(p_mesh,width,height);
+			boost::shared_ptr<CaVascularNetwork<2> > vascularNetwork = vascularNetworkGenerator.GenerateHexagonallyTesselatedVascularNetwork(width,height,vessel_length,"North East");
 
-            // write vascular cell data out to file
+			// write vascular cell data out to file
 
-            std::string output_directory = "TestVascularNetworkGenerator";
-            std::string filename;
-            std::stringstream sstm;
-            OutputFileHandler output_file_handler(output_directory, false);
+			std::string output_directory = "TestVascularNetworkGenerator";
+			std::string filename;
+			std::stringstream sstm;
+			OutputFileHandler output_file_handler(output_directory, false);
 
-            sstm << output_file_handler.GetOutputDirectoryFullPath() << "HexagonallyTessellatedVesselNetwork.vtk";
+			sstm << output_file_handler.GetOutputDirectoryFullPath() << "HexagonallyTessellatedVesselNetwork.vtk";
 
-            filename = sstm.str();
+			filename = sstm.str();
 
-            vascularNetwork->SaveVasculatureDataToFile(filename);
+			vascularNetwork->SaveVasculatureDataToFile(filename);
 
-        }
-        catch(Exception &e)
-        {
-            std::cout << e.GetMessage() << std::endl;
-        }
+		}
+		catch(Exception &e)
+		{
+			std::cout << e.GetMessage() << std::endl;
+		}
 
-    }
+	}
+
+	void TestVascularNetworkGeneratorWithTapmeierNetwork() throw(Exception)
+        		{
+
+		try
+		{
+
+			boost::shared_ptr<CaVessel<3> > prototypeVessel(new CaVessel<3>());
+			prototypeVessel->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(0.0,"unitless"),3.0*pow(10.0,(-6)));
+			VascularNetworkGenerator<3> vascularNetworkGenerator(prototypeVessel);
+
+			FileFinder fileFinder("projects/Angiogenesis/test/data/tapmeier_network.vtp",RelativeTo::ChasteSourceRoot);
+
+			std::string input_filename = fileFinder.GetAbsolutePath();
+			TS_ASSERT(fileFinder.IsFile());
+			TS_ASSERT(fileFinder.Exists());
+
+			boost::shared_ptr<CaVascularNetwork<3> > vascularNetwork = vascularNetworkGenerator.GenerateVascularNetworkFromVtkFile(input_filename);
+
+			// write vascular cell data out to file
+
+			std::string output_directory = "TestVascularNetworkGenerator";
+			std::string output_filename;
+			std::stringstream sstm;
+			OutputFileHandler output_file_handler(output_directory, false);
+
+			sstm << output_file_handler.GetOutputDirectoryFullPath() << "TapmeierNetwork.vtk";
+
+			output_filename = sstm.str();
+
+			vascularNetwork->SaveVasculatureDataToFile(output_filename);
+
+		}
+		catch(Exception &e)
+		{
+			std::cout << e.GetMessage() << std::endl;
+		}
+
+        		}
 
 };
 

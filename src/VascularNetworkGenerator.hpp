@@ -66,13 +66,24 @@ public:
     /*
      * Creates a hexagonally tesselated vessel network
      *
-     * @param p_mesh Potts mesh
-     * @param width width of Potts mesh
-     * @param height width of Potts mesh
-     * @return a vector of location indices which specify the locations of vascular cells inside a
-     *         hexagonally tesselated vessel network
+     * @param width width of Potts mesh.
+     * @param height width of Potts mesh.
+     * @param vessel_length approximate vessel length.
+     * @param venous_output_position output node location on Potts mesh (can be "North East" or "South East").
+     * @return a hexagonally tesselated vessel network
      */
-    boost::shared_ptr<CaVascularNetwork<SPATIAL_DIM> > GenerateHexagonallyTesselatedVascularNetwork(PottsMesh<2>* p_mesh, unsigned width, unsigned height);
+    boost::shared_ptr<CaVascularNetwork<SPATIAL_DIM> > GenerateHexagonallyTesselatedVascularNetwork(unsigned width,
+    																				unsigned height,
+    																				unsigned vessel_length,
+    																				std::string venous_output_position);
+
+    /*
+         * Generates a vessel network from a vtk file.
+         *
+         * @param filename name of file in which vascular network is described.
+         * @return the vascular network described in the prescribed file.
+         */
+        boost::shared_ptr<CaVascularNetwork<SPATIAL_DIM> > GenerateVascularNetworkFromVtkFile(std::string filename);
 
     /**
        Assigns the arterial haematocrit level that will be prescribed to the VesselNetwork.

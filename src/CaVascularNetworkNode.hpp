@@ -89,21 +89,21 @@ public:
 
        @return mPressure
      */
-    double GetPressure() const;
+    double GetPressure();
 
     /**
        Returns the number of vessels which are adjoint to the node.
 
        @return pAdjoiningVessels.size()
      */
-    int GetNumberOfAdjoiningVessels() const;
+    unsigned GetNumberOfAdjoiningVessels();
 
     /**
        Returns a boost::shared_ptr to Vessel i which is adjoint to this node.
 
        @return pAdjoiningVessels[i]
      */
-    boost::shared_ptr<CaVessel<SPATIAL_DIM> > GetAdjoiningVessel(int i);
+    boost::shared_ptr<CaVessel<SPATIAL_DIM> > GetAdjoiningVessel(unsigned i);
 
     /**
        Returns whether the node is an input node to a VesselNetwork.

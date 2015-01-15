@@ -35,19 +35,19 @@ ChastePoint<SPATIAL_DIM> CaVascularNetworkNode<SPATIAL_DIM>::GetLocation()
 }
 
 template<unsigned SPATIAL_DIM>
-double CaVascularNetworkNode<SPATIAL_DIM>::GetPressure() const
+double CaVascularNetworkNode<SPATIAL_DIM>::GetPressure()
 {
     return mPressure;
 }
 
 template<unsigned SPATIAL_DIM>
-int CaVascularNetworkNode<SPATIAL_DIM>::GetNumberOfAdjoiningVessels() const
+unsigned CaVascularNetworkNode<SPATIAL_DIM>::GetNumberOfAdjoiningVessels()
 {
     return pAdjoiningVessels.size();
 }
 
 template<unsigned SPATIAL_DIM>
-boost::shared_ptr<CaVessel<SPATIAL_DIM> > CaVascularNetworkNode<SPATIAL_DIM>::GetAdjoiningVessel(int i)
+boost::shared_ptr<CaVessel<SPATIAL_DIM> > CaVascularNetworkNode<SPATIAL_DIM>::GetAdjoiningVessel(unsigned i)
 {
     return pAdjoiningVessels[i].lock(); // lock() converts weak pointer (stored here) to shared pointer
 }
@@ -84,7 +84,7 @@ void CaVascularNetworkNode<SPATIAL_DIM>::AddAdjoiningVessel(boost::shared_ptr<Ca
 
     int numberOfTimeVesselIsAlreadyAttachedToNode = 0;
 
-    for(int i = 0; i < pAdjoiningVessels.size(); i++)
+    for(unsigned i = 0; i < pAdjoiningVessels.size(); i++)
     {
         if (pAdjoiningVessels[i].lock() == vessel)
         {
@@ -118,7 +118,7 @@ template<unsigned SPATIAL_DIM>
 void CaVascularNetworkNode<SPATIAL_DIM>::RemoveAdjoiningVessel(boost::shared_ptr<CaVessel<SPATIAL_DIM> > vessel)
 {
 
-    for(int i = 0; i < pAdjoiningVessels.size(); i++)
+    for(unsigned i = 0; i < pAdjoiningVessels.size(); i++)
     {
         if (pAdjoiningVessels[i].lock() == vessel)
         {
@@ -140,7 +140,7 @@ bool CaVascularNetworkNode<SPATIAL_DIM>::IsAttachedToVessel(boost::shared_ptr<Ca
 
     bool vesselIsAttachedToNode = false;
 
-    for(int i = 0; i < pAdjoiningVessels.size(); i++)
+    for(unsigned i = 0; i < pAdjoiningVessels.size(); i++)
     {
         if (pAdjoiningVessels[i].lock() == vessel)
         {

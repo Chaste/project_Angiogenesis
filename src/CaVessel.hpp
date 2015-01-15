@@ -235,12 +235,12 @@ public:
     /**
        @return mVesselSegmentLocations[i]
      */
-    ChastePoint<SPATIAL_DIM> GetSegmentCoordinate(int i);
+    ChastePoint<SPATIAL_DIM> GetSegmentCoordinate(unsigned i);
 
     /**
        @return mVesselSegmentLocations.size()
      */
-    int GetNumberOfSegments() const;
+    unsigned GetNumberOfSegments();
 
     /**
        Returns whether the Vessel has an actively migrating tip cell.
@@ -355,7 +355,7 @@ public:
     /**
        @return the number of IntraVascularChemicals contained within the vessel.
      */
-    int GetNumberOfIntraVascularChemicals();
+    unsigned GetNumberOfIntraVascularChemicals();
 
     /**
        @return the concentration of the prescribed IntraVascularChemical.

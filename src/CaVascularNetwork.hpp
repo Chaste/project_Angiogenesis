@@ -105,7 +105,7 @@ public:
 
        @param vessel boost::shared_ptr<CaVessel<SPATIAL_DIM> >.
      */
-    int GetVesselID(boost::shared_ptr<CaVessel<SPATIAL_DIM> > vessel);
+    unsigned GetVesselID(boost::shared_ptr<CaVessel<SPATIAL_DIM> > vessel);
 
     /**
        This method is used to resolve the identity of nodes contained within a network.
@@ -115,17 +115,17 @@ public:
        @param node
        @return id of node (index of node in mNodeArray)
      */
-    int GetNodeID(boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > node);
+    unsigned GetNodeID(boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > node);
 
     /**
        Returns the number of vessels contained within the network.
      */
-    int GetNumberOfVesselsInNetwork();
+    unsigned GetNumberOfVesselsInNetwork();
 
     /**
             Returns the number of nodes contained within the network.
      */
-    int GetNumberOfNodesInNetwork();
+    unsigned GetNumberOfNodesInNetwork();
 
     /**
             Returns the number of vessels which occupy a particular location in the spatial mesh.
@@ -138,7 +138,7 @@ public:
 
             @param location ChastePoint<SPATIAL_DIM>.
      */
-    int GetNumberOfVesselsAtLocation(ChastePoint<SPATIAL_DIM> coord);
+    unsigned GetNumberOfVesselsAtLocation(ChastePoint<SPATIAL_DIM> coord);
 
     /**
             Returns a boost::shared_ptr to the vessel object with the prescribed id.
@@ -258,7 +258,7 @@ public:
             pseudo-acceptable state within some operation implementations whereby two nodes temporarily
             occupy the same location before being merged.
      */
-    int NumberOfNodesPresentAtLocation(ChastePoint<SPATIAL_DIM> location);
+    unsigned NumberOfNodesPresentAtLocation(ChastePoint<SPATIAL_DIM> location);
 
     /**
             Adds a vessel to the VesselNetwork. A Vessel may only be added to the network if there is

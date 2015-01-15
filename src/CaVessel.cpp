@@ -191,14 +191,14 @@ std::vector<ChastePoint<SPATIAL_DIM> > CaVessel<SPATIAL_DIM>::GetSegmentCoordina
 }
 
 template<unsigned SPATIAL_DIM>
-ChastePoint<SPATIAL_DIM> CaVessel<SPATIAL_DIM>::GetSegmentCoordinate(int i)
+ChastePoint<SPATIAL_DIM> CaVessel<SPATIAL_DIM>::GetSegmentCoordinate(unsigned i)
 {
     assert(i < mVesselSegmentLocations.size());
     return mVesselSegmentLocations[i];
 }
 
 template<unsigned SPATIAL_DIM>
-int CaVessel<SPATIAL_DIM>::GetNumberOfSegments() const
+unsigned CaVessel<SPATIAL_DIM>::GetNumberOfSegments()
 {
     return mVesselSegmentLocations.size();
 }
@@ -229,7 +229,7 @@ IntraVascularChemicalCollection& CaVessel<SPATIAL_DIM>::GetCollectionOfIntraVasc
 }
 
 template<unsigned SPATIAL_DIM>
-int CaVessel<SPATIAL_DIM>::GetNumberOfIntraVascularChemicals()
+unsigned CaVessel<SPATIAL_DIM>::GetNumberOfIntraVascularChemicals()
 {
     return mChemicalCollection.GetIntraVascularChemicalCollection().size();
 }
@@ -425,7 +425,7 @@ void CaVessel<SPATIAL_DIM>::SetNextVesselSegmentCoordinate(ChastePoint<SPATIAL_D
 
         SetLength(0.0);
 
-        for (int i = 1; i < GetNumberOfSegments(); i++)
+        for (unsigned i = 1; i < GetNumberOfSegments(); i++)
         {
             double segmentlength = 0;
 
@@ -447,6 +447,8 @@ void CaVessel<SPATIAL_DIM>::SetNextVesselSegmentCoordinate(ChastePoint<SPATIAL_D
         mVesselSegmentLocations.push_back(Coords);
         SetLength(1);
     }
+
+    std::cout << "print" << std::endl;
 
 }
 
