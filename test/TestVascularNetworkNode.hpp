@@ -37,11 +37,10 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TESTVASCULARNETWORKNODE_HPP_
 
 #include <cxxtest/TestSuite.h>
-#include "FileFinder.hpp"
-#include "OutputFileHandler.hpp"
 #include "SmartPointers.hpp"
 #include "CaVascularNetworkNode.hpp"
 #include "CaVessel.hpp"
+#include "ChastePoint.hpp"
 #include "FakePetscSetup.hpp"
 
 class TestVascularNetworkGenerator : public CxxTest::TestSuite
@@ -51,9 +50,72 @@ public:
 	void TestConstructor() throw(Exception)
 	{
 		// Make a node
-		CaVascularNetworkNode<2> vessel_node;
+		CaVascularNetworkNode<2> node;
+
+		// Test Getters and Setters
+		ChastePoint<2> point(1.0, 2.0);
+		node.SetLocation(point);
+
+		TS_ASSERT_DELTA(node.GetLocation()[0], point[0], 1.e-6);
+		TS_ASSERT_DELTA(node.GetLocation()[1], point[1], 1.e-6);
+
+		node.SetIsInputNode(true);
+		node.SetIsOutputNode(true);
+		TS_ASSERT(node.IsInputNode());
+		TS_ASSERT(node.IsOutputNode());
+
+		double pressure = 100.0;
+		node.SetPressure(pressure);
+		TS_ASSERT_DELTA(node.GetPressure(), pressure, 1.e-6);
+
+		// Test the Exception in the shared method for the
+		// case of a shared pointer to node not being set.
+        TS_ASSERT_THROWS_THIS(node.shared()->GetPressure(),
+        		"Failed to return a shared pointer to a node. The node should be owned by a shared pointer before calling shared.");
 	}
 
+	void TestAddingAndRemovingVessels() throw(Exception)
+	{
+		// Make some nodes
+		boost::shared_ptr<CaVascularNetworkNode<2> > pNode(new CaVascularNetworkNode<2>);
+		boost::shared_ptr<CaVascularNetworkNode<2> > pNode2(new CaVascularNetworkNode<2>);
+
+		// Make some vessels
+		boost::shared_ptr<CaVessel<2> > pVessel(new CaVessel<2>);
+		boost::shared_ptr<CaVessel<2> > pVessel2(new CaVessel<2>);
+
+		// Add a vessel to the node and remove it again
+		TS_ASSERT_EQUALS(pNode->GetNumberOfAdjoiningVessels(), 0u);
+		pNode->AddAdjoiningVessel(pVessel);
+		TS_ASSERT_EQUALS(pNode->GetNumberOfAdjoiningVessels(), 1u);
+
+        TS_ASSERT_THROWS_THIS(pNode->IsAttachedToVessel(pVessel),
+                "The vessel has been added to the node, but the node has not been added to the vessel.");
+
+		pVessel->SetNode1(pNode);
+		TS_ASSERT(pNode->IsAttachedToVessel(pVessel));
+		TS_ASSERT_EQUALS(pNode->GetAdjoiningVessel(0u), pVessel);
+
+		pNode->RemoveAdjoiningVessel(pVessel);
+		TS_ASSERT(!pNode->IsAttachedToVessel(pVessel));
+        TS_ASSERT_THROWS_THIS(pNode->GetAdjoiningVessel(1u),
+                "Attempted to access a vessel with an out of range index.");
+
+		// Check for a suitable Exception if the vessel is not
+		// attached to the node.
+        TS_ASSERT_THROWS_THIS(pNode->RemoveAdjoiningVessel(pVessel),
+                "Attempted to remove a vessel from a node it is not attached to.");
+
+        // Attempt to attach the same vessel to a node multiple times
+        pNode->AddAdjoiningVessel(pVessel);
+        TS_ASSERT_THROWS_THIS(pNode->AddAdjoiningVessel(pVessel),
+                "Vessels and nodes in inconsistent state.");
+
+        pVessel->SetNode2(pNode);
+        pNode->AddAdjoiningVessel(pVessel);
+        TS_ASSERT_THROWS_THIS(pNode->AddAdjoiningVessel(pVessel),
+                "Vessel is already attached to node twice (at both ends). Cannot attach vessel to same node again.");
+	}
 };
 
 #endif /*TESTVASCULARNETWORKNODE_HPP_*/

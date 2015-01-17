@@ -51,10 +51,22 @@ CaVascularNetworkNode<DIM>::~CaVascularNetworkNode()
 {
 }
 
+///\todo This method will return a bad weak pointer exception if a shared pointer
+// to the node has not been previously created. A generic catch has been used, it
+// should be replaced with one specific to the pointer.
+//
 template<unsigned DIM>
 boost::shared_ptr<CaVascularNetworkNode<DIM> > CaVascularNetworkNode<DIM>::shared()
 {
-    return this->shared_from_this();
+	try
+	{
+		boost::shared_ptr<CaVascularNetworkNode<DIM> > pNode = this->shared_from_this();
+		return pNode;
+	}
+	catch(...)
+	{
+		EXCEPTION("Failed to return a shared pointer to a node. The node should be owned by a shared pointer before calling shared.");
+	}
 }
 
 template<unsigned DIM>
@@ -78,7 +90,14 @@ unsigned CaVascularNetworkNode<DIM>::GetNumberOfAdjoiningVessels()
 template<unsigned DIM>
 boost::shared_ptr<CaVessel<DIM> > CaVascularNetworkNode<DIM>::GetAdjoiningVessel(unsigned i)
 {
-    return mAdjoiningVessels[i].lock(); // lock() converts weak pointer (stored here) to shared pointer
+	if(i < mAdjoiningVessels.size())
+	{
+		return mAdjoiningVessels[i].lock(); // lock() converts weak pointer (stored here) to shared pointer
+	}
+	else
+	{
+		EXCEPTION("Attempted to access a vessel with an out of range index.");
+	}
 }
 
 template<unsigned DIM>
@@ -162,7 +181,7 @@ void CaVascularNetworkNode<DIM>::RemoveAdjoiningVessel(boost::shared_ptr<CaVesse
 
     if (!attached_to_vessel)
     {
-    	EXCEPTION("Warning: vessel is not attached to node. Cannot remove vessel from node.");
+    	EXCEPTION("Attempted to remove a vessel from a node it is not attached to.");
     }
 }
 
@@ -178,13 +197,12 @@ bool CaVascularNetworkNode<DIM>::IsAttachedToVessel(boost::shared_ptr<CaVessel<D
         {
             if (vessel->GetNode1() != shared() && vessel->GetNode2() != shared())
             {
-            	EXCEPTION("Vessel is not properly attached to node; vessels and nodes are in an inconsistent state.");
+            	EXCEPTION("The vessel has been added to the node, but the node has not been added to the vessel.");
             }
             attached_to_node = true;
             break;
         }
     }
-
     return attached_to_node;
 }
 

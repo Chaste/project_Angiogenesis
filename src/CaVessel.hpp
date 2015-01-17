@@ -1,131 +1,146 @@
 /*
- * CaVessel.hpp
- *
- *  Created on: 13 Jan 2015
- *      Author: connor
+
+Copyright (c) 2005-2015, University of Oxford.
+All rights reserved.
+
+University of Oxford means the Chancellor, Masters and Scholars of the
+University of Oxford, having an administrative office at Wellington
+Square, Oxford OX1 2JD, UK.
+
+This file is part of Chaste.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+ * Redistributions of source code must retain the above copyright notice,
+   this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+ * Neither the name of the University of Oxford nor the names of its
+   contributors may be used to endorse or promote products derived from this
+   software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
  */
 
 #ifndef CAVESSEL_HPP_
 #define CAVESSEL_HPP_
 
-
-#include <vector>
-#include <iostream>
-#include <cassert>
-#include <cstring>
-#include <cmath>
-#include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
-
+#include "SmartPointers.hpp"
+#include "Exception.hpp"
+#include "ChastePoint.hpp"
 #include "IntraVascularChemicalCollection.hpp"
 #include "Concentration.hpp"
-#include "ChastePoint.hpp"
 #include "CaVascularNetworkNode.hpp"
 
-template<unsigned SPATIAL_DIM>
-class CaVessel : public boost::enable_shared_from_this<CaVessel<SPATIAL_DIM> >
+template<unsigned DIM>
+class CaVessel : public boost::enable_shared_from_this<CaVessel<DIM> >
 {
 
 private:
 
-    // information about nodes at ends of vessel
-    // -----------------------------------------
-
     /**
-        Node at one end of the Vessel.
+     *  Node at one end of the Vessel.
      */
-    boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > pNode1;
+    boost::shared_ptr<CaVascularNetworkNode<DIM> > pNode1;
 
     /**
-        Node at other end of the Vessel.
+     *  Node at other end of the Vessel.
      */
-    boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > pNode2;
+    boost::shared_ptr<CaVascularNetworkNode<DIM> > pNode2;
 
     /**
-        Whether the Vessel has an actively migrating tip cell located at the end where node1 is
-        located.
+     *  Whether the Vessel has an actively migrating tip cell located at the end where node1 is
+     *  located.
      */
-    bool mActiveTipCellLocatedAtNode1;
+    bool mActiveTipCellAtNode1;
 
     /**
-        Whether the Vessel has an actively migrating tip cell located at the end where node2 is
-        located.
+     * Whether the Vessel has an actively migrating tip cell located at the end where node2 is
+     * located.
      */
-    bool mActiveTipCellLocatedAtNode2;
-
-
-    // spatial information about the vessel itself
-    // -------------------------------------------
+    bool mActiveTipCellAtNode2;
 
     /**
-        Collection of VesselSegments. A vessel segment is a spatially discrete location
-        occupied by the Vessel.
-
-        todo Need to think about how we introduce the following with cells instead of segments. For now use a vector of locations.
+     *  Collection of VesselSegments. A vessel segment is a spatially discrete location
+     *  occupied by the Vessel.
+     *
+     *  todo Need to think about how we introduce the following with cells instead of segments. For now use a vector of locations.
      */
-    //    std::vector<boost::shared_ptr<VesselSegment<SPATIAL_DIM> > > VesselSegments;
-
-    std::vector<ChastePoint<SPATIAL_DIM> > mVesselSegmentLocations;
-
-    // information about chemicals and mechanical properties
-    // -----------------------------------------------------
+    std::vector<ChastePoint<DIM> > mVesselSegmentLocations;
 
     /**
-        Time that the Vessel has experienced low wall shear stress.
+     * Collection of radii at vessel segment locations
+     */
+    std::vector<double> mVesselSegmentRadii;
+
+    /**
+     *  Time that the Vessel has experienced low wall shear stress.
      */
     double mTimeWithLowWallShearStress;
 
     /**
-        Radius of the vessel. Should be in units of meters.
+     * Radius of the vessel. Should be in units of meters.
      */
     double mRadius;
 
     /**
-        Previous radius of the vessel. Should be in units of meters.
-        This allows us to look for convergence of structural adaptation algorithms.
+     * Previous radius of the vessel. Should be in units of meters.
+     * This allows us to look for convergence of structural adaptation algorithms.
      */
     double mPreviousRadius;
 
     /**
-        The fractional volume of red blood cells inside a vessel.
+     * The fractional volume of red blood cells inside a vessel.
      */
     double mHaematocritLevel;
 
     /**
-        The velocity of blood plasma flow through the vessel.
+     * The velocity of blood plasma flow through the vessel.
      */
     double mFlowVelocity;
 
     /**
-        The rate of blood plasma flow through the vessel.
+     * The rate of blood plasma flow through the vessel.
      */
     double mFlowRate;
 
     /**
-        The impedance of the vessel.
+     * The impedance of the vessel.
      */
     double mImpedance;
 
     /**
-        The length of the vessel.
+     * The length of the vessel.
      */
     double mLength;
 
     /**
-        The shear stress experienced by the walls of the vessels.
+     * The shear stress experienced by the walls of the vessels.
      */
     double mWallShearStress;
 
     /**
-        The viscosity of the blood plasma flowing through a vessel.
+     * The viscosity of the blood plasma flowing through a vessel.
      */
     double mViscosity;
 
     /**
-        Magnitude of the mechanical stimulus.  Many studies have shown that vessels respond
-        structurally to the mechanical forces exerted by flowing blood, i.e., transmural pressure
-        and shear stress at the endothelial surface.  Including this property allows us to model this
-        phenomenon.
+     * Magnitude of the mechanical stimulus.  Many studies have shown that vessels respond
+     * structurally to the mechanical forces exerted by flowing blood, i.e., transmural pressure
+     * and shear stress at the endothelial surface.  Including this property allows us to model this
+     * phenomenon.
      */
     double mMechanicalStimulus;
 
@@ -162,25 +177,23 @@ private:
     double mUpstreamConductedStimulus;
 
     /**
-        Collection of chemicals which the Vessel contains. The IntraVascularChemicalCollection
-        class allows IntraVascularChemicals to be added at will by a modeller.
+     * Collection of chemicals which the Vessel contains. The IntraVascularChemicalCollection
+     * class allows IntraVascularChemicals to be added at will by a modeller.
      */
     IntraVascularChemicalCollection mChemicalCollection;
 
     /**
-        Boolean quantity which stores whether a vessel is part of the neovasculature developed
-        since the start of a simulation.
+     *  Whether a vessel is part of the neovasculature developed since the start of a simulation.
      */
     bool mIsPartOfNeovasculature;
 
     /**
-        Whether the vessel is able to extend or not. This attirbute is
-        useful for implementing angiogenesis models correctly.
+     * Whether the vessel is able to extend or not. This attirbute is
+     * useful for implementing angiogenesis models correctly.
      */
     bool mCanExtend;
 
 public:
-
 
     /**
        Constructor.
@@ -205,37 +218,37 @@ public:
        For example, this method is useful for when an existing vessel divides to form two new vessels.
        None of the spatial information about the prescribed vessel are copied (i.e. segment coordinates).
      */
-    void CopyMechanicalPropertyValuesAndChemicalConcentrations(boost::shared_ptr<CaVessel<SPATIAL_DIM> > anotherVessel);
+    void CopyMechanicalPropertyValuesAndChemicalConcentrations(boost::shared_ptr<CaVessel<DIM> > anotherVessel);
 
     /**
-       @return boost::shared_ptr<CaVessel<SPATIAL_DIM> >
+       @return boost::shared_ptr<CaVessel<DIM> >
      */
-    boost::shared_ptr<CaVessel<SPATIAL_DIM> > shared();
-
-    /**
-       @return shared pointer to node1.
-     */
-    boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > GetNode1();
+    boost::shared_ptr<CaVessel<DIM> > shared();
 
     /**
        @return shared pointer to node1.
      */
-    boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > GetNode2();
+    boost::shared_ptr<CaVascularNetworkNode<DIM> > GetNode1();
+
+    /**
+       @return shared pointer to node2.
+     */
+    boost::shared_ptr<CaVascularNetworkNode<DIM> > GetNode2();
 
     /**
        @return mTimeWithLowWallShearStress
      */
-    double GetTimeWithLowWallShearStress() const;
+    double GetTimeWithLowWallShearStress();
 
     /**
        @return mVesselSegmentLocations
      */
-    std::vector<ChastePoint<SPATIAL_DIM> > GetSegmentCoordinates();
+    std::vector<ChastePoint<DIM> > GetSegmentCoordinates();
 
     /**
        @return mVesselSegmentLocations[i]
      */
-    ChastePoint<SPATIAL_DIM> GetSegmentCoordinate(unsigned i);
+    ChastePoint<DIM> GetSegmentCoordinate(unsigned i);
 
     /**
        @return mVesselSegmentLocations.size()
@@ -247,17 +260,17 @@ public:
 
        @return true if ActiveTipCellLocatedAtNode1() or ActiveTipCellLocatedAtNode2() returns true.
      */
-    bool HasActiveTipCell() const;
+    bool HasActiveTipCell();
 
     /**
-       @return mActiveTipCellLocatedAtNode1
+       @return mActiveTipCellAtNode1
      */
-    bool ActiveTipCellLocatedAtNode1() const;
+    bool ActiveTipCellLocatedAtNode1();
 
     /**
-       @return mActiveTipCellLocatedAtNode2
+       @return mActiveTipCellAtNode2
      */
-    bool ActiveTipCellLocatedAtNode2() const;
+    bool ActiveTipCellLocatedAtNode2();
 
     /**
      *  @return whether vessel is attached to input node.
@@ -340,17 +353,17 @@ public:
 //    /**
 //        @return mHaematocrit
 //     */
-//    boost::shared_ptr<VesselSegment<SPATIAL_DIM> > GetVesselSegment(int i);
+//    boost::shared_ptr<VesselSegment<DIM> > GetVesselSegment(int i);
 //
 //    /**
 //         Returns the vessel segment at the specified index
 //     */
-//    boost::shared_ptr<VesselSegment<SPATIAL_DIM> > GetVesselSegment(ChastePoint<SPATIAL_DIM> loc);
+//    boost::shared_ptr<VesselSegment<DIM> > GetVesselSegment(ChastePoint<DIM> loc);
 
     /**
        @return mChemicalCollection
      */
-    IntraVascularChemicalCollection& GetCollectionOfIntraVascularChemicals();
+    IntraVascularChemicalCollection& rGetCollectionOfIntraVascularChemicals();
 
     /**
        @return the number of IntraVascularChemicals contained within the vessel.
@@ -390,7 +403,7 @@ public:
 
        @param node node to be assigned to pNode1
      */
-    void SetNode1(boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > node);
+    void SetNode1(boost::shared_ptr<CaVascularNetworkNode<DIM> > node);
 
     /**
        Assigns the prescribed location to pNode1 of the vessel.
@@ -401,14 +414,14 @@ public:
 
        @param location new location of pNode1
      */
-    void SetNode1Location(ChastePoint<SPATIAL_DIM> location);
+    void SetNode1Location(ChastePoint<DIM> location);
 
     /**
        Assigns the prescribed node to pNode2
 
        @param node node to be assigned to pNode2
      */
-    void SetNode2(boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > node);
+    void SetNode2(boost::shared_ptr<CaVascularNetworkNode<DIM> > node);
 
     /**
        Assigns the prescribed location to pNode2 of the vessel.
@@ -419,7 +432,7 @@ public:
 
        @param location new location of pNode2
      */
-    void SetNode2Location(ChastePoint<SPATIAL_DIM> location);
+    void SetNode2Location(ChastePoint<DIM> location);
 
     /**
        Assigns a new vessel segment location to the collection of vessel segments. Vessel segments
@@ -435,7 +448,7 @@ public:
 
        @param location location of next vessel segment
      */
-    void SetNextVesselSegmentCoordinate(ChastePoint<SPATIAL_DIM> location);
+    void SetNextVesselSegmentCoordinate(ChastePoint<DIM> location);
 
     /*
      * todo Potentially add the following when cells are explicitly associated with vessels.
@@ -443,7 +456,7 @@ public:
 //    /**
 //            Add new VesselSegment to vessel
 //     */
-//    void AddVesselSegment(ChastePoint<SPATIAL_DIM> Coords);
+//    void AddVesselSegment(ChastePoint<DIM> Coords);
 
     /**
        Assigns the time that the Vessel has experienced low wall shear stress.
@@ -462,14 +475,14 @@ public:
     /**
        Assigns whether the Vessel has a tip cell located where node1 is located.
 
-       @param value new value for mActiveTipCellLocatedAtNode1
+       @param value new value for mActiveTipCellAtNode1
      */
     void SetActiveTipCellLocatedAtNode1(bool value);
 
     /**
        Assigns whether the Vessel has a tip cell located where node2 is located.
 
-       @param value new value for mActiveTipCellLocatedAtNode2
+       @param value new value for mActiveTipCellAtNode2
      */
     void SetActiveTipCellLocatedAtNode2(bool value);
 
@@ -571,7 +584,7 @@ public:
 
        @return true if vessel is attached to prescribed node
      */
-    bool IsAttachedToNode(boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > node);
+    bool IsAttachedToNode(boost::shared_ptr<CaVascularNetworkNode<DIM> > node);
 
     /**
        Method for prescribing whether a vessel is part of the neovasculature or not.
