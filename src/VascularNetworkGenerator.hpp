@@ -57,7 +57,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vtkSmartPointer.h>
 #endif // CHASTE_VTK
 
-template<unsigned SPACE_DIM>
+template<unsigned DIM>
 class VascularNetworkGenerator
 {
 
@@ -67,7 +67,7 @@ private:
      * Prototypes Vessel object from which other vessel objects will be instantiated.  This allows us to configure which chemicals
      * a vessel must "know about" in each simulation.
      */
-    boost::shared_ptr<CaVessel<SPACE_DIM> > mpPrototypeVessel;
+    boost::shared_ptr<CaVessel<DIM> > mpPrototypeVessel;
 
     /**
      * The arterial haematocrit level that will be prescribed to the VesselNetwork.
@@ -97,7 +97,7 @@ public:
      *
      * @param prototype prototype vessel using which other vessel objects will be instantiated.
      */
-    VascularNetworkGenerator(boost::shared_ptr<CaVessel<SPACE_DIM> > prototype = boost::shared_ptr<CaVessel<SPACE_DIM> >());
+    VascularNetworkGenerator(boost::shared_ptr<CaVessel<DIM> > prototype = boost::shared_ptr<CaVessel<DIM> >());
 
     /*
      * Destructor
@@ -113,7 +113,7 @@ public:
      * @param venous_output_position output node location(can be "North East" or "South East").
      * @return a hexagonally tesselated vessel network
      */
-    boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > GenerateHexagonalNetwork(unsigned width,
+    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateHexagonalNetwork(unsigned width,
     																				unsigned height,
     																				unsigned vessel_length,
     																				std::string venous_output_position = "North East");
@@ -125,7 +125,7 @@ public:
 	 * @param filename name of file in which vascular network is described.
 	 * @return a pointer to the generated vascular network.
 	 */
-	boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > GenerateNetworkFromVtkFile(std::string filename);
+	boost::shared_ptr<CaVascularNetwork<DIM> > GenerateNetworkFromVtkFile(std::string filename);
 	#endif // CHASTE_VTK
 
     /**
@@ -163,7 +163,7 @@ private:
      *
      * @return new instance of prototype vessel.
      */
-    boost::shared_ptr<CaVessel<SPACE_DIM> >  CreateVessel();
+    boost::shared_ptr<CaVessel<DIM> >  CreateVessel();
 };
 
 #endif /* VASCULARNETWORKGENERATOR_HPP_ */

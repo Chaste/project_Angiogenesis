@@ -1,118 +1,143 @@
 /*
- * CaCaVascularNetworkNode.cpp
- *
- *  Created on: 13 Jan 2015
- *      Author: connor
+
+Copyright (c) 2005-2015, University of Oxford.
+All rights reserved.
+
+University of Oxford means the Chancellor, Masters and Scholars of the
+University of Oxford, having an administrative office at Wellington
+Square, Oxford OX1 2JD, UK.
+
+This file is part of Chaste.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+ * Redistributions of source code must retain the above copyright notice,
+   this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+ * Neither the name of the University of Oxford nor the names of its
+   contributors may be used to endorse or promote products derived from this
+   software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
  */
 
 #include "CaVascularNetworkNode.hpp"
 #include "CaVessel.hpp"
-#include "Exception.hpp"
-#include <cassert>
 
-
-template<unsigned SPATIAL_DIM>
-CaVascularNetworkNode<SPATIAL_DIM>::CaVascularNetworkNode():mLocation(),mPressure(0.0),pAdjoiningVessels(),mIsInputNode(false),mIsOutputNode(false)
+template<unsigned DIM>
+CaVascularNetworkNode<DIM>::CaVascularNetworkNode()
+	: mLocation(),
+	  mPressure(0.0),
+	  mAdjoiningVessels(),
+	  mIsInputNode(false),
+	  mIsOutputNode(false)
 {
-
 }
 
-template<unsigned SPATIAL_DIM>
-CaVascularNetworkNode<SPATIAL_DIM>::~CaVascularNetworkNode()
+template<unsigned DIM>
+CaVascularNetworkNode<DIM>::~CaVascularNetworkNode()
 {
-
 }
 
-template<unsigned SPATIAL_DIM>
-boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > CaVascularNetworkNode<SPATIAL_DIM>::shared()
+template<unsigned DIM>
+boost::shared_ptr<CaVascularNetworkNode<DIM> > CaVascularNetworkNode<DIM>::shared()
 {
     return this->shared_from_this();
 }
 
-template<unsigned SPATIAL_DIM>
-ChastePoint<SPATIAL_DIM> CaVascularNetworkNode<SPATIAL_DIM>::GetLocation()
+template<unsigned DIM>
+ChastePoint<DIM> CaVascularNetworkNode<DIM>::GetLocation()
 {
     return mLocation;
 }
 
-template<unsigned SPATIAL_DIM>
-double CaVascularNetworkNode<SPATIAL_DIM>::GetPressure()
+template<unsigned DIM>
+double CaVascularNetworkNode<DIM>::GetPressure()
 {
     return mPressure;
 }
 
-template<unsigned SPATIAL_DIM>
-unsigned CaVascularNetworkNode<SPATIAL_DIM>::GetNumberOfAdjoiningVessels()
+template<unsigned DIM>
+unsigned CaVascularNetworkNode<DIM>::GetNumberOfAdjoiningVessels()
 {
-    return pAdjoiningVessels.size();
+    return mAdjoiningVessels.size();
 }
 
-template<unsigned SPATIAL_DIM>
-boost::shared_ptr<CaVessel<SPATIAL_DIM> > CaVascularNetworkNode<SPATIAL_DIM>::GetAdjoiningVessel(unsigned i)
+template<unsigned DIM>
+boost::shared_ptr<CaVessel<DIM> > CaVascularNetworkNode<DIM>::GetAdjoiningVessel(unsigned i)
 {
-    return pAdjoiningVessels[i].lock(); // lock() converts weak pointer (stored here) to shared pointer
+    return mAdjoiningVessels[i].lock(); // lock() converts weak pointer (stored here) to shared pointer
 }
 
-template<unsigned SPATIAL_DIM>
-bool CaVascularNetworkNode<SPATIAL_DIM>::IsInputNode()
+template<unsigned DIM>
+bool CaVascularNetworkNode<DIM>::IsInputNode()
 {
     return mIsInputNode;
 }
 
-template<unsigned SPATIAL_DIM>
-bool CaVascularNetworkNode<SPATIAL_DIM>::IsOutputNode()
+template<unsigned DIM>
+bool CaVascularNetworkNode<DIM>::IsOutputNode()
 {
     return mIsOutputNode;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVascularNetworkNode<SPATIAL_DIM>::SetLocation(ChastePoint<SPATIAL_DIM> loc)
+template<unsigned DIM>
+void CaVascularNetworkNode<DIM>::SetLocation(ChastePoint<DIM> location)
 {
-    mLocation = loc;
+    mLocation = location;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVascularNetworkNode<SPATIAL_DIM>::SetPressure(double pressure)
+template<unsigned DIM>
+void CaVascularNetworkNode<DIM>::SetPressure(double pressure)
 {
     mPressure = pressure;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVascularNetworkNode<SPATIAL_DIM>::AddAdjoiningVessel(boost::shared_ptr<CaVessel<SPATIAL_DIM> > vessel)
+template<unsigned DIM>
+void CaVascularNetworkNode<DIM>::AddAdjoiningVessel(boost::shared_ptr<CaVessel<DIM> > vessel)
 {
+    // The same vessel may be adjoint to a single node twice but that node must be both node1 and node2 of the doubly adjoint vessel
+    int number_times_attached_to_node = 0;
 
-
-    // same vessel may be adjoint to a single node twice but that node must be both node1 and node2 of the doubly adjoint vessel
-
-    int numberOfTimeVesselIsAlreadyAttachedToNode = 0;
-
-    for(unsigned i = 0; i < pAdjoiningVessels.size(); i++)
+    for(unsigned i = 0; i < mAdjoiningVessels.size(); i++)
     {
-        if (pAdjoiningVessels[i].lock() == vessel)
+        if (mAdjoiningVessels[i].lock() == vessel)
         {
-            numberOfTimeVesselIsAlreadyAttachedToNode++;
+        	number_times_attached_to_node++;
         }
     }
 
-    if (numberOfTimeVesselIsAlreadyAttachedToNode == 2)
+    if (number_times_attached_to_node == 0)
     {
-        throw Exception("Vessel is already attached to node twice (at both ends). Cannot attach vessel to same node again.","CaVascularNetworkNode.hpp",101);
+        mAdjoiningVessels.push_back(boost::weak_ptr<CaVessel<DIM> >(vessel));
     }
-
-    if (numberOfTimeVesselIsAlreadyAttachedToNode == 0)
+    else if (number_times_attached_to_node == 1 && vessel->GetNode1() == shared() && vessel->GetNode2() == shared())
     {
-        pAdjoiningVessels.push_back(boost::weak_ptr<CaVessel<SPATIAL_DIM> >(vessel));
-    }
-    else if (numberOfTimeVesselIsAlreadyAttachedToNode == 1 && vessel->GetNode1() == shared() && vessel->GetNode2() == shared())
-    {
-        pAdjoiningVessels.push_back(boost::weak_ptr<CaVessel<SPATIAL_DIM> >(vessel));
+        mAdjoiningVessels.push_back(boost::weak_ptr<CaVessel<DIM> >(vessel));
     }
     else
     {
-        throw Exception("Vessels and nodes in inconsistent state.","CaVascularNetworkNode.hpp",114);
+        if (number_times_attached_to_node == 2)
+        {
+            EXCEPTION("Vessel is already attached to node twice (at both ends). Cannot attach vessel to same node again.");
+        }
+        else
+        {
+        	EXCEPTION("Vessels and nodes in inconsistent state.");
+        }
     }
-
-
 
     /*
         todo should check that vessel being adjoined to node has not got an actively migrating tip located at this node
@@ -121,68 +146,61 @@ void CaVascularNetworkNode<SPATIAL_DIM>::AddAdjoiningVessel(boost::shared_ptr<Ca
      */
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVascularNetworkNode<SPATIAL_DIM>::RemoveAdjoiningVessel(boost::shared_ptr<CaVessel<SPATIAL_DIM> > vessel)
+template<unsigned DIM>
+void CaVascularNetworkNode<DIM>::RemoveAdjoiningVessel(boost::shared_ptr<CaVessel<DIM> > vessel)
 {
-
-
-    bool attachedToVessel = false;
-
-    for(unsigned i = 0; i < pAdjoiningVessels.size(); i++)
+    bool attached_to_vessel = false;
+    for(unsigned i = 0; i < mAdjoiningVessels.size(); i++)
     {
-        if (pAdjoiningVessels[i].lock() == vessel)
+        if (mAdjoiningVessels[i].lock() == vessel)
         {
-            attachedToVessel = true;
-            pAdjoiningVessels.erase(pAdjoiningVessels.begin() + i);
+        	attached_to_vessel = true;
+            mAdjoiningVessels.erase(mAdjoiningVessels.begin() + i);
             i--;
         }
     }
 
-    if (!attachedToVessel)
+    if (!attached_to_vessel)
     {
-        throw Exception("Warning: vessel is not attached to node. Cannot remove vessel from node.","CaVascularNetworkNode.hpp",152);
+    	EXCEPTION("Warning: vessel is not attached to node. Cannot remove vessel from node.");
     }
-
-
 }
 
 
-template<unsigned SPATIAL_DIM>
-bool CaVascularNetworkNode<SPATIAL_DIM>::IsAttachedToVessel(boost::shared_ptr<CaVessel<SPATIAL_DIM> > vessel)
+template<unsigned DIM>
+bool CaVascularNetworkNode<DIM>::IsAttachedToVessel(boost::shared_ptr<CaVessel<DIM> > vessel)
 {
+    bool attached_to_node = false;
 
-    bool vesselIsAttachedToNode = false;
-
-    for(unsigned i = 0; i < pAdjoiningVessels.size(); i++)
+    for(unsigned i = 0; i < mAdjoiningVessels.size(); i++)
     {
-        if (pAdjoiningVessels[i].lock() == vessel)
+        if (mAdjoiningVessels[i].lock() == vessel)
         {
             if (vessel->GetNode1() != shared() && vessel->GetNode2() != shared())
             {
-                throw Exception("Vessel is not properly attached to node; vessels and nodes are in an inconsistent state.","CaVascularNetworkNode.hpp",162);
+            	EXCEPTION("Vessel is not properly attached to node; vessels and nodes are in an inconsistent state.");
             }
-            vesselIsAttachedToNode = true;
+            attached_to_node = true;
             break;
         }
     }
 
-    return vesselIsAttachedToNode;
+    return attached_to_node;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVascularNetworkNode<SPATIAL_DIM>::SetIsInputNode(bool value)
+template<unsigned DIM>
+void CaVascularNetworkNode<DIM>::SetIsInputNode(bool value)
 {
     mIsInputNode = value;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVascularNetworkNode<SPATIAL_DIM>::SetIsOutputNode(bool value)
+template<unsigned DIM>
+void CaVascularNetworkNode<DIM>::SetIsOutputNode(bool value)
 {
     mIsOutputNode = value;
 }
 
 // Explicit instantiation
-
 template class CaVascularNetworkNode<2>;
 template class CaVascularNetworkNode<3>;
 

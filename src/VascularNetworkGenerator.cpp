@@ -35,8 +35,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "VascularNetworkGenerator.hpp"
 
-template<unsigned SPACE_DIM>
-VascularNetworkGenerator<SPACE_DIM>::VascularNetworkGenerator(boost::shared_ptr<CaVessel<SPACE_DIM> > prototype)
+template<unsigned DIM>
+VascularNetworkGenerator<DIM>::VascularNetworkGenerator(boost::shared_ptr<CaVessel<DIM> > prototype)
 	: mpPrototypeVessel(prototype),
 	  mArterialHaematocritLevel(0.0),
 	  mVenousOutputPressure(0.0),
@@ -45,13 +45,13 @@ VascularNetworkGenerator<SPACE_DIM>::VascularNetworkGenerator(boost::shared_ptr<
 {
 }
 
-template<unsigned SPACE_DIM>
-VascularNetworkGenerator<SPACE_DIM>::~VascularNetworkGenerator()
+template<unsigned DIM>
+VascularNetworkGenerator<DIM>::~VascularNetworkGenerator()
 {
 }
 
-template<unsigned SPACE_DIM>
-void VascularNetworkGenerator<SPACE_DIM>::SetArterialHaematocritLevel(double value)
+template<unsigned DIM>
+void VascularNetworkGenerator<DIM>::SetArterialHaematocritLevel(double value)
 {
 	mArterialHaematocritLevel = value;
 
@@ -61,8 +61,8 @@ void VascularNetworkGenerator<SPACE_DIM>::SetArterialHaematocritLevel(double val
 	}
 }
 
-template<unsigned SPACE_DIM>
-void VascularNetworkGenerator<SPACE_DIM>::SetArterialInputPressure(double value)
+template<unsigned DIM>
+void VascularNetworkGenerator<DIM>::SetArterialInputPressure(double value)
 {
 	mArterialInputPressure = value;
 
@@ -72,8 +72,8 @@ void VascularNetworkGenerator<SPACE_DIM>::SetArterialInputPressure(double value)
 	}
 }
 
-template<unsigned SPACE_DIM>
-void VascularNetworkGenerator<SPACE_DIM>::SetVenousOutputPressure(double value)
+template<unsigned DIM>
+void VascularNetworkGenerator<DIM>::SetVenousOutputPressure(double value)
 {
 	mVenousOutputPressure = value;
 
@@ -83,8 +83,8 @@ void VascularNetworkGenerator<SPACE_DIM>::SetVenousOutputPressure(double value)
 	}
 }
 
-template<unsigned SPACE_DIM>
-void VascularNetworkGenerator<SPACE_DIM>::SetInitialRadius(double value)
+template<unsigned DIM>
+void VascularNetworkGenerator<DIM>::SetInitialRadius(double value)
 {
 	mInitialRadius = value;
 
@@ -95,8 +95,8 @@ void VascularNetworkGenerator<SPACE_DIM>::SetInitialRadius(double value)
 	}
 }
 
-template<unsigned SPACE_DIM>
-boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > VascularNetworkGenerator<SPACE_DIM>::GenerateHexagonalNetwork(unsigned width,
+template<unsigned DIM>
+boost::shared_ptr<CaVascularNetwork<DIM> > VascularNetworkGenerator<DIM>::GenerateHexagonalNetwork(unsigned width,
 		unsigned height,
 		unsigned vessel_length,
 		std::string venous_output_position)
@@ -124,79 +124,79 @@ boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > VascularNetworkGenerator<SPACE_
 	// Generate an array of vessels with no spatial info
 	unsigned number_of_vessels = (units_in_x_direction*units_in_y_direction*6)+
 			(units_in_y_direction*5)+units_in_x_direction;
-	boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > pVesselNetwork(new CaVascularNetwork<SPACE_DIM>());
-	std::vector<boost::shared_ptr<CaVessel<SPACE_DIM> > > vessel_array;
+	boost::shared_ptr<CaVascularNetwork<DIM> > pVesselNetwork(new CaVascularNetwork<DIM>());
+	std::vector<boost::shared_ptr<CaVessel<DIM> > > vessel_array;
 	for (unsigned i = 0; i < number_of_vessels; i++)
 	{
 		vessel_array.push_back(CreateVessel());
 	}
 
 	// Set the left side coordinates of vessels in the network
-	vessel_array[0]->SetNode1Location(ChastePoint<SPACE_DIM>(0.0, 0.0));
-	vessel_array[1]->SetNode1Location(ChastePoint<SPACE_DIM>(diagonal_vessel_length+horizontal_vessel_length,diagonal_vessel_length));
-	vessel_array[2]->SetNode1Location(ChastePoint<SPACE_DIM>(2.0*diagonal_vessel_length+horizontal_vessel_length, 0.0));
+	vessel_array[0]->SetNode1Location(ChastePoint<DIM>(0.0, 0.0));
+	vessel_array[1]->SetNode1Location(ChastePoint<DIM>(diagonal_vessel_length+horizontal_vessel_length,diagonal_vessel_length));
+	vessel_array[2]->SetNode1Location(ChastePoint<DIM>(2.0*diagonal_vessel_length+horizontal_vessel_length, 0.0));
 	for (unsigned i = 3; i < (2+3*units_in_x_direction); i++)
 	{
-		vessel_array[i]->SetNode1Location(ChastePoint<SPACE_DIM>(vessel_array[i-3]->GetNode1()->GetLocation()[0] +
+		vessel_array[i]->SetNode1Location(ChastePoint<DIM>(vessel_array[i-3]->GetNode1()->GetLocation()[0] +
 				2.0*(diagonal_vessel_length+horizontal_vessel_length), vessel_array[i-3]->GetNode1()->GetLocation()[1]));
 	}
-	vessel_array[2+3*units_in_x_direction]->SetNode1Location(ChastePoint<SPACE_DIM>(0, 2.0*diagonal_vessel_length));
-	vessel_array[2+3*units_in_x_direction+1]->SetNode1Location(ChastePoint<SPACE_DIM>(diagonal_vessel_length, diagonal_vessel_length));
-	vessel_array[2+3*units_in_x_direction+2]->SetNode1Location(ChastePoint<SPACE_DIM>(diagonal_vessel_length+horizontal_vessel_length, diagonal_vessel_length));
+	vessel_array[2+3*units_in_x_direction]->SetNode1Location(ChastePoint<DIM>(0, 2.0*diagonal_vessel_length));
+	vessel_array[2+3*units_in_x_direction+1]->SetNode1Location(ChastePoint<DIM>(diagonal_vessel_length, diagonal_vessel_length));
+	vessel_array[2+3*units_in_x_direction+2]->SetNode1Location(ChastePoint<DIM>(diagonal_vessel_length+horizontal_vessel_length, diagonal_vessel_length));
 
 	for (unsigned i = (2+3*units_in_x_direction+3); i < (2+3*units_in_x_direction+3*(units_in_x_direction+1)); i++)
 	{
-		vessel_array[i]->SetNode1Location(ChastePoint<SPACE_DIM>(vessel_array[i-3]->GetNode1()->GetLocation()[0] +
+		vessel_array[i]->SetNode1Location(ChastePoint<DIM>(vessel_array[i-3]->GetNode1()->GetLocation()[0] +
 				2.0*(diagonal_vessel_length+horizontal_vessel_length), vessel_array[i-3]->GetNode1()->GetLocation()[1]));
 	}
 
 	for (unsigned i = (2+3*units_in_x_direction+3*(units_in_x_direction+1)); i < number_of_vessels - units_in_x_direction; i++)
 	{
-		vessel_array[i]->SetNode1Location(ChastePoint<SPACE_DIM>(vessel_array[i - (2+3*units_in_x_direction+3*(units_in_x_direction+1))]->GetNode1()->GetLocation()[0],
+		vessel_array[i]->SetNode1Location(ChastePoint<DIM>(vessel_array[i - (2+3*units_in_x_direction+3*(units_in_x_direction+1))]->GetNode1()->GetLocation()[0],
 				vessel_array[i-(2+3*units_in_x_direction+3*(units_in_x_direction+1))]->GetNode1()->GetLocation()[1] + 2.0*diagonal_vessel_length));
 	}
-	vessel_array[number_of_vessels-units_in_x_direction]->SetNode1Location(ChastePoint<SPACE_DIM>(2.0*diagonal_vessel_length+horizontal_vessel_length,
+	vessel_array[number_of_vessels-units_in_x_direction]->SetNode1Location(ChastePoint<DIM>(2.0*diagonal_vessel_length+horizontal_vessel_length,
 			vessel_array[number_of_vessels-units_in_x_direction-1]->GetNode1()->GetLocation()[1]+diagonal_vessel_length));
 
 	for (unsigned i = 1; i < units_in_x_direction; i++)
 	{
-		vessel_array[number_of_vessels-units_in_x_direction+i]->SetNode1Location(ChastePoint<SPACE_DIM>(
+		vessel_array[number_of_vessels-units_in_x_direction+i]->SetNode1Location(ChastePoint<DIM>(
 				vessel_array[number_of_vessels-units_in_x_direction+i-1]->GetNode1()->GetLocation()[0] + 2*(diagonal_vessel_length+horizontal_vessel_length),
 				vessel_array[number_of_vessels-units_in_x_direction+i-1]->GetNode1()->GetLocation()[1]));
 	}
 
 	// Set the right side coordinates of vessels in the network
-	vessel_array[0]->SetNode2Location(ChastePoint<SPACE_DIM>(diagonal_vessel_length, diagonal_vessel_length));
-	vessel_array[1]->SetNode2Location(ChastePoint<SPACE_DIM>(2.0*diagonal_vessel_length+horizontal_vessel_length, 0.0));
-	vessel_array[2]->SetNode2Location(ChastePoint<SPACE_DIM>(2.0*(diagonal_vessel_length+horizontal_vessel_length), 0.0));
+	vessel_array[0]->SetNode2Location(ChastePoint<DIM>(diagonal_vessel_length, diagonal_vessel_length));
+	vessel_array[1]->SetNode2Location(ChastePoint<DIM>(2.0*diagonal_vessel_length+horizontal_vessel_length, 0.0));
+	vessel_array[2]->SetNode2Location(ChastePoint<DIM>(2.0*(diagonal_vessel_length+horizontal_vessel_length), 0.0));
 
 	for (unsigned i = 3; i < (2+3*units_in_x_direction); i++)
 	{
-		vessel_array[i]->SetNode2Location(ChastePoint<SPACE_DIM>(vessel_array[i-3]->GetNode2()->GetLocation()[0]+2*(diagonal_vessel_length+horizontal_vessel_length),
+		vessel_array[i]->SetNode2Location(ChastePoint<DIM>(vessel_array[i-3]->GetNode2()->GetLocation()[0]+2*(diagonal_vessel_length+horizontal_vessel_length),
 				vessel_array[i-3]->GetNode2()->GetLocation()[1]));
 	}
-	vessel_array[2+3*units_in_x_direction]->SetNode2Location(ChastePoint<SPACE_DIM>(diagonal_vessel_length, diagonal_vessel_length));
-	vessel_array[2+3*units_in_x_direction+1]->SetNode2Location(ChastePoint<SPACE_DIM>(diagonal_vessel_length+horizontal_vessel_length, diagonal_vessel_length));
-	vessel_array[2+3*units_in_x_direction+2]->SetNode2Location(ChastePoint<SPACE_DIM>(2*diagonal_vessel_length+horizontal_vessel_length, 2*diagonal_vessel_length));
+	vessel_array[2+3*units_in_x_direction]->SetNode2Location(ChastePoint<DIM>(diagonal_vessel_length, diagonal_vessel_length));
+	vessel_array[2+3*units_in_x_direction+1]->SetNode2Location(ChastePoint<DIM>(diagonal_vessel_length+horizontal_vessel_length, diagonal_vessel_length));
+	vessel_array[2+3*units_in_x_direction+2]->SetNode2Location(ChastePoint<DIM>(2*diagonal_vessel_length+horizontal_vessel_length, 2*diagonal_vessel_length));
 
 	for (unsigned i = (2+3*units_in_x_direction+3); i < (2+3*units_in_x_direction+3*(units_in_x_direction+1)); i++)
 	{
-		vessel_array[i]->SetNode2Location(ChastePoint<SPACE_DIM>(vessel_array[i-3]->GetNode2()->GetLocation()[0] + 2*(diagonal_vessel_length+horizontal_vessel_length),
+		vessel_array[i]->SetNode2Location(ChastePoint<DIM>(vessel_array[i-3]->GetNode2()->GetLocation()[0] + 2*(diagonal_vessel_length+horizontal_vessel_length),
 				vessel_array[i-3]->GetNode2()->GetLocation()[1]));
 	}
 
 	for (unsigned i = (2+3*units_in_x_direction+3*(units_in_x_direction+1)); i < number_of_vessels - units_in_x_direction; i++)
 	{
-		vessel_array[i]->SetNode2Location(ChastePoint<SPACE_DIM>(vessel_array[i - (2+3*units_in_x_direction+3*(units_in_x_direction+1))]->GetNode2()->GetLocation()[0],
+		vessel_array[i]->SetNode2Location(ChastePoint<DIM>(vessel_array[i - (2+3*units_in_x_direction+3*(units_in_x_direction+1))]->GetNode2()->GetLocation()[0],
 				vessel_array[i - (2+3*units_in_x_direction+3*(units_in_x_direction+1))]->GetNode2()->GetLocation()[1] + 2*diagonal_vessel_length));
 	}
 
-	vessel_array[number_of_vessels - units_in_x_direction]->SetNode2Location(ChastePoint<SPACE_DIM>(2*(diagonal_vessel_length+horizontal_vessel_length),
+	vessel_array[number_of_vessels - units_in_x_direction]->SetNode2Location(ChastePoint<DIM>(2*(diagonal_vessel_length+horizontal_vessel_length),
 			vessel_array[number_of_vessels - units_in_x_direction-1]->GetNode1()->GetLocation()[1] + diagonal_vessel_length));
 
 	for (unsigned i = 1; i < units_in_x_direction; i++)
 	{
-		vessel_array[number_of_vessels - units_in_x_direction + i]->SetNode2Location(ChastePoint<SPACE_DIM>(
+		vessel_array[number_of_vessels - units_in_x_direction + i]->SetNode2Location(ChastePoint<DIM>(
 				vessel_array[number_of_vessels - units_in_x_direction + i - 1]->GetNode2()->GetLocation()[0] + 2*(diagonal_vessel_length+horizontal_vessel_length),
 				vessel_array[number_of_vessels - units_in_x_direction + i - 1]->GetNode2()->GetLocation()[1]));
 	}
@@ -209,7 +209,7 @@ boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > VascularNetworkGenerator<SPACE_
 			// Vessel is horizontal
 			for(unsigned j = 0; j < horizontal_vessel_length + 1; j++)
 			{
-				vessel_array[i]->SetNextVesselSegmentCoordinate(ChastePoint<SPACE_DIM>(vessel_array[i]->GetNode1()->GetLocation()[0]+j,
+				vessel_array[i]->SetNextVesselSegmentCoordinate(ChastePoint<DIM>(vessel_array[i]->GetNode1()->GetLocation()[0]+j,
 						vessel_array[i]->GetNode1()->GetLocation()[1]));
 			}
 		}
@@ -218,7 +218,7 @@ boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > VascularNetworkGenerator<SPACE_
 			// Vessel is diagonal - going downwards
 			for(unsigned j = 0; j < diagonal_vessel_length + 1; j++)
 			{
-				vessel_array[i]->SetNextVesselSegmentCoordinate(ChastePoint<SPACE_DIM>(vessel_array[i]->GetNode1()->GetLocation()[0]+j,
+				vessel_array[i]->SetNextVesselSegmentCoordinate(ChastePoint<DIM>(vessel_array[i]->GetNode1()->GetLocation()[0]+j,
 						vessel_array[i]->GetNode1()->GetLocation()[1]+j));
 			}
 		}
@@ -227,7 +227,7 @@ boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > VascularNetworkGenerator<SPACE_
 			// Vessel is diagonal - going upwards
 			for(unsigned j = 0; j < diagonal_vessel_length + 1; j++)
 			{
-				vessel_array[i]->SetNextVesselSegmentCoordinate(ChastePoint<SPACE_DIM>(vessel_array[i]->GetNode1()->GetLocation()[0]+j,
+				vessel_array[i]->SetNextVesselSegmentCoordinate(ChastePoint<DIM>(vessel_array[i]->GetNode1()->GetLocation()[0]+j,
 						vessel_array[i]->GetNode1()->GetLocation()[1]-j));
 			}
 		}
@@ -259,24 +259,24 @@ boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > VascularNetworkGenerator<SPACE_
 	}
 
 	// Set the input node
-	pVesselNetwork->SetInputNode(ChastePoint<SPACE_DIM>(0.0, 0.0));
+	pVesselNetwork->SetInputNode(ChastePoint<DIM>(0.0, 0.0));
 
 	return pVesselNetwork;
 }
 
 #ifdef CHASTE_VTK
-template<unsigned SPACE_DIM>
-boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > VascularNetworkGenerator<SPACE_DIM>::GenerateNetworkFromVtkFile(std::string filename)
+template<unsigned DIM>
+boost::shared_ptr<CaVascularNetwork<DIM> > VascularNetworkGenerator<DIM>::GenerateNetworkFromVtkFile(std::string filename)
 {
 	// Create an empty vessel network
-	boost::shared_ptr<CaVascularNetwork<SPACE_DIM>  > pVesselNetwork(new CaVascularNetwork<SPACE_DIM>());
+	boost::shared_ptr<CaVascularNetwork<DIM>  > pVesselNetwork(new CaVascularNetwork<DIM>());
 
 	// Create a VTK PolyData object based on the contents of the input VTK file
 	vtkSmartPointer<vtkXMLPolyDataReader> reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
 	reader->SetFileName(filename.c_str());
 	reader->Update();
 	vtkPolyData* pPolyData = reader->GetOutput();
-	std::vector<ChastePoint<SPACE_DIM> > point_locations;
+	std::vector<ChastePoint<DIM> > point_locations;
 	std::vector<double> radii;
 
 	// Create a vector of chaste points corresponding to vessel node locations
@@ -284,13 +284,13 @@ boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > VascularNetworkGenerator<SPACE_
 	{
 		double point_coords[3];
 		pPolyData->GetPoint(i, point_coords);
-		if (SPACE_DIM < 3)
+		if (DIM < 3)
 		{
-			point_locations.push_back(ChastePoint<SPACE_DIM>(point_coords[0], point_coords[1]));
+			point_locations.push_back(ChastePoint<DIM>(point_coords[0], point_coords[1]));
 		}
 		else
 		{
-			point_locations.push_back(ChastePoint<SPACE_DIM>(point_coords[0], point_coords[1], point_coords[2]));
+			point_locations.push_back(ChastePoint<DIM>(point_coords[0], point_coords[1], point_coords[2]));
 		}
 	}
 
@@ -327,7 +327,7 @@ boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > VascularNetworkGenerator<SPACE_
 	for(int i = 0; i < pPolyData->GetNumberOfLines(); i++)
 	{
 		// Make a new vessel
-		boost::shared_ptr<CaVessel<SPACE_DIM> > vessel = CreateVessel();
+		boost::shared_ptr<CaVessel<DIM> > vessel = CreateVessel();
 		pCellArray->GetNextCell(num_segments, pSegmentList);
 		vessel->SetNode1Location(point_locations[pSegmentList[0]]);
 		vessel->SetNode2Location(point_locations[pSegmentList[num_segments - 1]]);
@@ -357,10 +357,10 @@ boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > VascularNetworkGenerator<SPACE_
 }
 #endif // CHASTE_VTK
 
-template<unsigned SPACE_DIM>
-boost::shared_ptr<CaVessel<SPACE_DIM> > VascularNetworkGenerator<SPACE_DIM>::CreateVessel()
+template<unsigned DIM>
+boost::shared_ptr<CaVessel<DIM> > VascularNetworkGenerator<DIM>::CreateVessel()
 {
-	boost::shared_ptr<CaVessel<SPACE_DIM> > vessel(new CaVessel<SPACE_DIM>());
+	boost::shared_ptr<CaVessel<DIM> > vessel(new CaVessel<DIM>());
 
 	// If there is a prototype vessel use it to make sure that all vessels in the network "know about" the right chemicals and
 	// that those chemical species have the right concentrations.

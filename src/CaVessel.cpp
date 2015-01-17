@@ -7,27 +7,27 @@
 
 #include "CaVessel.hpp"
 
-template<unsigned SPATIAL_DIM>
-CaVessel<SPATIAL_DIM>::CaVessel() : pNode1(new CaVascularNetworkNode<SPATIAL_DIM>()),pNode2(new CaVascularNetworkNode<SPATIAL_DIM>()),mActiveTipCellLocatedAtNode1(false),mActiveTipCellLocatedAtNode2(false),mVesselSegmentLocations(),mTimeWithLowWallShearStress(0.0),mRadius(1.0*pow(10.0,-5)),mPreviousRadius(1.0),mHaematocritLevel(0.45),mFlowVelocity(0.0),mFlowRate(0.0),mImpedance(0.0),mLength(0.0),mWallShearStress(0.0),mViscosity(0.0),mMechanicalStimulus(0.0),mMetabolicStimulus(0.0),mShrinkingStimulus(0.0),mDownstreamConductedStimulus(0.0),mUpstreamConductedStimulus(0.0),mChemicalCollection(),mIsPartOfNeovasculature(true), mCanExtend(false)
+template<unsigned DIM>
+CaVessel<DIM>::CaVessel() : pNode1(new CaVascularNetworkNode<DIM>()),pNode2(new CaVascularNetworkNode<DIM>()),mActiveTipCellLocatedAtNode1(false),mActiveTipCellLocatedAtNode2(false),mVesselSegmentLocations(),mTimeWithLowWallShearStress(0.0),mRadius(1.0*pow(10.0,-5)),mPreviousRadius(1.0),mHaematocritLevel(0.45),mFlowVelocity(0.0),mFlowRate(0.0),mImpedance(0.0),mLength(0.0),mWallShearStress(0.0),mViscosity(0.0),mMechanicalStimulus(0.0),mMetabolicStimulus(0.0),mShrinkingStimulus(0.0),mDownstreamConductedStimulus(0.0),mUpstreamConductedStimulus(0.0),mChemicalCollection(),mIsPartOfNeovasculature(true), mCanExtend(false)
 {
 
 }
 
-template<unsigned SPATIAL_DIM>
-CaVessel<SPATIAL_DIM>::~CaVessel()
+template<unsigned DIM>
+CaVessel<DIM>::~CaVessel()
 {
 
 }
 
-template<unsigned SPATIAL_DIM>
-bool CaVessel<SPATIAL_DIM>::IsInputVessel()
+template<unsigned DIM>
+bool CaVessel<DIM>::IsInputVessel()
 {
     return (pNode1->IsInputNode() || pNode2->IsInputNode());
 }
 
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::CopyMechanicalPropertyValuesAndChemicalConcentrations(boost::shared_ptr<CaVessel<SPATIAL_DIM> > anotherVessel)
+template<unsigned DIM>
+void CaVessel<DIM>::CopyMechanicalPropertyValuesAndChemicalConcentrations(boost::shared_ptr<CaVessel<DIM> > anotherVessel)
 {
     mTimeWithLowWallShearStress = anotherVessel->GetTimeWithLowWallShearStress();
     mRadius = anotherVessel->GetRadius();
@@ -56,18 +56,18 @@ void CaVessel<SPATIAL_DIM>::CopyMechanicalPropertyValuesAndChemicalConcentration
 
 }
 
-template<unsigned SPATIAL_DIM>
-double CaVessel<SPATIAL_DIM>::GetRadius()
+template<unsigned DIM>
+double CaVessel<DIM>::GetRadius()
 {
     return mRadius;
 }
 
-template<unsigned SPATIAL_DIM>
-double CaVessel<SPATIAL_DIM>::GetTortuosity()
+template<unsigned DIM>
+double CaVessel<DIM>::GetTortuosity()
 {
     double distanceBetweenEndsOfVessel;
 
-    if (SPATIAL_DIM > 2)
+    if (DIM > 2)
     {
         distanceBetweenEndsOfVessel = pow((pow(double(GetNode1()->GetLocation()[0] - GetNode2()->GetLocation()[0]),2) +
                 pow(double(GetNode1()->GetLocation()[1] - GetNode2()->GetLocation()[1]),2) +
@@ -82,205 +82,205 @@ double CaVessel<SPATIAL_DIM>::GetTortuosity()
     return (mLength/distanceBetweenEndsOfVessel);
 }
 
-template<unsigned SPATIAL_DIM>
-double CaVessel<SPATIAL_DIM>::GetPreviousRadius()
+template<unsigned DIM>
+double CaVessel<DIM>::GetPreviousRadius()
 {
     return mPreviousRadius;
 }
 
-template<unsigned SPATIAL_DIM>
-double CaVessel<SPATIAL_DIM>::GetHaematocritLevel()
+template<unsigned DIM>
+double CaVessel<DIM>::GetHaematocritLevel()
 {
     return mHaematocritLevel;
 }
 
-template<unsigned SPATIAL_DIM>
-double CaVessel<SPATIAL_DIM>::GetFlowVelocity()
+template<unsigned DIM>
+double CaVessel<DIM>::GetFlowVelocity()
 {
     return mFlowVelocity;
 }
 
-template<unsigned SPATIAL_DIM>
-double CaVessel<SPATIAL_DIM>::GetFlowRate()
+template<unsigned DIM>
+double CaVessel<DIM>::GetFlowRate()
 {
     return mFlowRate;
 }
 
-template<unsigned SPATIAL_DIM>
-double CaVessel<SPATIAL_DIM>::GetImpedance()
+template<unsigned DIM>
+double CaVessel<DIM>::GetImpedance()
 {
     return mImpedance;
 }
 
-template<unsigned SPATIAL_DIM>
-double CaVessel<SPATIAL_DIM>::GetLength()
+template<unsigned DIM>
+double CaVessel<DIM>::GetLength()
 {
     return mLength;
 }
 
-template<unsigned SPATIAL_DIM>
-double CaVessel<SPATIAL_DIM>::GetWallShearStress()
+template<unsigned DIM>
+double CaVessel<DIM>::GetWallShearStress()
 {
     return mWallShearStress;
 }
 
-template<unsigned SPATIAL_DIM>
-double CaVessel<SPATIAL_DIM>::GetViscosity()
+template<unsigned DIM>
+double CaVessel<DIM>::GetViscosity()
 {
     return mViscosity;
 }
 
-template<unsigned SPATIAL_DIM>
-double CaVessel<SPATIAL_DIM>::GetMechanicalStimulus()
+template<unsigned DIM>
+double CaVessel<DIM>::GetMechanicalStimulus()
 {
     return mMechanicalStimulus;
 }
 
-template<unsigned SPATIAL_DIM>
-double CaVessel<SPATIAL_DIM>::GetMetabolicStimulus()
+template<unsigned DIM>
+double CaVessel<DIM>::GetMetabolicStimulus()
 {
     return mMetabolicStimulus;
 }
 
-template<unsigned SPATIAL_DIM>
-double CaVessel<SPATIAL_DIM>::GetShrinkingStimulus()
+template<unsigned DIM>
+double CaVessel<DIM>::GetShrinkingStimulus()
 {
     return mShrinkingStimulus;
 }
 
-template<unsigned SPATIAL_DIM>
-double CaVessel<SPATIAL_DIM>::GetDownstreamConductedStimulus()
+template<unsigned DIM>
+double CaVessel<DIM>::GetDownstreamConductedStimulus()
 {
     return mDownstreamConductedStimulus;
 }
 
-template<unsigned SPATIAL_DIM>
-double CaVessel<SPATIAL_DIM>::GetUpstreamConductedStimulus()
+template<unsigned DIM>
+double CaVessel<DIM>::GetUpstreamConductedStimulus()
 {
     return mUpstreamConductedStimulus;
 }
 
-template<unsigned SPATIAL_DIM>
-boost::shared_ptr<CaVessel<SPATIAL_DIM> > CaVessel<SPATIAL_DIM>::shared()
+template<unsigned DIM>
+boost::shared_ptr<CaVessel<DIM> > CaVessel<DIM>::shared()
 {
     return this->shared_from_this();
 }
 
-template<unsigned SPATIAL_DIM>
-boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > CaVessel<SPATIAL_DIM>::GetNode1()
+template<unsigned DIM>
+boost::shared_ptr<CaVascularNetworkNode<DIM> > CaVessel<DIM>::GetNode1()
 {
     return pNode1;
 }
 
-template<unsigned SPATIAL_DIM>
-boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > CaVessel<SPATIAL_DIM>::GetNode2()
+template<unsigned DIM>
+boost::shared_ptr<CaVascularNetworkNode<DIM> > CaVessel<DIM>::GetNode2()
 {
     return pNode2;
 }
 
-template<unsigned SPATIAL_DIM>
-double CaVessel<SPATIAL_DIM>::GetTimeWithLowWallShearStress() const
+template<unsigned DIM>
+double CaVessel<DIM>::GetTimeWithLowWallShearStress() const
 {
     return mTimeWithLowWallShearStress;
 }
 
-template<unsigned SPATIAL_DIM>
-std::vector<ChastePoint<SPATIAL_DIM> > CaVessel<SPATIAL_DIM>::GetSegmentCoordinates()
+template<unsigned DIM>
+std::vector<ChastePoint<DIM> > CaVessel<DIM>::GetSegmentCoordinates()
 {
     return mVesselSegmentLocations;
 }
 
-template<unsigned SPATIAL_DIM>
-ChastePoint<SPATIAL_DIM> CaVessel<SPATIAL_DIM>::GetSegmentCoordinate(unsigned i)
+template<unsigned DIM>
+ChastePoint<DIM> CaVessel<DIM>::GetSegmentCoordinate(unsigned i)
 {
     assert(i < mVesselSegmentLocations.size());
     return mVesselSegmentLocations[i];
 }
 
-template<unsigned SPATIAL_DIM>
-unsigned CaVessel<SPATIAL_DIM>::GetNumberOfSegments()
+template<unsigned DIM>
+unsigned CaVessel<DIM>::GetNumberOfSegments()
 {
     return mVesselSegmentLocations.size();
 }
 
 
-template<unsigned SPATIAL_DIM>
-bool CaVessel<SPATIAL_DIM>::HasActiveTipCell() const
+template<unsigned DIM>
+bool CaVessel<DIM>::HasActiveTipCell() const
 {
     return (ActiveTipCellLocatedAtNode1() || ActiveTipCellLocatedAtNode2());
 }
 
-template<unsigned SPATIAL_DIM>
-bool CaVessel<SPATIAL_DIM>::ActiveTipCellLocatedAtNode1() const
+template<unsigned DIM>
+bool CaVessel<DIM>::ActiveTipCellLocatedAtNode1() const
 {
     return mActiveTipCellLocatedAtNode1;
 }
 
-template<unsigned SPATIAL_DIM>
-bool CaVessel<SPATIAL_DIM>::ActiveTipCellLocatedAtNode2() const
+template<unsigned DIM>
+bool CaVessel<DIM>::ActiveTipCellLocatedAtNode2() const
 {
     return mActiveTipCellLocatedAtNode2;
 }
 
-template<unsigned SPATIAL_DIM>
-IntraVascularChemicalCollection& CaVessel<SPATIAL_DIM>::GetCollectionOfIntraVascularChemicals()
+template<unsigned DIM>
+IntraVascularChemicalCollection& CaVessel<DIM>::GetCollectionOfIntraVascularChemicals()
 {
     return mChemicalCollection;
 }
 
-template<unsigned SPATIAL_DIM>
-unsigned CaVessel<SPATIAL_DIM>::GetNumberOfIntraVascularChemicals()
+template<unsigned DIM>
+unsigned CaVessel<DIM>::GetNumberOfIntraVascularChemicals()
 {
     return mChemicalCollection.GetIntraVascularChemicalCollection().size();
 }
 
-template<unsigned SPATIAL_DIM>
-double CaVessel<SPATIAL_DIM>::GetIntraVascularChemicalConcentration(string chemicalname)
+template<unsigned DIM>
+double CaVessel<DIM>::GetIntraVascularChemicalConcentration(string chemicalname)
 {
     return mChemicalCollection.GetIntraVascularChemicalConcentration(chemicalname);
 }
 
 
-template<unsigned SPATIAL_DIM>
-bool CaVessel<SPATIAL_DIM>::IsPartOfNeovasculature()
+template<unsigned DIM>
+bool CaVessel<DIM>::IsPartOfNeovasculature()
 {
     return mIsPartOfNeovasculature;
 }
 
-template<unsigned SPATIAL_DIM>
-bool CaVessel<SPATIAL_DIM>::CanExtend()
+template<unsigned DIM>
+bool CaVessel<DIM>::CanExtend()
 {
     return mCanExtend;
 }
 
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::SetIntraVascularChemicalConcentration(string chemicalname, Concentration concentration)
+template<unsigned DIM>
+void CaVessel<DIM>::SetIntraVascularChemicalConcentration(string chemicalname, Concentration concentration)
 {
     mChemicalCollection.SetIntraVascularChemicalConcentration(chemicalname,concentration);
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::SetNode1(boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > node)
+template<unsigned DIM>
+void CaVessel<DIM>::SetNode1(boost::shared_ptr<CaVascularNetworkNode<DIM> > node)
 {
     pNode1 = node;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::SetNode1Location(ChastePoint<SPATIAL_DIM> location)
+template<unsigned DIM>
+void CaVessel<DIM>::SetNode1Location(ChastePoint<DIM> location)
 {
     pNode1->SetLocation(location);
     pNode1->AddAdjoiningVessel(shared()); // badly placed - doesn't make much sense but only place to do it really
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::SetNode2(boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > node)
+template<unsigned DIM>
+void CaVessel<DIM>::SetNode2(boost::shared_ptr<CaVascularNetworkNode<DIM> > node)
 {
     pNode2 = node;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::SetNode2Location(ChastePoint<SPATIAL_DIM> location)
+template<unsigned DIM>
+void CaVessel<DIM>::SetNode2Location(ChastePoint<DIM> location)
 {
     pNode2->SetLocation(location);
     pNode2->AddAdjoiningVessel(shared());
@@ -289,8 +289,8 @@ void CaVessel<SPATIAL_DIM>::SetNode2Location(ChastePoint<SPATIAL_DIM> location)
 /*
  * todo This method needs some adjustment ... dealing with coordinates that may not be integers, for example. And what if there is no z-coordinate
  */
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::SetNextVesselSegmentCoordinate(ChastePoint<SPATIAL_DIM> Coords)
+template<unsigned DIM>
+void CaVessel<DIM>::SetNextVesselSegmentCoordinate(ChastePoint<DIM> Coords)
 {
 
     //    // method also includes re-calculation of length of vessel, given that vessel has had another segment added
@@ -429,12 +429,12 @@ void CaVessel<SPATIAL_DIM>::SetNextVesselSegmentCoordinate(ChastePoint<SPATIAL_D
         {
             double segmentlength = 0;
 
-            if (SPATIAL_DIM == 2)
+            if (DIM == 2)
             {
                 segmentlength = pow((pow(double(GetSegmentCoordinate(i)[0] - GetSegmentCoordinate(i - 1)[0]),2) + pow(double(GetSegmentCoordinate(i)[1] - GetSegmentCoordinate(i - 1)[1]),2)),0.5);
             }
 
-            if (SPATIAL_DIM == 3)
+            if (DIM == 3)
             {
                 segmentlength = pow((pow(double(GetSegmentCoordinate(i)[0] - GetSegmentCoordinate(i - 1)[0]),2) + pow(double(GetSegmentCoordinate(i)[1] - GetSegmentCoordinate(i - 1)[1]),2) + pow(double(GetSegmentCoordinate(i)[2] - GetSegmentCoordinate(i - 1)[2]),2)),0.5);
             }
@@ -451,20 +451,20 @@ void CaVessel<SPATIAL_DIM>::SetNextVesselSegmentCoordinate(ChastePoint<SPATIAL_D
 
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::SetTimeWithLowWallShearStress(double time)
+template<unsigned DIM>
+void CaVessel<DIM>::SetTimeWithLowWallShearStress(double time)
 {
     mTimeWithLowWallShearStress = time;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::IncrementTimeWithLowWallShearStress(double t)
+template<unsigned DIM>
+void CaVessel<DIM>::IncrementTimeWithLowWallShearStress(double t)
 {
     mTimeWithLowWallShearStress += t;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::SetActiveTipCellLocatedAtNode1(bool value)
+template<unsigned DIM>
+void CaVessel<DIM>::SetActiveTipCellLocatedAtNode1(bool value)
 {
     if (value == true)
     {
@@ -474,8 +474,8 @@ void CaVessel<SPATIAL_DIM>::SetActiveTipCellLocatedAtNode1(bool value)
     mActiveTipCellLocatedAtNode1 = value;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::SetActiveTipCellLocatedAtNode2(bool value)
+template<unsigned DIM>
+void CaVessel<DIM>::SetActiveTipCellLocatedAtNode2(bool value)
 {
     if (value == true)
     {
@@ -485,104 +485,104 @@ void CaVessel<SPATIAL_DIM>::SetActiveTipCellLocatedAtNode2(bool value)
     mActiveTipCellLocatedAtNode2 = value;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::SetRadius(double value)
+template<unsigned DIM>
+void CaVessel<DIM>::SetRadius(double value)
 {
     mRadius = value;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::SetPreviousRadius(double value)
+template<unsigned DIM>
+void CaVessel<DIM>::SetPreviousRadius(double value)
 {
     mPreviousRadius = value;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::SetHaematocritLevel(double value)
+template<unsigned DIM>
+void CaVessel<DIM>::SetHaematocritLevel(double value)
 {
     mHaematocritLevel = value;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::SetFlowVelocity(double value)
+template<unsigned DIM>
+void CaVessel<DIM>::SetFlowVelocity(double value)
 {
     mFlowVelocity = value;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::SetFlowRate(double value)
+template<unsigned DIM>
+void CaVessel<DIM>::SetFlowRate(double value)
 {
     mFlowRate = value;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::SetImpedance(double value)
+template<unsigned DIM>
+void CaVessel<DIM>::SetImpedance(double value)
 {
     mImpedance = value;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::SetLength(double value)
+template<unsigned DIM>
+void CaVessel<DIM>::SetLength(double value)
 {
     mLength = value;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::SetWallShearStress(double value)
+template<unsigned DIM>
+void CaVessel<DIM>::SetWallShearStress(double value)
 {
     mWallShearStress = value;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::SetViscosity(double value)
+template<unsigned DIM>
+void CaVessel<DIM>::SetViscosity(double value)
 {
     mViscosity = value;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::SetMechanicalStimulus(double value)
+template<unsigned DIM>
+void CaVessel<DIM>::SetMechanicalStimulus(double value)
 {
     mMechanicalStimulus = value;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::SetMetabolicStimulus(double value)
+template<unsigned DIM>
+void CaVessel<DIM>::SetMetabolicStimulus(double value)
 {
     mMetabolicStimulus = value;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::SetShrinkingStimulus(double value)
+template<unsigned DIM>
+void CaVessel<DIM>::SetShrinkingStimulus(double value)
 {
     mShrinkingStimulus = value;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::SetDownstreamConductedStimulus(double value)
+template<unsigned DIM>
+void CaVessel<DIM>::SetDownstreamConductedStimulus(double value)
 {
     mDownstreamConductedStimulus = value;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::SetUpstreamConductedStimulus(double value)
+template<unsigned DIM>
+void CaVessel<DIM>::SetUpstreamConductedStimulus(double value)
 {
     mUpstreamConductedStimulus = value;
 }
 
-template<unsigned SPATIAL_DIM>
-bool CaVessel<SPATIAL_DIM>::IsAttachedToNode(boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > node)
+template<unsigned DIM>
+bool CaVessel<DIM>::IsAttachedToNode(boost::shared_ptr<CaVascularNetworkNode<DIM> > node)
 {
     return (node == pNode1 || node == pNode2);
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::SetIsPartOfNeovasculature(bool value)
+template<unsigned DIM>
+void CaVessel<DIM>::SetIsPartOfNeovasculature(bool value)
 {
     mIsPartOfNeovasculature = value;
 }
 
-template<unsigned SPATIAL_DIM>
-void CaVessel<SPATIAL_DIM>::CanExtend(bool value)
+template<unsigned DIM>
+void CaVessel<DIM>::CanExtend(bool value)
 {
     mCanExtend = value;
 }
