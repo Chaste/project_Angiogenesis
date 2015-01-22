@@ -82,8 +82,7 @@ private:
 	std::vector<ChastePoint<DIM> > mVesselSegmentLocations;
 
 	/**
-	 * Collection of chemicals which the Vessel contains. The IntraVascularChemicalCollection
-	 * class allows IntraVascularChemicals to be added at will by a modeller.
+	 * Collection of chemicals which the Vessel contains.
 	 */
 	IntraVascularChemicalCollection mChemicalCollection;
 
@@ -104,7 +103,7 @@ public:
 	/**
        Destructor.
 	 */
-	virtual ~CaVessel();
+	~CaVessel();
 
 	/**
        Copies the mechanical property values and chemical concentrations from the prescribed vessel
@@ -147,27 +146,27 @@ public:
 	/**
 	 * Returns type double vessel data value.
 	 */
-	double GetDoubleDataValue(const std::string variableName);
+	double GetDoubleDataValue(const std::string& variableName);
 
 	/**
 	 * Returns type double vessel data units.
 	 */
-	std::string GetDoubleDataUnits(const std::string variableName);
+	const std::string& GetDoubleDataUnits(const std::string& variableName) const;
 
 	/**
 	 * Returns type boolean vessel data.
 	 */
-	bool GetBooleanData(const std::string variableName);
+	bool GetBooleanData(const std::string& variableName);
 
 	/**
 	 * Assigns type double vessel data.
 	 */
-	void SetDoubleData(const std::string variableName, double data, const std::string unit = "None");
+	void SetDoubleData(const std::string& variableName, double data, const std::string& unit = "None");
 
 	/**
 	 * Assigns type boolean vessel data.
 	 */
-	void SetBooleanData(const std::string variableName, bool data);
+	void SetBooleanData(const std::string& variableName, bool data);
 
 	/**
 	 *  @return whether vessel is attached to input node.

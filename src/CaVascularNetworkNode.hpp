@@ -77,8 +77,7 @@ public:
 	/*
 	 * Constructor
 	 *
-	 * Upon instantiation the node has no prescribed location, no adjoining vessels, pressure at the
-	 * node is zero and the node is neither an input or output node to a network.
+	 * Upon instantiation the node has no prescribed location or adjoining vessels.
 	 *
 	 */
 	CaVascularNetworkNode();
@@ -86,7 +85,7 @@ public:
 	/*
 	 * Destructor
 	 */
-	virtual ~CaVascularNetworkNode();
+	~CaVascularNetworkNode();
 
 	/**
 	 *  Returns a boost::shared_ptr to this CaVascularNetworkNode.
@@ -105,17 +104,17 @@ public:
 	/**
 	 * Returns type double vessel node data value.
 	 */
-	double GetDoubleDataValue(const std::string variableName);
+	double GetDoubleDataValue(const std::string& variableName);
 
 	/**
 	 * Returns type double vessel node data units.
 	 */
-	std::string GetDoubleDataUnits(const std::string variableName);
+	const std::string& GetDoubleDataUnits(const std::string& variableName) const;
 
 	/**
 	 * Returns type boolean vessel node data.
 	 */
-	bool GetBooleanData(const std::string variableName);
+	bool GetBooleanData(const std::string& variableName);
 
 	/**
 	 *  Returns the number of vessels which are adjoint to the node.
@@ -134,19 +133,19 @@ public:
 	/**
 	 * Assigns type double vessel node data.
 	 */
-	void SetDoubleData(const std::string variableName, double data, const std::string unit = "None");
+	void SetDoubleData(const std::string& variableName, double data, const std::string& unit = "None");
 
 	/**
 	 * Assigns type boolean vessel node data.
 	 */
-	void SetBooleanData(const std::string variableName, bool data);
+	void SetBooleanData(const std::string& variableName, bool data);
 
 	/**
 	 * Assigns the prescribed location to the node.
 	 *
 	 *  @param loc new location of node
 	 */
-	void SetLocation(ChastePoint<DIM> loc);
+	void SetLocation(ChastePoint<DIM> location);
 
 	/**
        Adds an adjoining Vessel to the node.

@@ -1,112 +1,114 @@
 /*
- * CaVascularNetwork.cpp
- *
- *  Created on: 13 Jan 2015
- *      Author: connor
+
+Copyright (c) 2005-2015, University of Oxford.
+All rights reserved.
+
+University of Oxford means the Chancellor, Masters and Scholars of the
+University of Oxford, having an administrative office at Wellington
+Square, Oxford OX1 2JD, UK.
+
+This file is part of Chaste.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+ * Redistributions of source code must retain the above copyright notice,
+   this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+ * Neither the name of the University of Oxford nor the names of its
+   contributors may be used to endorse or promote products derived from this
+   software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
  */
 
 #include "CaVascularNetwork.hpp"
 
-//
-//  CaVascularNetwork.cpp
-//  VascularTumourGrowthModellingFramework
-//
-//  Created by Anthony Connor on 16/10/2012.
-//  Copyright (c) 2012 Anthony Connor. All rights reserved.
-//
-
-#include "CaVascularNetwork.hpp"
-#include <math.h>
-#include <float.h>
-
-#include <boost/config.hpp>
-#include <algorithm>
-#include <utility>
-#include <boost/graph/visitors.hpp>
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/breadth_first_search.hpp>
-
-#include <boost/pending/indirect_cmp.hpp>
-
-
-
-template <unsigned SPATIAL_DIM>
-CaVascularNetwork<SPATIAL_DIM>::CaVascularNetwork() : mVesselArray(), mNodeArray(), mArterialHaematocritLevel(0.45), mArterialInputPressure(27*(1.01*pow(10.0,5)/760)), mVenousOutputPressure(15*(1.01*pow(10.0,5)/760))
+template <unsigned DIM>
+CaVascularNetwork<DIM>::CaVascularNetwork()
+	: mVesselArray(),
+	  mNodeArray(),
+	  mArterialHaematocritLevel(0.45),
+	  mArterialInputPressure(27*(1.01*pow(10.0,5)/760)),
+	  mVenousOutputPressure(15*(1.01*pow(10.0,5)/760))
 {
-
 }
 
-template <unsigned SPATIAL_DIM>
-CaVascularNetwork<SPATIAL_DIM>::~CaVascularNetwork()
+template <unsigned DIM>
+CaVascularNetwork<DIM>::~CaVascularNetwork()
 {
-
 }
 
-template <unsigned SPATIAL_DIM>
-boost::shared_ptr<CaVascularNetwork<SPATIAL_DIM> > CaVascularNetwork<SPATIAL_DIM>::shared()
+template <unsigned DIM>
+boost::shared_ptr<CaVascularNetwork<DIM> > CaVascularNetwork<DIM>::shared()
 {
     return this->shared_from_this();
 }
 
-template <unsigned SPATIAL_DIM>
-unsigned CaVascularNetwork<SPATIAL_DIM>::GetVesselID(boost::shared_ptr<CaVessel<SPATIAL_DIM> > vessel)
+template <unsigned DIM>
+unsigned CaVascularNetwork<DIM>::GetVesselID(boost::shared_ptr<CaVessel<DIM> > vessel)
 {
-
-    bool vesselFound = false;
+    bool vessel_found = false;
     unsigned i = 0;
 
     for (i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
         if (vessel == mVesselArray[i])
         {
-            vesselFound = true;
+        	vessel_found = true;
             break;
         }
     }
 
-    assert(vesselFound);
-
+    assert(vessel_found);
     return i;
 }
 
 
-template <unsigned SPATIAL_DIM>
-unsigned CaVascularNetwork<SPATIAL_DIM>::GetNodeID(boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > node)
+template <unsigned DIM>
+unsigned CaVascularNetwork<DIM>::GetNodeID(boost::shared_ptr<CaVascularNetworkNode<DIM> > node)
 {
-
-    bool nodeFound = false;
+    bool node_found = false;
     unsigned i = 0;
 
     for (i = 0; i < GetNumberOfNodesInNetwork(); i++)
     {
         if (node == mNodeArray[i])
         {
-            nodeFound = true;
+        	node_found = true;
             break;
         }
     }
 
-    assert(nodeFound);
-
+    assert(node_found);
     return i;
-
 }
 
-template <unsigned SPATIAL_DIM>
-unsigned CaVascularNetwork<SPATIAL_DIM>::GetNumberOfVesselsInNetwork()
+template <unsigned DIM>
+unsigned CaVascularNetwork<DIM>::GetNumberOfVesselsInNetwork()
 {
     return mVesselArray.size();
 }
 
-template <unsigned SPATIAL_DIM>
-unsigned CaVascularNetwork<SPATIAL_DIM>::GetNumberOfNodesInNetwork()
+template <unsigned DIM>
+unsigned CaVascularNetwork<DIM>::GetNumberOfNodesInNetwork()
 {
     return mNodeArray.size();
 }
 
-
-template <unsigned SPATIAL_DIM>
-unsigned CaVascularNetwork<SPATIAL_DIM>::GetNumberOfVesselsAtLocation(ChastePoint<SPATIAL_DIM> coord)
+template <unsigned DIM>
+unsigned CaVascularNetwork<DIM>::GetNumberOfVesselsAtLocation(ChastePoint<DIM> coord)
 {
 
 	unsigned numberOfVesselsAtLocation = 0;
@@ -125,16 +127,15 @@ unsigned CaVascularNetwork<SPATIAL_DIM>::GetNumberOfVesselsAtLocation(ChastePoin
     return numberOfVesselsAtLocation;
 }
 
-template <unsigned SPATIAL_DIM>
-boost::shared_ptr<CaVessel<SPATIAL_DIM> > CaVascularNetwork<SPATIAL_DIM>::GetVessel(int vessel_id)
+template <unsigned DIM>
+boost::shared_ptr<CaVessel<DIM> > CaVascularNetwork<DIM>::GetVessel(int vessel_id)
 {
     return mVesselArray[vessel_id];
 }
 
-template <unsigned SPATIAL_DIM>
-boost::shared_ptr<CaVessel<SPATIAL_DIM> > CaVascularNetwork<SPATIAL_DIM>::GetVessel(ChastePoint<SPATIAL_DIM> coord, int positionInContainer)
+template <unsigned DIM>
+boost::shared_ptr<CaVessel<DIM> > CaVascularNetwork<DIM>::GetVessel(ChastePoint<DIM> coord, int positionInContainer)
 {
-
     int numberOfVesselsAtLocation = 0;
     int vesselID = 0;
 
@@ -163,16 +164,15 @@ boost::shared_ptr<CaVessel<SPATIAL_DIM> > CaVascularNetwork<SPATIAL_DIM>::GetVes
     return mVesselArray[vesselID];
 }
 
-template <unsigned SPATIAL_DIM>
-boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > CaVascularNetwork<SPATIAL_DIM>::GetNode(int node_id)
+template <unsigned DIM>
+boost::shared_ptr<CaVascularNetworkNode<DIM> > CaVascularNetwork<DIM>::GetNode(int node_id)
 {
     return mNodeArray[node_id];
 }
 
-template <unsigned SPATIAL_DIM>
-boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > CaVascularNetwork<SPATIAL_DIM>::GetNode(ChastePoint<SPATIAL_DIM> location)
+template <unsigned DIM>
+boost::shared_ptr<CaVascularNetworkNode<DIM> > CaVascularNetwork<DIM>::GetNode(ChastePoint<DIM> location)
 {
-
     assert(NodePresentAtLocation(location));
     assert(NumberOfNodesPresentAtLocation(location) == 1);
 
@@ -187,29 +187,28 @@ boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > CaVascularNetwork<SPATIAL
     }
 
     return mNodeArray[nodeID];
-
 }
 
-template <unsigned SPATIAL_DIM>
-double CaVascularNetwork<SPATIAL_DIM>::GetArterialHaematocritLevel()
+template <unsigned DIM>
+double CaVascularNetwork<DIM>::GetArterialHaematocritLevel()
 {
     return mArterialHaematocritLevel;
 }
 
-template <unsigned SPATIAL_DIM>
-double CaVascularNetwork<SPATIAL_DIM>::GetArterialInputPressure()
+template <unsigned DIM>
+double CaVascularNetwork<DIM>::GetArterialInputPressure()
 {
     return mArterialInputPressure;
 }
 
-template <unsigned SPATIAL_DIM>
-double CaVascularNetwork<SPATIAL_DIM>::GetVenousOutputPressure()
+template <unsigned DIM>
+double CaVascularNetwork<DIM>::GetVenousOutputPressure()
 {
     return mVenousOutputPressure;
 }
 
-//template <unsigned SPATIAL_DIM>
-//double CaVascularNetwork<SPATIAL_DIM>::GetMeanVesselLengthOfNeovasculature()
+//template <unsigned DIM>
+//double CaVascularNetwork<DIM>::GetMeanVesselLengthOfNeovasculature()
 //{
 //    double totalVesselLength = 0;
 //    int numberofNewVessels = 0;
@@ -227,8 +226,8 @@ double CaVascularNetwork<SPATIAL_DIM>::GetVenousOutputPressure()
 //    return (totalVesselLength/(double)numberofNewVessels);
 //}
 //
-//template <unsigned SPATIAL_DIM>
-//int CaVascularNetwork<SPATIAL_DIM>::GetNumberOfVesselsByLength(double lowerBoundLength, double upperBoundLength)
+//template <unsigned DIM>
+//int CaVascularNetwork<DIM>::GetNumberOfVesselsByLength(double lowerBoundLength, double upperBoundLength)
 //{
 //    int numberOfVesselsInsideRange = 0;
 //
@@ -243,8 +242,8 @@ double CaVascularNetwork<SPATIAL_DIM>::GetVenousOutputPressure()
 //    return numberOfVesselsInsideRange;
 //}
 //
-//template <unsigned SPATIAL_DIM>
-//int CaVascularNetwork<SPATIAL_DIM>::GetNumberOfVesselsByRadius(double lowerBoundRadius, double upperBoundRadius)
+//template <unsigned DIM>
+//int CaVascularNetwork<DIM>::GetNumberOfVesselsByRadius(double lowerBoundRadius, double upperBoundRadius)
 //{
 //    int numberOfVesselsInsideRange = 0;
 //
@@ -259,8 +258,8 @@ double CaVascularNetwork<SPATIAL_DIM>::GetVenousOutputPressure()
 //    return numberOfVesselsInsideRange;
 //}
 //
-//template <unsigned SPATIAL_DIM>
-//int CaVascularNetwork<SPATIAL_DIM>::GetNumberOfVesselsByTortuosity(double lowerBoundTortuosity, double upperBoundTortuosity)
+//template <unsigned DIM>
+//int CaVascularNetwork<DIM>::GetNumberOfVesselsByTortuosity(double lowerBoundTortuosity, double upperBoundTortuosity)
 //{
 //    int numberOfVesselsInsideRange = 0;
 //
@@ -275,8 +274,8 @@ double CaVascularNetwork<SPATIAL_DIM>::GetVenousOutputPressure()
 //    return numberOfVesselsInsideRange;
 //}
 //
-//template <unsigned SPATIAL_DIM>
-//double CaVascularNetwork<SPATIAL_DIM>::GetMeanVesselRadiusOfNeovasculature()
+//template <unsigned DIM>
+//double CaVascularNetwork<DIM>::GetMeanVesselRadiusOfNeovasculature()
 //{
 //    double totalVesselRadius = 0;
 //    int numberofNewVessels = 0;
@@ -294,8 +293,8 @@ double CaVascularNetwork<SPATIAL_DIM>::GetVenousOutputPressure()
 //    return (totalVesselRadius/(double)numberofNewVessels);
 //}
 //
-//template <unsigned SPATIAL_DIM>
-//double CaVascularNetwork<SPATIAL_DIM>::GetMeanVesselTortuosityOfNeovasculature()
+//template <unsigned DIM>
+//double CaVascularNetwork<DIM>::GetMeanVesselTortuosityOfNeovasculature()
 //{
 //    double totalVesselTortuosity = 0;
 //    int numberofNewVessels = 0;
@@ -319,32 +318,32 @@ double CaVascularNetwork<SPATIAL_DIM>::GetVenousOutputPressure()
 //    return (totalVesselTortuosity/(double)numberofNewVessels);
 //}
 
-template <unsigned SPATIAL_DIM>
-std::vector<boost::shared_ptr<CaVessel<SPATIAL_DIM> > > CaVascularNetwork<SPATIAL_DIM>::GetVessels()
+template <unsigned DIM>
+std::vector<boost::shared_ptr<CaVessel<DIM> > > CaVascularNetwork<DIM>::GetVessels()
 {
     return mVesselArray;
 }
 
-template <unsigned SPATIAL_DIM>
-void CaVascularNetwork<SPATIAL_DIM>::SetArterialHaematocritLevel(double value)
+template <unsigned DIM>
+void CaVascularNetwork<DIM>::SetArterialHaematocritLevel(double value)
 {
     mArterialHaematocritLevel = value;
 }
 
-template <unsigned SPATIAL_DIM>
-void CaVascularNetwork<SPATIAL_DIM>::SetArterialInputPressure(double value)
+template <unsigned DIM>
+void CaVascularNetwork<DIM>::SetArterialInputPressure(double value)
 {
     mArterialInputPressure = value;
 }
 
-template <unsigned SPATIAL_DIM>
-void CaVascularNetwork<SPATIAL_DIM>::SetVenousOutputPressure(double value)
+template <unsigned DIM>
+void CaVascularNetwork<DIM>::SetVenousOutputPressure(double value)
 {
     mVenousOutputPressure = value;
 }
 
-template <unsigned SPATIAL_DIM>
-bool CaVascularNetwork<SPATIAL_DIM>::NodePresentAtLocation(ChastePoint<SPATIAL_DIM> location)
+template <unsigned DIM>
+bool CaVascularNetwork<DIM>::NodePresentAtLocation(ChastePoint<DIM> location)
 {
     bool nodePresentAtLocation = false;
 
@@ -356,12 +355,11 @@ bool CaVascularNetwork<SPATIAL_DIM>::NodePresentAtLocation(ChastePoint<SPATIAL_D
             break;
         }
     }
-
     return nodePresentAtLocation;
 }
 
-template <unsigned SPATIAL_DIM>
-unsigned CaVascularNetwork<SPATIAL_DIM>::NumberOfNodesPresentAtLocation(ChastePoint<SPATIAL_DIM> location)
+template <unsigned DIM>
+unsigned CaVascularNetwork<DIM>::NumberOfNodesPresentAtLocation(ChastePoint<DIM> location)
 {
 	unsigned numberOfNodesPresentAtLocation = 0;
 
@@ -376,10 +374,9 @@ unsigned CaVascularNetwork<SPATIAL_DIM>::NumberOfNodesPresentAtLocation(ChastePo
     return numberOfNodesPresentAtLocation;
 }
 
-template <unsigned SPATIAL_DIM>
-void CaVascularNetwork<SPATIAL_DIM>::AddVessel(boost::shared_ptr<CaVessel<SPATIAL_DIM> > vessel)
+template <unsigned DIM>
+void CaVascularNetwork<DIM>::AddVessel(boost::shared_ptr<CaVessel<DIM> > vessel)
 {
-
     // todo Checking that there is enough space for the vessel at a particular location should be handled in a new CABasedCellPopulation
 
     // Check that the first and last segment coordinates are the same as the coordinates of the vessel nodes.
@@ -391,7 +388,6 @@ void CaVascularNetwork<SPATIAL_DIM>::AddVessel(boost::shared_ptr<CaVessel<SPATIA
     assert(vessel->GetNode2()->GetNumberOfAdjoiningVessels() == 1);
 
     // add vessel to network
-
     mVesselArray.push_back(vessel);
 
     bool node1OfVesselAlreadyPresentInNetwork = false;
@@ -419,6 +415,7 @@ void CaVascularNetwork<SPATIAL_DIM>::AddVessel(boost::shared_ptr<CaVessel<SPATIA
     for (unsigned i = 0; i < GetNumberOfNodesInNetwork(); i++)
     {
         if (GetNode(i)->GetLocation().IsSamePoint(vessel->GetNode2()->GetLocation())) // assume nodes are the same if they have the same location
+
         {
             vessel->SetNode2(mNodeArray[i]);
             GetNode(i)->AddAdjoiningVessel(vessel);
@@ -433,14 +430,12 @@ void CaVascularNetwork<SPATIAL_DIM>::AddVessel(boost::shared_ptr<CaVessel<SPATIA
     {
         mNodeArray.push_back(vessel->GetNode2());
     }
-
 }
 
-template <unsigned SPATIAL_DIM>
-bool CaVascularNetwork<SPATIAL_DIM>::VesselIsInNetwork(boost::shared_ptr<CaVessel<SPATIAL_DIM> > vessel)
+template <unsigned DIM>
+bool CaVascularNetwork<DIM>::VesselIsInNetwork(boost::shared_ptr<CaVessel<DIM> > vessel)
 {
     bool vesselIsInNetwork = false;
-
     unsigned i = 0;
 
     for (i = 0; i < GetNumberOfVesselsInNetwork(); i++)
@@ -451,13 +446,11 @@ bool CaVascularNetwork<SPATIAL_DIM>::VesselIsInNetwork(boost::shared_ptr<CaVesse
             break;
         }
     }
-
     return vesselIsInNetwork;
 }
 
-
-template <unsigned SPATIAL_DIM>
-bool CaVascularNetwork<SPATIAL_DIM>::NodeIsInNetwork(boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > node)
+template <unsigned DIM>
+bool CaVascularNetwork<DIM>::NodeIsInNetwork(boost::shared_ptr<CaVascularNetworkNode<DIM> > node)
 {
     bool nodeIsInNetwork = false;
 
@@ -478,21 +471,33 @@ bool CaVascularNetwork<SPATIAL_DIM>::NodeIsInNetwork(boost::shared_ptr<CaVascula
 /*
  * Helper class for "connected" methods
  */
-template < typename TimeMap > class bfs_time_visitor:public boost::default_bfs_visitor {
-    typedef typename boost::property_traits < TimeMap >::value_type T;
+template<typename TimeMap> class bfs_time_visitor : public boost::default_bfs_visitor
+{
+    typedef typename boost::property_traits<TimeMap>::value_type T;
+
 public:
-    bfs_time_visitor(TimeMap tmap, T & t):m_timemap(tmap), m_time(t) { }
-    template < typename Vertex, typename Graph >
-    void discover_vertex(Vertex u, const Graph & g) const
+
+    TimeMap m_timemap;
+    T& m_time;
+
+    bfs_time_visitor(TimeMap tmap, T& t)
+    	:m_timemap(tmap),
+    	 m_time(t)
+    {
+    }
+
+    template<typename Vertex, typename Graph>
+    void discover_vertex(Vertex u, const Graph& g) const
     {
         put(m_timemap, u, m_time++);
     }
-    TimeMap m_timemap;
-    T & m_time;
 };
 
-template <unsigned SPATIAL_DIM>
-bool CaVascularNetwork<SPATIAL_DIM>::Connected(boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > node1, boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > node2)
+
+///\ todo this could be made more general by passing in vectors of source nodes and target nodes and returning true for any targets connected
+// to a source. Would avoid graph reconstruction for each query and results in only one overall method.
+template <unsigned DIM>
+bool CaVascularNetwork<DIM>::Connected(boost::shared_ptr<CaVascularNetworkNode<DIM> > node1, boost::shared_ptr<CaVascularNetworkNode<DIM> > node2)
 {
 
     if (node1 == node2)
@@ -501,18 +506,16 @@ bool CaVascularNetwork<SPATIAL_DIM>::Connected(boost::shared_ptr<CaVascularNetwo
     }
 
     // construct graph representation of vessel network
-
-    typedef boost::adjacency_list<boost::vecS,boost::vecS,boost::undirectedS> Graph;
+    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS> Graph;
 
     Graph G;
 
     for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
-        add_edge(GetNodeID(GetVessel(i)->GetNode1()),GetNodeID(GetVessel(i)->GetNode2()),G);
+        add_edge(GetNodeID(GetVessel(i)->GetNode1()), GetNodeID(GetVessel(i)->GetNode2()), G);
     }
 
     // typedefs
-
     typedef boost::graph_traits<Graph>::vertices_size_type Size;
 
     // a vector to hold the discover time property for each vertex
@@ -528,11 +531,10 @@ bool CaVascularNetwork<SPATIAL_DIM>::Connected(boost::shared_ptr<CaVascularNetwo
     breadth_first_search(G,vertex(GetNodeID(node1),G), boost::visitor(vis));
 
     return (dtime[GetNodeID(node2)] > 0);
-
 }
 
-template <unsigned SPATIAL_DIM>
-bool CaVascularNetwork<SPATIAL_DIM>::ConnectedToInputNode(boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > node)
+template <unsigned DIM>
+bool CaVascularNetwork<DIM>::ConnectedToInputNode(boost::shared_ptr<CaVascularNetworkNode<DIM> > node)
 {
 
     if (node->GetBooleanData("IsInputNode"))
@@ -541,18 +543,16 @@ bool CaVascularNetwork<SPATIAL_DIM>::ConnectedToInputNode(boost::shared_ptr<CaVa
     }
 
     // construct graph representation of vessel network
-
     typedef boost::adjacency_list<boost::vecS,boost::vecS,boost::undirectedS> Graph;
 
     Graph G;
 
     for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
     {
-        add_edge(GetNodeID(GetVessel(i)->GetNode1()),GetNodeID(GetVessel(i)->GetNode2()),G);
+        add_edge(GetNodeID(GetVessel(i)->GetNode1()),GetNodeID(GetVessel(i)->GetNode2()), G);
     }
 
     // typedefs
-
     typedef boost::graph_traits<Graph>::vertices_size_type Size;
 
     int connectedToInputNode = 0;
@@ -578,18 +578,14 @@ bool CaVascularNetwork<SPATIAL_DIM>::ConnectedToInputNode(boost::shared_ptr<CaVa
             {
                 connectedToInputNode++;
             }
-
         }
-
     }
-
     return (connectedToInputNode > 0);
-
 }
 
 
-template <unsigned SPATIAL_DIM>
-bool CaVascularNetwork<SPATIAL_DIM>::ConnectedToOutputNode(boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > node)
+template <unsigned DIM>
+bool CaVascularNetwork<DIM>::ConnectedToOutputNode(boost::shared_ptr<CaVascularNetworkNode<DIM> > node)
 {
 
     if (node->GetBooleanData("IsOutputNode"))
@@ -639,29 +635,25 @@ bool CaVascularNetwork<SPATIAL_DIM>::ConnectedToOutputNode(boost::shared_ptr<CaV
         }
 
     }
-
     return (connectedToOutputNode > 0);
-
 }
 
-
-template <unsigned SPATIAL_DIM>
-void CaVascularNetwork<SPATIAL_DIM>::SetInputNode(ChastePoint<SPATIAL_DIM> location)
+template <unsigned DIM>
+void CaVascularNetwork<DIM>::SetInputNode(ChastePoint<DIM> location)
 {
      assert(GetNode(location)->GetNumberOfAdjoiningVessels() == 1);
      GetNode(location)->SetBooleanData("IsInputNode", true);
 }
 
-template <unsigned SPATIAL_DIM>
-void CaVascularNetwork<SPATIAL_DIM>::SetOutputNode(ChastePoint<SPATIAL_DIM> location)
+template <unsigned DIM>
+void CaVascularNetwork<DIM>::SetOutputNode(ChastePoint<DIM> location)
 {
     assert(GetNode(location)->GetNumberOfAdjoiningVessels() == 1);
     GetNode(location)->SetBooleanData("IsOutputNode", true);
 }
 
-
-template <unsigned SPATIAL_DIM>
-void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
+template <unsigned DIM>
+void CaVascularNetwork<DIM>::SaveVasculatureDataToFile(string filename)
 {
     // open file to write data to
     // __________________________
@@ -686,7 +678,7 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
 //        for (unsigned j = 0; j < GetVessel(i)->GetNumberOfSegments(); j++)
 //        {
 //            out << (GetVessel(i)->GetSegmentCoordinate(j)[0]) << " " << (GetVessel(i)->GetSegmentCoordinate(j)[1]) << " ";
-//            if (SPATIAL_DIM > 2)
+//            if (DIM > 2)
 //            {
 //                out << (GetVessel(i)->GetSegmentCoordinate(j)[2]);
 //            }
@@ -952,11 +944,9 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
 //    }
 //
 //    out.close();
-
 }
 
 // Explicit instantiation
-
 template class CaVascularNetwork<2>;
 template class CaVascularNetwork<3>;
 

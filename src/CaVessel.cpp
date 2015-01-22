@@ -43,16 +43,12 @@ CaVessel<DIM>::CaVessel()
 	  mBooleanData(),
 	  mVesselSegmentLocations(),
 	  mChemicalCollection()
-
-
 {
-
 }
 
 template<unsigned DIM>
 CaVessel<DIM>::~CaVessel()
 {
-
 }
 
 //template<unsigned DIM>
@@ -143,7 +139,7 @@ unsigned CaVessel<DIM>::GetNumberOfSegments()
 }
 
 template<unsigned DIM>
-double CaVessel<DIM>::GetDoubleDataValue(const std::string variableName)
+double CaVessel<DIM>::GetDoubleDataValue(const std::string& variableName)
 {
 	std::map<std::string, std::pair<double, std::string> >::const_iterator it = mDoubleData.find(variableName);
 	if (it == mDoubleData.end())
@@ -154,7 +150,7 @@ double CaVessel<DIM>::GetDoubleDataValue(const std::string variableName)
 }
 
 template<unsigned DIM>
-std::string CaVessel<DIM>::GetDoubleDataUnits(const std::string variableName)
+const std::string& CaVessel<DIM>::GetDoubleDataUnits(const std::string& variableName) const
 {
 
 	std::map<std::string, std::pair<double, std::string> >::const_iterator it = mDoubleData.find(variableName);
@@ -167,7 +163,7 @@ std::string CaVessel<DIM>::GetDoubleDataUnits(const std::string variableName)
 }
 
 template<unsigned DIM>
-bool CaVessel<DIM>::GetBooleanData(const std::string variableName)
+bool CaVessel<DIM>::GetBooleanData(const std::string& variableName)
 {
 	std::map<std::string, bool >::const_iterator it = mBooleanData.find(variableName);
 	if (it == mBooleanData.end())
@@ -178,13 +174,13 @@ bool CaVessel<DIM>::GetBooleanData(const std::string variableName)
 }
 
 template<unsigned DIM>
-void CaVessel<DIM>::SetDoubleData(const std::string variableName, double data, const std::string unit)
+void CaVessel<DIM>::SetDoubleData(const std::string& variableName, double data, const std::string& unit)
 {
 	mDoubleData[variableName] = std::pair<double, std::string> (data, unit);
 }
 
 template<unsigned DIM>
-void CaVessel<DIM>::SetBooleanData(const std::string variableName, bool data)
+void CaVessel<DIM>::SetBooleanData(const std::string& variableName, bool data)
 {
 	mBooleanData[variableName] = data;
 }
@@ -247,35 +243,35 @@ void CaVessel<DIM>::SetNode2Location(ChastePoint<DIM> location)
 template<unsigned DIM>
 void CaVessel<DIM>::SetNextVesselSegmentCoordinate(ChastePoint<DIM> point)
 {
-    if (GetNumberOfSegments() > 0)
-    {
-        mVesselSegmentLocations.push_back(point);
-        // todo set length here?
-
-        for (unsigned i = 1; i < GetNumberOfSegments(); i++)
-        {
-            double segment_length = 0;
-
-            if (DIM == 2)
-            {
-                segment_length = pow((pow(double(GetSegmentCoordinate(i)[0]-GetSegmentCoordinate(i-1)[0]), 2) +
-                		pow(double(GetSegmentCoordinate(i)[1]-GetSegmentCoordinate(i-1)[1]), 2)), 0.5);
-            }
-
-            if (DIM == 3)
-            {
-                segment_length = pow((pow(double(GetSegmentCoordinate(i)[0]-GetSegmentCoordinate(i-1)[0]), 2) +
-                		pow(double(GetSegmentCoordinate(i)[1]-GetSegmentCoordinate(i-1)[1]),2) +
-                		pow(double(GetSegmentCoordinate(i)[2] - GetSegmentCoordinate(i - 1)[2]), 2)), 0.5);
-            }
-            // todo set length here?
-        }
-    }
-    else
-    {
-        mVesselSegmentLocations.push_back(point);
-        // todo set length here?
-    }
+//    if (GetNumberOfSegments() > 0)
+//    {
+//        mVesselSegmentLocations.push_back(point);
+//        // todo set length here?
+//
+//        for (unsigned i = 1; i < GetNumberOfSegments(); i++)
+//        {
+//            double segment_length = 0;
+//
+//            if (DIM == 2)
+//            {
+//                segment_length = pow((pow(double(GetSegmentCoordinate(i)[0]-GetSegmentCoordinate(i-1)[0]), 2) +
+//                		pow(double(GetSegmentCoordinate(i)[1]-GetSegmentCoordinate(i-1)[1]), 2)), 0.5);
+//            }
+//
+//            if (DIM == 3)
+//            {
+//                segment_length = pow((pow(double(GetSegmentCoordinate(i)[0]-GetSegmentCoordinate(i-1)[0]), 2) +
+//                		pow(double(GetSegmentCoordinate(i)[1]-GetSegmentCoordinate(i-1)[1]),2) +
+//                		pow(double(GetSegmentCoordinate(i)[2] - GetSegmentCoordinate(i - 1)[2]), 2)), 0.5);
+//            }
+//            // todo set length here?
+//        }
+//    }
+//    else
+//    {
+//        mVesselSegmentLocations.push_back(point);
+//        // todo set length here?
+//    }
 }
 
 template<unsigned DIM>

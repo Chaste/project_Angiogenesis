@@ -42,9 +42,8 @@ CaVascularNetworkNode<DIM>::CaVascularNetworkNode()
   mDoubleData(),
   mBooleanData(),
   mAdjoiningVessels()
-  {
-
-  }
+{
+}
 
 template<unsigned DIM>
 CaVascularNetworkNode<DIM>::~CaVascularNetworkNode()
@@ -76,7 +75,7 @@ ChastePoint<DIM> CaVascularNetworkNode<DIM>::GetLocation()
 }
 
 template<unsigned DIM>
-double CaVascularNetworkNode<DIM>::GetDoubleDataValue(const std::string variableName)
+double CaVascularNetworkNode<DIM>::GetDoubleDataValue(const std::string& variableName)
 {
 	std::map<std::string, std::pair<double, std::string> >::const_iterator it = mDoubleData.find(variableName);
 	if (it == mDoubleData.end())
@@ -87,7 +86,7 @@ double CaVascularNetworkNode<DIM>::GetDoubleDataValue(const std::string variable
 }
 
 template<unsigned DIM>
-std::string CaVascularNetworkNode<DIM>::GetDoubleDataUnits(const std::string variableName)
+const std::string& CaVascularNetworkNode<DIM>::GetDoubleDataUnits(const std::string& variableName) const
 {
 
 	std::map<std::string, std::pair<double, std::string> >::const_iterator it = mDoubleData.find(variableName);
@@ -96,11 +95,10 @@ std::string CaVascularNetworkNode<DIM>::GetDoubleDataUnits(const std::string var
 		EXCEPTION("No double valued property, '" << variableName << "', in property register.");
 	}
 	return(it->second.second);
-
 }
 
 template<unsigned DIM>
-bool CaVascularNetworkNode<DIM>::GetBooleanData(const std::string variableName)
+bool CaVascularNetworkNode<DIM>::GetBooleanData(const std::string& variableName)
 {
 	std::map<std::string, bool >::const_iterator it = mBooleanData.find(variableName);
 	if (it == mBooleanData.end())
@@ -130,13 +128,13 @@ boost::shared_ptr<CaVessel<DIM> > CaVascularNetworkNode<DIM>::GetAdjoiningVessel
 }
 
 template<unsigned DIM>
-void CaVascularNetworkNode<DIM>::SetDoubleData(const std::string variableName, double data, const std::string unit)
+void CaVascularNetworkNode<DIM>::SetDoubleData(const std::string& variableName, double data, const std::string& unit)
 {
 	mDoubleData[variableName] = std::pair<double, std::string> (data, unit);
 }
 
 template<unsigned DIM>
-void CaVascularNetworkNode<DIM>::SetBooleanData(const std::string variableName, bool data)
+void CaVascularNetworkNode<DIM>::SetBooleanData(const std::string& variableName, bool data)
 {
 	mBooleanData[variableName] = data;
 }
