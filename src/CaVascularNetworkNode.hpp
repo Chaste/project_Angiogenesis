@@ -52,98 +52,103 @@ class CaVascularNetworkNode : public boost::enable_shared_from_this<CaVascularNe
 {
 private:
 
-    /**
-     *   Location of node.
-     */
-    ChastePoint<DIM> mLocation;
+	/**
+	 *   Location of node.
+	 */
+	ChastePoint<DIM> mLocation;
 
-    /**
-     *   Node data of type double, with units
-     */
-    std::map<std::string, std::pair<double, std::string> > mDoubleData;
+	/**
+	 *   Node data of type double, with units
+	 */
+	std::map<std::string, std::pair<double, std::string> > mDoubleData;
 
-    /**
-     *   Node data of type bool
-     */
-    std::map<std::string, bool> mBooleanData;
+	/**
+	 *   Node data of type bool
+	 */
+	std::map<std::string, bool> mBooleanData;
 
-    /**
-     *   Collection of CaVessel objects which are adjoint to this node.
-     */
-    std::vector<boost::weak_ptr<CaVessel<DIM> > > mAdjoiningVessels;
+	/**
+	 *   Collection of CaVessel objects which are adjoint to this node.
+	 */
+	std::vector<boost::weak_ptr<CaVessel<DIM> > > mAdjoiningVessels;
 
 public:
 
-    /*
-     * Constructor
-     *
-     * Upon instantiation the node has no prescribed location, no adjoining vessels, pressure at the
-     * node is zero and the node is neither an input or output node to a network.
-     *
-     */
-    CaVascularNetworkNode();
+	/*
+	 * Constructor
+	 *
+	 * Upon instantiation the node has no prescribed location, no adjoining vessels, pressure at the
+	 * node is zero and the node is neither an input or output node to a network.
+	 *
+	 */
+	CaVascularNetworkNode();
 
-    /*
-     * Destructor
-     */
-    virtual ~CaVascularNetworkNode();
+	/*
+	 * Destructor
+	 */
+	virtual ~CaVascularNetworkNode();
 
-    /**
-     *  Returns a boost::shared_ptr to this CaVascularNetworkNode.
-     *
-     *  @return boost::shared_ptr<CaVascularNetworkNode<DIM,T> >
-     */
-    boost::shared_ptr<CaVascularNetworkNode<DIM> > shared();
+	/**
+	 *  Returns a boost::shared_ptr to this CaVascularNetworkNode.
+	 *
+	 *  @return boost::shared_ptr<CaVascularNetworkNode<DIM,T> >
+	 */
+	boost::shared_ptr<CaVascularNetworkNode<DIM> > shared();
 
-    /**
-     *  Returns the location of the node.
-     *
-     *  @return mLocation
-     */
-    ChastePoint<DIM> GetLocation();
+	/**
+	 *  Returns the location of the node.
+	 *
+	 *  @return mLocation
+	 */
+	ChastePoint<DIM> GetLocation();
 
-    /**
-     * Returns type double vessel node data.
-     */
-    std::pair<double, std::string> GetDoubleData(const std::string& variableName);
+	/**
+	 * Returns type double vessel node data value.
+	 */
+	double GetDoubleDataValue(const std::string variableName);
 
-    /**
-     * Returns type boolean vessel node data.
-     */
-    bool GetBooleanData(const std::string& variableName);
+	/**
+	 * Returns type double vessel node data units.
+	 */
+	std::string GetDoubleDataUnits(const std::string variableName);
 
-    /**
-     *  Returns the number of vessels which are adjoint to the node.
-     *
-     *  @return mAdjoiningVessels.size()
-     */
-    unsigned GetNumberOfAdjoiningVessels();
+	/**
+	 * Returns type boolean vessel node data.
+	 */
+	bool GetBooleanData(const std::string variableName);
 
-    /**
-     *  Returns a boost::shared_ptr to Vessel i which is adjoint to this node.
-     *
-     * @return mAdjoiningVessels[i]
-     */
-    boost::shared_ptr<CaVessel<DIM> > GetAdjoiningVessel(unsigned i);
+	/**
+	 *  Returns the number of vessels which are adjoint to the node.
+	 *
+	 *  @return mAdjoiningVessels.size()
+	 */
+	unsigned GetNumberOfAdjoiningVessels();
 
-    /**
-     * Assigns type double vessel node data.
-     */
-    void SetDoubleData(const std::string& variableName, double data, const std::string& unit = "None");
+	/**
+	 *  Returns a boost::shared_ptr to Vessel i which is adjoint to this node.
+	 *
+	 * @return mAdjoiningVessels[i]
+	 */
+	boost::shared_ptr<CaVessel<DIM> > GetAdjoiningVessel(unsigned i);
 
-    /**
-     * Assigns type boolean vessel node data.
-     */
-    void SetBooleanData(const std::string& variableName, bool data);
+	/**
+	 * Assigns type double vessel node data.
+	 */
+	void SetDoubleData(const std::string variableName, double data, const std::string unit = "None");
 
-    /**
-     * Assigns the prescribed location to the node.
-     *
-     *  @param loc new location of node
-     */
-    void SetLocation(ChastePoint<DIM> loc);
+	/**
+	 * Assigns type boolean vessel node data.
+	 */
+	void SetBooleanData(const std::string variableName, bool data);
 
-    /**
+	/**
+	 * Assigns the prescribed location to the node.
+	 *
+	 *  @param loc new location of node
+	 */
+	void SetLocation(ChastePoint<DIM> loc);
+
+	/**
        Adds an adjoining Vessel to the node.
        The prescribed Vessel may be attached to the same node twice if it loops around on itself.
        In this case the node must be both node1 and node2 of the Vessel.
@@ -152,22 +157,22 @@ public:
        an actively migrating tip located at this node.
 
        @param vessel vessel to be added to node
-     */
-    void AddAdjoiningVessel(boost::shared_ptr<CaVessel<DIM> > vessel);
+	 */
+	void AddAdjoiningVessel(boost::shared_ptr<CaVessel<DIM> > vessel);
 
-    /**
+	/**
        Removes an adjoining vessel from to node.
 
        @param vessel vessel to be removed from node
-     */
-    void RemoveAdjoiningVessel(boost::shared_ptr<CaVessel<DIM> > vessel);
+	 */
+	void RemoveAdjoiningVessel(boost::shared_ptr<CaVessel<DIM> > vessel);
 
-    /**
+	/**
        Checks whether the prescribed vessel is attached to this node.
 
        @param vessel vessel which may or may not be attached to node
-     */
-    bool IsAttachedToVessel(boost::shared_ptr<CaVessel<DIM> > vessel);
+	 */
+	bool IsAttachedToVessel(boost::shared_ptr<CaVessel<DIM> > vessel);
 
 };
 

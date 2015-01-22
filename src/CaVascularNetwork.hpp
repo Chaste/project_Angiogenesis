@@ -23,6 +23,8 @@
 #include <boost/multi_array.hpp>
 #include <boost/enable_shared_from_this.hpp>
 
+#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the boost deprecated warning for now (gcc4.3)
+
 //! CaVascularNetwork class
 
 /*!
@@ -171,36 +173,36 @@ public:
      */
     boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > GetNode(ChastePoint<SPATIAL_DIM> location);
 
-    /**
-            Return mean length of vessels in network.
-     */
-    double GetMeanVesselLengthOfNeovasculature();
-
-    /**
-            Return mean radius of vessels in network.
-     */
-    double GetMeanVesselRadiusOfNeovasculature();
-
-    /**
-            Return mean tortuosity of vessels in network. Vessels whose tortuosity are infinite (i.e. self-loops)
-            are ignored in this calculation.
-     */
-    double GetMeanVesselTortuosityOfNeovasculature();
-
-    /**
-            Return number of vessels which have length within a specified range (lowerBoundLength < length <= upperBoundLength).
-     */
-    int GetNumberOfVesselsByLength(double lowerBoundLength, double upperBoundLength);
-
-    /**
-            Return number of vessels which have radius within a specified range (lowerBoundRadius < length <= upperBoundRadius).
-     */
-    int GetNumberOfVesselsByRadius(double lowerBoundRadius, double upperBoundRadius);
-
-    /**
-            Return number of vessels which have tortuosity within a specified range (lowerBoundTortuosity  < length <= upperBoundTortuosity).
-     */
-    int GetNumberOfVesselsByTortuosity(double lowerBoundTortuosity, double upperBoundTortuosity);
+//    /**
+//            Return mean length of vessels in network.
+//     */
+//    double GetMeanVesselLengthOfNeovasculature();
+//
+//    /**
+//            Return mean radius of vessels in network.
+//     */
+//    double GetMeanVesselRadiusOfNeovasculature();
+//
+//    /**
+//            Return mean tortuosity of vessels in network. Vessels whose tortuosity are infinite (i.e. self-loops)
+//            are ignored in this calculation.
+//     */
+//    double GetMeanVesselTortuosityOfNeovasculature();
+//
+//    /**
+//            Return number of vessels which have length within a specified range (lowerBoundLength < length <= upperBoundLength).
+//     */
+//    int GetNumberOfVesselsByLength(double lowerBoundLength, double upperBoundLength);
+//
+//    /**
+//            Return number of vessels which have radius within a specified range (lowerBoundRadius < length <= upperBoundRadius).
+//     */
+//    int GetNumberOfVesselsByRadius(double lowerBoundRadius, double upperBoundRadius);
+//
+//    /**
+//            Return number of vessels which have tortuosity within a specified range (lowerBoundTortuosity  < length <= upperBoundTortuosity).
+//     */
+//    int GetNumberOfVesselsByTortuosity(double lowerBoundTortuosity, double upperBoundTortuosity);
 
     /**
             Returns the haematocrit levels in all vessels connected to arterial input nodes.

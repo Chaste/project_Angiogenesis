@@ -59,19 +59,6 @@ public:
 		TS_ASSERT_DELTA(node.GetLocation()[0], point[0], 1.e-6);
 		TS_ASSERT_DELTA(node.GetLocation()[1], point[1], 1.e-6);
 
-		node.SetIsInputNode(true);
-		node.SetIsOutputNode(true);
-		TS_ASSERT(node.IsInputNode());
-		TS_ASSERT(node.IsOutputNode());
-
-		double pressure = 100.0;
-		node.SetPressure(pressure);
-		TS_ASSERT_DELTA(node.GetPressure(), pressure, 1.e-6);
-
-		// Test the Exception in the shared method for the
-		// case of a shared pointer to node not being set.
-        TS_ASSERT_THROWS_THIS(node.shared()->GetPressure(),
-        		"Failed to return a shared pointer to a node. The node should be owned by a shared pointer before calling shared.");
 	}
 
 	void TestAddingAndRemovingVessels() throw(Exception)
@@ -116,6 +103,28 @@ public:
         TS_ASSERT_THROWS_THIS(pNode->AddAdjoiningVessel(pVessel),
                 "Vessel is already attached to node twice (at both ends). Cannot attach vessel to same node again.");
 	}
+
+
+	void TestGettingAndSettingProperties()
+	{
+
+		boost::shared_ptr<CaVascularNetworkNode<2> > pNode(new CaVascularNetworkNode<2>);
+
+		TS_ASSERT_THROWS_THIS(pNode->GetDoubleDataValue("pressure"),"No double valued property, 'pressure', in property register.");
+
+		TS_ASSERT_THROWS_THIS(pNode->GetBooleanData("isActivelyMigrating"),"No boolean valued property, 'isActivelyMigrating', in property register.");
+
+		pNode->SetDoubleData("pressure", 1e5, "Pa");
+
+		pNode->SetBooleanData("isActivelyMigrating", true);
+
+		TS_ASSERT_EQUALS(pNode->GetDoubleDataValue("pressure"),1e5);
+		TS_ASSERT_EQUALS(pNode->GetDoubleDataUnits("pressure"),"Pa");
+
+		TS_ASSERT_EQUALS(pNode->GetBooleanData("isActivelyMigrating"),true);
+
+	}
+
 };
 
 #endif /*TESTVASCULARNETWORKNODE_HPP_*/

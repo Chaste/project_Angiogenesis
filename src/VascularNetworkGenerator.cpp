@@ -242,8 +242,8 @@ boost::shared_ptr<CaVascularNetwork<DIM> > VascularNetworkGenerator<DIM>::Genera
 	// Initialize vessel lengths, radii and haematocrit
 	for (unsigned i = 0; i < pVesselNetwork->GetNumberOfVesselsInNetwork(); i++)
 	{
-		pVesselNetwork->GetVessel(i)->SetRadius(mInitialRadius);
-		pVesselNetwork->GetVessel(i)->SetHaematocritLevel(mArterialHaematocritLevel);
+		pVesselNetwork->GetVessel(i)->SetDoubleData("radius",mInitialRadius,"m");
+		pVesselNetwork->GetVessel(i)->SetDoubleData("haematocritLevel",mArterialHaematocritLevel,"unitless");
 	}
 	pVesselNetwork->SetArterialHaematocritLevel(mArterialHaematocritLevel);
 	pVesselNetwork->SetArterialInputPressure(mArterialInputPressure);
@@ -267,11 +267,8 @@ boost::shared_ptr<CaVascularNetwork<DIM> > VascularNetworkGenerator<DIM>::Genera
 template<unsigned DIM>
 boost::shared_ptr<CaVascularNetwork<DIM> > VascularNetworkGenerator<DIM>::GenerateSingleBifurcationNetwork(unsigned vessel_length)
 {
-
-	// Make the vessels
-
-
-
+	boost::shared_ptr<CaVascularNetwork<DIM>  > pVesselNetwork(new CaVascularNetwork<DIM>());
+	return pVesselNetwork;
 }
 
 #ifdef CHASTE_VTK
@@ -352,8 +349,9 @@ boost::shared_ptr<CaVascularNetwork<DIM> > VascularNetworkGenerator<DIM>::Genera
 			vessel->SetNextVesselSegmentCoordinate(point_locations[pSegmentList[j]]);
 			average_radius = average_radius + radii[pSegmentList[j]];
 		}
-		vessel->SetRadius(average_radius/double(num_segments));
-		vessel->SetHaematocritLevel(mArterialHaematocritLevel);
+
+		vessel->SetDoubleData("radius",average_radius/double(num_segments),"m");
+		vessel->SetDoubleData("haematocritLevel",mArterialHaematocritLevel,"unitless");
 
 		// Add the resulting vessel to the network
 		pVesselNetwork->AddVessel(vessel);
@@ -380,16 +378,16 @@ boost::shared_ptr<CaVessel<DIM> > VascularNetworkGenerator<DIM>::CreateVessel()
 		for (unsigned i = 0; i < mpPrototypeVessel->GetNumberOfIntraVascularChemicals(); i++)
 		{
 			// \todo This is aweful! Need to sort out the interfaces for intra vascular chemicals and collections to make them easier to handle.
-			vessel->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical(mpPrototypeVessel->GetCollectionOfIntraVascularChemicals().
+			vessel->rGetCollectionOfIntraVascularChemicals().AddIntraVascularChemical(mpPrototypeVessel->rGetCollectionOfIntraVascularChemicals().
 					GetIntraVascularChemicalCollection()[i].GetChemicalName(),
-					Concentration(mpPrototypeVessel->GetCollectionOfIntraVascularChemicals().GetIntraVascularChemicalCollection()[i].GetConcentration(),
-							mpPrototypeVessel->GetCollectionOfIntraVascularChemicals().GetIntraVascularChemicalCollection()[i].GetUnits()),
-							mpPrototypeVessel->GetCollectionOfIntraVascularChemicals().GetIntraVascularChemicalCollection()[i].GetPermeabilityOfVesselWallToChemical());
+					Concentration(mpPrototypeVessel->rGetCollectionOfIntraVascularChemicals().GetIntraVascularChemicalCollection()[i].GetConcentration(),
+							mpPrototypeVessel->rGetCollectionOfIntraVascularChemicals().GetIntraVascularChemicalCollection()[i].GetUnits()),
+							mpPrototypeVessel->rGetCollectionOfIntraVascularChemicals().GetIntraVascularChemicalCollection()[i].GetPermeabilityOfVesselWallToChemical());
 		}
 	}
 	// we wish to count vessels instantiated now as part of existing vasculature so that they can be
 	// distinguished from vessels forming the neovasculature when those vessels form
-	vessel->SetIsPartOfNeovasculature(false);
+	vessel->SetBooleanData("isPartOfNeovasculature", false);
 
 	return vessel;
 }

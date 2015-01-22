@@ -208,116 +208,116 @@ double CaVascularNetwork<SPATIAL_DIM>::GetVenousOutputPressure()
     return mVenousOutputPressure;
 }
 
-template <unsigned SPATIAL_DIM>
-double CaVascularNetwork<SPATIAL_DIM>::GetMeanVesselLengthOfNeovasculature()
-{
-    double totalVesselLength = 0;
-    int numberofNewVessels = 0;
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        if (GetVessel(i)->IsPartOfNeovasculature())
-        {
-            totalVesselLength += GetVessel(i)->GetLength();
-            numberofNewVessels++;
-        }
-
-    }
-
-    return (totalVesselLength/(double)numberofNewVessels);
-}
-
-template <unsigned SPATIAL_DIM>
-int CaVascularNetwork<SPATIAL_DIM>::GetNumberOfVesselsByLength(double lowerBoundLength, double upperBoundLength)
-{
-    int numberOfVesselsInsideRange = 0;
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        if (GetVessel(i)->GetLength() > lowerBoundLength && GetVessel(i)->GetLength() <= upperBoundLength)
-        {
-            numberOfVesselsInsideRange++;
-        }
-    }
-
-    return numberOfVesselsInsideRange;
-}
-
-template <unsigned SPATIAL_DIM>
-int CaVascularNetwork<SPATIAL_DIM>::GetNumberOfVesselsByRadius(double lowerBoundRadius, double upperBoundRadius)
-{
-    int numberOfVesselsInsideRange = 0;
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        if (GetVessel(i)->GetRadius() > lowerBoundRadius && GetVessel(i)->GetRadius() <= upperBoundRadius)
-        {
-            numberOfVesselsInsideRange++;
-        }
-    }
-
-    return numberOfVesselsInsideRange;
-}
-
-template <unsigned SPATIAL_DIM>
-int CaVascularNetwork<SPATIAL_DIM>::GetNumberOfVesselsByTortuosity(double lowerBoundTortuosity, double upperBoundTortuosity)
-{
-    int numberOfVesselsInsideRange = 0;
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        if (GetVessel(i)->GetTortuosity() > lowerBoundTortuosity && GetVessel(i)->GetTortuosity() <= upperBoundTortuosity)
-        {
-            numberOfVesselsInsideRange++;
-        }
-    }
-
-    return numberOfVesselsInsideRange;
-}
-
-template <unsigned SPATIAL_DIM>
-double CaVascularNetwork<SPATIAL_DIM>::GetMeanVesselRadiusOfNeovasculature()
-{
-    double totalVesselRadius = 0;
-    int numberofNewVessels = 0;
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        if (GetVessel(i)->IsPartOfNeovasculature())
-        {
-            totalVesselRadius += GetVessel(i)->GetRadius();
-            numberofNewVessels++;
-        }
-
-    }
-
-    return (totalVesselRadius/(double)numberofNewVessels);
-}
-
-template <unsigned SPATIAL_DIM>
-double CaVascularNetwork<SPATIAL_DIM>::GetMeanVesselTortuosityOfNeovasculature()
-{
-    double totalVesselTortuosity = 0;
-    int numberofNewVessels = 0;
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        if (std::isinf(GetVessel(i)->GetTortuosity()))
-        {
-            // we ignore vessels with infinite tortuosity, i.e. self-loops
-        }
-        else
-        {
-            if (GetVessel(i)->IsPartOfNeovasculature())
-            {
-                totalVesselTortuosity += GetVessel(i)->GetTortuosity();
-                numberofNewVessels++;
-            }
-        }
-    }
-
-    return (totalVesselTortuosity/(double)numberofNewVessels);
-}
+//template <unsigned SPATIAL_DIM>
+//double CaVascularNetwork<SPATIAL_DIM>::GetMeanVesselLengthOfNeovasculature()
+//{
+//    double totalVesselLength = 0;
+//    int numberofNewVessels = 0;
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        if (GetVessel(i)->IsPartOfNeovasculature())
+//        {
+//            totalVesselLength += GetVessel(i)->GetLength();
+//            numberofNewVessels++;
+//        }
+//
+//    }
+//
+//    return (totalVesselLength/(double)numberofNewVessels);
+//}
+//
+//template <unsigned SPATIAL_DIM>
+//int CaVascularNetwork<SPATIAL_DIM>::GetNumberOfVesselsByLength(double lowerBoundLength, double upperBoundLength)
+//{
+//    int numberOfVesselsInsideRange = 0;
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        if (GetVessel(i)->GetLength() > lowerBoundLength && GetVessel(i)->GetLength() <= upperBoundLength)
+//        {
+//            numberOfVesselsInsideRange++;
+//        }
+//    }
+//
+//    return numberOfVesselsInsideRange;
+//}
+//
+//template <unsigned SPATIAL_DIM>
+//int CaVascularNetwork<SPATIAL_DIM>::GetNumberOfVesselsByRadius(double lowerBoundRadius, double upperBoundRadius)
+//{
+//    int numberOfVesselsInsideRange = 0;
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        if (GetVessel(i)->GetRadius() > lowerBoundRadius && GetVessel(i)->GetRadius() <= upperBoundRadius)
+//        {
+//            numberOfVesselsInsideRange++;
+//        }
+//    }
+//
+//    return numberOfVesselsInsideRange;
+//}
+//
+//template <unsigned SPATIAL_DIM>
+//int CaVascularNetwork<SPATIAL_DIM>::GetNumberOfVesselsByTortuosity(double lowerBoundTortuosity, double upperBoundTortuosity)
+//{
+//    int numberOfVesselsInsideRange = 0;
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        if (GetVessel(i)->GetTortuosity() > lowerBoundTortuosity && GetVessel(i)->GetTortuosity() <= upperBoundTortuosity)
+//        {
+//            numberOfVesselsInsideRange++;
+//        }
+//    }
+//
+//    return numberOfVesselsInsideRange;
+//}
+//
+//template <unsigned SPATIAL_DIM>
+//double CaVascularNetwork<SPATIAL_DIM>::GetMeanVesselRadiusOfNeovasculature()
+//{
+//    double totalVesselRadius = 0;
+//    int numberofNewVessels = 0;
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        if (GetVessel(i)->IsPartOfNeovasculature())
+//        {
+//            totalVesselRadius += GetVessel(i)->GetRadius();
+//            numberofNewVessels++;
+//        }
+//
+//    }
+//
+//    return (totalVesselRadius/(double)numberofNewVessels);
+//}
+//
+//template <unsigned SPATIAL_DIM>
+//double CaVascularNetwork<SPATIAL_DIM>::GetMeanVesselTortuosityOfNeovasculature()
+//{
+//    double totalVesselTortuosity = 0;
+//    int numberofNewVessels = 0;
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        if (std::isinf(GetVessel(i)->GetTortuosity()))
+//        {
+//            // we ignore vessels with infinite tortuosity, i.e. self-loops
+//        }
+//        else
+//        {
+//            if (GetVessel(i)->IsPartOfNeovasculature())
+//            {
+//                totalVesselTortuosity += GetVessel(i)->GetTortuosity();
+//                numberofNewVessels++;
+//            }
+//        }
+//    }
+//
+//    return (totalVesselTortuosity/(double)numberofNewVessels);
+//}
 
 template <unsigned SPATIAL_DIM>
 std::vector<boost::shared_ptr<CaVessel<SPATIAL_DIM> > > CaVascularNetwork<SPATIAL_DIM>::GetVessels()
@@ -402,13 +402,7 @@ void CaVascularNetwork<SPATIAL_DIM>::AddVessel(boost::shared_ptr<CaVessel<SPATIA
         {
             vessel->SetNode1(mNodeArray[i]);
             GetNode(i)->AddAdjoiningVessel(vessel);
-            // we do not want to change the number of vessels which are attached to input or output
-            // nodes of the network for the moment - this is a limitation of the models
-            // some of the mathematics (haematocrit calculations) require that only one vessel exits/enters
-            // an input/output node of the network currently
-            // ----------------------------------------------------------------------------------
-            assert(GetNode(i)->IsInputNode() == false);
-            assert(GetNode(i)->IsOutputNode() == false);
+
             // ----------------------------------------------------------------------------------
             node1OfVesselAlreadyPresentInNetwork = true;
             break;
@@ -428,13 +422,7 @@ void CaVascularNetwork<SPATIAL_DIM>::AddVessel(boost::shared_ptr<CaVessel<SPATIA
         {
             vessel->SetNode2(mNodeArray[i]);
             GetNode(i)->AddAdjoiningVessel(vessel);
-            // we do not want to change the number of vessels which are attached to input or output
-            // nodes of the network for the moment - this is a limitation of the models
-            // some of the mathematics (haematocrit calculations) require that only one vessel exits/enters
-            // an input/output node of the network currently
-            // ----------------------------------------------------------------------------------
-            assert(GetNode(i)->IsInputNode() == false);
-            assert(GetNode(i)->IsOutputNode() == false);
+
             // ----------------------------------------------------------------------------------
             node2OfVesselAlreadyPresentInNetwork = true;
             break;
@@ -547,7 +535,7 @@ template <unsigned SPATIAL_DIM>
 bool CaVascularNetwork<SPATIAL_DIM>::ConnectedToInputNode(boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > node)
 {
 
-    if (node->IsInputNode())
+    if (node->GetBooleanData("IsInputNode"))
     {
         return true;
     }
@@ -572,7 +560,7 @@ bool CaVascularNetwork<SPATIAL_DIM>::ConnectedToInputNode(boost::shared_ptr<CaVa
     for (unsigned j = 0; j < GetNumberOfNodesInNetwork(); j++)
     {
 
-        if (GetNode(j)->IsInputNode())
+        if (GetNode(j)->GetBooleanData("IsInputNode"))
         {
             // a vector to hold the discover time property for each vertex
             std::vector<Size> dtime(num_vertices(G));
@@ -604,7 +592,7 @@ template <unsigned SPATIAL_DIM>
 bool CaVascularNetwork<SPATIAL_DIM>::ConnectedToOutputNode(boost::shared_ptr<CaVascularNetworkNode<SPATIAL_DIM> > node)
 {
 
-    if (node->IsOutputNode())
+    if (node->GetBooleanData("IsOutputNode"))
     {
         return true;
     }
@@ -629,7 +617,7 @@ bool CaVascularNetwork<SPATIAL_DIM>::ConnectedToOutputNode(boost::shared_ptr<CaV
     for (unsigned j = 0; j < GetNumberOfNodesInNetwork(); j++)
     {
 
-        if (GetNode(j)->IsOutputNode())
+        if (GetNode(j)->GetBooleanData("IsOutputNode"))
         {
             // a vector to hold the discover time property for each vertex
             std::vector<Size> dtime(num_vertices(G));
@@ -661,14 +649,14 @@ template <unsigned SPATIAL_DIM>
 void CaVascularNetwork<SPATIAL_DIM>::SetInputNode(ChastePoint<SPATIAL_DIM> location)
 {
      assert(GetNode(location)->GetNumberOfAdjoiningVessels() == 1);
-     GetNode(location)->SetIsInputNode(true);
+     GetNode(location)->SetBooleanData("IsInputNode", true);
 }
 
 template <unsigned SPATIAL_DIM>
 void CaVascularNetwork<SPATIAL_DIM>::SetOutputNode(ChastePoint<SPATIAL_DIM> location)
 {
     assert(GetNode(location)->GetNumberOfAdjoiningVessels() == 1);
-    GetNode(location)->SetIsOutputNode(true);
+    GetNode(location)->SetBooleanData("IsOutputNode", true);
 }
 
 
@@ -678,290 +666,292 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
     // open file to write data to
     // __________________________
 
-    std::ofstream out(filename.c_str());
+	///\ todo replace with vtk polydata writer
 
-    int NumberOfPoints = 0;
-
-    for(unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        NumberOfPoints += GetVessel(i)->GetNumberOfSegments();
-    }
-
-    out << "# vtk DataFile Version 3.0\nvtk vasculature data\nASCII\n\n";
-    out << "DATASET POLYDATA\n";
-    out << "POINTS " << NumberOfPoints <<" float\n";
-
-    for(unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        for (unsigned j = 0; j < GetVessel(i)->GetNumberOfSegments(); j++)
-        {
-            out << (GetVessel(i)->GetSegmentCoordinate(j)[0]) << " " << (GetVessel(i)->GetSegmentCoordinate(j)[1]) << " ";
-            if (SPATIAL_DIM > 2)
-            {
-                out << (GetVessel(i)->GetSegmentCoordinate(j)[2]);
-            }
-            else
-            {
-                out << 0;
-            }
-            out << "\n";
-        }
-
-    }
-
-    out << "\n\n";
-    out << "LINES " << GetNumberOfVesselsInNetwork() << " " <<  GetNumberOfVesselsInNetwork() + NumberOfPoints << "\n";
-
-    int NumberOfPointsUsed = 0;
-
-    for(unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        out << GetVessel(i)->GetNumberOfSegments() << " ";
-        for (unsigned j = 0; j < GetVessel(i)->GetNumberOfSegments(); j++)
-        {
-            out << NumberOfPointsUsed << " ";
-            NumberOfPointsUsed++;
-        }
-        out << "\n";
-    }
-
-
-    out << "\nCELL_DATA " << GetNumberOfVesselsInNetwork() << "\n";
-    out << "FIELD FieldData " << 20 + GetVessel(0)->GetNumberOfIntraVascularChemicals() << "\n";
-
-    out << "\n";
-    out << "Radius" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        out << GetVessel(i)->GetRadius();
-        out << "\n";
-    }
-
-    out << "\n";
-    out << "UpstreamConductedStimulus" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        out << GetVessel(i)->GetUpstreamConductedStimulus();
-        out << "\n";
-    }
-
-    out << "\n";
-    out << "DownstreamConductedStimulus" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        out << GetVessel(i)->GetDownstreamConductedStimulus();
-        out << "\n";
-    }
-
-    out << "\n";
-    out << "ShrinkingStimulus" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        out << GetVessel(i)->GetShrinkingStimulus();
-        out << "\n";
-    }
-
-    out << "\n";
-    out << "MetabolicStimulus" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        out << GetVessel(i)->GetMetabolicStimulus();
-        out << "\n";
-    }
-
-    out << "\n";
-    out << "MechanicalStimulus" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        out << GetVessel(i)->GetMechanicalStimulus();
-        out << "\n";
-    }
-
-    out << "\n";
-    out << "Viscosity" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        out << GetVessel(i)->GetViscosity();
-        out << "\n";
-    }
-
-    out << "\n";
-    out << "Impedance" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        out << GetVessel(i)->GetImpedance();
-        out << "\n";
-    }
-
-    out << "\n";
-    out << "WallShearStress" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        out << GetVessel(i)->GetWallShearStress();
-        out << "\n";
-    }
-
-    out << "\n";
-    out << "FlowVelocity" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        out << GetVessel(i)->GetFlowVelocity();
-        out << "\n";
-    }
-
-    out << "\n";
-    out << "FlowRate" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        out << GetVessel(i)->GetFlowRate();
-        out << "\n";
-    }
-
-    out << "\n";
-    out << "AbsFlowVelocity" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        out << fabs(GetVessel(i)->GetFlowVelocity());
-        out << "\n";
-    }
-
-    out << "\n";
-    out << "AbsFlowRate" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        out << fabs(GetVessel(i)->GetFlowRate());
-        out << "\n";
-    }
-
-    out << "\n";
-    out << "HaematocritLevel" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        out << GetVessel(i)->GetHaematocritLevel();
-        out << "\n";
-    }
-
-    out << "\n";
-    out << "Length" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        out << GetVessel(i)->GetLength();
-        out << "\n";
-    }
-
-    out << "\n";
-    out << "Pressure" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        out << 0.5*(GetVessel(i)->GetNode1()->GetPressure() + GetVessel(i)->GetNode2()->GetPressure());
-        out << "\n";
-    }
-
-    out << "\n";
-    out << "Tortuosity" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        if (std::isinf(GetVessel(i)->GetTortuosity()))
-        {
-            // tortuosity is infinite for a circle but paraview cannot handle infinite vales so prescribe arbitrary large
-            // value to print out to file if tortuosity is infinite.
-            out << 10000000;
-            out << "\n";
-        }
-        else
-        {
-            out << GetVessel(i)->GetTortuosity();
-            out << "\n";
-        }
-    }
-
-    out << "\n";
-    out << "HasActiveTipCell" << " 1 " << GetNumberOfVesselsInNetwork() << " int\n";
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        out << GetVessel(i)->HasActiveTipCell();
-        out << "\n";
-    }
-
-    out << "\n";
-    out << "TimeWithLowWallShearStress" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        out << GetVessel(i)->GetTimeWithLowWallShearStress();
-        out << "\n";
-    }
-
-    out << "\n";
-
-    out << "\n";
-    out << "IsPartOfNeovasculature" << " 1 " << GetNumberOfVesselsInNetwork() << " int\n";
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-
-        if (GetVessel(i)->IsPartOfNeovasculature() == true)
-        {
-            out << "1 ";
-        }
-        else
-        {
-            out << "0 ";
-        }
-        out << "\n";
-    }
-
-    out << "\n";
-
-    if (GetVessel(0)->GetNumberOfIntraVascularChemicals() > 0)
-    {
-
-        for (unsigned chemsIndex = 0; chemsIndex < GetVessel(0)->GetNumberOfIntraVascularChemicals(); chemsIndex++)
-        {
-            out << "\n";
-            out << GetVessel(0)->GetCollectionOfIntraVascularChemicals().GetIntraVascularChemicalCollection()[chemsIndex].GetChemicalName() << "Concentration 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-
-            for(unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-            {
-
-                if (GetVessel(i)->GetCollectionOfIntraVascularChemicals().GetIntraVascularChemicalCollection()[chemsIndex].GetConcentration() > 1e-15)
-                {
-                    out << GetVessel(i)->GetCollectionOfIntraVascularChemicals().GetIntraVascularChemicalCollection()[chemsIndex].GetConcentration();
-                }
-                else
-                {
-                    out << 0;
-                }
-                out << "\n";
-            }
-
-
-
-            out << "\n";
-        }
-
-
-    }
-
-    out.close();
+//    std::ofstream out(filename.c_str());
+//
+//    int NumberOfPoints = 0;
+//
+//    for(unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        NumberOfPoints += GetVessel(i)->GetNumberOfSegments();
+//    }
+//
+//    out << "# vtk DataFile Version 3.0\nvtk vasculature data\nASCII\n\n";
+//    out << "DATASET POLYDATA\n";
+//    out << "POINTS " << NumberOfPoints <<" float\n";
+//
+//    for(unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        for (unsigned j = 0; j < GetVessel(i)->GetNumberOfSegments(); j++)
+//        {
+//            out << (GetVessel(i)->GetSegmentCoordinate(j)[0]) << " " << (GetVessel(i)->GetSegmentCoordinate(j)[1]) << " ";
+//            if (SPATIAL_DIM > 2)
+//            {
+//                out << (GetVessel(i)->GetSegmentCoordinate(j)[2]);
+//            }
+//            else
+//            {
+//                out << 0;
+//            }
+//            out << "\n";
+//        }
+//
+//    }
+//
+//    out << "\n\n";
+//    out << "LINES " << GetNumberOfVesselsInNetwork() << " " <<  GetNumberOfVesselsInNetwork() + NumberOfPoints << "\n";
+//
+//    int NumberOfPointsUsed = 0;
+//
+//    for(unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        out << GetVessel(i)->GetNumberOfSegments() << " ";
+//        for (unsigned j = 0; j < GetVessel(i)->GetNumberOfSegments(); j++)
+//        {
+//            out << NumberOfPointsUsed << " ";
+//            NumberOfPointsUsed++;
+//        }
+//        out << "\n";
+//    }
+//
+//
+//    out << "\nCELL_DATA " << GetNumberOfVesselsInNetwork() << "\n";
+//    out << "FIELD FieldData " << 20 + GetVessel(0)->GetNumberOfIntraVascularChemicals() << "\n";
+//
+//    out << "\n";
+//    out << "Radius" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        out << GetVessel(i)->GetRadius();
+//        out << "\n";
+//    }
+//
+//    out << "\n";
+//    out << "UpstreamConductedStimulus" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        out << GetVessel(i)->GetUpstreamConductedStimulus();
+//        out << "\n";
+//    }
+//
+//    out << "\n";
+//    out << "DownstreamConductedStimulus" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        out << GetVessel(i)->GetDownstreamConductedStimulus();
+//        out << "\n";
+//    }
+//
+//    out << "\n";
+//    out << "ShrinkingStimulus" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        out << GetVessel(i)->GetShrinkingStimulus();
+//        out << "\n";
+//    }
+//
+//    out << "\n";
+//    out << "MetabolicStimulus" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        out << GetVessel(i)->GetMetabolicStimulus();
+//        out << "\n";
+//    }
+//
+//    out << "\n";
+//    out << "MechanicalStimulus" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        out << GetVessel(i)->GetMechanicalStimulus();
+//        out << "\n";
+//    }
+//
+//    out << "\n";
+//    out << "Viscosity" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        out << GetVessel(i)->GetViscosity();
+//        out << "\n";
+//    }
+//
+//    out << "\n";
+//    out << "Impedance" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        out << GetVessel(i)->GetImpedance();
+//        out << "\n";
+//    }
+//
+//    out << "\n";
+//    out << "WallShearStress" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        out << GetVessel(i)->GetWallShearStress();
+//        out << "\n";
+//    }
+//
+//    out << "\n";
+//    out << "FlowVelocity" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        out << GetVessel(i)->GetFlowVelocity();
+//        out << "\n";
+//    }
+//
+//    out << "\n";
+//    out << "FlowRate" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        out << GetVessel(i)->GetFlowRate();
+//        out << "\n";
+//    }
+//
+//    out << "\n";
+//    out << "AbsFlowVelocity" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        out << fabs(GetVessel(i)->GetFlowVelocity());
+//        out << "\n";
+//    }
+//
+//    out << "\n";
+//    out << "AbsFlowRate" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        out << fabs(GetVessel(i)->GetFlowRate());
+//        out << "\n";
+//    }
+//
+//    out << "\n";
+//    out << "HaematocritLevel" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        out << GetVessel(i)->GetHaematocritLevel();
+//        out << "\n";
+//    }
+//
+//    out << "\n";
+//    out << "Length" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        out << GetVessel(i)->GetLength();
+//        out << "\n";
+//    }
+//
+//    out << "\n";
+//    out << "Pressure" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        out << 0.5*(GetVessel(i)->GetNode1()->GetPressure() + GetVessel(i)->GetNode2()->GetPressure());
+//        out << "\n";
+//    }
+//
+//    out << "\n";
+//    out << "Tortuosity" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        if (std::isinf(GetVessel(i)->GetTortuosity()))
+//        {
+//            // tortuosity is infinite for a circle but paraview cannot handle infinite vales so prescribe arbitrary large
+//            // value to print out to file if tortuosity is infinite.
+//            out << 10000000;
+//            out << "\n";
+//        }
+//        else
+//        {
+//            out << GetVessel(i)->GetTortuosity();
+//            out << "\n";
+//        }
+//    }
+//
+//    out << "\n";
+//    out << "HasActiveTipCell" << " 1 " << GetNumberOfVesselsInNetwork() << " int\n";
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        out << GetVessel(i)->HasActiveTipCell();
+//        out << "\n";
+//    }
+//
+//    out << "\n";
+//    out << "TimeWithLowWallShearStress" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        out << GetVessel(i)->GetTimeWithLowWallShearStress();
+//        out << "\n";
+//    }
+//
+//    out << "\n";
+//
+//    out << "\n";
+//    out << "IsPartOfNeovasculature" << " 1 " << GetNumberOfVesselsInNetwork() << " int\n";
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//
+//        if (GetVessel(i)->IsPartOfNeovasculature() == true)
+//        {
+//            out << "1 ";
+//        }
+//        else
+//        {
+//            out << "0 ";
+//        }
+//        out << "\n";
+//    }
+//
+//    out << "\n";
+//
+//    if (GetVessel(0)->GetNumberOfIntraVascularChemicals() > 0)
+//    {
+//
+//        for (unsigned chemsIndex = 0; chemsIndex < GetVessel(0)->GetNumberOfIntraVascularChemicals(); chemsIndex++)
+//        {
+//            out << "\n";
+//            out << GetVessel(0)->GetCollectionOfIntraVascularChemicals().GetIntraVascularChemicalCollection()[chemsIndex].GetChemicalName() << "Concentration 1 " << GetNumberOfVesselsInNetwork() << " float\n";
+//
+//            for(unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//            {
+//
+//                if (GetVessel(i)->GetCollectionOfIntraVascularChemicals().GetIntraVascularChemicalCollection()[chemsIndex].GetConcentration() > 1e-15)
+//                {
+//                    out << GetVessel(i)->GetCollectionOfIntraVascularChemicals().GetIntraVascularChemicalCollection()[chemsIndex].GetConcentration();
+//                }
+//                else
+//                {
+//                    out << 0;
+//                }
+//                out << "\n";
+//            }
+//
+//
+//
+//            out << "\n";
+//        }
+//
+//
+//    }
+//
+//    out.close();
 
 }
 

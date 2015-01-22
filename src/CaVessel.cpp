@@ -39,61 +39,32 @@ template<unsigned DIM>
 CaVessel<DIM>::CaVessel()
 	: pNode1(new CaVascularNetworkNode<DIM>()),
 	  pNode2(new CaVascularNetworkNode<DIM>()),
-	  mActiveTipCellAtNode1(false),
-	  mActiveTipCellAtNode2(false),
+	  mDoubleData(),
+	  mBooleanData(),
 	  mVesselSegmentLocations(),
-	  mTimeWithLowWallShearStress(0.0),
-	  mRadius(0.0),
-	  mPreviousRadius(0.0),
-	  mHaematocritLevel(0.0),
-	  mFlowVelocity(0.0),
-	  mFlowRate(0.0),
-	  mImpedance(0.0),
-	  mLength(0.0),
-	  mWallShearStress(0.0),
-	  mViscosity(0.0),
-	  mMechanicalStimulus(0.0),
-	  mMetabolicStimulus(0.0),
-	  mShrinkingStimulus(0.0),
-	  mDownstreamConductedStimulus(0.0),
-	  mUpstreamConductedStimulus(0.0),
-	  mChemicalCollection(),
-	  mIsPartOfNeovasculature(true),
-	  mCanExtend(false)
+	  mChemicalCollection()
+
+
 {
+
 }
 
 template<unsigned DIM>
 CaVessel<DIM>::~CaVessel()
 {
+
 }
 
-template<unsigned DIM>
-bool CaVessel<DIM>::IsInputVessel()
-{
-    return (pNode1->IsInputNode() || pNode2->IsInputNode());
-}
-
+//template<unsigned DIM>
+//bool CaVessel<DIM>::IsInputVessel()
+//{
+//    return (pNode1->IsInputNode() || pNode2->IsInputNode());
+//}
 
 template<unsigned DIM>
 void CaVessel<DIM>::CopyMechanicalPropertyValuesAndChemicalConcentrations(boost::shared_ptr<CaVessel<DIM> > another_vessel)
 {
-    mTimeWithLowWallShearStress = another_vessel->GetTimeWithLowWallShearStress();
-    mRadius = another_vessel->GetRadius();
-    mPreviousRadius = another_vessel->GetPreviousRadius();
-    mHaematocritLevel = another_vessel->GetHaematocritLevel();
-    mFlowVelocity = another_vessel->GetFlowVelocity();
-    mFlowRate = another_vessel->GetFlowRate();
-    mImpedance = another_vessel->GetImpedance();
-    mLength = another_vessel->GetLength();
-    mWallShearStress = another_vessel->GetWallShearStress();
-    mViscosity = another_vessel->GetViscosity();
-    mMechanicalStimulus = another_vessel->GetMechanicalStimulus();
-    mMetabolicStimulus = another_vessel->GetMetabolicStimulus();
-    mShrinkingStimulus = another_vessel->GetShrinkingStimulus();
-    mDownstreamConductedStimulus = another_vessel->GetDownstreamConductedStimulus();
-    mUpstreamConductedStimulus = another_vessel->GetUpstreamConductedStimulus();
-    mCanExtend = another_vessel->CanExtend();
+    // todo need to copy property maps over
 
     for (unsigned i = 0; i < another_vessel->GetNumberOfIntraVascularChemicals(); i++)
     {
@@ -121,7 +92,11 @@ double CaVessel<DIM>::GetTortuosity()
 				pow(double(GetNode1()->GetLocation()[1] - GetNode2()->GetLocation()[1]), 2)), 0.5);
     }
 
-    return (mLength/distance_between_ends_of_vessel);
+    // todo need to change the following to have length returned from property list
+
+    double length = 100;
+
+    return (length/distance_between_ends_of_vessel);
 }
 
 template<unsigned DIM>
@@ -167,11 +142,51 @@ unsigned CaVessel<DIM>::GetNumberOfSegments()
     return mVesselSegmentLocations.size();
 }
 
+template<unsigned DIM>
+double CaVessel<DIM>::GetDoubleDataValue(const std::string variableName)
+{
+	std::map<std::string, std::pair<double, std::string> >::const_iterator it = mDoubleData.find(variableName);
+	if (it == mDoubleData.end())
+	{
+		EXCEPTION("No double valued property, '" << variableName << "', in property register.");
+	}
+	return(it->second.first);
+}
 
 template<unsigned DIM>
-bool CaVessel<DIM>::HasActiveTipCell()
+std::string CaVessel<DIM>::GetDoubleDataUnits(const std::string variableName)
 {
-    return (ActiveTipCellLocatedAtNode1() || ActiveTipCellLocatedAtNode2());
+
+	std::map<std::string, std::pair<double, std::string> >::const_iterator it = mDoubleData.find(variableName);
+	if (it == mDoubleData.end())
+	{
+		EXCEPTION("No double valued property, '" << variableName << "', in property register.");
+	}
+	return(it->second.second);
+
+}
+
+template<unsigned DIM>
+bool CaVessel<DIM>::GetBooleanData(const std::string variableName)
+{
+	std::map<std::string, bool >::const_iterator it = mBooleanData.find(variableName);
+	if (it == mBooleanData.end())
+	{
+		EXCEPTION("No boolean valued property, '" << variableName << "', in property register.");
+	}
+	return(it->second);
+}
+
+template<unsigned DIM>
+void CaVessel<DIM>::SetDoubleData(const std::string variableName, double data, const std::string unit)
+{
+	mDoubleData[variableName] = std::pair<double, std::string> (data, unit);
+}
+
+template<unsigned DIM>
+void CaVessel<DIM>::SetBooleanData(const std::string variableName, bool data)
+{
+	mBooleanData[variableName] = data;
 }
 
 template<unsigned DIM>
@@ -235,7 +250,7 @@ void CaVessel<DIM>::SetNextVesselSegmentCoordinate(ChastePoint<DIM> point)
     if (GetNumberOfSegments() > 0)
     {
         mVesselSegmentLocations.push_back(point);
-        SetLength(0.0);
+        // todo set length here?
 
         for (unsigned i = 1; i < GetNumberOfSegments(); i++)
         {
@@ -253,57 +268,14 @@ void CaVessel<DIM>::SetNextVesselSegmentCoordinate(ChastePoint<DIM> point)
                 		pow(double(GetSegmentCoordinate(i)[1]-GetSegmentCoordinate(i-1)[1]),2) +
                 		pow(double(GetSegmentCoordinate(i)[2] - GetSegmentCoordinate(i - 1)[2]), 2)), 0.5);
             }
-            SetLength(GetLength()+segment_length);
+            // todo set length here?
         }
     }
     else
     {
         mVesselSegmentLocations.push_back(point);
-        SetLength(1.0);
+        // todo set length here?
     }
-}
-
-template<unsigned DIM>
-void CaVessel<DIM>::IncrementTimeWithLowWallShearStress(double delta_time)
-{
-    mTimeWithLowWallShearStress += delta_time;
-}
-
-template<unsigned DIM>
-void CaVessel<DIM>::SetActiveTipCellLocatedAtNode1(bool value)
-{
-    if (value == true)
-    {
-    	if (!(GetNode1()->GetNumberOfAdjoiningVessels() == 1 && GetNode1()->GetAdjoiningVessel(0) == shared()))
-    	{
-    		EXCEPTION("Node 1 is not linked with the vessel or there is an incorrect number of vessels attached to the node.");
-    	}
-
-    	if (mActiveTipCellAtNode2)
-    	{
-    		EXCEPTION("There is already an active tip cell at the other end of the vessel.");
-    	}
-    }
-    mActiveTipCellAtNode1 = value;
-}
-
-template<unsigned DIM>
-void CaVessel<DIM>::SetActiveTipCellLocatedAtNode2(bool value)
-{
-    if (value == true)
-    {
-
-    	if (!(GetNode2()->GetNumberOfAdjoiningVessels() == 1 && GetNode2()->GetAdjoiningVessel(0) == shared()))
-    	{
-    		EXCEPTION("Node 2 is not linked with the vessel or there is an incorrect number of vessels attached to the node.");
-    	}
-
-    	if (mActiveTipCellAtNode1)
-    	{
-    		EXCEPTION("There is already an active tip cell at the other end of the vessel.");
-    	}
-    }
-    mActiveTipCellAtNode2 = value;
 }
 
 template<unsigned DIM>

@@ -52,34 +52,28 @@ public:
 		// Make a vessel
 		CaVessel<2> vessel;
 
-		// Test Getters and Setters
-		vessel.SetRadius(10.0);
-		TS_ASSERT_DELTA(vessel.GetRadius(), 10.0, 1.e-6);
-		vessel.SetPreviousRadius(15.0);
-		TS_ASSERT_DELTA(vessel.GetPreviousRadius(), 15.0, 1.e-6);
-		vessel.SetHaematocritLevel(0.3);
-		TS_ASSERT_DELTA(vessel.GetHaematocritLevel(), 0.3, 1.e-6);
-		vessel.SetFlowVelocity(100.0);
-		TS_ASSERT_DELTA(vessel.GetFlowVelocity(), 100.0, 1.e-6);
-		vessel.SetFlowRate(0.001);
-		TS_ASSERT_DELTA(vessel.GetFlowRate(), 0.001, 1.e-6);
-		vessel.SetImpedance(300.0);
-		TS_ASSERT_DELTA(vessel.GetImpedance(), 300.0, 1.e-6);
-		vessel.SetWallShearStress(100.0);
-		TS_ASSERT_DELTA(vessel.GetWallShearStress(), 100.0, 1.e-6);
-		vessel.SetViscosity(0.001);
-		TS_ASSERT_DELTA(vessel.GetViscosity(), 0.001, 1.e-6);
-		vessel.SetMechanicalStimulus(90.0);
-		TS_ASSERT_DELTA(vessel.GetMechanicalStimulus(), 90.0, 1.e-6);
-		vessel.SetMetabolicStimulus(20.0);
-		TS_ASSERT_DELTA(vessel.GetMetabolicStimulus(), 20.0, 1.e-6);
-		vessel.SetShrinkingStimulus(30.0);
-		TS_ASSERT_DELTA(vessel.GetShrinkingStimulus(), 30.0, 1.e-6);
-		vessel.SetDownstreamConductedStimulus(50.0);
-		TS_ASSERT_DELTA(vessel.GetDownstreamConductedStimulus(), 50.0, 1.e-6);
-		vessel.SetUpstreamConductedStimulus(90.0);
-		TS_ASSERT_DELTA(vessel.GetUpstreamConductedStimulus(), 90.0, 1.e-6);
 	}
+
+	void TestGettingAndSettingProperties()
+	{
+
+		boost::shared_ptr<CaVessel<2> > pVessel(new CaVessel<2>);
+
+		TS_ASSERT_THROWS_THIS(pVessel->GetDoubleDataValue("radius"),"No double valued property, 'radius', in property register.");
+
+		TS_ASSERT_THROWS_THIS(pVessel->GetBooleanData("hasActivelyMigratingTipCell"),"No boolean valued property, 'hasActivelyMigratingTipCell', in property register.");
+
+		pVessel->SetDoubleData("radius", 1e-5, "m");
+
+		pVessel->SetBooleanData("hasActivelyMigratingTipCell", true);
+
+		TS_ASSERT_EQUALS(pVessel->GetDoubleDataValue("radius"),1e-5);
+		TS_ASSERT_EQUALS(pVessel->GetDoubleDataUnits("radius"),"m");
+
+		TS_ASSERT_EQUALS(pVessel->GetBooleanData("hasActivelyMigratingTipCell"),true);
+
+	}
+
 };
 
 #endif /*TESTCAVESSEL_HPP_*/
