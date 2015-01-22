@@ -118,6 +118,13 @@ public:
     																				unsigned vessel_length,
     																				std::string venous_output_position = "North East");
 
+    /*
+     * Creates a single bifurcation network.
+     *
+     */
+    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateSingleBifurcationNetwork(unsigned vessel_length);
+
+
 	#ifdef CHASTE_VTK
     /*
 	 * Generates a vessel network from a vtk file.

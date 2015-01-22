@@ -105,12 +105,6 @@ void CaVessel<DIM>::CopyMechanicalPropertyValuesAndChemicalConcentrations(boost:
 }
 
 template<unsigned DIM>
-double CaVessel<DIM>::GetRadius()
-{
-    return mRadius;
-}
-
-template<unsigned DIM>
 double CaVessel<DIM>::GetTortuosity()
 {
     double distance_between_ends_of_vessel;
@@ -131,84 +125,6 @@ double CaVessel<DIM>::GetTortuosity()
 }
 
 template<unsigned DIM>
-double CaVessel<DIM>::GetPreviousRadius()
-{
-    return mPreviousRadius;
-}
-
-template<unsigned DIM>
-double CaVessel<DIM>::GetHaematocritLevel()
-{
-    return mHaematocritLevel;
-}
-
-template<unsigned DIM>
-double CaVessel<DIM>::GetFlowVelocity()
-{
-    return mFlowVelocity;
-}
-
-template<unsigned DIM>
-double CaVessel<DIM>::GetFlowRate()
-{
-    return mFlowRate;
-}
-
-template<unsigned DIM>
-double CaVessel<DIM>::GetImpedance()
-{
-    return mImpedance;
-}
-
-template<unsigned DIM>
-double CaVessel<DIM>::GetLength()
-{
-    return mLength;
-}
-
-template<unsigned DIM>
-double CaVessel<DIM>::GetWallShearStress()
-{
-    return mWallShearStress;
-}
-
-template<unsigned DIM>
-double CaVessel<DIM>::GetViscosity()
-{
-    return mViscosity;
-}
-
-template<unsigned DIM>
-double CaVessel<DIM>::GetMechanicalStimulus()
-{
-    return mMechanicalStimulus;
-}
-
-template<unsigned DIM>
-double CaVessel<DIM>::GetMetabolicStimulus()
-{
-    return mMetabolicStimulus;
-}
-
-template<unsigned DIM>
-double CaVessel<DIM>::GetShrinkingStimulus()
-{
-    return mShrinkingStimulus;
-}
-
-template<unsigned DIM>
-double CaVessel<DIM>::GetDownstreamConductedStimulus()
-{
-    return mDownstreamConductedStimulus;
-}
-
-template<unsigned DIM>
-double CaVessel<DIM>::GetUpstreamConductedStimulus()
-{
-    return mUpstreamConductedStimulus;
-}
-
-template<unsigned DIM>
 boost::shared_ptr<CaVessel<DIM> > CaVessel<DIM>::shared()
 {
     return this->shared_from_this();
@@ -224,12 +140,6 @@ template<unsigned DIM>
 boost::shared_ptr<CaVascularNetworkNode<DIM> > CaVessel<DIM>::GetNode2()
 {
     return pNode2;
-}
-
-template<unsigned DIM>
-double CaVessel<DIM>::GetTimeWithLowWallShearStress()
-{
-    return mTimeWithLowWallShearStress;
 }
 
 template<unsigned DIM>
@@ -265,18 +175,6 @@ bool CaVessel<DIM>::HasActiveTipCell()
 }
 
 template<unsigned DIM>
-bool CaVessel<DIM>::ActiveTipCellLocatedAtNode1()
-{
-    return mActiveTipCellAtNode1;
-}
-
-template<unsigned DIM>
-bool CaVessel<DIM>::ActiveTipCellLocatedAtNode2()
-{
-    return mActiveTipCellAtNode2;
-}
-
-template<unsigned DIM>
 IntraVascularChemicalCollection& CaVessel<DIM>::rGetCollectionOfIntraVascularChemicals()
 {
     return mChemicalCollection;
@@ -292,19 +190,6 @@ template<unsigned DIM>
 double CaVessel<DIM>::GetIntraVascularChemicalConcentration(string chemical_name)
 {
     return mChemicalCollection.GetIntraVascularChemicalConcentration(chemical_name);
-}
-
-
-template<unsigned DIM>
-bool CaVessel<DIM>::IsPartOfNeovasculature()
-{
-    return mIsPartOfNeovasculature;
-}
-
-template<unsigned DIM>
-bool CaVessel<DIM>::CanExtend()
-{
-    return mCanExtend;
 }
 
 
@@ -379,12 +264,6 @@ void CaVessel<DIM>::SetNextVesselSegmentCoordinate(ChastePoint<DIM> point)
 }
 
 template<unsigned DIM>
-void CaVessel<DIM>::SetTimeWithLowWallShearStress(double time)
-{
-    mTimeWithLowWallShearStress = time;
-}
-
-template<unsigned DIM>
 void CaVessel<DIM>::IncrementTimeWithLowWallShearStress(double delta_time)
 {
     mTimeWithLowWallShearStress += delta_time;
@@ -428,105 +307,9 @@ void CaVessel<DIM>::SetActiveTipCellLocatedAtNode2(bool value)
 }
 
 template<unsigned DIM>
-void CaVessel<DIM>::SetRadius(double value)
-{
-    mRadius = value;
-}
-
-template<unsigned DIM>
-void CaVessel<DIM>::SetPreviousRadius(double value)
-{
-    mPreviousRadius = value;
-}
-
-template<unsigned DIM>
-void CaVessel<DIM>::SetHaematocritLevel(double value)
-{
-    mHaematocritLevel = value;
-}
-
-template<unsigned DIM>
-void CaVessel<DIM>::SetFlowVelocity(double value)
-{
-    mFlowVelocity = value;
-}
-
-template<unsigned DIM>
-void CaVessel<DIM>::SetFlowRate(double value)
-{
-    mFlowRate = value;
-}
-
-template<unsigned DIM>
-void CaVessel<DIM>::SetImpedance(double value)
-{
-    mImpedance = value;
-}
-
-template<unsigned DIM>
-void CaVessel<DIM>::SetLength(double value)
-{
-    mLength = value;
-}
-
-template<unsigned DIM>
-void CaVessel<DIM>::SetWallShearStress(double value)
-{
-    mWallShearStress = value;
-}
-
-template<unsigned DIM>
-void CaVessel<DIM>::SetViscosity(double value)
-{
-    mViscosity = value;
-}
-
-template<unsigned DIM>
-void CaVessel<DIM>::SetMechanicalStimulus(double value)
-{
-    mMechanicalStimulus = value;
-}
-
-template<unsigned DIM>
-void CaVessel<DIM>::SetMetabolicStimulus(double value)
-{
-    mMetabolicStimulus = value;
-}
-
-template<unsigned DIM>
-void CaVessel<DIM>::SetShrinkingStimulus(double value)
-{
-    mShrinkingStimulus = value;
-}
-
-template<unsigned DIM>
-void CaVessel<DIM>::SetDownstreamConductedStimulus(double value)
-{
-    mDownstreamConductedStimulus = value;
-}
-
-template<unsigned DIM>
-void CaVessel<DIM>::SetUpstreamConductedStimulus(double value)
-{
-    mUpstreamConductedStimulus = value;
-}
-
-template<unsigned DIM>
 bool CaVessel<DIM>::IsAttachedToNode(boost::shared_ptr<CaVascularNetworkNode<DIM> > node)
 {
     return (node == pNode1 || node == pNode2);
-}
-
-template<unsigned DIM>
-void CaVessel<DIM>::SetIsPartOfNeovasculature(bool value)
-{
-    mIsPartOfNeovasculature = value;
-}
-
-template<unsigned DIM>
-void CaVessel<DIM>::CanExtend(bool value)
-{
-    mCanExtend = value;
 }
 
 // Explicit instantiation

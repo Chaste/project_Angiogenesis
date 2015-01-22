@@ -264,6 +264,16 @@ boost::shared_ptr<CaVascularNetwork<DIM> > VascularNetworkGenerator<DIM>::Genera
 	return pVesselNetwork;
 }
 
+template<unsigned DIM>
+boost::shared_ptr<CaVascularNetwork<DIM> > VascularNetworkGenerator<DIM>::GenerateSingleBifurcationNetwork(unsigned vessel_length)
+{
+
+	// Make the vessels
+
+
+
+}
+
 #ifdef CHASTE_VTK
 template<unsigned DIM>
 boost::shared_ptr<CaVascularNetwork<DIM> > VascularNetworkGenerator<DIM>::GenerateNetworkFromVtkFile(std::string filename)

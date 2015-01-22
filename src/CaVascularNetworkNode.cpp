@@ -39,10 +39,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 template<unsigned DIM>
 CaVascularNetworkNode<DIM>::CaVascularNetworkNode()
 	: mLocation(),
-	  mPressure(0.0),
-	  mAdjoiningVessels(),
-	  mIsInputNode(false),
-	  mIsOutputNode(false)
+	  mDoubleData(),
+	  mBooleanData(),
+	  mAdjoiningVessels()
 {
 }
 
@@ -76,9 +75,17 @@ ChastePoint<DIM> CaVascularNetworkNode<DIM>::GetLocation()
 }
 
 template<unsigned DIM>
-double CaVascularNetworkNode<DIM>::GetPressure()
+std::pair<double, std::string> GetDoubleData(const std::string& variableName)
 {
-    return mPressure;
+	// Refer to CellData.cpp for a method to ensure variableName is not added to
+	// the map if it doesn't exist.
+	return mDoubleData[variableName];
+}
+
+template<unsigned DIM>
+bool GetBooleanData(const std::string& variableName)
+{
+	return mBooleanData[variableName];
 }
 
 template<unsigned DIM>
@@ -101,15 +108,15 @@ boost::shared_ptr<CaVessel<DIM> > CaVascularNetworkNode<DIM>::GetAdjoiningVessel
 }
 
 template<unsigned DIM>
-bool CaVascularNetworkNode<DIM>::IsInputNode()
+void SetDoubleData(const std::string& variableName, double data, const std::string& unit = "None")
 {
-    return mIsInputNode;
+	mDoubleData[variableName] = std::pair<double, std::string> (data, unit);
 }
 
 template<unsigned DIM>
-bool CaVascularNetworkNode<DIM>::IsOutputNode()
+void SetBooleanData(const std::string& variableName, bool data)
 {
-    return mIsOutputNode;
+	mBooleanData[variableName] = data;
 }
 
 template<unsigned DIM>
@@ -204,18 +211,6 @@ bool CaVascularNetworkNode<DIM>::IsAttachedToVessel(boost::shared_ptr<CaVessel<D
         }
     }
     return attached_to_node;
-}
-
-template<unsigned DIM>
-void CaVascularNetworkNode<DIM>::SetIsInputNode(bool value)
-{
-    mIsInputNode = value;
-}
-
-template<unsigned DIM>
-void CaVascularNetworkNode<DIM>::SetIsOutputNode(bool value)
-{
-    mIsOutputNode = value;
 }
 
 // Explicit instantiation

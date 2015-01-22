@@ -965,16 +965,6 @@ void CaVascularNetwork<SPATIAL_DIM>::SaveVasculatureDataToFile(string filename)
 
 }
 
-
-//template <unsigned SPATIAL_DIM>
-//void CaVascularNetwork<SPATIAL_DIM>::UpdateVascularNetwork(CaBasedCellPopulation<SPATIAL_DIM>& cell_population)
-//{
-//
-//}
-
-
-
-
 // Explicit instantiation
 
 template class CaVascularNetwork<2>;

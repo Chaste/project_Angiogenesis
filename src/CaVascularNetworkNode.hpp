@@ -37,6 +37,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define CAVASCULARNETWORKNODE_HPP_
 
 #include <vector>
+#include <map>
+#include <string>
 #include "ChastePoint.hpp"
 #include "Exception.hpp"
 #include "SmartPointers.hpp"
@@ -56,27 +58,19 @@ private:
     ChastePoint<DIM> mLocation;
 
     /**
-     *   Pressure in VesselNetwork at node location. Flow through Vessels in a VesselNetwork is dictated by
-     *   the pressure differences between nodes in the network.
-	 *
-     *   Pressure should be in units of Pa.
+     *   Node data of type double, with units
      */
-    double mPressure;
+    std::map<std::string, std::pair<double, std::string> > mDoubleData;
+
+    /**
+     *   Node data of type bool
+     */
+    std::map<std::string, bool> mBooleanData;
 
     /**
      *   Collection of CaVessel objects which are adjoint to this node.
      */
     std::vector<boost::weak_ptr<CaVessel<DIM> > > mAdjoiningVessels;
-
-    /**
-     *   Is the node is an input of the CaVesselNetwork.
-     */
-    bool mIsInputNode;
-
-    /**
-     *   Is the node is an output of the CaVesselNetwork.
-     */
-    bool mIsOutputNode;
 
 public:
 
@@ -109,11 +103,14 @@ public:
     ChastePoint<DIM> GetLocation();
 
     /**
-     *  Returns the pressure at the node.
-     *
-     *  @return mPressure
+     * Returns type double vessel node data.
      */
-    double GetPressure();
+    std::pair<double, std::string> GetDoubleData(const std::string& variableName);
+
+    /**
+     * Returns type boolean vessel node data.
+     */
+    bool GetBooleanData(const std::string& variableName);
 
     /**
      *  Returns the number of vessels which are adjoint to the node.
@@ -130,18 +127,14 @@ public:
     boost::shared_ptr<CaVessel<DIM> > GetAdjoiningVessel(unsigned i);
 
     /**
-     *  Returns whether the node is an input node to a VesselNetwork.
-     *
-     *  @return mIsInputNode
+     * Assigns type double vessel node data.
      */
-    bool IsInputNode();
+    void SetDoubleData(const std::string& variableName, double data, const std::string& unit = "None");
 
     /**
-     *  Returns whether the node is an output node to a VesselNetwork.
-     *
-     *  @return mIsInputNode
+     * Assigns type boolean vessel node data.
      */
-    bool IsOutputNode();
+    void SetBooleanData(const std::string& variableName, bool data);
 
     /**
      * Assigns the prescribed location to the node.
@@ -149,14 +142,6 @@ public:
      *  @param loc new location of node
      */
     void SetLocation(ChastePoint<DIM> loc);
-
-
-    /**
-     * Assigns the prescribed pressure to the node.
-     *
-     * @param pressure new pressure at node
-     */
-    void SetPressure(double pressure);
 
     /**
        Adds an adjoining Vessel to the node.
@@ -183,20 +168,6 @@ public:
        @param vessel vessel which may or may not be attached to node
      */
     bool IsAttachedToVessel(boost::shared_ptr<CaVessel<DIM> > vessel);
-
-    /**
-       Assigns whether the node is an input node to a vessel network.
-
-       @param value whether node is input node
-     */
-    void SetIsInputNode(bool value);
-
-    /**
-       Assigns whether the node is an output node to a vessel network.
-
-       @param value whether node is input node
-     */
-    void SetIsOutputNode(bool value);
 
 };
 

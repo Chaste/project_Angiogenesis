@@ -36,6 +36,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef CAVESSEL_HPP_
 #define CAVESSEL_HPP_
 
+#include <vector>
+#include <iostream>
+#include <map>
 #include <boost/enable_shared_from_this.hpp>
 #include "SmartPointers.hpp"
 #include "Exception.hpp"
@@ -61,16 +64,14 @@ private:
     boost::shared_ptr<CaVascularNetworkNode<DIM> > pNode2;
 
     /**
-     *  Whether the Vessel has an actively migrating tip cell located at the end where node1 is
-     *  located.
+     *   Vessel data of type double, with units
      */
-    bool mActiveTipCellAtNode1;
+    std::map<std::string, std::pair<double, std::string> > mDoubleData;
 
     /**
-     * Whether the Vessel has an actively migrating tip cell located at the end where node2 is
-     * located.
+     *   Vessel data of type bool
      */
-    bool mActiveTipCellAtNode2;
+    std::map<std::string, bool> mBooleanData;
 
     /**
      *  Collection of VesselSegments. A vessel segment is a spatially discrete location
@@ -86,112 +87,10 @@ private:
     std::vector<double> mVesselSegmentRadii;
 
     /**
-     *  Time that the Vessel has experienced low wall shear stress.
-     */
-    double mTimeWithLowWallShearStress;
-
-    /**
-     * Radius of the vessel. Should be in units of meters.
-     */
-    double mRadius;
-
-    /**
-     * Previous radius of the vessel. Should be in units of meters.
-     * This allows us to look for convergence of structural adaptation algorithms.
-     */
-    double mPreviousRadius;
-
-    /**
-     * The fractional volume of red blood cells inside a vessel.
-     */
-    double mHaematocritLevel;
-
-    /**
-     * The velocity of blood plasma flow through the vessel.
-     */
-    double mFlowVelocity;
-
-    /**
-     * The rate of blood plasma flow through the vessel.
-     */
-    double mFlowRate;
-
-    /**
-     * The impedance of the vessel.
-     */
-    double mImpedance;
-
-    /**
-     * The length of the vessel.
-     */
-    double mLength;
-
-    /**
-     * The shear stress experienced by the walls of the vessels.
-     */
-    double mWallShearStress;
-
-    /**
-     * The viscosity of the blood plasma flowing through a vessel.
-     */
-    double mViscosity;
-
-    /**
-     * Magnitude of the mechanical stimulus.  Many studies have shown that vessels respond
-     * structurally to the mechanical forces exerted by flowing blood, i.e., transmural pressure
-     * and shear stress at the endothelial surface.  Including this property allows us to model this
-     * phenomenon.
-     */
-    double mMechanicalStimulus;
-
-    /**
-        Magnitude of the metabolic stimulus.  Inclusion of this property within a model allows us to model the fact
-        that vessel segments with insufficient supply of blood may generate a signal which stimulates a
-        diameter increase. If sufficiently strong, such a response has the important property of
-        stabilizing  vessel network structure by preventing excessive shrinking of vessel diameters.
-     */
-    double mMetabolicStimulus;
-
-    /**
-        Magnitude of the shrinking stimulus.  The shrinking tendency of vessels can be interpreted
-        as reflecting the basal need for factors stimulating growth of vessels to maintain or
-        increase their cell mass and diameter. I.e., vessels are assumed to decrease in diameter in
-        the absence of all other stimuli.
-     */
-    double mShrinkingStimulus;
-
-    /**
-        Magnitude of the downstream conducted stimulus. Conducted signals reaching a given vessel
-        segment provide an additional stimulus to which the vessel segment may respond. This stimulus acts
-        so as to increases diameter of vessel segments draining extensive networks, preventing
-        low-flow and low-generation shunts.
-     */
-    double mDownstreamConductedStimulus;
-
-    /**
-        Magnitude of the upstream conducted stimulus. Conducted signals reaching a given vessel
-        segment provide an additional stimulus to which the vessel segment may respond. This stimulus acts
-        so as to increases diameter of vessel segments feeding extensive networks, preventing
-        low-flow and low-generation shunts.
-     */
-    double mUpstreamConductedStimulus;
-
-    /**
      * Collection of chemicals which the Vessel contains. The IntraVascularChemicalCollection
      * class allows IntraVascularChemicals to be added at will by a modeller.
      */
     IntraVascularChemicalCollection mChemicalCollection;
-
-    /**
-     *  Whether a vessel is part of the neovasculature developed since the start of a simulation.
-     */
-    bool mIsPartOfNeovasculature;
-
-    /**
-     * Whether the vessel is able to extend or not. This attirbute is
-     * useful for implementing angiogenesis models correctly.
-     */
-    bool mCanExtend;
 
 public:
 
@@ -263,89 +162,9 @@ public:
     bool HasActiveTipCell();
 
     /**
-       @return mActiveTipCellAtNode1
-     */
-    bool ActiveTipCellLocatedAtNode1();
-
-    /**
-       @return mActiveTipCellAtNode2
-     */
-    bool ActiveTipCellLocatedAtNode2();
-
-    /**
      *  @return whether vessel is attached to input node.
      */
     bool IsInputVessel();
-
-    /**
-        @return mRadius
-     */
-    double GetRadius();
-
-    /**
-        @return mPreviousRadius
-     */
-    double GetPreviousRadius();
-
-    /**
-        @return mHaematocrit
-     */
-    double GetHaematocritLevel();
-
-    /**
-        @return mFlowVelocity
-     */
-    double GetFlowVelocity();
-
-    /**
-        @return mFlowRate
-     */
-    double GetFlowRate();
-
-    /**
-        @return mImpedance
-     */
-    double GetImpedance();
-
-    /**
-        @return mLength
-     */
-    double GetLength();
-
-    /**
-        @return mWallShearStress
-     */
-    double GetWallShearStress();
-
-    /**
-        @return mViscosity
-     */
-    double GetViscosity();
-
-    /**
-        @return mMechanicalStimulus
-     */
-    double GetMechanicalStimulus();
-
-    /**
-        @return mMetabolicStimulus
-     */
-    double GetMetabolicStimulus();
-
-    /**
-        @return mShrinkingStimulus
-     */
-    double GetShrinkingStimulus();
-
-    /**
-        @return mDownstreamConductedStimulus
-     */
-    double GetDownstreamConductedStimulus();
-
-    /**
-        @return mUpstreamConductedStimulus
-     */
-    double GetUpstreamConductedStimulus();
 
     /*
      * todo A variant of the following should be added when cells (rather than vessel segments) are associated with vessels.
@@ -379,16 +198,6 @@ public:
        @return the tortuosity of a vessel. The tortuosity is calculated as the arc-chord ratio. This is the ratio of the vessel length to the distance between the two ends of the vessel.
      */
     double GetTortuosity();
-
-    /**
-       @return mIsPartOfNeo
-     */
-    bool IsPartOfNeovasculature();
-
-    /**
-       @return mCanExtend
-     */
-    bool CanExtend();
 
     /**
        Assigns the concentration of the prescribed IntraVascularChemical.
@@ -459,13 +268,6 @@ public:
 //    void AddVesselSegment(ChastePoint<DIM> Coords);
 
     /**
-       Assigns the time that the Vessel has experienced low wall shear stress.
-
-       @param value new value for mTimeWithLowWallShearStress
-     */
-    void SetTimeWithLowWallShearStress(double time);
-
-    /**
        Increments the time that the Vessel has experienced low wall shear stress by the prescribed amount.
 
        @param value amount by which mTimeWithLowWallShearStress should be incremented
@@ -485,99 +287,6 @@ public:
        @param value new value for mActiveTipCellAtNode2
      */
     void SetActiveTipCellLocatedAtNode2(bool value);
-
-    /**
-       Assigns the prescribed value to the radius of the vessel.
-
-       @param value new value for mRadius
-     */
-    void SetRadius(double value);
-
-    /**
-       Assigns the prescribed value to the previousRadius of the vessel. Note that reassignment
-       of radius to previous radius must be done manually in order to avoid confusion in the
-       convergence of the structural adaptation algorithm.
-
-       @param value new value for mPreviousRadius
-     */
-    void SetPreviousRadius(double value);
-
-    /**
-       Assigns the prescribed value to haematocrit level.
-
-       @param value new value for mHaematocritLevel
-     */
-    void SetHaematocritLevel(double value);
-
-    /**
-       Assigns the prescribed value to the velocity of blood plasma flow through the vessel.
-
-       @param value new value for mFlowVelocity
-     */
-    void SetFlowVelocity(double value);
-
-    /**
-       Assigns the prescribed value to the rate of blood plasma flow through the vessel.
-
-       @param value new value for mFlowRate
-     */
-    void SetFlowRate(double value);
-
-    /**
-       Assigns the prescribed value to the impedance of the vessel.
-
-       @param value new value for mImpedance
-     */
-    void SetImpedance(double value);
-
-    /**
-       Assigns the prescribed value to the shear stress experienced by the walls of the vessels.
-
-       @param value new value for mWallShearStress
-     */
-    void SetWallShearStress(double value);
-
-    /**
-       Assigns the prescribed value to the viscosity of the blood plasma flowing through a vessel.
-
-       @param value new value for mViscosity
-     */
-    void SetViscosity(double value);
-
-    /**
-       Assigns the prescribed value to the local mechanical stimulus experienced by the vessel.
-
-       @param value new value for mMechanicalStimulus
-     */
-    void SetMechanicalStimulus(double value);
-
-    /**
-       Assigns the prescribed value to the local metabolic stimulus experienced by the vessel.
-
-       @param value new value for mMetabolicStimulus
-     */
-    void SetMetabolicStimulus(double value);
-
-    /**
-       Assigns the prescribed value to the shrinking stimulus experienced by the vessel.
-
-       @param value new value for mShrinkingStimulus
-     */
-    void SetShrinkingStimulus(double value);
-
-    /**
-       Assigns the prescribed value to the downstream conducted stimulus experienced by the vessel.
-
-       @param value new value for mDownstreamConductedStimulus
-     */
-    void SetDownstreamConductedStimulus(double value);
-
-    /**
-       Assigns the prescribed value to the upstream conducted stimulus experienced by the vessel.
-
-       @param value new value for mUpstreamConductedStimulus
-     */
-    void SetUpstreamConductedStimulus(double value);
 
     /**
        Checks whether the prescribed node is attached to this vessel.
