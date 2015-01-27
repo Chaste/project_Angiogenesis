@@ -39,41 +39,109 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <cxxtest/TestSuite.h>
 #include "SmartPointers.hpp"
 #include "CaVascularNetworkNode.hpp"
+#include "CaVesselSegment.hpp"
 #include "CaVessel.hpp"
 #include "ChastePoint.hpp"
+#include "VascularNetworkData.hpp"
 #include "FakePetscSetup.hpp"
 
 class TestCaVessel : public CxxTest::TestSuite
 {
 public:
 
+	typedef boost::shared_ptr<CaVascularNetworkNode<2> > NodePtr2;
+	typedef boost::shared_ptr<CaVascularNetworkNode<3> > NodePtr3;
+	typedef boost::shared_ptr<CaVesselSegment<2> > SegmentPtr2;
+	typedef boost::shared_ptr<CaVesselSegment<3> > SegmentPtr3;
+	typedef boost::shared_ptr<CaVessel<2> > VesselPtr2;
+	typedef boost::shared_ptr<CaVessel<3> > VesselPtr3;
+
 	void TestConstructor() throw(Exception)
 	{
+    	// Make some nodes
+		std::vector<ChastePoint<2> > points;
+		points.push_back(ChastePoint<2>(0.0, 0.0));
+		points.push_back(ChastePoint<2>(1.0, 2.0));
+		points.push_back(ChastePoint<2>(3.0, 4.0));
+		points.push_back(ChastePoint<2>(4.0, 5.0));
+		points.push_back(ChastePoint<2>(7.0, 8.0));
+		points.push_back(ChastePoint<2>(8.0, 9.0));
+
+		std::vector<NodePtr2> nodes;
+		for(unsigned i=0; i < points.size(); i++)
+		{
+			nodes.push_back(NodePtr2 (CaVascularNetworkNode<2>::Create(points[i])));
+		}
+
+    	// Make some segments
+		SegmentPtr2 pSegment0(CaVesselSegment<2>::Create(nodes[0], nodes[1]));
+		SegmentPtr2 pSegment1(CaVesselSegment<2>::Create(nodes[1], nodes[2]));
+		SegmentPtr2 pSegment2(CaVesselSegment<2>::Create(nodes[2], nodes[3]));
+		SegmentPtr2 pSegment3(CaVesselSegment<2>::Create(nodes[4], nodes[5]));
+
 		// Make a vessel
-		CaVessel<2> vessel;
+		VesselPtr2 pVessel1(CaVessel<2>::Create(pSegment1));
 
+		std::vector<SegmentPtr2> good_segments;
+		good_segments.push_back(pSegment1);
+		good_segments.push_back(pSegment2);
+		VesselPtr2 pVessel2(CaVessel<2>::Create(good_segments));
+
+		std::vector<SegmentPtr2> bad_segments = good_segments;
+		bad_segments.push_back(pSegment3);
+		TS_ASSERT_THROWS_THIS(VesselPtr2 pVessel3(CaVessel<2>::Create(bad_segments));,"Input vessel segments are not attached in the correct order.");
+
+		// Check that locations are correct
+		TS_ASSERT(points[1].IsSamePoint(pVessel1->GetStartNode()->GetLocation()));
+		TS_ASSERT(points[3].IsSamePoint(pVessel2->GetEndNode()->GetLocation()));
+
+		// Check that segments are correctly returned
+		TS_ASSERT_EQUALS(pVessel2->GetNumberOfSegments(), 2u);
+		TS_ASSERT_EQUALS(pVessel2->GetSegments().size(), 2u);
+		TS_ASSERT(points[1].IsSamePoint(pVessel2->GetSegments(0)->GetNodes(0)->GetLocation()));
+
+		// Try adding a segment to the start
+		pVessel1->AddSegments(pSegment0);
+		TS_ASSERT_EQUALS(pVessel1->GetNumberOfSegments(), 2u);
+
+		// Try adding a disconnected segment
+		TS_ASSERT_THROWS_THIS(pVessel1->AddSegments(pSegment3),"Input vessel segment does not coincide with any end of the vessel.");
+
+		// Test simple Getters and Setters
+		pVessel1->SetId(5u);
+		std::string label = "Inlet";
+		pVessel1->SetLabel(label);
+		TS_ASSERT_EQUALS(pVessel1->GetId(), 5u);
+		TS_ASSERT_EQUALS(pVessel1->rGetLabel().c_str(), label.c_str());
 	}
 
-	void TestGettingAndSettingProperties()
+	void TestAccessingData() throw(Exception)
 	{
+    	// Make some nodes
+    	ChastePoint<3> point1(1.0, 2.0, 6.0);
+    	ChastePoint<3> point2(3.0, 4.0, 7.0);
 
-		boost::shared_ptr<CaVessel<2> > pVessel(new CaVessel<2>);
+    	NodePtr3 pNode1(CaVascularNetworkNode<3>::Create(point1));
+    	NodePtr3 pNode2(CaVascularNetworkNode<3>::Create(point2));
 
-		TS_ASSERT_THROWS_THIS(pVessel->GetDoubleDataValue("radius"),"No double valued property, 'radius', in property register.");
+    	// Make a segment
+    	SegmentPtr3 pSegment1(CaVesselSegment<3>::Create(pNode1, pNode2));
 
-		TS_ASSERT_THROWS_THIS(pVessel->GetBooleanData("hasActivelyMigratingTipCell"),"No boolean valued property, 'hasActivelyMigratingTipCell', in property register.");
+		// Make a vessel
+    	VesselPtr3 pVessel(CaVessel<3>::Create(pSegment1));
 
-		pVessel->SetDoubleData("radius", 1e-5, "m");
+		// Set some data
+		double radius = 5.5;
+		pVessel->GetDataContainer()->SetData("radius", radius);
+		TS_ASSERT_DELTA(pVessel->GetDataContainer()->GetData<double>("radius"), radius, 1.e-6);
 
-		pVessel->SetBooleanData("hasActivelyMigratingTipCell", true);
-
-		TS_ASSERT_EQUALS(pVessel->GetDoubleDataValue("radius"),1e-5);
-		TS_ASSERT_EQUALS(pVessel->GetDoubleDataUnits("radius"),"m");
-
-		TS_ASSERT_EQUALS(pVessel->GetBooleanData("hasActivelyMigratingTipCell"),true);
-
+		// Replace the existing data container with a new one
+		boost::shared_ptr<VascularNetworkData> pDataContainer(new VascularNetworkData());
+		double haematocrit = 7.5;
+		pDataContainer->SetData("haematocrit", haematocrit);
+		pVessel->SetDataContainer(pDataContainer);
+		TS_ASSERT_DELTA(pVessel->GetDataContainer()->GetData<double>("haematocrit"), haematocrit, 1.e-6);
 	}
-
 };
 
 #endif /*TESTCAVESSEL_HPP_*/

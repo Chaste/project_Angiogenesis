@@ -34,14 +34,16 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include "CaVascularNetworkNode.hpp"
-#include "CaVessel.hpp"
 
 template<unsigned DIM>
-CaVascularNetworkNode<DIM>::CaVascularNetworkNode()
-: mLocation(),
-  mDoubleData(),
-  mBooleanData(),
-  mAdjoiningVessels()
+CaVascularNetworkNode<DIM>::CaVascularNetworkNode(ChastePoint<DIM> location)
+	: mLocation(location),
+	  mpCell(CellPtr()),
+	  mpCellPopulation(NULL),
+	  mpDataContainer(boost::shared_ptr<VascularNetworkData>(new VascularNetworkData())),
+	  mId(0),
+	  mLabel(""),
+	  mVesselSegments(std::vector<boost::weak_ptr<CaVesselSegment<DIM> > >())
 {
 }
 
@@ -50,76 +52,148 @@ CaVascularNetworkNode<DIM>::~CaVascularNetworkNode()
 {
 }
 
-///\todo This method will return a bad weak pointer exception if a shared pointer
-// to the node has not been previously created. A generic catch has been used, it
-// should be replaced with one specific to the pointer.
-//
 template<unsigned DIM>
-boost::shared_ptr<CaVascularNetworkNode<DIM> > CaVascularNetworkNode<DIM>::shared()
+boost::shared_ptr<CaVascularNetworkNode<DIM> >CaVascularNetworkNode<DIM>::Create(ChastePoint<DIM> location)
 {
-	try
+	boost::shared_ptr<CaVascularNetworkNode<DIM> > pSelf(new CaVascularNetworkNode<DIM>(location));
+	return pSelf;
+}
+
+template<unsigned DIM>
+CellPtr CaVascularNetworkNode<DIM>::GetCell()
+{
+	if(mpCell)
 	{
-		boost::shared_ptr<CaVascularNetworkNode<DIM> > pNode = this->shared_from_this();
-		return pNode;
+		return mpCell;
 	}
-	catch(...)
+	else
 	{
-		EXCEPTION("Failed to return a shared pointer to a node. The node should be owned by a shared pointer before calling shared.");
+		EXCEPTION("A Cell has been requested but none have been assigned to this Node.");
 	}
+}
+
+template<unsigned DIM>
+unsigned CaVascularNetworkNode<DIM>::GetId()
+{
+	return mId;
+}
+
+template<unsigned DIM>
+const std::string& CaVascularNetworkNode<DIM>::rGetLabel()
+{
+	return mLabel;
 }
 
 template<unsigned DIM>
 ChastePoint<DIM> CaVascularNetworkNode<DIM>::GetLocation()
 {
-	return mLocation;
-}
-
-template<unsigned DIM>
-double CaVascularNetworkNode<DIM>::GetDoubleDataValue(const std::string& variableName)
-{
-	std::map<std::string, std::pair<double, std::string> >::const_iterator it = mDoubleData.find(variableName);
-	if (it == mDoubleData.end())
+	if(mpCell)
 	{
-		EXCEPTION("No double valued property, '" << variableName << "', in property register.");
+		ChastePoint<DIM> location(mpCellPopulation->GetLocationOfCellCentre(mpCell));
+		return location;
 	}
-	return(it->second.first);
-}
-
-template<unsigned DIM>
-const std::string& CaVascularNetworkNode<DIM>::GetDoubleDataUnits(const std::string& variableName) const
-{
-
-	std::map<std::string, std::pair<double, std::string> >::const_iterator it = mDoubleData.find(variableName);
-	if (it == mDoubleData.end())
+	else
 	{
-		EXCEPTION("No double valued property, '" << variableName << "', in property register.");
+		return mLocation;
 	}
-	return(it->second.second);
 }
 
 template<unsigned DIM>
-bool CaVascularNetworkNode<DIM>::GetBooleanData(const std::string& variableName)
+boost::shared_ptr<VascularNetworkData> CaVascularNetworkNode<DIM>::GetDataContainer()
 {
-	std::map<std::string, bool >::const_iterator it = mBooleanData.find(variableName);
-	if (it == mBooleanData.end())
+	return mpDataContainer;
+}
+
+template<unsigned DIM>
+bool CaVascularNetworkNode<DIM>::HasCell()
+{
+	return mpCell;
+}
+
+template<unsigned DIM>
+void CaVascularNetworkNode<DIM>::SetDataContainer(boost::shared_ptr<VascularNetworkData> pDataContainer)
+{
+	mpDataContainer->SetMap(pDataContainer->GetMap());
+}
+
+template<unsigned DIM>
+void CaVascularNetworkNode<DIM>::SetCell(CellPtr pCell)
+{
+	if(mpCellPopulation != NULL)
 	{
-		EXCEPTION("No boolean valued property, '" << variableName << "', in property register.");
+		std::list<CellPtr> cell_list = mpCellPopulation->rGetCells();
+		bool found = (std::find(cell_list.begin(), cell_list.end(), pCell) != cell_list.end());
+		if (found)
+		{
+			mpCell = pCell;
+		}
+		else
+		{
+			EXCEPTION("Attempted to add a Cell that is not in the assigned CellPopulation.");
+		}
 	}
-	return(it->second);
-}
-
-template<unsigned DIM>
-unsigned CaVascularNetworkNode<DIM>::GetNumberOfAdjoiningVessels()
-{
-	return mAdjoiningVessels.size();
-}
-
-template<unsigned DIM>
-boost::shared_ptr<CaVessel<DIM> > CaVascularNetworkNode<DIM>::GetAdjoiningVessel(unsigned i)
-{
-	if(i < mAdjoiningVessels.size())
+	else
 	{
-		return mAdjoiningVessels[i].lock(); // lock() converts weak pointer (stored here) to shared pointer
+		EXCEPTION("Attempted to add a Cell without first adding a CellPopulation.");
+	}
+}
+
+template<unsigned DIM>
+void CaVascularNetworkNode<DIM>::SetCellPopulation(CaBasedCellPopulation<DIM>* pCellPopulation)
+{
+	if (mpCell)
+	{
+		std::list<CellPtr> cell_list = pCellPopulation->rGetCells();
+		bool found = (std::find(cell_list.begin(), cell_list.end(), mpCell) != cell_list.end());
+
+		if (!found)
+		{
+			mpCell = CellPtr();
+		}
+	}
+	mpCellPopulation = pCellPopulation;
+}
+
+template<unsigned DIM>
+void CaVascularNetworkNode<DIM>::SetId(unsigned id)
+{
+	mId = id;
+}
+
+template<unsigned DIM>
+void CaVascularNetworkNode<DIM>::SetLabel(const std::string& label)
+{
+	mLabel = label;
+}
+
+template<unsigned DIM>
+void CaVascularNetworkNode<DIM>::SetLocation(ChastePoint<DIM> location)
+{
+	if (mpCell)
+	{
+		mpCell = CellPtr();
+	}
+	mLocation = location;
+}
+
+template<unsigned DIM>
+void CaVascularNetworkNode<DIM>::RemoveCell()
+{
+	mpCell = CellPtr();
+}
+
+template<unsigned DIM>
+unsigned CaVascularNetworkNode<DIM>::GetNumberOfSegments()
+{
+	return mVesselSegments.size();
+}
+
+template<unsigned DIM>
+boost::shared_ptr<CaVesselSegment<DIM> > CaVascularNetworkNode<DIM>::GetVesselSegments(unsigned index)
+{
+	if(index < mVesselSegments.size())
+	{
+		return mVesselSegments[index].lock(); // lock() converts weak pointer (stored here) to shared pointer
 	}
 	else
 	{
@@ -128,33 +202,27 @@ boost::shared_ptr<CaVessel<DIM> > CaVascularNetworkNode<DIM>::GetAdjoiningVessel
 }
 
 template<unsigned DIM>
-void CaVascularNetworkNode<DIM>::SetDoubleData(const std::string& variableName, double data, const std::string& unit)
+std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >CaVascularNetworkNode<DIM>::GetVesselSegments()
 {
-	mDoubleData[variableName] = std::pair<double, std::string> (data, unit);
+	std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments;
+
+	for(unsigned i=0; i<mVesselSegments.size(); i++)
+	{
+		segments.push_back(mVesselSegments[i].lock());
+	}
+
+	return segments;
 }
 
 template<unsigned DIM>
-void CaVascularNetworkNode<DIM>::SetBooleanData(const std::string& variableName, bool data)
+void CaVascularNetworkNode<DIM>::AddSegment(boost::shared_ptr<CaVesselSegment<DIM> > vessel_segment)
 {
-	mBooleanData[variableName] = data;
-}
-
-template<unsigned DIM>
-void CaVascularNetworkNode<DIM>::SetLocation(ChastePoint<DIM> location)
-{
-	mLocation = location;
-}
-
-
-template<unsigned DIM>
-void CaVascularNetworkNode<DIM>::AddAdjoiningVessel(boost::shared_ptr<CaVessel<DIM> > vessel)
-{
-	// The same vessel may be adjoint to a single node twice but that node must be both node1 and node2 of the doubly adjoint vessel
+	// Vessel segments can only be attached to a node once.
 	int number_times_attached_to_node = 0;
 
-	for(unsigned i = 0; i < mAdjoiningVessels.size(); i++)
+	for(unsigned i = 0; i < mVesselSegments.size(); i++)
 	{
-		if (mAdjoiningVessels[i].lock() == vessel)
+		if (mVesselSegments[i].lock() == vessel_segment)
 		{
 			number_times_attached_to_node++;
 		}
@@ -162,70 +230,25 @@ void CaVascularNetworkNode<DIM>::AddAdjoiningVessel(boost::shared_ptr<CaVessel<D
 
 	if (number_times_attached_to_node == 0)
 	{
-		mAdjoiningVessels.push_back(boost::weak_ptr<CaVessel<DIM> >(vessel));
-	}
-	else if (number_times_attached_to_node == 1 && vessel->GetNode1() == shared() && vessel->GetNode2() == shared())
-	{
-		mAdjoiningVessels.push_back(boost::weak_ptr<CaVessel<DIM> >(vessel));
+		mVesselSegments.push_back(boost::weak_ptr<CaVesselSegment<DIM> > (vessel_segment));
 	}
 	else
 	{
-		if (number_times_attached_to_node == 2)
-		{
-			EXCEPTION("Vessel is already attached to node twice (at both ends). Cannot attach vessel to same node again.");
-		}
-		else
-		{
-			EXCEPTION("Vessels and nodes in inconsistent state.");
-		}
+		EXCEPTION("This segment is already attached to this node.");
 	}
-
-	/*
-        todo should check that vessel being adjoined to node has not got an actively migrating tip located at this node
-        todo should perhaps check that the vessel exists at the location where the node is located
-        - i.e. that the vessel's first or last segment coordinate is at the location of the node.
-	 */
 }
 
 template<unsigned DIM>
-void CaVascularNetworkNode<DIM>::RemoveAdjoiningVessel(boost::shared_ptr<CaVessel<DIM> > vessel)
+void CaVascularNetworkNode<DIM>::RemoveSegment(boost::shared_ptr<CaVesselSegment<DIM> > pVesselSegment)
 {
-	bool attached_to_vessel = false;
-	for(unsigned i = 0; i < mAdjoiningVessels.size(); i++)
+	for(unsigned i = 0; i < mVesselSegments.size(); i++)
 	{
-		if (mAdjoiningVessels[i].lock() == vessel)
+		if (mVesselSegments[i].lock() == pVesselSegment)
 		{
-			attached_to_vessel = true;
-			mAdjoiningVessels.erase(mAdjoiningVessels.begin() + i);
+			mVesselSegments.erase(mVesselSegments.begin() + i);
 			i--;
 		}
 	}
-
-	if (!attached_to_vessel)
-	{
-		EXCEPTION("Attempted to remove a vessel from a node it is not attached to.");
-	}
-}
-
-
-template<unsigned DIM>
-bool CaVascularNetworkNode<DIM>::IsAttachedToVessel(boost::shared_ptr<CaVessel<DIM> > vessel)
-{
-	bool attached_to_node = false;
-
-	for(unsigned i = 0; i < mAdjoiningVessels.size(); i++)
-	{
-		if (mAdjoiningVessels[i].lock() == vessel)
-		{
-			if (vessel->GetNode1() != shared() && vessel->GetNode2() != shared())
-			{
-				EXCEPTION("The vessel has been added to the node, but the node has not been added to the vessel.");
-			}
-			attached_to_node = true;
-			break;
-		}
-	}
-	return attached_to_node;
 }
 
 // Explicit instantiation

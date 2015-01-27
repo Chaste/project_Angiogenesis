@@ -39,48 +39,83 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include <map>
 #include <string>
+#include <algorithm>
+#include <boost/weak_ptr.hpp>
 #include "ChastePoint.hpp"
 #include "Exception.hpp"
 #include "SmartPointers.hpp"
+#include "Cell.hpp"
+#include "CaBasedCellPopulation.hpp"
+#include "VascularNetworkData.hpp"
+#include "CaVesselSegment.hpp"
 
-// forward declaration of vessel class - vascular network node referenced in vessel class
-template <unsigned DIM>
-class CaVessel;
+template<unsigned DIM>
+class CaVesselSegment;
+
+/*
+ * Nodes are point locations along a vessel. They are useful for describing the positions of
+ * vessel segments and in calculating flow in networks. They can be linked to the position of a single Cell object
+ * which can in turn correspond to a single biological cell or a group of biological cells. Cell objects should update
+ * nodal positions while nodes can pass flow and stimulus information to their corresponding Cells.
+ */
 
 template<unsigned DIM>
 class CaVascularNetworkNode : public boost::enable_shared_from_this<CaVascularNetworkNode<DIM> >
 {
+	///\todo this breaks encapsulation, but ensures that the node-segment connectivity is
+	// kept up-to-date. Look at methods for limiting friend class access to methods.
+	friend class CaVesselSegment<DIM>;
+
 private:
 
 	/**
-	 *   Location of node.
+	 *   Location of a node. Used if a CellPtr has not been assigned.
 	 */
 	ChastePoint<DIM> mLocation;
 
 	/**
-	 *   Node data of type double, with units
+	 *   Pointer to an associated Cell.
 	 */
-	std::map<std::string, std::pair<double, std::string> > mDoubleData;
+	CellPtr mpCell;
 
 	/**
-	 *   Node data of type bool
+	 *   Pointer to an associated Cell Population.
 	 */
-	std::map<std::string, bool> mBooleanData;
+	CaBasedCellPopulation<DIM>* mpCellPopulation;
+
+    /**
+     * Container for non-spatial node data.
+     */
+	boost::shared_ptr<VascularNetworkData> mpDataContainer;
+
+    /**
+     * Id tag, can be useful for storing segment-node relationships in the VesselNetwork class.
+     */
+    unsigned mId;
+
+    /**
+     * Label tag, can be useful for identifying input and output nodes.
+     */
+    std::string mLabel;
 
 	/**
-	 *   Collection of CaVessel objects which are adjoint to this node.
+	 *   Collection of weak pointers to Vessel Segments connected to this node.
 	 */
-	std::vector<boost::weak_ptr<CaVessel<DIM> > > mAdjoiningVessels;
+	std::vector<boost::weak_ptr<CaVesselSegment<DIM> > > mVesselSegments;
 
 public:
 
 	/*
 	 * Constructor
 	 *
-	 * Upon instantiation the node has no prescribed location or adjoining vessels.
-	 *
+	 * A node must be specified with a location.
 	 */
-	CaVascularNetworkNode();
+	CaVascularNetworkNode(ChastePoint<DIM> location);
+
+    /*
+     * Construct a new instance of the class and return a shared pointer to it.
+     */
+    static boost::shared_ptr<CaVascularNetworkNode<DIM> > Create(ChastePoint<DIM> location);
 
 	/*
 	 * Destructor
@@ -88,90 +123,114 @@ public:
 	~CaVascularNetworkNode();
 
 	/**
-	 *  Returns a boost::shared_ptr to this CaVascularNetworkNode.
+	 *  Return a pointer to the associated Cell.
 	 *
-	 *  @return boost::shared_ptr<CaVascularNetworkNode<DIM,T> >
+	 *  @return mpCell
 	 */
-	boost::shared_ptr<CaVascularNetworkNode<DIM> > shared();
+	CellPtr GetCell();
 
 	/**
-	 *  Returns the location of the node.
+	 *  Return the Id
+	 *
+	 *  @return mId
+	 */
+	unsigned GetId();
+
+	/**
+	 *  Return the Label
+	 *
+	 *  @return mLabel
+	 */
+	const std::string& rGetLabel();
+
+	/**
+	 *  Return the location of the node or, if there is one, the associated Cell.
 	 *
 	 *  @return mLocation
 	 */
 	ChastePoint<DIM> GetLocation();
 
 	/**
-	 * Returns type double vessel node data value.
-	 */
-	double GetDoubleDataValue(const std::string& variableName);
-
-	/**
-	 * Returns type double vessel node data units.
-	 */
-	const std::string& GetDoubleDataUnits(const std::string& variableName) const;
-
-	/**
-	 * Returns type boolean vessel node data.
-	 */
-	bool GetBooleanData(const std::string& variableName);
-
-	/**
-	 *  Returns the number of vessels which are adjoint to the node.
+	 *  Return a pointer to the node's non-spatial data container.
 	 *
-	 *  @return mAdjoiningVessels.size()
+	 *  @return mDataContainer
 	 */
-	unsigned GetNumberOfAdjoiningVessels();
+	boost::shared_ptr<VascularNetworkData> GetDataContainer();
 
 	/**
-	 *  Returns a boost::shared_ptr to Vessel i which is adjoint to this node.
+	 *  Return the number of attached segments
+	 */
+	unsigned GetNumberOfSegments();
+
+	/**
+	 *  Return a boost::shared_ptr to VesselSegment i.
 	 *
 	 * @return mAdjoiningVessels[i]
 	 */
-	boost::shared_ptr<CaVessel<DIM> > GetAdjoiningVessel(unsigned i);
+	boost::shared_ptr<CaVesselSegment<DIM> > GetVesselSegments(unsigned index);
+
+	std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >GetVesselSegments();
 
 	/**
-	 * Assigns type double vessel node data.
-	 */
-	void SetDoubleData(const std::string& variableName, double data, const std::string& unit = "None");
-
-	/**
-	 * Assigns type boolean vessel node data.
-	 */
-	void SetBooleanData(const std::string& variableName, bool data);
-
-	/**
-	 * Assigns the prescribed location to the node.
+	 *  Return true if there is an associated Cell.
 	 *
-	 *  @param loc new location of node
+	 *  @return bool
+	 */
+	bool HasCell();
+
+	/**
+	 *  Assign a Cell to the node. Throw an Exception if the Cell is not a member of the
+	 *  Cell Population or if a Cell Population has not been set. Overwrite any existing Cell.
+	 */
+	void SetCell(CellPtr pCell);
+
+	/**
+	 *  Assign a Cell Population to the node. If an existing Cell is not a member of the population
+	 *  remove it.
+	 */
+	void SetCellPopulation(CaBasedCellPopulation<DIM>* pCellPopulation);
+
+	/**
+	 *  Over-write the node's non-spatial DataContainer
+	 *
+	 *  This can be useful when copying data from an existing node.
+	 */
+	void SetDataContainer(boost::shared_ptr<VascularNetworkData> pDataContainer);
+
+	/**
+	 *  Assign the Id
+	 *
+	 */
+	void SetId(unsigned id);
+
+	/**
+	 *  Assign the Label
+	 *
+	 */
+	void SetLabel(const std::string& label);
+
+	/**
+	 *  Set the location of the node. This breaks any links with an assigned Cell, so if there is an
+	 *  assigned Cell remove it.
 	 */
 	void SetLocation(ChastePoint<DIM> location);
 
 	/**
-       Adds an adjoining Vessel to the node.
-       The prescribed Vessel may be attached to the same node twice if it loops around on itself.
-       In this case the node must be both node1 and node2 of the Vessel.
-
-       todo: at some point should possibly check that the vessel being adjoined to node has not got
-       an actively migrating tip located at this node.
-
-       @param vessel vessel to be added to node
+	 *  Remove the assigned Cell
 	 */
-	void AddAdjoiningVessel(boost::shared_ptr<CaVessel<DIM> > vessel);
+	void RemoveCell();
+
+private:
 
 	/**
-       Removes an adjoining vessel from to node.
-
-       @param vessel vessel to be removed from node
+       Adds an adjoining Vessel segment the node.
 	 */
-	void RemoveAdjoiningVessel(boost::shared_ptr<CaVessel<DIM> > vessel);
+	void AddSegment(boost::shared_ptr<CaVesselSegment<DIM> > pVesselSegment);
 
 	/**
-       Checks whether the prescribed vessel is attached to this node.
-
-       @param vessel vessel which may or may not be attached to node
+       Removes an adjoining vessel segment from to node.
 	 */
-	bool IsAttachedToVessel(boost::shared_ptr<CaVessel<DIM> > vessel);
+	void RemoveSegment(boost::shared_ptr<CaVesselSegment<DIM> > pVesselSegment);
 
 };
 

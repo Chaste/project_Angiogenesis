@@ -36,14 +36,29 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CaVessel.hpp"
 
 template<unsigned DIM>
-CaVessel<DIM>::CaVessel()
-	: pNode1(new CaVascularNetworkNode<DIM>()),
-	  pNode2(new CaVascularNetworkNode<DIM>()),
-	  mDoubleData(),
-	  mBooleanData(),
-	  mVesselSegmentLocations(),
-	  mChemicalCollection()
+CaVessel<DIM>::CaVessel(boost::shared_ptr<CaVesselSegment<DIM> > pSegment)
+	: mSegments(std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >()),
+	  mpDataContainer(boost::shared_ptr<VascularNetworkData>(new VascularNetworkData())),
+	  mId(0),
+	  mLabel("")
 {
+	mSegments.push_back(pSegment);
+}
+
+template<unsigned DIM>
+CaVessel<DIM>::CaVessel(std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments)
+	: mSegments(segments),
+	  mpDataContainer(boost::shared_ptr<VascularNetworkData>(new VascularNetworkData())),
+	  mId(0),
+	  mLabel("")
+{
+	for (unsigned i = 1; i < mSegments.size(); i++)
+	{
+		if(mSegments[i]->GetNodes(0) != mSegments[i-1]->GetNodes(1))
+		{
+			EXCEPTION("Input vessel segments are not attached in the correct order.");
+		}
+	}
 }
 
 template<unsigned DIM>
@@ -51,233 +66,171 @@ CaVessel<DIM>::~CaVessel()
 {
 }
 
-//template<unsigned DIM>
-//bool CaVessel<DIM>::IsInputVessel()
-//{
-//    return (pNode1->IsInputNode() || pNode2->IsInputNode());
-//}
-
 template<unsigned DIM>
-void CaVessel<DIM>::CopyMechanicalPropertyValuesAndChemicalConcentrations(boost::shared_ptr<CaVessel<DIM> > another_vessel)
+boost::shared_ptr<CaVessel<DIM> >CaVessel<DIM>::Create(boost::shared_ptr<CaVesselSegment<DIM> > pSegment)
 {
-    // todo need to copy property maps over
+	boost::shared_ptr<CaVessel<DIM> > pSelf(new CaVessel<DIM>(pSegment));
 
-    for (unsigned i = 0; i < another_vessel->GetNumberOfIntraVascularChemicals(); i++)
-    {
-        mChemicalCollection.AddIntraVascularChemical(another_vessel->rGetCollectionOfIntraVascularChemicals().GetIntraVascularChemicalCollection()[i].GetChemicalName(),
-                Concentration(another_vessel->rGetCollectionOfIntraVascularChemicals().GetIntraVascularChemicalCollection()[i].GetConcentration(),
-                another_vessel->rGetCollectionOfIntraVascularChemicals().GetIntraVascularChemicalCollection()[i].GetUnits()),
-                another_vessel->rGetCollectionOfIntraVascularChemicals().GetIntraVascularChemicalCollection()[i].GetPermeabilityOfVesselWallToChemical());
-    }
+	// Add the vessel to the segment
+	pSegment->AddVessel(pSelf->shared_from_this());
+	return pSelf;
 }
 
 template<unsigned DIM>
-double CaVessel<DIM>::GetTortuosity()
+boost::shared_ptr<CaVessel<DIM> >CaVessel<DIM>::Create(std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments)
 {
-    double distance_between_ends_of_vessel;
+	boost::shared_ptr<CaVessel<DIM> > pSelf(new CaVessel<DIM>(segments));
 
-    if (DIM == 3u)
-    {
-        distance_between_ends_of_vessel = pow((pow(double(GetNode1()->GetLocation()[0] - GetNode2()->GetLocation()[0]), 2) +
-                pow(double(GetNode1()->GetLocation()[1] - GetNode2()->GetLocation()[1]), 2) +
-                pow(double(GetNode1()->GetLocation()[2] - GetNode2()->GetLocation()[2]), 2)), 0.5);
-    }
-    else
-    {
-		distance_between_ends_of_vessel = pow((pow(double(GetNode1()->GetLocation()[0] - GetNode2()->GetLocation()[0]), 2) +
-				pow(double(GetNode1()->GetLocation()[1] - GetNode2()->GetLocation()[1]), 2)), 0.5);
-    }
-
-    // todo need to change the following to have length returned from property list
-
-    double length = 100;
-
-    return (length/distance_between_ends_of_vessel);
-}
-
-template<unsigned DIM>
-boost::shared_ptr<CaVessel<DIM> > CaVessel<DIM>::shared()
-{
-    return this->shared_from_this();
-}
-
-template<unsigned DIM>
-boost::shared_ptr<CaVascularNetworkNode<DIM> > CaVessel<DIM>::GetNode1()
-{
-    return pNode1;
-}
-
-template<unsigned DIM>
-boost::shared_ptr<CaVascularNetworkNode<DIM> > CaVessel<DIM>::GetNode2()
-{
-    return pNode2;
-}
-
-template<unsigned DIM>
-std::vector<ChastePoint<DIM> > CaVessel<DIM>::GetSegmentCoordinates()
-{
-    return mVesselSegmentLocations;
-}
-
-template<unsigned DIM>
-ChastePoint<DIM> CaVessel<DIM>::GetSegmentCoordinate(unsigned i)
-{
-	if(i < mVesselSegmentLocations.size())
+	// Add the vessel to the segments
+	for (unsigned i = 1; i < segments.size(); i++)
 	{
-		return mVesselSegmentLocations[i];
+		segments[i]->AddVessel(pSelf->shared_from_this());
+	}
+	return pSelf;
+}
+
+template<unsigned DIM>
+void CaVessel<DIM>::AddSegments(boost::shared_ptr<CaVesselSegment<DIM> > pSegment)
+{
+	///\todo adding segments at the start could be slow. Maybe a deque is better than
+	// vector in this case.
+
+	if(pSegment->GetNodes(0) == mSegments.back()->GetNodes(1))
+	// Append to end of vessel
+	{
+		mSegments.push_back(pSegment);
+	}
+	else if(pSegment->GetNodes(1) == mSegments.front()->GetNodes(0))
+	// Insert at the start of the vessel
+	{
+		mSegments.insert(mSegments.begin(), pSegment);
 	}
 	else
 	{
-		EXCEPTION("Attempted to access a vessel segment with an out of range index.");
+		EXCEPTION("Input vessel segment does not coincide with any end of the vessel.");
+	}
+}
+
+template<unsigned DIM>
+void CaVessel<DIM>::AddSegments(std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments)
+{
+
+	// Check that the first or end segment coincide with the start or end of the vessel
+	bool start = false;
+	bool end = false;
+
+	if(segments.front()->GetNodes(0) == mSegments.back()->GetNodes(1))
+	{
+		start = true;
+	}
+	else if(segments.back()->GetNodes(1) == mSegments.front()->GetNodes(0))
+	{
+		end = true;
+	}
+	else
+	{
+		EXCEPTION("Input vessel segments do not coincide with any end of the vessel.");
+	}
+
+	// Check that the segments are in the correct order
+	for (unsigned i = 1; i < segments.size(); i++)
+	{
+		if(segments[i]->GetNodes(0) != segments[i-1]->GetNodes(1))
+		{
+			EXCEPTION("Input vessel segments are not ordered correctly.");
+		}
+		segments[i]->AddVessel(Shared());
+	}
+
+	if (start)
+	{
+		mSegments.insert(mSegments.end(), segments.begin(), segments.end());
+	}
+	else if (end)
+	{
+		std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > temp = segments;
+		temp.insert(temp.end(), mSegments.begin(), mSegments.end());
+		mSegments = temp;
+	}
+}
+
+template<unsigned DIM>
+boost::shared_ptr<VascularNetworkData> CaVessel<DIM>::GetDataContainer()
+{
+	return mpDataContainer;
+}
+
+template<unsigned DIM>
+unsigned CaVessel<DIM>::GetId()
+{
+	return mId;
+}
+
+template<unsigned DIM>
+const std::string& CaVessel<DIM>::rGetLabel()
+{
+	return mLabel;
+}
+
+template<unsigned DIM>
+boost::shared_ptr<CaVascularNetworkNode<DIM> > CaVessel<DIM>::GetStartNode()
+{
+    return mSegments.front()->GetNodes(0);
+}
+
+template<unsigned DIM>
+boost::shared_ptr<CaVascularNetworkNode<DIM> > CaVessel<DIM>::GetEndNode()
+{
+	return mSegments.back()->GetNodes(1);
+}
+
+template<unsigned DIM>
+std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > CaVessel<DIM>::GetSegments()
+{
+	return mSegments;
+}
+
+template<unsigned DIM>
+boost::shared_ptr<CaVesselSegment<DIM> > CaVessel<DIM>::GetSegments(unsigned i)
+{
+	if(i < mSegments.size())
+	{
+		return mSegments[i];
+	}
+	else
+	{
+		EXCEPTION("Requested segment index exceeds number of segments.");
 	}
 }
 
 template<unsigned DIM>
 unsigned CaVessel<DIM>::GetNumberOfSegments()
 {
-    return mVesselSegmentLocations.size();
+    return mSegments.size();
 }
 
 template<unsigned DIM>
-double CaVessel<DIM>::GetDoubleDataValue(const std::string& variableName)
+void CaVessel<DIM>::SetDataContainer(boost::shared_ptr<VascularNetworkData> pDataContainer)
 {
-	std::map<std::string, std::pair<double, std::string> >::const_iterator it = mDoubleData.find(variableName);
-	if (it == mDoubleData.end())
-	{
-		EXCEPTION("No double valued property, '" << variableName << "', in property register.");
-	}
-	return(it->second.first);
+	mpDataContainer->SetMap(pDataContainer->GetMap());
 }
 
 template<unsigned DIM>
-const std::string& CaVessel<DIM>::GetDoubleDataUnits(const std::string& variableName) const
+void CaVessel<DIM>::SetId(unsigned id)
 {
-
-	std::map<std::string, std::pair<double, std::string> >::const_iterator it = mDoubleData.find(variableName);
-	if (it == mDoubleData.end())
-	{
-		EXCEPTION("No double valued property, '" << variableName << "', in property register.");
-	}
-	return(it->second.second);
-
+	mId = id;
 }
 
 template<unsigned DIM>
-bool CaVessel<DIM>::GetBooleanData(const std::string& variableName)
+void CaVessel<DIM>::SetLabel(const std::string& label)
 {
-	std::map<std::string, bool >::const_iterator it = mBooleanData.find(variableName);
-	if (it == mBooleanData.end())
-	{
-		EXCEPTION("No boolean valued property, '" << variableName << "', in property register.");
-	}
-	return(it->second);
+	mLabel = label;
 }
 
 template<unsigned DIM>
-void CaVessel<DIM>::SetDoubleData(const std::string& variableName, double data, const std::string& unit)
+boost::shared_ptr<CaVessel<DIM> > CaVessel<DIM>::Shared()
 {
-	mDoubleData[variableName] = std::pair<double, std::string> (data, unit);
-}
-
-template<unsigned DIM>
-void CaVessel<DIM>::SetBooleanData(const std::string& variableName, bool data)
-{
-	mBooleanData[variableName] = data;
-}
-
-template<unsigned DIM>
-IntraVascularChemicalCollection& CaVessel<DIM>::rGetCollectionOfIntraVascularChemicals()
-{
-    return mChemicalCollection;
-}
-
-template<unsigned DIM>
-unsigned CaVessel<DIM>::GetNumberOfIntraVascularChemicals()
-{
-    return mChemicalCollection.GetIntraVascularChemicalCollection().size();
-}
-
-template<unsigned DIM>
-double CaVessel<DIM>::GetIntraVascularChemicalConcentration(string chemical_name)
-{
-    return mChemicalCollection.GetIntraVascularChemicalConcentration(chemical_name);
-}
-
-
-template<unsigned DIM>
-void CaVessel<DIM>::SetIntraVascularChemicalConcentration(string chemical_name, Concentration concentration)
-{
-    mChemicalCollection.SetIntraVascularChemicalConcentration(chemical_name, concentration);
-}
-
-template<unsigned DIM>
-void CaVessel<DIM>::SetNode1(boost::shared_ptr<CaVascularNetworkNode<DIM> > node)
-{
-    pNode1 = node;
-}
-
-template<unsigned DIM>
-void CaVessel<DIM>::SetNode1Location(ChastePoint<DIM> location)
-{
-    pNode1->SetLocation(location);
-    pNode1->AddAdjoiningVessel(shared()); // badly placed - doesn't make much sense but only place to do it really
-}
-
-template<unsigned DIM>
-void CaVessel<DIM>::SetNode2(boost::shared_ptr<CaVascularNetworkNode<DIM> > node)
-{
-    pNode2 = node;
-}
-
-template<unsigned DIM>
-void CaVessel<DIM>::SetNode2Location(ChastePoint<DIM> location)
-{
-    pNode2->SetLocation(location);
-    pNode2->AddAdjoiningVessel(shared());
-}
-
-/*
- * todo This method needs some adjustment ... dealing with coordinates that may not be integers, for example.
- * And what if there is no z-coordinate
- */
-template<unsigned DIM>
-void CaVessel<DIM>::SetNextVesselSegmentCoordinate(ChastePoint<DIM> point)
-{
-//    if (GetNumberOfSegments() > 0)
-//    {
-//        mVesselSegmentLocations.push_back(point);
-//        // todo set length here?
-//
-//        for (unsigned i = 1; i < GetNumberOfSegments(); i++)
-//        {
-//            double segment_length = 0;
-//
-//            if (DIM == 2)
-//            {
-//                segment_length = pow((pow(double(GetSegmentCoordinate(i)[0]-GetSegmentCoordinate(i-1)[0]), 2) +
-//                		pow(double(GetSegmentCoordinate(i)[1]-GetSegmentCoordinate(i-1)[1]), 2)), 0.5);
-//            }
-//
-//            if (DIM == 3)
-//            {
-//                segment_length = pow((pow(double(GetSegmentCoordinate(i)[0]-GetSegmentCoordinate(i-1)[0]), 2) +
-//                		pow(double(GetSegmentCoordinate(i)[1]-GetSegmentCoordinate(i-1)[1]),2) +
-//                		pow(double(GetSegmentCoordinate(i)[2] - GetSegmentCoordinate(i - 1)[2]), 2)), 0.5);
-//            }
-//            // todo set length here?
-//        }
-//    }
-//    else
-//    {
-//        mVesselSegmentLocations.push_back(point);
-//        // todo set length here?
-//    }
-}
-
-template<unsigned DIM>
-bool CaVessel<DIM>::IsAttachedToNode(boost::shared_ptr<CaVascularNetworkNode<DIM> > node)
-{
-    return (node == pNode1 || node == pNode2);
+    return this->shared_from_this();
 }
 
 // Explicit instantiation

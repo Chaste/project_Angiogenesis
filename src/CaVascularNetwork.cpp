@@ -37,11 +37,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 template <unsigned DIM>
 CaVascularNetwork<DIM>::CaVascularNetwork()
-	: mVesselArray(),
-	  mNodeArray(),
-	  mArterialHaematocritLevel(0.45),
-	  mArterialInputPressure(27*(1.01*pow(10.0,5)/760)),
-	  mVenousOutputPressure(15*(1.01*pow(10.0,5)/760))
+	: mVessels(std::vector<boost::shared_ptr<CaVessel<DIM> > >()),
+	  //mNodes(std::vector<boost::shared_ptr<CaVascularNetworkNode<DIM> > >()),
+	  mpDataContainer(boost::shared_ptr<VascularNetworkData>(new VascularNetworkData()))
 {
 }
 
@@ -51,900 +49,404 @@ CaVascularNetwork<DIM>::~CaVascularNetwork()
 }
 
 template <unsigned DIM>
-boost::shared_ptr<CaVascularNetwork<DIM> > CaVascularNetwork<DIM>::shared()
+void CaVascularNetwork<DIM>::AddVessels(boost::shared_ptr<CaVessel<DIM> > vessel)
 {
-    return this->shared_from_this();
+	mVessels.push_back(vessel);
 }
 
 template <unsigned DIM>
-unsigned CaVascularNetwork<DIM>::GetVesselID(boost::shared_ptr<CaVessel<DIM> > vessel)
+void CaVascularNetwork<DIM>::AddVessels(std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels)
 {
-    bool vessel_found = false;
-    unsigned i = 0;
-
-    for (i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        if (vessel == mVesselArray[i])
-        {
-        	vessel_found = true;
-            break;
-        }
-    }
-
-    assert(vessel_found);
-    return i;
-}
-
-
-template <unsigned DIM>
-unsigned CaVascularNetwork<DIM>::GetNodeID(boost::shared_ptr<CaVascularNetworkNode<DIM> > node)
-{
-    bool node_found = false;
-    unsigned i = 0;
-
-    for (i = 0; i < GetNumberOfNodesInNetwork(); i++)
-    {
-        if (node == mNodeArray[i])
-        {
-        	node_found = true;
-            break;
-        }
-    }
-
-    assert(node_found);
-    return i;
+	mVessels.insert(mVessels.end(), vessels.begin(), vessels.end());
 }
 
 template <unsigned DIM>
-unsigned CaVascularNetwork<DIM>::GetNumberOfVesselsInNetwork()
+std::set<boost::shared_ptr<CaVascularNetworkNode<DIM> > > CaVascularNetwork<DIM>::GetNodes()
 {
-    return mVesselArray.size();
+	std::set<boost::shared_ptr<CaVascularNetworkNode<DIM> > >  nodes;
+
+	typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator it;
+	typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator jt;
+	for(it = mVessels.begin(); it != mVessels.end(); it++)
+	{
+		std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = (*it)->GetSegments();
+		for(jt = segments.begin(); jt != segments.end(); jt++)
+		{
+			nodes.insert((*jt)->GetNodes(0));
+			nodes.insert((*jt)->GetNodes(1));
+		}
+	}
+	return nodes;
 }
-
-template <unsigned DIM>
-unsigned CaVascularNetwork<DIM>::GetNumberOfNodesInNetwork()
-{
-    return mNodeArray.size();
-}
-
-template <unsigned DIM>
-unsigned CaVascularNetwork<DIM>::GetNumberOfVesselsAtLocation(ChastePoint<DIM> coord)
-{
-
-	unsigned numberOfVesselsAtLocation = 0;
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        for (unsigned j = 0; j < GetVessel(i)->GetNumberOfSegments(); j++)
-        {
-            if (GetVessel(i)->GetSegmentCoordinate(j).IsSamePoint(coord))
-            {
-                numberOfVesselsAtLocation++;
-            }
-        }
-    }
-
-    return numberOfVesselsAtLocation;
-}
-
-template <unsigned DIM>
-boost::shared_ptr<CaVessel<DIM> > CaVascularNetwork<DIM>::GetVessel(int vessel_id)
-{
-    return mVesselArray[vessel_id];
-}
-
-template <unsigned DIM>
-boost::shared_ptr<CaVessel<DIM> > CaVascularNetwork<DIM>::GetVessel(ChastePoint<DIM> coord, int positionInContainer)
-{
-    int numberOfVesselsAtLocation = 0;
-    int vesselID = 0;
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        for (unsigned j = 0; j < GetVessel(i)->GetNumberOfSegments(); j++)
-        {
-            if (GetVessel(i)->GetSegmentCoordinate(j).IsSamePoint(coord))
-            {
-                numberOfVesselsAtLocation++;
-            }
-
-            if (numberOfVesselsAtLocation > positionInContainer)
-            {
-                vesselID = i;
-            }
-        }
-    }
-
-    if (numberOfVesselsAtLocation <= positionInContainer)
-    {
-        // todo This should strictly be an exception.
-        assert(numberOfVesselsAtLocation > positionInContainer);
-    }
-
-    return mVesselArray[vesselID];
-}
-
-template <unsigned DIM>
-boost::shared_ptr<CaVascularNetworkNode<DIM> > CaVascularNetwork<DIM>::GetNode(int node_id)
-{
-    return mNodeArray[node_id];
-}
-
-template <unsigned DIM>
-boost::shared_ptr<CaVascularNetworkNode<DIM> > CaVascularNetwork<DIM>::GetNode(ChastePoint<DIM> location)
-{
-    assert(NodePresentAtLocation(location));
-    assert(NumberOfNodesPresentAtLocation(location) == 1);
-
-    int nodeID;
-    for (unsigned i = 0; i < GetNumberOfNodesInNetwork(); i++)
-    {
-        if (mNodeArray[i]->GetLocation().IsSamePoint(location))
-        {
-            nodeID = i;
-            break;
-        }
-    }
-
-    return mNodeArray[nodeID];
-}
-
-template <unsigned DIM>
-double CaVascularNetwork<DIM>::GetArterialHaematocritLevel()
-{
-    return mArterialHaematocritLevel;
-}
-
-template <unsigned DIM>
-double CaVascularNetwork<DIM>::GetArterialInputPressure()
-{
-    return mArterialInputPressure;
-}
-
-template <unsigned DIM>
-double CaVascularNetwork<DIM>::GetVenousOutputPressure()
-{
-    return mVenousOutputPressure;
-}
-
-//template <unsigned DIM>
-//double CaVascularNetwork<DIM>::GetMeanVesselLengthOfNeovasculature()
-//{
-//    double totalVesselLength = 0;
-//    int numberofNewVessels = 0;
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        if (GetVessel(i)->IsPartOfNeovasculature())
-//        {
-//            totalVesselLength += GetVessel(i)->GetLength();
-//            numberofNewVessels++;
-//        }
-//
-//    }
-//
-//    return (totalVesselLength/(double)numberofNewVessels);
-//}
-//
-//template <unsigned DIM>
-//int CaVascularNetwork<DIM>::GetNumberOfVesselsByLength(double lowerBoundLength, double upperBoundLength)
-//{
-//    int numberOfVesselsInsideRange = 0;
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        if (GetVessel(i)->GetLength() > lowerBoundLength && GetVessel(i)->GetLength() <= upperBoundLength)
-//        {
-//            numberOfVesselsInsideRange++;
-//        }
-//    }
-//
-//    return numberOfVesselsInsideRange;
-//}
-//
-//template <unsigned DIM>
-//int CaVascularNetwork<DIM>::GetNumberOfVesselsByRadius(double lowerBoundRadius, double upperBoundRadius)
-//{
-//    int numberOfVesselsInsideRange = 0;
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        if (GetVessel(i)->GetRadius() > lowerBoundRadius && GetVessel(i)->GetRadius() <= upperBoundRadius)
-//        {
-//            numberOfVesselsInsideRange++;
-//        }
-//    }
-//
-//    return numberOfVesselsInsideRange;
-//}
-//
-//template <unsigned DIM>
-//int CaVascularNetwork<DIM>::GetNumberOfVesselsByTortuosity(double lowerBoundTortuosity, double upperBoundTortuosity)
-//{
-//    int numberOfVesselsInsideRange = 0;
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        if (GetVessel(i)->GetTortuosity() > lowerBoundTortuosity && GetVessel(i)->GetTortuosity() <= upperBoundTortuosity)
-//        {
-//            numberOfVesselsInsideRange++;
-//        }
-//    }
-//
-//    return numberOfVesselsInsideRange;
-//}
-//
-//template <unsigned DIM>
-//double CaVascularNetwork<DIM>::GetMeanVesselRadiusOfNeovasculature()
-//{
-//    double totalVesselRadius = 0;
-//    int numberofNewVessels = 0;
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        if (GetVessel(i)->IsPartOfNeovasculature())
-//        {
-//            totalVesselRadius += GetVessel(i)->GetRadius();
-//            numberofNewVessels++;
-//        }
-//
-//    }
-//
-//    return (totalVesselRadius/(double)numberofNewVessels);
-//}
-//
-//template <unsigned DIM>
-//double CaVascularNetwork<DIM>::GetMeanVesselTortuosityOfNeovasculature()
-//{
-//    double totalVesselTortuosity = 0;
-//    int numberofNewVessels = 0;
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        if (std::isinf(GetVessel(i)->GetTortuosity()))
-//        {
-//            // we ignore vessels with infinite tortuosity, i.e. self-loops
-//        }
-//        else
-//        {
-//            if (GetVessel(i)->IsPartOfNeovasculature())
-//            {
-//                totalVesselTortuosity += GetVessel(i)->GetTortuosity();
-//                numberofNewVessels++;
-//            }
-//        }
-//    }
-//
-//    return (totalVesselTortuosity/(double)numberofNewVessels);
-//}
 
 template <unsigned DIM>
 std::vector<boost::shared_ptr<CaVessel<DIM> > > CaVascularNetwork<DIM>::GetVessels()
 {
-    return mVesselArray;
+	return mVessels;
 }
 
 template <unsigned DIM>
-void CaVascularNetwork<DIM>::SetArterialHaematocritLevel(double value)
+void CaVascularNetwork<DIM>::MergeCoincidentNodes()
 {
-    mArterialHaematocritLevel = value;
+	// Loop through the nodes, if they are coincident but not identical replace
+	// one of them. Nodes in the inner iteration loop are the ones replaced.
+	std::set<boost::shared_ptr<CaVascularNetworkNode<DIM> > > nodes = GetNodes();
+
+	typename std::set<boost::shared_ptr<CaVascularNetworkNode<DIM> > >::iterator it;
+	typename std::set<boost::shared_ptr<CaVascularNetworkNode<DIM> > >::iterator it2;
+	typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator it3;
+
+	for(it = nodes.begin(); it != nodes.end(); it++)
+	{
+		for(it2 = nodes.begin(); it2 != nodes.end(); it2++)
+		{
+			// If the nodes are not identical
+			if ((*it) != (*it2))
+			{
+				// If the node locations are the same - according to the ChastePoint definition
+				if((*it)->GetLocation().IsSamePoint((*it2)->GetLocation()))
+				{
+					// Replace the node corresponding to it2 with the one corresponding to it
+					// in all segments.
+					std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = (*it2)->GetVesselSegments();
+					for(it3 = segments.begin(); it3 != segments.end(); it3++)
+					{
+						if ((*it3)->GetNodes(0) == (*it2))
+						{
+							(*it3)->ReplaceNode(0, (*it));
+						}
+						else if(((*it3)->GetNodes(1) == (*it2)))
+						{
+							(*it3)->ReplaceNode(1, (*it));
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 template <unsigned DIM>
-void CaVascularNetwork<DIM>::SetArterialInputPressure(double value)
+void CaVascularNetwork<DIM>::WriteToFile(std::string filename, bool geometry_only)
 {
-    mArterialInputPressure = value;
-}
+	vtkSmartPointer<vtkPolyData> pPolyData = vtkSmartPointer<vtkPolyData>::New();
+	vtkSmartPointer<vtkPoints> pPoints= vtkSmartPointer<vtkPoints>::New();
+	vtkSmartPointer<vtkCellArray> pLines = vtkSmartPointer<vtkCellArray>::New();
+	//vtkSmartPointer<vtkFloatArray> pInfo = vtkSmartPointer<vtkFloatArray>::New();
 
-template <unsigned DIM>
-void CaVascularNetwork<DIM>::SetVenousOutputPressure(double value)
-{
-    mVenousOutputPressure = value;
-}
+	//pInfo->SetNumberOfComponents(1);
+	//pInfo->SetName("Something");
 
-template <unsigned DIM>
-bool CaVascularNetwork<DIM>::NodePresentAtLocation(ChastePoint<DIM> location)
-{
-    bool nodePresentAtLocation = false;
+	typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator it;
 
-    for (unsigned i = 0; i < GetNumberOfNodesInNetwork(); i++)
+    for(it = mVessels.begin(); it < mVessels.end(); it++)
     {
-        if (mNodeArray[i]->GetLocation().IsSamePoint(location))
-        {
-            nodePresentAtLocation = true;
-            break;
-        }
+    	vtkSmartPointer<vtkLine> pLine = vtkSmartPointer<vtkLine>::New();
+    	std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = (*it)->GetSegments();
+
+    	for(unsigned i = 0; i < segments.size(); i++)
+    	{
+    		ChastePoint<DIM> location = segments[i]->GetNodes(0)->GetLocation();
+    		vtkIdType pointId;
+    		if(DIM == 2)
+    		{
+    			pointId = pPoints->InsertNextPoint(location[0], location[1], 0.0);
+    		}
+    		else
+    		{
+    			pointId = pPoints->InsertNextPoint(location[0], location[1], location[2]);
+    		}
+    		pLine->GetPointIds()->InsertId(i, pointId);
+
+    		if (i == segments.size() - 1)
+    		{
+    			vtkIdType pointId2;
+    			ChastePoint<DIM> location2 = segments[i]->GetNodes(1)->GetLocation();
+        		if(DIM == 2)
+        		{
+        			pointId2 = pPoints->InsertNextPoint(location2[0], location2[1], 0.0);
+        		}
+        		else
+        		{
+        			pointId2 = pPoints->InsertNextPoint(location2[0], location2[1], location2[2]);
+        		}
+        		pLine->GetPointIds()->InsertId(i + 1, pointId2);
+    		}
+    	}
+    	pLines->InsertNextCell(pLine);
+    	//pInfo->InsertNextTupleValue(1.0);
     }
-    return nodePresentAtLocation;
-}
+    pPolyData->SetPoints(pPoints);
+    pPolyData->SetLines(pLines);
+    //pPolyData->GetCellData().SetScalars(pInfo);
 
-template <unsigned DIM>
-unsigned CaVascularNetwork<DIM>::NumberOfNodesPresentAtLocation(ChastePoint<DIM> location)
-{
-	unsigned numberOfNodesPresentAtLocation = 0;
-
-    for (unsigned i = 0; i < GetNumberOfNodesInNetwork(); i++)
-    {
-        if (mNodeArray[i]->GetLocation().IsSamePoint(location))
-        {
-            numberOfNodesPresentAtLocation++;
-        }
-    }
-
-    return numberOfNodesPresentAtLocation;
-}
-
-template <unsigned DIM>
-void CaVascularNetwork<DIM>::AddVessel(boost::shared_ptr<CaVessel<DIM> > vessel)
-{
-    // todo Checking that there is enough space for the vessel at a particular location should be handled in a new CABasedCellPopulation
-
-    // Check that the first and last segment coordinates are the same as the coordinates of the vessel nodes.
-
-    assert(vessel->GetNode1()->GetLocation().IsSamePoint(vessel->GetSegmentCoordinate(0)) || vessel->GetNode2()->GetLocation().IsSamePoint(vessel->GetSegmentCoordinate(0)));
-    assert(vessel->GetNode1()->GetLocation().IsSamePoint(vessel->GetSegmentCoordinate(vessel->GetNumberOfSegments() - 1)) || vessel->GetNode2()->GetLocation().IsSamePoint(vessel->GetSegmentCoordinate(vessel->GetNumberOfSegments() - 1)));
-
-    assert(vessel->GetNode1()->GetNumberOfAdjoiningVessels() == 1);
-    assert(vessel->GetNode2()->GetNumberOfAdjoiningVessels() == 1);
-
-    // add vessel to network
-    mVesselArray.push_back(vessel);
-
-    bool node1OfVesselAlreadyPresentInNetwork = false;
-
-    for (unsigned i = 0; i < GetNumberOfNodesInNetwork(); i++)
-    {
-        if (GetNode(i)->GetLocation().IsSamePoint(vessel->GetNode1()->GetLocation())) // assume nodes are the same if they have the same location
-        {
-            vessel->SetNode1(mNodeArray[i]);
-            GetNode(i)->AddAdjoiningVessel(vessel);
-
-            // ----------------------------------------------------------------------------------
-            node1OfVesselAlreadyPresentInNetwork = true;
-            break;
-        }
-    }
-
-    if (node1OfVesselAlreadyPresentInNetwork == false)
-    {
-        mNodeArray.push_back(vessel->GetNode1());
-    }
-
-    bool node2OfVesselAlreadyPresentInNetwork = false;
-
-    for (unsigned i = 0; i < GetNumberOfNodesInNetwork(); i++)
-    {
-        if (GetNode(i)->GetLocation().IsSamePoint(vessel->GetNode2()->GetLocation())) // assume nodes are the same if they have the same location
-
-        {
-            vessel->SetNode2(mNodeArray[i]);
-            GetNode(i)->AddAdjoiningVessel(vessel);
-
-            // ----------------------------------------------------------------------------------
-            node2OfVesselAlreadyPresentInNetwork = true;
-            break;
-        }
-    }
-
-    if (node2OfVesselAlreadyPresentInNetwork == false)
-    {
-        mNodeArray.push_back(vessel->GetNode2());
-    }
-}
-
-template <unsigned DIM>
-bool CaVascularNetwork<DIM>::VesselIsInNetwork(boost::shared_ptr<CaVessel<DIM> > vessel)
-{
-    bool vesselIsInNetwork = false;
-    unsigned i = 0;
-
-    for (i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        if (vessel == mVesselArray[i])
-        {
-            vesselIsInNetwork = true;
-            break;
-        }
-    }
-    return vesselIsInNetwork;
-}
-
-template <unsigned DIM>
-bool CaVascularNetwork<DIM>::NodeIsInNetwork(boost::shared_ptr<CaVascularNetworkNode<DIM> > node)
-{
-    bool nodeIsInNetwork = false;
-
-    unsigned i = 0;
-
-    for (i = 0; i < GetNumberOfNodesInNetwork(); i++)
-    {
-        if (node == mNodeArray[i])
-        {
-            nodeIsInNetwork = true;
-            break;
-        }
-    }
-
-    return nodeIsInNetwork;
-}
-
-/*
- * Helper class for "connected" methods
- */
-template<typename TimeMap> class bfs_time_visitor : public boost::default_bfs_visitor
-{
-    typedef typename boost::property_traits<TimeMap>::value_type T;
-
-public:
-
-    TimeMap m_timemap;
-    T& m_time;
-
-    bfs_time_visitor(TimeMap tmap, T& t)
-    	:m_timemap(tmap),
-    	 m_time(t)
-    {
-    }
-
-    template<typename Vertex, typename Graph>
-    void discover_vertex(Vertex u, const Graph& g) const
-    {
-        put(m_timemap, u, m_time++);
-    }
-};
-
-
-///\ todo this could be made more general by passing in vectors of source nodes and target nodes and returning true for any targets connected
-// to a source. Would avoid graph reconstruction for each query and results in only one overall method.
-template <unsigned DIM>
-bool CaVascularNetwork<DIM>::Connected(boost::shared_ptr<CaVascularNetworkNode<DIM> > node1, boost::shared_ptr<CaVascularNetworkNode<DIM> > node2)
-{
-
-    if (node1 == node2)
-    {
-        return true;
-    }
-
-    // construct graph representation of vessel network
-    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS> Graph;
-
-    Graph G;
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        add_edge(GetNodeID(GetVessel(i)->GetNode1()), GetNodeID(GetVessel(i)->GetNode2()), G);
-    }
-
-    // typedefs
-    typedef boost::graph_traits<Graph>::vertices_size_type Size;
-
-    // a vector to hold the discover time property for each vertex
-    std::vector<Size> dtime(num_vertices(G));
-
-    Size time = 0;
-    bfs_time_visitor<Size*>vis(&dtime[0], time);
-
-    // use breadth first search to establish discovery time of all nodes from node1
-    // this assigns a discovery time to dTime for each node (index relates to nodeID)
-    // dTime is zero for node1 and all other nodes that are not connected to node1
-    // dTime is nonzero for all nodes that are connected to node1 (except node 1 itself)
-    breadth_first_search(G,vertex(GetNodeID(node1),G), boost::visitor(vis));
-
-    return (dtime[GetNodeID(node2)] > 0);
-}
-
-template <unsigned DIM>
-bool CaVascularNetwork<DIM>::ConnectedToInputNode(boost::shared_ptr<CaVascularNetworkNode<DIM> > node)
-{
-
-    if (node->GetBooleanData("IsInputNode"))
-    {
-        return true;
-    }
-
-    // construct graph representation of vessel network
-    typedef boost::adjacency_list<boost::vecS,boost::vecS,boost::undirectedS> Graph;
-
-    Graph G;
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        add_edge(GetNodeID(GetVessel(i)->GetNode1()),GetNodeID(GetVessel(i)->GetNode2()), G);
-    }
-
-    // typedefs
-    typedef boost::graph_traits<Graph>::vertices_size_type Size;
-
-    int connectedToInputNode = 0;
-
-    for (unsigned j = 0; j < GetNumberOfNodesInNetwork(); j++)
-    {
-
-        if (GetNode(j)->GetBooleanData("IsInputNode"))
-        {
-            // a vector to hold the discover time property for each vertex
-            std::vector<Size> dtime(num_vertices(G));
-
-            Size time = 0;
-            bfs_time_visitor<Size*>vis(&dtime[0], time);
-
-            // use breadth first search to establish discovery time of all nodes from node1
-            // this assigns a discovery time to dTime for each node (index relates to nodeID)
-            // dTime is zero for node1 and all other nodes that are not connected to node1
-            // dTime is nonzero for all nodes that are connected to node1 (except node 1 itself)
-            breadth_first_search(G,vertex(j,G), boost::visitor(vis));
-
-            if (dtime[GetNodeID(node)] > 0)
-            {
-                connectedToInputNode++;
-            }
-        }
-    }
-    return (connectedToInputNode > 0);
+	vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
+	writer->SetFileName(filename.c_str());
+	writer->SetInput(pPolyData);
+	writer->Write();
 }
 
 
-template <unsigned DIM>
-bool CaVascularNetwork<DIM>::ConnectedToOutputNode(boost::shared_ptr<CaVascularNetworkNode<DIM> > node)
-{
-
-    if (node->GetBooleanData("IsOutputNode"))
-    {
-        return true;
-    }
-
-    // construct graph representation of vessel network
-
-    typedef boost::adjacency_list<boost::vecS,boost::vecS,boost::undirectedS> Graph;
-
-    Graph G;
-
-    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-    {
-        add_edge(GetNodeID(GetVessel(i)->GetNode1()),GetNodeID(GetVessel(i)->GetNode2()),G);
-    }
-
-    // typedefs
-
-    typedef boost::graph_traits<Graph>::vertices_size_type Size;
-
-    int connectedToOutputNode = 0;
-
-    for (unsigned j = 0; j < GetNumberOfNodesInNetwork(); j++)
-    {
-
-        if (GetNode(j)->GetBooleanData("IsOutputNode"))
-        {
-            // a vector to hold the discover time property for each vertex
-            std::vector<Size> dtime(num_vertices(G));
-
-            Size time = 0;
-            bfs_time_visitor<Size*>vis(&dtime[0], time);
-
-            // use breadth first search to establish discovery time of all nodes from node1
-            // this assigns a discovery time to dTime for each node (index relates to nodeID)
-            // dTime is zero for node1 and all other nodes that are not connected to node1
-            // dTime is nonzero for all nodes that are connected to node1 (except node 1 itself)
-            breadth_first_search(G,vertex(j,G), boost::visitor(vis));
-
-            if (dtime[GetNodeID(node)] > 0)
-            {
-                connectedToOutputNode++;
-            }
-
-        }
-
-    }
-    return (connectedToOutputNode > 0);
-}
-
-template <unsigned DIM>
-void CaVascularNetwork<DIM>::SetInputNode(ChastePoint<DIM> location)
-{
-     assert(GetNode(location)->GetNumberOfAdjoiningVessels() == 1);
-     GetNode(location)->SetBooleanData("IsInputNode", true);
-}
-
-template <unsigned DIM>
-void CaVascularNetwork<DIM>::SetOutputNode(ChastePoint<DIM> location)
-{
-    assert(GetNode(location)->GetNumberOfAdjoiningVessels() == 1);
-    GetNode(location)->SetBooleanData("IsOutputNode", true);
-}
-
-template <unsigned DIM>
-void CaVascularNetwork<DIM>::SaveVasculatureDataToFile(string filename)
-{
-    // open file to write data to
-    // __________________________
-
-	///\ todo replace with vtk polydata writer
-
-//    std::ofstream out(filename.c_str());
+//template <unsigned DIM>
+//boost::shared_ptr<CaVascularNetwork<DIM> > CaVascularNetwork<DIM>::shared()
+//{
+//    return this->shared_from_this();
+//}
 //
-//    int NumberOfPoints = 0;
+//template <unsigned DIM>
+//unsigned CaVascularNetwork<DIM>::GetVesselID(boost::shared_ptr<CaVessel<DIM> > vessel)
+//{
+//    bool vessel_found = false;
+//    unsigned i = 0;
 //
-//    for(unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    for (i = 0; i < GetNumberOfVesselsInNetwork(); i++)
 //    {
-//        NumberOfPoints += GetVessel(i)->GetNumberOfSegments();
+//        if (vessel == mVesselArray[i])
+//        {
+//        	vessel_found = true;
+//            break;
+//        }
 //    }
 //
-//    out << "# vtk DataFile Version 3.0\nvtk vasculature data\nASCII\n\n";
-//    out << "DATASET POLYDATA\n";
-//    out << "POINTS " << NumberOfPoints <<" float\n";
+//    assert(vessel_found);
+//    return i;
+//}
 //
-//    for(unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//
+//template <unsigned DIM>
+//unsigned CaVascularNetwork<DIM>::GetNodeID(boost::shared_ptr<CaVascularNetworkNode<DIM> > node)
+//{
+//    bool node_found = false;
+//    unsigned i = 0;
+//
+//    for (i = 0; i < GetNumberOfNodesInNetwork(); i++)
+//    {
+//        if (node == mNodeArray[i])
+//        {
+//        	node_found = true;
+//            break;
+//        }
+//    }
+//
+//    assert(node_found);
+//    return i;
+//}
+//
+//template <unsigned DIM>
+//unsigned CaVascularNetwork<DIM>::GetNumberOfVesselsInNetwork()
+//{
+//    return mVesselArray.size();
+//}
+//
+//template <unsigned DIM>
+//unsigned CaVascularNetwork<DIM>::GetNumberOfNodesInNetwork()
+//{
+//    return mNodeArray.size();
+//}
+//
+//template <unsigned DIM>
+//unsigned CaVascularNetwork<DIM>::GetNumberOfVesselsAtLocation(ChastePoint<DIM> coord)
+//{
+//
+//	unsigned numberOfVesselsAtLocation = 0;
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
 //    {
 //        for (unsigned j = 0; j < GetVessel(i)->GetNumberOfSegments(); j++)
 //        {
-//            out << (GetVessel(i)->GetSegmentCoordinate(j)[0]) << " " << (GetVessel(i)->GetSegmentCoordinate(j)[1]) << " ";
-//            if (DIM > 2)
+//            if (GetVessel(i)->GetSegmentCoordinate(j).IsSamePoint(coord))
 //            {
-//                out << (GetVessel(i)->GetSegmentCoordinate(j)[2]);
+//                numberOfVesselsAtLocation++;
 //            }
-//            else
+//        }
+//    }
+//
+//    return numberOfVesselsAtLocation;
+//}
+//
+//
+//template <unsigned DIM>
+//bool CaVascularNetwork<DIM>::NodePresentAtLocation(ChastePoint<DIM> location)
+//{
+//    bool nodePresentAtLocation = false;
+//
+//    for (unsigned i = 0; i < GetNumberOfNodesInNetwork(); i++)
+//    {
+//        if (mNodeArray[i]->GetLocation().IsSamePoint(location))
+//        {
+//            nodePresentAtLocation = true;
+//            break;
+//        }
+//    }
+//    return nodePresentAtLocation;
+//}
+//
+//template <unsigned DIM>
+//unsigned CaVascularNetwork<DIM>::NumberOfNodesPresentAtLocation(ChastePoint<DIM> location)
+//{
+//	unsigned numberOfNodesPresentAtLocation = 0;
+//
+//    for (unsigned i = 0; i < GetNumberOfNodesInNetwork(); i++)
+//    {
+//        if (mNodeArray[i]->GetLocation().IsSamePoint(location))
+//        {
+//            numberOfNodesPresentAtLocation++;
+//        }
+//    }
+//
+//    return numberOfNodesPresentAtLocation;
+//}
+//
+//template <unsigned DIM>
+//bool CaVascularNetwork<DIM>::VesselIsInNetwork(boost::shared_ptr<CaVessel<DIM> > vessel)
+//{
+//    bool vesselIsInNetwork = false;
+//    unsigned i = 0;
+//
+//    for (i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        if (vessel == mVesselArray[i])
+//        {
+//            vesselIsInNetwork = true;
+//            break;
+//        }
+//    }
+//    return vesselIsInNetwork;
+//}
+//
+//template <unsigned DIM>
+//bool CaVascularNetwork<DIM>::NodeIsInNetwork(boost::shared_ptr<CaVascularNetworkNode<DIM> > node)
+//{
+//    bool nodeIsInNetwork = false;
+//
+//    unsigned i = 0;
+//
+//    for (i = 0; i < GetNumberOfNodesInNetwork(); i++)
+//    {
+//        if (node == mNodeArray[i])
+//        {
+//            nodeIsInNetwork = true;
+//            break;
+//        }
+//    }
+//
+//    return nodeIsInNetwork;
+//}
+//
+///*
+// * Helper class for "connected" methods
+// */
+//template<typename TimeMap> class bfs_time_visitor : public boost::default_bfs_visitor
+//{
+//    typedef typename boost::property_traits<TimeMap>::value_type T;
+//
+//public:
+//
+//    TimeMap m_timemap;
+//    T& m_time;
+//
+//    bfs_time_visitor(TimeMap tmap, T& t)
+//    	:m_timemap(tmap),
+//    	 m_time(t)
+//    {
+//    }
+//
+//    template<typename Vertex, typename Graph>
+//    void discover_vertex(Vertex u, const Graph& g) const
+//    {
+//        put(m_timemap, u, m_time++);
+//    }
+//};
+//
+/////\ todo this could be made more general by passing in vectors of source nodes and target nodes and returning true for any targets connected
+//// to a source. Would avoid graph reconstruction for each query and results in only one overall method.
+//template <unsigned DIM>
+//bool CaVascularNetwork<DIM>::Connected(boost::shared_ptr<CaVascularNetworkNode<DIM> > node1, boost::shared_ptr<CaVascularNetworkNode<DIM> > node2)
+//{
+//
+//    if (node1 == node2)
+//    {
+//        return true;
+//    }
+//
+//    // construct graph representation of vessel network
+//    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS> Graph;
+//
+//    Graph G;
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        add_edge(GetNodeID(GetVessel(i)->GetNode1()), GetNodeID(GetVessel(i)->GetNode2()), G);
+//    }
+//
+//    // typedefs
+//    typedef boost::graph_traits<Graph>::vertices_size_type Size;
+//
+//    // a vector to hold the discover time property for each vertex
+//    std::vector<Size> dtime(num_vertices(G));
+//
+//    Size time = 0;
+//    bfs_time_visitor<Size*>vis(&dtime[0], time);
+//
+//    // use breadth first search to establish discovery time of all nodes from node1
+//    // this assigns a discovery time to dTime for each node (index relates to nodeID)
+//    // dTime is zero for node1 and all other nodes that are not connected to node1
+//    // dTime is nonzero for all nodes that are connected to node1 (except node 1 itself)
+//    breadth_first_search(G,vertex(GetNodeID(node1),G), boost::visitor(vis));
+//
+//    return (dtime[GetNodeID(node2)] > 0);
+//}
+//
+//template <unsigned DIM>
+//bool CaVascularNetwork<DIM>::ConnectedToInputNode(boost::shared_ptr<CaVascularNetworkNode<DIM> > node)
+//{
+//
+//    if (node->GetBooleanData("IsInputNode"))
+//    {
+//        return true;
+//    }
+//
+//    // construct graph representation of vessel network
+//    typedef boost::adjacency_list<boost::vecS,boost::vecS,boost::undirectedS> Graph;
+//
+//    Graph G;
+//
+//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
+//    {
+//        add_edge(GetNodeID(GetVessel(i)->GetNode1()),GetNodeID(GetVessel(i)->GetNode2()), G);
+//    }
+//
+//    // typedefs
+//    typedef boost::graph_traits<Graph>::vertices_size_type Size;
+//
+//    int connectedToInputNode = 0;
+//
+//    for (unsigned j = 0; j < GetNumberOfNodesInNetwork(); j++)
+//    {
+//
+//        if (GetNode(j)->GetBooleanData("IsInputNode"))
+//        {
+//            // a vector to hold the discover time property for each vertex
+//            std::vector<Size> dtime(num_vertices(G));
+//
+//            Size time = 0;
+//            bfs_time_visitor<Size*>vis(&dtime[0], time);
+//
+//            // use breadth first search to establish discovery time of all nodes from node1
+//            // this assigns a discovery time to dTime for each node (index relates to nodeID)
+//            // dTime is zero for node1 and all other nodes that are not connected to node1
+//            // dTime is nonzero for all nodes that are connected to node1 (except node 1 itself)
+//            breadth_first_search(G,vertex(j,G), boost::visitor(vis));
+//
+//            if (dtime[GetNodeID(node)] > 0)
 //            {
-//                out << 0;
+//                connectedToInputNode++;
 //            }
-//            out << "\n";
-//        }
-//
-//    }
-//
-//    out << "\n\n";
-//    out << "LINES " << GetNumberOfVesselsInNetwork() << " " <<  GetNumberOfVesselsInNetwork() + NumberOfPoints << "\n";
-//
-//    int NumberOfPointsUsed = 0;
-//
-//    for(unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        out << GetVessel(i)->GetNumberOfSegments() << " ";
-//        for (unsigned j = 0; j < GetVessel(i)->GetNumberOfSegments(); j++)
-//        {
-//            out << NumberOfPointsUsed << " ";
-//            NumberOfPointsUsed++;
-//        }
-//        out << "\n";
-//    }
-//
-//
-//    out << "\nCELL_DATA " << GetNumberOfVesselsInNetwork() << "\n";
-//    out << "FIELD FieldData " << 20 + GetVessel(0)->GetNumberOfIntraVascularChemicals() << "\n";
-//
-//    out << "\n";
-//    out << "Radius" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        out << GetVessel(i)->GetRadius();
-//        out << "\n";
-//    }
-//
-//    out << "\n";
-//    out << "UpstreamConductedStimulus" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        out << GetVessel(i)->GetUpstreamConductedStimulus();
-//        out << "\n";
-//    }
-//
-//    out << "\n";
-//    out << "DownstreamConductedStimulus" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        out << GetVessel(i)->GetDownstreamConductedStimulus();
-//        out << "\n";
-//    }
-//
-//    out << "\n";
-//    out << "ShrinkingStimulus" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        out << GetVessel(i)->GetShrinkingStimulus();
-//        out << "\n";
-//    }
-//
-//    out << "\n";
-//    out << "MetabolicStimulus" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        out << GetVessel(i)->GetMetabolicStimulus();
-//        out << "\n";
-//    }
-//
-//    out << "\n";
-//    out << "MechanicalStimulus" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        out << GetVessel(i)->GetMechanicalStimulus();
-//        out << "\n";
-//    }
-//
-//    out << "\n";
-//    out << "Viscosity" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        out << GetVessel(i)->GetViscosity();
-//        out << "\n";
-//    }
-//
-//    out << "\n";
-//    out << "Impedance" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        out << GetVessel(i)->GetImpedance();
-//        out << "\n";
-//    }
-//
-//    out << "\n";
-//    out << "WallShearStress" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        out << GetVessel(i)->GetWallShearStress();
-//        out << "\n";
-//    }
-//
-//    out << "\n";
-//    out << "FlowVelocity" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        out << GetVessel(i)->GetFlowVelocity();
-//        out << "\n";
-//    }
-//
-//    out << "\n";
-//    out << "FlowRate" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        out << GetVessel(i)->GetFlowRate();
-//        out << "\n";
-//    }
-//
-//    out << "\n";
-//    out << "AbsFlowVelocity" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        out << fabs(GetVessel(i)->GetFlowVelocity());
-//        out << "\n";
-//    }
-//
-//    out << "\n";
-//    out << "AbsFlowRate" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        out << fabs(GetVessel(i)->GetFlowRate());
-//        out << "\n";
-//    }
-//
-//    out << "\n";
-//    out << "HaematocritLevel" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        out << GetVessel(i)->GetHaematocritLevel();
-//        out << "\n";
-//    }
-//
-//    out << "\n";
-//    out << "Length" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        out << GetVessel(i)->GetLength();
-//        out << "\n";
-//    }
-//
-//    out << "\n";
-//    out << "Pressure" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        out << 0.5*(GetVessel(i)->GetNode1()->GetPressure() + GetVessel(i)->GetNode2()->GetPressure());
-//        out << "\n";
-//    }
-//
-//    out << "\n";
-//    out << "Tortuosity" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        if (std::isinf(GetVessel(i)->GetTortuosity()))
-//        {
-//            // tortuosity is infinite for a circle but paraview cannot handle infinite vales so prescribe arbitrary large
-//            // value to print out to file if tortuosity is infinite.
-//            out << 10000000;
-//            out << "\n";
-//        }
-//        else
-//        {
-//            out << GetVessel(i)->GetTortuosity();
-//            out << "\n";
 //        }
 //    }
+//    return (connectedToInputNode > 0);
+//}
 //
-//    out << "\n";
-//    out << "HasActiveTipCell" << " 1 " << GetNumberOfVesselsInNetwork() << " int\n";
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        out << GetVessel(i)->HasActiveTipCell();
-//        out << "\n";
-//    }
-//
-//    out << "\n";
-//    out << "TimeWithLowWallShearStress" << " 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        out << GetVessel(i)->GetTimeWithLowWallShearStress();
-//        out << "\n";
-//    }
-//
-//    out << "\n";
-//
-//    out << "\n";
-//    out << "IsPartOfNeovasculature" << " 1 " << GetNumberOfVesselsInNetwork() << " int\n";
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//
-//        if (GetVessel(i)->IsPartOfNeovasculature() == true)
-//        {
-//            out << "1 ";
-//        }
-//        else
-//        {
-//            out << "0 ";
-//        }
-//        out << "\n";
-//    }
-//
-//    out << "\n";
-//
-//    if (GetVessel(0)->GetNumberOfIntraVascularChemicals() > 0)
-//    {
-//
-//        for (unsigned chemsIndex = 0; chemsIndex < GetVessel(0)->GetNumberOfIntraVascularChemicals(); chemsIndex++)
-//        {
-//            out << "\n";
-//            out << GetVessel(0)->GetCollectionOfIntraVascularChemicals().GetIntraVascularChemicalCollection()[chemsIndex].GetChemicalName() << "Concentration 1 " << GetNumberOfVesselsInNetwork() << " float\n";
-//
-//            for(unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//            {
-//
-//                if (GetVessel(i)->GetCollectionOfIntraVascularChemicals().GetIntraVascularChemicalCollection()[chemsIndex].GetConcentration() > 1e-15)
-//                {
-//                    out << GetVessel(i)->GetCollectionOfIntraVascularChemicals().GetIntraVascularChemicalCollection()[chemsIndex].GetConcentration();
-//                }
-//                else
-//                {
-//                    out << 0;
-//                }
-//                out << "\n";
-//            }
-//
-//
-//
-//            out << "\n";
-//        }
-//
-//
-//    }
-//
-//    out.close();
-}
 
 // Explicit instantiation
 template class CaVascularNetwork<2>;

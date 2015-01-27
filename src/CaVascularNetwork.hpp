@@ -37,9 +37,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define CAVASCULARNETWORK_HPP_
 
 #include <math.h>
-#include <float.h>
 #include <algorithm>
-#include <utility>
 #include <vector>
 #include <iostream>
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the boost deprecated warning for now (gcc4.3)
@@ -52,15 +50,24 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/pending/indirect_cmp.hpp>
+#ifdef CHASTE_VTK
+#include <vtkDoubleArray.h>
+#include <vtkFloatArray.h>
+#include <vtkCellData.h>
+#include <vtkCellArray.h>
+#include <vtkPointData.h>
+#include <vtkPolyData.h>
+#include <vtkLine.h>
+#include <vtkXMLPolyDataWriter.h>
+#include <vtkSmartPointer.h>
+#endif // CHASTE_VTK
 #include "CaVessel.hpp"
+#include "CaVesselSegment.hpp"
 #include "CaVascularNetworkNode.hpp"
 #include "SmartPointers.hpp"
 
 /*
-    A vessel network is any set of connected or unconnected vessels within a model domain.
-    The class contains a reference to a PottsMesh class which enables the vessels contained
-    within a vessel network to interact spatially with other biological entities contained in the
-    model domain.
+    A vessel network is a collection of vessels
  */
 
 template<unsigned DIM>
@@ -72,40 +79,17 @@ private:
     /**
        Container for Vessels in the VesselNetwork.
      */
-    std::vector<boost::shared_ptr<CaVessel<DIM> > > mVesselArray;
+    std::vector<boost::shared_ptr<CaVessel<DIM> > > mVessels;
 
     /**
-       Container for VesselNetworkNodes in the VesselNetwork.
+     * Container for non-spatial node data.
      */
-    std::vector<boost::shared_ptr<CaVascularNetworkNode<DIM> > > mNodeArray;
-
-    /**
-       Level of haematocrit inside input vessels of a network.
-     */
-    double mArterialHaematocritLevel;
-
-    /**
-       Pressure at arterial input nodes of network. Pressure should be prescribed in units of
-       Pascals.
-     */
-    double mArterialInputPressure;
-
-    /**
-       Pressure at venous output nodes of network. Pressure should be prescribed in units of
-       Pascals.
-     */
-    double mVenousOutputPressure;
+	boost::shared_ptr<VascularNetworkData> mpDataContainer;
 
 public:
 
     /*
      * Constructor
-     *
-     * Upon instantiation:
-            The network contains no nodes or vessels.
-            arterialHaematocritLevel is initialised as 0.45.
-            arterialInputPressure is initialised as 3588 Pa.
-            venousOutputPressure is initialised as 1993 Pa.
      */
     CaVascularNetwork();
 
@@ -115,239 +99,100 @@ public:
     ~CaVascularNetwork();
 
     /**
-       Returns a boost::shared_ptr to this VesselNetwork.
-
-       @return boost::shared_ptr<CaVascularNetwork<DIM> >
+        Adds a vessel to the VesselNetwork.
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > shared();
+    void AddVessels(boost::shared_ptr<CaVessel<DIM> > vessel);
+
+   /**
+       Adds a collection of vessels to the VesselNetwork
+    */
+    void AddVessels(std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels);
 
     /**
-       This method is used to resolve the identity of vessels contained within a network.
-       For example, a vessel could be fetched from the spatial mesh and provided as an argument to
-       this function in order to determine the local identity of that vessel in the network.
-
-       @param vessel boost::shared_ptr<CaVessel<DIM> >.
+        Return the nodes in the network
      */
-    unsigned GetVesselID(boost::shared_ptr<CaVessel<DIM> > vessel);
+    std::set<boost::shared_ptr<CaVascularNetworkNode<DIM> > > GetNodes();
 
     /**
-       This method is used to resolve the identity of nodes contained within a network.
-       For example, a node could be fetched from the spatial mesh and provided as an argument to
-       this function in order to determine the local identity of that node in the network.
-
-       @param node
-       @return id of node (index of node in mNodeArray)
-     */
-    unsigned GetNodeID(boost::shared_ptr<CaVascularNetworkNode<DIM> > node);
-
-    /**
-       Returns the number of vessels contained within the network.
-     */
-    unsigned GetNumberOfVesselsInNetwork();
-
-    /**
-       Returns the number of nodes contained within the network.
-     */
-    unsigned GetNumberOfNodesInNetwork();
-
-    /**
-		Returns the number of vessels which occupy a particular location in the spatial mesh.
-		At the moment, it is assumed that multiple vessels only occupy the same location on the
-		spatial mesh if they are connected at that location. I.e. a node would also be present at
-		that location.
-
-		The spatial coordinate provided as an argument should be within the boundaries of the model
-		domain (contained within the spatial mesh).
-
-		@param location ChastePoint<DIM>.
-     */
-    unsigned GetNumberOfVesselsAtLocation(ChastePoint<DIM> coord);
-
-    /**
-		Returns a boost::shared_ptr to the vessel object with the prescribed id.
-
-		@param vessel_id integer.
-     */
-    boost::shared_ptr<CaVessel<DIM> > GetVessel(int vessel_id);
-
-    /**
-		Returns a boost::shared_ptr to the vessel object with the prescribed location and at the
-		prescribed position in the container at that location in the spatial mesh.
-
-		@param location ChastePoint<DIM>.
-		@param positionInContainer integer.
-     */
-    boost::shared_ptr<CaVessel<DIM> > GetVessel(ChastePoint<DIM> coord,
-                                                 int positionInContainer);
-
-    /**
-		Returns a boost::shared_ptr to the node object with the prescribed id.
-
-		@param node_id integer.
-     */
-    boost::shared_ptr<CaVascularNetworkNode<DIM> > GetNode(int node_id);
-
-    /**
-		Returns a boost::shared_ptr to the node object with the prescribed location in the spatial
-		mesh. Currently, there should only ever be one node in any one location in the spatial mesh.
-
-		To check whether there is a node at a location at all the method
-		NumberOfNodesPresentAtLocation(location) may be used.
-     */
-    boost::shared_ptr<CaVascularNetworkNode<DIM> > GetNode(ChastePoint<DIM> location);
-
-//    /**
-//            Return mean length of vessels in network.
-//     */
-//    double GetMeanVesselLengthOfNeovasculature();
-//
-//    /**
-//            Return mean radius of vessels in network.
-//     */
-//    double GetMeanVesselRadiusOfNeovasculature();
-//
-//    /**
-//            Return mean tortuosity of vessels in network. Vessels whose tortuosity are infinite (i.e. self-loops)
-//            are ignored in this calculation.
-//     */
-//    double GetMeanVesselTortuosityOfNeovasculature();
-//
-//    /**
-//            Return number of vessels which have length within a specified range (lowerBoundLength < length <= upperBoundLength).
-//     */
-//    int GetNumberOfVesselsByLength(double lowerBoundLength, double upperBoundLength);
-//
-//    /**
-//            Return number of vessels which have radius within a specified range (lowerBoundRadius < length <= upperBoundRadius).
-//     */
-//    int GetNumberOfVesselsByRadius(double lowerBoundRadius, double upperBoundRadius);
-//
-//    /**
-//            Return number of vessels which have tortuosity within a specified range (lowerBoundTortuosity  < length <= upperBoundTortuosity).
-//     */
-//    int GetNumberOfVesselsByTortuosity(double lowerBoundTortuosity, double upperBoundTortuosity);
-
-    /**
-            Returns the haematocrit levels in all vessels connected to arterial input nodes.
-
-            @return arterialHaematocritLevel.
-     */
-    double GetArterialHaematocritLevel();
-
-    /**
-            Returns the pressure at all input nodes in the network.
-
-            @return arterialInputPressure.
-     */
-    double GetArterialInputPressure();
-
-    /**
-            Returns the pressure at all output nodes in the network.
-
-            @return venousOutputPressure.
-     */
-    double GetVenousOutputPressure();
-
-    /**
-            Returns a array of vessels.
-
-            @return VesselArray.
+        Return the vessels in the network
      */
     std::vector<boost::shared_ptr<CaVessel<DIM> > > GetVessels();
 
     /**
-            Sets the member variable arterialHaematocritLevel to the prescribed value.
+       Merge nodes with the same spatial location. Useful for
+       tidying up networks read from file.
      */
-    void SetArterialHaematocritLevel(double value);
+    void MergeCoincidentNodes();
 
     /**
-            Sets the member variable arterialInputPressure to the prescribed value.
+     	 Write the VesselNetwork data to a file.
      */
-    void SetArterialInputPressure(double value);
+    void WriteToFile(std::string filename, bool geometry_only = false);
+
+//    /**
+//       Return the Index of the specified vessel
+//     */
+//    unsigned GetVesselIndex(boost::shared_ptr<CaVessel<DIM> > vessel);
+//
+//    /**
+//       Returns the number of vessels contained within the network.
+//     */
+//    unsigned GetNumberOfVessels();
+//
+//    /**
+//       Returns the number of nodes contained within the network.
+//     */
+//    unsigned GetNumberOfNodes();
+//
+//    /**
+//       Returns a boost::shared_ptr to this VesselNetwork.
+//
+//       @return boost::shared_ptr<CaVascularNetwork<DIM> >
+//     */
+//    boost::shared_ptr<CaVascularNetwork<DIM> > Shared();
+//
+    /**
+		Returns a boost::shared_ptr to the node object with the prescribed location in the spatial
+		mesh.
+     */
+    //boost::shared_ptr<CaVascularNetworkNode<DIM> > GetNode(ChastePoint<DIM> location);
 
     /**
-            Sets the member variable venousOutputPressure to the prescribed value.
+		Return the number of vessels which occupy a particular location in the spatial mesh.
+
+		@param location ChastePoint<DIM>.
      */
-    void SetVenousOutputPressure(double value);
+    //unsigned GetNumberOfVesselsAtLocation(ChastePoint<DIM> location);
 
     /**
             Returns whether there is a node present at the prescribed location.
      */
-    bool NodePresentAtLocation(ChastePoint<DIM> location);
+    // bool NodePresentAtLocation(ChastePoint<DIM> location);
 
     /**
-            Returns how many nodes are present at a location. There should only ever really be at most
-            one node present at any one location.  However, the VesselNetwork may enter a
-            pseudo-acceptable state within some operation implementations whereby two nodes temporarily
-            occupy the same location before being merged.
+            Returns how many nodes are present at a location.
      */
-    unsigned NumberOfNodesPresentAtLocation(ChastePoint<DIM> location);
+    // unsigned NumberOfNodesPresentAtLocation(ChastePoint<DIM> location);
 
     /**
-            Adds a vessel to the VesselNetwork. A Vessel may only be added to the network if there is
-            enough free space in the spatial mesh for the vessel to be added.
-
-            The Vessel being added should not be adjoined to any other Vessel - joining to other vessels
-            in the network occurs automatically within this method. Additionally, nodes defined within
-            the Vessel being added are merged with existing nodes in the vessel network. Before adding
-            the Vessel, therefore, the locations of the two nodes should be defined within that Vessel.
-
-            This method also automatically adds the Vessel to the spatial mesh.
+            Checks whether the prescribed vessel is contained within the vessel network.
      */
-    void AddVessel(boost::shared_ptr<CaVessel<DIM> > vessel);
+    //bool IsInNetwork(boost::shared_ptr<CaVessel<DIM> > vessel);
 
     /**
-            Checks whether the prescribed vessel is contained within the vessel network. This method is
-            intended to be used mainly for debugging purposes.
+            Checks whether the prescribed node is contained within the vessel network.
      */
-    bool VesselIsInNetwork(boost::shared_ptr<CaVessel<DIM> > vessel);
+    //bool IsInNetwork(boost::shared_ptr<CaVascularNetworkNode<DIM> > node);
 
     /**
-            Checks whether the prescribed node is contained within the vessel network. This method is
-            intended to be used mainly for debugging purposes.
+            Return whether a node is connected to a source node.
      */
-    bool NodeIsInNetwork(boost::shared_ptr<CaVascularNetworkNode<DIM> > node);
+    //bool QueryNodeConnectivity(std::vector<boost::shared_ptr<CaVascularNetworkNode<DIM> > > source_nodes, boost::shared_ptr<CaVascularNetworkNode<DIM> > query_node);
 
     /**
-            Return whether two nodes are connected.
-
-            If the two nodes are the same this function returns true.
+            Return whether a vector of nodes is connected to a source node.
      */
-    bool Connected(boost::shared_ptr<CaVascularNetworkNode<DIM> > node1, boost::shared_ptr<CaVascularNetworkNode<DIM> > node2);
-
-    /**
-            Return whether a node is connected to an input node.
-
-            If the node is an input node this function returns true.
-     */
-    bool ConnectedToInputNode(boost::shared_ptr<CaVascularNetworkNode<DIM> > node);
-
-    /**
-            Return whether a nodes is connected to an output node.
-
-            If the node is an output node this function returns true.
-     */
-    bool ConnectedToOutputNode(boost::shared_ptr<CaVascularNetworkNode<DIM> > node);
-
-    /**
-            Labels the node located at the prescribed location as an input node of the network.
-            There must be a node located at the location provided.
-            At present an input node must only be attached to one vessel.
-     */
-    void SetInputNode(ChastePoint<DIM> location);
-
-    /**
-            Labels the node located at the prescribed location as an output node of the network.
-            There must be a node located at the location provided.
-            At present an output node must only be attached to one vessel.
-     */
-    void SetOutputNode(ChastePoint<DIM> location);
-
-    /**
-            Save the VesselNetwork data to a file, identifiable by the prescribed string, in a format
-            which may be imported to ParaView (file should be a .vtk file).
-     */
-    void SaveVasculatureDataToFile(string filename);
+    //bool QueryNodeConnectivity(std::vector<boost::shared_ptr<CaVascularNetworkNode<DIM> > > source_nodes, std::vector<boost::shared_ptr<CaVascularNetworkNode<DIM> > > query_nodes);
 };
 
 #endif /* CAVASCULARNETWORK_HPP_ */

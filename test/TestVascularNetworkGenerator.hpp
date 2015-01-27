@@ -50,20 +50,18 @@ public:
 	void TestGenerateAndWriteHexagonalNetwork() throw(Exception)
 	{
 		// Specify the network dimensions
-		unsigned width = 50u;
-		unsigned height = 25u;
-		unsigned vessel_length = 5u;
+		double vessel_length = 5.0;
 
 		// Generate the network
 		VascularNetworkGenerator<2> vascular_network_generator;
-		boost::shared_ptr<CaVascularNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(width, height, vessel_length);
+		boost::shared_ptr<CaVascularNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalUnit(vessel_length);
 
 		///\todo Add some checks for the generated network, e.g. node positions, number of nodes etc.
 
 		// Write the network to file
 		OutputFileHandler output_file_handler("TestVascularNetworkGenerator", false);
-		std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("HexagonalVesselNetwork.vtk");
-		vascular_network->SaveVasculatureDataToFile(output_filename);
+		std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("HexagonalVesselNetwork.vtp");
+		vascular_network->WriteToFile(output_filename);
 	}
 
 	#ifdef CHASTE_VTK
@@ -83,8 +81,9 @@ public:
 
 		// Write the network to file
 		OutputFileHandler output_file_handler("TestVascularNetworkGenerator", false);
-		std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("VtkVesselNetwork.vtk");
-		vascular_network->SaveVasculatureDataToFile(output_filename);
+		std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("VtkVesselNetwork.vtp");
+		vascular_network->MergeCoincidentNodes();
+		vascular_network->WriteToFile(output_filename);
      }
 	#endif // CHASTE_VTK
 };
