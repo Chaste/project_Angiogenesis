@@ -43,6 +43,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "VascularNetworkData.hpp"
 #include "ChastePoint.hpp"
 #include "CaVesselSegment.hpp"
+#include "CaVessel.hpp"
 #include "FakePetscSetup.hpp"
 
 class TestVesselSegment : public AbstractCellBasedTestSuite
@@ -64,6 +65,10 @@ public:
     	NodePtr2 pNode1(CaVascularNetworkNode<2>::Create(point1));
     	NodePtr2 pNode2(CaVascularNetworkNode<2>::Create(point2));
 
+    	// Check for an exception if the segment is defined with the same nodes
+    	TS_ASSERT_THROWS_THIS(SegmentPtr2 (CaVesselSegment<2>::Create(pNode1, pNode1)),
+    			"Attempted to assign the same node to both ends of a vessel segment.");
+
     	// Make a segment
     	SegmentPtr2 pSegment(CaVesselSegment<2>::Create(pNode1, pNode2));
 
@@ -72,7 +77,8 @@ public:
     	TS_ASSERT(point1.IsSamePoint(pSegment->GetNodes(0)->GetLocation()));
     	TS_ASSERT(point2.IsSamePoint(pSegment->GetNodes().second->GetLocation()));
     	TS_ASSERT(point2.IsSamePoint(pSegment->GetNodes(1)->GetLocation()));
-    	TS_ASSERT_THROWS_THIS(pSegment->GetNodes(2), "A node index other than 0 or 1 has been requested for a Vessel Segment.");
+    	TS_ASSERT_THROWS_THIS(pSegment->GetNodes(2),
+    			"A node index other than 0 or 1 has been requested for a Vessel Segment.");
 
     	// Test simple Getters and Setters
     	pSegment->SetId(5u);
@@ -136,6 +142,39 @@ public:
 
     	TS_ASSERT_DELTA(pSegment->GetLength(), std::sqrt(8.0), 1.e-6);
     	TS_ASSERT_DELTA(pSegment2->GetLength(), std::sqrt(27.0), 1.e-6);
+	}
+
+	void TestAddingAndRemovingVessels() throw(Exception)
+	{
+		// Make some nodes
+		ChastePoint<2> point1(4.0, 3.0);
+		ChastePoint<2> point2(4.0, 5.0);
+		ChastePoint<2> point3(5.0, 6.0);
+		boost::shared_ptr<CaVascularNetworkNode<2> > pNode(new CaVascularNetworkNode<2>(point1));
+		boost::shared_ptr<CaVascularNetworkNode<2> > pNode2(new CaVascularNetworkNode<2>(point2));
+		boost::shared_ptr<CaVascularNetworkNode<2> > pNode3(new CaVascularNetworkNode<2>(point3));
+
+		// Make some vessel segments
+		boost::shared_ptr<CaVesselSegment<2> > pVesselSegment(CaVesselSegment<2>::Create(pNode, pNode2));
+		boost::shared_ptr<CaVesselSegment<2> > pVesselSegment2(CaVesselSegment<2>::Create(pNode2, pNode3));
+
+		TS_ASSERT_THROWS_THIS(boost::shared_ptr<CaVessel<2> > vessel = pVesselSegment->GetVessel(),
+				"A vessel has been requested but this segment doesn't have one.");
+
+		// Make a vessel and check that it has been suitably added to the segment
+		boost::shared_ptr<CaVessel<2> > pVessel(CaVessel<2>::Create(pVesselSegment));
+		TS_ASSERT(pVesselSegment->GetNodes(0)->GetLocation().IsSamePoint(
+				pVesselSegment->GetVessel()->GetSegments(0)->GetNodes(0)->GetLocation()));
+
+		// Check the exception when a vessel is added to a segment which already has one
+		TS_ASSERT_THROWS_THIS(boost::shared_ptr<CaVessel<2> > pVessel(CaVessel<2>::Create(pVesselSegment));,
+			"This segment already has a vessel.");
+
+		// Try removing a segment from the vessel
+		pVessel->AddSegments(pVesselSegment2);
+		pVessel->RemoveSegments(true, false);
+		TS_ASSERT_THROWS_THIS(boost::shared_ptr<CaVessel<2> > vessel = pVesselSegment->GetVessel(),
+				"A vessel has been requested but this segment doesn't have one.");
 	}
 };
 

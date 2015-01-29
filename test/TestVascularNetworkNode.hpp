@@ -40,10 +40,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SmartPointers.hpp"
 #include "CaVascularNetworkNode.hpp"
 #include "VascularNetworkData.hpp"
-//#include "CaVessel.hpp"
 #include "ChastePoint.hpp"
 #include "CellsGenerator.hpp"
-#include "WildTypeCellMutationState.hpp"
 #include "FixedDurationGenerationBasedCellCycleModel.hpp"
 #include "CaBasedCellPopulation.hpp"
 #include "PottsMeshGenerator.hpp"
@@ -59,10 +57,15 @@ public:
 		ChastePoint<2> point(1.0, 1.0);
 		CaVascularNetworkNode<2> node(point);
 
+		// Make a pointer to a node
+		boost::shared_ptr<CaVascularNetworkNode<2> > pNode = CaVascularNetworkNode<2>::Create(point);
+
 		// Test simple Getters and Setters
 		ChastePoint<2> point2(3.0, 4.0);
 		node.SetLocation(point2);
 		TS_ASSERT(point2.IsSamePoint(node.GetLocation()));
+		pNode->SetLocation(point2);
+		TS_ASSERT(point2.IsSamePoint(pNode->GetLocation()));
 
 		node.SetId(5u);
 		std::string label = "Inlet";
@@ -105,6 +108,9 @@ public:
         TS_ASSERT(!node.HasCell());
         TS_ASSERT_THROWS_THIS(node.SetCell(cells[0]), "Attempted to add a Cell without first adding a CellPopulation.");
 
+        // Check that a suitable exception is thrown if the node doesn't have a cell yet
+        TS_ASSERT_THROWS_THIS(node.GetCell(), "A Cell has been requested but none have been assigned to this Node.") ;
+
         // Create a simple 2D PottsMesh
         PottsMeshGenerator<2> generator(5, 0, 0, 5, 0, 0);
         PottsMesh<2>* p_mesh = generator.GetMesh();
@@ -120,9 +126,10 @@ public:
         node.SetCell(p_cell_population->rGetCells().front());
         TS_ASSERT(node.HasCell());
 
-        // Verify that the node has moved to the cell's location
+        // Verify that the node has moved to the cell's location, also checking GetCell method.
         ChastePoint<2> point2(1.0, 0.0);
         TS_ASSERT(point2.IsSamePoint(node.GetLocation()));
+        TS_ASSERT(point2.IsSamePoint(p_cell_population->GetLocationOfCellCentre(node.GetCell())));
 
         // Try adding a cell not in the population
 		std::vector<CellPtr> cells2;
@@ -147,7 +154,7 @@ public:
         delete p_cell_population2;
 	}
 
-	void TestAddingAndRemovingVessels() throw(Exception)
+	void TestAddingAndRemovingVesselSegments() throw(Exception)
 	{
 		// Make some nodes
 		ChastePoint<2> point1(4.0, 3.0);
@@ -165,12 +172,19 @@ public:
 		TS_ASSERT_EQUALS(pNode->GetNumberOfSegments(), 1u);
 		TS_ASSERT_EQUALS(pNode2->GetNumberOfSegments(), 2u);
 
+		// Check that the segments are correctly retrieved from the node.
+		TS_ASSERT(pNode2->GetLocation().IsSamePoint(pNode2->GetVesselSegments(0)->GetNodes(1)->GetLocation()));
+		TS_ASSERT(pNode2->GetLocation().IsSamePoint(pNode2->GetVesselSegments()[0]->GetNodes(1)->GetLocation()));
+		TS_ASSERT_THROWS_THIS(pNode2->GetVesselSegments(3), "Attempted to access a segment with an out of range index.");
+
 		// Check that the vessel segment connectivity is updated when a node is replaced.
 		pVesselSegment2->ReplaceNode(1, pNode);
 		TS_ASSERT_EQUALS(pNode->GetNumberOfSegments(), 2u);
 		TS_ASSERT_EQUALS(pNode3->GetNumberOfSegments(), 0u);
-	}
 
+		// Check that a node can't be replaced with one that's already there
+		TS_ASSERT_THROWS_THIS(pVesselSegment2->ReplaceNode(0, pNode), "This segment is already attached to this node.");
+	}
 };
 
 #endif /*TESTVASCULARNETWORKNODE_HPP_*/

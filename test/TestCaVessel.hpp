@@ -100,19 +100,59 @@ public:
 		TS_ASSERT_EQUALS(pVessel2->GetSegments().size(), 2u);
 		TS_ASSERT(points[1].IsSamePoint(pVessel2->GetSegments(0)->GetNodes(0)->GetLocation()));
 
-		// Try adding a segment to the start
-		pVessel1->AddSegments(pSegment0);
-		TS_ASSERT_EQUALS(pVessel1->GetNumberOfSegments(), 2u);
-
-		// Try adding a disconnected segment
-		TS_ASSERT_THROWS_THIS(pVessel1->AddSegments(pSegment3),"Input vessel segment does not coincide with any end of the vessel.");
-
 		// Test simple Getters and Setters
 		pVessel1->SetId(5u);
 		std::string label = "Inlet";
 		pVessel1->SetLabel(label);
 		TS_ASSERT_EQUALS(pVessel1->GetId(), 5u);
 		TS_ASSERT_EQUALS(pVessel1->rGetLabel().c_str(), label.c_str());
+	}
+
+	void TestAddingAndRemovingSegments() throw(Exception)
+	{
+    	// Make some nodes
+		std::vector<ChastePoint<2> > points;
+		points.push_back(ChastePoint<2>(0.0, 0.0));
+		points.push_back(ChastePoint<2>(1.0, 2.0));
+		points.push_back(ChastePoint<2>(2.0, 3.0));
+		points.push_back(ChastePoint<2>(4.0, 5.0));
+		points.push_back(ChastePoint<2>(7.0, 8.0));
+		points.push_back(ChastePoint<2>(8.0, 9.0));
+
+		std::vector<NodePtr2> nodes;
+		for(unsigned i=0; i < points.size(); i++)
+		{
+			nodes.push_back(NodePtr2 (CaVascularNetworkNode<2>::Create(points[i])));
+		}
+
+    	// Make some segments
+		SegmentPtr2 pSegment0(CaVesselSegment<2>::Create(nodes[0], nodes[1]));
+		SegmentPtr2 pSegment1(CaVesselSegment<2>::Create(nodes[1], nodes[2]));
+		SegmentPtr2 pSegment2(CaVesselSegment<2>::Create(nodes[2], nodes[3]));
+		SegmentPtr2 pSegment3(CaVesselSegment<2>::Create(nodes[4], nodes[5]));
+
+		// Make a vessel
+		VesselPtr2 pVessel1(CaVessel<2>::Create(pSegment1));
+
+		// Try adding a segment to the start and end
+		pVessel1->AddSegments(pSegment0);
+		pVessel1->AddSegments(pSegment2);
+		TS_ASSERT_EQUALS(pVessel1->GetNumberOfSegments(), 3u);
+
+		// Try adding a disconnected segment
+		TS_ASSERT_THROWS_THIS(pVessel1->AddSegments(pSegment3),"Input vessel segment does not coincide with any end of the vessel.");
+
+		// Remove the segments from the ends
+		pVessel1->RemoveSegments(true, true);
+		TS_ASSERT_EQUALS(pVessel1->GetNumberOfSegments(), 1u);
+
+		// Vector version of adding.
+		std::vector<SegmentPtr2> good_segments;
+		good_segments.push_back(pSegment1);
+		good_segments.push_back(pSegment2);
+
+		std::vector<SegmentPtr2> bad_segments = good_segments;
+		bad_segments.push_back(pSegment3);
 	}
 
 	void TestAccessingData() throw(Exception)

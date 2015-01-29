@@ -169,6 +169,11 @@ public:
 	 */
 	boost::shared_ptr<CaVesselSegment<DIM> > GetVesselSegments(unsigned index);
 
+	/**
+	 *  Return a boost::shared_ptr to the VesselSegments.
+	 *
+	 * @return mAdjoiningVessels[i]
+	 */
 	std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >GetVesselSegments();
 
 	/**

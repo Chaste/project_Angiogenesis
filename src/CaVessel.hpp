@@ -192,6 +192,11 @@ public:
        @return mVesselSegmentLocations.size()
 	 */
 	unsigned GetNumberOfSegments();
+
+	/**
+       Remove segments from the ends of a vessel
+	 */
+	void RemoveSegments(bool start, bool end);
 };
 
 #endif /* CAVESSEL_HPP_ */

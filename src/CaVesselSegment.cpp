@@ -102,7 +102,14 @@ double CaVesselSegment<DIM>::GetLength()
 template<unsigned DIM>
 boost::shared_ptr<CaVessel<DIM> > CaVesselSegment<DIM>::GetVessel()
 {
-	return mVessel.lock();
+	if(mVessel.lock())
+	{
+		return mVessel.lock();
+	}
+	else
+	{
+		EXCEPTION("A vessel has been requested but this segment doesn't have one.");
+	}
 }
 
 template<unsigned DIM>
@@ -170,15 +177,8 @@ void CaVesselSegment<DIM>::SetLabel(const std::string& label)
 template<unsigned DIM>
 boost::shared_ptr<CaVesselSegment<DIM> > CaVesselSegment<DIM>::Shared()
 {
-	try
-	{
 		boost::shared_ptr<CaVesselSegment<DIM> > pSegment = this->shared_from_this();
 		return pSegment;
-	}
-	catch(...)
-	{
-		EXCEPTION("Failed to return a shared pointer to a segment. The segment should be owned by a shared pointer from creation.");
-	}
 }
 
 template<unsigned DIM>

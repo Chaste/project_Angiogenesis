@@ -92,8 +92,6 @@ boost::shared_ptr<CaVessel<DIM> >CaVessel<DIM>::Create(std::vector<boost::shared
 template<unsigned DIM>
 void CaVessel<DIM>::AddSegments(boost::shared_ptr<CaVesselSegment<DIM> > pSegment)
 {
-	///\todo adding segments at the start could be slow. Maybe a deque is better than
-	// vector in this case.
 
 	if(pSegment->GetNodes(0) == mSegments.back()->GetNodes(1))
 	// Append to end of vessel
@@ -114,8 +112,6 @@ void CaVessel<DIM>::AddSegments(boost::shared_ptr<CaVesselSegment<DIM> > pSegmen
 template<unsigned DIM>
 void CaVessel<DIM>::AddSegments(std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments)
 {
-
-	// Check that the first or end segment coincide with the start or end of the vessel
 	bool start = false;
 	bool end = false;
 
@@ -231,6 +227,40 @@ template<unsigned DIM>
 boost::shared_ptr<CaVessel<DIM> > CaVessel<DIM>::Shared()
 {
     return this->shared_from_this();
+}
+
+template<unsigned DIM>
+void CaVessel<DIM>::RemoveSegments(bool start, bool end)
+{
+	if(start || end)
+	{
+		if(start && end)
+		{
+			if(mSegments.size() <= 2)
+			{
+				if(mSegments.front() != mSegments.back())
+				{
+					EXCEPTION("Vessel must have at least one segment.");
+				}
+			}
+		}
+		if(mSegments.size() == 1)
+		{
+			EXCEPTION("Vessel must have at least one segment.");
+		}
+	}
+
+	if (start)
+	{
+		mSegments.front()->RemoveVessel();
+		mSegments.erase(mSegments.begin());
+	}
+
+	if (end)
+	{
+		mSegments.back()->RemoveVessel();
+		mSegments.pop_back();
+	}
 }
 
 // Explicit instantiation

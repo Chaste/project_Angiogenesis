@@ -193,11 +193,11 @@ boost::shared_ptr<CaVesselSegment<DIM> > CaVascularNetworkNode<DIM>::GetVesselSe
 {
 	if(index < mVesselSegments.size())
 	{
-		return mVesselSegments[index].lock(); // lock() converts weak pointer (stored here) to shared pointer
+		return mVesselSegments[index].lock();
 	}
 	else
 	{
-		EXCEPTION("Attempted to access a vessel with an out of range index.");
+		EXCEPTION("Attempted to access a segment with an out of range index.");
 	}
 }
 
