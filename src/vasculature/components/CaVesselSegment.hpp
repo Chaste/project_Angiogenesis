@@ -38,9 +38,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <boost/enable_shared_from_this.hpp>
 #include <math.h>
-#include "CaVascularNetworkNode.hpp"
+#include "VascularNode.hpp"
 #include "CaVessel.hpp"
-#include "VascularNetworkData.hpp"
+#include "VasculatureData.hpp"
 #include "SmartPointers.hpp"
 #include "ChastePoint.hpp"
 
@@ -48,11 +48,7 @@ template<unsigned DIM>
 class CaVessel;
 
 template<unsigned DIM>
-class CaVascularNetworkNode;
-
-///\todo this breaks encapsulation, but ensures that the segment-vessel connectivity is
-// kept up-to-date. Look at methods for limiting friend class access to methods.
-//friend class CaVessel<DIM>;
+class VascularNode;
 
 /*
  * Vessel segments are straight sub-units of vessels, defined by the positions of
@@ -73,12 +69,12 @@ private:
     /**
      * Container for segment end nodes
      */
-    std::pair<boost::shared_ptr<CaVascularNetworkNode<DIM> >, boost::shared_ptr<CaVascularNetworkNode<DIM> > > mNodes;
+    std::pair<boost::shared_ptr<VascularNode<DIM> >, boost::shared_ptr<VascularNode<DIM> > > mNodes;
 
     /**
      * Container for non-spatial segment data.
      */
-	boost::shared_ptr<VascularNetworkData> mpDataContainer;
+	boost::shared_ptr<VasculatureData> mpDataContainer;
 
     /**
      * Id tag, can be useful for storing segment-vessel relationships in the VesselNetwork class.
@@ -101,7 +97,7 @@ private:
      * Constructor - This is private as instances of this class must be created with a corresponding shared pointer. This is
      * implemented using the static Create method.
      */
-    CaVesselSegment(boost::shared_ptr<CaVascularNetworkNode<DIM> > pNode1, boost::shared_ptr<CaVascularNetworkNode<DIM> > pNode2);
+    CaVesselSegment(boost::shared_ptr<VascularNode<DIM> > pNode1, boost::shared_ptr<VascularNode<DIM> > pNode2);
 
 public:
 
@@ -109,7 +105,7 @@ public:
      * Construct a new instance of the class and return a shared pointer to it. Also manage the association of segments to nodes by
      * passing weak pointers to the nodes.
      */
-    static boost::shared_ptr<CaVesselSegment<DIM> > Create(boost::shared_ptr<CaVascularNetworkNode<DIM> > pNode1, boost::shared_ptr<CaVascularNetworkNode<DIM> > pNode2);
+    static boost::shared_ptr<CaVesselSegment<DIM> > Create(boost::shared_ptr<VascularNode<DIM> > pNode1, boost::shared_ptr<VascularNode<DIM> > pNode2);
 
     /*
      * Destructor
@@ -121,7 +117,7 @@ public:
 	 *
 	 *  @return mDataContainer
 	 */
-	boost::shared_ptr<VascularNetworkData> GetDataContainer();
+	boost::shared_ptr<VasculatureData> GetDataContainer();
 
 	/**
 	 *  Return the Id
@@ -153,24 +149,24 @@ public:
     /**
        Return a the segment nodes as a pair
      */
-    std::pair<boost::shared_ptr<CaVascularNetworkNode<DIM> >, boost::shared_ptr<CaVascularNetworkNode<DIM> > > GetNodes();
+    std::pair<boost::shared_ptr<VascularNode<DIM> >, boost::shared_ptr<VascularNode<DIM> > > GetNodes();
 
     /**
        Return a pointer to the node specified by the index
      */
-    boost::shared_ptr<CaVascularNetworkNode<DIM> > GetNodes(unsigned index);
+    boost::shared_ptr<VascularNode<DIM> > GetNodes(unsigned index);
 
     /**
        Replace the node at the specified index with the passed in node.
      */
-    void ReplaceNode(unsigned old_node_index, boost::shared_ptr<CaVascularNetworkNode<DIM> >  pNewNode);
+    void ReplaceNode(unsigned old_node_index, boost::shared_ptr<VascularNode<DIM> >  pNewNode);
 
 	/**
 	 *  Over-write the segment's non-spatial DataContainer
 	 *
 	 *  This can be useful when copying data from an existing segment.
 	 */
-	void SetDataContainer(boost::shared_ptr<VascularNetworkData> pDataContainer);
+	void SetDataContainer(boost::shared_ptr<VasculatureData> pDataContainer);
 
 	/**
 	 *  Assign the Id

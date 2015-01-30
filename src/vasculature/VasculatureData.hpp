@@ -33,8 +33,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef VASCULARNETWORKDATA_HPP_
-#define VASCULARNETWORKDATA_HPP_
+#ifndef VASCULATUREDATA_HPP_
+#define VASCULATUREDATA_HPP_
 
 #include <map>
 #include <string>
@@ -43,15 +43,15 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Exception.hpp"
 #include "SmartPointers.hpp"
 
-class VascularNetworkData : public boost::enable_shared_from_this<VascularNetworkData>
+class VasculatureData : public boost::enable_shared_from_this<VasculatureData>
 {
     std::map<std::string, boost::any> mDataMap;
 
 public:
 
-    VascularNetworkData();
+    VasculatureData();
 
-    ~VascularNetworkData();
+    ~VasculatureData();
 
     std::map<std::string, boost::any> GetMap();
 
@@ -66,7 +66,7 @@ public:
 
 // Templated methods are defined here as explicit instantiation would limit the types that can
 // be stored in the data maps.
-template<typename T> T VascularNetworkData::GetData(const std::string& variableName)
+template<typename T> T VasculatureData::GetData(const std::string& variableName)
 {
 	// Check if the key is in the map
 	std::map<std::string, boost::any>::const_iterator it = mDataMap.find(variableName);
@@ -86,7 +86,7 @@ template<typename T> T VascularNetworkData::GetData(const std::string& variableN
 	}
 }
 
-template<typename T> bool VascularNetworkData::IsType(const std::string& variableName)
+template<typename T> bool VasculatureData::IsType(const std::string& variableName)
 {
 	try
 	{
@@ -99,4 +99,4 @@ template<typename T> bool VascularNetworkData::IsType(const std::string& variabl
 	}
 }
 
-#endif /* VASCULARNETWORKDATA_HPP_ */
+#endif /* VASCULATUREDATA_HPP_ */

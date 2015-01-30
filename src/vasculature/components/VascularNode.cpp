@@ -33,14 +33,14 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#include "CaVascularNetworkNode.hpp"
+#include "VascularNode.hpp"
 
 template<unsigned DIM>
-CaVascularNetworkNode<DIM>::CaVascularNetworkNode(ChastePoint<DIM> location)
+VascularNode<DIM>::VascularNode(ChastePoint<DIM> location)
 	: mLocation(location),
 	  mpCell(CellPtr()),
 	  mpCellPopulation(NULL),
-	  mpDataContainer(boost::shared_ptr<VascularNetworkData>(new VascularNetworkData())),
+	  mpDataContainer(boost::shared_ptr<VasculatureData>(new VasculatureData())),
 	  mId(0),
 	  mLabel(""),
 	  mVesselSegments(std::vector<boost::weak_ptr<CaVesselSegment<DIM> > >())
@@ -48,19 +48,19 @@ CaVascularNetworkNode<DIM>::CaVascularNetworkNode(ChastePoint<DIM> location)
 }
 
 template<unsigned DIM>
-CaVascularNetworkNode<DIM>::~CaVascularNetworkNode()
+VascularNode<DIM>::~VascularNode()
 {
 }
 
 template<unsigned DIM>
-boost::shared_ptr<CaVascularNetworkNode<DIM> >CaVascularNetworkNode<DIM>::Create(ChastePoint<DIM> location)
+boost::shared_ptr<VascularNode<DIM> >VascularNode<DIM>::Create(ChastePoint<DIM> location)
 {
-	boost::shared_ptr<CaVascularNetworkNode<DIM> > pSelf(new CaVascularNetworkNode<DIM>(location));
+	boost::shared_ptr<VascularNode<DIM> > pSelf(new VascularNode<DIM>(location));
 	return pSelf;
 }
 
 template<unsigned DIM>
-CellPtr CaVascularNetworkNode<DIM>::GetCell()
+CellPtr VascularNode<DIM>::GetCell()
 {
 	if(mpCell)
 	{
@@ -73,19 +73,19 @@ CellPtr CaVascularNetworkNode<DIM>::GetCell()
 }
 
 template<unsigned DIM>
-unsigned CaVascularNetworkNode<DIM>::GetId()
+unsigned VascularNode<DIM>::GetId()
 {
 	return mId;
 }
 
 template<unsigned DIM>
-const std::string& CaVascularNetworkNode<DIM>::rGetLabel()
+const std::string& VascularNode<DIM>::rGetLabel()
 {
 	return mLabel;
 }
 
 template<unsigned DIM>
-ChastePoint<DIM> CaVascularNetworkNode<DIM>::GetLocation()
+ChastePoint<DIM> VascularNode<DIM>::GetLocation()
 {
 	if(mpCell)
 	{
@@ -99,25 +99,51 @@ ChastePoint<DIM> CaVascularNetworkNode<DIM>::GetLocation()
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VascularNetworkData> CaVascularNetworkNode<DIM>::GetDataContainer()
+boost::shared_ptr<VasculatureData> VascularNode<DIM>::GetDataContainer()
 {
 	return mpDataContainer;
 }
 
 template<unsigned DIM>
-bool CaVascularNetworkNode<DIM>::HasCell()
+bool VascularNode<DIM>::HasCell()
 {
 	return mpCell;
 }
 
 template<unsigned DIM>
-void CaVascularNetworkNode<DIM>::SetDataContainer(boost::shared_ptr<VascularNetworkData> pDataContainer)
+bool VascularNode<DIM>::IsCoincident(ChastePoint<DIM> point)
+{
+	if (GetLocation().IsSamePoint(point))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+template<unsigned DIM>
+bool VascularNode<DIM>::IsCoincident(boost::shared_ptr<VascularNode<DIM> > node)
+{
+	if (GetLocation().IsSamePoint(node->GetLocation()))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+template<unsigned DIM>
+void VascularNode<DIM>::SetDataContainer(boost::shared_ptr<VasculatureData> pDataContainer)
 {
 	mpDataContainer->SetMap(pDataContainer->GetMap());
 }
 
 template<unsigned DIM>
-void CaVascularNetworkNode<DIM>::SetCell(CellPtr pCell)
+void VascularNode<DIM>::SetCell(CellPtr pCell)
 {
 	if(mpCellPopulation != NULL)
 	{
@@ -139,7 +165,7 @@ void CaVascularNetworkNode<DIM>::SetCell(CellPtr pCell)
 }
 
 template<unsigned DIM>
-void CaVascularNetworkNode<DIM>::SetCellPopulation(CaBasedCellPopulation<DIM>* pCellPopulation)
+void VascularNode<DIM>::SetCellPopulation(CaBasedCellPopulation<DIM>* pCellPopulation)
 {
 	if (mpCell)
 	{
@@ -155,19 +181,19 @@ void CaVascularNetworkNode<DIM>::SetCellPopulation(CaBasedCellPopulation<DIM>* p
 }
 
 template<unsigned DIM>
-void CaVascularNetworkNode<DIM>::SetId(unsigned id)
+void VascularNode<DIM>::SetId(unsigned id)
 {
 	mId = id;
 }
 
 template<unsigned DIM>
-void CaVascularNetworkNode<DIM>::SetLabel(const std::string& label)
+void VascularNode<DIM>::SetLabel(const std::string& label)
 {
 	mLabel = label;
 }
 
 template<unsigned DIM>
-void CaVascularNetworkNode<DIM>::SetLocation(ChastePoint<DIM> location)
+void VascularNode<DIM>::SetLocation(ChastePoint<DIM> location)
 {
 	if (mpCell)
 	{
@@ -177,19 +203,19 @@ void CaVascularNetworkNode<DIM>::SetLocation(ChastePoint<DIM> location)
 }
 
 template<unsigned DIM>
-void CaVascularNetworkNode<DIM>::RemoveCell()
+void VascularNode<DIM>::RemoveCell()
 {
 	mpCell = CellPtr();
 }
 
 template<unsigned DIM>
-unsigned CaVascularNetworkNode<DIM>::GetNumberOfSegments()
+unsigned VascularNode<DIM>::GetNumberOfSegments()
 {
 	return mVesselSegments.size();
 }
 
 template<unsigned DIM>
-boost::shared_ptr<CaVesselSegment<DIM> > CaVascularNetworkNode<DIM>::GetVesselSegments(unsigned index)
+boost::shared_ptr<CaVesselSegment<DIM> > VascularNode<DIM>::GetVesselSegments(unsigned index)
 {
 	if(index < mVesselSegments.size())
 	{
@@ -202,7 +228,7 @@ boost::shared_ptr<CaVesselSegment<DIM> > CaVascularNetworkNode<DIM>::GetVesselSe
 }
 
 template<unsigned DIM>
-std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >CaVascularNetworkNode<DIM>::GetVesselSegments()
+std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >VascularNode<DIM>::GetVesselSegments()
 {
 	std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments;
 
@@ -215,7 +241,7 @@ std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >CaVascularNetworkNode<DIM>
 }
 
 template<unsigned DIM>
-void CaVascularNetworkNode<DIM>::AddSegment(boost::shared_ptr<CaVesselSegment<DIM> > vessel_segment)
+void VascularNode<DIM>::AddSegment(boost::shared_ptr<CaVesselSegment<DIM> > vessel_segment)
 {
 	// Vessel segments can only be attached to a node once.
 	int number_times_attached_to_node = 0;
@@ -239,7 +265,7 @@ void CaVascularNetworkNode<DIM>::AddSegment(boost::shared_ptr<CaVesselSegment<DI
 }
 
 template<unsigned DIM>
-void CaVascularNetworkNode<DIM>::RemoveSegment(boost::shared_ptr<CaVesselSegment<DIM> > pVesselSegment)
+void VascularNode<DIM>::RemoveSegment(boost::shared_ptr<CaVesselSegment<DIM> > pVesselSegment)
 {
 	for(unsigned i = 0; i < mVesselSegments.size(); i++)
 	{
@@ -252,6 +278,6 @@ void CaVascularNetworkNode<DIM>::RemoveSegment(boost::shared_ptr<CaVesselSegment
 }
 
 // Explicit instantiation
-template class CaVascularNetworkNode<2>;
-template class CaVascularNetworkNode<3>;
+template class VascularNode<2>;
+template class VascularNode<3>;
 

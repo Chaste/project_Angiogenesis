@@ -38,9 +38,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <math.h>
 #include "AbstractCellBasedTestSuite.hpp"
-#include "CaVascularNetworkNode.hpp"
+#include "VascularNode.hpp"
 #include "SmartPointers.hpp"
-#include "VascularNetworkData.hpp"
+#include "VasculatureData.hpp"
 #include "ChastePoint.hpp"
 #include "CaVesselSegment.hpp"
 #include "CaVascularNetwork.hpp"
@@ -51,8 +51,8 @@ class TestVesselNetwork : public AbstractCellBasedTestSuite
 {
 public:
 
-	typedef boost::shared_ptr<CaVascularNetworkNode<2> > NodePtr2;
-	typedef boost::shared_ptr<CaVascularNetworkNode<3> > NodePtr3;
+	typedef boost::shared_ptr<VascularNode<2> > NodePtr2;
+	typedef boost::shared_ptr<VascularNode<3> > NodePtr3;
 	typedef boost::shared_ptr<CaVesselSegment<2> > SegmentPtr2;
 	typedef boost::shared_ptr<CaVesselSegment<3> > SegmentPtr3;
 	typedef boost::shared_ptr<CaVessel<2> > VesselPtr2;
@@ -71,9 +71,9 @@ public:
 		std::vector<NodePtr3> nodes;
 		for(unsigned i=0; i < points.size(); i++)
 		{
-			nodes.push_back(NodePtr3 (CaVascularNetworkNode<3>::Create(points[i])));
+			nodes.push_back(NodePtr3 (VascularNode<3>::Create(points[i])));
 		}
-		nodes.push_back(NodePtr3 (CaVascularNetworkNode<3>::Create(points[1])));
+		nodes.push_back(NodePtr3 (VascularNode<3>::Create(points[1])));
 
     	// Make some segments
 		SegmentPtr3 pSegment1(CaVesselSegment<3>::Create(nodes[0], nodes[1]));
@@ -104,6 +104,17 @@ public:
 		OutputFileHandler output_file_handler("TestVesselNetwork", false);
 		std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("GenericVesselNetwork.vtp");
 		vessel_network.WriteToFile(output_filename, true);
+
+		// Move the network
+		std::vector<double> translation_vector_3d;
+		translation_vector_3d.push_back(3.5);
+		translation_vector_3d.push_back(5.6);
+		translation_vector_3d.push_back(-12.8);
+
+		vessel_network.Translate(translation_vector_3d);
+		vessel_network.Translate(translation_vector_3d, true);
+		std::string output_filename2 = output_file_handler.GetOutputDirectoryFullPath().append("GenericVesselNetwork_TranslatedCopy.vtp");
+		vessel_network.WriteToFile(output_filename2, true);
     }
 };
 

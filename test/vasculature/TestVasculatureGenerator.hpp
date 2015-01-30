@@ -40,10 +40,10 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "FileFinder.hpp"
 #include "OutputFileHandler.hpp"
 #include "SmartPointers.hpp"
-#include "VascularNetworkGenerator.hpp"
+#include "VasculatureGenerator.hpp"
 #include "FakePetscSetup.hpp"
 
-class TestVascularNetworkGenerator : public CxxTest::TestSuite
+class TestVasculatureGenerator : public CxxTest::TestSuite
 {
 public:
 
@@ -53,13 +53,16 @@ public:
 		double vessel_length = 5.0;
 
 		// Generate the network
-		VascularNetworkGenerator<2> vascular_network_generator;
+		VasculatureGenerator<2> vascular_network_generator;
 		boost::shared_ptr<CaVascularNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalUnit(vessel_length);
+
+		// Pattern the unit
+		vascular_network_generator.PatternUnitByTranslation(vascular_network, 3, 3);
 
 		///\todo Add some checks for the generated network, e.g. node positions, number of nodes etc.
 
 		// Write the network to file
-		OutputFileHandler output_file_handler("TestVascularNetworkGenerator", false);
+		OutputFileHandler output_file_handler("TestVasculatureGenerator", false);
 		std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("HexagonalVesselNetwork.vtp");
 		vascular_network->WriteToFile(output_filename);
 	}
@@ -74,13 +77,13 @@ public:
 		std::string input_filename = fileFinder.GetAbsolutePath();
 
 		// Generate the network
-		VascularNetworkGenerator<3> vascular_network_generator;
+		VasculatureGenerator<3> vascular_network_generator;
 		boost::shared_ptr<CaVascularNetwork<3> > vascular_network = vascular_network_generator.GenerateNetworkFromVtkFile(input_filename);
 
 		///\todo Add some checks for the generated network, e.g. node positions, number of nodes etc.
 
 		// Write the network to file
-		OutputFileHandler output_file_handler("TestVascularNetworkGenerator", false);
+		OutputFileHandler output_file_handler("TestVasculatureGenerator", false);
 		std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("VtkVesselNetwork.vtp");
 		vascular_network->MergeCoincidentNodes();
 		vascular_network->WriteToFile(output_filename);

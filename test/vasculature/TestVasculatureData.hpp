@@ -38,9 +38,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <cxxtest/TestSuite.h>
 #include "FakePetscSetup.hpp"
-#include "VascularNetworkData.hpp"
+#include "VasculatureData.hpp"
 
-class TestVascularNetworkData : public CxxTest::TestSuite
+class TestVasculatureData : public CxxTest::TestSuite
 {
 public:
 
@@ -49,7 +49,7 @@ public:
     void TestConstructor() throw(Exception)
     {
     	// Make a data instance
-    	VascularNetworkData data;
+    	VasculatureData data;
 
     	// Pass in some data
     	double value = 12.0;

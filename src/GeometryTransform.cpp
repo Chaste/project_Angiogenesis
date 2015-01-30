@@ -33,27 +33,41 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#include "VascularNetworkData.hpp"
+#include "GeometryTransform.hpp"
 
-VascularNetworkData::VascularNetworkData()
+/*
+    A collection of simple geometric transformations
+ */
+
+template<unsigned DIM>
+GeometryTransform<DIM>::GeometryTransform()
 {
 }
 
-VascularNetworkData::~VascularNetworkData()
+template<unsigned DIM>
+GeometryTransform<DIM>::~GeometryTransform()
 {
 }
 
-std::map<std::string, boost::any> VascularNetworkData::GetMap()
+template<unsigned DIM>
+std::vector<ChastePoint<DIM> > GeometryTransform<DIM>::Translate(std::vector<ChastePoint<DIM> > points, std::vector<double> translation_vector)
 {
-	return mDataMap;
+	std::vector<ChastePoint<DIM> > new_points;
+	typename std::vector<ChastePoint<DIM> >::iterator it;
+
+	for(it = points.begin(); it != points.end(); it++)
+	{
+		std::vector<double> coords;
+		for (unsigned i=0; i <DIM; i++)
+		{
+			coords.push_back((*it)[i] + translation_vector[i]);
+		}
+
+		new_points.push_back((ChastePoint<DIM> (coords)));
+	}
+	return new_points;
 }
 
-void VascularNetworkData::SetMap(std::map<std::string, boost::any> map)
-{
-	mDataMap = map;
-}
-
-void VascularNetworkData::SetData(const std::string& variableName, const boost::any& value)
-{
-	mDataMap[variableName] = value;
-}
+//Explicit instantiation
+template class GeometryTransform<2>;
+template class GeometryTransform<3>;

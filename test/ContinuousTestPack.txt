@@ -1,4 +1,7 @@
-TestVascularNetworkGenerator.hpp
-TestVascularNetworkNode.hpp
-TestVascularCellProperty.hpp
-TestCaVessel.hpp
+vasculature/components/TestVascularNode.hpp
+vasculature/components/TestCaVesselSegment.hpp
+vasculature/components/TestCaVessel.hpp
+vasculature/components/TestCaVascularNetwork.hpp
+vasculature/TestVasculatureData.hpp
+vasculature/TestVasculatureGenerator.hpp
+cell/TestVascularCellProperty.hpp

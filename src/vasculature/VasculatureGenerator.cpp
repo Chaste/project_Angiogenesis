@@ -33,42 +33,105 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#include "VascularNetworkGenerator.hpp"
+#include "VasculatureGenerator.hpp"
 
 template<unsigned DIM>
-VascularNetworkGenerator<DIM>::VascularNetworkGenerator()
+VasculatureGenerator<DIM>::VasculatureGenerator()
 {
 }
 
 template<unsigned DIM>
-VascularNetworkGenerator<DIM>::~VascularNetworkGenerator()
+VasculatureGenerator<DIM>::~VasculatureGenerator()
 {
 }
 
-//template<unsigned DIM>
-//boost::shared_ptr<CaVascularNetwork<DIM> > VascularNetworkGenerator<DIM>::PatternUnitByTranslation(boost::shared_ptr<CaVascularNetwork<DIM> > input_unit,
-//																		unsigned number_in_direction1,
-//																		unsigned number_in_direction2,
-//																		unsigned number_in_direction3)
-//{
+template<unsigned DIM>
+void VasculatureGenerator<DIM>::PatternUnitByTranslation(boost::shared_ptr<CaVascularNetwork<DIM> > input_unit,
+																		unsigned number_in_direction1,
+																		unsigned number_in_direction2,
+																		unsigned number_in_direction3)
+{
+
+	// Get unit dimensions
+	std::set<boost::shared_ptr<VascularNode<DIM> > > nodes = input_unit->GetNodes();
+
+	std::vector<double> max_vals;
+	std::vector<double> min_vals;
+	for (unsigned i = 0; i < DIM; i++)
+	{
+		max_vals.push_back(-1.e6);
+		min_vals.push_back(1.e6);
+	}
+
+	typename std::set<boost::shared_ptr<VascularNode<DIM> > >::iterator node_iter;
+	for (node_iter=nodes.begin(); node_iter!=nodes.end(); node_iter++)
+	{
+		for(unsigned i=0; i <DIM; i++)
+		{
+			if((*node_iter)->GetLocation()[i] > max_vals[i])
+			{
+				max_vals[i] = (*node_iter)->GetLocation()[i];
+			}
+			if((*node_iter)->GetLocation()[i] < min_vals[i])
+			{
+				min_vals[i] = (*node_iter)->GetLocation()[i];
+			}
+		}
+	}
 //
-//	//todo this is quite 'brute force' for now. Could be made nicer by making some copy constructors.
-//
-//	for(unsigned i=0; i < number_in_direction1; i++)
-//	{
-//		for(unsigned j=0; j < number_in_direction2; j++)
-//		{
-//			for(unsigned k=0; k < number_in_direction3; k++)
-//			{
-//
-//			}
-//		}
-//	}
-//
-//}
+	// Get the translation vector
+	std::vector<double> base_translation_vector;
+	for(unsigned i=0; i <DIM; i++)
+	{
+		base_translation_vector.push_back(max_vals[i] - min_vals[i]);
+	}
+
+	// Copy the vessels and translate the new ones a specified number of
+	// times in each direction.
+	std::vector<double> translation_vector;
+	translation_vector.push_back(0.0);
+	translation_vector.push_back(0.0);
+	if(DIM>2)
+	{
+		translation_vector.push_back(0.0);
+	}
+
+	for(unsigned i=0; i < number_in_direction1; i++)
+	{
+		if(number_in_direction1 != 1)
+		{
+			double distance = double(pow(2,i)) * base_translation_vector[0];
+			translation_vector[0] = distance;
+			input_unit->Translate(translation_vector, true);
+		}
+	}
+	for(unsigned j=0; j < number_in_direction2; j++)
+	{
+		if(number_in_direction2 != 1)
+		{
+			double distance = double(pow(2,j)) * base_translation_vector[1];
+			translation_vector[0] = 0.0;
+			translation_vector[1] = distance;
+			input_unit->Translate(translation_vector, true);
+		}
+	}
+	if(DIM>2)
+	{
+		for(unsigned k=0; k < number_in_direction3; k++)
+		{
+			if(number_in_direction3 != 1)
+			{
+				double distance = double(pow(2,k)) * base_translation_vector[2];
+				translation_vector[1] = 0.0;
+				translation_vector[2] = distance;
+				input_unit->Translate(translation_vector, true);
+			}
+		}
+	}
+}
 
 template<unsigned DIM>
-boost::shared_ptr<CaVascularNetwork<DIM> > VascularNetworkGenerator<DIM>::GenerateHexagonalUnit(double vessel_length)
+boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateHexagonalUnit(double vessel_length)
 {
 	// Generate the nodes
 	std::vector<ChastePoint<DIM> > points;
@@ -93,11 +156,11 @@ boost::shared_ptr<CaVascularNetwork<DIM> > VascularNetworkGenerator<DIM>::Genera
 		points.push_back(ChastePoint<DIM>(3.0 * vessel_length,  2.0 * vessel_length, 0.0)); //6
 	}
 
-	std::vector<boost::shared_ptr<CaVascularNetworkNode<DIM> > > nodes;
+	std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes;
 	typename std::vector<ChastePoint<DIM> >::iterator it;
 	for(it = points.begin(); it < points.end(); it++)
 	{
-		nodes.push_back(boost::shared_ptr<CaVascularNetworkNode<DIM> >(CaVascularNetworkNode<DIM>::Create(*it)));
+		nodes.push_back(boost::shared_ptr<VascularNode<DIM> >(VascularNode<DIM>::Create(*it)));
 	}
 
 	// Generate the segments and vessels
@@ -147,11 +210,11 @@ boost::shared_ptr<CaVascularNetwork<DIM> > GenerateBifurcationUnit(double vessel
 		points.push_back(ChastePoint<DIM>(4.0 * vessel_length, vessel_length, 0.0)); //5
 	}
 
-	std::vector<boost::shared_ptr<CaVascularNetworkNode<DIM> > > nodes;
+	std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes;
 	typename std::vector<ChastePoint<DIM> >::iterator it;
 	for(it = points.begin(); it < points.end(); it++)
 	{
-		nodes.push_back(new CaVascularNetworkNode<DIM>(*it));
+		nodes.push_back(new VascularNode<DIM>(*it));
 	}
 
 	// Generate the segments and vessels
@@ -178,7 +241,7 @@ boost::shared_ptr<CaVascularNetwork<DIM> > GenerateBifurcationUnit(double vessel
 
 #ifdef CHASTE_VTK
 template<unsigned DIM>
-boost::shared_ptr<CaVascularNetwork<DIM> > VascularNetworkGenerator<DIM>::GenerateNetworkFromVtkFile(std::string filename)
+boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateNetworkFromVtkFile(std::string filename)
 {
 	// Create an empty vessel network
 	boost::shared_ptr<CaVascularNetwork<DIM>  > pVesselNetwork(new CaVascularNetwork<DIM>());
@@ -192,18 +255,18 @@ boost::shared_ptr<CaVascularNetwork<DIM> > VascularNetworkGenerator<DIM>::Genera
 	std::vector<double> radii;
 
 	// Create a vector of chaste points corresponding to vessel node locations
-	std::vector<boost::shared_ptr<CaVascularNetworkNode<DIM> > > nodes;
+	std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes;
 	for(vtkIdType i = 0; i < pPolyData->GetNumberOfPoints(); i++)
 	{
 		double point_coords[3];
 		pPolyData->GetPoint(i, point_coords);
 		if (DIM < 3)
 		{
-			nodes.push_back(boost::shared_ptr<CaVascularNetworkNode<DIM> > (CaVascularNetworkNode<DIM>::Create(ChastePoint<DIM>(point_coords[0], point_coords[1]))));
+			nodes.push_back(boost::shared_ptr<VascularNode<DIM> > (VascularNode<DIM>::Create(ChastePoint<DIM>(point_coords[0], point_coords[1]))));
 		}
 		else
 		{
-			nodes.push_back(boost::shared_ptr<CaVascularNetworkNode<DIM> > (CaVascularNetworkNode<DIM>::Create(ChastePoint<DIM>(point_coords[0], point_coords[1], point_coords[2]))));
+			nodes.push_back(boost::shared_ptr<VascularNode<DIM> > (VascularNode<DIM>::Create(ChastePoint<DIM>(point_coords[0], point_coords[1], point_coords[2]))));
 		}
 	}
 
@@ -266,5 +329,5 @@ boost::shared_ptr<CaVascularNetwork<DIM> > VascularNetworkGenerator<DIM>::Genera
 #endif // CHASTE_VTK
 
 //Explicit instantiation
-template class VascularNetworkGenerator<2>;
-template class VascularNetworkGenerator<3>;
+template class VasculatureGenerator<2>;
+template class VasculatureGenerator<3>;

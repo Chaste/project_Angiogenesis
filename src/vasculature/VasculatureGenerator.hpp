@@ -43,7 +43,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Exception.hpp"
 #include "CaVessel.hpp"
 #include "CaVascularNetwork.hpp"
-#include "CaVascularNetworkNode.hpp"
+#include "VascularNode.hpp"
 
 #ifdef CHASTE_VTK
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the strstream deprecated warning for now (gcc4.3)
@@ -58,7 +58,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif // CHASTE_VTK
 
 template<unsigned DIM>
-class VascularNetworkGenerator
+class VasculatureGenerator
 {
 
 public:
@@ -68,20 +68,20 @@ public:
      *
      * @param prototype prototype vessel using which other vessel objects will be instantiated.
      */
-    VascularNetworkGenerator();
+    VasculatureGenerator();
 
     /*
      * Destructor
      */
-    ~VascularNetworkGenerator();
+    ~VasculatureGenerator();
 
     /*
      * Pattern Unit
      */
-//    boost::shared_ptr<CaVascularNetwork<DIM> > PatternUnitByTranslation(boost::shared_ptr<CaVascularNetwork<DIM> > input_unit,
-//    																		unsigned number_in_direction1,
-//    																		unsigned number_in_direction2,
-//    																		unsigned number_in_direction3);
+    void PatternUnitByTranslation(boost::shared_ptr<CaVascularNetwork<DIM> > input_unit,
+    																		unsigned doublings_in_direction1,
+    																		unsigned doublings_in_direction2,
+    																		unsigned doublings_in_direction3 = 1);
 
     /*
      * Creates a hexagonal repeating unit

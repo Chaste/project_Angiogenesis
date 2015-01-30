@@ -38,8 +38,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 template <unsigned DIM>
 CaVascularNetwork<DIM>::CaVascularNetwork()
 	: mVessels(std::vector<boost::shared_ptr<CaVessel<DIM> > >()),
-	  //mNodes(std::vector<boost::shared_ptr<CaVascularNetworkNode<DIM> > >()),
-	  mpDataContainer(boost::shared_ptr<VascularNetworkData>(new VascularNetworkData()))
+	  mpDataContainer(boost::shared_ptr<VasculatureData>(new VasculatureData()))
 {
 }
 
@@ -61,9 +60,9 @@ void CaVascularNetwork<DIM>::AddVessels(std::vector<boost::shared_ptr<CaVessel<D
 }
 
 template <unsigned DIM>
-std::set<boost::shared_ptr<CaVascularNetworkNode<DIM> > > CaVascularNetwork<DIM>::GetNodes()
+std::set<boost::shared_ptr<VascularNode<DIM> > > CaVascularNetwork<DIM>::GetNodes()
 {
-	std::set<boost::shared_ptr<CaVascularNetworkNode<DIM> > >  nodes;
+	std::set<boost::shared_ptr<VascularNode<DIM> > >  nodes;
 
 	typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator it;
 	typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator jt;
@@ -90,10 +89,10 @@ void CaVascularNetwork<DIM>::MergeCoincidentNodes()
 {
 	// Loop through the nodes, if they are coincident but not identical replace
 	// one of them. Nodes in the inner iteration loop are the ones replaced.
-	std::set<boost::shared_ptr<CaVascularNetworkNode<DIM> > > nodes = GetNodes();
+	std::set<boost::shared_ptr<VascularNode<DIM> > > nodes = GetNodes();
 
-	typename std::set<boost::shared_ptr<CaVascularNetworkNode<DIM> > >::iterator it;
-	typename std::set<boost::shared_ptr<CaVascularNetworkNode<DIM> > >::iterator it2;
+	typename std::set<boost::shared_ptr<VascularNode<DIM> > >::iterator it;
+	typename std::set<boost::shared_ptr<VascularNode<DIM> > >::iterator it2;
 	typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator it3;
 
 	for(it = nodes.begin(); it != nodes.end(); it++)
@@ -104,7 +103,7 @@ void CaVascularNetwork<DIM>::MergeCoincidentNodes()
 			if ((*it) != (*it2))
 			{
 				// If the node locations are the same - according to the ChastePoint definition
-				if((*it)->GetLocation().IsSamePoint((*it2)->GetLocation()))
+				if((*it)->IsCoincident((*it2)))
 				{
 					// Replace the node corresponding to it2 with the one corresponding to it
 					// in all segments.
@@ -123,6 +122,82 @@ void CaVascularNetwork<DIM>::MergeCoincidentNodes()
 				}
 			}
 		}
+	}
+}
+
+template <unsigned DIM>
+std::set<boost::shared_ptr<VascularNode<DIM> > > CaVascularNetwork<DIM>::DeepCopyVessels()
+{
+	std::set<boost::shared_ptr<VascularNode<DIM> > >  nodes;
+
+	// Deep copy each of the vessels
+	// loop through the vessels, segments and nodes and recreate new instances
+	typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator vessel_iter;
+	typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator segment_iter;
+	std::vector<boost::shared_ptr<CaVessel<DIM> > > new_vessels;
+
+	for(vessel_iter = mVessels.begin(); vessel_iter != mVessels.end(); vessel_iter++)
+	{
+		std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > new_segments;
+		std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = (*vessel_iter)->GetSegments();
+
+		for(segment_iter = segments.begin(); segment_iter != segments.end(); segment_iter++)
+		{
+			ChastePoint<DIM> node0_location = (*segment_iter)->GetNodes(0)->GetLocation();
+			ChastePoint<DIM> node1_location = (*segment_iter)->GetNodes(1)->GetLocation();
+
+			boost::shared_ptr<VascularNode<DIM> > pNode0(VascularNode<DIM>::Create(node0_location));
+			boost::shared_ptr<VascularNode<DIM> > pNode1(VascularNode<DIM>::Create(node1_location));
+			nodes.insert(pNode0);
+			nodes.insert(pNode1);
+
+			boost::shared_ptr<CaVesselSegment<DIM> > pSegment(CaVesselSegment<DIM>::Create(pNode0, pNode1));
+			new_segments.push_back(pSegment);
+		}
+		boost::shared_ptr<CaVessel<DIM> > pVessel(CaVessel<DIM>::Create(new_segments));
+		new_vessels.push_back(pVessel);
+	}
+	AddVessels(new_vessels);
+
+	return nodes;
+}
+
+template <unsigned DIM>
+void CaVascularNetwork<DIM>::Translate(std::vector<double> translation_vector, bool copy)
+{
+	//	Get a vector of points corresponding to nodes, move the points
+	typename std::set<boost::shared_ptr<VascularNode<DIM> > >::iterator node_iter;
+	std::set<boost::shared_ptr<VascularNode<DIM> > >  nodes;
+	std::vector<ChastePoint<DIM> > points;
+
+	if(!copy)
+	{
+		nodes = GetNodes();
+	}
+	else
+	{
+		nodes = DeepCopyVessels();
+	}
+
+	for(node_iter = nodes.begin(); node_iter != nodes.end(); node_iter++)
+	{
+		points.push_back((*node_iter)->GetLocation());
+	}
+
+	GeometryTransform<DIM> transform;
+	std::vector<ChastePoint<DIM> > new_points = transform.Translate(points, translation_vector);
+
+	unsigned count = 0u;
+	for(node_iter = nodes.begin(); node_iter != nodes.end(); node_iter++)
+	{
+		(*node_iter)->SetLocation(new_points[count]);
+		count++;
+	}
+
+	// Merge coincident nodes
+	if(copy)
+	{
+		MergeCoincidentNodes();
 	}
 }
 
@@ -186,51 +261,6 @@ void CaVascularNetwork<DIM>::WriteToFile(std::string filename, bool geometry_onl
 	writer->Write();
 }
 
-
-//template <unsigned DIM>
-//boost::shared_ptr<CaVascularNetwork<DIM> > CaVascularNetwork<DIM>::shared()
-//{
-//    return this->shared_from_this();
-//}
-//
-//template <unsigned DIM>
-//unsigned CaVascularNetwork<DIM>::GetVesselID(boost::shared_ptr<CaVessel<DIM> > vessel)
-//{
-//    bool vessel_found = false;
-//    unsigned i = 0;
-//
-//    for (i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        if (vessel == mVesselArray[i])
-//        {
-//        	vessel_found = true;
-//            break;
-//        }
-//    }
-//
-//    assert(vessel_found);
-//    return i;
-//}
-//
-//
-//template <unsigned DIM>
-//unsigned CaVascularNetwork<DIM>::GetNodeID(boost::shared_ptr<CaVascularNetworkNode<DIM> > node)
-//{
-//    bool node_found = false;
-//    unsigned i = 0;
-//
-//    for (i = 0; i < GetNumberOfNodesInNetwork(); i++)
-//    {
-//        if (node == mNodeArray[i])
-//        {
-//        	node_found = true;
-//            break;
-//        }
-//    }
-//
-//    assert(node_found);
-//    return i;
-//}
 //
 //template <unsigned DIM>
 //unsigned CaVascularNetwork<DIM>::GetNumberOfVesselsInNetwork()
@@ -244,94 +274,7 @@ void CaVascularNetwork<DIM>::WriteToFile(std::string filename, bool geometry_onl
 //    return mNodeArray.size();
 //}
 //
-//template <unsigned DIM>
-//unsigned CaVascularNetwork<DIM>::GetNumberOfVesselsAtLocation(ChastePoint<DIM> coord)
-//{
 //
-//	unsigned numberOfVesselsAtLocation = 0;
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        for (unsigned j = 0; j < GetVessel(i)->GetNumberOfSegments(); j++)
-//        {
-//            if (GetVessel(i)->GetSegmentCoordinate(j).IsSamePoint(coord))
-//            {
-//                numberOfVesselsAtLocation++;
-//            }
-//        }
-//    }
-//
-//    return numberOfVesselsAtLocation;
-//}
-//
-//
-//template <unsigned DIM>
-//bool CaVascularNetwork<DIM>::NodePresentAtLocation(ChastePoint<DIM> location)
-//{
-//    bool nodePresentAtLocation = false;
-//
-//    for (unsigned i = 0; i < GetNumberOfNodesInNetwork(); i++)
-//    {
-//        if (mNodeArray[i]->GetLocation().IsSamePoint(location))
-//        {
-//            nodePresentAtLocation = true;
-//            break;
-//        }
-//    }
-//    return nodePresentAtLocation;
-//}
-//
-//template <unsigned DIM>
-//unsigned CaVascularNetwork<DIM>::NumberOfNodesPresentAtLocation(ChastePoint<DIM> location)
-//{
-//	unsigned numberOfNodesPresentAtLocation = 0;
-//
-//    for (unsigned i = 0; i < GetNumberOfNodesInNetwork(); i++)
-//    {
-//        if (mNodeArray[i]->GetLocation().IsSamePoint(location))
-//        {
-//            numberOfNodesPresentAtLocation++;
-//        }
-//    }
-//
-//    return numberOfNodesPresentAtLocation;
-//}
-//
-//template <unsigned DIM>
-//bool CaVascularNetwork<DIM>::VesselIsInNetwork(boost::shared_ptr<CaVessel<DIM> > vessel)
-//{
-//    bool vesselIsInNetwork = false;
-//    unsigned i = 0;
-//
-//    for (i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        if (vessel == mVesselArray[i])
-//        {
-//            vesselIsInNetwork = true;
-//            break;
-//        }
-//    }
-//    return vesselIsInNetwork;
-//}
-//
-//template <unsigned DIM>
-//bool CaVascularNetwork<DIM>::NodeIsInNetwork(boost::shared_ptr<CaVascularNetworkNode<DIM> > node)
-//{
-//    bool nodeIsInNetwork = false;
-//
-//    unsigned i = 0;
-//
-//    for (i = 0; i < GetNumberOfNodesInNetwork(); i++)
-//    {
-//        if (node == mNodeArray[i])
-//        {
-//            nodeIsInNetwork = true;
-//            break;
-//        }
-//    }
-//
-//    return nodeIsInNetwork;
-//}
 //
 ///*
 // * Helper class for "connected" methods
@@ -361,7 +304,7 @@ void CaVascularNetwork<DIM>::WriteToFile(std::string filename, bool geometry_onl
 /////\ todo this could be made more general by passing in vectors of source nodes and target nodes and returning true for any targets connected
 //// to a source. Would avoid graph reconstruction for each query and results in only one overall method.
 //template <unsigned DIM>
-//bool CaVascularNetwork<DIM>::Connected(boost::shared_ptr<CaVascularNetworkNode<DIM> > node1, boost::shared_ptr<CaVascularNetworkNode<DIM> > node2)
+//bool CaVascularNetwork<DIM>::Connected(boost::shared_ptr<VascularNode<DIM> > node1, boost::shared_ptr<VascularNode<DIM> > node2)
 //{
 //
 //    if (node1 == node2)
@@ -398,7 +341,7 @@ void CaVascularNetwork<DIM>::WriteToFile(std::string filename, bool geometry_onl
 //}
 //
 //template <unsigned DIM>
-//bool CaVascularNetwork<DIM>::ConnectedToInputNode(boost::shared_ptr<CaVascularNetworkNode<DIM> > node)
+//bool CaVascularNetwork<DIM>::ConnectedToInputNode(boost::shared_ptr<VascularNode<DIM> > node)
 //{
 //
 //    if (node->GetBooleanData("IsInputNode"))

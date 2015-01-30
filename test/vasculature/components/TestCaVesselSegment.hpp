@@ -38,9 +38,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <math.h>
 #include "AbstractCellBasedTestSuite.hpp"
-#include "CaVascularNetworkNode.hpp"
+#include "VascularNode.hpp"
 #include "SmartPointers.hpp"
-#include "VascularNetworkData.hpp"
+#include "VasculatureData.hpp"
 #include "ChastePoint.hpp"
 #include "CaVesselSegment.hpp"
 #include "CaVessel.hpp"
@@ -50,8 +50,8 @@ class TestVesselSegment : public AbstractCellBasedTestSuite
 {
 public:
 
-	typedef boost::shared_ptr<CaVascularNetworkNode<2> > NodePtr2;
-	typedef boost::shared_ptr<CaVascularNetworkNode<3> > NodePtr3;
+	typedef boost::shared_ptr<VascularNode<2> > NodePtr2;
+	typedef boost::shared_ptr<VascularNode<3> > NodePtr3;
 	typedef boost::shared_ptr<CaVesselSegment<2> > SegmentPtr2;
 	typedef boost::shared_ptr<CaVesselSegment<3> > SegmentPtr3;
 
@@ -62,8 +62,8 @@ public:
     	// Make some nodes
     	ChastePoint<2> point1(1.0, 2.0);
     	ChastePoint<2> point2(3.0, 4.0);
-    	NodePtr2 pNode1(CaVascularNetworkNode<2>::Create(point1));
-    	NodePtr2 pNode2(CaVascularNetworkNode<2>::Create(point2));
+    	NodePtr2 pNode1(VascularNode<2>::Create(point1));
+    	NodePtr2 pNode2(VascularNode<2>::Create(point2));
 
     	// Check for an exception if the segment is defined with the same nodes
     	TS_ASSERT_THROWS_THIS(SegmentPtr2 (CaVesselSegment<2>::Create(pNode1, pNode1)),
@@ -73,10 +73,10 @@ public:
     	SegmentPtr2 pSegment(CaVesselSegment<2>::Create(pNode1, pNode2));
 
     	// Check the locations
-    	TS_ASSERT(point1.IsSamePoint(pSegment->GetNodes().first->GetLocation()));
-    	TS_ASSERT(point1.IsSamePoint(pSegment->GetNodes(0)->GetLocation()));
-    	TS_ASSERT(point2.IsSamePoint(pSegment->GetNodes().second->GetLocation()));
-    	TS_ASSERT(point2.IsSamePoint(pSegment->GetNodes(1)->GetLocation()));
+    	TS_ASSERT(pSegment->GetNodes().first->IsCoincident(point1));
+    	TS_ASSERT(pSegment->GetNodes(0)->IsCoincident(point1));
+    	TS_ASSERT(pSegment->GetNodes().second->IsCoincident(point2));
+    	TS_ASSERT(pSegment->GetNodes(1)->IsCoincident(point2));
     	TS_ASSERT_THROWS_THIS(pSegment->GetNodes(2),
     			"A node index other than 0 or 1 has been requested for a Vessel Segment.");
 
@@ -90,13 +90,13 @@ public:
 		// Test replacing a node
     	ChastePoint<2> point3(6.0, 7.0);
     	ChastePoint<2> point4(8.0, 9.0);
-    	NodePtr2 pNode3(CaVascularNetworkNode<2>::Create(point3));
-    	NodePtr2 pNode4(CaVascularNetworkNode<2>::Create(point4));
+    	NodePtr2 pNode3(VascularNode<2>::Create(point3));
+    	NodePtr2 pNode4(VascularNode<2>::Create(point4));
 
     	pSegment->ReplaceNode(0, pNode3);
     	pSegment->ReplaceNode(1, pNode4);
-    	TS_ASSERT(point3.IsSamePoint(pSegment->GetNodes().first->GetLocation()));
-    	TS_ASSERT(point4.IsSamePoint(pSegment->GetNodes().second->GetLocation()));
+    	TS_ASSERT(pSegment->GetNodes().first->IsCoincident(point3));
+    	TS_ASSERT(pSegment->GetNodes().second->IsCoincident(point4));
     	TS_ASSERT_THROWS_THIS(pSegment->ReplaceNode(2, pNode3), "A node index other than 0 or 1 has been requested for a Vessel Segment.");
     }
 
@@ -105,8 +105,8 @@ public:
     	// Make some nodes
     	ChastePoint<3> point1(1.0, 2.0, 6.0);
     	ChastePoint<3> point2(3.0, 4.0, 7.0);
-    	NodePtr3 pNode1(CaVascularNetworkNode<3>::Create(point1));
-    	NodePtr3 pNode2(CaVascularNetworkNode<3>::Create(point2));
+    	NodePtr3 pNode1(VascularNode<3>::Create(point1));
+    	NodePtr3 pNode2(VascularNode<3>::Create(point2));
 
     	// Make a segment
     	SegmentPtr3 pSegment(CaVesselSegment<3>::Create(pNode1, pNode2));
@@ -117,7 +117,7 @@ public:
 		TS_ASSERT_DELTA(pSegment->GetDataContainer()->GetData<double>("radius"), radius, 1.e-6);
 
 		// Replace the existing data container with a new one
-		boost::shared_ptr<VascularNetworkData> pDataContainer(new VascularNetworkData());
+		boost::shared_ptr<VasculatureData> pDataContainer(new VasculatureData());
 		double haematocrit = 7.5;
 		pDataContainer->SetData("haematocrit", haematocrit);
 		pSegment->SetDataContainer(pDataContainer);
@@ -132,10 +132,10 @@ public:
     	ChastePoint<3> point3(3.0, 4.0, 5.0);
     	ChastePoint<3> point4(6.0, 7.0, 8.0);
 
-    	NodePtr2 pNode1(CaVascularNetworkNode<2>::Create(point1));
-    	NodePtr2 pNode2(CaVascularNetworkNode<2>::Create(point2));
-    	NodePtr3 pNode3(CaVascularNetworkNode<3>::Create(point3));
-    	NodePtr3 pNode4(CaVascularNetworkNode<3>::Create(point4));
+    	NodePtr2 pNode1(VascularNode<2>::Create(point1));
+    	NodePtr2 pNode2(VascularNode<2>::Create(point2));
+    	NodePtr3 pNode3(VascularNode<3>::Create(point3));
+    	NodePtr3 pNode4(VascularNode<3>::Create(point4));
 
     	SegmentPtr2 pSegment(CaVesselSegment<2>::Create(pNode1, pNode2));
     	SegmentPtr3 pSegment2(CaVesselSegment<3>::Create(pNode3, pNode4));
@@ -150,9 +150,9 @@ public:
 		ChastePoint<2> point1(4.0, 3.0);
 		ChastePoint<2> point2(4.0, 5.0);
 		ChastePoint<2> point3(5.0, 6.0);
-		boost::shared_ptr<CaVascularNetworkNode<2> > pNode(new CaVascularNetworkNode<2>(point1));
-		boost::shared_ptr<CaVascularNetworkNode<2> > pNode2(new CaVascularNetworkNode<2>(point2));
-		boost::shared_ptr<CaVascularNetworkNode<2> > pNode3(new CaVascularNetworkNode<2>(point3));
+		boost::shared_ptr<VascularNode<2> > pNode(new VascularNode<2>(point1));
+		boost::shared_ptr<VascularNode<2> > pNode2(new VascularNode<2>(point2));
+		boost::shared_ptr<VascularNode<2> > pNode3(new VascularNode<2>(point3));
 
 		// Make some vessel segments
 		boost::shared_ptr<CaVesselSegment<2> > pVesselSegment(CaVesselSegment<2>::Create(pNode, pNode2));
@@ -163,8 +163,7 @@ public:
 
 		// Make a vessel and check that it has been suitably added to the segment
 		boost::shared_ptr<CaVessel<2> > pVessel(CaVessel<2>::Create(pVesselSegment));
-		TS_ASSERT(pVesselSegment->GetNodes(0)->GetLocation().IsSamePoint(
-				pVesselSegment->GetVessel()->GetSegments(0)->GetNodes(0)->GetLocation()));
+		TS_ASSERT(pVesselSegment->GetNodes(0)->IsCoincident(pVesselSegment->GetVessel()->GetSegments(0)->GetNodes(0)));
 
 		// Check the exception when a vessel is added to a segment which already has one
 		TS_ASSERT_THROWS_THIS(boost::shared_ptr<CaVessel<2> > pVessel(CaVessel<2>::Create(pVesselSegment));,

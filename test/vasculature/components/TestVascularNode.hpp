@@ -33,13 +33,13 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef TESTVASCULARNETWORKNODE_HPP_
-#define TESTVASCULARNETWORKNODE_HPP_
+#ifndef TESTVASCULARNODE_HPP_
+#define TESTVASCULARNODE_HPP_
 
 #include "AbstractCellBasedTestSuite.hpp"
 #include "SmartPointers.hpp"
-#include "CaVascularNetworkNode.hpp"
-#include "VascularNetworkData.hpp"
+#include "VascularNode.hpp"
+#include "VasculatureData.hpp"
 #include "ChastePoint.hpp"
 #include "CellsGenerator.hpp"
 #include "FixedDurationGenerationBasedCellCycleModel.hpp"
@@ -47,7 +47,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "PottsMeshGenerator.hpp"
 #include "FakePetscSetup.hpp"
 
-class TestVascularNetworkNode: public AbstractCellBasedTestSuite
+class TestVascularkNode: public AbstractCellBasedTestSuite
 {
 public:
 
@@ -55,17 +55,17 @@ public:
 	{
 		// Make a node
 		ChastePoint<2> point(1.0, 1.0);
-		CaVascularNetworkNode<2> node(point);
+		VascularNode<2> node(point);
 
 		// Make a pointer to a node
-		boost::shared_ptr<CaVascularNetworkNode<2> > pNode = CaVascularNetworkNode<2>::Create(point);
+		boost::shared_ptr<VascularNode<2> > pNode = VascularNode<2>::Create(point);
 
 		// Test simple Getters and Setters
 		ChastePoint<2> point2(3.0, 4.0);
 		node.SetLocation(point2);
-		TS_ASSERT(point2.IsSamePoint(node.GetLocation()));
+		TS_ASSERT(node.IsCoincident(point2));
 		pNode->SetLocation(point2);
-		TS_ASSERT(point2.IsSamePoint(pNode->GetLocation()));
+		TS_ASSERT(pNode->IsCoincident(point2));
 
 		node.SetId(5u);
 		std::string label = "Inlet";
@@ -78,7 +78,7 @@ public:
 	{
 		// Make a node
 		ChastePoint<3> point(1.0, 1.0, 2.0);
-		CaVascularNetworkNode<3> node(point);
+		VascularNode<3> node(point);
 
 		// Set some data
 		double radius = 5.5;
@@ -86,7 +86,7 @@ public:
 		TS_ASSERT_DELTA(node.GetDataContainer()->GetData<double>("radius"), radius, 1.e-6);
 
 		// Replace the existing data container with a new one
-		boost::shared_ptr<VascularNetworkData> pDataContainer(new VascularNetworkData());
+		boost::shared_ptr<VasculatureData> pDataContainer(new VasculatureData());
 		double haematocrit = 7.5;
 		pDataContainer->SetData("haematocrit", haematocrit);
 		node.SetDataContainer(pDataContainer);
@@ -97,7 +97,7 @@ public:
 	{
 		// Make a node
 		ChastePoint<2> point(4.0, 3.0);
-		CaVascularNetworkNode<2> node(point);
+		VascularNode<2> node(point);
 
         // Create some cells
 		std::vector<CellPtr> cells;
@@ -128,7 +128,7 @@ public:
 
         // Verify that the node has moved to the cell's location, also checking GetCell method.
         ChastePoint<2> point2(1.0, 0.0);
-        TS_ASSERT(point2.IsSamePoint(node.GetLocation()));
+        TS_ASSERT(node.IsCoincident(point2));
         TS_ASSERT(point2.IsSamePoint(p_cell_population->GetLocationOfCellCentre(node.GetCell())));
 
         // Try adding a cell not in the population
@@ -160,9 +160,9 @@ public:
 		ChastePoint<2> point1(4.0, 3.0);
 		ChastePoint<2> point2(4.0, 5.0);
 		ChastePoint<2> point3(5.0, 6.0);
-		boost::shared_ptr<CaVascularNetworkNode<2> > pNode(new CaVascularNetworkNode<2>(point1));
-		boost::shared_ptr<CaVascularNetworkNode<2> > pNode2(new CaVascularNetworkNode<2>(point2));
-		boost::shared_ptr<CaVascularNetworkNode<2> > pNode3(new CaVascularNetworkNode<2>(point3));
+		boost::shared_ptr<VascularNode<2> > pNode(new VascularNode<2>(point1));
+		boost::shared_ptr<VascularNode<2> > pNode2(new VascularNode<2>(point2));
+		boost::shared_ptr<VascularNode<2> > pNode3(new VascularNode<2>(point3));
 
 		// Make some vessel segments
 		boost::shared_ptr<CaVesselSegment<2> > pVesselSegment(CaVesselSegment<2>::Create(pNode, pNode2));
@@ -173,8 +173,8 @@ public:
 		TS_ASSERT_EQUALS(pNode2->GetNumberOfSegments(), 2u);
 
 		// Check that the segments are correctly retrieved from the node.
-		TS_ASSERT(pNode2->GetLocation().IsSamePoint(pNode2->GetVesselSegments(0)->GetNodes(1)->GetLocation()));
-		TS_ASSERT(pNode2->GetLocation().IsSamePoint(pNode2->GetVesselSegments()[0]->GetNodes(1)->GetLocation()));
+		TS_ASSERT(pNode2->IsCoincident(pNode2->GetVesselSegments(0)->GetNodes(1)));
+		TS_ASSERT(pNode2->IsCoincident(pNode2->GetVesselSegments()[0]->GetNodes(1)));
 		TS_ASSERT_THROWS_THIS(pNode2->GetVesselSegments(3), "Attempted to access a segment with an out of range index.");
 
 		// Check that the vessel segment connectivity is updated when a node is replaced.
@@ -187,4 +187,4 @@ public:
 	}
 };
 
-#endif /*TESTVASCULARNETWORKNODE_HPP_*/
+#endif /*TESTVASCULARNODE_HPP_*/

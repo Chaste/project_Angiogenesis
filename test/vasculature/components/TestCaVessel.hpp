@@ -38,19 +38,19 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <cxxtest/TestSuite.h>
 #include "SmartPointers.hpp"
-#include "CaVascularNetworkNode.hpp"
+#include "VascularNode.hpp"
 #include "CaVesselSegment.hpp"
 #include "CaVessel.hpp"
 #include "ChastePoint.hpp"
-#include "VascularNetworkData.hpp"
+#include "VasculatureData.hpp"
 #include "FakePetscSetup.hpp"
 
 class TestCaVessel : public CxxTest::TestSuite
 {
 public:
 
-	typedef boost::shared_ptr<CaVascularNetworkNode<2> > NodePtr2;
-	typedef boost::shared_ptr<CaVascularNetworkNode<3> > NodePtr3;
+	typedef boost::shared_ptr<VascularNode<2> > NodePtr2;
+	typedef boost::shared_ptr<VascularNode<3> > NodePtr3;
 	typedef boost::shared_ptr<CaVesselSegment<2> > SegmentPtr2;
 	typedef boost::shared_ptr<CaVesselSegment<3> > SegmentPtr3;
 	typedef boost::shared_ptr<CaVessel<2> > VesselPtr2;
@@ -70,7 +70,7 @@ public:
 		std::vector<NodePtr2> nodes;
 		for(unsigned i=0; i < points.size(); i++)
 		{
-			nodes.push_back(NodePtr2 (CaVascularNetworkNode<2>::Create(points[i])));
+			nodes.push_back(NodePtr2 (VascularNode<2>::Create(points[i])));
 		}
 
     	// Make some segments
@@ -92,13 +92,13 @@ public:
 		TS_ASSERT_THROWS_THIS(VesselPtr2 pVessel3(CaVessel<2>::Create(bad_segments));,"Input vessel segments are not attached in the correct order.");
 
 		// Check that locations are correct
-		TS_ASSERT(points[1].IsSamePoint(pVessel1->GetStartNode()->GetLocation()));
-		TS_ASSERT(points[3].IsSamePoint(pVessel2->GetEndNode()->GetLocation()));
+		TS_ASSERT(pVessel1->GetStartNode()->IsCoincident(points[1]));
+		TS_ASSERT(pVessel2->GetEndNode()->IsCoincident(points[3]));
 
 		// Check that segments are correctly returned
 		TS_ASSERT_EQUALS(pVessel2->GetNumberOfSegments(), 2u);
 		TS_ASSERT_EQUALS(pVessel2->GetSegments().size(), 2u);
-		TS_ASSERT(points[1].IsSamePoint(pVessel2->GetSegments(0)->GetNodes(0)->GetLocation()));
+		TS_ASSERT(pVessel2->GetSegments(0)->GetNodes(0)->IsCoincident(points[1]));
 
 		// Test simple Getters and Setters
 		pVessel1->SetId(5u);
@@ -122,7 +122,7 @@ public:
 		std::vector<NodePtr2> nodes;
 		for(unsigned i=0; i < points.size(); i++)
 		{
-			nodes.push_back(NodePtr2 (CaVascularNetworkNode<2>::Create(points[i])));
+			nodes.push_back(NodePtr2 (VascularNode<2>::Create(points[i])));
 		}
 
     	// Make some segments
@@ -161,8 +161,8 @@ public:
     	ChastePoint<3> point1(1.0, 2.0, 6.0);
     	ChastePoint<3> point2(3.0, 4.0, 7.0);
 
-    	NodePtr3 pNode1(CaVascularNetworkNode<3>::Create(point1));
-    	NodePtr3 pNode2(CaVascularNetworkNode<3>::Create(point2));
+    	NodePtr3 pNode1(VascularNode<3>::Create(point1));
+    	NodePtr3 pNode2(VascularNode<3>::Create(point2));
 
     	// Make a segment
     	SegmentPtr3 pSegment1(CaVesselSegment<3>::Create(pNode1, pNode2));
@@ -176,7 +176,7 @@ public:
 		TS_ASSERT_DELTA(pVessel->GetDataContainer()->GetData<double>("radius"), radius, 1.e-6);
 
 		// Replace the existing data container with a new one
-		boost::shared_ptr<VascularNetworkData> pDataContainer(new VascularNetworkData());
+		boost::shared_ptr<VasculatureData> pDataContainer(new VasculatureData());
 		double haematocrit = 7.5;
 		pDataContainer->SetData("haematocrit", haematocrit);
 		pVessel->SetDataContainer(pDataContainer);

@@ -40,6 +40,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <algorithm>
 #include <vector>
 #include <iostream>
+#include <set>
+#include <map>
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the boost deprecated warning for now (gcc4.3)
 #include <boost/config.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
@@ -63,8 +65,10 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif // CHASTE_VTK
 #include "CaVessel.hpp"
 #include "CaVesselSegment.hpp"
-#include "CaVascularNetworkNode.hpp"
+#include "VascularNode.hpp"
 #include "SmartPointers.hpp"
+#include "VasculatureData.hpp"
+#include "GeometryTransform.hpp"
 
 /*
     A vessel network is a collection of vessels
@@ -84,7 +88,7 @@ private:
     /**
      * Container for non-spatial node data.
      */
-	boost::shared_ptr<VascularNetworkData> mpDataContainer;
+	boost::shared_ptr<VasculatureData> mpDataContainer;
 
 public:
 
@@ -111,12 +115,18 @@ public:
     /**
         Return the nodes in the network
      */
-    std::set<boost::shared_ptr<CaVascularNetworkNode<DIM> > > GetNodes();
+    std::set<boost::shared_ptr<VascularNode<DIM> > > GetNodes();
 
     /**
         Return the vessels in the network
      */
     std::vector<boost::shared_ptr<CaVessel<DIM> > > GetVessels();
+
+    /*
+     * Translates the network along the provided vector, if a copy is requested the original vessels are copied
+     * (without original non-spatial data) and the new vessels are translated.
+     */
+    void Translate(std::vector<double> translation_vector, bool copy = false);
 
     /**
        Merge nodes with the same spatial location. Useful for
@@ -128,6 +138,14 @@ public:
      	 Write the VesselNetwork data to a file.
      */
     void WriteToFile(std::string filename, bool geometry_only = false);
+
+private:
+
+    /**
+        Create a deep copy of all existing vessels and return a set of newly added nodes.
+        This is useful for performing geometric transformations on the network.
+     */
+    std::set<boost::shared_ptr<VascularNode<DIM> > > DeepCopyVessels();
 
 //    /**
 //       Return the Index of the specified vessel
@@ -155,7 +173,7 @@ public:
 		Returns a boost::shared_ptr to the node object with the prescribed location in the spatial
 		mesh.
      */
-    //boost::shared_ptr<CaVascularNetworkNode<DIM> > GetNode(ChastePoint<DIM> location);
+    //boost::shared_ptr<VascularNode<DIM> > GetNode(ChastePoint<DIM> location);
 
     /**
 		Return the number of vessels which occupy a particular location in the spatial mesh.
@@ -182,17 +200,17 @@ public:
     /**
             Checks whether the prescribed node is contained within the vessel network.
      */
-    //bool IsInNetwork(boost::shared_ptr<CaVascularNetworkNode<DIM> > node);
+    //bool IsInNetwork(boost::shared_ptr<VascularNode<DIM> > node);
 
     /**
             Return whether a node is connected to a source node.
      */
-    //bool QueryNodeConnectivity(std::vector<boost::shared_ptr<CaVascularNetworkNode<DIM> > > source_nodes, boost::shared_ptr<CaVascularNetworkNode<DIM> > query_node);
+    //bool QueryNodeConnectivity(std::vector<boost::shared_ptr<VascularNode<DIM> > > source_nodes, boost::shared_ptr<VascularNode<DIM> > query_node);
 
     /**
             Return whether a vector of nodes is connected to a source node.
      */
-    //bool QueryNodeConnectivity(std::vector<boost::shared_ptr<CaVascularNetworkNode<DIM> > > source_nodes, std::vector<boost::shared_ptr<CaVascularNetworkNode<DIM> > > query_nodes);
+    //bool QueryNodeConnectivity(std::vector<boost::shared_ptr<VascularNode<DIM> > > source_nodes, std::vector<boost::shared_ptr<VascularNode<DIM> > > query_nodes);
 };
 
 #endif /* CAVASCULARNETWORK_HPP_ */

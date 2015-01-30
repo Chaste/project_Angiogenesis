@@ -43,14 +43,15 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SmartPointers.hpp"
 #include "Exception.hpp"
 #include "ChastePoint.hpp"
-#include "CaVascularNetworkNode.hpp"
+#include "VascularNode.hpp"
 #include "CaVesselSegment.hpp"
+#include "VasculatureData.hpp"
 
 template<unsigned DIM>
 class CaVesselSegment;
 
 template<unsigned DIM>
-class CaVascularNetworkNode;
+class VascularNode;
 
 template<unsigned DIM>
 class CaVessel : public boost::enable_shared_from_this<CaVessel<DIM> >
@@ -65,7 +66,7 @@ private:
     /**
      * Container for non-spatial vessel data.
      */
-	boost::shared_ptr<VascularNetworkData> mpDataContainer;
+	boost::shared_ptr<VasculatureData> mpDataContainer;
 
     /**
      * Id tag, can be useful for storing segment-vessel relationships in the VesselNetwork class.
@@ -142,14 +143,14 @@ public:
 	 *
 	 *  @return mDataContainer
 	 */
-	boost::shared_ptr<VascularNetworkData> GetDataContainer();
+	boost::shared_ptr<VasculatureData> GetDataContainer();
 
 	/**
 	 *  Over-write the vessel's non-spatial DataContainer
 	 *
 	 *  This can be useful when copying data from an existing node.
 	 */
-	void SetDataContainer(boost::shared_ptr<VascularNetworkData> pDataContainer);
+	void SetDataContainer(boost::shared_ptr<VasculatureData> pDataContainer);
 
 	/**
 	 *  Assign the Id
@@ -171,12 +172,12 @@ public:
 	/**
        @return shared pointer to the first node of the first segment
 	 */
-	boost::shared_ptr<CaVascularNetworkNode<DIM> > GetStartNode();
+	boost::shared_ptr<VascularNode<DIM> > GetStartNode();
 
 	/**
        @return shared pointer to the second node of the last segment
 	 */
-	boost::shared_ptr<CaVascularNetworkNode<DIM> > GetEndNode();
+	boost::shared_ptr<VascularNode<DIM> > GetEndNode();
 
 	/**
        @return mVesselSegmentLocations

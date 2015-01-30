@@ -33,8 +33,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef CAVASCULARNETWORKNODE_HPP_
-#define CAVASCULARNETWORKNODE_HPP_
+#ifndef VASCULARNODE_HPP_
+#define VASCULARNODE_HPP_
 
 #include <vector>
 #include <map>
@@ -46,7 +46,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SmartPointers.hpp"
 #include "Cell.hpp"
 #include "CaBasedCellPopulation.hpp"
-#include "VascularNetworkData.hpp"
+#include "VasculatureData.hpp"
 #include "CaVesselSegment.hpp"
 
 template<unsigned DIM>
@@ -60,7 +60,7 @@ class CaVesselSegment;
  */
 
 template<unsigned DIM>
-class CaVascularNetworkNode : public boost::enable_shared_from_this<CaVascularNetworkNode<DIM> >
+class VascularNode : public boost::enable_shared_from_this<VascularNode<DIM> >
 {
 	///\todo this breaks encapsulation, but ensures that the node-segment connectivity is
 	// kept up-to-date. Look at methods for limiting friend class access to methods.
@@ -86,7 +86,7 @@ private:
     /**
      * Container for non-spatial node data.
      */
-	boost::shared_ptr<VascularNetworkData> mpDataContainer;
+	boost::shared_ptr<VasculatureData> mpDataContainer;
 
     /**
      * Id tag, can be useful for storing segment-node relationships in the VesselNetwork class.
@@ -110,17 +110,17 @@ public:
 	 *
 	 * A node must be specified with a location.
 	 */
-	CaVascularNetworkNode(ChastePoint<DIM> location);
+	VascularNode(ChastePoint<DIM> location);
 
     /*
      * Construct a new instance of the class and return a shared pointer to it.
      */
-    static boost::shared_ptr<CaVascularNetworkNode<DIM> > Create(ChastePoint<DIM> location);
+    static boost::shared_ptr<VascularNode<DIM> > Create(ChastePoint<DIM> location);
 
 	/*
 	 * Destructor
 	 */
-	~CaVascularNetworkNode();
+	~VascularNode();
 
 	/**
 	 *  Return a pointer to the associated Cell.
@@ -155,7 +155,7 @@ public:
 	 *
 	 *  @return mDataContainer
 	 */
-	boost::shared_ptr<VascularNetworkData> GetDataContainer();
+	boost::shared_ptr<VasculatureData> GetDataContainer();
 
 	/**
 	 *  Return the number of attached segments
@@ -184,6 +184,20 @@ public:
 	bool HasCell();
 
 	/**
+	 *  Return true if the node is coincident with the input location
+	 *
+	 *  @return bool
+	 */
+	bool IsCoincident(ChastePoint<DIM> point);
+
+	/**
+	 *  Return true if the node is coincident with the input node
+	 *
+	 *  @return bool
+	 */
+	bool IsCoincident(boost::shared_ptr<VascularNode<DIM> > node);
+
+	/**
 	 *  Assign a Cell to the node. Throw an Exception if the Cell is not a member of the
 	 *  Cell Population or if a Cell Population has not been set. Overwrite any existing Cell.
 	 */
@@ -200,7 +214,7 @@ public:
 	 *
 	 *  This can be useful when copying data from an existing node.
 	 */
-	void SetDataContainer(boost::shared_ptr<VascularNetworkData> pDataContainer);
+	void SetDataContainer(boost::shared_ptr<VasculatureData> pDataContainer);
 
 	/**
 	 *  Assign the Id
@@ -239,4 +253,4 @@ private:
 
 };
 
-#endif /* CAVASCULARNETWORKNODE_HPP_ */
+#endif /* VASCULARNODE_HPP_ */
