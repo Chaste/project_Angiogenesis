@@ -142,9 +142,13 @@ public:
 
 	/**
 	 *  Return the length
-	 *
 	 */
     double GetLength();
+
+	/**
+	 *  Return a point mid-way along the vessel
+	 */
+    ChastePoint<DIM> GetMidPoint();
 
     /**
        Return a the segment nodes as a pair

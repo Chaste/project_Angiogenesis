@@ -100,6 +100,24 @@ double CaVesselSegment<DIM>::GetLength()
 }
 
 template<unsigned DIM>
+ChastePoint<DIM> CaVesselSegment<DIM>::GetMidPoint()
+{
+	ChastePoint<DIM> point1 = mNodes.first->GetLocation();
+	ChastePoint<DIM> point2 = mNodes.second->GetLocation();
+
+	if (DIM ==2)
+	{
+		ChastePoint<DIM> mid_point((point2[0] + point1[0])/2.0, (point2[1] + point1[1])/2.0);
+		return mid_point;
+	}
+	else
+	{
+		ChastePoint<DIM> mid_point((point2[0] + point1[0])/2.0, (point2[1] + point1[1])/2.0, (point2[2] + point1[2])/2.0);
+		return mid_point;
+	}
+}
+
+template<unsigned DIM>
 boost::shared_ptr<CaVessel<DIM> > CaVesselSegment<DIM>::GetVessel()
 {
 	if(mVessel.lock())
