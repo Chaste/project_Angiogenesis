@@ -5,3 +5,4 @@ vasculature/components/TestCaVascularNetwork.hpp
 vasculature/TestVasculatureData.hpp
 vasculature/TestVasculatureGenerator.hpp
 cell/TestVascularCellProperty.hpp
+TestGeometryTransform.hpp

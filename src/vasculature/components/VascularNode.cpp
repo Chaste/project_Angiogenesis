@@ -33,6 +33,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
+#include <algorithm>
+#include <stddef.h>
 #include "VascularNode.hpp"
 
 template<unsigned DIM>
@@ -48,19 +50,39 @@ VascularNode<DIM>::VascularNode(ChastePoint<DIM> location)
 }
 
 template<unsigned DIM>
-VascularNode<DIM>::~VascularNode()
+VascularNode<DIM>::VascularNode(double point1, double point2, double point3)
+    : mLocation(ChastePoint<DIM>(point1, point2, point3)),
+      mpCell(CellPtr()),
+      mpCellPopulation(NULL),
+      mpDataContainer(boost::shared_ptr<VasculatureData>(new VasculatureData())),
+      mId(0),
+      mLabel(""),
+      mVesselSegments(std::vector<boost::weak_ptr<CaVesselSegment<DIM> > >())
 {
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VascularNode<DIM> >VascularNode<DIM>::Create(ChastePoint<DIM> location)
+VascularNode<DIM>::~VascularNode()
 {
-	boost::shared_ptr<VascularNode<DIM> > pSelf(new VascularNode<DIM>(location));
+    delete mpCellPopulation;
+}
+
+template<unsigned DIM>
+boost::shared_ptr<VascularNode<DIM> >VascularNode<DIM>::Create(const ChastePoint<DIM>& rlocation)
+{
+    MAKE_PTR_ARGS(VascularNode<DIM>, pSelf, (rlocation));
 	return pSelf;
 }
 
 template<unsigned DIM>
-CellPtr VascularNode<DIM>::GetCell()
+boost::shared_ptr<VascularNode<DIM> >VascularNode<DIM>::Create(double point1, double point2, double point3)
+{
+    MAKE_PTR_ARGS(VascularNode<DIM>, pSelf, (point1, point2, point3));
+    return pSelf;
+}
+
+template<unsigned DIM>
+CellPtr VascularNode<DIM>::GetCell() const
 {
 	if(mpCell)
 	{
@@ -73,24 +95,23 @@ CellPtr VascularNode<DIM>::GetCell()
 }
 
 template<unsigned DIM>
-unsigned VascularNode<DIM>::GetId()
+unsigned VascularNode<DIM>::GetId() const
 {
 	return mId;
 }
 
 template<unsigned DIM>
-const std::string& VascularNode<DIM>::rGetLabel()
+const std::string& VascularNode<DIM>::rGetLabel() const
 {
 	return mLabel;
 }
 
 template<unsigned DIM>
-ChastePoint<DIM> VascularNode<DIM>::GetLocation()
+ChastePoint<DIM> VascularNode<DIM>::GetLocation() const
 {
 	if(mpCell)
 	{
-		ChastePoint<DIM> location(mpCellPopulation->GetLocationOfCellCentre(mpCell));
-		return location;
+		return mpCellPopulation->GetLocationOfCellCentre(mpCell);
 	}
 	else
 	{
@@ -99,45 +120,31 @@ ChastePoint<DIM> VascularNode<DIM>::GetLocation()
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VasculatureData> VascularNode<DIM>::GetDataContainer()
+boost::shared_ptr<VasculatureData> VascularNode<DIM>::GetDataContainer() const
 {
 	return mpDataContainer;
 }
 
 template<unsigned DIM>
-bool VascularNode<DIM>::HasCell()
+bool VascularNode<DIM>::HasCell() const
 {
 	return mpCell;
 }
 
 template<unsigned DIM>
-bool VascularNode<DIM>::IsCoincident(ChastePoint<DIM> point)
+bool VascularNode<DIM>::IsCoincident(const ChastePoint<DIM>& rPoint) const
 {
-	if (GetLocation().IsSamePoint(point))
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return (GetLocation().IsSamePoint(rPoint));
 }
 
 template<unsigned DIM>
-bool VascularNode<DIM>::IsCoincident(boost::shared_ptr<VascularNode<DIM> > node)
+bool VascularNode<DIM>::IsCoincident(const boost::shared_ptr<VascularNode<DIM> > node) const
 {
-	if (GetLocation().IsSamePoint(node->GetLocation()))
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return (GetLocation().IsSamePoint(node->GetLocation()));
 }
 
 template<unsigned DIM>
-void VascularNode<DIM>::SetDataContainer(boost::shared_ptr<VasculatureData> pDataContainer)
+void VascularNode<DIM>::SetDataContainer(const boost::shared_ptr<VasculatureData> pDataContainer)
 {
 	mpDataContainer->SetMap(pDataContainer->GetMap());
 }
@@ -165,7 +172,7 @@ void VascularNode<DIM>::SetCell(CellPtr pCell)
 }
 
 template<unsigned DIM>
-void VascularNode<DIM>::SetCellPopulation(CaBasedCellPopulation<DIM>* pCellPopulation)
+void VascularNode<DIM>::SetCellPopulation(AbstractCellPopulation<DIM>* pCellPopulation)
 {
 	if (mpCell)
 	{
@@ -187,19 +194,19 @@ void VascularNode<DIM>::SetId(unsigned id)
 }
 
 template<unsigned DIM>
-void VascularNode<DIM>::SetLabel(const std::string& label)
+void VascularNode<DIM>::SetLabel(const std::string& rLabel)
 {
-	mLabel = label;
+	mLabel = rLabel;
 }
 
 template<unsigned DIM>
-void VascularNode<DIM>::SetLocation(ChastePoint<DIM> location)
+void VascularNode<DIM>::SetLocation(const ChastePoint<DIM>& rLocation)
 {
 	if (mpCell)
 	{
 		mpCell = CellPtr();
 	}
-	mLocation = location;
+	mLocation = rLocation;
 }
 
 template<unsigned DIM>
@@ -209,13 +216,13 @@ void VascularNode<DIM>::RemoveCell()
 }
 
 template<unsigned DIM>
-unsigned VascularNode<DIM>::GetNumberOfSegments()
+unsigned VascularNode<DIM>::GetNumberOfSegments() const
 {
 	return mVesselSegments.size();
 }
 
 template<unsigned DIM>
-boost::shared_ptr<CaVesselSegment<DIM> > VascularNode<DIM>::GetVesselSegments(unsigned index)
+boost::shared_ptr<CaVesselSegment<DIM> > VascularNode<DIM>::GetVesselSegments(unsigned index) const
 {
 	if(index < mVesselSegments.size())
 	{
@@ -228,7 +235,7 @@ boost::shared_ptr<CaVesselSegment<DIM> > VascularNode<DIM>::GetVesselSegments(un
 }
 
 template<unsigned DIM>
-std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >VascularNode<DIM>::GetVesselSegments()
+std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >VascularNode<DIM>::GetVesselSegments() const
 {
 	std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments;
 
@@ -241,14 +248,14 @@ std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >VascularNode<DIM>::GetVess
 }
 
 template<unsigned DIM>
-void VascularNode<DIM>::AddSegment(boost::shared_ptr<CaVesselSegment<DIM> > vessel_segment)
+void VascularNode<DIM>::AddSegment(boost::shared_ptr<CaVesselSegment<DIM> > pVesselSegment)
 {
 	// Vessel segments can only be attached to a node once.
 	int number_times_attached_to_node = 0;
 
 	for(unsigned i = 0; i < mVesselSegments.size(); i++)
 	{
-		if (mVesselSegments[i].lock() == vessel_segment)
+		if (mVesselSegments[i].lock() == pVesselSegment)
 		{
 			number_times_attached_to_node++;
 		}
@@ -256,7 +263,7 @@ void VascularNode<DIM>::AddSegment(boost::shared_ptr<CaVesselSegment<DIM> > vess
 
 	if (number_times_attached_to_node == 0)
 	{
-		mVesselSegments.push_back(boost::weak_ptr<CaVesselSegment<DIM> > (vessel_segment));
+		mVesselSegments.push_back(boost::weak_ptr<CaVesselSegment<DIM> > (pVesselSegment));
 	}
 	else
 	{

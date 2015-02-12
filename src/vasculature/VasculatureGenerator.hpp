@@ -90,7 +90,6 @@ public:
 
     /*
      * Creates a bifurcation repeating unit
-     *
      */
     boost::shared_ptr<CaVascularNetwork<DIM> > GenerateBifurcationUnit(double vessel_length);
 
