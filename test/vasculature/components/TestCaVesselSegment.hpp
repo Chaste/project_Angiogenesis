@@ -74,10 +74,10 @@ public:
 
     	// Check the locations
     	TS_ASSERT(pSegment->GetNodes().first->IsCoincident(point1));
-    	TS_ASSERT(pSegment->GetNodes(0)->IsCoincident(point1));
+    	TS_ASSERT(pSegment->GetNode(0)->IsCoincident(point1));
     	TS_ASSERT(pSegment->GetNodes().second->IsCoincident(point2));
-    	TS_ASSERT(pSegment->GetNodes(1)->IsCoincident(point2));
-    	TS_ASSERT_THROWS_THIS(pSegment->GetNodes(2),
+    	TS_ASSERT(pSegment->GetNode(1)->IsCoincident(point2));
+    	TS_ASSERT_THROWS_THIS(pSegment->GetNode(2),
     			"A node index other than 0 or 1 has been requested for a Vessel Segment.");
 
     	// Test simple Getters and Setters
@@ -163,15 +163,16 @@ public:
 
 		// Make a vessel and check that it has been suitably added to the segment
 		boost::shared_ptr<CaVessel<2> > pVessel(CaVessel<2>::Create(pVesselSegment));
-		TS_ASSERT(pVesselSegment->GetNodes(0)->IsCoincident(pVesselSegment->GetVessel()->GetSegments(0)->GetNodes(0)));
+		TS_ASSERT(pVesselSegment->GetNode(0)->IsCoincident(pVesselSegment->GetVessel()->GetSegments(0)->GetNode(0)));
 
 		// Check the exception when a vessel is added to a segment which already has one
 		TS_ASSERT_THROWS_THIS(boost::shared_ptr<CaVessel<2> > pVessel(CaVessel<2>::Create(pVesselSegment));,
 			"This segment already has a vessel.");
 
 		// Try removing a segment from the vessel
-		pVessel->AddSegments(pVesselSegment2);
-		pVessel->RemoveSegments(true, false);
+		pVessel->AddSegment(pVesselSegment2);
+		pVessel->RemoveSegments(SegmentLocation::Start);
+		pVessel->RemoveSegments(SegmentLocation::End);
 		TS_ASSERT_THROWS_THIS(boost::shared_ptr<CaVessel<2> > vessel = pVesselSegment->GetVessel(),
 				"A vessel has been requested but this segment doesn't have one.");
 	}

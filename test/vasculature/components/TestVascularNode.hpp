@@ -38,6 +38,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "AbstractCellBasedTestSuite.hpp"
 #include "SmartVasculaturePointers.hpp"
+#include "CaVesselSegment.hpp"
 #include "VascularNode.hpp"
 #include "VasculatureData.hpp"
 #include "ChastePoint.hpp"
@@ -106,13 +107,15 @@ public:
         MAKE_VN_PTR_ARGS(CaVesselSegment<2>, pVesselSegment, (pNode, pNode2));
         MAKE_VN_PTR_ARGS(CaVesselSegment<2>, pVesselSegment2, (pNode2, pNode3));
 
+        TS_ASSERT_DELTA(pVesselSegment->GetLength(), 2.0, 1.e-6);
+
         // Check that the vessel segments have been suitably added to the nodes.
         TS_ASSERT_EQUALS(pNode->GetNumberOfSegments(), 1u);
         TS_ASSERT_EQUALS(pNode2->GetNumberOfSegments(), 2u);
 
         // Check that the segments are correctly retrieved from the node.
-        TS_ASSERT(pNode2->IsCoincident(pNode2->GetVesselSegments(0)->GetNodes(1)));
-        TS_ASSERT(pNode2->IsCoincident(pNode2->GetVesselSegments()[0]->GetNodes(1)));
+        TS_ASSERT(pNode2->IsCoincident(pNode2->GetVesselSegments(0)->GetNode(1)));
+        TS_ASSERT(pNode2->IsCoincident(pNode2->GetVesselSegments()[0]->GetNode(1)));
         TS_ASSERT_THROWS_THIS(pNode2->GetVesselSegments(3), "Attempted to access a segment with an out of range index.");
 
         // Check that the vessel segment connectivity is updated when a node is replaced.
@@ -124,7 +127,7 @@ public:
         TS_ASSERT_THROWS_THIS(pVesselSegment2->ReplaceNode(0, pNode), "This segment is already attached to this node.");
     }
 
-    void DontTestAddingAndRemovingCells() throw(Exception)
+    void TestAddingAndRemovingCells() throw(Exception)
     {
         // Make a node
         ChastePoint<2> point(4.0, 3.0);
@@ -150,7 +153,7 @@ public:
         location_indices.push_back(1);
 
         // Create a cell population
-        CaBasedCellPopulation<2>* p_cell_population = new CaBasedCellPopulation<2>(*p_mesh, cells, location_indices);
+        MAKE_PTR_ARGS(CaBasedCellPopulation<2>, p_cell_population, (*p_mesh, cells, location_indices));
         node.SetCellPopulation(p_cell_population);
 
         // Now try adding a cell
@@ -172,7 +175,7 @@ public:
         std::vector<unsigned> location_indices2;
         location_indices2.push_back(2);
 
-        CaBasedCellPopulation<2>* p_cell_population2 = new CaBasedCellPopulation<2>(*p_mesh, cells2, location_indices2);
+        MAKE_PTR_ARGS(CaBasedCellPopulation<2>, p_cell_population2, (*p_mesh, cells2, location_indices2));
         node.SetCellPopulation(p_cell_population2);
         TS_ASSERT(!node.HasCell());
 
@@ -180,9 +183,6 @@ public:
         node.SetCell(p_cell_population2->rGetCells().front());
         node.RemoveCell();
         TS_ASSERT(!node.HasCell());
-
-        delete p_cell_population;
-        delete p_cell_population2;
     }
 };
 

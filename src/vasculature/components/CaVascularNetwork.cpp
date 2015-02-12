@@ -71,8 +71,8 @@ std::set<boost::shared_ptr<VascularNode<DIM> > > CaVascularNetwork<DIM>::GetNode
 		std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = (*it)->GetSegments();
 		for(jt = segments.begin(); jt != segments.end(); jt++)
 		{
-			nodes.insert((*jt)->GetNodes(0));
-			nodes.insert((*jt)->GetNodes(1));
+			nodes.insert((*jt)->GetNode(0));
+			nodes.insert((*jt)->GetNode(1));
 		}
 	}
 	return nodes;
@@ -110,11 +110,11 @@ void CaVascularNetwork<DIM>::MergeCoincidentNodes()
 					std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = (*it2)->GetVesselSegments();
 					for(it3 = segments.begin(); it3 != segments.end(); it3++)
 					{
-						if ((*it3)->GetNodes(0) == (*it2))
+						if ((*it3)->GetNode(0) == (*it2))
 						{
 							(*it3)->ReplaceNode(0, (*it));
 						}
-						else if(((*it3)->GetNodes(1) == (*it2)))
+						else if(((*it3)->GetNode(1) == (*it2)))
 						{
 							(*it3)->ReplaceNode(1, (*it));
 						}
@@ -143,8 +143,8 @@ std::set<boost::shared_ptr<VascularNode<DIM> > > CaVascularNetwork<DIM>::DeepCop
 
 		for(segment_iter = segments.begin(); segment_iter != segments.end(); segment_iter++)
 		{
-			ChastePoint<DIM> node0_location = (*segment_iter)->GetNodes(0)->GetLocation();
-			ChastePoint<DIM> node1_location = (*segment_iter)->GetNodes(1)->GetLocation();
+			ChastePoint<DIM> node0_location = (*segment_iter)->GetNode(0)->GetLocation();
+			ChastePoint<DIM> node1_location = (*segment_iter)->GetNode(1)->GetLocation();
 
 			boost::shared_ptr<VascularNode<DIM> > pNode0(VascularNode<DIM>::Create(node0_location));
 			boost::shared_ptr<VascularNode<DIM> > pNode1(VascularNode<DIM>::Create(node1_location));
@@ -221,7 +221,7 @@ void CaVascularNetwork<DIM>::WriteToFile(std::string filename, bool geometry_onl
 
     	for(unsigned i = 0; i < segments.size(); i++)
     	{
-    		ChastePoint<DIM> location = segments[i]->GetNodes(0)->GetLocation();
+    		ChastePoint<DIM> location = segments[i]->GetNode(0)->GetLocation();
     		vtkIdType pointId;
     		if(DIM == 2)
     		{
@@ -236,7 +236,7 @@ void CaVascularNetwork<DIM>::WriteToFile(std::string filename, bool geometry_onl
     		if (i == segments.size() - 1)
     		{
     			vtkIdType pointId2;
-    			ChastePoint<DIM> location2 = segments[i]->GetNodes(1)->GetLocation();
+    			ChastePoint<DIM> location2 = segments[i]->GetNode(1)->GetLocation();
         		if(DIM == 2)
         		{
         			pointId2 = pPoints->InsertNextPoint(location2[0], location2[1], 0.0);

@@ -36,12 +36,13 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <algorithm>
 #include <stddef.h>
 #include "VascularNode.hpp"
+#include "CaVesselSegment.hpp"
 
 template<unsigned DIM>
 VascularNode<DIM>::VascularNode(ChastePoint<DIM> location)
 	: mLocation(location),
 	  mpCell(CellPtr()),
-	  mpCellPopulation(NULL),
+	  mpCellPopulation(boost::shared_ptr<AbstractCellPopulation<DIM> >()),
 	  mpDataContainer(boost::shared_ptr<VasculatureData>(new VasculatureData())),
 	  mId(0),
 	  mLabel(""),
@@ -53,7 +54,7 @@ template<unsigned DIM>
 VascularNode<DIM>::VascularNode(double point1, double point2, double point3)
     : mLocation(ChastePoint<DIM>(point1, point2, point3)),
       mpCell(CellPtr()),
-      mpCellPopulation(NULL),
+      mpCellPopulation(boost::shared_ptr<AbstractCellPopulation<DIM> >()),
       mpDataContainer(boost::shared_ptr<VasculatureData>(new VasculatureData())),
       mId(0),
       mLabel(""),
@@ -64,7 +65,6 @@ VascularNode<DIM>::VascularNode(double point1, double point2, double point3)
 template<unsigned DIM>
 VascularNode<DIM>::~VascularNode()
 {
-    delete mpCellPopulation;
 }
 
 template<unsigned DIM>
@@ -152,7 +152,7 @@ void VascularNode<DIM>::SetDataContainer(const boost::shared_ptr<VasculatureData
 template<unsigned DIM>
 void VascularNode<DIM>::SetCell(CellPtr pCell)
 {
-	if(mpCellPopulation != NULL)
+	if(mpCellPopulation)
 	{
 		std::list<CellPtr> cell_list = mpCellPopulation->rGetCells();
 		bool found = (std::find(cell_list.begin(), cell_list.end(), pCell) != cell_list.end());
@@ -172,7 +172,7 @@ void VascularNode<DIM>::SetCell(CellPtr pCell)
 }
 
 template<unsigned DIM>
-void VascularNode<DIM>::SetCellPopulation(AbstractCellPopulation<DIM>* pCellPopulation)
+void VascularNode<DIM>::SetCellPopulation(boost::shared_ptr<AbstractCellPopulation<DIM> > pCellPopulation)
 {
 	if (mpCell)
 	{

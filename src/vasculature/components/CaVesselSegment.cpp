@@ -34,16 +34,18 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include "CaVesselSegment.hpp"
+#include "VascularNode.hpp"
+#include "CaVessel.hpp"
 
 template<unsigned DIM>
 CaVesselSegment<DIM>::CaVesselSegment(boost::shared_ptr<VascularNode<DIM> > pNode1, boost::shared_ptr<VascularNode<DIM> > pNode2)
-	: mNodes(std::pair<boost::shared_ptr<VascularNode<DIM> >, boost::shared_ptr<VascularNode<DIM> > > (pNode1, pNode2)),
-	  mpDataContainer(boost::shared_ptr<VasculatureData>(new VasculatureData())),
-	  mId(0),
-	  mLabel(""),
-	  mVessel(boost::weak_ptr<CaVessel<DIM> >())
-{
-}
+: mNodes(std::pair<boost::shared_ptr<VascularNode<DIM> >, boost::shared_ptr<VascularNode<DIM> > > (pNode1, pNode2)),
+  mpDataContainer(boost::shared_ptr<VasculatureData>(new VasculatureData())),
+  mId(0),
+  mLabel(""),
+  mVessel(boost::weak_ptr<CaVessel<DIM> >())
+  {
+  }
 
 template<unsigned DIM>
 boost::shared_ptr<CaVesselSegment<DIM> >CaVesselSegment<DIM>::Create(boost::shared_ptr<VascularNode<DIM> > pNode1, boost::shared_ptr<VascularNode<DIM> > pNode2)
@@ -68,24 +70,24 @@ CaVesselSegment<DIM>::~CaVesselSegment()
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VasculatureData> CaVesselSegment<DIM>::GetDataContainer()
+boost::shared_ptr<VasculatureData> CaVesselSegment<DIM>::GetDataContainer() const
 {
 	return mpDataContainer;
 }
 
 template<unsigned DIM>
-unsigned CaVesselSegment<DIM>::GetId()
+unsigned CaVesselSegment<DIM>::GetId() const
 {
 	return mId;
 }
 
 template<unsigned DIM>
-const std::string& CaVesselSegment<DIM>::rGetLabel()
+const std::string& CaVesselSegment<DIM>::rGetLabel() const
 {
 	return mLabel;
 }
 template<unsigned DIM>
-double CaVesselSegment<DIM>::GetLength()
+double CaVesselSegment<DIM>::GetLength() const
 {
 	ChastePoint<DIM> point1 = mNodes.first->GetLocation();
 	ChastePoint<DIM> point2 = mNodes.second->GetLocation();
@@ -137,7 +139,7 @@ std::pair<boost::shared_ptr<VascularNode<DIM> >, boost::shared_ptr<VascularNode<
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VascularNode<DIM> > CaVesselSegment<DIM>::GetNodes(unsigned index)
+boost::shared_ptr<VascularNode<DIM> > CaVesselSegment<DIM>::GetNode(unsigned index)
 {
 	if (index == 0u)
 	{
@@ -154,15 +156,53 @@ boost::shared_ptr<VascularNode<DIM> > CaVesselSegment<DIM>::GetNodes(unsigned in
 }
 
 template<unsigned DIM>
-void CaVesselSegment<DIM>::ReplaceNode(unsigned old_node_index, boost::shared_ptr<VascularNode<DIM> >  pNewNode)
+bool CaVesselSegment<DIM>::HasNode(boost::shared_ptr<VascularNode<DIM> > pNode)
 {
-	if (old_node_index == 0u)
+	return(pNode == GetNode(0) || pNode == GetNode(1));
+}
+
+template<unsigned DIM>
+bool CaVesselSegment<DIM>::IsConnectedTo(boost::shared_ptr<CaVesselSegment<DIM> > otherSegment)
+{
+
+	bool isConnectedToSegment = false;
+
+	if (otherSegment == Shared())
+	{
+		EXCEPTION("Vessel segment cannot be connected to itself.");
+	}
+
+	if (this->GetNode(0) == otherSegment->GetNode(0) && this->GetNode(1) == otherSegment->GetNode(1))
+	{
+		EXCEPTION("Vessel segments should not have identical nodes at both ends (and thus be completely overlapping).");
+	}
+	if (this->GetNode(1) == otherSegment->GetNode(0) && this->GetNode(0) == otherSegment->GetNode(1))
+	{
+		EXCEPTION("Vessel segments should not have identical nodes at both ends (and thus be completely overlapping).");
+	}
+
+	if (this->GetNode(0) == otherSegment->GetNode(0)
+			|| this->GetNode(0) == otherSegment->GetNode(1)
+			|| this->GetNode(1) == otherSegment->GetNode(0)
+			|| this->GetNode(1) == otherSegment->GetNode(1))
+	{
+		isConnectedToSegment = true;
+	}
+
+	return isConnectedToSegment;
+
+}
+
+template<unsigned DIM>
+void CaVesselSegment<DIM>::ReplaceNode(unsigned oldNodeIndex, boost::shared_ptr<VascularNode<DIM> >  pNewNode)
+{
+	if (oldNodeIndex == 0u)
 	{
 		mNodes.first->RemoveSegment(Shared());
 		mNodes.first = pNewNode;
 		mNodes.first->AddSegment(Shared());
 	}
-	else if (old_node_index == 1u)
+	else if (oldNodeIndex == 1u)
 	{
 		mNodes.second->RemoveSegment(Shared());
 		mNodes.second = pNewNode;
@@ -187,25 +227,21 @@ void CaVesselSegment<DIM>::SetId(unsigned id)
 }
 
 template<unsigned DIM>
-void CaVesselSegment<DIM>::SetLabel(const std::string& label)
+void CaVesselSegment<DIM>::SetLabel(const std::string& rLabel)
 {
-	mLabel = label;
+	mLabel = rLabel;
 }
 
 template<unsigned DIM>
 boost::shared_ptr<CaVesselSegment<DIM> > CaVesselSegment<DIM>::Shared()
 {
-		boost::shared_ptr<CaVesselSegment<DIM> > pSegment = this->shared_from_this();
-		return pSegment;
+	boost::shared_ptr<CaVesselSegment<DIM> > pSegment = this->shared_from_this();
+	return pSegment;
 }
 
 template<unsigned DIM>
 void CaVesselSegment<DIM>::AddVessel(boost::shared_ptr<CaVessel<DIM> > pVessel)
 {
-	if(mVessel.lock())
-	{
-		EXCEPTION("This segment already has a vessel.");
-	}
 	mVessel = pVessel;
 }
 

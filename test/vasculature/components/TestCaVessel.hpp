@@ -98,7 +98,7 @@ public:
 		// Check that segments are correctly returned
 		TS_ASSERT_EQUALS(pVessel2->GetNumberOfSegments(), 2u);
 		TS_ASSERT_EQUALS(pVessel2->GetSegments().size(), 2u);
-		TS_ASSERT(pVessel2->GetSegments(0)->GetNodes(0)->IsCoincident(points[1]));
+		TS_ASSERT(pVessel2->GetSegment(0)->GetNode(0)->IsCoincident(points[1]));
 
 		// Test simple Getters and Setters
 		pVessel1->SetId(5u);
@@ -135,15 +135,16 @@ public:
 		VesselPtr2 pVessel1(CaVessel<2>::Create(pSegment1));
 
 		// Try adding a segment to the start and end
-		pVessel1->AddSegments(pSegment0);
-		pVessel1->AddSegments(pSegment2);
+		pVessel1->AddSegment(pSegment0);
+		pVessel1->AddSegment(pSegment2);
 		TS_ASSERT_EQUALS(pVessel1->GetNumberOfSegments(), 3u);
 
 		// Try adding a disconnected segment
-		TS_ASSERT_THROWS_THIS(pVessel1->AddSegments(pSegment3),"Input vessel segment does not coincide with any end of the vessel.");
+		TS_ASSERT_THROWS_THIS(pVessel1->AddSegment(pSegment3),"Input vessel segment does not coincide with any end of the vessel.");
 
 		// Remove the segments from the ends
-		pVessel1->RemoveSegments(true, true);
+		pVessel1->RemoveSegments(SegmentLocation::Start);
+		pVessel1->RemoveSegments(SegmentLocation::End);
 		TS_ASSERT_EQUALS(pVessel1->GetNumberOfSegments(), 1u);
 
 		// Vector version of adding.

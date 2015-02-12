@@ -38,8 +38,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <boost/enable_shared_from_this.hpp>
 #include <math.h>
-#include "VascularNode.hpp"
-#include "CaVessel.hpp"
 #include "VasculatureData.hpp"
 #include "SmartPointers.hpp"
 #include "ChastePoint.hpp"
@@ -60,8 +58,6 @@ template<unsigned DIM>
 class CaVesselSegment : public boost::enable_shared_from_this<CaVesselSegment<DIM> >
 {
 
-	///\todo this breaks encapsulation, but ensures that the segment-vessel connectivity is
-	// kept up-to-date. Look at methods for limiting friend class access to methods.
 	friend class CaVessel<DIM>;
 
 private:
@@ -117,14 +113,14 @@ public:
 	 *
 	 *  @return mDataContainer
 	 */
-	boost::shared_ptr<VasculatureData> GetDataContainer();
+	boost::shared_ptr<VasculatureData> GetDataContainer() const;
 
 	/**
 	 *  Return the Id
 	 *
 	 *  @return mId
 	 */
-	unsigned GetId();
+	unsigned GetId() const;
 
 	/**
 	 *  Return a boost::shared_ptr to the vessel.
@@ -138,15 +134,15 @@ public:
 	 *
 	 *  @return mLabel
 	 */
-	const std::string& rGetLabel();
+	const std::string& rGetLabel() const;
 
 	/**
 	 *  Return the length
 	 */
-    double GetLength();
+    double GetLength() const;
 
 	/**
-	 *  Return a point mid-way along the vessel
+	 *  Return a point mid-way along the vessel segment
 	 */
     ChastePoint<DIM> GetMidPoint();
 
@@ -158,12 +154,22 @@ public:
     /**
        Return a pointer to the node specified by the index
      */
-    boost::shared_ptr<VascularNode<DIM> > GetNodes(unsigned index);
+    boost::shared_ptr<VascularNode<DIM> > GetNode(unsigned index);
+
+    /**
+     *  Returns whether the segment is connected to another segment correctly.
+     */
+    bool IsConnectedTo(boost::shared_ptr<CaVesselSegment<DIM> > pOtherSegment);
+
+    /**
+     *  Returns whether the node is in the segment.
+     */
+    bool HasNode(boost::shared_ptr<VascularNode<DIM> > pNode);
 
     /**
        Replace the node at the specified index with the passed in node.
      */
-    void ReplaceNode(unsigned old_node_index, boost::shared_ptr<VascularNode<DIM> >  pNewNode);
+    void ReplaceNode(unsigned oldNodeIndex, boost::shared_ptr<VascularNode<DIM> >  pNewNode);
 
 	/**
 	 *  Over-write the segment's non-spatial DataContainer
@@ -182,7 +188,7 @@ public:
 	 *  Assign the Label
 	 *
 	 */
-	void SetLabel(const std::string& label);
+	void SetLabel(const std::string& rLabel);
 
 private:
 

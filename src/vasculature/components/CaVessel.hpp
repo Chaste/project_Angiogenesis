@@ -47,11 +47,15 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CaVesselSegment.hpp"
 #include "VasculatureData.hpp"
 
-template<unsigned DIM>
-class CaVesselSegment;
 
-template<unsigned DIM>
-class VascularNode;
+struct SegmentLocation
+{
+    enum Value
+    {
+        Start,
+        End
+    };
+};
 
 template<unsigned DIM>
 class CaVessel : public boost::enable_shared_from_this<CaVessel<DIM> >
@@ -98,14 +102,12 @@ private:
 public:
 
     /*
-     * Construct a new instance of the class and return a shared pointer to it. Also manage the association of segments to nodes by
-     * passing weak pointers to the nodes.
+     * Construct a new instance of the class and return a shared pointer to it.
      */
     static boost::shared_ptr<CaVessel<DIM> > Create(boost::shared_ptr<CaVesselSegment<DIM> > pSegment);
 
     /*
-     * Construct a new instance of the class and return a shared pointer to it. Also manage the association of segments to nodes by
-     * passing weak pointers to the nodes.
+     * Construct a new instance of the class and return a shared pointer to it.
      */
     static boost::shared_ptr<CaVessel<DIM> > Create(std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments);
 
@@ -117,7 +119,7 @@ public:
 	/**
        Add a single segment to either end of the vessel
 	 */
-	void AddSegments(boost::shared_ptr<CaVesselSegment<DIM> > segment);
+	void AddSegment(boost::shared_ptr<CaVesselSegment<DIM> > segment);
 
 	/**
        Add a collection of segments to either end of the vessel
@@ -187,7 +189,7 @@ public:
 	/**
        @return mVesselSegmentLocations[i]
 	 */
-	boost::shared_ptr<CaVesselSegment<DIM> > GetSegments(unsigned i);
+	boost::shared_ptr<CaVesselSegment<DIM> > GetSegment(unsigned i);
 
 	/**
        @return mVesselSegmentLocations.size()
@@ -197,7 +199,7 @@ public:
 	/**
        Remove segments from the ends of a vessel
 	 */
-	void RemoveSegments(bool start, bool end);
+	void RemoveSegments(SegmentLocation::Value location);
 };
 
 #endif /* CAVESSEL_HPP_ */

@@ -46,7 +46,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "AbstractCellPopulation.hpp"
 #include "SmartVasculaturePointers.hpp"
 #include "VasculatureData.hpp"
-#include "CaVesselSegment.hpp"
+
 
 /**
  *  Forward declaration to allow segments to manage adding and removing themselves from nodes.
@@ -83,7 +83,7 @@ private:
     /**
      *   Pointer to an associated Cell Population.
      */
-    AbstractCellPopulation<DIM>* mpCellPopulation;
+    boost::shared_ptr<AbstractCellPopulation<DIM> > mpCellPopulation;
 
     /**
      * Pointer to a container for non-spatial node data.
@@ -177,12 +177,12 @@ public:
     unsigned GetNumberOfSegments() const;
 
     /**
-     *  Return a boost::shared_ptr to VesselSegment i.
+     *  Return a boost::shared_ptr to VesselSegment index.
      */
     boost::shared_ptr<CaVesselSegment<DIM> > GetVesselSegments(unsigned index) const;
 
     /**
-     *  Return a boost::shared_ptr to the VesselSegments.
+     *  Return a vector of boost::shared_ptr to the VesselSegments.
      */
     std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > GetVesselSegments() const;
 
@@ -217,7 +217,7 @@ public:
      *  Assign a Cell Population to the node. If an existing Cell is not a member of the population
      *  remove it.
      */
-    void SetCellPopulation(AbstractCellPopulation<DIM>* pCellPopulation);
+    void SetCellPopulation(boost::shared_ptr<AbstractCellPopulation<DIM> > pCellPopulation);
 
     /**
      *  Over-write the node's non-spatial DataContainer
