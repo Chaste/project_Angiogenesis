@@ -45,10 +45,7 @@ CaVessel<DIM>::CaVessel(boost::shared_ptr<CaVesselSegment<DIM> > pSegment)
 	mSegments.push_back(pSegment);
   }
 
-/*
- * todo Change this method to make more general - segments should be accepted if either one of their nodes
- * coincide with either the vessel's start or end node
- */
+
 template<unsigned DIM>
 CaVessel<DIM>::CaVessel(std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments)
 : mSegments(segments),
@@ -56,6 +53,12 @@ CaVessel<DIM>::CaVessel(std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > s
   mId(0),
   mLabel("")
   {
+
+	if (segments.size() <= 1)
+	{
+		EXCEPTION("The input vector of vessel segments must contain at least two segments.");
+	}
+
 	for (unsigned i = 1; i < mSegments.size(); i++)
 	{
 		if(!mSegments[i]->IsConnectedTo(mSegments[i-1]))
@@ -209,17 +212,24 @@ template<unsigned DIM>
 boost::shared_ptr<VascularNode<DIM> > CaVessel<DIM>::GetStartNode()
 {
 
-	if (mSegments[1]->HasNode(mSegments.front()->GetNode(0)))
-	{
-		return mSegments.front()->GetNode(1);
-	}
-	else if (mSegments[1]->HasNode(mSegments.front()->GetNode(1)))
+	if (mSegments.size() == 1)
 	{
 		return mSegments.front()->GetNode(0);
 	}
 	else
 	{
-		EXCEPTION("Vessel segments at start of vessel are not connected correctly.");
+		if (mSegments[1]->HasNode(mSegments.front()->GetNode(0)))
+		{
+			return mSegments.front()->GetNode(1);
+		}
+		else if (mSegments[1]->HasNode(mSegments.front()->GetNode(1)))
+		{
+			return mSegments.front()->GetNode(0);
+		}
+		else
+		{
+			EXCEPTION("Vessel segments at start of vessel are not connected correctly.");
+		}
 	}
 
 }
@@ -227,17 +237,24 @@ boost::shared_ptr<VascularNode<DIM> > CaVessel<DIM>::GetStartNode()
 template<unsigned DIM>
 boost::shared_ptr<VascularNode<DIM> > CaVessel<DIM>::GetEndNode()
 {
-	if (mSegments[mSegments.size() - 2]->HasNode(mSegments.back()->GetNode(0)))
+	if (mSegments.size() == 1)
 	{
 		return mSegments.back()->GetNode(1);
 	}
-	else if (mSegments[mSegments.size() - 2]->HasNode(mSegments.back()->GetNode(1)))
-	{
-		return mSegments.back()->GetNode(0);
-	}
 	else
 	{
-		EXCEPTION("Vessel segments at end of vessel are not connected correctly.");
+		if (mSegments[mSegments.size() - 2]->HasNode(mSegments.back()->GetNode(0)))
+		{
+			return mSegments.back()->GetNode(1);
+		}
+		else if (mSegments[mSegments.size() - 2]->HasNode(mSegments.back()->GetNode(1)))
+		{
+			return mSegments.back()->GetNode(0);
+		}
+		else
+		{
+			EXCEPTION("Vessel segments at end of vessel are not connected correctly.");
+		}
 	}
 }
 

@@ -85,8 +85,8 @@ public:
 		std::vector<SegmentPtr2> good_segments;
 		good_segments.push_back(pSegment1);
 		good_segments.push_back(pSegment2);
-		VesselPtr2 pVessel2(CaVessel<2>::Create(good_segments));
 
+		VesselPtr2 pVessel2(CaVessel<2>::Create(good_segments));
 		std::vector<SegmentPtr2> bad_segments = good_segments;
 		bad_segments.push_back(pSegment3);
 		TS_ASSERT_THROWS_THIS(VesselPtr2 pVessel3(CaVessel<2>::Create(bad_segments));,"Input vessel segments are not attached in the correct order.");
