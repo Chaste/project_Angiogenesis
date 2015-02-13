@@ -48,7 +48,7 @@ CaVascularNetwork<DIM>::~CaVascularNetwork()
 }
 
 template <unsigned DIM>
-void CaVascularNetwork<DIM>::AddVessels(boost::shared_ptr<CaVessel<DIM> > vessel)
+void CaVascularNetwork<DIM>::AddVessel(boost::shared_ptr<CaVessel<DIM> > vessel)
 {
 	mVessels.push_back(vessel);
 }

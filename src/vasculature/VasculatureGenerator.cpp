@@ -239,9 +239,8 @@ boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateBi
 	return pNetwork;
 }
 
-#ifdef CHASTE_VTK
 template<unsigned DIM>
-boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateNetworkFromVtkFile(std::string filename)
+boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateNetworkFromVtkFile(const std::string& filename)
 {
 	// Create an empty vessel network
 	boost::shared_ptr<CaVascularNetwork<DIM>  > pVesselNetwork(new CaVascularNetwork<DIM>());
@@ -321,12 +320,11 @@ boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateNe
 		vessel->GetDataContainer()->SetData("radius", average_radius/double(num_segments));
 
 		// Add the resulting vessel to the network
-		pVesselNetwork->AddVessels(vessel);
+		pVesselNetwork->AddVessel(vessel);
 	}
 
 	return pVesselNetwork;
 }
-#endif // CHASTE_VTK
 
 //Explicit instantiation
 template class VasculatureGenerator<2>;

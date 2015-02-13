@@ -91,7 +91,7 @@ public:
 
 		// Make a network
 		CaVascularNetwork<3> vessel_network;
-		vessel_network.AddVessels(pVessel1);
+		vessel_network.AddVessel(pVessel1);
 		vessel_network.AddVessels(vessels);
 
 		TS_ASSERT_EQUALS(vessel_network.GetNodes().size(), 5u);

@@ -105,7 +105,7 @@ public:
     /**
         Adds a vessel to the VesselNetwork.
      */
-    void AddVessels(boost::shared_ptr<CaVessel<DIM> > vessel);
+    void AddVessel(boost::shared_ptr<CaVessel<DIM> > vessel);
 
    /**
        Adds a collection of vessels to the VesselNetwork

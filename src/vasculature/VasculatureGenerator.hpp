@@ -39,7 +39,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include <string>
 #include "SmartPointers.hpp"
-#include "Warnings.hpp"
 #include "Exception.hpp"
 #include "CaVessel.hpp"
 #include "CaVascularNetwork.hpp"
@@ -101,7 +100,7 @@ public:
 	 * @param filename name of file in which vascular network is described.
 	 * @return a pointer to the generated vascular network.
 	 */
-	boost::shared_ptr<CaVascularNetwork<DIM> > GenerateNetworkFromVtkFile(std::string filename);
+	boost::shared_ptr<CaVascularNetwork<DIM> > GenerateNetworkFromVtkFile(const std::string& filename);
 	#endif // CHASTE_VTK
 
 };

@@ -54,32 +54,30 @@ CaVessel<DIM>::CaVessel(std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > s
   mLabel("")
   {
 
-	if (segments.size() <= 1)
+	if (segments.size() > 1)
 	{
-		EXCEPTION("The input vector of vessel segments must contain at least two segments.");
-	}
+        for (unsigned i = 1; i < mSegments.size(); i++)
+        {
+            if(!mSegments[i]->IsConnectedTo(mSegments[i-1]))
+            {
+                EXCEPTION("Input vessel segments are not attached in the correct order.");
+            }
+        }
 
-	for (unsigned i = 1; i < mSegments.size(); i++)
-	{
-		if(!mSegments[i]->IsConnectedTo(mSegments[i-1]))
-		{
-			EXCEPTION("Input vessel segments are not attached in the correct order.");
-		}
-	}
-
-	for (unsigned i = 0; i < mSegments.size(); i++)
-	{
-		for (unsigned j = 0; j < mSegments.size(); j++)
-		{
-			if (i != j && i != j-1 && i != j+1)
-			{
-				if(mSegments[i]->IsConnectedTo(mSegments[j]))
-				{
-					EXCEPTION("Input vessel segments are not correctly connected.");
-				}
-			}
-		}
-	}
+        for (unsigned i = 0; i < mSegments.size(); i++)
+        {
+            for (unsigned j = 0; j < mSegments.size(); j++)
+            {
+                if (i != j && i != j-1 && i != j+1)
+                {
+                    if(mSegments[i]->IsConnectedTo(mSegments[j]))
+                    {
+                        EXCEPTION("Input vessel segments are not correctly connected.");
+                    }
+                }
+            }
+        }
+    }
   }
 
 template<unsigned DIM>

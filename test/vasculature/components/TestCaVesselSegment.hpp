@@ -163,16 +163,18 @@ public:
 
 		// Make a vessel and check that it has been suitably added to the segment
 		boost::shared_ptr<CaVessel<2> > pVessel(CaVessel<2>::Create(pVesselSegment));
-		TS_ASSERT(pVesselSegment->GetNode(0)->IsCoincident(pVesselSegment->GetVessel()->GetSegments(0)->GetNode(0)));
+		TS_ASSERT(pVesselSegment->GetNode(0)->IsCoincident(pVesselSegment->GetVessel()->GetSegment(0)->GetNode(0)));
 
-		// Check the exception when a vessel is added to a segment which already has one
-		TS_ASSERT_THROWS_THIS(boost::shared_ptr<CaVessel<2> > pVessel(CaVessel<2>::Create(pVesselSegment));,
-			"This segment already has a vessel.");
+		// Add a different vessel
+        boost::shared_ptr<CaVessel<2> > pVessel2(CaVessel<2>::Create(pVesselSegment));
+        TS_ASSERT(pVesselSegment->GetNode(0)->IsCoincident(pVesselSegment->GetVessel()->GetSegment(0)->GetNode(0)));
 
 		// Try removing a segment from the vessel
 		pVessel->AddSegment(pVesselSegment2);
 		pVessel->RemoveSegments(SegmentLocation::Start);
-		pVessel->RemoveSegments(SegmentLocation::End);
+        TS_ASSERT_THROWS_THIS(pVessel->RemoveSegments(SegmentLocation::End),
+                "Vessel must have at least one segment.");
+
 		TS_ASSERT_THROWS_THIS(boost::shared_ptr<CaVessel<2> > vessel = pVesselSegment->GetVessel(),
 				"A vessel has been requested but this segment doesn't have one.");
 	}
