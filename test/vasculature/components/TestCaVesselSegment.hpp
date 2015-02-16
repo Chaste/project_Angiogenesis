@@ -57,7 +57,6 @@ public:
 
     void TestConstructor() throw(Exception)
     {
-    	typedef boost::shared_ptr<CaVesselSegment<2> > FooPtr;
 
     	// Make some nodes
     	ChastePoint<2> point1(1.0, 2.0);

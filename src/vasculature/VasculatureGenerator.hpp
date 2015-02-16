@@ -92,6 +92,11 @@ public:
      */
     boost::shared_ptr<CaVascularNetwork<DIM> > GenerateBifurcationUnit(double vessel_length);
 
+    /*
+     * Creates a single vessel
+     */
+    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateSingleVessel(double vessel_length);
+
 
 	#ifdef CHASTE_VTK
     /*

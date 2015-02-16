@@ -240,6 +240,45 @@ boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateBi
 }
 
 template<unsigned DIM>
+boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateSingleVessel(double vessel_length)
+{
+	std::vector<ChastePoint<DIM> > points;
+
+	if(DIM == 2)
+	{
+		points.push_back(ChastePoint<DIM>(0.0, 0.0)); //0
+		points.push_back(ChastePoint<DIM>(vessel_length, 0.0)); //1
+	}
+	else
+	{
+		points.push_back(ChastePoint<DIM>(0.0, 0.0, 0.0)); //0
+		points.push_back(ChastePoint<DIM>(vessel_length, 0.0, 0.0)); //1
+	}
+
+	std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes;
+	typename std::vector<ChastePoint<DIM> >::iterator it;
+	for(it = points.begin(); it < points.end(); it++)
+	{
+		nodes.push_back((VascularNode<DIM>::Create(*it)));
+	}
+
+	std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments;
+	segments.push_back(boost::shared_ptr<CaVesselSegment<DIM> >(CaVesselSegment<DIM>::Create(nodes[0], nodes[1])));
+
+	std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels;
+	typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator it2;
+	for(it2 = segments.begin(); it2 < segments.end(); it2++)
+	{
+		vessels.push_back(boost::shared_ptr<CaVessel<DIM> > (CaVessel<DIM>::Create(*it2)));
+	}
+
+	// Generate the network
+	boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork(new CaVascularNetwork<DIM>());
+	pNetwork->AddVessels(vessels);
+	return pNetwork;
+}
+
+template<unsigned DIM>
 boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateNetworkFromVtkFile(const std::string& filename)
 {
 	// Create an empty vessel network
