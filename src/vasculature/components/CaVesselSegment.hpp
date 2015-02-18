@@ -129,6 +129,8 @@ public:
 	 */
 	boost::shared_ptr<CaVessel<DIM> > GetVessel();
 
+    double GetDistance(const ChastePoint<DIM>& rPoint);
+
 	/**
 	 *  Return the Label
 	 *

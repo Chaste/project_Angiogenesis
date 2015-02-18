@@ -120,6 +120,21 @@ ChastePoint<DIM> VascularNode<DIM>::GetLocation() const
 }
 
 template<unsigned DIM>
+double VascularNode<DIM>::GetDistance(const ChastePoint<DIM>& rPoint)
+{
+	double distance_squared;
+	ChastePoint<DIM> location = GetLocation();
+
+	distance_squared = pow(location[0] -rPoint[0],2) + pow(location[1] -rPoint[1],2);
+	if(DIM==3)
+	{
+		distance_squared += pow(location[2] -rPoint[2],2);
+	}
+
+	return std::sqrt(distance_squared);
+}
+
+template<unsigned DIM>
 boost::shared_ptr<VasculatureData> VascularNode<DIM>::GetDataContainer() const
 {
 	return mpDataContainer;

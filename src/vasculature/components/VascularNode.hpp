@@ -143,6 +143,8 @@ public:
      */
     CellPtr GetCell() const;
 
+    double GetDistance(const ChastePoint<DIM>& rPoint);
+
     /**
      *  Return the Id
      *

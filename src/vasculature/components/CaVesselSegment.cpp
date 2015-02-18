@@ -82,6 +82,65 @@ unsigned CaVesselSegment<DIM>::GetId() const
 }
 
 template<unsigned DIM>
+double CaVesselSegment<DIM>::GetDistance(const ChastePoint<DIM>& rPoint)
+{
+	ChastePoint<DIM> location1 = GetNode(0)->GetLocation();
+	ChastePoint<DIM> location2 = GetNode(1)->GetLocation();
+
+	std::vector<double> segment_vector(DIM);
+	std::vector<double>  point_vector(DIM);
+
+	// Get a vector along the segment and one from the point to one end of the segment
+	for(unsigned i=0; i<DIM; i++)
+	{
+		segment_vector[i] = location2[i] - location1[i];
+		point_vector[i] = rPoint[i] - location1[i];
+	}
+
+	// Get segment_vector.point_vector
+	double dot_product_segment_point = 0.0;
+	for(unsigned i=0; i<DIM; i++)
+	{
+		dot_product_segment_point += segment_vector[i] * point_vector[i];
+	}
+
+	if(dot_product_segment_point <= 0.0)
+	{
+		return GetNode(0)->GetDistance(rPoint);
+	}
+
+	// Get point_vector.point_vector
+	double dot_product_segment_segment = 0.0;
+	for(unsigned i=0; i<DIM; i++)
+	{
+		dot_product_segment_segment += segment_vector[i] * segment_vector[i];
+	}
+
+	if(dot_product_segment_segment <= dot_product_segment_point)
+	{
+		return GetNode(1)->GetDistance(rPoint);
+	}
+
+	double projection_ratio = dot_product_segment_point / dot_product_segment_segment;
+	std::vector<double> projected_point(DIM);
+
+	for(unsigned i=0; i<DIM; i++)
+	{
+		projected_point[i] += location1[i] + projection_ratio * segment_vector[i];
+	}
+
+	double distance_squared;
+
+	distance_squared = pow(projected_point[0] -rPoint[0],2) + pow(projected_point[1] -rPoint[1],2);
+	if(DIM==3)
+	{
+		distance_squared += pow(projected_point[2] -rPoint[2],2);
+	}
+
+	return std::sqrt(distance_squared);
+}
+
+template<unsigned DIM>
 const std::string& CaVesselSegment<DIM>::rGetLabel() const
 {
 	return mLabel;
