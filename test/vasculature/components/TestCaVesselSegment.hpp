@@ -97,6 +97,18 @@ public:
     	TS_ASSERT(pSegment->GetNodes().first->IsCoincident(point3));
     	TS_ASSERT(pSegment->GetNodes().second->IsCoincident(point4));
     	TS_ASSERT_THROWS_THIS(pSegment->ReplaceNode(2, pNode3), "A node index other than 0 or 1 has been requested for a Vessel Segment.");
+
+    	// Test point distance calculation
+    	double distance1 = 0.7071;
+    	double distance2 = 2.2360;
+    	ChastePoint<2> point5(7.0, 7.0); // projection is inside segment
+    	TS_ASSERT_DELTA(pSegment->GetDistance(point5), distance1, 1.e-3);
+
+    	ChastePoint<2> point6(10.0, 10.0); // projection is outside segment
+    	TS_ASSERT_DELTA(pSegment->GetDistance(point6), distance2, 1.e-3);
+
+    	ChastePoint<2> point7(5.0, 5.0); // projection is outside segment
+    	TS_ASSERT_DELTA(pSegment->GetDistance(point7), distance2, 1.e-3);
     }
 
 	void TestAccessingData() throw(Exception)

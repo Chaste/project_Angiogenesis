@@ -48,7 +48,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "PottsMeshGenerator.hpp"
 #include "FakePetscSetup.hpp"
 
-class TestVascularkNode: public AbstractCellBasedTestSuite
+class TestVascularNode: public AbstractCellBasedTestSuite
 {
 public:
 
@@ -71,6 +71,13 @@ public:
         TS_ASSERT_EQUALS(node.GetId(), 5u);
         TS_ASSERT_EQUALS(node.rGetLabel().c_str(), label.c_str());
 
+        // Test distance calculation
+        ChastePoint<2> test_point(2.0, 2.0);
+        TS_ASSERT_DELTA(node.GetDistance(test_point), std::sqrt(5.0), 1.e-6);
+
+        VascularNode<3> node2(ChastePoint<3> (1.0, 1.0, 1.0));
+        ChastePoint<3> test_point2(2.0, 2.0, 2.0);
+        TS_ASSERT_DELTA(node2.GetDistance(test_point2), std::sqrt(3.0), 1.e-6);
     }
 
 	void TestAccessingData() throw(Exception)

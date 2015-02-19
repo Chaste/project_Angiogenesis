@@ -143,6 +143,11 @@ public:
      */
     CellPtr GetCell() const;
 
+    /**
+     *  Return the distance between the input point and the node
+     *
+     *  @return double
+    */
     double GetDistance(const ChastePoint<DIM>& rPoint);
 
     /**

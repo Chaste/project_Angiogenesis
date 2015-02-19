@@ -129,6 +129,13 @@ public:
 	 */
 	boost::shared_ptr<CaVessel<DIM> > GetVessel();
 
+    /**
+     *  Return the distance between the input point and the segment. If the projection of the
+     *  point is within the segment the distance is the perpendicular distance to the segment.
+     *  Otherwise it is the distance to the nearest vascular node.
+     *
+     *  @return double
+    */
     double GetDistance(const ChastePoint<DIM>& rPoint);
 
 	/**
