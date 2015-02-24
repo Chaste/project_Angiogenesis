@@ -70,7 +70,7 @@ private:
     /**
      * Container for non-spatial segment data.
      */
-	boost::shared_ptr<VasculatureData> mpDataContainer;
+	VasculatureData mDataContainer;
 
     /**
      * Id tag, can be useful for storing segment-vessel relationships in the VesselNetwork class.
@@ -113,7 +113,7 @@ public:
 	 *
 	 *  @return mDataContainer
 	 */
-	boost::shared_ptr<VasculatureData> GetDataContainer() const;
+	VasculatureData& GetDataContainer();
 
 	/**
 	 *  Return the Id
@@ -185,7 +185,7 @@ public:
 	 *
 	 *  This can be useful when copying data from an existing segment.
 	 */
-	void SetDataContainer(boost::shared_ptr<VasculatureData> pDataContainer);
+	void SetDataContainer(VasculatureData dataContainer);
 
 	/**
 	 *  Assign the Id

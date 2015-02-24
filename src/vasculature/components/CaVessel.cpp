@@ -38,7 +38,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 template<unsigned DIM>
 CaVessel<DIM>::CaVessel(boost::shared_ptr<CaVesselSegment<DIM> > pSegment)
 : mSegments(std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >()),
-  mpDataContainer(boost::shared_ptr<VasculatureData>(new VasculatureData())),
+  mDataContainer(),
   mId(0),
   mLabel("")
   {
@@ -49,7 +49,7 @@ CaVessel<DIM>::CaVessel(boost::shared_ptr<CaVesselSegment<DIM> > pSegment)
 template<unsigned DIM>
 CaVessel<DIM>::CaVessel(std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments)
 : mSegments(segments),
-  mpDataContainer(boost::shared_ptr<VasculatureData>(new VasculatureData())),
+  mDataContainer(),
   mId(0),
   mLabel("")
   {
@@ -189,9 +189,9 @@ void CaVessel<DIM>::AddSegments(std::vector<boost::shared_ptr<CaVesselSegment<DI
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VasculatureData> CaVessel<DIM>::GetDataContainer()
+VasculatureData & CaVessel<DIM>::GetDataContainer()
 {
-	return mpDataContainer;
+	return mDataContainer;
 }
 
 template<unsigned DIM>
@@ -282,9 +282,15 @@ unsigned CaVessel<DIM>::GetNumberOfSegments()
 }
 
 template<unsigned DIM>
-void CaVessel<DIM>::SetDataContainer(boost::shared_ptr<VasculatureData> pDataContainer)
+unsigned CaVessel<DIM>::GetNumberOfNodes()
 {
-	mpDataContainer->SetMap(pDataContainer->GetMap());
+	return GetNumberOfSegments() + 1;
+}
+
+template<unsigned DIM>
+void CaVessel<DIM>::SetDataContainer(VasculatureData dataContainer)
+{
+	mDataContainer = dataContainer;
 }
 
 template<unsigned DIM>

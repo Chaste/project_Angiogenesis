@@ -35,7 +35,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "VasculatureData.hpp"
 
-VasculatureData::VasculatureData()
+VasculatureData::VasculatureData() : mDataMap()
 {
 }
 
@@ -43,7 +43,7 @@ VasculatureData::~VasculatureData()
 {
 }
 
-std::map<std::string, boost::any> VasculatureData::GetMap()
+std::map<std::string, boost::any> & VasculatureData::GetMap()
 {
 	return mDataMap;
 }

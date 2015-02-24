@@ -88,15 +88,15 @@ public:
 
         // Set some data
         double radius = 5.5;
-        node.GetDataContainer()->SetData("radius", radius);
-        TS_ASSERT_DELTA(node.GetDataContainer()->GetData<double>("radius"), radius, 1.e-6);
+        node.GetDataContainer().SetData("radius", radius);
+        TS_ASSERT_DELTA(node.GetDataContainer().GetData<double>("radius"), radius, 1.e-6);
 
         // Replace the existing data container with a new one
-        boost::shared_ptr<VasculatureData> pDataContainer(new VasculatureData());
+        VasculatureData dataContainer;
         double haematocrit = 7.5;
-        pDataContainer->SetData("haematocrit", haematocrit);
-        node.SetDataContainer(pDataContainer);
-        TS_ASSERT_DELTA(node.GetDataContainer()->GetData<double>("haematocrit"), haematocrit, 1.e-6);
+        dataContainer.SetData("haematocrit", haematocrit);
+        node.SetDataContainer(dataContainer);
+        TS_ASSERT_DELTA(node.GetDataContainer().GetData<double>("haematocrit"), haematocrit, 1.e-6);
     }
 
 	void TestAddingAndRemovingVesselSegments() throw(Exception)

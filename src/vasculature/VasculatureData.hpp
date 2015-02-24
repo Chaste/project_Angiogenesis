@@ -54,7 +54,7 @@ public:
 
     ~VasculatureData();
 
-    std::map<std::string, boost::any> GetMap();
+    std::map<std::string, boost::any> & GetMap();
 
     template<typename T> T GetData(const std::string& variableName);
 

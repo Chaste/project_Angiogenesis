@@ -43,7 +43,7 @@ VascularNode<DIM>::VascularNode(ChastePoint<DIM> location)
 	: mLocation(location),
 	  mpCell(CellPtr()),
 	  mpCellPopulation(boost::shared_ptr<AbstractCellPopulation<DIM> >()),
-	  mpDataContainer(boost::shared_ptr<VasculatureData>(new VasculatureData())),
+	  mDataContainer(),
 	  mId(0),
 	  mLabel(""),
 	  mVesselSegments(std::vector<boost::weak_ptr<CaVesselSegment<DIM> > >())
@@ -55,7 +55,7 @@ VascularNode<DIM>::VascularNode(double point1, double point2, double point3)
     : mLocation(ChastePoint<DIM>(point1, point2, point3)),
       mpCell(CellPtr()),
       mpCellPopulation(boost::shared_ptr<AbstractCellPopulation<DIM> >()),
-      mpDataContainer(boost::shared_ptr<VasculatureData>(new VasculatureData())),
+      mDataContainer(),
       mId(0),
       mLabel(""),
       mVesselSegments(std::vector<boost::weak_ptr<CaVesselSegment<DIM> > >())
@@ -135,9 +135,9 @@ double VascularNode<DIM>::GetDistance(const ChastePoint<DIM>& rPoint)
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VasculatureData> VascularNode<DIM>::GetDataContainer() const
+VasculatureData& VascularNode<DIM>::GetDataContainer()
 {
-	return mpDataContainer;
+	return mDataContainer;
 }
 
 template<unsigned DIM>
@@ -159,9 +159,9 @@ bool VascularNode<DIM>::IsCoincident(const boost::shared_ptr<VascularNode<DIM> >
 }
 
 template<unsigned DIM>
-void VascularNode<DIM>::SetDataContainer(const boost::shared_ptr<VasculatureData> pDataContainer)
+void VascularNode<DIM>::SetDataContainer(VasculatureData dataContainer)
 {
-	mpDataContainer->SetMap(pDataContainer->GetMap());
+	mDataContainer = dataContainer;
 }
 
 template<unsigned DIM>

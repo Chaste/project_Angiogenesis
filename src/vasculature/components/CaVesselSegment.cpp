@@ -40,7 +40,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 template<unsigned DIM>
 CaVesselSegment<DIM>::CaVesselSegment(boost::shared_ptr<VascularNode<DIM> > pNode1, boost::shared_ptr<VascularNode<DIM> > pNode2)
 : mNodes(std::pair<boost::shared_ptr<VascularNode<DIM> >, boost::shared_ptr<VascularNode<DIM> > > (pNode1, pNode2)),
-  mpDataContainer(boost::shared_ptr<VasculatureData>(new VasculatureData())),
+  mDataContainer(),
   mId(0),
   mLabel(""),
   mVessel(boost::weak_ptr<CaVessel<DIM> >())
@@ -70,9 +70,9 @@ CaVesselSegment<DIM>::~CaVesselSegment()
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VasculatureData> CaVesselSegment<DIM>::GetDataContainer() const
+VasculatureData& CaVesselSegment<DIM>::GetDataContainer()
 {
-	return mpDataContainer;
+	return mDataContainer;
 }
 
 template<unsigned DIM>
@@ -274,9 +274,9 @@ void CaVesselSegment<DIM>::ReplaceNode(unsigned oldNodeIndex, boost::shared_ptr<
 }
 
 template<unsigned DIM>
-void CaVesselSegment<DIM>::SetDataContainer(boost::shared_ptr<VasculatureData> pDataContainer)
+void CaVesselSegment<DIM>::SetDataContainer(VasculatureData dataContainer)
 {
-	mpDataContainer->SetMap(pDataContainer->GetMap());
+	mDataContainer = dataContainer;
 }
 
 template<unsigned DIM>

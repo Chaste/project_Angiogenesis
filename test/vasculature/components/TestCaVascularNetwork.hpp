@@ -31,7 +31,7 @@ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-*/
+ */
 
 #ifndef TESTVESSELNETWORK_HPP_
 #define TESTVESSELNETWORK_HPP_
@@ -58,9 +58,9 @@ public:
 	typedef boost::shared_ptr<CaVessel<2> > VesselPtr2;
 	typedef boost::shared_ptr<CaVessel<3> > VesselPtr3;
 
-    void TestConstructor() throw(Exception)
+	void TestConstructor() throw(Exception)
     {
-    	// Make some nodes
+		// Make some nodes
 		std::vector<ChastePoint<3> > points;
 		points.push_back(ChastePoint<3>(1.0, 2.0, 6.0));
 		points.push_back(ChastePoint<3>(3.0, 4.0, 7.0));
@@ -75,7 +75,7 @@ public:
 		}
 		nodes.push_back(NodePtr3 (VascularNode<3>::Create(points[1])));
 
-    	// Make some segments
+		// Make some segments
 		SegmentPtr3 pSegment1(CaVesselSegment<3>::Create(nodes[0], nodes[1]));
 		SegmentPtr3 pSegment2(CaVesselSegment<3>::Create(nodes[2], nodes[3]));
 		SegmentPtr3 pSegment3(CaVesselSegment<3>::Create(nodes[3], nodes[4]));
@@ -85,9 +85,9 @@ public:
 		VesselPtr3 pVessel2(CaVessel<3>::Create(pSegment2));
 		VesselPtr3 pVessel3(CaVessel<3>::Create(pSegment3));
 
-    	std::vector<VesselPtr3> vessels;
-    	vessels.push_back(pVessel2);
-    	vessels.push_back(pVessel3);
+		std::vector<VesselPtr3> vessels;
+		vessels.push_back(pVessel2);
+		vessels.push_back(pVessel3);
 
 		// Make a network
 		CaVascularNetwork<3> vessel_network;
@@ -100,8 +100,25 @@ public:
 
 		TS_ASSERT_EQUALS(vessel_network.GetNodes().size(), 4u);
 
+		// Make some network data
+		VasculatureData data;
+		double radius = 10.0;
+		double haematocrit = 0.4;
+		bool has_flow = true;
+		unsigned some_index = 5u;
+		data.SetData("Radius", radius);
+		data.SetData("Haematocrit", haematocrit);
+		data.SetData("Has Flow", has_flow);
+		data.SetData("SomeIndex", some_index);
+		vessel_network.SetVesselData(data);
+
+		VasculatureData node_data;
+		double pressure = 10.0;
+		node_data.SetData("Pressure", pressure);
+		vessel_network.SetNodeData(node_data);
+
 		// Try writing to file
-		OutputFileHandler output_file_handler("TestVesselNetwork", false);
+		OutputFileHandler output_file_handler("TestVesselNetwork");
 		std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("GenericVesselNetwork.vtp");
 		vessel_network.WriteToFile(output_filename, true);
 
@@ -115,6 +132,22 @@ public:
 		vessel_network.Translate(translation_vector_3d, true);
 		std::string output_filename2 = output_file_handler.GetOutputDirectoryFullPath().append("GenericVesselNetwork_TranslatedCopy.vtp");
 		vessel_network.WriteToFile(output_filename2, true);
+
+		TS_ASSERT(vessel_network.Connected(nodes[0], nodes[4]));
+
+		NodePtr3 node4 = VascularNode<3>::Create(1.0 , 1.0 , 1.0);
+		NodePtr3 node5 = VascularNode<3>::Create(5.0 , 5.0 , 1.0);
+
+		SegmentPtr3 pSegment4(CaVesselSegment<3>::Create(node4, node5));
+
+		// Make some vessels
+		VesselPtr3 pVessel4(CaVessel<3>::Create(pSegment4));
+		vessel_network.AddVessel(pVessel4);
+
+		TS_ASSERT(!vessel_network.Connected(nodes[0], node5));
+
+		TS_ASSERT(vessel_network.Connected(node4, node5));
+
     }
 };
 
