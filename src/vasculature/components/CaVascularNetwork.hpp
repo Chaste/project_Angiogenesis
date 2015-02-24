@@ -169,6 +169,11 @@ public:
 	 */
 	unsigned GetVesselIndex(boost::shared_ptr<CaVessel<DIM> > vessel);
 
+	/**
+	 * Outputs connectivity of vessels to file in graphviz format (.gv).
+	 */
+	void VisualiseVesselConnectivity(std::string output_filename);
+
 private:
 
 	/**
