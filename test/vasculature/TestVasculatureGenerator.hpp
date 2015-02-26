@@ -87,6 +87,10 @@ public:
 		std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("VtkVesselNetwork.vtp");
 		vascular_network->MergeCoincidentNodes();
 		vascular_network->WriteToFile(output_filename);
+
+        std::string output_filename1 = output_file_handler.GetOutputDirectoryFullPath().append("VesselNetworkConnectivityGraph.gv");
+        vascular_network->VisualiseVesselConnectivity(output_filename1);
+
      }
 	#endif // CHASTE_VTK
 };

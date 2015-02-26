@@ -204,22 +204,26 @@ public:
         vessel_network.Translate(translation_vector_3d);
         vessel_network.Translate(translation_vector_3d, true);
 
-        // Add another vessel
-        VesselPtr3 pVessel4(CaVessel<3>::Create(pSegment4));
-        vessel_network.AddVessel(pVessel4);
+
         NodePtr3 node4 = VascularNode<3>::Create(1.0 , 1.0 , 1.0);
         NodePtr3 node5 = VascularNode<3>::Create(5.0 , 5.0 , 1.0);
         SegmentPtr3 pSegment4(CaVesselSegment<3>::Create(node4, node5));
+
+        // Add another vessel
+        VesselPtr3 pVessel4(CaVessel<3>::Create(pSegment4));
+        vessel_network.AddVessel(pVessel4);
 
 
         TS_ASSERT(vessel_network.Connected(nodes[0], nodes[4]));
         TS_ASSERT(!vessel_network.Connected(nodes[0], node5));
         TS_ASSERT(vessel_network.Connected(node4, node5));
 
+        OutputFileHandler output_file_handler("TestVesselNetwork",false);
         std::string output_filename4 = output_file_handler.GetOutputDirectoryFullPath().append("ConnectedTestVesselNetwork.gv");
         vessel_network.VisualiseVesselConnectivity(output_filename4);
 
     }
+
 };
 
 #endif /*TESTVESSELNETWORK_HPP_*/

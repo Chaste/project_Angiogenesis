@@ -118,9 +118,19 @@ public:
 	bool Connected(boost::shared_ptr<VascularNode<DIM> > node1, boost::shared_ptr<VascularNode<DIM> > node2);
 
 	/**
+        Return the extents of the vessel network in the form ((xmin, xmax), (ymin, ymax), (zmin, zmax))
+	 */
+	std::vector<std::pair<double, double> > GetExtents();
+
+	/**
         Return the nodes in the network
 	 */
 	std::set<boost::shared_ptr<VascularNode<DIM> > > GetNodes();
+
+	/**
+	    Return the only the nodes at the ends of vessels in the network
+	 */
+	std::set<boost::shared_ptr<VascularNode<DIM> > > GetVesselEndNodes();
 
 	/**
         Return the vessels in the network

@@ -75,12 +75,16 @@ public:
     ~VasculatureGenerator();
 
     /*
-     * Pattern Unit
+     * Pattern Unit. Coincident nodes are automatically merged in this method.
      */
     void PatternUnitByTranslation(boost::shared_ptr<CaVascularNetwork<DIM> > input_unit,
     																		unsigned doublings_in_direction1,
     																		unsigned doublings_in_direction2,
     																		unsigned doublings_in_direction3 = 1);
+
+    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateHexagonalNetwork(unsigned width,
+                    													unsigned height,
+                    													unsigned vessel_length);
 
     /*
      * Creates a hexagonal repeating unit

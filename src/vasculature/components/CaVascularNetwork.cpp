@@ -63,6 +63,69 @@ void CaVascularNetwork<DIM>::AddVessels(std::vector<boost::shared_ptr<CaVessel<D
 }
 
 template <unsigned DIM>
+std::vector<std::pair<double, double> > CaVascularNetwork<DIM>::GetExtents()
+{
+	double x_max = -DBL_MAX;
+	double y_max = -DBL_MAX;
+	double z_max = -DBL_MAX;
+
+    std::set<boost::shared_ptr<VascularNode<DIM> > > nodes = GetNodes();
+    typename std::set<boost::shared_ptr<VascularNode<DIM> > >::iterator it;
+
+    for(it = nodes.begin(); it != nodes.end(); it++)
+    {
+    	ChastePoint<DIM> location = (*it)->GetLocation();
+        if(location[0] > x_max)
+        {
+        	x_max = location[0];
+        }
+        if(location[1] > y_max)
+        {
+        	y_max = location[1];
+        }
+        if(DIM > 2)
+        {
+            if(location[2] > z_max)
+            {
+            	z_max = location[2];
+            }
+        }
+    }
+
+	double x_min = x_max;
+	double y_min = y_max;
+	double z_min = z_max;
+
+    for(it = nodes.begin(); it != nodes.end(); it++)
+    {
+    	ChastePoint<DIM> location = (*it)->GetLocation();
+        if(location[0] < x_min)
+        {
+        	x_min = location[0];
+        }
+        if(location[1] < y_min)
+        {
+        	y_min = location[1];
+        }
+        if(DIM > 2)
+        {
+            if(location[2] < z_min)
+            {
+            	z_min = location[2];
+            }
+        }
+    }
+
+    std::vector<std::pair<double, double> > container;
+
+    container.push_back(std::pair<double, double>(x_min, x_max));
+    container.push_back(std::pair<double, double>(y_min, y_max));
+    container.push_back(std::pair<double, double>(z_min, z_max));
+
+    return container;
+}
+
+template <unsigned DIM>
 std::set<boost::shared_ptr<VascularNode<DIM> > > CaVascularNetwork<DIM>::GetNodes()
 {
     std::set<boost::shared_ptr<VascularNode<DIM> > >  nodes;
@@ -77,6 +140,22 @@ std::set<boost::shared_ptr<VascularNode<DIM> > > CaVascularNetwork<DIM>::GetNode
             nodes.insert((*jt)->GetNode(0));
             nodes.insert((*jt)->GetNode(1));
         }
+    }
+    return nodes;
+}
+
+template <unsigned DIM>
+std::set<boost::shared_ptr<VascularNode<DIM> > > CaVascularNetwork<DIM>::GetVesselEndNodes()
+{
+    std::set<boost::shared_ptr<VascularNode<DIM> > >  nodes;
+
+    typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator it;
+    typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator jt;
+
+    for(it = mVessels.begin(); it != mVessels.end(); it++)
+    {
+            nodes.insert((*it)->GetEndNode());
+            nodes.insert((*it)->GetStartNode());
     }
     return nodes;
 }
@@ -136,7 +215,7 @@ void CaVascularNetwork<DIM>::MergeCoincidentNodes()
                 // If the node locations are the same - according to the ChastePoint definition
                 if((*it)->IsCoincident((*it2)))
                 {
-                    // Replace the node corresponding to it2 with the one corresponding to it
+                    // Replace the node corresponding to 'it2' with the one corresponding to 'it'
                     // in all segments.
                     std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = (*it2)->GetVesselSegments();
                     for(it3 = segments.begin(); it3 != segments.end(); it3++)
@@ -509,7 +588,7 @@ bool CaVascularNetwork<DIM>::Connected(boost::shared_ptr<VascularNode<DIM> > nod
 
     typename std::set<boost::shared_ptr<VascularNode<DIM> > >::iterator node_iterator;
 
-    std::set<boost::shared_ptr<VascularNode<DIM> > > nodes = GetNodes();
+    std::set<boost::shared_ptr<VascularNode<DIM> > > nodes = GetVesselEndNodes();
 
     for (node_iterator = nodes.begin(); node_iterator != nodes.end(); node_iterator++)
     {
@@ -565,7 +644,7 @@ void CaVascularNetwork<DIM>::VisualiseVesselConnectivity(std::string output_file
 
     typename std::set<boost::shared_ptr<VascularNode<DIM> > >::iterator node_iterator;
 
-    std::set<boost::shared_ptr<VascularNode<DIM> > > nodes = GetNodes();
+    std::set<boost::shared_ptr<VascularNode<DIM> > > nodes = GetVesselEndNodes();
 
     for (node_iterator = nodes.begin(); node_iterator != nodes.end(); node_iterator++)
     {
@@ -579,18 +658,29 @@ void CaVascularNetwork<DIM>::VisualiseVesselConnectivity(std::string output_file
         }
     }
 
-    for (node_iterator = nodes.begin(); node_iterator != nodes.end(); node_iterator++)
-    {
-        if ((*node_iterator)->GetVesselSegments().size() == 1)
-        {
-            if ((*node_iterator)->GetVesselSegments(0)->GetVessel()->GetStartNode()->GetVesselSegments().size() == 1
-                    && (*node_iterator)->GetVesselSegments(0)->GetVessel()->GetEndNode()->GetVesselSegments().size() == 1)
-            {
-                add_edge(GetVesselIndex((*node_iterator)->GetVesselSegments(0)->GetVessel()),
-                         GetVesselIndex((*node_iterator)->GetVesselSegments(0)->GetVessel()), G);
-            }
-        }
-    }
+    typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator vessel_iterator;
+	for (vessel_iterator = mVessels.begin(); vessel_iterator != mVessels.end(); vessel_iterator++)
+	{
+		if ((*vessel_iterator)->GetStartNode()->GetNumberOfSegments() == 1 && (*vessel_iterator)->GetEndNode()->GetNumberOfSegments() == 1)
+		{
+			add_edge(GetVesselIndex((*vessel_iterator)),
+					 GetVesselIndex((*vessel_iterator)), G);
+		}
+	}
+
+
+//    for (node_iterator = nodes.begin(); node_iterator != nodes.end(); node_iterator++)
+//    {
+//        if ((*node_iterator)->GetVesselSegments().size() == 1)
+//        {
+//            if ((*node_iterator)->GetVesselSegments(0)->GetVessel()->GetStartNode()->GetVesselSegments().size() == 1
+//                    && (*node_iterator)->GetVesselSegments(0)->GetVessel()->GetEndNode()->GetVesselSegments().size() == 1)
+//            {
+//                add_edge(GetVesselIndex((*node_iterator)->GetVesselSegments(0)->GetVessel()),
+//                         GetVesselIndex((*node_iterator)->GetVesselSegments(0)->GetVessel()), G);
+//            }
+//        }
+//    }
 
     std::ofstream outf(output_filename.c_str());
 
