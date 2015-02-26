@@ -48,88 +48,12 @@ std::map<std::string, boost::any> & VasculatureData::GetMap()
 	return mDataMap;
 }
 
-double VasculatureData::GetDoubleData(const std::string& variableName)
-{
-	// Check if the key is in the map
-	std::map<std::string, boost::any>::const_iterator it = mDataMap.find(variableName);
-	if (it == mDataMap.end())
-	{
-		EXCEPTION("No key: '" << variableName << "' found in property register.");
-	}
-
-	// Try to return the data in the form of the requested type
-	try
-	{
-		return boost::any_cast<double>(it->second);
-	}
-	catch(const boost::bad_any_cast&)
-	{
-		EXCEPTION("Invalid type specified for the requested key: " << variableName);
-	}
-}
-
-unsigned VasculatureData::GetUnsignedData(const std::string& variableName)
-{
-	// Check if the key is in the map
-	std::map<std::string, boost::any>::const_iterator it = mDataMap.find(variableName);
-	if (it == mDataMap.end())
-	{
-		EXCEPTION("No key: '" << variableName << "' found in property register.");
-	}
-
-	// Try to return the data in the form of the requested type
-	try
-	{
-		return boost::any_cast<unsigned>(it->second);
-	}
-	catch(const boost::bad_any_cast&)
-	{
-		EXCEPTION("Invalid type specified for the requested key: " << variableName);
-	}
-}
-
-std::vector<double> VasculatureData::GetVectorDoubleData(const std::string& variableName)
-{
-	// Check if the key is in the map
-	std::map<std::string, boost::any>::const_iterator it = mDataMap.find(variableName);
-	if (it == mDataMap.end())
-	{
-		EXCEPTION("No key: '" << variableName << "' found in property register.");
-	}
-
-	// Try to return the data in the form of the requested type
-	try
-	{
-		return boost::any_cast<std::vector<double> >(it->second);
-	}
-	catch(const boost::bad_any_cast&)
-	{
-		EXCEPTION("Invalid type specified for the requested key: " << variableName);
-	}
-}
-
-
 void VasculatureData::SetMap(std::map<std::string, boost::any> map)
 {
 	mDataMap = map;
 }
 
 void VasculatureData::SetData(const std::string& variableName, const boost::any& value)
-{
-	mDataMap[variableName] = value;
-}
-
-void VasculatureData::SetDoubleData(const std::string& variableName, double value)
-{
-	mDataMap[variableName] = value;
-}
-
-void VasculatureData::SetUnsignedData(const std::string& variableName, unsigned value)
-{
-	mDataMap[variableName] = value;
-}
-
-void VasculatureData::SetVectorDoubleData(const std::string& variableName, std::vector<double> value)
 {
 	mDataMap[variableName] = value;
 }

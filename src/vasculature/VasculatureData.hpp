@@ -58,29 +58,12 @@ public:
 
     template<typename T> T GetData(const std::string& variableName);
 
-    // These classes help with python wrapping as conversion to-from boost::any type is difficult.
-    // The generic GetData method is preferred for C++ usage.
-    // todo remove when a python dict->vasculature data converter is implemented
-    double GetDoubleData(const std::string& variableName);
-
-    unsigned GetUnsignedData(const std::string& variableName);
-
-    std::vector<double> GetVectorDoubleData(const std::string& variableName);
-
     template<typename T> bool IsType(const std::string& variableName);
 
     void SetMap(std::map<std::string, boost::any> map);
 
     void SetData(const std::string& variableName, const boost::any& value);
 
-    // These classes help with python wrapping as conversion to-from boost::any type is difficult.
-    // The generic SetData method is preferred for C++ usage.
-    // todo remove when a python dict->vasculature data converter is implemented
-    void SetDoubleData(const std::string& variableName, double value);
-
-    void SetUnsignedData(const std::string& variableName, unsigned value);
-
-    void SetVectorDoubleData(const std::string& variableName, std::vector<double> value);
 };
 
 // Templated methods are defined here as explicit instantiation would limit the types that can
