@@ -56,10 +56,7 @@ public:
 
 		// Generate the network
 		VasculatureGenerator<2> vascular_network_generator;
-		boost::shared_ptr<CaVascularNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalUnit(vessel_length);
-
-		// Pattern the unit
-		vascular_network_generator.PatternUnitByTranslation(vascular_network, 3, 3);
+		boost::shared_ptr<CaVascularNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(1000,1000,vessel_length);
 
         VasculatureData data;
         double impedance = 10.0;
