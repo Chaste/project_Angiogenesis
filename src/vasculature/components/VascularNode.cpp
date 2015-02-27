@@ -39,8 +39,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CaVesselSegment.hpp"
 
 template<unsigned DIM>
-VascularNode<DIM>::VascularNode(ChastePoint<DIM> location)
-	: mLocation(location),
+VascularNode<DIM>::VascularNode(const ChastePoint<DIM>& rLocation)
+	: mLocation(rLocation),
 	  mpCell(CellPtr()),
 	  mpCellPopulation(boost::shared_ptr<AbstractCellPopulation<DIM> >()),
 	  mDataContainer(),
@@ -68,9 +68,33 @@ VascularNode<DIM>::~VascularNode()
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VascularNode<DIM> >VascularNode<DIM>::Create(const ChastePoint<DIM>& rlocation)
+void VascularNode<DIM>::AddSegment(boost::shared_ptr<CaVesselSegment<DIM> > pVesselSegment)
 {
-    MAKE_PTR_ARGS(VascularNode<DIM>, pSelf, (rlocation));
+	// Vessel segments can only be attached to a node once.
+	int number_times_attached_to_node = 0;
+
+	for(unsigned i = 0; i < mVesselSegments.size(); i++)
+	{
+		if (mVesselSegments[i].lock() == pVesselSegment)
+		{
+			number_times_attached_to_node++;
+		}
+	}
+
+	if (number_times_attached_to_node == 0)
+	{
+		mVesselSegments.push_back(boost::weak_ptr<CaVesselSegment<DIM> > (pVesselSegment));
+	}
+	else
+	{
+		EXCEPTION("This segment is already attached to this node.");
+	}
+}
+
+template<unsigned DIM>
+boost::shared_ptr<VascularNode<DIM> >VascularNode<DIM>::Create(const ChastePoint<DIM>& rLocation)
+{
+    MAKE_PTR_ARGS(VascularNode<DIM>, pSelf, (rLocation));
 	return pSelf;
 }
 
@@ -92,6 +116,33 @@ CellPtr VascularNode<DIM>::GetCell() const
 	{
 		EXCEPTION("A Cell has been requested but none have been assigned to this Node.");
 	}
+}
+
+template<unsigned DIM>
+const VasculatureData& VascularNode<DIM>::rGetDataContainer()
+{
+	return mDataContainer;
+}
+
+template<unsigned DIM>
+std::vector<std::string> VascularNode<DIM>::GetDataKeys(bool castable_to_double) const
+{
+	return mDataContainer.GetKeys(castable_to_double);
+}
+
+template<unsigned DIM>
+double VascularNode<DIM>::GetDistance(const ChastePoint<DIM>& rPoint)
+{
+	double distance_squared;
+	ChastePoint<DIM> location = GetLocation();
+
+	distance_squared = pow(location[0] -rPoint[0],2) + pow(location[1] -rPoint[1],2);
+	if(DIM==3)
+	{
+		distance_squared += pow(location[2] -rPoint[2],2);
+	}
+
+	return std::sqrt(distance_squared);
 }
 
 template<unsigned DIM>
@@ -120,24 +171,35 @@ ChastePoint<DIM> VascularNode<DIM>::GetLocation() const
 }
 
 template<unsigned DIM>
-double VascularNode<DIM>::GetDistance(const ChastePoint<DIM>& rPoint)
+unsigned VascularNode<DIM>::GetNumberOfSegments() const
 {
-	double distance_squared;
-	ChastePoint<DIM> location = GetLocation();
-
-	distance_squared = pow(location[0] -rPoint[0],2) + pow(location[1] -rPoint[1],2);
-	if(DIM==3)
-	{
-		distance_squared += pow(location[2] -rPoint[2],2);
-	}
-
-	return std::sqrt(distance_squared);
+	return mVesselSegments.size();
 }
 
 template<unsigned DIM>
-VasculatureData& VascularNode<DIM>::GetDataContainer()
+boost::shared_ptr<CaVesselSegment<DIM> > VascularNode<DIM>::GetVesselSegment(unsigned index) const
 {
-	return mDataContainer;
+	if(index < mVesselSegments.size())
+	{
+		return mVesselSegments[index].lock();
+	}
+	else
+	{
+		EXCEPTION("Attempted to access a segment with an out of range index.");
+	}
+}
+
+template<unsigned DIM>
+std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >VascularNode<DIM>::GetVesselSegments() const
+{
+	std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments;
+
+	for(unsigned i=0; i<mVesselSegments.size(); i++)
+	{
+		segments.push_back(mVesselSegments[i].lock());
+	}
+
+	return segments;
 }
 
 template<unsigned DIM>
@@ -147,21 +209,34 @@ bool VascularNode<DIM>::HasCell() const
 }
 
 template<unsigned DIM>
+bool VascularNode<DIM>::HasDataKey(const std::string& rKey) const
+{
+	return mDataContainer.HasKey(rKey);
+}
+
+template<unsigned DIM>
+bool VascularNode<DIM>::IsAttachedTo(const boost::shared_ptr<CaVesselSegment<DIM> > pSegment) const
+{
+	if (pSegment->GetNode(0) == this->shared_from_this() || pSegment->GetNode(1) == this->shared_from_this())
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+template<unsigned DIM>
 bool VascularNode<DIM>::IsCoincident(const ChastePoint<DIM>& rPoint) const
 {
 	return (GetLocation().IsSamePoint(rPoint));
 }
 
 template<unsigned DIM>
-bool VascularNode<DIM>::IsCoincident(const boost::shared_ptr<VascularNode<DIM> > node) const
+bool VascularNode<DIM>::IsCoincident(const boost::shared_ptr<VascularNode<DIM> > pNode) const
 {
-	return (GetLocation().IsSamePoint(node->GetLocation()));
-}
-
-template<unsigned DIM>
-void VascularNode<DIM>::SetDataContainer(VasculatureData dataContainer)
-{
-	mDataContainer = dataContainer;
+	return (GetLocation().IsSamePoint(pNode->GetLocation()));
 }
 
 template<unsigned DIM>
@@ -203,6 +278,12 @@ void VascularNode<DIM>::SetCellPopulation(boost::shared_ptr<AbstractCellPopulati
 }
 
 template<unsigned DIM>
+void VascularNode<DIM>::SetDataContainer(const VasculatureData& rDataContainer)
+{
+	mDataContainer = rDataContainer;
+}
+
+template<unsigned DIM>
 void VascularNode<DIM>::SetId(unsigned id)
 {
 	mId = id;
@@ -228,62 +309,6 @@ template<unsigned DIM>
 void VascularNode<DIM>::RemoveCell()
 {
 	mpCell = CellPtr();
-}
-
-template<unsigned DIM>
-unsigned VascularNode<DIM>::GetNumberOfSegments() const
-{
-	return mVesselSegments.size();
-}
-
-template<unsigned DIM>
-boost::shared_ptr<CaVesselSegment<DIM> > VascularNode<DIM>::GetVesselSegments(unsigned index) const
-{
-	if(index < mVesselSegments.size())
-	{
-		return mVesselSegments[index].lock();
-	}
-	else
-	{
-		EXCEPTION("Attempted to access a segment with an out of range index.");
-	}
-}
-
-template<unsigned DIM>
-std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >VascularNode<DIM>::GetVesselSegments() const
-{
-	std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments;
-
-	for(unsigned i=0; i<mVesselSegments.size(); i++)
-	{
-		segments.push_back(mVesselSegments[i].lock());
-	}
-
-	return segments;
-}
-
-template<unsigned DIM>
-void VascularNode<DIM>::AddSegment(boost::shared_ptr<CaVesselSegment<DIM> > pVesselSegment)
-{
-	// Vessel segments can only be attached to a node once.
-	int number_times_attached_to_node = 0;
-
-	for(unsigned i = 0; i < mVesselSegments.size(); i++)
-	{
-		if (mVesselSegments[i].lock() == pVesselSegment)
-		{
-			number_times_attached_to_node++;
-		}
-	}
-
-	if (number_times_attached_to_node == 0)
-	{
-		mVesselSegments.push_back(boost::weak_ptr<CaVesselSegment<DIM> > (pVesselSegment));
-	}
-	else
-	{
-		EXCEPTION("This segment is already attached to this node.");
-	}
 }
 
 template<unsigned DIM>

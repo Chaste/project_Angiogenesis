@@ -35,7 +35,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "VasculatureData.hpp"
 
-VasculatureData::VasculatureData() : mDataMap()
+VasculatureData::VasculatureData()
 {
 }
 
@@ -43,9 +43,42 @@ VasculatureData::~VasculatureData()
 {
 }
 
-std::map<std::string, boost::any> & VasculatureData::GetMap()
+std::vector<std::string> VasculatureData::GetKeys(bool castable_to_double) const
+{
+	std::vector<std::string> keys;
+	std::map<std::string, boost::any>::const_iterator it;
+	for(it = mDataMap.begin(); it != mDataMap.end(); it++)
+	{
+		if(!castable_to_double)
+		{
+			keys.push_back(it->first);
+		}
+		else
+		{
+			if(it->second.type()== typeid(int) || it->second.type()== typeid(unsigned)
+					|| it->second.type()== typeid(bool) || it->second.type()== typeid(double))
+			{
+				keys.push_back(it->first);
+			}
+		}
+	}
+	return keys;
+}
+
+std::map<std::string, boost::any> VasculatureData::GetMap() const
 {
 	return mDataMap;
+}
+
+bool VasculatureData::HasKey(const std::string& rKey) const
+{
+	// Check if the key is in the map
+	std::map<std::string, boost::any>::const_iterator it = mDataMap.find(rKey);
+	if (it == mDataMap.end())
+	{
+		return false;
+	}
+	return true;
 }
 
 void VasculatureData::SetMap(std::map<std::string, boost::any> map)

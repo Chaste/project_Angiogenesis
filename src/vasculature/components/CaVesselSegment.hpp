@@ -107,27 +107,28 @@ public:
      * Destructor
      */
     ~CaVesselSegment();
+    
+    /**
+     *  Return the segment data for the input key. An attempt is made
+     *  to cast to type T.
+     *  @return T data
+     */
+    template<typename T> T GetData(const std::string& rKey);
 
 	/**
-	 *  Return a pointer to the segment's non-spatial data container.
+	 *  Return a const reference to the segment's non-spatial data container.
 	 *
 	 *  @return mDataContainer
 	 */
-	VasculatureData& GetDataContainer();
-
-	/**
-	 *  Return the Id
-	 *
-	 *  @return mId
-	 */
-	unsigned GetId() const;
-
-	/**
-	 *  Return a boost::shared_ptr to the vessel.
-	 *
-	 * @return mAdjoiningVessels[i]
-	 */
-	boost::shared_ptr<CaVessel<DIM> > GetVessel();
+	const VasculatureData& rGetDataContainer() const;
+	
+    /**
+     *  Return a vector of data keys for the segment. Input true if
+     *  the corresponding value should be castable to double.
+     *
+     *  @return std::vector<std::string>
+     */
+    std::vector<std::string> GetDataKeys(bool castable_to_double = false) const;
 
     /**
      *  Return the distance between the input point and the segment. If the projection of the
@@ -138,6 +139,13 @@ public:
     */
     double GetDistance(const ChastePoint<DIM>& rPoint);
 
+	/**
+	 *  Return the Id
+	 *
+	 *  @return mId
+	 */
+	unsigned GetId() const;
+	
 	/**
 	 *  Return the Label
 	 *
@@ -154,48 +162,76 @@ public:
 	 *  Return a point mid-way along the vessel segment
 	 */
     ChastePoint<DIM> GetMidPoint();
-
-    /**
-       Return a the segment nodes as a pair
-     */
-    std::pair<boost::shared_ptr<VascularNode<DIM> >, boost::shared_ptr<VascularNode<DIM> > > GetNodes();
-
+    
     /**
        Return a pointer to the node specified by the index
      */
     boost::shared_ptr<VascularNode<DIM> > GetNode(unsigned index);
-
+    
     /**
-     *  Returns whether the segment is connected to another segment correctly.
+       Return the segment nodes as a pair
      */
-    bool IsConnectedTo(boost::shared_ptr<CaVesselSegment<DIM> > pOtherSegment);
+    std::pair<boost::shared_ptr<VascularNode<DIM> >, boost::shared_ptr<VascularNode<DIM> > > GetNodes();
 
     /**
-     *  Returns whether the node is in the segment.
+     *  Return the projection of a point onto the segment. If the projection is outside the segment an
+     *  Exception is thrown.
+     */
+    ChastePoint<DIM> GetPointProjection(const ChastePoint<DIM>& rPoint);
+
+    /**
+     *  Return a unit vector pointing along the segment. The orientation along the segment is from node0 to node 1.
+     */
+    ChastePoint<DIM> GetUnitTangent();
+
+	/**
+	 *  Return a boost::shared_ptr to the vessel.
+	 *
+	 * @return mAdjoiningVessels[i]
+	 */
+	boost::shared_ptr<CaVessel<DIM> > GetVessel();
+	
+    /**
+     *  Return true if the segment has data corresponding to the input key.
+     *
+     *  @return bool
+     */
+    bool HasDataKey(const std::string& rKey) const;
+
+    /**
+     *  Return whether the node is in the segment.
      */
     bool HasNode(boost::shared_ptr<VascularNode<DIM> > pNode);
+
+    /**
+     *  Return whether the segment is connected to another segment.
+     */
+    bool IsConnectedTo(boost::shared_ptr<CaVesselSegment<DIM> > pOtherSegment);
 
     /**
        Replace the node at the specified index with the passed in node.
      */
     void ReplaceNode(unsigned oldNodeIndex, boost::shared_ptr<VascularNode<DIM> >  pNewNode);
 
+    /**
+     *  Add data of any type to the segment using the identifying key
+     */
+    template<typename T> void SetData(const std::string& rKey, T value);
+
 	/**
 	 *  Over-write the segment's non-spatial DataContainer
 	 *
 	 *  This can be useful when copying data from an existing segment.
 	 */
-	void SetDataContainer(VasculatureData dataContainer);
+	void SetDataContainer(const VasculatureData& rDataContainer);
 
 	/**
 	 *  Assign the Id
-	 *
 	 */
 	void SetId(unsigned id);
 
 	/**
 	 *  Assign the Label
-	 *
 	 */
 	void SetLabel(const std::string& rLabel);
 
@@ -218,5 +254,17 @@ private:
 	 */
 	void RemoveVessel();
 };
+
+template<unsigned DIM>
+template<typename T> T CaVesselSegment<DIM>::GetData(const std::string& variableName)
+{
+	return mDataContainer.GetData<T>(variableName);
+}
+
+template<unsigned DIM>
+template<typename T> void CaVesselSegment<DIM>::SetData(const std::string& variableName, T value)
+{
+	mDataContainer.SetData(variableName, value);
+}
 
 #endif /* CAVASCULARNETWORK_HPP_ */

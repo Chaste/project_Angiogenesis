@@ -40,6 +40,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SmartPointers.hpp"
 #include "VascularNode.hpp"
 #include "CaVesselSegment.hpp"
+#include "SmartVasculaturePointers.hpp"
 #include "CaVessel.hpp"
 #include "ChastePoint.hpp"
 #include "VasculatureData.hpp"
@@ -48,13 +49,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 class TestCaVessel : public CxxTest::TestSuite
 {
 public:
-
-	typedef boost::shared_ptr<VascularNode<2> > NodePtr2;
-	typedef boost::shared_ptr<VascularNode<3> > NodePtr3;
-	typedef boost::shared_ptr<CaVesselSegment<2> > SegmentPtr2;
-	typedef boost::shared_ptr<CaVesselSegment<3> > SegmentPtr3;
-	typedef boost::shared_ptr<CaVessel<2> > VesselPtr2;
-	typedef boost::shared_ptr<CaVessel<3> > VesselPtr3;
 
 	void TestConstructor() throw(Exception)
 	{
@@ -67,29 +61,31 @@ public:
 		points.push_back(ChastePoint<2>(7.0, 8.0));
 		points.push_back(ChastePoint<2>(8.0, 9.0));
 
-		std::vector<NodePtr2> nodes;
+		std::vector<boost::shared_ptr<VascularNode<2> > > nodes;
 		for(unsigned i=0; i < points.size(); i++)
 		{
-			nodes.push_back(NodePtr2 (VascularNode<2>::Create(points[i])));
+			MAKE_VN_PTR_ARGS(VascularNode<2>, pNode, (points[i]));
+			nodes.push_back(pNode);
 		}
 
     	// Make some segments
-		SegmentPtr2 pSegment0(CaVesselSegment<2>::Create(nodes[0], nodes[1]));
-		SegmentPtr2 pSegment1(CaVesselSegment<2>::Create(nodes[1], nodes[2]));
-		SegmentPtr2 pSegment2(CaVesselSegment<2>::Create(nodes[2], nodes[3]));
-		SegmentPtr2 pSegment3(CaVesselSegment<2>::Create(nodes[4], nodes[5]));
+		MAKE_VN_PTR_ARGS(CaVesselSegment<2>, pSegment0, (nodes[0], nodes[1]));
+		MAKE_VN_PTR_ARGS(CaVesselSegment<2>, pSegment1, (nodes[1], nodes[2]));
+		MAKE_VN_PTR_ARGS(CaVesselSegment<2>, pSegment2, (nodes[2], nodes[3]));
+		MAKE_VN_PTR_ARGS(CaVesselSegment<2>, pSegment3, (nodes[4], nodes[5]));
 
-		// Make a vessel
-		VesselPtr2 pVessel1(CaVessel<2>::Create(pSegment1));
+		// Make some vessels
+		MAKE_VN_PTR_ARGS(CaVessel<2>, pVessel1, (pSegment1));
 
-		std::vector<SegmentPtr2> good_segments;
+		std::vector<boost::shared_ptr<CaVesselSegment<2> > > good_segments;
 		good_segments.push_back(pSegment1);
 		good_segments.push_back(pSegment2);
 
-		VesselPtr2 pVessel2(CaVessel<2>::Create(good_segments));
-		std::vector<SegmentPtr2> bad_segments = good_segments;
+		MAKE_VN_PTR_ARGS(CaVessel<2>, pVessel2, (good_segments));
+		std::vector<boost::shared_ptr<CaVesselSegment<2> > > bad_segments = good_segments;
 		bad_segments.push_back(pSegment3);
-		TS_ASSERT_THROWS_THIS(VesselPtr2 pVessel3(CaVessel<2>::Create(bad_segments));,"Input vessel segments are not attached in the correct order.");
+		TS_ASSERT_THROWS_THIS(MAKE_VN_PTR_ARGS(CaVessel<2>, pVessel3, (bad_segments)),"Input vessel segments are not attached in the correct order.");
+		MAKE_VN_PTR_ARGS(CaVessel<2>, pVessel3, (nodes));
 
 		// Check that locations are correct
 		TS_ASSERT(pVessel1->GetStartNode()->IsCoincident(points[1]));
@@ -97,6 +93,7 @@ public:
 
 		// Check that segments are correctly returned
 		TS_ASSERT_EQUALS(pVessel2->GetNumberOfSegments(), 2u);
+		TS_ASSERT_EQUALS(pVessel3->GetNumberOfSegments(), 5u);
 		TS_ASSERT_EQUALS(pVessel2->GetSegments().size(), 2u);
 		TS_ASSERT(pVessel2->GetSegment(0)->GetNode(0)->IsCoincident(points[1]));
 
@@ -119,20 +116,21 @@ public:
 		points.push_back(ChastePoint<2>(7.0, 8.0));
 		points.push_back(ChastePoint<2>(8.0, 9.0));
 
-		std::vector<NodePtr2> nodes;
+		std::vector<boost::shared_ptr<VascularNode<2> > > nodes;
 		for(unsigned i=0; i < points.size(); i++)
 		{
-			nodes.push_back(NodePtr2 (VascularNode<2>::Create(points[i])));
+			MAKE_VN_PTR_ARGS(VascularNode<2>, pNode, (points[i]));
+			nodes.push_back(pNode);
 		}
 
     	// Make some segments
-		SegmentPtr2 pSegment0(CaVesselSegment<2>::Create(nodes[0], nodes[1]));
-		SegmentPtr2 pSegment1(CaVesselSegment<2>::Create(nodes[1], nodes[2]));
-		SegmentPtr2 pSegment2(CaVesselSegment<2>::Create(nodes[2], nodes[3]));
-		SegmentPtr2 pSegment3(CaVesselSegment<2>::Create(nodes[4], nodes[5]));
+		MAKE_VN_PTR_ARGS(CaVesselSegment<2>, pSegment0, (nodes[0], nodes[1]));
+		MAKE_VN_PTR_ARGS(CaVesselSegment<2>, pSegment1, (nodes[1], nodes[2]));
+		MAKE_VN_PTR_ARGS(CaVesselSegment<2>, pSegment2, (nodes[2], nodes[3]));
+		MAKE_VN_PTR_ARGS(CaVesselSegment<2>, pSegment3, (nodes[4], nodes[5]));
 
 		// Make a vessel
-		VesselPtr2 pVessel1(CaVessel<2>::Create(pSegment1));
+		MAKE_VN_PTR_ARGS(CaVessel<2>, pVessel1, (pSegment1));
 
 		// Try adding a segment to the start and end
 		pVessel1->AddSegment(pSegment0);
@@ -147,13 +145,20 @@ public:
 		pVessel1->RemoveSegments(SegmentLocation::End);
 		TS_ASSERT_EQUALS(pVessel1->GetNumberOfSegments(), 1u);
 
-		// Vector version of adding.
-		std::vector<SegmentPtr2> good_segments;
+		// Vector version of adding segments
+		std::vector<boost::shared_ptr<CaVesselSegment<2> > > good_segments;
 		good_segments.push_back(pSegment1);
 		good_segments.push_back(pSegment2);
 
-		std::vector<SegmentPtr2> bad_segments = good_segments;
+		std::vector<boost::shared_ptr<CaVesselSegment<2> > > bad_segments = good_segments;
 		bad_segments.push_back(pSegment3);
+
+		MAKE_VN_PTR_ARGS(CaVessel<2>, pVessel2, (pSegment0));
+		pVessel2->AddSegments(good_segments);
+		TS_ASSERT_EQUALS(pVessel2->GetNumberOfSegments(), 3u);
+
+		MAKE_VN_PTR_ARGS(CaVessel<2>, pVessel3, (pSegment0));
+		TS_ASSERT_THROWS_THIS(pVessel3->AddSegments(bad_segments),"Input vessel segments are not attached in the correct order.");
 	}
 
 	void TestAccessingData() throw(Exception)
@@ -162,26 +167,37 @@ public:
     	ChastePoint<3> point1(1.0, 2.0, 6.0);
     	ChastePoint<3> point2(3.0, 4.0, 7.0);
 
-    	NodePtr3 pNode1(VascularNode<3>::Create(point1));
-    	NodePtr3 pNode2(VascularNode<3>::Create(point2));
+    	MAKE_VN_PTR_ARGS(VascularNode<3>, pNode1, (point1));
+    	MAKE_VN_PTR_ARGS(VascularNode<3>, pNode2, (point2));
 
     	// Make a segment
-    	SegmentPtr3 pSegment1(CaVesselSegment<3>::Create(pNode1, pNode2));
+    	MAKE_VN_PTR_ARGS(CaVesselSegment<3>, pSegment1, (pNode1, pNode2));
 
 		// Make a vessel
-    	VesselPtr3 pVessel(CaVessel<3>::Create(pSegment1));
+    	MAKE_VN_PTR_ARGS(CaVessel<3>, pVessel1, (pSegment1));
 
-		// Set some data
-		double radius = 5.5;
-		pVessel->GetDataContainer().SetData("radius", radius);
-		TS_ASSERT_DELTA(pVessel->GetDataContainer().GetData<double>("radius"), radius, 1.e-6);
+        // Set some data
+        double radius = 5.5;
+        std::string key ="radius";
+        pVessel1->SetData(key, radius);
 
-		// Replace the existing data container with a new one
-		VasculatureData dataContainer;
-		double haematocrit = 7.5;
-		dataContainer.SetData("haematocrit", haematocrit);
-		pVessel->SetDataContainer(dataContainer);
-		TS_ASSERT_DELTA(pVessel->GetDataContainer().GetData<double>("haematocrit"), haematocrit, 1.e-6);
+        // Check the key is set
+        TS_ASSERT(pVessel1->HasDataKey("radius"));
+        TS_ASSERT_EQUALS(pVessel1->GetDataKeys()[0].c_str(), key.c_str());
+
+        bool value_is_castable_to_double = true;
+        TS_ASSERT_EQUALS(pVessel1->GetDataKeys(value_is_castable_to_double)[0].c_str(), key.c_str());
+
+        // Check the key value is retrieved
+        TS_ASSERT_DELTA(pVessel1->GetData<double>("radius"), radius, 1.e-6);
+        TS_ASSERT_DELTA(pVessel1->rGetDataContainer().GetData<double>("radius"), radius, 1.e-6);
+
+        // Replace the existing data container with a new one
+        VasculatureData data_container;
+        double haematocrit = 7.5;
+        data_container.SetData("haematocrit", haematocrit);
+        pVessel1->SetDataContainer(data_container);
+        TS_ASSERT_DELTA(pVessel1->GetData<double>("haematocrit"), haematocrit, 1.e-6);
 	}
 };
 

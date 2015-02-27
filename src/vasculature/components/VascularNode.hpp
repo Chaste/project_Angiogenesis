@@ -47,7 +47,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SmartVasculaturePointers.hpp"
 #include "VasculatureData.hpp"
 
-
 /**
  *  Forward declaration to allow segments to manage adding and removing themselves from nodes.
  */
@@ -86,7 +85,7 @@ private:
     boost::shared_ptr<AbstractCellPopulation<DIM> > mpCellPopulation;
 
     /**
-     * Pointer to a container for non-spatial node data.
+     * Container for non-spatial node data.
      */
     VasculatureData mDataContainer;
 
@@ -112,7 +111,7 @@ public:
      *
      * A node must be specified with a location.
      */
-    VascularNode(ChastePoint<DIM> rLocation);
+    VascularNode(const ChastePoint<DIM>& rLocation);
 
     /*
      * Constructor
@@ -120,6 +119,11 @@ public:
      * A node must be specified with a location.
      */
     VascularNode(double point1, double point2, double point3 = 0.0);
+    
+    /*
+     * Destructor
+     */
+    ~VascularNode();
 
     /*
      * Construct a new instance of the class and return a shared pointer to it.
@@ -131,18 +135,35 @@ public:
      */
     static boost::shared_ptr<VascularNode<DIM> > Create(double point1, double point2, double point3 = 0.0);
 
-    /*
-     * Destructor
-     */
-    ~VascularNode();
-
     /**
      *  Return a pointer to the associated Cell.
      *
      *  @return mpCell
      */
     CellPtr GetCell() const;
+    
+    /**
+     *  Return the node data for the input key. An attempt is made
+     *  to cast to type T.
+     *  @return T data
+     */
+    template<typename T> T GetData(const std::string& rKey);
 
+    /**
+     *  Return a const reference to the non-spatial data container.
+     *
+     *  @return mDataContainer
+     */
+    const VasculatureData& rGetDataContainer();   
+    
+    /**
+     *  Return a vector of data keys for the node. Input true if
+     *  the corresponding value should be castable to double.
+     *
+     *  @return std::vector<std::string>
+     */
+    std::vector<std::string> GetDataKeys(bool castable_to_double = false) const;   
+    
     /**
      *  Return the distance between the input point and the node
      *
@@ -158,7 +179,7 @@ public:
     unsigned GetId() const;
 
     /**
-     *  Return the Label
+     *  Return a const reference to the Label
      *
      *  @return mLabel
      */
@@ -172,13 +193,6 @@ public:
     ChastePoint<DIM> GetLocation() const;
 
     /**
-     *  Return a pointer to the node's non-spatial data container.
-     *
-     *  @return mDataContainer
-     */
-    VasculatureData& GetDataContainer();
-
-    /**
      *  Return the number of attached segments
      */
     unsigned GetNumberOfSegments() const;
@@ -186,7 +200,7 @@ public:
     /**
      *  Return a boost::shared_ptr to VesselSegment index.
      */
-    boost::shared_ptr<CaVesselSegment<DIM> > GetVesselSegments(unsigned index) const;
+    boost::shared_ptr<CaVesselSegment<DIM> > GetVesselSegment(unsigned index) const;
 
     /**
      *  Return a vector of boost::shared_ptr to the VesselSegments.
@@ -199,6 +213,20 @@ public:
      *  @return bool
      */
     bool HasCell() const;
+    
+     /**
+     *  Return true if the node has data corresponding to the input key.
+     *
+     *  @return bool
+     */
+    bool HasDataKey(const std::string& rKey) const;
+
+    /**
+     *  Return true if the input segment is attached to the node
+     *
+     *  @return bool
+     */
+    bool IsAttachedTo(const boost::shared_ptr<CaVesselSegment<DIM> > pSegment) const;
 
     /**
      *  Return true if the node is coincident with the input location
@@ -227,11 +255,16 @@ public:
     void SetCellPopulation(boost::shared_ptr<AbstractCellPopulation<DIM> > pCellPopulation);
 
     /**
+     *  Add data of any type to the node using the identifying key
+     */
+    template<typename T> void SetData(const std::string& rKey, T value);
+
+    /**
      *  Over-write the node's non-spatial DataContainer
      *
      *  This can be useful when copying data from an existing node.
      */
-    void SetDataContainer(VasculatureData dataContainer);
+    void SetDataContainer(const VasculatureData& rDataContainer);
 
     /**
      *  Assign the Id
@@ -269,5 +302,17 @@ private:
     void RemoveSegment(boost::shared_ptr<CaVesselSegment<DIM> > pVesselSegment);
 
 };
+
+template<unsigned DIM>
+template<typename T> T VascularNode<DIM>::GetData(const std::string& variableName)
+{
+	return mDataContainer.GetData<T>(variableName);
+}
+
+template<unsigned DIM>
+template<typename T> void VascularNode<DIM>::SetData(const std::string& variableName, T value)
+{
+	mDataContainer.SetData(variableName, value);
+}
 
 #endif /* VASCULARNODE_HPP_ */

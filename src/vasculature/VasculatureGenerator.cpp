@@ -477,7 +477,7 @@ boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateNe
 			average_radius = average_radius + radii[pSegmentList[j]];
 		}
 		boost::shared_ptr<CaVessel<DIM> > vessel(CaVessel<DIM>::Create(segments));
-		vessel->GetDataContainer().SetData("radius", average_radius/double(num_segments));
+		vessel->SetData("radius", average_radius/double(num_segments));
 
 		// Add the resulting vessel to the network
 		pVesselNetwork->AddVessel(vessel);

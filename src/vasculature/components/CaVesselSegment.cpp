@@ -70,15 +70,21 @@ CaVesselSegment<DIM>::~CaVesselSegment()
 }
 
 template<unsigned DIM>
-VasculatureData& CaVesselSegment<DIM>::GetDataContainer()
+void CaVesselSegment<DIM>::AddVessel(boost::shared_ptr<CaVessel<DIM> > pVessel)
+{
+	mVessel = pVessel;
+}
+
+template<unsigned DIM>
+const VasculatureData& CaVesselSegment<DIM>::rGetDataContainer() const
 {
 	return mDataContainer;
 }
 
 template<unsigned DIM>
-unsigned CaVesselSegment<DIM>::GetId() const
+std::vector<std::string> CaVesselSegment<DIM>::GetDataKeys(bool castable_to_double) const
 {
-	return mId;
+	return mDataContainer.GetKeys(castable_to_double);
 }
 
 template<unsigned DIM>
@@ -141,6 +147,12 @@ double CaVesselSegment<DIM>::GetDistance(const ChastePoint<DIM>& rPoint)
 }
 
 template<unsigned DIM>
+unsigned CaVesselSegment<DIM>::GetId() const
+{
+	return mId;
+}
+
+template<unsigned DIM>
 const std::string& CaVesselSegment<DIM>::rGetLabel() const
 {
 	return mLabel;
@@ -179,25 +191,6 @@ ChastePoint<DIM> CaVesselSegment<DIM>::GetMidPoint()
 }
 
 template<unsigned DIM>
-boost::shared_ptr<CaVessel<DIM> > CaVesselSegment<DIM>::GetVessel()
-{
-	if(mVessel.lock())
-	{
-		return mVessel.lock();
-	}
-	else
-	{
-		EXCEPTION("A vessel has been requested but this segment doesn't have one.");
-	}
-}
-
-template<unsigned DIM>
-std::pair<boost::shared_ptr<VascularNode<DIM> >, boost::shared_ptr<VascularNode<DIM> > > CaVesselSegment<DIM>::GetNodes()
-{
-	return mNodes;
-}
-
-template<unsigned DIM>
 boost::shared_ptr<VascularNode<DIM> > CaVesselSegment<DIM>::GetNode(unsigned index)
 {
 	if (index == 0u)
@@ -212,6 +205,106 @@ boost::shared_ptr<VascularNode<DIM> > CaVesselSegment<DIM>::GetNode(unsigned ind
 	{
 		EXCEPTION("A node index other than 0 or 1 has been requested for a Vessel Segment.");
 	}
+}
+
+template<unsigned DIM>
+std::pair<boost::shared_ptr<VascularNode<DIM> >, boost::shared_ptr<VascularNode<DIM> > > CaVesselSegment<DIM>::GetNodes()
+{
+	return mNodes;
+}
+
+template<unsigned DIM>
+ChastePoint<DIM> CaVesselSegment<DIM>::GetPointProjection(const ChastePoint<DIM>& rPoint)
+{
+	ChastePoint<DIM> location1 = GetNode(0)->GetLocation();
+	ChastePoint<DIM> location2 = GetNode(1)->GetLocation();
+
+	std::vector<double> segment_vector(DIM);
+	std::vector<double> point_vector(DIM);
+
+	// Get a vector along the segment and one from the point to one end of the segment
+	for(unsigned i=0; i<DIM; i++)
+	{
+		segment_vector[i] = location2[i] - location1[i];
+		point_vector[i] = rPoint[i] - location1[i];
+	}
+
+	// Get segment_vector.point_vector
+	double dot_product_segment_point = 0.0;
+	for(unsigned i=0; i<DIM; i++)
+	{
+		dot_product_segment_point += segment_vector[i] * point_vector[i];
+	}
+
+	// Get point_vector.point_vector
+	double dot_product_segment_segment = 0.0;
+	for(unsigned i=0; i<DIM; i++)
+	{
+		dot_product_segment_segment += segment_vector[i] * segment_vector[i];
+	}
+
+	if(dot_product_segment_point <= 0.0 || dot_product_segment_segment <= dot_product_segment_point)
+	{
+		EXCEPTION("Projection of point is outside segment.");
+	}
+
+	double projection_ratio = dot_product_segment_point / dot_product_segment_segment;
+	std::vector<double> projected_point(DIM);
+
+	for(unsigned i=0; i<DIM; i++)
+	{
+		projected_point[i] += location1[i] + projection_ratio * segment_vector[i];
+	}
+
+	return ChastePoint<DIM>(projected_point);
+}
+
+template<unsigned DIM>
+ChastePoint<DIM> CaVesselSegment<DIM>::GetUnitTangent()
+{
+
+	ChastePoint<DIM> location1 = GetNode(0)->GetLocation();
+	ChastePoint<DIM> location2 = GetNode(1)->GetLocation();
+
+	std::vector<double> tangent;
+	double length_squared = 0.0;
+	for(unsigned i=0; i<DIM; i++)
+	{
+		double distance = location2[i] - location1[i];
+		length_squared += distance * distance;
+		tangent.push_back(distance);
+	}
+
+	double length = std::sqrt(length_squared);
+	if (length <= 1.e-12)
+	{
+		EXCEPTION("Segment is too short to reliably calculate a unit tangent.");
+	}
+	for(unsigned i=0; i<DIM; i++)
+	{
+		tangent[i] /= length;
+	}
+
+	return ChastePoint<DIM>(tangent);
+}
+
+template<unsigned DIM>
+boost::shared_ptr<CaVessel<DIM> > CaVesselSegment<DIM>::GetVessel()
+{
+	if(mVessel.lock())
+	{
+		return mVessel.lock();
+	}
+	else
+	{
+		EXCEPTION("A vessel has been requested but this segment doesn't have one.");
+	}
+}
+
+template<unsigned DIM>
+bool CaVesselSegment<DIM>::HasDataKey(const std::string& rKey) const
+{
+	return mDataContainer.HasKey(rKey);
 }
 
 template<unsigned DIM>
@@ -249,7 +342,12 @@ bool CaVesselSegment<DIM>::IsConnectedTo(boost::shared_ptr<CaVesselSegment<DIM> 
 	}
 
 	return isConnectedToSegment;
+}
 
+template<unsigned DIM>
+void CaVesselSegment<DIM>::RemoveVessel()
+{
+	mVessel = boost::weak_ptr<CaVessel<DIM> >();
 }
 
 template<unsigned DIM>
@@ -274,9 +372,9 @@ void CaVesselSegment<DIM>::ReplaceNode(unsigned oldNodeIndex, boost::shared_ptr<
 }
 
 template<unsigned DIM>
-void CaVesselSegment<DIM>::SetDataContainer(VasculatureData dataContainer)
+void CaVesselSegment<DIM>::SetDataContainer(const VasculatureData& rDataContainer)
 {
-	mDataContainer = dataContainer;
+	mDataContainer = rDataContainer;
 }
 
 template<unsigned DIM>
@@ -296,18 +394,6 @@ boost::shared_ptr<CaVesselSegment<DIM> > CaVesselSegment<DIM>::Shared()
 {
 	boost::shared_ptr<CaVesselSegment<DIM> > pSegment = this->shared_from_this();
 	return pSegment;
-}
-
-template<unsigned DIM>
-void CaVesselSegment<DIM>::AddVessel(boost::shared_ptr<CaVessel<DIM> > pVessel)
-{
-	mVessel = pVessel;
-}
-
-template<unsigned DIM>
-void CaVesselSegment<DIM>::RemoveVessel()
-{
-	mVessel = boost::weak_ptr<CaVessel<DIM> >();
 }
 
 // Explicit instantiation

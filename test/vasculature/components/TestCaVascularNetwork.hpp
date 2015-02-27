@@ -120,7 +120,7 @@ public:
         // Try writing to file
         OutputFileHandler output_file_handler("TestVesselNetwork");
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("GenericVesselNetwork.vtp");
-        vessel_network.WriteToFile(output_filename, true);
+        vessel_network.Write(output_filename, true);
 
         // Move the network
         std::vector<double> translation_vector_3d;
@@ -131,13 +131,12 @@ public:
         vessel_network.Translate(translation_vector_3d);
         vessel_network.Translate(translation_vector_3d, true);
         std::string output_filename2 = output_file_handler.GetOutputDirectoryFullPath().append("GenericVesselNetwork_TranslatedCopy.vtp");
-        vessel_network.WriteToFile(output_filename2, true);
+        vessel_network.Write(output_filename2, true);
 
     }
 
     void TestConnnectedMethods() throw(Exception)
     {
-
         // Make some nodes
         std::vector<ChastePoint<3> > points;
         points.push_back(ChastePoint<3>(1.0, 2.0, 6.0));
@@ -214,14 +213,13 @@ public:
         vessel_network.AddVessel(pVessel4);
 
 
-        TS_ASSERT(vessel_network.Connected(nodes[0], nodes[4]));
-        TS_ASSERT(!vessel_network.Connected(nodes[0], node5));
-        TS_ASSERT(vessel_network.Connected(node4, node5));
+        TS_ASSERT(vessel_network.IsConnected(nodes[0], nodes[4]));
+        TS_ASSERT(!vessel_network.IsConnected(nodes[0], node5));
+        TS_ASSERT(vessel_network.IsConnected(node4, node5));
 
         OutputFileHandler output_file_handler("TestVesselNetwork",false);
         std::string output_filename4 = output_file_handler.GetOutputDirectoryFullPath().append("ConnectedTestVesselNetwork.gv");
         vessel_network.VisualiseVesselConnectivity(output_filename4);
-
     }
 
 };

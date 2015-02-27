@@ -41,7 +41,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 template <unsigned DIM>
 CaVascularNetwork<DIM>::CaVascularNetwork()
 : mVessels(std::vector<boost::shared_ptr<CaVessel<DIM> > >()),
-  mpDataContainer(boost::shared_ptr<VasculatureData>(new VasculatureData()))
+  mDataContainer()
   {
   }
 
@@ -51,15 +51,15 @@ CaVascularNetwork<DIM>::~CaVascularNetwork()
 }
 
 template <unsigned DIM>
-void CaVascularNetwork<DIM>::AddVessel(boost::shared_ptr<CaVessel<DIM> > vessel)
+void CaVascularNetwork<DIM>::AddVessel(boost::shared_ptr<CaVessel<DIM> > pVessel)
 {
-    mVessels.push_back(vessel);
+	mVessels.push_back(pVessel);
 }
 
 template <unsigned DIM>
 void CaVascularNetwork<DIM>::AddVessels(std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels)
 {
-    mVessels.insert(mVessels.end(), vessels.begin(), vessels.end());
+	mVessels.insert(mVessels.end(), vessels.begin(), vessels.end());
 }
 
 template <unsigned DIM>
@@ -126,6 +126,57 @@ std::vector<std::pair<double, double> > CaVascularNetwork<DIM>::GetExtents()
 }
 
 template <unsigned DIM>
+boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::GetNearestNode(ChastePoint<DIM>& rLocation)
+{
+	std::set<boost::shared_ptr<VascularNode<DIM> > > nodes = GetNodes();
+	boost::shared_ptr<VascularNode<DIM> > nearest_node;
+	double min_distance = 1.e12;
+
+	typename std::set<boost::shared_ptr<VascularNode<DIM> > >::iterator node_iter;
+	for(node_iter = nodes.begin(); node_iter != nodes.end(); node_iter++)
+	{
+
+		double node_distance = (*node_iter)->GetDistance(rLocation);
+		if (node_distance < min_distance)
+		{
+			min_distance = node_distance;
+			nearest_node = (*node_iter) ;
+		}
+	}
+	return nearest_node;
+}
+
+template <unsigned DIM>
+boost::shared_ptr<CaVesselSegment<DIM> > CaVascularNetwork<DIM>::GetNearestSegment(const ChastePoint<DIM>& rLocation)
+{
+	boost::shared_ptr<CaVesselSegment<DIM> > nearest_segment;
+	double min_distance = 1.e12;
+
+	typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator vessel_iter;
+	typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator segment_iter;
+	for(vessel_iter = mVessels.begin(); vessel_iter != mVessels.end(); vessel_iter++)
+	{
+		std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = (*vessel_iter)->GetSegments();
+		for(segment_iter = segments.begin(); segment_iter != segments.end(); segment_iter++)
+		{
+			double segment_distance = (*segment_iter)->GetDistance(rLocation);
+			if (segment_distance < min_distance)
+			{
+				min_distance = segment_distance;
+				nearest_segment = (*segment_iter) ;
+			}
+		}
+	}
+	return nearest_segment;
+}
+
+template <unsigned DIM>
+boost::shared_ptr<CaVessel<DIM> > CaVascularNetwork<DIM>::GetNearestVessel(const ChastePoint<DIM>& rLocation)
+{
+	return GetNearestSegment(rLocation)->GetVessel();
+}
+
+template <unsigned DIM>
 std::set<boost::shared_ptr<VascularNode<DIM> > > CaVascularNetwork<DIM>::GetNodes()
 {
     std::set<boost::shared_ptr<VascularNode<DIM> > >  nodes;
@@ -145,6 +196,24 @@ std::set<boost::shared_ptr<VascularNode<DIM> > > CaVascularNetwork<DIM>::GetNode
 }
 
 template <unsigned DIM>
+unsigned CaVascularNetwork<DIM>::GetNumberOfNodes()
+{
+	return GetNodes().size();
+}
+
+template <unsigned DIM>
+unsigned CaVascularNetwork<DIM>::GetNumberOfVessels()
+{
+	return mVessels.size();
+}
+
+template <unsigned DIM>
+boost::shared_ptr<CaVessel<DIM> > CaVascularNetwork<DIM>::GetVessel(unsigned index)
+{
+	return mVessels[index];
+}
+
+template <unsigned DIM>
 std::set<boost::shared_ptr<VascularNode<DIM> > > CaVascularNetwork<DIM>::GetVesselEndNodes()
 {
     std::set<boost::shared_ptr<VascularNode<DIM> > >  nodes;
@@ -161,37 +230,181 @@ std::set<boost::shared_ptr<VascularNode<DIM> > > CaVascularNetwork<DIM>::GetVess
 }
 
 template <unsigned DIM>
-void CaVascularNetwork<DIM>::SetNodeData(VasculatureData data)
-{
-    std::set<boost::shared_ptr<VascularNode<DIM> > > nodes = GetNodes();
-    typename std::set<boost::shared_ptr<VascularNode<DIM> > >::iterator it;
-
-    for(it = nodes.begin(); it != nodes.end(); it++)
-    {
-        (*it)->SetDataContainer(data);
-    }
-}
-
-template <unsigned DIM>
-void CaVascularNetwork<DIM>::SetVesselData(VasculatureData data)
-{
-    typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator it;
-    for(it = mVessels.begin(); it != mVessels.end(); it++)
-    {
-        (*it)->SetDataContainer(data);
-    }
-}
-
-template <unsigned DIM>
 std::vector<boost::shared_ptr<CaVessel<DIM> > > CaVascularNetwork<DIM>::GetVessels()
 {
-    return mVessels;
+	return mVessels;
 }
 
 template <unsigned DIM>
-boost::shared_ptr<CaVessel<DIM> > CaVascularNetwork<DIM>::GetVessel(unsigned i)
+unsigned CaVascularNetwork<DIM>::GetVesselIndex(boost::shared_ptr<CaVessel<DIM> > pVessel)
 {
-    return mVessels[i];
+	unsigned index = 0;
+	typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator it;
+	for(it = mVessels.begin(); it != mVessels.end(); it++)
+	{
+		if(*it == pVessel)
+		{
+			return index;
+		}
+		index ++;
+	}
+	EXCEPTION("Input vessel is not in the network.");
+}
+
+/*
+ * Helper class for "connected" methods
+ */
+template<typename TimeMap> class bfs_time_visitor : public boost::default_bfs_visitor
+{
+    typedef typename boost::property_traits<TimeMap>::value_type T;
+
+public:
+
+    TimeMap m_timemap;
+    T& m_time;
+
+    bfs_time_visitor(TimeMap tmap, T& t)
+    :m_timemap(tmap),
+     m_time(t)
+    {
+    }
+
+    template<typename Vertex, typename Graph>
+    void discover_vertex(Vertex u, const Graph& g) const
+    {
+        put(m_timemap, u, m_time++);
+    }
+};
+
+template <unsigned DIM>
+bool CaVascularNetwork<DIM>::IsConnected(boost::shared_ptr<VascularNode<DIM> > pSourceNode, boost::shared_ptr<VascularNode<DIM> > pQueryNode)
+{
+	if (pSourceNode == pQueryNode)
+	{
+		return true;
+	}
+
+	boost::shared_ptr<CaVessel<DIM> > p_source_vessel = pSourceNode->GetVesselSegment(0)->GetVessel();
+	boost::shared_ptr<CaVessel<DIM> > p_query_vessel = pQueryNode->GetVesselSegment(0)->GetVessel();
+
+	if (p_source_vessel == p_query_vessel || p_source_vessel->IsConnectedTo(p_query_vessel))
+	{
+		return true;
+	}
+
+	// Assign the vessel nodes unique IDs
+	std::set<boost::shared_ptr<VascularNode<DIM> > >  vessel_nodes = GetVesselEndNodes();
+	typename std::set<boost::shared_ptr<VascularNode<DIM> > >::iterator node_iter;
+	unsigned counter = 0;
+	for(node_iter = vessel_nodes.begin(); node_iter != vessel_nodes.end(); node_iter++)
+	{
+		(*node_iter)->SetId(counter);
+		counter ++;
+	}
+
+	// Get the start nodes of the containing and query vessels
+	boost::shared_ptr<VascularNode<DIM> > pEquivalentSourceNode = p_source_vessel->GetStartNode();
+	boost::shared_ptr<VascularNode<DIM> > pEquivalentQueryNode = p_query_vessel->GetStartNode();
+
+	// construct graph representation of vessel network
+	typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS> Graph;
+
+	Graph G;
+
+	for (unsigned i = 0; i < mVessels.size(); i++)
+	{
+		add_edge(mVessels[i]->GetStartNode()->GetId(), mVessels[i]->GetEndNode()->GetId(), G);
+	}
+
+	// typedefs
+	typedef boost::graph_traits<Graph>::vertices_size_type Size;
+
+	// a vector to hold the discover time property for each vertex
+	std::vector<Size> dtime(num_vertices(G));
+
+	Size time = 0;
+	bfs_time_visitor<Size*>vis(&dtime[0], time);
+
+	// use breadth first search to establish discovery time of all nodes from node1
+	// this assigns a discovery time to dTime for each node (index relates to nodeID)
+	// dTime is zero for node1 and all other nodes that are not connected to node1
+	// dTime is nonzero for all nodes that are connected to node1 (except node 1 itself)
+	breadth_first_search(G,vertex(pEquivalentSourceNode->GetId(),G), boost::visitor(vis));
+
+	return (dtime[pEquivalentQueryNode->GetId()] > 0);
+}
+
+template <unsigned DIM>
+std::vector<std::vector<bool> > CaVascularNetwork<DIM>::IsConnected(std::vector<boost::shared_ptr<VascularNode<DIM> > > sourceNodes,
+		std::vector<boost::shared_ptr<VascularNode<DIM> > > queryNodes)
+{
+
+	// Assign the vessel nodes unique IDs
+	std::set<boost::shared_ptr<VascularNode<DIM> > >  vessel_nodes = GetVesselEndNodes();
+	typename std::set<boost::shared_ptr<VascularNode<DIM> > >::iterator node_iter;
+	unsigned counter = 0;
+	for(node_iter = vessel_nodes.begin(); node_iter != vessel_nodes.end(); node_iter++)
+	{
+		(*node_iter)->SetId(counter);
+		counter ++;
+	}
+
+	// construct graph representation of vessel network
+	typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS> Graph;
+	typedef boost::graph_traits<Graph>::vertices_size_type Size;
+
+	Graph G;
+
+	for (unsigned i = 0; i < mVessels.size(); i++)
+	{
+		add_edge(mVessels[i]->GetStartNode()->GetId(), mVessels[i]->GetEndNode()->GetId(), G);
+	}
+
+	std::vector<std::vector<bool> > connected;
+
+	for(unsigned i=0; i<sourceNodes.size(); i++)
+	{
+		boost::shared_ptr<VascularNode<DIM> > pSourceNode = sourceNodes[i];
+		boost::shared_ptr<CaVessel<DIM> > p_source_vessel = pSourceNode->GetVesselSegment(0)->GetVessel();
+		boost::shared_ptr<VascularNode<DIM> > pEquivalentSourceNode = p_source_vessel->GetStartNode();
+
+		std::vector<bool> connected_to_this_source;
+
+		for (unsigned j=0; j<queryNodes.size(); j++)
+		{
+			boost::shared_ptr<VascularNode<DIM> > pQueryNode = queryNodes[j];
+
+			if (pSourceNode == pQueryNode)
+			{
+				connected_to_this_source.push_back(true);
+				continue;
+			}
+
+			boost::shared_ptr<CaVessel<DIM> > p_query_vessel = pQueryNode->GetVesselSegment(0)->GetVessel();
+			if (p_source_vessel == p_query_vessel || p_source_vessel->IsConnectedTo(p_query_vessel))
+			{
+				connected_to_this_source.push_back(true);
+				continue;
+			}
+
+			boost::shared_ptr<VascularNode<DIM> > pEquivalentQueryNode = p_query_vessel->GetStartNode();
+
+
+			// a vector to hold the discover time property for each vertex
+			std::vector<Size> dtime(num_vertices(G));
+
+			Size time = 0;
+			bfs_time_visitor<Size*>vis(&dtime[0], time);
+
+			breadth_first_search(G,vertex(pEquivalentSourceNode->GetId(),G), boost::visitor(vis));
+
+			connected_to_this_source.push_back(dtime[pEquivalentQueryNode->GetId()] > 0);
+		}
+
+		connected.push_back(connected_to_this_source);
+	}
+
+	return connected;
 }
 
 template <unsigned DIM>
@@ -236,44 +449,29 @@ void CaVascularNetwork<DIM>::MergeCoincidentNodes()
 }
 
 template <unsigned DIM>
-std::set<boost::shared_ptr<VascularNode<DIM> > > CaVascularNetwork<DIM>::DeepCopyVessels()
+void CaVascularNetwork<DIM>::SetNodeData(VasculatureData data)
 {
-    std::set<boost::shared_ptr<VascularNode<DIM> > >  nodes;
+    std::set<boost::shared_ptr<VascularNode<DIM> > > nodes = GetNodes();
+    typename std::set<boost::shared_ptr<VascularNode<DIM> > >::iterator it;
 
-    // Deep copy each of the vessels
-    // loop through the vessels, segments and nodes and recreate new instances
-    typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator vessel_iter;
-    typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator segment_iter;
-    std::vector<boost::shared_ptr<CaVessel<DIM> > > new_vessels;
-
-    for(vessel_iter = mVessels.begin(); vessel_iter != mVessels.end(); vessel_iter++)
+    for(it = nodes.begin(); it != nodes.end(); it++)
     {
-        std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > new_segments;
-        std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = (*vessel_iter)->GetSegments();
-
-        for(segment_iter = segments.begin(); segment_iter != segments.end(); segment_iter++)
-        {
-            ChastePoint<DIM> node0_location = (*segment_iter)->GetNode(0)->GetLocation();
-            ChastePoint<DIM> node1_location = (*segment_iter)->GetNode(1)->GetLocation();
-
-            boost::shared_ptr<VascularNode<DIM> > pNode0(VascularNode<DIM>::Create(node0_location));
-            boost::shared_ptr<VascularNode<DIM> > pNode1(VascularNode<DIM>::Create(node1_location));
-            nodes.insert(pNode0);
-            nodes.insert(pNode1);
-
-            boost::shared_ptr<CaVesselSegment<DIM> > pSegment(CaVesselSegment<DIM>::Create(pNode0, pNode1));
-            new_segments.push_back(pSegment);
-        }
-        boost::shared_ptr<CaVessel<DIM> > pVessel(CaVessel<DIM>::Create(new_segments));
-        new_vessels.push_back(pVessel);
+        (*it)->SetDataContainer(data);
     }
-    AddVessels(new_vessels);
-
-    return nodes;
 }
 
 template <unsigned DIM>
-void CaVascularNetwork<DIM>::Translate(std::vector<double> translation_vector, bool copy)
+void CaVascularNetwork<DIM>::SetVesselData(VasculatureData data)
+{
+    typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator it;
+    for(it = mVessels.begin(); it != mVessels.end(); it++)
+    {
+        (*it)->SetDataContainer(data);
+    }
+}
+
+template <unsigned DIM>
+void CaVascularNetwork<DIM>::Translate(const std::vector<double>& rTranslationVector, bool copy)
 {
     //	Get a vector of points corresponding to nodes, move the points
     typename std::set<boost::shared_ptr<VascularNode<DIM> > >::iterator node_iter;
@@ -295,7 +493,7 @@ void CaVascularNetwork<DIM>::Translate(std::vector<double> translation_vector, b
     }
 
     GeometryTransform<DIM> transform;
-    std::vector<ChastePoint<DIM> > new_points = transform.Translate(points, translation_vector);
+    std::vector<ChastePoint<DIM> > new_points = transform.Translate(points, rTranslationVector);
 
     unsigned count = 0u;
     for(node_iter = nodes.begin(); node_iter != nodes.end(); node_iter++)
@@ -312,7 +510,7 @@ void CaVascularNetwork<DIM>::Translate(std::vector<double> translation_vector, b
 }
 
 template <unsigned DIM>
-void CaVascularNetwork<DIM>::WriteToFile(std::string filename, bool geometry_only)
+void CaVascularNetwork<DIM>::Write(const std::string& filename, bool geometry_only)
 {
     vtkSmartPointer<vtkPolyData> pPolyData = vtkSmartPointer<vtkPolyData>::New();
     vtkSmartPointer<vtkPoints> pPoints= vtkSmartPointer<vtkPoints>::New();
@@ -323,7 +521,9 @@ void CaVascularNetwork<DIM>::WriteToFile(std::string filename, bool geometry_onl
 
     // Set up vessel info arrays
     std::map<std::string, boost::any >::iterator map_iterator;
-    for(map_iterator = mVessels[0]->GetDataContainer().GetMap().begin(); map_iterator != mVessels[0]->GetDataContainer().GetMap().end(); map_iterator++)
+    std::map<std::string, boost::any > data_map = mVessels[0]->rGetDataContainer().GetMap();
+
+    for(map_iterator = data_map.begin(); map_iterator != data_map.end(); map_iterator++)
     {
         vtkSmartPointer<vtkDoubleArray> pVesselInfo = vtkSmartPointer<vtkDoubleArray>::New();
         pVesselInfo->SetNumberOfComponents(1); // all scalar data - has one entry
@@ -347,7 +547,8 @@ void CaVascularNetwork<DIM>::WriteToFile(std::string filename, bool geometry_onl
 
     // Set up node info arrays
     std::map<std::string, boost::any >::iterator map_iterator5;
-    for(map_iterator5 = mVessels[0]->GetStartNode()->GetDataContainer().GetMap().begin(); map_iterator5 != mVessels[0]->GetStartNode()->GetDataContainer().GetMap().end(); map_iterator5++)
+    std::map<std::string, boost::any > data_map2 = mVessels[0]->GetStartNode()->rGetDataContainer().GetMap();
+    for(map_iterator5 = data_map2.begin(); map_iterator5 != data_map2.end(); map_iterator5++)
     {
         vtkSmartPointer<vtkDoubleArray> pNodeInfo = vtkSmartPointer<vtkDoubleArray>::New();
         pNodeInfo->SetNumberOfComponents(1); // all scalar data - has one entry
@@ -385,7 +586,9 @@ void CaVascularNetwork<DIM>::WriteToFile(std::string filename, bool geometry_onl
             }
             std::map<std::string, boost::any >::iterator map_iterator3;
             unsigned key_index = 0;
-            for(map_iterator3 = segments[i]->GetNode(0)->GetDataContainer().GetMap().begin(); map_iterator3 != segments[i]->GetNode(0)->GetDataContainer().GetMap().end(); map_iterator3++)
+
+            std::map<std::string, boost::any > data_map3 = segments[i]->GetNode(0)->rGetDataContainer().GetMap();
+            for(map_iterator3 = data_map3.begin(); map_iterator3 != data_map3.end(); map_iterator3++)
             {
                 if (map_iterator3->second.type() == typeid(double))
                 {
@@ -425,7 +628,8 @@ void CaVascularNetwork<DIM>::WriteToFile(std::string filename, bool geometry_onl
                 std::map<std::string, boost::any >::iterator map_iterator4;
 
                 unsigned key_index = 0;
-                for(map_iterator4 = segments[i]->GetNode(1)->GetDataContainer().GetMap().begin(); map_iterator4 != segments[i]->GetNode(1)->GetDataContainer().GetMap().end(); map_iterator4++)
+                std::map<std::string, boost::any > data_map4 = segments[i]->GetNode(1)->rGetDataContainer().GetMap();
+                for(map_iterator4 = data_map4.begin(); map_iterator4 != data_map4.end(); map_iterator4++)
                 {
                     if (map_iterator4->second.type() == typeid(double))
                     {
@@ -452,9 +656,10 @@ void CaVascularNetwork<DIM>::WriteToFile(std::string filename, bool geometry_onl
         pLines->InsertNextCell(pLine);
 
         std::map<std::string, boost::any >::iterator map_iterator2;
+        std::map<std::string, boost::any > data_map5 = (*it)->rGetDataContainer().GetMap();
 
         unsigned key_index = 0;
-        for(map_iterator2 = (*it)->GetDataContainer().GetMap().begin(); map_iterator2 != (*it)->GetDataContainer().GetMap().end(); map_iterator2++)
+        for(map_iterator2 = data_map5.begin(); map_iterator2 != data_map5.end(); map_iterator2++)
         {
             if (map_iterator2->second.type() == typeid(double))
             {
@@ -496,143 +701,6 @@ void CaVascularNetwork<DIM>::WriteToFile(std::string filename, bool geometry_onl
     writer->Write();
 }
 
-
-template <unsigned DIM>
-unsigned CaVascularNetwork<DIM>::GetNumberOfVessels()
-{
-    return mVessels.size();
-}
-//
-//template <unsigned DIM>
-//unsigned CaVascularNetwork<DIM>::GetNumberOfNodesInNetwork()
-//{
-//    return mNodeArray.size();
-//}
-//
-//
-//
-/*
- * Helper class for "connected" methods
- */
-template<typename TimeMap> class bfs_time_visitor : public boost::default_bfs_visitor
-{
-    typedef typename boost::property_traits<TimeMap>::value_type T;
-
-public:
-
-    TimeMap m_timemap;
-    T& m_time;
-
-    bfs_time_visitor(TimeMap tmap, T& t)
-    :m_timemap(tmap),
-     m_time(t)
-    {
-    }
-
-    template<typename Vertex, typename Graph>
-    void discover_vertex(Vertex u, const Graph& g) const
-    {
-        put(m_timemap, u, m_time++);
-    }
-};
-
-template <unsigned DIM>
-unsigned CaVascularNetwork<DIM>::GetVesselIndex(boost::shared_ptr<CaVessel<DIM> > vessel)
-{
-
-
-    bool vesselFound = false;
-    unsigned i = 0;
-
-    for (i = 0; i < GetNumberOfVessels(); i++)
-    {
-        if (vessel == mVessels[i])
-        {
-            vesselFound = true;
-            break;
-        }
-    }
-
-    if(!vesselFound)
-    {
-        EXCEPTION("Vessel not present in vessel network!");
-    }
-
-    return i;
-}
-
-//
-///\ todo this could be made more general by passing in vectors of source nodes and target nodes and returning true for any targets connected
-// to a source. Would avoid graph reconstruction for each query and results in only one overall method.
-template <unsigned DIM>
-bool CaVascularNetwork<DIM>::Connected(boost::shared_ptr<VascularNode<DIM> > node1, boost::shared_ptr<VascularNode<DIM> > node2)
-{
-
-    if (node1 == node2)
-    {
-        return true;
-    }
-
-    boost::shared_ptr<CaVessel<DIM> > vessel1 = node1->GetVesselSegments(0)->GetVessel();
-    boost::shared_ptr<CaVessel<DIM> > vessel2 = node2->GetVesselSegments(0)->GetVessel();
-
-    if (vessel1 == vessel2)
-    {
-        return true;
-    }
-
-    // construct graph representation of vessel network
-    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS> Graph;
-
-    Graph G;
-
-    typename std::set<boost::shared_ptr<VascularNode<DIM> > >::iterator node_iterator;
-
-    std::set<boost::shared_ptr<VascularNode<DIM> > > nodes = GetVesselEndNodes();
-
-    for (node_iterator = nodes.begin(); node_iterator != nodes.end(); node_iterator++)
-    {
-        if ((*node_iterator)->GetVesselSegments().size() > 1)
-        {
-            for (unsigned j = 1; j < (*node_iterator)->GetVesselSegments().size(); j++)
-            {
-                add_edge(GetVesselIndex((*node_iterator)->GetVesselSegments(0)->GetVessel()),
-                         GetVesselIndex((*node_iterator)->GetVesselSegments(j)->GetVessel()), G);
-            }
-        }
-    }
-
-    for (node_iterator = nodes.begin(); node_iterator != nodes.end(); node_iterator++)
-    {
-        if ((*node_iterator)->GetVesselSegments().size() == 1)
-        {
-            if ((*node_iterator)->GetVesselSegments(0)->GetVessel()->GetStartNode()->GetVesselSegments().size() == 1
-                    && (*node_iterator)->GetVesselSegments(0)->GetVessel()->GetEndNode()->GetVesselSegments().size() == 1)
-            {
-                add_edge(GetVesselIndex((*node_iterator)->GetVesselSegments(0)->GetVessel()),
-                         GetVesselIndex((*node_iterator)->GetVesselSegments(0)->GetVessel()), G);
-            }
-        }
-    }
-
-    // typedefs
-    typedef boost::graph_traits<Graph>::vertices_size_type Size;
-
-    // a vector to hold the discover time property for each vertex
-    std::vector<Size> dtime(num_vertices(G));
-
-    Size time = 0;
-    bfs_time_visitor<Size*>vis(&dtime[0], time);
-
-    // use breadth first search to establish discovery time of all nodes from node1
-    // this assigns a discovery time to dTime for each node (index relates to nodeID)
-    // dTime is zero for node1 and all other nodes that are not connected to node1
-    // dTime is nonzero for all nodes that are connected to node1 (except node 1 itself)
-    breadth_first_search(G,vertex(GetVesselIndex(vessel1),G), boost::visitor(vis));
-
-    return (dtime[GetVesselIndex(vessel2)] > 0);
-}
-
 template <unsigned DIM>
 void CaVascularNetwork<DIM>::VisualiseVesselConnectivity(std::string output_filename)
 {
@@ -652,8 +720,8 @@ void CaVascularNetwork<DIM>::VisualiseVesselConnectivity(std::string output_file
         {
             for (unsigned j = 1; j < (*node_iterator)->GetVesselSegments().size(); j++)
             {
-                add_edge(GetVesselIndex((*node_iterator)->GetVesselSegments(0)->GetVessel()),
-                         GetVesselIndex((*node_iterator)->GetVesselSegments(j)->GetVessel()), G);
+                add_edge(GetVesselIndex((*node_iterator)->GetVesselSegment(0)->GetVessel()),
+                         GetVesselIndex((*node_iterator)->GetVesselSegment(j)->GetVessel()), G);
             }
         }
     }
@@ -668,79 +736,49 @@ void CaVascularNetwork<DIM>::VisualiseVesselConnectivity(std::string output_file
 		}
 	}
 
-
-//    for (node_iterator = nodes.begin(); node_iterator != nodes.end(); node_iterator++)
-//    {
-//        if ((*node_iterator)->GetVesselSegments().size() == 1)
-//        {
-//            if ((*node_iterator)->GetVesselSegments(0)->GetVessel()->GetStartNode()->GetVesselSegments().size() == 1
-//                    && (*node_iterator)->GetVesselSegments(0)->GetVessel()->GetEndNode()->GetVesselSegments().size() == 1)
-//            {
-//                add_edge(GetVesselIndex((*node_iterator)->GetVesselSegments(0)->GetVessel()),
-//                         GetVesselIndex((*node_iterator)->GetVesselSegments(0)->GetVessel()), G);
-//            }
-//        }
-//    }
-
     std::ofstream outf(output_filename.c_str());
 
     boost::dynamic_properties dp;
     dp.property("node_id", get(boost::vertex_index, G));
     write_graphviz_dp(outf, G, dp);
-
 }
 
-//
-//template <unsigned DIM>
-//bool CaVascularNetwork<DIM>::ConnectedToInputNode(boost::shared_ptr<VascularNode<DIM> > node)
-//{
-//
-//    if (node->GetBooleanData("IsInputNode"))
-//    {
-//        return true;
-//    }
-//
-//    // construct graph representation of vessel network
-//    typedef boost::adjacency_list<boost::vecS,boost::vecS,boost::undirectedS> Graph;
-//
-//    Graph G;
-//
-//    for (unsigned i = 0; i < GetNumberOfVesselsInNetwork(); i++)
-//    {
-//        add_edge(GetNodeID(GetVessel(i)->GetNode1()),GetNodeID(GetVessel(i)->GetNode2()), G);
-//    }
-//
-//    // typedefs
-//    typedef boost::graph_traits<Graph>::vertices_size_type Size;
-//
-//    int connectedToInputNode = 0;
-//
-//    for (unsigned j = 0; j < GetNumberOfNodesInNetwork(); j++)
-//    {
-//
-//        if (GetNode(j)->GetBooleanData("IsInputNode"))
-//        {
-//            // a vector to hold the discover time property for each vertex
-//            std::vector<Size> dtime(num_vertices(G));
-//
-//            Size time = 0;
-//            bfs_time_visitor<Size*>vis(&dtime[0], time);
-//
-//            // use breadth first search to establish discovery time of all nodes from node1
-//            // this assigns a discovery time to dTime for each node (index relates to nodeID)
-//            // dTime is zero for node1 and all other nodes that are not connected to node1
-//            // dTime is nonzero for all nodes that are connected to node1 (except node 1 itself)
-//            breadth_first_search(G,vertex(j,G), boost::visitor(vis));
-//
-//            if (dtime[GetNodeID(node)] > 0)
-//            {
-//                connectedToInputNode++;
-//            }
-//        }
-//    }
-//    return (connectedToInputNode > 0);
-//}
-//
+template <unsigned DIM>
+std::set<boost::shared_ptr<VascularNode<DIM> > > CaVascularNetwork<DIM>::DeepCopyVessels()
+{
+    std::set<boost::shared_ptr<VascularNode<DIM> > >  nodes;
+
+    // Deep copy each of the vessels
+    // loop through the vessels, segments and nodes and recreate new instances
+    typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator vessel_iter;
+    typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator segment_iter;
+    std::vector<boost::shared_ptr<CaVessel<DIM> > > new_vessels;
+
+    for(vessel_iter = mVessels.begin(); vessel_iter != mVessels.end(); vessel_iter++)
+    {
+        std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > new_segments;
+        std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = (*vessel_iter)->GetSegments();
+
+        for(segment_iter = segments.begin(); segment_iter != segments.end(); segment_iter++)
+        {
+            ChastePoint<DIM> node0_location = (*segment_iter)->GetNode(0)->GetLocation();
+            ChastePoint<DIM> node1_location = (*segment_iter)->GetNode(1)->GetLocation();
+
+            boost::shared_ptr<VascularNode<DIM> > pNode0(VascularNode<DIM>::Create(node0_location));
+            boost::shared_ptr<VascularNode<DIM> > pNode1(VascularNode<DIM>::Create(node1_location));
+            nodes.insert(pNode0);
+            nodes.insert(pNode1);
+
+            boost::shared_ptr<CaVesselSegment<DIM> > pSegment(CaVesselSegment<DIM>::Create(pNode0, pNode1));
+            new_segments.push_back(pSegment);
+        }
+        boost::shared_ptr<CaVessel<DIM> > pVessel(CaVessel<DIM>::Create(new_segments));
+        new_vessels.push_back(pVessel);
+    }
+    AddVessels(new_vessels);
+
+    return nodes;
+}
 
 // Explicit instantiation
 template class CaVascularNetwork<2>;

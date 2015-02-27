@@ -54,9 +54,13 @@ public:
 
     ~VasculatureData();
 
-    std::map<std::string, boost::any> & GetMap();
+    std::map<std::string, boost::any> GetMap() const;
 
-    template<typename T> T GetData(const std::string& variableName);
+    template<typename T> T GetData(const std::string& variableName) const;
+    
+    std::vector<std::string> GetKeys(bool castable_to_double = false) const;
+
+    bool HasKey(const std::string& rKey) const;
 
     template<typename T> bool IsType(const std::string& variableName);
 
@@ -68,7 +72,7 @@ public:
 
 // Templated methods are defined here as explicit instantiation would limit the types that can
 // be stored in the data maps.
-template<typename T> T VasculatureData::GetData(const std::string& variableName)
+template<typename T> T VasculatureData::GetData(const std::string& variableName) const
 {
 	// Check if the key is in the map
 	std::map<std::string, boost::any>::const_iterator it = mDataMap.find(variableName);

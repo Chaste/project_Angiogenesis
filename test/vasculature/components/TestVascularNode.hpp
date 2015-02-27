@@ -54,65 +54,74 @@ public:
 
 	void TestConstructor() throw(Exception)
     {
-        // Make some nodes using both methods
-        VascularNode<2> node(ChastePoint<2> (1.0, 1.0));
-        MAKE_VN_PTR_ARGS(VascularNode<2>, pNode, (ChastePoint<2> (1.0, 1.0)));
+        // Make some nodes and node pointers using explicit coordinates and Chaste points
+		VascularNode<2> node1(0.0, 0.0);
+        VascularNode<3> node2(ChastePoint<3> (1.0, 1.0, 1.0));
+        MAKE_VN_PTR_ARGS(VascularNode<3>, pNode3, (2.0, 2.0, 3.0));
+        MAKE_VN_PTR_ARGS(VascularNode<2>, pNode4, (ChastePoint<2> (3.0, 4.0)));
 
         // Test simple Getters and Setters
-        ChastePoint<2> point(3.0, 4.0);
-        node.SetLocation(point);
-        TS_ASSERT(node.IsCoincident(point));
-        pNode->SetLocation(point);
-        TS_ASSERT(pNode->IsCoincident(point));
-
-        node.SetId(5u);
+        node1.SetId(5u);
         std::string label = "Inlet";
-        node.SetLabel(label);
-        TS_ASSERT_EQUALS(node.GetId(), 5u);
-        TS_ASSERT_EQUALS(node.rGetLabel().c_str(), label.c_str());
+        node1.SetLabel(label);
+        TS_ASSERT_EQUALS(node1.GetId(), 5u);
+        TS_ASSERT_EQUALS(node1.rGetLabel().c_str(), label.c_str());
 
-        // Test distance calculation
+        // Test setting location and coincident methods
+        ChastePoint<2> point(3.0, 4.0);
+        node1.SetLocation(point);
+        TS_ASSERT(node1.IsCoincident(point));
+        TS_ASSERT(node1.IsCoincident(pNode4));
+
+        // Test distance calculation method
         ChastePoint<2> test_point(2.0, 2.0);
-        TS_ASSERT_DELTA(node.GetDistance(test_point), std::sqrt(5.0), 1.e-6);
-
-        VascularNode<3> node2(ChastePoint<3> (1.0, 1.0, 1.0));
         ChastePoint<3> test_point2(2.0, 2.0, 2.0);
+        TS_ASSERT_DELTA(node1.GetDistance(test_point), std::sqrt(5.0), 1.e-6);
         TS_ASSERT_DELTA(node2.GetDistance(test_point2), std::sqrt(3.0), 1.e-6);
     }
 
 	void TestAccessingData() throw(Exception)
     {
         // Make a node
-        ChastePoint<3> point(1.0, 1.0, 2.0);
-        VascularNode<3> node(point);
+        VascularNode<3> node(1.0, 1.0, 2.0);
 
         // Set some data
         double radius = 5.5;
-        node.GetDataContainer().SetData("radius", radius);
-        TS_ASSERT_DELTA(node.GetDataContainer().GetData<double>("radius"), radius, 1.e-6);
+        std::string key ="radius";
+        node.SetData(key, radius);
+
+        // Check the key is set
+        TS_ASSERT(node.HasDataKey("radius"));
+        TS_ASSERT_EQUALS(node.GetDataKeys()[0].c_str(), key.c_str());
+
+        bool value_is_castable_to_double = true;
+        TS_ASSERT_EQUALS(node.GetDataKeys(value_is_castable_to_double)[0].c_str(), key.c_str());
+
+        // Check the key value is retrieved
+        TS_ASSERT_DELTA(node.GetData<double>("radius"), radius, 1.e-6);
+        TS_ASSERT_DELTA(node.rGetDataContainer().GetData<double>("radius"), radius, 1.e-6);
 
         // Replace the existing data container with a new one
-        VasculatureData dataContainer;
+        VasculatureData data_container;
         double haematocrit = 7.5;
-        dataContainer.SetData("haematocrit", haematocrit);
-        node.SetDataContainer(dataContainer);
-        TS_ASSERT_DELTA(node.GetDataContainer().GetData<double>("haematocrit"), haematocrit, 1.e-6);
+        data_container.SetData("haematocrit", haematocrit);
+        node.SetDataContainer(data_container);
+        TS_ASSERT_DELTA(node.GetData<double>("haematocrit"), haematocrit, 1.e-6);
     }
 
 	void TestAddingAndRemovingVesselSegments() throw(Exception)
     {
         // Make some nodes
-        ChastePoint<2> point1(4.0, 3.0);
-        ChastePoint<2> point2(4.0, 5.0);
-        ChastePoint<2> point3(5.0, 6.0);
-
-        MAKE_VN_PTR_ARGS(VascularNode<2>, pNode, (ChastePoint<2> (4.0, 3.0)));
-        MAKE_VN_PTR_ARGS(VascularNode<2>, pNode2, (ChastePoint<2> (4.0, 5.0)));
+        MAKE_VN_PTR_ARGS(VascularNode<2>, pNode, (4.0, 3.0));
+        MAKE_VN_PTR_ARGS(VascularNode<2>, pNode2, (4.0, 5.0));
         MAKE_VN_PTR_ARGS(VascularNode<2>, pNode3, (0.5, 0.6));
 
         // Make some vessel segments
         MAKE_VN_PTR_ARGS(CaVesselSegment<2>, pVesselSegment, (pNode, pNode2));
         MAKE_VN_PTR_ARGS(CaVesselSegment<2>, pVesselSegment2, (pNode2, pNode3));
+
+        TS_ASSERT(pNode->IsAttachedTo(pVesselSegment));
+        TS_ASSERT(!pNode3->IsAttachedTo(pVesselSegment));
 
         TS_ASSERT_DELTA(pVesselSegment->GetLength(), 2.0, 1.e-6);
 
@@ -121,9 +130,9 @@ public:
         TS_ASSERT_EQUALS(pNode2->GetNumberOfSegments(), 2u);
 
         // Check that the segments are correctly retrieved from the node.
-        TS_ASSERT(pNode2->IsCoincident(pNode2->GetVesselSegments(0)->GetNode(1)));
+        TS_ASSERT(pNode2->IsCoincident(pNode2->GetVesselSegment(0)->GetNode(1)));
         TS_ASSERT(pNode2->IsCoincident(pNode2->GetVesselSegments()[0]->GetNode(1)));
-        TS_ASSERT_THROWS_THIS(pNode2->GetVesselSegments(3), "Attempted to access a segment with an out of range index.");
+        TS_ASSERT_THROWS_THIS(pNode2->GetVesselSegment(3), "Attempted to access a segment with an out of range index.");
 
         // Check that the vessel segment connectivity is updated when a node is replaced.
         pVesselSegment2->ReplaceNode(1, pNode);
@@ -137,8 +146,7 @@ public:
     void TestAddingAndRemovingCells() throw(Exception)
     {
         // Make a node
-        ChastePoint<2> point(4.0, 3.0);
-        VascularNode<2> node(point);
+        VascularNode<2> node(4.0, 3.0);
 
         // Create some cells
         std::vector<CellPtr> cells;

@@ -80,15 +80,15 @@ class CaVascularNetwork : public boost::enable_shared_from_this<CaVascularNetwor
 
 private:
 
-	/**
+    /**
        Container for Vessels in the VesselNetwork.
-	 */
-	std::vector<boost::shared_ptr<CaVessel<DIM> > > mVessels;
+     */
+    std::vector<boost::shared_ptr<CaVessel<DIM> > > mVessels;
 
-	/**
-	 * Container for non-spatial node data.
-	 */
-	boost::shared_ptr<VasculatureData> mpDataContainer;
+    /**
+     * Container for non-spatial vessel network data.
+     */
+	VasculatureData mDataContainer;
 
 public:
 
@@ -105,17 +105,27 @@ public:
 	/**
         Adds a vessel to the VesselNetwork.
 	 */
-	void AddVessel(boost::shared_ptr<CaVessel<DIM> > vessel);
+    void AddVessel(boost::shared_ptr<CaVessel<DIM> > pVessel);
 
 	/**
        Adds a collection of vessels to the VesselNetwork
 	 */
 	void AddVessels(std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels);
+	
+    /**
+        Get the node nearest to the specified location
+     */
+     boost::shared_ptr<VascularNode<DIM> > GetNearestNode(ChastePoint<DIM>& rLocation);
 
-	/**
-       Return true if the input nodes are connected.
-	 */
-	bool Connected(boost::shared_ptr<VascularNode<DIM> > node1, boost::shared_ptr<VascularNode<DIM> > node2);
+     /**
+         Get the segment nearest to the specified location
+      */
+    boost::shared_ptr<CaVesselSegment<DIM> > GetNearestSegment(const ChastePoint<DIM>& rLocation);
+
+     /**
+         Get the segment nearest to the specified location
+      */
+    boost::shared_ptr<CaVessel<DIM> > GetNearestVessel(const ChastePoint<DIM>& rLocation);
 
 	/**
         Return the extents of the vessel network in the form ((xmin, xmax), (ymin, ymax), (zmin, zmax))
@@ -126,27 +136,53 @@ public:
         Return the nodes in the network
 	 */
 	std::set<boost::shared_ptr<VascularNode<DIM> > > GetNodes();
+	
+	/**
+	   Returns the number of nodes in the network.
+	 */
+	unsigned GetNumberOfNodes();
 
+	/**
+	   Returns the number of vessels in the network.
+	 */
+	unsigned GetNumberOfVessels();
+	
+    /**
+        Return the vessel with the specified index in the network
+     */
+    boost::shared_ptr<CaVessel<DIM> > GetVessel(unsigned index);
+    
 	/**
 	    Return the only the nodes at the ends of vessels in the network
 	 */
 	std::set<boost::shared_ptr<VascularNode<DIM> > > GetVesselEndNodes();
 
 	/**
+	   Return the Index of the specified vessel
+	 */
+	unsigned GetVesselIndex(boost::shared_ptr<CaVessel<DIM> > pVessel);
+	
+    /**
         Return the vessels in the network
-	 */
-	std::vector<boost::shared_ptr<CaVessel<DIM> > > GetVessels();
+     */
+    std::vector<boost::shared_ptr<CaVessel<DIM> > > GetVessels();
 
-	/**
-            Return the vessel at index i in the network
-	 */
-	boost::shared_ptr<CaVessel<DIM> > GetVessel(unsigned i);
+    /**
+        Return whether a node is connected to a source node.
+     */
+    bool IsConnected(boost::shared_ptr<VascularNode<DIM> > pSourceNode, boost::shared_ptr<VascularNode<DIM> > pQueryNode);
 
-	/**
-       Returns the number of vessels contained within the network.
-	 */
-	unsigned GetNumberOfVessels();
+    /**
+        Return whether a vector of nodes is connected to a vector of source nodes.
+     */
+    std::vector<std::vector<bool> > IsConnected(std::vector<boost::shared_ptr<VascularNode<DIM> > > sourceNodes, std::vector<boost::shared_ptr<VascularNode<DIM> > > queryNodes);
 
+    /**
+       Merge nodes with the same spatial location. Useful for
+       tidying up networks read from file.
+     */
+    void MergeCoincidentNodes();
+    
 	/**
         Apply the input data to all nodes in the network
 	 */
@@ -157,27 +193,16 @@ public:
 	 */
 	void SetVesselData(VasculatureData data);
 
-	/*
-	 * Translates the network along the provided vector, if a copy is requested the original vessels are copied
-	 * (without original non-spatial data) and the new vessels are translated.
-	 */
-	void Translate(std::vector<double> translation_vector, bool copy = false);
+    /*
+     * Translates the network along the provided vector, if a copy is requested the original vessels are copied
+     * (without original non-spatial data) and the new vessels are translated.
+     */
+    void Translate(const std::vector<double>& rTranslationVector, bool copy = false);
 
-	/**
-       Merge nodes with the same spatial location. Useful for
-       tidying up networks read from file.
-	 */
-	void MergeCoincidentNodes();
-
-	/**
+    /**
      	 Write the VesselNetwork data to a file.
-	 */
-	void WriteToFile(std::string filename, bool geometry_only = false);
-
-	/**
-	 * Returns index of vessel in mVessel.
-	 */
-	unsigned GetVesselIndex(boost::shared_ptr<CaVessel<DIM> > vessel);
+     */
+    void Write(const std::string& rFilename, bool geometryOnly = false);
 
 	/**
 	 * Outputs connectivity of vessels to file in graphviz format (.gv).
@@ -192,69 +217,6 @@ private:
 	 */
 	std::set<boost::shared_ptr<VascularNode<DIM> > > DeepCopyVessels();
 
-
-
-	//    /**
-	//       Return the Index of the specified vessel
-	//     */
-	//    unsigned GetVesselIndex(boost::shared_ptr<CaVessel<DIM> > vessel);
-	//
-
-	//
-	//    /**
-	//       Returns the number of nodes contained within the network.
-	//     */
-	//    unsigned GetNumberOfNodes();
-	//
-	//    /**
-	//       Returns a boost::shared_ptr to this VesselNetwork.
-	//
-	//       @return boost::shared_ptr<CaVascularNetwork<DIM> >
-	//     */
-	//    boost::shared_ptr<CaVascularNetwork<DIM> > Shared();
-	//
-	/**
-		Returns a boost::shared_ptr to the node object with the prescribed location in the spatial
-		mesh.
-	 */
-	//boost::shared_ptr<VascularNode<DIM> > GetNode(ChastePoint<DIM> location);
-
-	/**
-		Return the number of vessels which occupy a particular location in the spatial mesh.
-
-		@param location ChastePoint<DIM>.
-	 */
-	//unsigned GetNumberOfVesselsAtLocation(ChastePoint<DIM> location);
-
-	/**
-            Returns whether there is a node present at the prescribed location.
-	 */
-	// bool NodePresentAtLocation(ChastePoint<DIM> location);
-
-	/**
-            Returns how many nodes are present at a location.
-	 */
-	// unsigned NumberOfNodesPresentAtLocation(ChastePoint<DIM> location);
-
-	/**
-            Checks whether the prescribed vessel is contained within the vessel network.
-	 */
-	//bool IsInNetwork(boost::shared_ptr<CaVessel<DIM> > vessel);
-
-	/**
-            Checks whether the prescribed node is contained within the vessel network.
-	 */
-	//bool IsInNetwork(boost::shared_ptr<VascularNode<DIM> > node);
-
-	/**
-            Return whether a node is connected to a source node.
-	 */
-	//bool QueryNodeConnectivity(std::vector<boost::shared_ptr<VascularNode<DIM> > > source_nodes, boost::shared_ptr<VascularNode<DIM> > query_node);
-
-	/**
-            Return whether a vector of nodes is connected to a source node.
-	 */
-	//bool QueryNodeConnectivity(std::vector<boost::shared_ptr<VascularNode<DIM> > > source_nodes, std::vector<boost::shared_ptr<VascularNode<DIM> > > query_nodes);
 };
 
 #endif /* CAVASCULARNETWORK_HPP_ */
