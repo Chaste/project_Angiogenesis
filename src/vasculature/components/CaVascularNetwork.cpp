@@ -196,6 +196,16 @@ std::set<boost::shared_ptr<VascularNode<DIM> > > CaVascularNetwork<DIM>::GetNode
 }
 
 template <unsigned DIM>
+std::vector<boost::shared_ptr<VascularNode<DIM> > > CaVascularNetwork<DIM>::GetVectorOfNodes()
+{
+	std::vector<boost::shared_ptr<VascularNode<DIM> > > vec_nodes;
+    std::set<boost::shared_ptr<VascularNode<DIM> > >  nodes = GetNodes();
+    std::copy(nodes.begin(), nodes.end(), std::back_inserter(vec_nodes));
+
+    return vec_nodes;
+}
+
+template <unsigned DIM>
 unsigned CaVascularNetwork<DIM>::GetNumberOfNodes()
 {
 	return GetNodes().size();

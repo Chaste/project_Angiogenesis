@@ -138,6 +138,11 @@ public:
 	std::set<boost::shared_ptr<VascularNode<DIM> > > GetNodes();
 	
 	/**
+        Return the nodes in the network in the form of a vector
+	 */
+	std::vector<boost::shared_ptr<VascularNode<DIM> > > GetVectorOfNodes();
+
+	/**
 	   Returns the number of nodes in the network.
 	 */
 	unsigned GetNumberOfNodes();
