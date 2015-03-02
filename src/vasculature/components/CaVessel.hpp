@@ -267,15 +267,4 @@ private:
 	boost::shared_ptr<CaVessel<DIM> > Shared();
 };
 
-template<unsigned DIM>
-template<typename T> T CaVessel<DIM>::GetData(const std::string& variableName)
-{
-	return mDataContainer.GetData<T>(variableName);
-}
-
-template<unsigned DIM>
-template<typename T> void CaVessel<DIM>::SetData(const std::string& variableName, T value)
-{
-	mDataContainer.SetData(variableName, value);
-}
 #endif /* CAVESSEL_HPP_ */

@@ -43,6 +43,26 @@ VasculatureData::~VasculatureData()
 {
 }
 
+template<typename T> T VasculatureData::GetData(const std::string& variableName) const
+{
+	// Check if the key is in the map
+	std::map<std::string, boost::any>::const_iterator it = mDataMap.find(variableName);
+	if (it == mDataMap.end())
+	{
+		EXCEPTION("No key: '" << variableName << "' found in property register.");
+	}
+
+	// Try to return the data in the form of the requested type
+	try
+	{
+		return boost::any_cast<T>(it->second);
+	}
+	catch(const boost::bad_any_cast&)
+	{
+		EXCEPTION("Invalid type specified for the requested key: " << variableName);
+	}
+}
+
 std::vector<std::string> VasculatureData::GetKeys(bool castable_to_double) const
 {
 	std::vector<std::string> keys;
@@ -81,12 +101,42 @@ bool VasculatureData::HasKey(const std::string& rKey) const
 	return true;
 }
 
+template<typename T> bool VasculatureData::IsType(const std::string& variableName)
+{
+	try
+	{
+		boost::any_cast<T>(mDataMap[variableName]);
+		return true;
+	}
+	catch(const boost::bad_any_cast&)
+	{
+		return false;
+	}
+}
+
 void VasculatureData::SetMap(std::map<std::string, boost::any> map)
 {
 	mDataMap = map;
 }
 
-void VasculatureData::SetData(const std::string& variableName, const boost::any& value)
+template<typename T> void VasculatureData::SetData(const std::string& variableName, T value)
 {
 	mDataMap[variableName] = value;
 }
+
+// Explicit instantiation
+
+template bool VasculatureData::GetData<bool>(const std::string& variableName) const;
+template double VasculatureData::GetData<double>(const std::string& variableName) const;
+template unsigned VasculatureData::GetData<unsigned>(const std::string& variableName) const;
+template std::vector<double> VasculatureData::GetData<std::vector<double> >(const std::string& variableName) const;
+
+template bool VasculatureData::IsType<bool>(const std::string& variableName);
+template bool VasculatureData::IsType<double>(const std::string& variableName);
+template bool VasculatureData::IsType<unsigned>(const std::string& variableName);
+template bool VasculatureData::IsType<std::vector<double> >(const std::string& variableName);
+
+template void VasculatureData::SetData(const std::string& variableName, bool value);
+template void VasculatureData::SetData(const std::string& variableName, double value);
+template void VasculatureData::SetData(const std::string& variableName, unsigned value);
+template void VasculatureData::SetData(const std::string& variableName, std::vector<double> value);

@@ -82,6 +82,12 @@ const VasculatureData& CaVesselSegment<DIM>::rGetDataContainer() const
 }
 
 template<unsigned DIM>
+template<typename T> T CaVesselSegment<DIM>::GetData(const std::string& variableName)
+{
+	return mDataContainer.GetData<T>(variableName);
+}
+
+template<unsigned DIM>
 std::vector<std::string> CaVesselSegment<DIM>::GetDataKeys(bool castable_to_double) const
 {
 	return mDataContainer.GetKeys(castable_to_double);
@@ -372,6 +378,12 @@ void CaVesselSegment<DIM>::ReplaceNode(unsigned oldNodeIndex, boost::shared_ptr<
 }
 
 template<unsigned DIM>
+template<typename T> void CaVesselSegment<DIM>::SetData(const std::string& variableName, T value)
+{
+	mDataContainer.SetData(variableName, value);
+}
+
+template<unsigned DIM>
 void CaVesselSegment<DIM>::SetDataContainer(const VasculatureData& rDataContainer)
 {
 	mDataContainer = rDataContainer;
@@ -399,3 +411,21 @@ boost::shared_ptr<CaVesselSegment<DIM> > CaVesselSegment<DIM>::Shared()
 // Explicit instantiation
 template class CaVesselSegment<2>;
 template class CaVesselSegment<3>;
+
+template bool CaVesselSegment<2>::GetData<bool>(const std::string& variableName);
+template double CaVesselSegment<2>::GetData<double>(const std::string& variableName);
+template unsigned CaVesselSegment<2>::GetData<unsigned>(const std::string& variableName);
+template std::vector<double> CaVesselSegment<2>::GetData<std::vector<double> >(const std::string& variableName);
+template void CaVesselSegment<2>::SetData(const std::string& variableName, bool value);
+template void CaVesselSegment<2>::SetData(const std::string& variableName, double value);
+template void CaVesselSegment<2>::SetData(const std::string& variableName, unsigned value);
+template void CaVesselSegment<2>::SetData(const std::string& variableName, std::vector<double> value);
+
+template bool CaVesselSegment<3>::GetData<bool>(const std::string& variableName);
+template double CaVesselSegment<3>::GetData<double>(const std::string& variableName);
+template unsigned CaVesselSegment<3>::GetData<unsigned>(const std::string& variableName);
+template std::vector<double> CaVesselSegment<3>::GetData<std::vector<double> >(const std::string& variableName);
+template void CaVesselSegment<3>::SetData(const std::string& variableName, bool value);
+template void CaVesselSegment<3>::SetData(const std::string& variableName, double value);
+template void CaVesselSegment<3>::SetData(const std::string& variableName, unsigned value);
+template void CaVesselSegment<3>::SetData(const std::string& variableName, std::vector<double> value);

@@ -57,14 +57,14 @@ public:
 
     	// Check that the correct type is distinguished
     	TS_ASSERT(data.IsType<double>("radius"));
-    	TS_ASSERT(!data.IsType<std::string>("radius"));
+    	TS_ASSERT(!data.IsType<std::vector<double> >("radius"));
 
     	// Check that the data is correctly returned
     	TS_ASSERT_DELTA(data.GetData<double>("radius"), 12.0, 1.e-6);
 
     	// Check that a suitable Exception is thrown if an incorrect type is
     	// specified.
-    	TS_ASSERT_THROWS_THIS(data.GetData<std::string>("radius"), "Invalid type specified for the requested key: radius");
+    	TS_ASSERT_THROWS_THIS(data.GetData<std::vector<double> >("radius"), "Invalid type specified for the requested key: radius");
 
     	// Check that a suitable Exception is thrown if a non-existing key is requested
     	TS_ASSERT_THROWS_THIS(data.GetData<double>("nonsense"), "No key: 'nonsense' found in property register.");

@@ -303,16 +303,4 @@ private:
 
 };
 
-template<unsigned DIM>
-template<typename T> T VascularNode<DIM>::GetData(const std::string& variableName)
-{
-	return mDataContainer.GetData<T>(variableName);
-}
-
-template<unsigned DIM>
-template<typename T> void VascularNode<DIM>::SetData(const std::string& variableName, T value)
-{
-	mDataContainer.SetData(variableName, value);
-}
-
 #endif /* VASCULARNODE_HPP_ */

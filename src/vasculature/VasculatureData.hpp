@@ -66,43 +66,8 @@ public:
 
     void SetMap(std::map<std::string, boost::any> map);
 
-    void SetData(const std::string& variableName, const boost::any& value);
+    template<typename T> void SetData(const std::string& variableName, T value);
 
 };
-
-// Templated methods are defined here as explicit instantiation would limit the types that can
-// be stored in the data maps.
-template<typename T> T VasculatureData::GetData(const std::string& variableName) const
-{
-	// Check if the key is in the map
-	std::map<std::string, boost::any>::const_iterator it = mDataMap.find(variableName);
-	if (it == mDataMap.end())
-	{
-		EXCEPTION("No key: '" << variableName << "' found in property register.");
-	}
-
-	// Try to return the data in the form of the requested type
-	try
-	{
-		return boost::any_cast<T>(it->second);
-	}
-	catch(const boost::bad_any_cast&)
-	{
-		EXCEPTION("Invalid type specified for the requested key: " << variableName);
-	}
-}
-
-template<typename T> bool VasculatureData::IsType(const std::string& variableName)
-{
-	try
-	{
-		boost::any_cast<T>(mDataMap[variableName]);
-		return true;
-	}
-	catch(const boost::bad_any_cast&)
-	{
-		return false;
-	}
-}
 
 #endif /* VASCULATUREDATA_HPP_ */

@@ -87,28 +87,28 @@ public:
     		{
     			if((*vessel_iterator)->GetStartNode()->GetLocation()[1] >  y_middle)
     			{
-    				(*vessel_iterator)->GetStartNode()->GetDataContainer().SetData("Is Input", true);
+    				(*vessel_iterator)->GetStartNode()->SetData("Is Input", true);
     			}
     		}
     		if((*vessel_iterator)->GetEndNode()->GetNumberOfSegments() == 1)
     		{
     			if((*vessel_iterator)->GetEndNode()->GetLocation()[1] >  y_middle)
     			{
-    				(*vessel_iterator)->GetEndNode()->GetDataContainer().SetData("Is Input", true);
+    				(*vessel_iterator)->GetEndNode()->SetData("Is Input", true);
     			}
     		}
     		if((*vessel_iterator)->GetStartNode()->GetNumberOfSegments() == 1)
     		{
     			if((*vessel_iterator)->GetStartNode()->GetLocation()[1] <=  y_middle)
     			{
-    				(*vessel_iterator)->GetStartNode()->GetDataContainer().SetData("Is Output", true);
+    				(*vessel_iterator)->GetStartNode()->SetData("Is Output", true);
     			}
     		}
     		if((*vessel_iterator)->GetEndNode()->GetNumberOfSegments() == 1)
     		{
     			if((*vessel_iterator)->GetEndNode()->GetLocation()[1] <=  y_middle)
     			{
-    				(*vessel_iterator)->GetEndNode()->GetDataContainer().SetData("Is Output", true);
+    				(*vessel_iterator)->GetEndNode()->SetData("Is Output", true);
     			}
     		}
 
@@ -120,7 +120,7 @@ public:
 		// Write the network to file
 		OutputFileHandler output_file_handler("TestSimpleFlowSolver", false);
 		std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("HexagonalVesselNetwork.vtp");
-		vascular_network->WriteToFile(output_filename);
+		vascular_network->Write(output_filename);
 	}
 
 };

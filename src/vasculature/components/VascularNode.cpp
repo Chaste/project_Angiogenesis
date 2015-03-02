@@ -125,6 +125,12 @@ const VasculatureData& VascularNode<DIM>::rGetDataContainer()
 }
 
 template<unsigned DIM>
+template<typename T> T VascularNode<DIM>::GetData(const std::string& variableName)
+{
+	return mDataContainer.GetData<T>(variableName);
+}
+
+template<unsigned DIM>
 std::vector<std::string> VascularNode<DIM>::GetDataKeys(bool castable_to_double) const
 {
 	return mDataContainer.GetKeys(castable_to_double);
@@ -240,6 +246,25 @@ bool VascularNode<DIM>::IsCoincident(const boost::shared_ptr<VascularNode<DIM> >
 }
 
 template<unsigned DIM>
+void VascularNode<DIM>::RemoveCell()
+{
+	mpCell = CellPtr();
+}
+
+template<unsigned DIM>
+void VascularNode<DIM>::RemoveSegment(boost::shared_ptr<CaVesselSegment<DIM> > pVesselSegment)
+{
+	for(unsigned i = 0; i < mVesselSegments.size(); i++)
+	{
+		if (mVesselSegments[i].lock() == pVesselSegment)
+		{
+			mVesselSegments.erase(mVesselSegments.begin() + i);
+			i--;
+		}
+	}
+}
+
+template<unsigned DIM>
 void VascularNode<DIM>::SetCell(CellPtr pCell)
 {
 	if(mpCellPopulation)
@@ -284,6 +309,12 @@ void VascularNode<DIM>::SetDataContainer(const VasculatureData& rDataContainer)
 }
 
 template<unsigned DIM>
+template<typename T> void VascularNode<DIM>::SetData(const std::string& variableName, T value)
+{
+	mDataContainer.SetData(variableName, value);
+}
+
+template<unsigned DIM>
 void VascularNode<DIM>::SetId(unsigned id)
 {
 	mId = id;
@@ -305,26 +336,26 @@ void VascularNode<DIM>::SetLocation(const ChastePoint<DIM>& rLocation)
 	mLocation = rLocation;
 }
 
-template<unsigned DIM>
-void VascularNode<DIM>::RemoveCell()
-{
-	mpCell = CellPtr();
-}
-
-template<unsigned DIM>
-void VascularNode<DIM>::RemoveSegment(boost::shared_ptr<CaVesselSegment<DIM> > pVesselSegment)
-{
-	for(unsigned i = 0; i < mVesselSegments.size(); i++)
-	{
-		if (mVesselSegments[i].lock() == pVesselSegment)
-		{
-			mVesselSegments.erase(mVesselSegments.begin() + i);
-			i--;
-		}
-	}
-}
-
 // Explicit instantiation
 template class VascularNode<2>;
 template class VascularNode<3>;
+
+template bool VascularNode<2>::GetData<bool>(const std::string& variableName);
+template double VascularNode<2>::GetData<double>(const std::string& variableName);
+template unsigned VascularNode<2>::GetData<unsigned>(const std::string& variableName);
+template std::vector<double> VascularNode<2>::GetData<std::vector<double> >(const std::string& variableName);
+template void VascularNode<2>::SetData(const std::string& variableName, bool value);
+template void VascularNode<2>::SetData(const std::string& variableName, double value);
+template void VascularNode<2>::SetData(const std::string& variableName, unsigned value);
+template void VascularNode<2>::SetData(const std::string& variableName, std::vector<double> value);
+
+template bool VascularNode<3>::GetData<bool>(const std::string& variableName);
+template double VascularNode<3>::GetData<double>(const std::string& variableName);
+template unsigned VascularNode<3>::GetData<unsigned>(const std::string& variableName);
+template std::vector<double> VascularNode<3>::GetData<std::vector<double> >(const std::string& variableName);
+template void VascularNode<3>::SetData(const std::string& variableName, bool value);
+template void VascularNode<3>::SetData(const std::string& variableName, double value);
+template void VascularNode<3>::SetData(const std::string& variableName, unsigned value);
+template void VascularNode<3>::SetData(const std::string& variableName, std::vector<double> value);
+
 

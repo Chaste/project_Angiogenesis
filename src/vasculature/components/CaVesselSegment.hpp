@@ -255,16 +255,4 @@ private:
 	void RemoveVessel();
 };
 
-template<unsigned DIM>
-template<typename T> T CaVesselSegment<DIM>::GetData(const std::string& variableName)
-{
-	return mDataContainer.GetData<T>(variableName);
-}
-
-template<unsigned DIM>
-template<typename T> void CaVesselSegment<DIM>::SetData(const std::string& variableName, T value)
-{
-	mDataContainer.SetData(variableName, value);
-}
-
 #endif /* CAVASCULARNETWORK_HPP_ */
