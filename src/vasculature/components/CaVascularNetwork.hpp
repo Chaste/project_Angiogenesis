@@ -137,6 +137,11 @@ public:
 	 */
 	std::set<boost::shared_ptr<VascularNode<DIM> > > GetNodes();
 	
+    /**
+        Return the node with the prescribed index
+     */
+    boost::shared_ptr<VascularNode<DIM> > GetNode(unsigned index);
+
 	/**
         Return the nodes in the network in the form of a vector
 	 */
@@ -167,6 +172,16 @@ public:
 	 */
 	unsigned GetVesselIndex(boost::shared_ptr<CaVessel<DIM> > pVessel);
 	
+    /**
+       Return the Index of the specified vessel segment
+     */
+    unsigned GetVesselSegmentIndex(boost::shared_ptr<CaVesselSegment<DIM> > pVesselSegment);
+
+    /**
+       Return the vessel segments in the network
+     */
+    std::vector<boost::shared_ptr<CaVessel<DIM> > > GetVesselSegments();
+
     /**
         Return the vessels in the network
      */

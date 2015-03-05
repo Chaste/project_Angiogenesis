@@ -49,14 +49,14 @@ class TestSimpleFlowSolver : public CxxTest::TestSuite
 {
 public:
 
-	void TestFlowThroughHexagonalNetwork() throw(Exception)
-	{
-		// Specify the network dimensions
-		double vessel_length = 80.0;
+    void TestFlowThroughHexagonalNetwork() throw(Exception)
+    {
+        // Specify the network dimensions
+        double vessel_length = 80.0;
 
-		// Generate the network
-		VasculatureGenerator<2> vascular_network_generator;
-		boost::shared_ptr<CaVascularNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(1000,1000,vessel_length);
+        // Generate the network
+        VasculatureGenerator<2> vascular_network_generator;
+        boost::shared_ptr<CaVascularNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(1000,1000,vessel_length);
 
         VasculatureData data;
         double impedance = 10.0;
@@ -64,6 +64,7 @@ public:
         data.SetData("Impedance", impedance);
         data.SetData("Flow Rate", flow_rate);
         vascular_network->SetVesselData(data);
+        vascular_network->SetSegmentData(data);
 
         VasculatureData node_data;
         double pressure = 10.0;
@@ -81,47 +82,51 @@ public:
 
         std::vector<boost::shared_ptr<CaVessel<2> > > vessels = vascular_network->GetVessels();
 
-    	for (vessel_iterator = vessels.begin(); vessel_iterator != vessels.end(); vessel_iterator++)
-    	{
-    		if((*vessel_iterator)->GetStartNode()->GetNumberOfSegments() == 1)
-    		{
-    			if((*vessel_iterator)->GetStartNode()->GetLocation()[1] >  y_middle)
-    			{
-    				(*vessel_iterator)->GetStartNode()->SetData("Is Input", true);
-    			}
-    		}
-    		if((*vessel_iterator)->GetEndNode()->GetNumberOfSegments() == 1)
-    		{
-    			if((*vessel_iterator)->GetEndNode()->GetLocation()[1] >  y_middle)
-    			{
-    				(*vessel_iterator)->GetEndNode()->SetData("Is Input", true);
-    			}
-    		}
-    		if((*vessel_iterator)->GetStartNode()->GetNumberOfSegments() == 1)
-    		{
-    			if((*vessel_iterator)->GetStartNode()->GetLocation()[1] <=  y_middle)
-    			{
-    				(*vessel_iterator)->GetStartNode()->SetData("Is Output", true);
-    			}
-    		}
-    		if((*vessel_iterator)->GetEndNode()->GetNumberOfSegments() == 1)
-    		{
-    			if((*vessel_iterator)->GetEndNode()->GetLocation()[1] <=  y_middle)
-    			{
-    				(*vessel_iterator)->GetEndNode()->SetData("Is Output", true);
-    			}
-    		}
+        for (vessel_iterator = vessels.begin(); vessel_iterator != vessels.end(); vessel_iterator++)
+        {
+            if((*vessel_iterator)->GetStartNode()->GetNumberOfSegments() == 1)
+            {
+                if((*vessel_iterator)->GetStartNode()->GetLocation()[1] >  y_middle)
+                {
+                    (*vessel_iterator)->GetStartNode()->GetDataContainer().SetData("Is Input", true);
+                    (*vessel_iterator)->GetStartNode()->GetDataContainer().SetData("Pressure", 3393);
+                }
+            }
+            if((*vessel_iterator)->GetEndNode()->GetNumberOfSegments() == 1)
+            {
+                if((*vessel_iterator)->GetEndNode()->GetLocation()[1] >  y_middle)
+                {
+                    (*vessel_iterator)->GetEndNode()->GetDataContainer().SetData("Is Input", true);
+                    (*vessel_iterator)->GetEndNode()->GetDataContainer().SetData("Pressure", 3393);
+                }
+            }
+            if((*vessel_iterator)->GetStartNode()->GetNumberOfSegments() == 1)
+            {
+                if((*vessel_iterator)->GetStartNode()->GetLocation()[1] <=  y_middle)
+                {
+                    (*vessel_iterator)->GetStartNode()->GetDataContainer().SetData("Is Output", true);
+                    (*vessel_iterator)->GetStartNode()->GetDataContainer().SetData("Pressure", 1993);
+                }
+            }
+            if((*vessel_iterator)->GetEndNode()->GetNumberOfSegments() == 1)
+            {
+                if((*vessel_iterator)->GetEndNode()->GetLocation()[1] <=  y_middle)
+                {
+                    (*vessel_iterator)->GetEndNode()->GetDataContainer().SetData("Is Output", true);
+                    (*vessel_iterator)->GetEndNode()->GetDataContainer().SetData("Pressure", 1993);
+                }
+            }
 
-    	}
+        }
 
-		SimpleFlowSolver<2> solver;
-		solver.Implement(vascular_network);
+        SimpleFlowSolver<2> solver;
+        solver.Implement(vascular_network);
 
-		// Write the network to file
-		OutputFileHandler output_file_handler("TestSimpleFlowSolver", false);
-		std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("HexagonalVesselNetwork.vtp");
-		vascular_network->Write(output_filename);
-	}
+        // Write the network to file
+        OutputFileHandler output_file_handler("TestSimpleFlowSolver", false);
+        std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("HexagonalVesselNetwork.vtp");
+        vascular_network->WriteToFile(output_filename);
+    }
 
 };
 
