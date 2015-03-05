@@ -85,16 +85,10 @@ public:
 
 		VasculatureData data;
 		double impedance = 10.0;
-		double flow_rate = 0.0;
 		data.SetData("Impedance", impedance);
-		data.SetData("Flow Rate", flow_rate);
-		data.SetData("Absolute Flow Rate", flow_rate);
-		p_vascular_network->SetVesselData(data);
 		p_vascular_network->SetSegmentData(data);
 
 		VasculatureData node_data;
-		double pressure = 10.0;
-		node_data.SetData("Pressure", pressure);
 		bool is_input = false;
 		node_data.SetData("Is Input", is_input);
 		bool is_output = false;
@@ -116,6 +110,10 @@ public:
 
 		TS_ASSERT_DELTA(p_vessel->GetData<double>("Flow Rate"),(3393-1000.5)/impedance,1e-6);
 		TS_ASSERT_DELTA(p_segment->GetData<double>("Flow Rate"),(3393-1000.5)/impedance,1e-6);
+
+		p_segment->SetData("Impedance",0.0);
+
+		TS_ASSERT_THROWS_THIS(solver.Implement(p_vascular_network),"Impedance should be a positive number.");
 
 	}
 
@@ -156,16 +154,10 @@ public:
 
 		VasculatureData data;
 		double impedance = 10.0;
-		double flow_rate = 0.0;
-		data.SetData("Flow Rate", flow_rate);
-		data.SetData("Absolute Flow Rate", flow_rate);
-		p_vascular_network->SetVesselData(data);
 		data.SetData("Impedance", impedance);
 		p_vascular_network->SetSegmentData(data);
 
 		VasculatureData node_data;
-		double pressure = 10.0;
-		node_data.SetData("Pressure", pressure);
 		bool is_input = false;
 		node_data.SetData("Is Input", is_input);
 		bool is_output = false;
@@ -236,16 +228,10 @@ public:
 
 		VasculatureData data;
 		double impedance = 10.0;
-		double flow_rate = 0.0;
 		data.SetData("Impedance", impedance);
-		data.SetData("Flow Rate", flow_rate);
-		data.SetData("Absolute Flow Rate", flow_rate);
-		p_vascular_network->SetVesselData(data);
 		p_vascular_network->SetSegmentData(data);
 
 		VasculatureData node_data;
-		double pressure = 10.0;
-		node_data.SetData("Pressure", pressure);
 		bool is_input = false;
 		node_data.SetData("Is Input", is_input);
 		bool is_output = false;
@@ -281,11 +267,11 @@ public:
 
 		TS_ASSERT_DELTA(vessels[0]->GetData<double>("Absolute Flow Rate"),(3393-nodes[2]->GetData<double>("Pressure"))/impedance,1e-6);
 		TS_ASSERT_DELTA(vessels[1]->GetData<double>("Absolute Flow Rate"),(3393-nodes[2]->GetData<double>("Pressure"))/impedance,1e-6);
-		TS_ASSERT_DELTA(vessels[2]->GetData<double>("Absolute Flow Rate"),(1000.5-nodes[2]->GetData<double>("Pressure"))/impedance,1e-6);
+		TS_ASSERT_DELTA(vessels[2]->GetData<double>("Absolute Flow Rate"),fabs((1000.5-nodes[2]->GetData<double>("Pressure")))/impedance,1e-6);
 
 		TS_ASSERT_DELTA(p_segment1->GetData<double>("Absolute Flow Rate"),(3393-nodes[2]->GetData<double>("Pressure"))/impedance,1e-6);
 		TS_ASSERT_DELTA(p_segment2->GetData<double>("Absolute Flow Rate"),(3393-nodes[2]->GetData<double>("Pressure"))/impedance,1e-6);
-		TS_ASSERT_DELTA(p_segment3->GetData<double>("Absolute Flow Rate"),(1000.5-nodes[2]->GetData<double>("Pressure"))/impedance,1e-6);
+		TS_ASSERT_DELTA(p_segment3->GetData<double>("Absolute Flow Rate"),fabs((1000.5-nodes[2]->GetData<double>("Pressure")))/impedance,1e-6);
 
 		double kirchoff_residual = vessels[0]->GetData<double>("Flow Rate") + vessels[1]->GetData<double>("Flow Rate") -
 									vessels[2]->GetData<double>("Flow Rate");
@@ -305,16 +291,10 @@ public:
 
 		VasculatureData data;
 		double impedance = 10.0;
-		double flow_rate = 0.0;
 		data.SetData("Impedance", impedance);
-		data.SetData("Flow Rate", flow_rate);
-		data.SetData("Absolute Flow Rate", flow_rate);
-		vascular_network->SetVesselData(data);
 		vascular_network->SetSegmentData(data);
 
 		VasculatureData node_data;
-		double pressure = 10.0;
-		node_data.SetData("Pressure", pressure);
 		bool is_input = false;
 		node_data.SetData("Is Input", is_input);
 		bool is_output = false;
