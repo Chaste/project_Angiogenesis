@@ -154,7 +154,7 @@ public:
      *
      *  @return mDataContainer
      */
-    const VasculatureData& rGetDataContainer();   
+    const VasculatureData& rGetDataContainer();
     
     /**
      *  Return a vector of data keys for the node. Input true if

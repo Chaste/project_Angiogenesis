@@ -94,6 +94,17 @@ public:
         vessel_network.AddVessel(pVessel1);
         vessel_network.AddVessels(vessels);
 
+        std::vector<boost::shared_ptr<VascularNode<3> > > nodeVector = vessel_network.GetVectorOfNodes();
+
+        for (unsigned i = 0; i < nodeVector.size(); i++)
+        {
+        	TS_ASSERT_EQUALS(vessel_network.GetNodeIndex(nodeVector[i]),i);
+        }
+
+        NodePtr3 p_not_in_network = VascularNode<3>::Create(points[0]);
+
+        TS_ASSERT_THROWS_THIS(vessel_network.GetNodeIndex(p_not_in_network),"Node is not in the network.");
+
         TS_ASSERT_EQUALS(vessel_network.GetNodes().size(), 5u);
 
         vessel_network.MergeCoincidentNodes();
@@ -221,6 +232,7 @@ public:
         std::string output_filename4 = output_file_handler.GetOutputDirectoryFullPath().append("ConnectedTestVesselNetwork.gv");
         vessel_network.VisualiseVesselConnectivity(output_filename4);
     }
+
 
 };
 
