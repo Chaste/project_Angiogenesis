@@ -40,6 +40,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SmartPointers.hpp"
 #include "PoiseuilleImpedanceCalculator.hpp"
 #include "VasculatureData.hpp"
+#include "MathsCustomFunctions.hpp"
+
 #include "FakePetscSetup.hpp"
 
 class TestPoiseuilleImpedanceCalculator : public CxxTest::TestSuite
@@ -90,7 +92,7 @@ public:
 
 		calculator.Calculate(p_vascular_network);
 
-		double expected_impedance = 8*viscosity*5/(M_PI*pow(radius,4.0));
+		double expected_impedance = 8*viscosity*5/(M_PI*SmallPow(radius,4u));
 
 		TS_ASSERT_DELTA(p_vessel->GetData<double>("Impedance"),expected_impedance,1e-6);
 		TS_ASSERT_DELTA(p_segment->GetData<double>("Impedance"),expected_impedance,1e-6);

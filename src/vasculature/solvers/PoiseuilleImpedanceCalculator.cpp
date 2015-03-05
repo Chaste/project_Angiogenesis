@@ -11,6 +11,7 @@
 #include "LinearSystem.hpp"
 #include "Exception.hpp"
 #include "ReplicatableVector.hpp"
+#include "MathsCustomFunctions.hpp"
 
 template<unsigned DIM>
 PoiseuilleImpedanceCalculator<DIM>::PoiseuilleImpedanceCalculator()
@@ -46,7 +47,7 @@ void PoiseuilleImpedanceCalculator<DIM>::Calculate(boost::shared_ptr<CaVascularN
 		{
 			EXCEPTION("Viscosity should be a positive number.");
 		}
-		double impedance = 8*segments[segIndex]->template GetData<double>("Viscosity")*length/(M_PI*pow(segments[segIndex]->template GetData<double>("Radius"),4.0));
+		double impedance = 8*segments[segIndex]->template GetData<double>("Viscosity")*length/(M_PI*SmallPow(segments[segIndex]->template GetData<double>("Radius"),4u));
 
 		segments[segIndex]->SetData("Impedance",impedance);
 	}
