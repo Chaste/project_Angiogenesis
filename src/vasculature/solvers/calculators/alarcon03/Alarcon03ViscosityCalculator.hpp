@@ -33,33 +33,29 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef SIMPLEFLOWSOLVER_HPP_
-#define SIMPLEFLOWSOLVER_HPP_
+#ifndef _Alarcon03ViscosityCalculator_hpp
+#define _Alarcon03ViscosityCalculator_hpp
 
 #include <boost/shared_ptr.hpp>
 #include "CaVascularNetwork.hpp"
 
 template<unsigned DIM>
-class SimpleFlowSolver
+class Alarcon03ViscosityCalculator
 {
-
+    
 public:
+    
+    // constructor
+    Alarcon03ViscosityCalculator();
 
-	/**
-	 * Constructor.
-	 */
-	SimpleFlowSolver();
-
-	/**
-	 * Destructor.
-	 */
-	~SimpleFlowSolver();
-
-	/**
-	 * Implement flow solver;
-	 */
-	void Implement(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
-
+    /**
+     *  destructor.
+     */
+    ~Alarcon03ViscosityCalculator();
+    
+    // method for performing the calculation
+    void Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
+    
 };
 
-#endif /* SIMPLEFLOWSOLVER_HPP_ */
+#endif

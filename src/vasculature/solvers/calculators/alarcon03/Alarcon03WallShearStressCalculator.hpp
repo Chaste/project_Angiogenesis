@@ -33,33 +33,35 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef SIMPLEFLOWSOLVER_HPP_
-#define SIMPLEFLOWSOLVER_HPP_
+#ifndef _Alarcon03WallShearStressCalculator_hpp
+#define _Alarcon03WallShearStressCalculator_hpp
 
-#include <boost/shared_ptr.hpp>
+#include "boost/shared_ptr.hpp"
 #include "CaVascularNetwork.hpp"
 
+
+// todo replace with std version
+#ifndef PI
+#define PI 3.14159
+#endif
+
 template<unsigned DIM>
-class SimpleFlowSolver
+class Alarcon03WallShearStressCalculator
 {
-
+    
 public:
-
-	/**
-	 * Constructor.
-	 */
-	SimpleFlowSolver();
-
-	/**
-	 * Destructor.
-	 */
-	~SimpleFlowSolver();
-
-	/**
-	 * Implement flow solver;
-	 */
-	void Implement(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
+    
+    // constructor
+    Alarcon03WallShearStressCalculator();
+    
+    /**
+     *  destructor.
+     */
+    ~Alarcon03WallShearStressCalculator();
+    
+    // method for performing the Calculator
+    void Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
 
 };
 
-#endif /* SIMPLEFLOWSOLVER_HPP_ */
+#endif

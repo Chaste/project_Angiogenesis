@@ -33,33 +33,37 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef SIMPLEFLOWSOLVER_HPP_
-#define SIMPLEFLOWSOLVER_HPP_
-
-#include <boost/shared_ptr.hpp>
-#include "CaVascularNetwork.hpp"
+#include "Alarcon03WallShearStressCalculator.hpp"
 
 template<unsigned DIM>
-class SimpleFlowSolver
+Alarcon03WallShearStressCalculator<DIM>::Alarcon03WallShearStressCalculator()
 {
+    
+}
 
-public:
+template<unsigned DIM>
+Alarcon03WallShearStressCalculator<DIM>::~Alarcon03WallShearStressCalculator()
+{
+    
+}
 
-	/**
-	 * Constructor.
-	 */
-	SimpleFlowSolver();
+template<unsigned DIM>
+void Alarcon03WallShearStressCalculator<DIM>::Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork)
+{
+    
+	std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
 
-	/**
-	 * Destructor.
-	 */
-	~SimpleFlowSolver();
+	for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
+	{
+		double radius = segments[segment_index]->template GetData<double>("Radius");
+		double flow_rate = segments[segment_index]->template GetData<double>("Absolute Flow Rate");
+		double viscosity = segments[segment_index]->template GetData<double>("Viscosity");
 
-	/**
-	 * Implement flow solver;
-	 */
-	void Implement(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
+	    double wall_shear_stress = 8.0 * viscosity * flow_rate / (PI * pow(radius, 3));
+	    segments[segment_index]->SetData("Wall Shear Stress", wall_shear_stress);
+	}
+}
 
-};
-
-#endif /* SIMPLEFLOWSOLVER_HPP_ */
+// Explicit instantiation
+template class Alarcon03WallShearStressCalculator<2>;
+template class Alarcon03WallShearStressCalculator<3>;

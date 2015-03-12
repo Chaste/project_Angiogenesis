@@ -33,33 +33,48 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef SIMPLEFLOWSOLVER_HPP_
-#define SIMPLEFLOWSOLVER_HPP_
-
-#include <boost/shared_ptr.hpp>
-#include "CaVascularNetwork.hpp"
+#include "Alarcon03ViscosityCalculator.hpp"
 
 template<unsigned DIM>
-class SimpleFlowSolver
+Alarcon03ViscosityCalculator<DIM>::Alarcon03ViscosityCalculator()
 {
+    
+}
 
-public:
+template<unsigned DIM>
+Alarcon03ViscosityCalculator<DIM>::~Alarcon03ViscosityCalculator()
+{
+    
+}
 
-	/**
-	 * Constructor.
-	 */
-	SimpleFlowSolver();
+template<unsigned DIM>
+void Alarcon03ViscosityCalculator<DIM>::Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork)
+{
+    
+	std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
 
-	/**
-	 * Destructor.
-	 */
-	~SimpleFlowSolver();
+	for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
+	{
+		double radius = pow(10.0, 6)*segments[segment_index]->template GetData<double>("Radius"); // scale radius
 
-	/**
-	 * Implement flow solver;
-	 */
-	void Implement(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
+		double haematocrit = segments[segment_index]->template GetData<double>("Haematocrit");
+		double plasma_viscosity = 3.5*pow(10.0, -3);
 
-};
+		double power_term_1 = 1.0/(1.0 + pow(10.0, -11)*pow(2.0*radius, 12));
+		double c = (0.8 + exp(-0.15*radius))*(power_term_1 - 1) + power_term_1;
 
-#endif /* SIMPLEFLOWSOLVER_HPP_ */
+		double mu_45 = 6.0*exp(-0.17*radius) + 3.2 - 2.44*exp(-0.06*pow(2*radius, 0.645));
+
+		double power_term_2 = pow((2.0*radius/(2.0*radius - 1.1)),2);
+		double mu_rel = (1.0 + (mu_45 - 1.0)*(((pow((1.0 - haematocrit), c)) - 1)/((pow((1.0 - 0.45), c)) - 1.0))*power_term_2)*power_term_2;
+
+		double viscosity = plasma_viscosity * mu_rel;
+
+		segments[segment_index]->SetData("Viscosity", viscosity);
+	}
+    
+}
+
+// Explicit instantiation
+template class Alarcon03ViscosityCalculator<2>;
+template class Alarcon03ViscosityCalculator<3>;

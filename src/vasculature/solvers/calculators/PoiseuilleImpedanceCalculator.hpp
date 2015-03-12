@@ -33,14 +33,14 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef SIMPLEFLOWSOLVER_HPP_
-#define SIMPLEFLOWSOLVER_HPP_
+#ifndef PoiseuilleImpedanceCalculator_HPP_
+#define PoiseuilleImpedanceCalculator_HPP_
 
 #include <boost/shared_ptr.hpp>
 #include "CaVascularNetwork.hpp"
 
 template<unsigned DIM>
-class SimpleFlowSolver
+class PoiseuilleImpedanceCalculator
 {
 
 public:
@@ -48,18 +48,25 @@ public:
 	/**
 	 * Constructor.
 	 */
-	SimpleFlowSolver();
+	PoiseuilleImpedanceCalculator();
 
 	/**
 	 * Destructor.
 	 */
-	~SimpleFlowSolver();
+	~PoiseuilleImpedanceCalculator();
 
 	/**
-	 * Implement flow solver;
+	 * Calculate impedance, Z, of all vessel segments and vessels in network using Poiseuille flow
+	 * approximation:
+	 *
+	 * 			Z = \frac{8 \mu L}{\pi R^4},
+	 *
+	 * 	where \mu is viscosity, L is length and R is radius. Length is calculated within this method.
+	 * 	VascularData entries "Radius" and "Viscosity" must be previously set on each segment before this
+	 * 	calculation can be implemented.
 	 */
-	void Implement(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
+	void Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
 
 };
 
-#endif /* SIMPLEFLOWSOLVER_HPP_ */
+#endif /* PoiseuilleImpedanceCalculator_HPP_ */

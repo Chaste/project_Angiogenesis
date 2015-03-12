@@ -33,33 +33,53 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef SIMPLEFLOWSOLVER_HPP_
-#define SIMPLEFLOWSOLVER_HPP_
+#ifndef _Alarcon03MechanicalStimulusCalculator_hpp
+#define _Alarcon03MechanicalStimulusCalculator_hpp
 
 #include <boost/shared_ptr.hpp>
 #include "CaVascularNetwork.hpp"
 
 template<unsigned DIM>
-class SimpleFlowSolver
+class Alarcon03MechanicalStimulusCalculator
 {
+    
+private:
+    
+	/*
+	 * A small constant included to avoid singular behavior at low wall shear stress.
+	 */
+    double mTauRef;
 
+    /*
+     * The level of wall shear stress expected from the actual intravascular pressure, according
+     * to a parametric description of experimental data obtained in the rat mesentry (exhibiting a
+     * sigmoidal increase of wall shear stress with increasing pressure.
+     */
+    double mTauP;
+    
 public:
+    
+    // constructor
+    Alarcon03MechanicalStimulusCalculator();
+    
+    /**
+     *  destructor.
+     */
+    ~Alarcon03MechanicalStimulusCalculator();
+    
+    double GetTauP();
+    
+    double GetTauRef();
 
-	/**
-	 * Constructor.
-	 */
-	SimpleFlowSolver();
-
-	/**
-	 * Destructor.
-	 */
-	~SimpleFlowSolver();
-
-	/**
-	 * Implement flow solver;
-	 */
-	void Implement(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
+    void SetTauRef(double TauRef);
+    
+    // method for performing the Calculation
+    /**
+        This Calculator has been changed from the original found in Pries1998 in order to better fit experimental data.
+        See original paper and relevant test for comparison.
+     */
+    void Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
 
 };
 
-#endif /* SIMPLEFLOWSOLVER_HPP_ */
+#endif

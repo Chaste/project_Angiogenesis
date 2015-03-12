@@ -33,33 +33,41 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef SIMPLEFLOWSOLVER_HPP_
-#define SIMPLEFLOWSOLVER_HPP_
+#ifndef _Alarcon03RadiusCalculator_hpp
+#define _Alarcon03RadiusCalculator_hpp
 
 #include <boost/shared_ptr.hpp>
 #include "CaVascularNetwork.hpp"
 
 template<unsigned DIM>
-class SimpleFlowSolver
+class Alarcon03RadiusCalculator
 {
+    
+protected:
 
+    double mMinRadius;
+    double mMaxRadius;
+    double mTimeStep;
+    
 public:
+    
+    // constructor
+    Alarcon03RadiusCalculator();
+    
+    /**
+     *  destructor.
+     */
+    ~Alarcon03RadiusCalculator();
+    
+    void SetMinRadius(double minRadius);
+    
+    void SetMaxRadius(double maxRadius);
 
-	/**
-	 * Constructor.
-	 */
-	SimpleFlowSolver();
-
-	/**
-	 * Destructor.
-	 */
-	~SimpleFlowSolver();
-
-	/**
-	 * Implement flow solver;
-	 */
-	void Implement(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
-
+    void SetTimestep(double dt);
+    
+    // method for performing the calculation
+    void Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
+    
 };
 
-#endif /* SIMPLEFLOWSOLVER_HPP_ */
+#endif
