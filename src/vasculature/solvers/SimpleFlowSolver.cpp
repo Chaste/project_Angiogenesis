@@ -5,6 +5,8 @@
  *      Author: chaste
  */
 
+#include <vector>
+#include <algorithm>
 #include "SimpleFlowSolver.hpp"
 #include "CaVesselSegment.hpp"
 #include "VasculatureData.hpp"
@@ -16,13 +18,11 @@ template<unsigned DIM>
 SimpleFlowSolver<DIM>::SimpleFlowSolver()
 {
 
-
 }
 
 template<unsigned DIM>
 SimpleFlowSolver<DIM>::~SimpleFlowSolver()
 {
-
 
 }
 
@@ -30,185 +30,145 @@ template<unsigned DIM>
 void SimpleFlowSolver<DIM>::Implement(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork)
 {
 
-
-	/**
-            @note Flow is defined as positive from node1 to node2 by convention - positive flow in a vessel
-            attached to a node by its "node 0" involves flow out of the node. Conversely positive flow in
-            a vessel attached to a node by its "node 1" involves flow in to the node.
-
-            The first matrix assembled in this method assigns a coefficient to each vessel attached to a
-            node which tells us whether positive flow in that vessel means flow in to or out of that node.
-            If the coefficient is -1 then positive flow in the vessel means that flow is out of the node;
-            if the coefficient is +1 then positive flow in the vessel means that flow is in to the node.
+	/* Balance pressures in the network based on at least two defined pressures and no external flow.
+	 * Through applying mass (flow) balance at nodes this results in the system: Ap = 0
+	 * where pi are the nodal pressures and Aij is a matrix of inverse impedances.
+	 * Aii = -sum of inverse impedances of segments attached to node i and Aij is the sum of impedances of
+	 * segments between node i and node j. Practically this corresponds to only a single segment.
 	 */
 
-	// assemble linear system for node pressure calculation
-
-	PetscInt lhsVectorSize = vascularNetwork->GetNumberOfNodes();
-
-	// assemble structure to aid calculation
-
 	std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = vascularNetwork->GetVectorOfNodes();
-	std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
+	unsigned num_nodes = nodes.size();
 
-
-	std::vector< std::vector<int> > flowCoefficient;
-	unsigned numberOfRows = nodes.size();
-	unsigned numberOfCollumns = segments.size();
-
-	for (unsigned rows = 0; rows < numberOfRows; rows++)
+	// Get maximum number of segments attached to a node in the whole network. The system then has number of
+	// segments + 1 non-zero entries.
+	unsigned max_num_segments = 0;
+	for(unsigned node_index = 0; node_index < num_nodes; node_index++)
 	{
-		flowCoefficient.push_back(std::vector<int>()); // Add an empty row
-	}
+		boost::shared_ptr<VascularNode<DIM> > p_each_node = nodes[node_index];
+		unsigned num_segments_on_node = nodes[node_index]->GetNumberOfSegments();
 
-	for (unsigned cols = 0; cols < numberOfCollumns; cols++)
-	{
-		for (unsigned rows = 0; rows < numberOfRows; rows++)
+		if (num_segments_on_node > max_num_segments)
 		{
-			flowCoefficient[rows].push_back(0); // Add column to all rows
+			max_num_segments = num_segments_on_node;
 		}
 	}
 
+	// Set up the system
+	PetscInt lhsVectorSize = num_nodes;
+	LinearSystem linearSystem(lhsVectorSize, max_num_segments + 1);
 
-	// calculate maximum number of non-zeros entries per row in LHS-matrix of
-	// linearSystem
-	unsigned max_non_zeros = 0;
-
-	for(unsigned index = 0; index < nodes.size(); index++)
+	for (unsigned node_index = 0; node_index < num_nodes; node_index++)
 	{
+		boost::shared_ptr<VascularNode<DIM> > p_each_node = nodes[node_index];
+		unsigned num_segments_on_node = p_each_node->GetNumberOfSegments();
 
-		unsigned non_zeros_this_row = 1;
-
-		// flowCoefficient[nodeID][vesselSegmentID] = -1 if node is node 0 of vessel segment - denotes +ve flow if vessel flows out of node
-		// flowCoefficient[nodeID][vesselSegmentID] = 1 if node is node 1 of vessel segment - denotes +ve flow if vessel flows into node
-
-		for (unsigned j = 0; j < nodes[index]->GetNumberOfSegments(); j++)
+		for (unsigned segment_index = 0; segment_index < num_segments_on_node; segment_index++)
 		{
-			if (nodes[index] == nodes[index]->GetVesselSegment(j)->GetNode(0) && nodes[index] != nodes[index]->GetVesselSegment(j)->GetNode(1))
+			boost::shared_ptr<CaVesselSegment<DIM> > p_each_segment = p_each_node->GetVesselSegment(segment_index);
+
+			// Get the segment start and end nodes
+			boost::shared_ptr<VascularNode<DIM> > p_segment_start_node = p_each_segment->GetNode(0);
+			boost::shared_ptr<VascularNode<DIM> > p_segment_end_node = p_each_segment->GetNode(1);
+
+			if(p_segment_start_node->IsCoincident(p_segment_end_node))
 			{
-				flowCoefficient[index][vascularNetwork->GetVesselSegmentIndex(nodes[index]->GetVesselSegment(j))] = -1;
-				non_zeros_this_row++;
+				EXCEPTION("The network has a zero length segment. The flow problem cannot be solved. Try merging coincident nodes.");
 			}
-			else if (nodes[index] == nodes[index]->GetVesselSegment(j)->GetNode(1) && nodes[index] != nodes[index]->GetVesselSegment(j)->GetNode(0))
+
+			// Get the segment impedance
+			double impedance = p_each_segment->template GetData<double>("Impedance");
+			if (impedance <= 0)
 			{
-				flowCoefficient[index][vascularNetwork->GetVesselSegmentIndex(nodes[index]->GetVesselSegment(j))] = 1;
-				non_zeros_this_row++;
+				EXCEPTION("Impedance should be a positive number.");
 			}
-			else if (nodes[index] == nodes[index]->GetVesselSegment(j)->GetNode(1) && nodes[index] == nodes[index]->GetVesselSegment(j)->GetNode(0))
+
+			unsigned node2_index;
+
+			if (p_each_node == p_segment_start_node)
 			{
-				// vessel loops around on itself
-				// todo check that a segment can never have two nodes that are co-located - this statement can then be deleted
-				NEVER_REACHED;
-				flowCoefficient[index][vascularNetwork->GetVesselSegmentIndex(nodes[index]->GetVesselSegment(j))] = 1;
+				typename std::vector<boost::shared_ptr<VascularNode<DIM> > >::iterator node_iter = std::find(nodes.begin(), nodes.end(), p_segment_end_node);
+				node2_index = std::distance(nodes.begin(), node_iter);
 			}
 			else
 			{
-				EXCEPTION("Node identifies vessel segment as being adjoint but node has not been correctly assigned to segment.");
+				typename std::vector<boost::shared_ptr<VascularNode<DIM> > >::iterator node_iter = std::find(nodes.begin(), nodes.end(), p_segment_start_node);
+				node2_index = std::distance(nodes.begin(), node_iter);
 			}
-		}
 
-		if (non_zeros_this_row > max_non_zeros)
-		{
-			max_non_zeros = non_zeros_this_row;
-		}
-
-	}
-
-	LinearSystem linearSystem(lhsVectorSize,max_non_zeros);
-
-
-
-	for (unsigned node = 0; node < nodes.size(); node++)
-	{
-		for (unsigned seg = 0; seg < segments.size(); seg++)
-		{
-			if (flowCoefficient[node][seg] == 1)
-			{
-				double impedance = segments[seg]->template GetData<double>("Impedance");
-				if (impedance <= 0)
-				{
-					EXCEPTION("Impedance should be a positive number.");
-				}
-				linearSystem.AddToMatrixElement(node,node,-1/impedance);
-				linearSystem.AddToMatrixElement(node,vascularNetwork->GetNodeIndex(segments[seg]->GetNode(0)),+1/impedance);
-			}
-			if (flowCoefficient[node][seg] == -1)
-			{
-				double impedance = segments[seg]->template GetData<double>("Impedance");
-				if (impedance <= 0)
-				{
-					EXCEPTION("Impedance should be a positive number.");
-				}
-				linearSystem.AddToMatrixElement(node,node,-1/impedance);
-				linearSystem.AddToMatrixElement(node,vascularNetwork->GetNodeIndex(segments[seg]->GetNode(1)),+1/impedance);
-			}
+			// Add the inverse impedances to the linear system
+			linearSystem.AddToMatrixElement(node_index, node_index, -1/impedance); // Aii
+			linearSystem.AddToMatrixElement(node_index, node2_index, +1/impedance); // Aij
 		}
 	}
 
 	linearSystem.AssembleIntermediateLinearSystem();
 
 	// set constant pressure coefficients in matrix for arterial input nodes and venous output nodes and assemble pressure b_vector for node pressure calculation
-
-	for (unsigned nodeIndex1 = 0; nodeIndex1 < nodes.size(); nodeIndex1++)
+	std::vector<unsigned> rows_to_be_zerod;
+	std::vector<double> rhs_pressures;
+	for (unsigned node_index = 0; node_index < num_nodes; node_index++)
 	{
-		if (nodes[nodeIndex1]->template GetData<bool>("Is Input") || nodes[nodeIndex1]->template GetData<bool>("Is Output"))
+		if (nodes[node_index]->template GetData<bool>("Is Input") || nodes[node_index]->template GetData<bool>("Is Output"))
 		{
-			for (unsigned nodeIndex2 = 0; nodeIndex2 < nodes.size(); nodeIndex2++)
-			{
-				linearSystem.SetMatrixElement(nodeIndex1,nodeIndex2,0);
-			}
-			linearSystem.SetMatrixElement(nodeIndex1,nodeIndex1,1);
-			linearSystem.AssembleIntermediateLinearSystem();
-			linearSystem.AddToRhsVectorElement(nodeIndex1,nodes[nodeIndex1]->template GetData<double>("Pressure"));
+			rows_to_be_zerod.push_back(node_index);
+			rhs_pressures.push_back(nodes[node_index]->template GetData<double>("Pressure"));
 		}
+	}
+
+	linearSystem.ZeroMatrixRowsWithValueOnDiagonal(rows_to_be_zerod, 1.0);
+	linearSystem.AssembleIntermediateLinearSystem();
+
+	for (unsigned bc_index = 0; bc_index < rhs_pressures.size(); bc_index++)
+	{
+		linearSystem.AddToRhsVectorElement(rows_to_be_zerod[bc_index], rhs_pressures[bc_index]);
 	}
 
 	// set pressure to zero for all nodes which are not connected to either an input node or an output node
+	std::vector<unsigned> rows_to_be_zerod2;
 
-	for (unsigned candidateBoundaryNode = 0; candidateBoundaryNode < nodes.size(); candidateBoundaryNode++)
+	for (unsigned node_index = 0; node_index < num_nodes; node_index++)
 	{
-
-		if (vascularNetwork->GetNode(candidateBoundaryNode)->template GetData<bool>("Is Input") || vascularNetwork->GetNode(candidateBoundaryNode)->template GetData<bool>("Is Output"))
+		if (nodes[node_index]->template GetData<bool>("Is Input") || nodes[node_index]->template GetData<bool>("Is Output"))
 		{
-
-			for (unsigned testNode = 0; testNode < vascularNetwork->GetNumberOfNodes(); testNode++)
+			for (unsigned test_node_index = 0; test_node_index < num_nodes; test_node_index++)
 			{
-
-				if (!vascularNetwork->IsConnected(nodes[candidateBoundaryNode],nodes[testNode]))
+				if (!vascularNetwork->IsConnected(nodes[node_index], nodes[test_node_index]))
 				{
-					for (unsigned nodeIndex1 = 0; nodeIndex1 < nodes.size(); nodeIndex1++)
-					{
-						linearSystem.SetMatrixElement(testNode,nodeIndex1,0);
-					}
-					linearSystem.SetMatrixElement(testNode,testNode,1);
+					rows_to_be_zerod2.push_back(test_node_index);
 				}
-
 			}
 		}
-
 	}
+	linearSystem.ZeroMatrixRowsWithValueOnDiagonal(rows_to_be_zerod2, 1.0);
 
+	// Assemble and solve the system
 	linearSystem.AssembleFinalLinearSystem();
-
 	Vec solution = PetscTools::CreateVec(nodes.size());
 	solution = linearSystem.Solve();
+
+	// Recover the nodal pressures
 	ReplicatableVector a(solution);
-
-	// assign node pressures to vessels
-
-	for (unsigned nodeIndex = 0; nodeIndex < nodes.size(); nodeIndex++)
+	for (unsigned node_index = 0; node_index < num_nodes; node_index++)
 	{
-		nodes[nodeIndex]->SetData("Pressure",a[nodeIndex]);
+		nodes[node_index]->SetData("Pressure", a[node_index]);
 	}
 
-	for (unsigned segIndex = 0; segIndex < segments.size(); segIndex++)
+	/**
+		Set the segment flow rates
+	 */
+	std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
+
+	for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
 	{
-		double flow_rate = (segments[segIndex]->GetNode(0)->template GetData<double>("Pressure")
-				- segments[segIndex]->GetNode(1)->template GetData<double>("Pressure"))/segments[segIndex]->template GetData<double>("Impedance");
-		segments[segIndex]->SetData("Flow Rate",flow_rate);
-		segments[segIndex]->SetData("Absolute Flow Rate",fabs(flow_rate));
-		segments[segIndex]->GetVessel()->SetData("Flow Rate",flow_rate);
-		segments[segIndex]->GetVessel()->SetData("Absolute Flow Rate", fabs(flow_rate));
+		double start_node_pressure = segments[segment_index]->GetNode(0)->template GetData<double>("Pressure");
+		double end_node_pressure = segments[segment_index]->GetNode(1)->template GetData<double>("Pressure");
+
+		double flow_rate = (start_node_pressure - end_node_pressure)/segments[segment_index]->template GetData<double>("Impedance");
+		segments[segment_index]->SetData("Flow Rate",flow_rate);
+		segments[segment_index]->SetData("Absolute Flow Rate",fabs(flow_rate));
+		segments[segment_index]->GetVessel()->SetData("Flow Rate",flow_rate);
+		segments[segment_index]->GetVessel()->SetData("Absolute Flow Rate", fabs(flow_rate));
 	}
 
 	/*

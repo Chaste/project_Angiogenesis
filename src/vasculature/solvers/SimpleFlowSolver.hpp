@@ -8,8 +8,8 @@
 #ifndef SIMPLEFLOWSOLVER_HPP_
 #define SIMPLEFLOWSOLVER_HPP_
 
+#include <boost/shared_ptr.hpp>
 #include "CaVascularNetwork.hpp"
-#include "boost/shared_ptr.hpp"
 
 template<unsigned DIM>
 class SimpleFlowSolver
@@ -25,7 +25,7 @@ public:
 	/**
 	 * Destructor.
 	 */
-	virtual ~SimpleFlowSolver();
+	~SimpleFlowSolver();
 
 	/**
 	 * Implement flow solver;
