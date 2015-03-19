@@ -33,6 +33,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
+#include "math.h"
 #include "Alarcon03WallShearStressCalculator.hpp"
 
 template<unsigned DIM>
@@ -59,7 +60,7 @@ void Alarcon03WallShearStressCalculator<DIM>::Calculate(boost::shared_ptr<CaVasc
 		double flow_rate = segments[segment_index]->template GetData<double>("Absolute Flow Rate");
 		double viscosity = segments[segment_index]->template GetData<double>("Viscosity");
 
-	    double wall_shear_stress = 8.0 * viscosity * flow_rate / (PI * pow(radius, 3));
+	    double wall_shear_stress = 8.0 * viscosity * flow_rate / (M_PI * pow(radius, 3));
 	    segments[segment_index]->SetData("Wall Shear Stress", wall_shear_stress);
 	}
 }

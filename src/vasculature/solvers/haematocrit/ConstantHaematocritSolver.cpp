@@ -33,47 +33,47 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef _Alarcon03MetabolicStimulusCalculator_hpp
-#define _Alarcon03MetabolicStimulusCalculator_hpp
+#include "ConstantHaematocritSolver.hpp"
 
-#include <boost/shared_ptr.hpp>
-#include "CaVascularNetwork.hpp"
 
 template<unsigned DIM>
-class Alarcon03MetabolicStimulusCalculator
+ConstantHaematocritSolver<DIM>::ConstantHaematocritSolver(double haematocrit)
+	: AbstractHaematocritSolver<DIM>(),
+	  mHaematocrit(haematocrit)
 {
     
-private:
+}
 
-    double mQRef;
-    double mKm;
-    double mMaxStimulus;
+template<unsigned DIM>
+ConstantHaematocritSolver<DIM>::~ConstantHaematocritSolver()
+{
     
-public:
+}
+
+void ConstantHaematocritSolver<DIM>::SetHaematocrit(double haematocrit)
+{
+	mHaematocrit = haematocrit;
+}
+
+template<unsigned DIM>
+void ConstantHaematocritSolver<DIM>::Implement(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork)
+{
     
-    // constructor
-    Alarcon03MetabolicStimulusCalculator();
-    
-    /**
-     *  destructor.
-     */
-    ~Alarcon03MetabolicStimulusCalculator();
+	std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
 
-    double GetQRef();
+	for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
+	{
+		if(segments[segment_index]->template GetData<double>("Absolute Flow Rate") == 0.0)
+		{
+			segments[segment_index]->SetData("Haematocrit", 0.0);
+		}
+		else
+		{
+			segments[segment_index]->SetData("Haematocrit", mHaematocrit);
+		}
+	}
+}
 
-    double GetKm();
-
-    double GetMaxStimulus();
-
-    void SetQRef(double qRef);
-    
-    void SetKm(double km);
-    
-    void SetMaxStimulus(double maxStimulus);
-    
-    // method for performing the calculation
-    void Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
-
-};
-
-#endif
+// Explicit instantiation
+template class ConstantHaematocritSolver<2>;
+template class ConstantHaematocritSolver<3>;

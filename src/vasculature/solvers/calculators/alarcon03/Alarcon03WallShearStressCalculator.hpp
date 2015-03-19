@@ -39,12 +39,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "boost/shared_ptr.hpp"
 #include "CaVascularNetwork.hpp"
 
-
-// todo replace with std version
-#ifndef PI
-#define PI 3.14159
-#endif
-
 template<unsigned DIM>
 class Alarcon03WallShearStressCalculator
 {

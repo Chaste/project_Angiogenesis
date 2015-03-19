@@ -33,47 +33,31 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef _Alarcon03MetabolicStimulusCalculator_hpp
-#define _Alarcon03MetabolicStimulusCalculator_hpp
+#ifndef _AbstractHaematocritSolver_hpp
+#define _AbstractHaematocritSolver_hpp
 
 #include <boost/shared_ptr.hpp>
 #include "CaVascularNetwork.hpp"
 
 template<unsigned DIM>
-class Alarcon03MetabolicStimulusCalculator
+class AbstractHaematocritSolver
 {
-    
-private:
-
-    double mQRef;
-    double mKm;
-    double mMaxStimulus;
     
 public:
     
     // constructor
-    Alarcon03MetabolicStimulusCalculator();
+    AbstractHaematocritSolver();
     
     /**
-     *  destructor.
+     *  Virtual destructor.
      */
-    ~Alarcon03MetabolicStimulusCalculator();
-
-    double GetQRef();
-
-    double GetKm();
-
-    double GetMaxStimulus();
-
-    void SetQRef(double qRef);
+    virtual ~AbstractHaematocritSolver();
     
-    void SetKm(double km);
+    /**
+     *  Purely virtual method for performing the Solver encapsulated by concrete sub-classes of this class.
+     */
+    virtual void Implement(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork) = 0;
     
-    void SetMaxStimulus(double maxStimulus);
-    
-    // method for performing the calculation
-    void Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
-
 };
 
 #endif

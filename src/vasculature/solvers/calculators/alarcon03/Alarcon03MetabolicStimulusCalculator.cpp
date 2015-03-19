@@ -1,19 +1,45 @@
-//
-//  Alarcon03MetabolicStimulusCalculator.cpp
-//  VascularTumourGrowthModellingFramework
-//
-//  Created by Anthony Connor on 07/12/2012.
-//  Copyright (c) 2012 Anthony Connor. All rights reserved.
-//
+/*
 
-#include <stdio.h>
+Copyright (c) 2005-2015, University of Oxford.
+All rights reserved.
+
+University of Oxford means the Chancellor, Masters and Scholars of the
+University of Oxford, having an administrative office at Wellington
+Square, Oxford OX1 2JD, UK.
+
+This file is part of Chaste.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+ * Redistributions of source code must retain the above copyright notice,
+   this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+ * Neither the name of the University of Oxford nor the names of its
+   contributors may be used to endorse or promote products derived from this
+   software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+ */
+
 #include "Alarcon03MetabolicStimulusCalculator.hpp"
 
 template<unsigned DIM>
-Alarcon03MetabolicStimulusCalculator<DIM>::Alarcon03MetabolicStimulusCalculator() :
-Q_ref(6.666*pow(10.0,(-10))),
-k_m(0.83),
-MaxStimulus(1*pow(10.0,10.0))
+Alarcon03MetabolicStimulusCalculator<DIM>::Alarcon03MetabolicStimulusCalculator()
+	:mQRef(6.666*pow(10.0, -10)),
+	mKm(0.83),
+	mMaxStimulus(1*pow(10.0, 10.0))
 {
 
 }
@@ -27,40 +53,51 @@ Alarcon03MetabolicStimulusCalculator<DIM>::~Alarcon03MetabolicStimulusCalculator
 template<unsigned DIM>
 double Alarcon03MetabolicStimulusCalculator<DIM>::GetQRef()
 {
-	return Q_ref;
+	return mQRef;
 }
 
 template<unsigned DIM>
 double Alarcon03MetabolicStimulusCalculator<DIM>::GetKm()
 {
-	return k_m;
+	return mKm;
 }
 
 template<unsigned DIM>
-double Alarcon03MetabolicStimulusCalculator<DIM>::GetMaxStimulus()
+double Alarcon03MetabolicStimulusCalculator<DIM>::GetmMaxStimulus()
 {
-	return MaxStimulus;
+	return mMaxStimulus;
 }
 
 template<unsigned DIM>
-void Alarcon03MetabolicStimulusCalculator<DIM>::SetQRef(double qref)
+void Alarcon03MetabolicStimulusCalculator<DIM>::SetQRef(double qRef)
 {
-	assert(Q_ref > 0);
-	Q_ref = qref;
+	if(mQRef <= 0.0)
+	{
+		EXPCETION("Reference flow rate must be positive.");
+	}
+	mQRef = qRef;
+
 }
 
 template<unsigned DIM>
 void Alarcon03MetabolicStimulusCalculator<DIM>::SetKm(double km)
 {
-	assert(k_m >= 0);
-	k_m = km;
+	if(km <= 0.0)
+	{
+		EXPCETION("Parameter km must be positive.");
+	}
+	mKm = km;
 }
 
 template<unsigned DIM>
-void Alarcon03MetabolicStimulusCalculator<DIM>::SetMaxStimulus(double maxstimulus)
+void Alarcon03MetabolicStimulusCalculator<DIM>::SetmMaxStimulus(double maxStimulus)
 {
-	assert(MaxStimulus > 1000);
-	MaxStimulus = maxstimulus;
+	if(mMaxStimulus <= 0.0)
+	{
+		EXPCETION("Max Stimulus parameter must be positive");
+	}
+
+	mMaxStimulus = maxStimulus;
 }
 
 template<unsigned DIM>
@@ -68,22 +105,24 @@ void Alarcon03MetabolicStimulusCalculator<DIM>::Calculate(boost::shared_ptr<CaVa
 {
 
 	std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
-
-	for (unsigned segIndex = 0; segIndex < segments.size(); segIndex++)
+	for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
 	{
 
 		double metabolic_stimulus;
+		double haematocrit = segments[segment_index]->template GetData<double>("Haematocrit");
+		double flow_rate = segments[segment_index]->template GetData<double>("Absolute Flow Rate");
 
-		if (fabs(segments[segIndex]->template GetData<double>("Flow Rate")) > 0)
+		if (flow_rate > 0.0)
 		{
-			if(segments[segIndex]->template GetData<double>("Haematocrit Level") > 0)
+			if(haematocrit > 0.0)
 			{
-				metabolic_stimulus = k_m*log10(((Q_ref)/(fabs(segments[segIndex]->template GetData<double>("Flow Rate"))*(segments[segIndex]->template GetData<double>("Haematocrit Level")))) + 1.0);
+				metabolic_stimulus = mKm*log10(mQRef/(flow_rate*haematocrit) + 1.0);
 			}
 			else
 			{
+				// todo explore alternatives to sticking in an arbitary large number.
 				// some large number - unphysical if Metabolic stimulus term becomes infinite
-				metabolic_stimulus = MaxStimulus;
+				metabolic_stimulus = mMaxStimulus;
 			}
 		}
 		else
@@ -91,10 +130,8 @@ void Alarcon03MetabolicStimulusCalculator<DIM>::Calculate(boost::shared_ptr<CaVa
 			metabolic_stimulus = 0;
 		}
 
-		segments[segIndex]->SetData("Metabolic Stimulus", metabolic_stimulus);
-
+		segments[segment_index]->SetData("Metabolic Stimulus", metabolic_stimulus);
 	}
-
 }
 
 // Explicit instantiation
