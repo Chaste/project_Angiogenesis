@@ -73,7 +73,7 @@ void Alarcon03MetabolicStimulusCalculator<DIM>::SetQRef(double qRef)
 {
 	if(mQRef <= 0.0)
 	{
-		EXPCETION("Reference flow rate must be positive.");
+		EXCEPTION("Reference flow rate must be positive.");
 	}
 	mQRef = qRef;
 
@@ -84,7 +84,7 @@ void Alarcon03MetabolicStimulusCalculator<DIM>::SetKm(double km)
 {
 	if(km <= 0.0)
 	{
-		EXPCETION("Parameter km must be positive.");
+		EXCEPTION("Parameter km must be positive.");
 	}
 	mKm = km;
 }
@@ -94,7 +94,7 @@ void Alarcon03MetabolicStimulusCalculator<DIM>::SetMaxStimulus(double maxStimulu
 {
 	if(mMaxStimulus <= 0.0)
 	{
-		EXPCETION("Max Stimulus parameter must be positive");
+		EXCEPTION("Max Stimulus parameter must be positive");
 	}
 
 	mMaxStimulus = maxStimulus;
@@ -109,8 +109,8 @@ void Alarcon03MetabolicStimulusCalculator<DIM>::Calculate(boost::shared_ptr<CaVa
 	{
 
 		double metabolic_stimulus;
-		double haematocrit = segments[segment_index]->template GetData<double>("Haematocrit");
-		double flow_rate = segments[segment_index]->template GetData<double>("Absolute Flow Rate");
+		double haematocrit = segments[segment_index]->template GetData<double>("Haematocrit Level");
+		double flow_rate = fabs(segments[segment_index]->template GetData<double>("Flow Rate"));
 
 		if (flow_rate > 0.0)
 		{

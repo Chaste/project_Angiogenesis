@@ -45,15 +45,15 @@ StructuralAdaptationSolver<DIM>::StructuralAdaptationSolver()
 	  mTimeIncrement(0.0001),
 	  mWriteOutput(false),
 	  mOutputFileName("StructuralAdaptationSolverProgress"),
-	  mMaxIterations(1000000)
+	  mMaxIterations(100000)
 {
-   
+
 }
 
 template<unsigned DIM>
 StructuralAdaptationSolver<DIM>::~StructuralAdaptationSolver()
 {
-    
+
 }
 
 template<unsigned DIM>
@@ -70,7 +70,7 @@ bool StructuralAdaptationSolver<DIM>::GetWriteOutput() const
 
 
 template<unsigned DIM>
-string StructuralAdaptationSolver<DIM>::GetOutputFileName() const
+std::string StructuralAdaptationSolver<DIM>::GetOutputFileName() const
 {
     return mOutputFileName;
 }
@@ -118,24 +118,24 @@ void StructuralAdaptationSolver<DIM>::SetOutputFileName(std::string filename)
 template<unsigned DIM>
 void StructuralAdaptationSolver<DIM>::Implement(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork)
 {
-    
+
     std::ofstream out;
-    
+
     double max_radius_relative_change = 1.0;
     unsigned iteration = 0;
     double time = 0.0;
-    
+
     if (mWriteOutput)
     {
         out.open(mOutputFileName.c_str());
     }
-    
+
     if (out.is_open())
     {
         out << "\n";
         out << "#Iteration   Maximum relative change in radius in network\n\n";
     }
-    
+
     std::vector<double> previous_radii;
     std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
 
@@ -150,38 +150,38 @@ void StructuralAdaptationSolver<DIM>::Implement(boost::shared_ptr<CaVascularNetw
         iteration++;
 
         Iterate(vascularNetwork);
-        
+
         std::vector<double> relative_change;
-        
+
         for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
         {
         	double current_radius = segments[segment_index]->template GetData<double>("Radius");
 
         	relative_change.push_back(fabs(1.0 - current_radius/previous_radii[segment_index]));
-        	previous_radii[segment_index] = current_radius
+        	previous_radii[segment_index] = current_radius;
         }
-        
+
         max_radius_relative_change = *( std::max_element(relative_change.begin(), relative_change.end()));
-        
+
         if (out.is_open())
         {
             out<< std::setw(6) << iteration << std::setw(20) << max_radius_relative_change<< "\n";
         }
-        
+
     }
-    
+
     if (out.is_open())
     {
         out.close();
     }
-    
+
 }
 
 template<unsigned DIM>
 void StructuralAdaptationSolver<DIM>::WriteToFile(std::string parameterFileName)
 {
     std::ofstream out;
-    
+
     out.open(parameterFileName.c_str(), std::ios::app); // append to file
     out << "\nModule: StructuralAdaptationSolver\n";
     out << "\n---------------\n";

@@ -33,8 +33,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef _AbstractHaematocritSolver_hpp
-#define _AbstractHaematocritSolver_hpp
+#ifndef AbstractHaematocritSolver_hpp
+#define AbstractHaematocritSolver_hpp
 
 #include <boost/shared_ptr.hpp>
 #include "CaVascularNetwork.hpp"
@@ -42,22 +42,22 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 template<unsigned DIM>
 class AbstractHaematocritSolver
 {
-    
+
 public:
-    
+
     // constructor
     AbstractHaematocritSolver();
-    
+
     /**
      *  Virtual destructor.
      */
     virtual ~AbstractHaematocritSolver();
-    
+
     /**
      *  Purely virtual method for performing the Solver encapsulated by concrete sub-classes of this class.
      */
-    virtual void Implement(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork) = 0;
-    
+    virtual void Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork) = 0;
+
 };
 
 #endif

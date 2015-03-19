@@ -46,105 +46,105 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 template <unsigned DIM>
 class StructuralAdaptationSolver
 {
-    
+
 protected:
-    
+
     /**
-     *  Threshold tolerance for the maximum relative change in radii of vessels in a vessel 
+     *  Threshold tolerance for the maximum relative change in radii of vessels in a vessel
      *  network, below which a structural adaptation algorithm will terminate.
      */
     double mTolerance;
-    
+
     /**
      *  Length of time which the algorithm is incremented on each occasion that the Iterate
      *  function is called.
      */
     double mTimeIncrement;
-    
+
     /**
      *  Whether to output the progress of the structural adaptation algorithm to a file.
      */
     bool mWriteOutput;
-   
+
     /**
      *  Name of file to which the progress of the structural adaptation algorithm may be
      *  output.
      */
     std::string mOutputFileName;
-    
+
     /**
      *  Maximum number of iterations which we may allow the algorithm to run for, regardless of timestep
      *  and SimulationTime::GetTimeStep().
      */
     unsigned mMaxIterations;
-    
+
 public:
-    
+
     /**
      *  Constructor for StructuralAdaptationSolver class.
      */
     StructuralAdaptationSolver();
-    
+
     /**
      *  destructor.
      */
     virtual ~StructuralAdaptationSolver();
-    
+
     /**
      *  Return the mTolerance variable.
      */
     double GetTolerance() const;
-    
+
     /**
-     *  Return whether the progress of the structural adaptation algorithm will be output to a 
+     *  Return whether the progress of the structural adaptation algorithm will be output to a
      *  file.
      */
     bool GetWriteOutput() const;
-    
+
     /**
      *  Returns the filename for the file that the progress of the algorithm will be output to.
      */
     std::string GetOutputFileName() const;
-    
+
     /**
-     *  Returns the timeStep.
+     *  Returns the timeStep (in seconds).
      */
     double GetTimeIncrement() const;
-    
+
     /**
      *  Setter for tolerance parameter.
      */
     void SetTolerance(double tolerance);
-    
+
     /**
      *  Setter for timeStep parameter.
      */
     void SetTimeIncrement(double timeIncrement);
-    
+
     /**
      *  Setter for maximum number of iterations.
      */
     void SetMaxIterations(unsigned iterations);
-    
+
     /**
      *  Set whether to output the progress of structural adaptation algorithm to a file.
      */
     void SetWriteOutput(bool writeFlag);
-    
+
     /**
      *  Setter for name of output file that progression of structural adaptation algorithm may
      *  be output to.
      */
     void SetOutputFileName(std::string filename);
-    
+
     /**
      *  Method used to implement a structural adaptation algorithm on a vessel network.
-     *  The skeleton of an algorithm is outlined in this class.  An individual iteration of an 
-     *  algorithm should be defined inside the Iterate method within concrete subclasses of 
+     *  The skeleton of an algorithm is outlined in this class.  An individual iteration of an
+     *  algorithm should be defined inside the Iterate method within concrete subclasses of
      *  this class.
      */
     void Implement(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
-    
+
     /**
      *  Method to output parameters of model to a file.  The name of the object and parameter values
      *  are appended to the file.
@@ -152,10 +152,10 @@ public:
     virtual void WriteToFile(std::string parameterFileName = "Parameters.txt");
 
 protected:
-    
+
     /**
      *  Helper method for implementing various structural adaptation algorithms. This method
-     *  should contain all of the operations used within a single iteration of a structural 
+     *  should contain all of the operations used within a single iteration of a structural
      *  adaptation algorithm.
      */
     virtual void Iterate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork) = 0;

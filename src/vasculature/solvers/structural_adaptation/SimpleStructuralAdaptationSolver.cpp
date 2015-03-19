@@ -38,133 +38,117 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 template<unsigned DIM>
 SimpleStructuralAdaptationSolver<DIM>::SimpleStructuralAdaptationSolver()
 	: StructuralAdaptationSolver<DIM>(),
-	  haematocritCalculator(new Alarcon03HaematocritCalculator<DIM>()),
-	  nodePressureCalculator(new Alarcon03NodePressureCalculator<DIM>()),
-	  radiusCalculator(new Alarcon03RadiusCalculator<DIM>()),
-	  metabolicStimulusCalculator(new Alarcon03MetabolicStimulusCalculator<DIM>()),
-	  flowRateCalculator(new Alarcon03FlowRateCalculator<DIM>()),
-	  flowVelocityCalculator(new Alarcon03FlowVelocityCalculator<DIM>()),
-	  impedanceCalculator(new Alarcon03ImpedanceCalculator<DIM>()),
-	  mechanicalStimulusCalculator(new Alarcon03MechanicalStimulusCalculator<DIM>()),
-	  viscosityCalculator(new Alarcon03ViscosityCalculator<DIM>()),
-	  wallShearStressCalculator(new Alarcon03WallShearStressCalculator<DIM>()),
-	  downstreamConductedStimulusCalculator(new NullVesselPropertyLocalCalculator<DIM>()),
-	  upstreamConductedStimulusCalculator(new NullVesselPropertyLocalCalculator<DIM>())
+	  mHaematocritCalculator(new ConstantHaematocritSolver<DIM>()),
+	  mFlowSolver(new SimpleFlowSolver<DIM>()),
+	  mRadiusCalculator(new Alarcon03RadiusCalculator<DIM>()),
+	  mMetabolicStimulusCalculator(new Alarcon03MetabolicStimulusCalculator<DIM>()),
+	  mImpedanceCalculator(new PoiseuilleImpedanceCalculator<DIM>()),
+	  mMechanicalStimulusCalculator(new Alarcon03MechanicalStimulusCalculator<DIM>()),
+	  mViscosityCalculator(new Alarcon03ViscosityCalculator<DIM>()),
+	  mWallShearStressCalculator(new Alarcon03WallShearStressCalculator<DIM>())
+//	  ,
+//	  downstreamConductedStimulusCalculator(new NullVesselPropertyLocalCalculator<DIM>()),
+//	  upstreamConductedStimulusCalculator(new NullVesselPropertyLocalCalculator<DIM>())
 {
-    
+
 }
 
 template<unsigned DIM>
 SimpleStructuralAdaptationSolver<DIM>::~SimpleStructuralAdaptationSolver()
 {
-    
+
 }
 
 // setters
 template<unsigned DIM>
-void SimpleStructuralAdaptationSolver<DIM>::SetRadiusCalculator(boost::shared_ptr<Alarcon03RadiusCalculator<DIM> > pCalulcator)
+void SimpleStructuralAdaptationSolver<DIM>::SetRadiusCalculator(boost::shared_ptr<Alarcon03RadiusCalculator<DIM> > pCalculator)
 {
-    radiusCalculator = pCalulcator;
+    mRadiusCalculator = pCalculator;
 }
 
 template<unsigned DIM>
-void SimpleStructuralAdaptationSolver<DIM>::SetMetabolicStimulusCalculator(boost::shared_ptr<Alarcon03MetabolicStimulusCalculator<DIM> > pCalulcator)
+void SimpleStructuralAdaptationSolver<DIM>::SetMetabolicStimulusCalculator(boost::shared_ptr<Alarcon03MetabolicStimulusCalculator<DIM> > pCalculator)
 {
-    metabolicStimulusCalculator = pCalulcator;
+    mMetabolicStimulusCalculator = pCalculator;
+}
+
+
+template<unsigned DIM>
+void SimpleStructuralAdaptationSolver<DIM>::SetImpedanceCalculator(boost::shared_ptr<PoiseuilleImpedanceCalculator<DIM> > pCalculator)
+{
+    mImpedanceCalculator = pCalculator;
 }
 
 template<unsigned DIM>
-void SimpleStructuralAdaptationSolver<DIM>::SetFlowRateCalculator(boost::shared_ptr<Alarcon03FlowRateCalculator<DIM> > pCalulcator)
+void SimpleStructuralAdaptationSolver<DIM>::SetMechanicalStimulusCalculator(boost::shared_ptr<Alarcon03MechanicalStimulusCalculator<DIM> > pCalculator)
 {
-    flowRateCalculator = pCalulcator;
+    mMechanicalStimulusCalculator = pCalculator;
 }
 
 template<unsigned DIM>
-void SimpleStructuralAdaptationSolver<DIM>::SetFlowVelocityCalculator(boost::shared_ptr<Alarcon03FlowVelocityCalculator<DIM> > pCalulcator)
+void SimpleStructuralAdaptationSolver<DIM>::SetViscosityCalculator(boost::shared_ptr<Alarcon03ViscosityCalculator<DIM> > pCalculator)
 {
-    flowVelocityCalculator = pCalulcator;
+    mViscosityCalculator = pCalculator;
 }
 
 template<unsigned DIM>
-void SimpleStructuralAdaptationSolver<DIM>::SetImpedanceCalculator(boost::shared_ptr<PoiseuilleImpedanceCalculator<DIM> > pCalulcator)
+void SimpleStructuralAdaptationSolver<DIM>::SetWallShearStressCalculator(boost::shared_ptr<Alarcon03WallShearStressCalculator<DIM> > pCalculator)
 {
-    impedanceCalculator = pCalulcator;
+    mWallShearStressCalculator = pCalculator;
+}
+
+//template<unsigned DIM>
+//void SimpleStructuralAdaptationSolver<DIM>::SetDownstreamConductedStimulusCalculator(boost::shared_ptr<AbstractVesselPropertyLocalCalculator<DIM> > pCalculator)
+//{
+//    downstreamConductedStimulusCalculator = pCalculator;
+//}
+//
+//template<unsigned DIM>
+//void SimpleStructuralAdaptationSolver<DIM>::SetUpstreamConductedStimulusCalculator(boost::shared_ptr<AbstractVesselPropertyLocalCalculator<DIM> > pCalculator)
+//{
+//    upstreamConductedStimulusCalculator = pCalculator;
+//}
+
+template<unsigned DIM>
+void SimpleStructuralAdaptationSolver<DIM>::SetNodePressureCalculator(boost::shared_ptr<SimpleFlowSolver<DIM> > pCalculator)
+{
+    mFlowSolver = pCalculator;
 }
 
 template<unsigned DIM>
-void SimpleStructuralAdaptationSolver<DIM>::SetMechanicalStimulusCalculator(boost::shared_ptr<Alarcon03MechanicalStimulusCalculator<DIM> > pCalulcator)
+void SimpleStructuralAdaptationSolver<DIM>::SetHaematocritCalculator(boost::shared_ptr<ConstantHaematocritSolver<DIM> > pCalculator)
 {
-    mechanicalStimulusCalculator = pCalulcator;
-}
-
-template<unsigned DIM>
-void SimpleStructuralAdaptationSolver<DIM>::SetViscosityCalculator(boost::shared_ptr<Alarcon03ViscosityCalculator<DIM> > pCalulcator)
-{
-    viscosityCalculator = pCalulcator;
-}
-
-template<unsigned DIM>
-void SimpleStructuralAdaptationSolver<DIM>::SetWallShearStressCalculator(boost::shared_ptr<Alarcon03WallShearStressCalculator<DIM> > pCalulcator)
-{
-    wallShearStressCalculator = pCalulcator;
-}
-
-template<unsigned DIM>
-void SimpleStructuralAdaptationSolver<DIM>::SetDownstreamConductedStimulusCalculator(boost::shared_ptr<AbstractVesselPropertyLocalCalculator<DIM> > pCalulcator)
-{
-    downstreamConductedStimulusCalculator = pCalulcator;
-}
-
-template<unsigned DIM>
-void SimpleStructuralAdaptationSolver<DIM>::SetUpstreamConductedStimulusCalculator(boost::shared_ptr<AbstractVesselPropertyLocalCalculator<DIM> > pCalulcator)
-{
-    upstreamConductedStimulusCalculator = pCalulcator;
-}
-
-template<unsigned DIM>
-void SimpleStructuralAdaptationSolver<DIM>::SetNodePressureCalculator(boost::shared_ptr<SimpleFlowSolver<DIM> > pCalulcator)
-{
-    nodePressureCalculator = pCalulcator;
-}
-
-template<unsigned DIM>
-void SimpleStructuralAdaptationSolver<DIM>::SetHaematocritCalculator(boost::shared_ptr<AbstractHaematocritCalculator<DIM> > pCalulcator)
-{
-    haematocritCalculator = pCalulcator;
+    mHaematocritCalculator = pCalculator;
 }
 
 // method for performing the Calculator
 template<unsigned DIM>
 void SimpleStructuralAdaptationSolver<DIM>::Iterate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork)
 {
-    
-	viscosityCalculator->Calculate(vascularNetwork);
-	impedanceCalculator->Calculate(vascularNetwork);
 
-    nodePressureCalculator->Calculate(vascularNetwork);
-    
-    for (int i = 0; i < VN->GetNumberOfVesselsInNetwork(); i++)
-    {
-        flowRateCalculator->Calculate(VN->GetVessel(i));
-        flowVelocityCalculator->Calculate(VN->GetVessel(i));
-    }
-    
-    haematocritCalculator->Calculate(vascularNetwork);
-    
+	mRadiusCalculator->SetTimestep(this->GetTimeIncrement());
+
+	mViscosityCalculator->Calculate(vascularNetwork);
+	mImpedanceCalculator->Calculate(vascularNetwork);
+
+	mFlowSolver->Implement(vascularNetwork);
+
+    mHaematocritCalculator->Calculate(vascularNetwork);
+
     std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
 
     for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
     {
-    	segments[segment_index]->SetData("ShrinkingStimulus", 1.79);
+    	segments[segment_index]->SetData("Shrinking Stimulus", 1.79);
     }
 
-	wallShearStressCalculator->Calculate(vascularNetwork);
-	metabolicStimulusCalculator->Calculate(vascularNetwork);
-	mechanicalStimulusCalculator->Calculate(vascularNetwork);
-	upstreamConductedStimulusCalculator->Calculate(vascularNetwork);
-	downstreamConductedStimulusCalculator->Calculate(vascularNetwork);
-	radiusCalculator->Calculate(vascularNetwork);
-    
+	mWallShearStressCalculator->Calculate(vascularNetwork);
+	mMetabolicStimulusCalculator->Calculate(vascularNetwork);
+	mMechanicalStimulusCalculator->Calculate(vascularNetwork);
+//	upstreamConductedStimulusCalculator->Calculate(vascularNetwork);
+//	downstreamConductedStimulusCalculator->Calculate(vascularNetwork);
+	mRadiusCalculator->Calculate(vascularNetwork);
+
 }
 
 // Explicit instantiation

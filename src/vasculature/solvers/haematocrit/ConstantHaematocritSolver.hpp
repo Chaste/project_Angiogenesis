@@ -49,7 +49,7 @@ private:
 	double mHaematocrit;
 
 public:
-    
+
     // constructor
     ConstantHaematocritSolver(double haematocrit = 0.45);
 
@@ -57,9 +57,9 @@ public:
      *  Virtual destructor.
      */
     virtual ~ConstantHaematocritSolver();
-    
+
     // method for performing the Solver
-    void Implement(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
+    void Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
 
     void SetHaematocrit(double haematocrit);
 

@@ -615,6 +615,7 @@ void CaVascularNetwork<DIM>::Write(const std::string& filename, bool geometry_on
 
 	// Set up vessel info arrays
 	std::map<std::string, boost::any >::iterator map_iterator;
+
 	std::map<std::string, boost::any > data_map = mVessels[0]->rGetDataContainer().GetMap();
 
 	for(map_iterator = data_map.begin(); map_iterator != data_map.end(); map_iterator++)

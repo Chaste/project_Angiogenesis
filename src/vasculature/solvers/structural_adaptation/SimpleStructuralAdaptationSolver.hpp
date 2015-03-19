@@ -37,12 +37,10 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _SimpleStructuralAdaptationSolver_hpp
 
 #include "StructuralAdaptationSolver.hpp"
-#include "Alarcon03HaematocritCalculator.hpp"
+#include "ConstantHaematocritSolver.hpp"
 #include "SimpleFlowSolver.hpp"
 #include "Alarcon03MetabolicStimulusCalculator.hpp"
 #include "Alarcon03RadiusCalculator.hpp"
-#include "Alarcon03FlowRateCalculator.hpp"
-#include "Alarcon03FlowVelocityCalculator.hpp"
 #include "PoiseuilleImpedanceCalculator.hpp"
 #include "Alarcon03MechanicalStimulusCalculator.hpp"
 #include "Alarcon03ViscosityCalculator.hpp"
@@ -53,26 +51,23 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 template<unsigned DIM>
 class SimpleStructuralAdaptationSolver : public StructuralAdaptationSolver<DIM>
 {
-    
+
 private:
 
-    boost::shared_ptr<AbstractHaematocritCalculator<DIM> > mHaematocritCalculator;
+    boost::shared_ptr<ConstantHaematocritSolver<DIM> > mHaematocritCalculator;
     boost::shared_ptr<SimpleFlowSolver<DIM> > mFlowSolver;
-    
     boost::shared_ptr<Alarcon03RadiusCalculator<DIM> > mRadiusCalculator;
     boost::shared_ptr<Alarcon03MetabolicStimulusCalculator<DIM> > mMetabolicStimulusCalculator;
-    boost::shared_ptr<Alarcon03FlowRateCalculator<DIM> > mFlowRateCalculator;
-    boost::shared_ptr<Alarcon03FlowVelocityCalculator<DIM> > mFlowVelocityCalculator;
     boost::shared_ptr<PoiseuilleImpedanceCalculator<DIM> > mImpedanceCalculator;
     boost::shared_ptr<Alarcon03MechanicalStimulusCalculator<DIM> > mMechanicalStimulusCalculator;
     boost::shared_ptr<Alarcon03ViscosityCalculator<DIM> > mViscosityCalculator;
     boost::shared_ptr<Alarcon03WallShearStressCalculator<DIM> > mWallShearStressCalculator;
-    boost::shared_ptr<AbstractVesselPropertyLocalCalculator<DIM> > mDownstreamConductedStimulusCalculator;
-    boost::shared_ptr<AbstractVesselPropertyLocalCalculator<DIM> > mUpstreamConductedStimulusCalculator;
+//    boost::shared_ptr<AbstractVesselPropertyLocalCalculator<DIM> > mDownstreamConductedStimulusCalculator;
+//    boost::shared_ptr<AbstractVesselPropertyLocalCalculator<DIM> > mUpstreamConductedStimulusCalculator;
 
-    
+
 public:
-    
+
     /**
      *  Default constructor.
      */
@@ -82,35 +77,31 @@ public:
      *  Virtual destructor.
      */
     virtual ~SimpleStructuralAdaptationSolver();
-    
+
     // setters
-    void SetRadiusCalculator(boost::shared_ptr<Alarcon03RadiusCalculator<DIM> > pCalulcator);
-    
-    void SetMetabolicStimulusCalculator(boost::shared_ptr<Alarcon03MetabolicStimulusCalculator<DIM> > pCalulcator);
-    
-    void SetFlowRateCalculator(boost::shared_ptr<Alarcon03FlowRateCalculator<DIM> > pCalulcator);
-    
-    void SetFlowVelocityCalculator(boost::shared_ptr<Alarcon03FlowVelocityCalculator<DIM> > pCalulcator);
-    
-    void SetImpedanceCalculator(boost::shared_ptr<PoiseuilleImpedanceCalculator<DIM> > pCalulcator);
-    
-    void SetMechanicalStimulusCalculator(boost::shared_ptr<Alarcon03MechanicalStimulusCalculator<DIM> > pCalulcator);
-    
-    void SetViscosityCalculator(boost::shared_ptr<Alarcon03ViscosityCalculator<DIM> > pCalulcator);
-    
-    void SetWallShearStressCalculator(boost::shared_ptr<Alarcon03WallShearStressCalculator<DIM> > pCalulcator);
-    
-    void SetDownstreamConductedStimulusCalculator(boost::shared_ptr<AbstractVesselPropertyLocalCalculator<DIM> > pCalulcator);
-    
-    void SetUpstreamConductedStimulusCalculator(boost::shared_ptr<AbstractVesselPropertyLocalCalculator<DIM> > pCalulcator);
-    
-    void SetNodePressureCalculator(boost::shared_ptr<SimpleFlowSolver<DIM> > pCalulcator);
-    
-    void SetHaematocritCalculator(boost::shared_ptr<AbstractHaematocritCalculator<DIM> > pCalulcator);
-    
+    void SetRadiusCalculator(boost::shared_ptr<Alarcon03RadiusCalculator<DIM> > pCalculator);
+
+    void SetMetabolicStimulusCalculator(boost::shared_ptr<Alarcon03MetabolicStimulusCalculator<DIM> > pCalculator);
+
+    void SetImpedanceCalculator(boost::shared_ptr<PoiseuilleImpedanceCalculator<DIM> > pCalculator);
+
+    void SetMechanicalStimulusCalculator(boost::shared_ptr<Alarcon03MechanicalStimulusCalculator<DIM> > pCalculator);
+
+    void SetViscosityCalculator(boost::shared_ptr<Alarcon03ViscosityCalculator<DIM> > pCalculator);
+
+    void SetWallShearStressCalculator(boost::shared_ptr<Alarcon03WallShearStressCalculator<DIM> > pCalculator);
+
+//    void SetDownstreamConductedStimulusCalculator(boost::shared_ptr<AbstractVesselPropertyLocalCalculator<DIM> > pCalculator);
+//
+//    void SetUpstreamConductedStimulusCalculator(boost::shared_ptr<AbstractVesselPropertyLocalCalculator<DIM> > pCalculator);
+
+    void SetNodePressureCalculator(boost::shared_ptr<SimpleFlowSolver<DIM> > pCalculator);
+
+    void SetHaematocritCalculator(boost::shared_ptr<ConstantHaematocritSolver<DIM> > pCalculator);
+
     // method for performing the Calculation
     virtual void Iterate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
-    
+
 };
 
 #endif

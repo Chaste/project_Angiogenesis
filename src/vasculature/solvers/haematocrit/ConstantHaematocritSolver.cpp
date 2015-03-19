@@ -41,35 +41,36 @@ ConstantHaematocritSolver<DIM>::ConstantHaematocritSolver(double haematocrit)
 	: AbstractHaematocritSolver<DIM>(),
 	  mHaematocrit(haematocrit)
 {
-    
+
 }
 
 template<unsigned DIM>
 ConstantHaematocritSolver<DIM>::~ConstantHaematocritSolver()
 {
-    
+
 }
 
+template<unsigned DIM>
 void ConstantHaematocritSolver<DIM>::SetHaematocrit(double haematocrit)
 {
 	mHaematocrit = haematocrit;
 }
 
 template<unsigned DIM>
-void ConstantHaematocritSolver<DIM>::Implement(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork)
+void ConstantHaematocritSolver<DIM>::Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork)
 {
-    
+
 	std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
 
 	for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
 	{
 		if(segments[segment_index]->template GetData<double>("Absolute Flow Rate") == 0.0)
 		{
-			segments[segment_index]->SetData("Haematocrit", 0.0);
+			segments[segment_index]->SetData("Haematocrit Level", 0.0);
 		}
 		else
 		{
-			segments[segment_index]->SetData("Haematocrit", mHaematocrit);
+			segments[segment_index]->SetData("Haematocrit Level", mHaematocrit);
 		}
 	}
 }

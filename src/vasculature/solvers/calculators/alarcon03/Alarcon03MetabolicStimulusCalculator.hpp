@@ -42,18 +42,18 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 template<unsigned DIM>
 class Alarcon03MetabolicStimulusCalculator
 {
-    
+
 private:
 
     double mQRef;
     double mKm;
     double mMaxStimulus;
-    
+
 public:
-    
+
     // constructor
     Alarcon03MetabolicStimulusCalculator();
-    
+
     /**
      *  destructor.
      */
@@ -66,11 +66,11 @@ public:
     double GetMaxStimulus();
 
     void SetQRef(double qRef);
-    
+
     void SetKm(double km);
-    
+
     void SetMaxStimulus(double maxStimulus);
-    
+
     // method for performing the calculation
     void Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
 

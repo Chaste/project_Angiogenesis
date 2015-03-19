@@ -37,8 +37,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 template<unsigned DIM>
 Alarcon03RadiusCalculator<DIM>::Alarcon03RadiusCalculator()
-	: mMinRadius(1.0*pow(10.0,(-6))),
-	  mMaxRadius(50.0*pow(10.0,(-6))),
+	: mMinRadius(1e-6),
+	  mMaxRadius(50e-6),
 	  mTimeStep(0.0001)
 {
     
@@ -101,6 +101,21 @@ void Alarcon03RadiusCalculator<DIM>::Calculate(boost::shared_ptr<CaVascularNetwo
 
 		segments[segment_index]->SetData("Radius", radius);
 	}
+
+	//\ todo remove below code when the vtk writer can handle segments
+	std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels = vascularNetwork->GetVessels();
+
+	for (unsigned vessel_index = 0; vessel_index < vessels.size(); vessel_index++)
+	{
+		double average_radius = 0.0;
+		for (unsigned segment_index = 0; segment_index < vessels[vessel_index]->GetNumberOfSegments(); segment_index++)
+		{
+			average_radius += vessels[vessel_index]->GetSegment(segment_index)->template GetData<double>("Radius");
+		}
+
+		vessels[vessel_index]->SetData("Average Radius", average_radius / double(vessels[vessel_index]->GetNumberOfSegments()));
+	}
+
 }
 
 // Explicit instantiation
