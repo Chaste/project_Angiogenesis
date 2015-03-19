@@ -63,7 +63,7 @@ double Alarcon03MetabolicStimulusCalculator<DIM>::GetKm()
 }
 
 template<unsigned DIM>
-double Alarcon03MetabolicStimulusCalculator<DIM>::GetmMaxStimulus()
+double Alarcon03MetabolicStimulusCalculator<DIM>::GetMaxStimulus()
 {
 	return mMaxStimulus;
 }
@@ -90,7 +90,7 @@ void Alarcon03MetabolicStimulusCalculator<DIM>::SetKm(double km)
 }
 
 template<unsigned DIM>
-void Alarcon03MetabolicStimulusCalculator<DIM>::SetmMaxStimulus(double maxStimulus)
+void Alarcon03MetabolicStimulusCalculator<DIM>::SetMaxStimulus(double maxStimulus)
 {
 	if(mMaxStimulus <= 0.0)
 	{
