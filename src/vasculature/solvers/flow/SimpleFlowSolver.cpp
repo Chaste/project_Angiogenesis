@@ -152,21 +152,27 @@ void SimpleFlowSolver<DIM>::Implement(boost::shared_ptr<CaVascularNetwork<DIM> >
 		linearSystem.AddToRhsVectorElement(rows_to_be_zerod[bc_index], rhs_pressures[bc_index]);
 	}
 
+	std::vector<boost::shared_ptr<VascularNode<DIM> > > sourceNodes;
+
+    for (unsigned node_index = 0; node_index < num_nodes; node_index++)
+    {
+        if (nodes[node_index]->template GetData<bool>("Is Input") || nodes[node_index]->template GetData<bool>("Is Output"))
+        {
+            sourceNodes.push_back(nodes[node_index]);
+        }
+     }
+
+    std::vector<bool> connected = vascularNetwork->IsConnected(sourceNodes,nodes);
+
 	// set pressure to zero for all nodes which are not connected to either an input node or an output node
 	std::vector<unsigned> rows_to_be_zerod2;
 
 	for (unsigned node_index = 0; node_index < num_nodes; node_index++)
 	{
-		if (nodes[node_index]->template GetData<bool>("Is Input") || nodes[node_index]->template GetData<bool>("Is Output"))
-		{
-			for (unsigned test_node_index = 0; test_node_index < num_nodes; test_node_index++)
-			{
-				if (!vascularNetwork->IsConnected(nodes[node_index], nodes[test_node_index]))
-				{
-					rows_to_be_zerod2.push_back(test_node_index);
-				}
-			}
-		}
+	    if (!connected[node_index])
+	    {
+	        rows_to_be_zerod2.push_back(node_index);
+	    }
 	}
 	linearSystem.ZeroMatrixRowsWithValueOnDiagonal(rows_to_be_zerod2, 1.0);
 

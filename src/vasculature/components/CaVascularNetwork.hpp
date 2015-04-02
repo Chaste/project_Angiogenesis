@@ -200,7 +200,12 @@ public:
 	/**
         Return whether a vector of nodes is connected to a vector of source nodes.
 	 */
-	std::vector<std::vector<bool> > IsConnected(std::vector<boost::shared_ptr<VascularNode<DIM> > > sourceNodes, std::vector<boost::shared_ptr<VascularNode<DIM> > > queryNodes);
+	std::vector<bool> IsConnected(std::vector<boost::shared_ptr<VascularNode<DIM> > > sourceNodes, std::vector<boost::shared_ptr<VascularNode<DIM> > > queryNodes);
+
+	/**
+	 * Return whether node is in network.
+	 */
+	bool NodeIsInNetwork(boost::shared_ptr<VascularNode<DIM> > pSourceNode);
 
 	/**
        Merge nodes with the same spatial location. Useful for

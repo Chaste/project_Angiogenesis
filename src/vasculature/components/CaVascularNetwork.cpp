@@ -39,6 +39,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <algorithm>
 #include "OutputFileHandler.hpp"
 
+#include "Debug.hpp"
+
 template <unsigned DIM>
 CaVascularNetwork<DIM>::CaVascularNetwork()
 : mVessels(std::vector<boost::shared_ptr<CaVessel<DIM> > >()),
@@ -415,8 +417,9 @@ bool CaVascularNetwork<DIM>::IsConnected(boost::shared_ptr<VascularNode<DIM> > p
 	return (dtime[pEquivalentQueryNode->GetId()] > 0);
 }
 
+// Asks the question of whether the query nodes are connected to each of the source nodes ...
 template <unsigned DIM>
-std::vector<std::vector<bool> > CaVascularNetwork<DIM>::IsConnected(std::vector<boost::shared_ptr<VascularNode<DIM> > > sourceNodes,
+std::vector<bool > CaVascularNetwork<DIM>::IsConnected(std::vector<boost::shared_ptr<VascularNode<DIM> > > sourceNodes,
 		std::vector<boost::shared_ptr<VascularNode<DIM> > > queryNodes)
 		{
 
@@ -441,52 +444,73 @@ std::vector<std::vector<bool> > CaVascularNetwork<DIM>::IsConnected(std::vector<
 		add_edge(mVessels[i]->GetStartNode()->GetId(), mVessels[i]->GetEndNode()->GetId(), G);
 	}
 
-	std::vector<std::vector<bool> > connected;
+	std::vector<bool > connected(queryNodes.size(),false);
 
 	for(unsigned i=0; i<sourceNodes.size(); i++)
 	{
+
+//	    if (NodeIsInNetwork(sourceNodes[i]))
+//	    {
+//	        EXCEPTION("Source node is not in network.");
+//	    }
+
 		boost::shared_ptr<VascularNode<DIM> > pSourceNode = sourceNodes[i];
 		boost::shared_ptr<CaVessel<DIM> > p_source_vessel = pSourceNode->GetVesselSegment(0)->GetVessel();
 		boost::shared_ptr<VascularNode<DIM> > pEquivalentSourceNode = p_source_vessel->GetStartNode();
 
-		std::vector<bool> connected_to_this_source;
+        // a vector to hold the discover time property for each vertex
+        std::vector<Size> dtime(num_vertices(G));
+
+        Size time = 0;
+        bfs_time_visitor<Size*>vis(&dtime[0], time);
+
+        breadth_first_search(G,vertex(pEquivalentSourceNode->GetId(),G), boost::visitor(vis));
 
 		for (unsigned j=0; j<queryNodes.size(); j++)
 		{
+
+//		    if (NodeIsInNetwork(queryNodes[j]))
+//		    {
+//		        EXCEPTION("Query node is not in network.");
+//		    }
+
 			boost::shared_ptr<VascularNode<DIM> > pQueryNode = queryNodes[j];
 
 			if (pSourceNode == pQueryNode)
 			{
-				connected_to_this_source.push_back(true);
+				connected[j] = true;
 				continue;
 			}
 
 			boost::shared_ptr<CaVessel<DIM> > p_query_vessel = pQueryNode->GetVesselSegment(0)->GetVessel();
 			if (p_source_vessel == p_query_vessel || p_source_vessel->IsConnectedTo(p_query_vessel))
 			{
-				connected_to_this_source.push_back(true);
-				continue;
+			    connected[j] = true;
+			    continue;
 			}
 
 			boost::shared_ptr<VascularNode<DIM> > pEquivalentQueryNode = p_query_vessel->GetStartNode();
 
-
-			// a vector to hold the discover time property for each vertex
-			std::vector<Size> dtime(num_vertices(G));
-
-			Size time = 0;
-			bfs_time_visitor<Size*>vis(&dtime[0], time);
-
-			breadth_first_search(G,vertex(pEquivalentSourceNode->GetId(),G), boost::visitor(vis));
-
-			connected_to_this_source.push_back(dtime[pEquivalentQueryNode->GetId()] > 0);
+			if (dtime[pEquivalentQueryNode->GetId()] > 0)
+			{
+                connected[j] = true;
+			}
 		}
 
-		connected.push_back(connected_to_this_source);
 	}
 
 	return connected;
-		}
+}
+
+template <unsigned DIM>
+bool CaVascularNetwork<DIM>::NodeIsInNetwork(boost::shared_ptr<VascularNode<DIM> > pSourceNode)
+{
+
+    std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = GetVectorOfNodes();
+
+    return (std::find(nodes.begin(), nodes.end(), pSourceNode) != nodes.end());
+
+}
 
 template <unsigned DIM>
 void CaVascularNetwork<DIM>::MergeCoincidentNodes()

@@ -22,7 +22,7 @@
 
 #include "Debug.hpp"
 
-class TestStructuralAdaptationSolver : public CxxTest::TestSuite
+class TestSimpleStructuralAdaptationSolver : public CxxTest::TestSuite
 {
 
 	typedef boost::shared_ptr<VascularNode<2> > NodePtr2;
@@ -134,9 +134,9 @@ public:
 		SimpleStructuralAdaptationSolver<2> solver;
 		solver.SetWriteOutput(true);
 		solver.SetOutputFileName(progress_output_filename);
-		solver.SetTolerance(0.0001);
+		solver.SetTolerance(0.001);
 		solver.SetTimeIncrement(0.0001);
-		solver.SetMaxIterations(100000);
+		solver.SetMaxIterations(1000);
 
 		solver.Implement(vascular_network);
 

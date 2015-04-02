@@ -205,16 +205,6 @@ public:
         node_data.SetData("Pressure", pressure);
         vessel_network.SetNodeData(node_data);
 
-        // Move the network
-        std::vector<double> translation_vector_3d;
-        translation_vector_3d.push_back(3.5);
-        translation_vector_3d.push_back(5.6);
-        translation_vector_3d.push_back(-12.8);
-
-        vessel_network.Translate(translation_vector_3d);
-        vessel_network.Translate(translation_vector_3d, true);
-
-
         NodePtr3 node4 = VascularNode<3>::Create(1.0 , 1.0 , 1.0);
         NodePtr3 node5 = VascularNode<3>::Create(5.0 , 5.0 , 1.0);
         SegmentPtr3 pSegment4(CaVesselSegment<3>::Create(node4, node5));
@@ -223,10 +213,31 @@ public:
         VesselPtr3 pVessel4(CaVessel<3>::Create(pSegment4));
         vessel_network.AddVessel(pVessel4);
 
-
         TS_ASSERT(vessel_network.IsConnected(nodes[0], nodes[4]));
         TS_ASSERT(!vessel_network.IsConnected(nodes[0], node5));
         TS_ASSERT(vessel_network.IsConnected(node4, node5));
+
+        std::vector<NodePtr3> source_nodes;
+        source_nodes.push_back(nodes[0]);
+        source_nodes.push_back(node4);
+
+        std::vector<NodePtr3> query_nodes;
+        query_nodes.push_back(nodes[0]);
+        query_nodes.push_back(nodes[1]);
+        query_nodes.push_back(nodes[3]);
+        query_nodes.push_back(nodes[4]);
+
+        for(unsigned i = 0; i < query_nodes.size(); i++)
+        {
+            std::cout << "numsegs: " << query_nodes[i]->GetNumberOfSegments() << std::endl;
+        }
+
+        std::vector<bool> connected = vessel_network.IsConnected(source_nodes, query_nodes);
+        TS_ASSERT(connected[0]);
+        TS_ASSERT(connected[1]);
+        TS_ASSERT(connected[2]);
+        TS_ASSERT(connected[3]);
+
 
         OutputFileHandler output_file_handler("TestVesselNetwork",false);
         std::string output_filename4 = output_file_handler.GetOutputDirectoryFullPath().append("ConnectedTestVesselNetwork.gv");

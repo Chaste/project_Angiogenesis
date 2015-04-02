@@ -34,6 +34,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include "VasculatureGenerator.hpp"
+#include <sstream>
 
 template<unsigned DIM>
 VasculatureGenerator<DIM>::VasculatureGenerator()
@@ -278,7 +279,14 @@ boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateSi
 	return pNetwork;
 }
 
-// todo This method needs to be re-implemented using new vasculature structure and naming conventions.
+template <typename T>
+std::string to_string(T const& value) {
+    std::stringstream sstr;
+    sstr << value;
+    return sstr.str();
+}
+
+
 template<unsigned DIM>
 boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateHexagonalNetwork(unsigned width,
                 unsigned height,
@@ -295,7 +303,12 @@ boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateHe
         // Ensure there are a minimal number of units required to generate a functional network
         if(units_in_x_direction <= 1 || units_in_y_direction <= 1)
         {
-                EXCEPTION("Insufficient number of repeating units specified for the hexagonal network.");
+             std::string message = "Insufficient number of repeating units specified for the hexagonal network. Minimum length in x = ";
+             message.append(to_string<double>(2.0*(horizontal_vessel_length+diagonal_vessel_length)+horizontal_vessel_length+2.0*diagonal_vessel_length+1.0));
+             message.append(". Minimum length in y = ");
+             message.append(to_string<double>(2.0*diagonal_vessel_length+1.0));
+             message.append(".");
+             EXCEPTION(message);
         }
 
         // Generate an array of vessels with no spatial info
