@@ -34,6 +34,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include "VasculatureData.hpp"
+#include <stdexcept>
 
 VasculatureData::VasculatureData()
 {
@@ -43,23 +44,20 @@ VasculatureData::~VasculatureData()
 {
 }
 
-template<typename T> T VasculatureData::GetData(const std::string& variableName) const
+template<typename T> T VasculatureData::GetData(const std::string& variableName)
 {
-	// Check if the key is in the map
-	std::map<std::string, boost::any>::const_iterator it = mDataMap.find(variableName);
-	if (it == mDataMap.end())
-	{
-		EXCEPTION("No key: '" << variableName << "' found in property register.");
-	}
-
 	// Try to return the data in the form of the requested type
 	try
 	{
-		return boost::any_cast<T>(it->second);
+		return boost::any_cast<T>(mDataMap.at(variableName));
 	}
 	catch(const boost::bad_any_cast&)
 	{
 		EXCEPTION("Invalid type specified for the requested key: " << variableName);
+	}
+	catch(const std::out_of_range&)
+	{
+		EXCEPTION("No key: '" << variableName << "' found in property register.");
 	}
 }
 
@@ -126,10 +124,10 @@ template<typename T> void VasculatureData::SetData(const std::string& variableNa
 
 // Explicit instantiation
 
-template bool VasculatureData::GetData<bool>(const std::string& variableName) const;
-template double VasculatureData::GetData<double>(const std::string& variableName) const;
-template unsigned VasculatureData::GetData<unsigned>(const std::string& variableName) const;
-template std::vector<double> VasculatureData::GetData<std::vector<double> >(const std::string& variableName) const;
+template bool VasculatureData::GetData<bool>(const std::string& variableName);
+template double VasculatureData::GetData<double>(const std::string& variableName);
+template unsigned VasculatureData::GetData<unsigned>(const std::string& variableName);
+template std::vector<double> VasculatureData::GetData<std::vector<double> >(const std::string& variableName);
 
 template bool VasculatureData::IsType<bool>(const std::string& variableName);
 template bool VasculatureData::IsType<double>(const std::string& variableName);

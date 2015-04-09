@@ -82,9 +82,9 @@ public:
     																		unsigned doublings_in_direction2,
     																		unsigned doublings_in_direction3 = 1);
 
-    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateHexagonalNetwork(unsigned width,
-                    													unsigned height,
-                    													unsigned vessel_length);
+    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateHexagonalNetwork(double width,
+                    													double height,
+                    													double vessel_length);
 
     /*
      * Creates a hexagonal repeating unit

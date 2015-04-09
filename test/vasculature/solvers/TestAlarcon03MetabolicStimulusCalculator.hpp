@@ -86,8 +86,6 @@ public:
 		expected_metabolic_stimulus = MaxStimulus;
 
 		TS_ASSERT_DELTA(p_segment->template GetData<double>("Metabolic Stimulus"), expected_metabolic_stimulus,1e-6);
-
-
 	}
 
 };

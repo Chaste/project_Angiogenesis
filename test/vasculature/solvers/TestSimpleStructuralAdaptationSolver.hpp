@@ -37,11 +37,11 @@ public:
 	void TestStructuralAdaptationOfHexagonalNetwork() throw(Exception)
 	{
 		// Specify the network dimensions
-		double vessel_length = 80.0;
+		double vessel_length = 80e-6;
 
 		// Generate the network
 		VasculatureGenerator<2> vascular_network_generator;
-		boost::shared_ptr<CaVascularNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(1000,1000,vessel_length);
+		boost::shared_ptr<CaVascularNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(1e-3,1e-3,vessel_length);
 
 		VasculatureData data;
 		double radius = 1e-6;
@@ -77,7 +77,7 @@ public:
 					if((*vessel_iterator)->GetStartNode()->GetLocation()[0] >  x_middle)
 					{
 						(*vessel_iterator)->GetStartNode()->SetData<bool>("Is Input", true);
-						(*vessel_iterator)->GetStartNode()->SetData<double>("Pressure", 3289);
+						(*vessel_iterator)->GetStartNode()->SetData<double>("Pressure", 3322);
 					}
 				}
 			}
@@ -88,7 +88,7 @@ public:
 					if((*vessel_iterator)->GetStartNode()->GetLocation()[0] >  x_middle)
 					{
 						(*vessel_iterator)->GetEndNode()->SetData<bool>("Is Input", true);
-						(*vessel_iterator)->GetEndNode()->SetData<double>("Pressure", 3289);
+						(*vessel_iterator)->GetEndNode()->SetData<double>("Pressure", 3322);
 					}
 				}
 			}
@@ -134,7 +134,7 @@ public:
 		SimpleStructuralAdaptationSolver<2> solver;
 		solver.SetWriteOutput(true);
 		solver.SetOutputFileName(progress_output_filename);
-		solver.SetTolerance(0.001);
+		solver.SetTolerance(0.0001);
 		solver.SetTimeIncrement(0.0001);
 		solver.SetMaxIterations(1000);
 
