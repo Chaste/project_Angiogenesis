@@ -107,6 +107,40 @@ private:
      */
     double mImpedance;
 
+    /**
+     *   Viscosity of this vessel segment
+     */
+    double mViscosity;
+
+    /**
+     *   Wall shear stress of this vessel segment
+     */
+    double mWallShearStress;
+
+    /**
+     *   Mechanical stimulus of this vessel segment
+     */
+    double mMechanicalStimulus;
+
+    /**
+     *   Metabolic stimulus of this vessel segment
+     */
+    double mMetabolicStimulus;
+
+    /**
+     *   Upstream conducted stimulus of this vessel segment
+     */
+    double mUpstreamConductedStimulus;
+
+    /**
+     *   Downstream conducted stimulus of this vessel segment
+     */
+    double mDownstreamConductedStimulus;
+
+    /**
+     *   Shrinking stimulus of this vessel segment
+     */
+    double mShrinkingStimulus;
 
 private:
 
@@ -199,6 +233,41 @@ public:
 	 */
     double GetFlowRate() const;
 
+    /**
+     *  Return the viscosity
+     */
+    double GetViscosity() const;
+
+    /**
+     *   Return the wall shear stress of this vessel segment
+     */
+    double GetWallShearStress() const;
+
+    /**
+     *   Return the mechanical stimulus of this vessel segment
+     */
+    double GetMechanicalStimulus() const;
+
+    /**
+     *   Return the metabolic stimulus of this vessel segment
+     */
+    double GetMetabolicStimulus() const;
+
+    /**
+     *   Return the upstream conducted stimulus of this vessel segment
+     */
+    double GetUpstreamConductedStimulus() const;
+
+    /**
+     *   Return the downstream conducted stimulus of this vessel segment
+     */
+    double GetDownstreamConductedStimulus() const;
+
+    /**
+     *   Return the shrinking stimulus of this vessel segment
+     */
+    double GetShrinkingStimulus() const;
+
 	/**
 	 *  Return a point mid-way along the vessel segment
 	 */
@@ -290,6 +359,41 @@ public:
 	 *  Set the impedance
 	 */
     void SetImpedance(double impedance);
+
+    /**
+     *  Set the viscosity
+     */
+    void SetViscosity(double viscosity);
+
+    /**
+     *   Set the wall shear stress of this vessel segment
+     */
+    void SetWallShearStress(double value);
+
+    /**
+     *   Set the mechanical stimulus of this vessel segment
+     */
+    void SetMechanicalStimulus(double value);
+
+    /**
+     *   Set the metabolic stimulus of this vessel segment
+     */
+    void SetMetabolicStimulus(double value);
+
+    /**
+     *   Set the upstream conducted stimulus of this vessel segment
+     */
+    void SetUpstreamConductedStimulus(double value);
+
+    /**
+     *   Set the downstream conducted stimulus of this vessel segment
+     */
+    void SetDownstreamConductedStimulus(double value);
+
+    /**
+     *   Set the shrinking stimulus of this vessel segment
+     */
+    void SetShrinkingStimulus(double value);
 
 	/**
 	 *  Assign the Label

@@ -3,7 +3,6 @@ vasculature/components/TestCaVesselSegment.hpp
 vasculature/components/TestCaVessel.hpp
 vasculature/components/TestCaVascularNetwork.hpp
 vasculature/solvers/TestPoiseuilleImpedanceCalculator.hpp
-vasculature/solvers/TestSimpleFlowSolver.hpp
 vasculature/TestVasculatureData.hpp
 vasculature/TestVasculatureGenerator.hpp
 cell/TestVascularCellProperty.hpp

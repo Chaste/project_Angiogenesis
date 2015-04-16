@@ -81,8 +81,8 @@ void Alarcon03MechanicalStimulusCalculator<DIM>::Calculate(boost::shared_ptr<CaV
 	for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
 	{
 	    // get average pressure in segment. It is stored in pascal, so is converted to mmHg for the calculation.
-		double node0_pressure = segments[segment_index]->GetNode(0)->template GetData<double>("Pressure");
-		double node1_pressure = segments[segment_index]->GetNode(1)->template GetData<double>("Pressure");
+		double node0_pressure = segments[segment_index]->GetNode(0)->GetPressure();
+		double node1_pressure = segments[segment_index]->GetNode(1)->GetPressure();
 
 	    double average_pressure = (node0_pressure + node1_pressure)*760.0/(2.0*1.01*pow(10.0,5));
 
@@ -100,9 +100,9 @@ void Alarcon03MechanicalStimulusCalculator<DIM>::Calculate(boost::shared_ptr<CaV
 	    	mTauP = 0.1*(100.0 - 86.0*pow(exp(-5.0*log10(log10(average_pressure))), 5.4));
 	    }
 
-	    double wall_shear_stress = segments[segment_index]->template GetData<double>("Wall Shear Stress");
+	    double wall_shear_stress = segments[segment_index]->GetWallShearStress();
 	    double mechanical_stimulus = log10((wall_shear_stress + mTauRef)/mTauP);
-	    segments[segment_index]->SetData("Mechanical Stimulus", mechanical_stimulus);
+	    segments[segment_index]->SetMechanicalStimulus(mechanical_stimulus);
 	}
 }
 

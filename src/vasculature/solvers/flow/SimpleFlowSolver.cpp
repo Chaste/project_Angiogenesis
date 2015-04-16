@@ -42,6 +42,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Exception.hpp"
 #include "ReplicatableVector.hpp"
 
+#include "Debug.hpp"
+
 template<unsigned DIM>
 SimpleFlowSolver<DIM>::SimpleFlowSolver()
 {
@@ -82,6 +84,7 @@ void SimpleFlowSolver<DIM>::Implement(boost::shared_ptr<CaVascularNetwork<DIM> >
 		}
 	}
 
+
 	// Set up the system
 	PetscInt lhsVectorSize = num_nodes;
 	LinearSystem linearSystem(lhsVectorSize, max_num_segments + 1);
@@ -107,7 +110,7 @@ void SimpleFlowSolver<DIM>::Implement(boost::shared_ptr<CaVascularNetwork<DIM> >
 			}
 
 			// Get the segment impedance
-			double impedance = p_each_segment->template GetData<double>("Impedance");
+			double impedance = p_each_segment->GetImpedance();
 			if (impedance <= 0)
 			{
 				EXCEPTION("Impedance should be a positive number.");
@@ -139,12 +142,13 @@ void SimpleFlowSolver<DIM>::Implement(boost::shared_ptr<CaVascularNetwork<DIM> >
 	std::vector<double> rhs_pressures;
 	for (unsigned node_index = 0; node_index < num_nodes; node_index++)
 	{
-		if (nodes[node_index]->template GetData<bool>("Is Input") || nodes[node_index]->template GetData<bool>("Is Output"))
+		if (nodes[node_index]->IsInputNode() || nodes[node_index]->IsOutputNode())
 		{
 			rows_to_be_zerod.push_back(node_index);
-			rhs_pressures.push_back(nodes[node_index]->template GetData<double>("Pressure"));
+			rhs_pressures.push_back(nodes[node_index]->GetPressure());
 		}
 	}
+
 
 	linearSystem.ZeroMatrixRowsWithValueOnDiagonal(rows_to_be_zerod, 1.0);
 	linearSystem.AssembleIntermediateLinearSystem();
@@ -158,11 +162,12 @@ void SimpleFlowSolver<DIM>::Implement(boost::shared_ptr<CaVascularNetwork<DIM> >
 
     for (unsigned node_index = 0; node_index < num_nodes; node_index++)
     {
-        if (nodes[node_index]->template GetData<bool>("Is Input") || nodes[node_index]->template GetData<bool>("Is Output"))
+        if (nodes[node_index]->IsInputNode() || nodes[node_index]->IsOutputNode())
         {
             sourceNodes.push_back(nodes[node_index]);
         }
      }
+
 
     std::vector<bool> connected = vascularNetwork->IsConnected(sourceNodes,nodes);
 
@@ -178,16 +183,18 @@ void SimpleFlowSolver<DIM>::Implement(boost::shared_ptr<CaVascularNetwork<DIM> >
 	}
 	linearSystem.ZeroMatrixRowsWithValueOnDiagonal(rows_to_be_zerod2, 1.0);
 
+
 	// Assemble and solve the system
 	linearSystem.AssembleFinalLinearSystem();
 	Vec solution = PetscTools::CreateVec(nodes.size());
 	solution = linearSystem.Solve();
 
+
 	// Recover the nodal pressures
 	ReplicatableVector a(solution);
 	for (unsigned node_index = 0; node_index < num_nodes; node_index++)
 	{
-		nodes[node_index]->SetData("Pressure", a[node_index]);
+		nodes[node_index]->SetPressure(a[node_index]);
 	}
 
 	/**
@@ -197,14 +204,11 @@ void SimpleFlowSolver<DIM>::Implement(boost::shared_ptr<CaVascularNetwork<DIM> >
 
 	for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
 	{
-		double start_node_pressure = segments[segment_index]->GetNode(0)->template GetData<double>("Pressure");
-		double end_node_pressure = segments[segment_index]->GetNode(1)->template GetData<double>("Pressure");
+		double start_node_pressure = segments[segment_index]->GetNode(0)->GetPressure();
+		double end_node_pressure = segments[segment_index]->GetNode(1)->GetPressure();
 
-		double flow_rate = (start_node_pressure - end_node_pressure)/segments[segment_index]->template GetData<double>("Impedance");
-		segments[segment_index]->SetData("Flow Rate",flow_rate);
-		segments[segment_index]->SetData("Absolute Flow Rate",fabs(flow_rate));
-		segments[segment_index]->GetVessel()->SetData("Flow Rate",flow_rate);
-		segments[segment_index]->GetVessel()->SetData("Absolute Flow Rate", fabs(flow_rate));
+		double flow_rate = (start_node_pressure - end_node_pressure)/segments[segment_index]->GetImpedance();
+		segments[segment_index]->SetFlowRate(flow_rate);
 	}
 
 	/*

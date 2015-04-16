@@ -340,7 +340,20 @@ double CaVessel<DIM>::GetImpedance() const
 		impedance += mSegments[i]->GetImpedance();
 	}
 
-	return impedance/double(mSegments.size());
+	return impedance;
+}
+
+template<unsigned DIM>
+double CaVessel<DIM>::GetViscosity() const
+{
+    double viscosity = 0.0;
+
+    for (unsigned i = 0; i < mSegments.size(); i++)
+    {
+        viscosity += mSegments[i]->GetViscosity();
+    }
+
+    return viscosity/double(mSegments.size());
 }
 
 template <unsigned DIM>

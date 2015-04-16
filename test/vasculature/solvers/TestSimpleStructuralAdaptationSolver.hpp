@@ -43,21 +43,24 @@ public:
 		VasculatureGenerator<2> vascular_network_generator;
 		boost::shared_ptr<CaVascularNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(1e-3,1e-3,vessel_length);
 
-		VasculatureData data;
-		double radius = 1e-6;
-		data.SetData("Radius", radius);
-		double haematocrit = 0.45;
-		data.SetData("Haematocrit Level", haematocrit);
-		data.SetData("Upstream Conducted Stimulus", 0.0); // Take this out when the calculator has been implemented
-		data.SetData("Downstream Conducted Stimulus", 0.0); // Take this out when the calculator has been implemented
-		vascular_network->SetSegmentData(data);
+        std::vector<ChastePoint<2> > points;
+        points.push_back(ChastePoint<2>(0, 0));
+        points.push_back(ChastePoint<2>(5, 0));
 
-		VasculatureData node_data;
-		bool is_input = false;
-		node_data.SetData("Is Input", is_input);
-		bool is_output = false;
-		node_data.SetData("Is Output", is_output);
-		vascular_network->SetNodeData(node_data);
+        std::vector<NodePtr2> nodes;
+        for(unsigned i=0; i < points.size(); i++)
+        {
+            nodes.push_back(NodePtr2 (VascularNode<2>::Create(points[i])));
+        }
+
+        SegmentPtr2 p_segment(CaVesselSegment<2>::Create(nodes[0], nodes[1]));
+
+		double radius = 1e-5;
+		p_segment->SetRadius(radius);
+		double haematocrit = 0.45;
+		p_segment->SetHaematocrit(haematocrit);
+        vascular_network->SetSegmentProperties(p_segment);
+
 
 		std::vector<std::pair<double, double> > extents = vascular_network->GetExtents();
 		double y_middle = (extents[1].first + extents[1].second) /2.0;
@@ -76,8 +79,8 @@ public:
 				{
 					if((*vessel_iterator)->GetStartNode()->GetLocation()[0] >  x_middle)
 					{
-						(*vessel_iterator)->GetStartNode()->SetData<bool>("Is Input", true);
-						(*vessel_iterator)->GetStartNode()->SetData<double>("Pressure", 3322);
+						(*vessel_iterator)->GetStartNode()->IsInputNode(true);
+						(*vessel_iterator)->GetStartNode()->SetPressure(3322);
 					}
 				}
 			}
@@ -87,8 +90,8 @@ public:
 				{
 					if((*vessel_iterator)->GetStartNode()->GetLocation()[0] >  x_middle)
 					{
-						(*vessel_iterator)->GetEndNode()->SetData<bool>("Is Input", true);
-						(*vessel_iterator)->GetEndNode()->SetData<double>("Pressure", 3322);
+						(*vessel_iterator)->GetEndNode()->IsInputNode(true);
+						(*vessel_iterator)->GetEndNode()->SetPressure(3322);
 					}
 				}
 			}
@@ -98,8 +101,8 @@ public:
 				{
 					if((*vessel_iterator)->GetStartNode()->GetLocation()[0] <  x_middle)
 					{
-						(*vessel_iterator)->GetStartNode()->SetData<bool>("Is Output", true);
-						(*vessel_iterator)->GetStartNode()->SetData<double>("Pressure", 1993);
+						(*vessel_iterator)->GetStartNode()->IsOutputNode(true);
+						(*vessel_iterator)->GetStartNode()->SetPressure(1993);
 					}
 				}
 			}
@@ -109,8 +112,8 @@ public:
 				{
 					if((*vessel_iterator)->GetStartNode()->GetLocation()[0] <  x_middle)
 					{
-						(*vessel_iterator)->GetEndNode()->SetData<bool>("Is Output", true);
-						(*vessel_iterator)->GetEndNode()->SetData<double>("Pressure", 1993);
+						(*vessel_iterator)->GetEndNode()->IsOutputNode(true);
+						(*vessel_iterator)->GetEndNode()->SetPressure(1993);
 					}
 				}
 			}

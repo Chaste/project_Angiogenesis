@@ -47,7 +47,14 @@ CaVesselSegment<DIM>::CaVesselSegment(boost::shared_ptr<VascularNode<DIM> > pNod
   mRadius(1.0),
   mHaematocrit(0.45),
   mFlowRate(0.0),
-  mImpedance(0.0)
+  mImpedance(0.0),
+  mViscosity(0.0),
+  mWallShearStress(0.0),
+  mMechanicalStimulus(0.0),
+  mMetabolicStimulus(0.0),
+  mUpstreamConductedStimulus(0.0),
+  mDownstreamConductedStimulus(0.0),
+  mShrinkingStimulus(0.0)
   {
 
   }
@@ -206,6 +213,48 @@ template<unsigned DIM>
 double CaVesselSegment<DIM>::GetImpedance() const
 {
 	return mImpedance;
+}
+
+template<unsigned DIM>
+double CaVesselSegment<DIM>::GetViscosity() const
+{
+    return mViscosity;
+}
+
+template<unsigned DIM>
+double CaVesselSegment<DIM>::GetWallShearStress()  const
+{
+    return mWallShearStress;
+}
+
+template<unsigned DIM>
+double CaVesselSegment<DIM>::GetMechanicalStimulus()  const
+{
+    return mWallShearStress;
+}
+
+template<unsigned DIM>
+double CaVesselSegment<DIM>::GetMetabolicStimulus()  const
+{
+    return mMechanicalStimulus;
+}
+
+template<unsigned DIM>
+double CaVesselSegment<DIM>::GetUpstreamConductedStimulus()  const
+{
+    return mUpstreamConductedStimulus;
+}
+
+template<unsigned DIM>
+double CaVesselSegment<DIM>::GetDownstreamConductedStimulus()  const
+{
+    return mDownstreamConductedStimulus;
+}
+
+template<unsigned DIM>
+double CaVesselSegment<DIM>::GetShrinkingStimulus() const
+{
+    return mShrinkingStimulus;
 }
 
 template<unsigned DIM>
@@ -405,6 +454,11 @@ void CaVesselSegment<DIM>::ReplaceNode(unsigned oldNodeIndex, boost::shared_ptr<
 	{
 		EXCEPTION("A node index other than 0 or 1 has been requested for a Vessel Segment.");
 	}
+
+	if (mVessel.lock() != NULL)
+	{
+	    mVessel.lock()->UpdateNodes();
+	}
 }
 
 template<unsigned DIM>
@@ -453,6 +507,48 @@ template<unsigned DIM>
 void CaVesselSegment<DIM>::SetImpedance(double impedance)
 {
 	mImpedance = impedance;
+}
+
+template<unsigned DIM>
+void CaVesselSegment<DIM>::SetViscosity(double viscosity)
+{
+    mViscosity = viscosity;
+}
+
+template<unsigned DIM>
+void CaVesselSegment<DIM>::SetWallShearStress(double value)
+{
+    mWallShearStress = value;
+}
+
+template<unsigned DIM>
+void CaVesselSegment<DIM>::SetMechanicalStimulus(double value)
+{
+    mMechanicalStimulus = value;
+}
+
+template<unsigned DIM>
+void CaVesselSegment<DIM>::SetMetabolicStimulus(double value)
+{
+    mMetabolicStimulus = value;
+}
+
+template<unsigned DIM>
+void CaVesselSegment<DIM>::SetUpstreamConductedStimulus(double value)
+{
+    mUpstreamConductedStimulus = value;
+}
+
+template<unsigned DIM>
+void CaVesselSegment<DIM>::SetDownstreamConductedStimulus(double value)
+{
+    mDownstreamConductedStimulus = value;
+}
+
+template<unsigned DIM>
+void CaVesselSegment<DIM>::SetShrinkingStimulus(double value)
+{
+    mShrinkingStimulus = value;
 }
 
 template<unsigned DIM>

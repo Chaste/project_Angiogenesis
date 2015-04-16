@@ -139,7 +139,7 @@ void SimpleStructuralAdaptationSolver<DIM>::Iterate(boost::shared_ptr<CaVascular
 
     for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
     {
-    	segments[segment_index]->SetData("Shrinking Stimulus", 1.79);
+    	segments[segment_index]->SetShrinkingStimulus(1.79);
     }
 
 	mWallShearStressCalculator->Calculate(vascularNetwork);

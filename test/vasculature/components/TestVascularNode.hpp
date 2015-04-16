@@ -48,6 +48,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "PottsMeshGenerator.hpp"
 #include "FakePetscSetup.hpp"
 
+#include "Debug.hpp"
+
 class TestVascularNode: public AbstractCellBasedTestSuite
 {
 

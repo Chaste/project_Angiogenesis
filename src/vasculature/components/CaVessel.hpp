@@ -188,6 +188,13 @@ public:
 	 */
 	double GetImpedance() const;
 
+    /**
+     *  Return the Viscosity
+     *
+     *  @return double
+     */
+    double GetViscosity() const;
+
 	/**
 	 *  Return the Label
 	 *

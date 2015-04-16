@@ -59,8 +59,6 @@ class TestSimpleFlowSolver : public CxxTest::TestSuite
 
 public:
 
-
-
 	void TestFlowThroughSingleSegment() throw(Exception)
 	{
 
@@ -83,35 +81,27 @@ public:
 
 		p_vascular_network->AddVessel(p_vessel);
 
-		VasculatureData data;
 		double impedance = 10.0;
-		data.SetData("Impedance", impedance);
-		p_vascular_network->SetSegmentData(data);
+		p_segment->SetImpedance(impedance);
+		p_vascular_network->SetSegmentProperties(p_segment);
 
-		VasculatureData node_data;
-		bool is_input = false;
-		node_data.SetData("Is Input", is_input);
-		bool is_output = false;
-		node_data.SetData("Is Output", is_output);
-		p_vascular_network->SetNodeData(node_data);
+		p_vessel->GetStartNode()->IsInputNode(true);
+		p_vessel->GetStartNode()->SetPressure(3393);
 
-		p_vessel->GetStartNode()->SetData<bool>("Is Input", true);
-		p_vessel->GetStartNode()->SetData<double>("Pressure", 3393);
-
-		p_vessel->GetEndNode()->SetData<bool>("Is Output", true);
-		p_vessel->GetEndNode()->SetData<double>("Pressure", 1000.5);
+		p_vessel->GetEndNode()->IsOutputNode(true);
+		p_vessel->GetEndNode()->SetPressure(1000.5);
 
 		SimpleFlowSolver<3> solver;
 
 		solver.Implement(p_vascular_network);
 
-		TS_ASSERT_DELTA(p_vessel->GetStartNode()->GetData<double>("Pressure"),3393,1e-6);
-		TS_ASSERT_DELTA(p_vessel->GetEndNode()->GetData<double>("Pressure"),1000.5,1e-6);
+		TS_ASSERT_DELTA(p_vessel->GetStartNode()->GetPressure(),3393,1e-6);
+		TS_ASSERT_DELTA(p_vessel->GetEndNode()->GetPressure(),1000.5,1e-6);
 
-		TS_ASSERT_DELTA(p_vessel->GetData<double>("Flow Rate"),(3393-1000.5)/impedance,1e-6);
-		TS_ASSERT_DELTA(p_segment->GetData<double>("Flow Rate"),(3393-1000.5)/impedance,1e-6);
+		TS_ASSERT_DELTA(p_vessel->GetFlowRate(),(3393-1000.5)/impedance,1e-6);
+		TS_ASSERT_DELTA(p_segment->GetFlowRate(),(3393-1000.5)/impedance,1e-6);
 
-		p_segment->SetData("Impedance",0.0);
+		p_segment->SetImpedance(0.0);
 
 		TS_ASSERT_THROWS_THIS(solver.Implement(p_vascular_network),"Impedance should be a positive number.");
 
@@ -152,23 +142,15 @@ public:
 
 		p_vascular_network->AddVessel(p_vessel);
 
-		VasculatureData data;
-		double impedance = 10.0;
-		data.SetData("Impedance", impedance);
-		p_vascular_network->SetSegmentData(data);
+        double impedance = 10.0;
+        p_segment1->SetImpedance(impedance);
+        p_vascular_network->SetSegmentProperties(p_segment1);
 
-		VasculatureData node_data;
-		bool is_input = false;
-		node_data.SetData("Is Input", is_input);
-		bool is_output = false;
-		node_data.SetData("Is Output", is_output);
-		p_vascular_network->SetNodeData(node_data);
+		p_vessel->GetStartNode()->IsInputNode(true);
+		p_vessel->GetStartNode()->SetPressure(3393);
 
-		p_vessel->GetStartNode()->SetData<bool>("Is Input", true);
-		p_vessel->GetStartNode()->SetData<double>("Pressure", 3393);
-
-		p_vessel->GetEndNode()->SetData<bool>("Is Output", true);
-		p_vessel->GetEndNode()->SetData<double>("Pressure", 1000.5);
+		p_vessel->GetEndNode()->IsOutputNode(true);
+		p_vessel->GetEndNode()->SetPressure(1000.5);
 
 		SimpleFlowSolver<3> solver;
 
@@ -176,19 +158,18 @@ public:
 
 		for (unsigned i = 0; i < nodes.size(); i++)
 		{
-			TS_ASSERT_DELTA(nodes[i]->GetData<double>("Pressure"),3393 - (3393-1000.5)*i/(nodes.size()-1),1e-6);
+			TS_ASSERT_DELTA(nodes[i]->GetPressure(),3393 - (3393-1000.5)*i/(nodes.size()-1),1e-6);
 		}
 
-		TS_ASSERT_DELTA(p_vessel->GetStartNode()->GetData<double>("Pressure"),3393,1e-6);
-		TS_ASSERT_DELTA(p_vessel->GetEndNode()->GetData<double>("Pressure"),1000.5,1e-6);
+		TS_ASSERT_DELTA(p_vessel->GetStartNode()->GetPressure(),3393,1e-6);
+		TS_ASSERT_DELTA(p_vessel->GetEndNode()->GetPressure(),1000.5,1e-6);
 
-		TS_ASSERT_DELTA(p_vessel->GetData<double>("Flow Rate"),(3393-1000.5)/(segments.size()*impedance),1e-6);
+		TS_ASSERT_DELTA(p_vessel->GetFlowRate(),(3393-1000.5)/(segments.size()*impedance),1e-6);
 
 		for (unsigned i = 0; i < segments.size(); i++)
 		{
-			TS_ASSERT_DELTA(segments[i]->GetData<double>("Flow Rate"),(3393-1000.5)/(segments.size()*impedance),1e-6);
+			TS_ASSERT_DELTA(segments[i]->GetFlowRate(),(3393-1000.5)/(segments.size()*impedance),1e-6);
 		}
-
 
 	}
 
@@ -226,55 +207,39 @@ public:
 
 		p_vascular_network->AddVessels(vessels);
 
-		VasculatureData data;
-		double impedance = 10.0;
-		data.SetData("Impedance", impedance);
-		p_vascular_network->SetSegmentData(data);
+        double impedance = 10.0;
+        p_segment1->SetImpedance(impedance);
+        p_vascular_network->SetSegmentProperties(p_segment1);
 
-		VasculatureData node_data;
-		bool is_input = false;
-		node_data.SetData("Is Input", is_input);
-		bool is_output = false;
-		node_data.SetData("Is Output", is_output);
-		p_vascular_network->SetNodeData(node_data);
+		nodes[0]->IsInputNode(true);
+		nodes[0]->SetPressure(3393);
 
-		nodes[0]->SetData<bool>("Is Input", true);
-		nodes[0]->SetData<double>("Pressure", 3393);
+		nodes[1]->IsInputNode(true);
+		nodes[1]->SetPressure(3393);
 
-		nodes[1]->SetData<bool>("Is Input", true);
-		nodes[1]->SetData<double>("Pressure", 3393);
-
-		nodes[3]->SetData<bool>("Is Output", true);
-		nodes[3]->SetData<double>("Pressure", 1000.5);
+		nodes[3]->IsOutputNode(true);
+		nodes[3]->SetPressure(1000.5);
 
 		SimpleFlowSolver<3> solver;
 
 		solver.Implement(p_vascular_network);
 
 
-		TS_ASSERT_DELTA(nodes[0]->GetData<double>("Pressure"),3393,1e-6);
-		TS_ASSERT_DELTA(nodes[1]->GetData<double>("Pressure"),3393,1e-6);
-		TS_ASSERT_DELTA(nodes[2]->GetData<double>("Pressure"),(2*3393 + 1000.5)/3,1e-6);
-		TS_ASSERT_DELTA(nodes[3]->GetData<double>("Pressure"),1000.5,1e-6);
+		TS_ASSERT_DELTA(nodes[0]->GetPressure(),3393,1e-6);
+		TS_ASSERT_DELTA(nodes[1]->GetPressure(),3393,1e-6);
+		TS_ASSERT_DELTA(nodes[2]->GetPressure(),(2*3393 + 1000.5)/3,1e-6);
+		TS_ASSERT_DELTA(nodes[3]->GetPressure(),1000.5,1e-6);
 
-		TS_ASSERT_DELTA(vessels[0]->GetData<double>("Flow Rate"),(3393-nodes[2]->GetData<double>("Pressure"))/impedance,1e-6);
-		TS_ASSERT_DELTA(vessels[1]->GetData<double>("Flow Rate"),(3393-nodes[2]->GetData<double>("Pressure"))/impedance,1e-6);
-		TS_ASSERT_DELTA(vessels[2]->GetData<double>("Flow Rate"),-(nodes[2]->GetData<double>("Pressure")-1000.5)/impedance,1e-6);
+		TS_ASSERT_DELTA(vessels[0]->GetFlowRate(),(3393-nodes[2]->GetPressure())/impedance,1e-6);
+		TS_ASSERT_DELTA(vessels[1]->GetFlowRate(),(3393-nodes[2]->GetPressure())/impedance,1e-6);
+		TS_ASSERT_DELTA(vessels[2]->GetFlowRate(),-(nodes[2]->GetPressure()-1000.5)/impedance,1e-6);
 
-		TS_ASSERT_DELTA(p_segment1->GetData<double>("Flow Rate"),(3393-nodes[2]->GetData<double>("Pressure"))/impedance,1e-6);
-		TS_ASSERT_DELTA(p_segment2->GetData<double>("Flow Rate"),(3393-nodes[2]->GetData<double>("Pressure"))/impedance,1e-6);
-		TS_ASSERT_DELTA(p_segment3->GetData<double>("Flow Rate"),-(nodes[2]->GetData<double>("Pressure")-1000.5)/impedance,1e-6);
+		TS_ASSERT_DELTA(p_segment1->GetFlowRate(),(3393-nodes[2]->GetPressure())/impedance,1e-6);
+		TS_ASSERT_DELTA(p_segment2->GetFlowRate(),(3393-nodes[2]->GetPressure())/impedance,1e-6);
+		TS_ASSERT_DELTA(p_segment3->GetFlowRate(),-(nodes[2]->GetPressure()-1000.5)/impedance,1e-6);
 
-		TS_ASSERT_DELTA(vessels[0]->GetData<double>("Absolute Flow Rate"),(3393-nodes[2]->GetData<double>("Pressure"))/impedance,1e-6);
-		TS_ASSERT_DELTA(vessels[1]->GetData<double>("Absolute Flow Rate"),(3393-nodes[2]->GetData<double>("Pressure"))/impedance,1e-6);
-		TS_ASSERT_DELTA(vessels[2]->GetData<double>("Absolute Flow Rate"),fabs((1000.5-nodes[2]->GetData<double>("Pressure")))/impedance,1e-6);
-
-		TS_ASSERT_DELTA(p_segment1->GetData<double>("Absolute Flow Rate"),(3393-nodes[2]->GetData<double>("Pressure"))/impedance,1e-6);
-		TS_ASSERT_DELTA(p_segment2->GetData<double>("Absolute Flow Rate"),(3393-nodes[2]->GetData<double>("Pressure"))/impedance,1e-6);
-		TS_ASSERT_DELTA(p_segment3->GetData<double>("Absolute Flow Rate"),fabs((1000.5-nodes[2]->GetData<double>("Pressure")))/impedance,1e-6);
-
-		double kirchoff_residual = vessels[0]->GetData<double>("Flow Rate") + vessels[1]->GetData<double>("Flow Rate") +
-									vessels[2]->GetData<double>("Flow Rate");
+		double kirchoff_residual = vessels[0]->GetFlowRate() + vessels[1]->GetFlowRate() +
+									vessels[2]->GetFlowRate();
 
 		TS_ASSERT_DELTA(kirchoff_residual,0,1e-6);
 
@@ -314,55 +279,38 @@ public:
 
 		p_vascular_network->AddVessels(vessels);
 
-		VasculatureData data;
-		double impedance = 10.0;
-		data.SetData("Impedance", impedance);
-		p_vascular_network->SetSegmentData(data);
+        double impedance = 10.0;
+        p_segment1->SetImpedance(impedance);
+        p_vascular_network->SetSegmentProperties(p_segment1);
 
-		VasculatureData node_data;
-		bool is_input = false;
-		node_data.SetData("Is Input", is_input);
-		bool is_output = false;
-		node_data.SetData("Is Output", is_output);
-		p_vascular_network->SetNodeData(node_data);
+		nodes[0]->IsInputNode(true);
+		nodes[0]->SetPressure(3393);
 
-		nodes[0]->SetData<bool>("Is Input", true);
-		nodes[0]->SetData<double>("Pressure", 3393);
+		nodes[1]->IsInputNode(true);
+		nodes[1]->SetPressure(3393);
 
-		nodes[1]->SetData<bool>("Is Input", true);
-		nodes[1]->SetData<double>("Pressure", 3393);
-
-		nodes[3]->SetData<bool>("Is Output", true);
-		nodes[3]->SetData<double>("Pressure", 1000.5);
+		nodes[3]->IsOutputNode(true);
+		nodes[3]->SetPressure(1000.5);
 
 		SimpleFlowSolver<3> solver;
 
 		solver.Implement(p_vascular_network);
 
+		TS_ASSERT_DELTA(nodes[0]->GetPressure(),3393,1e-6);
+		TS_ASSERT_DELTA(nodes[1]->GetPressure(),3393,1e-6);
+		TS_ASSERT_DELTA(nodes[2]->GetPressure(),(2*3393 + 1000.5)/3,1e-6);
+		TS_ASSERT_DELTA(nodes[3]->GetPressure(),1000.5,1e-6);
 
-		TS_ASSERT_DELTA(nodes[0]->GetData<double>("Pressure"),3393,1e-6);
-		TS_ASSERT_DELTA(nodes[1]->GetData<double>("Pressure"),3393,1e-6);
-		TS_ASSERT_DELTA(nodes[2]->GetData<double>("Pressure"),(2*3393 + 1000.5)/3,1e-6);
-		TS_ASSERT_DELTA(nodes[3]->GetData<double>("Pressure"),1000.5,1e-6);
+		TS_ASSERT_DELTA(vessels[0]->GetFlowRate(),(3393-nodes[2]->GetPressure())/impedance,1e-6);
+		TS_ASSERT_DELTA(vessels[1]->GetFlowRate(),(3393-nodes[2]->GetPressure())/impedance,1e-6);
+		TS_ASSERT_DELTA(vessels[2]->GetFlowRate(),(nodes[2]->GetPressure()-1000.5)/impedance,1e-6);
 
-		TS_ASSERT_DELTA(vessels[0]->GetData<double>("Flow Rate"),(3393-nodes[2]->GetData<double>("Pressure"))/impedance,1e-6);
-		TS_ASSERT_DELTA(vessels[1]->GetData<double>("Flow Rate"),(3393-nodes[2]->GetData<double>("Pressure"))/impedance,1e-6);
-		TS_ASSERT_DELTA(vessels[2]->GetData<double>("Flow Rate"),(nodes[2]->GetData<double>("Pressure")-1000.5)/impedance,1e-6);
+		TS_ASSERT_DELTA(p_segment1->GetFlowRate(),(3393-nodes[2]->GetPressure())/impedance,1e-6);
+		TS_ASSERT_DELTA(p_segment2->GetFlowRate(),(3393-nodes[2]->GetPressure())/impedance,1e-6);
+		TS_ASSERT_DELTA(p_segment3->GetFlowRate(),(nodes[2]->GetPressure()-1000.5)/impedance,1e-6);
 
-		TS_ASSERT_DELTA(p_segment1->GetData<double>("Flow Rate"),(3393-nodes[2]->GetData<double>("Pressure"))/impedance,1e-6);
-		TS_ASSERT_DELTA(p_segment2->GetData<double>("Flow Rate"),(3393-nodes[2]->GetData<double>("Pressure"))/impedance,1e-6);
-		TS_ASSERT_DELTA(p_segment3->GetData<double>("Flow Rate"),(nodes[2]->GetData<double>("Pressure")-1000.5)/impedance,1e-6);
-
-		TS_ASSERT_DELTA(vessels[0]->GetData<double>("Absolute Flow Rate"),(3393-nodes[2]->GetData<double>("Pressure"))/impedance,1e-6);
-		TS_ASSERT_DELTA(vessels[1]->GetData<double>("Absolute Flow Rate"),(3393-nodes[2]->GetData<double>("Pressure"))/impedance,1e-6);
-		TS_ASSERT_DELTA(vessels[2]->GetData<double>("Absolute Flow Rate"),fabs((1000.5-nodes[2]->GetData<double>("Pressure")))/impedance,1e-6);
-
-		TS_ASSERT_DELTA(p_segment1->GetData<double>("Absolute Flow Rate"),(3393-nodes[2]->GetData<double>("Pressure"))/impedance,1e-6);
-		TS_ASSERT_DELTA(p_segment2->GetData<double>("Absolute Flow Rate"),(3393-nodes[2]->GetData<double>("Pressure"))/impedance,1e-6);
-		TS_ASSERT_DELTA(p_segment3->GetData<double>("Absolute Flow Rate"),fabs((1000.5-nodes[2]->GetData<double>("Pressure")))/impedance,1e-6);
-
-		double kirchoff_residual = vessels[0]->GetData<double>("Flow Rate") + vessels[1]->GetData<double>("Flow Rate") -
-				vessels[2]->GetData<double>("Flow Rate");
+		double kirchoff_residual = vessels[0]->GetFlowRate() + vessels[1]->GetFlowRate() -
+				vessels[2]->GetFlowRate();
 
 		TS_ASSERT_DELTA(kirchoff_residual,0,1e-6);
 
@@ -377,17 +325,22 @@ public:
 		VasculatureGenerator<2> vascular_network_generator;
 		boost::shared_ptr<CaVascularNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(1000,1000,vessel_length);
 
-		VasculatureData data;
-		double impedance = 10.0;
-		data.SetData("Impedance", impedance);
-		vascular_network->SetSegmentData(data);
+        // Make some nodes
+        std::vector<ChastePoint<2> > points;
+        points.push_back(ChastePoint<2>(0, 0, 0)); // input
+        points.push_back(ChastePoint<2>(0, 1.0, 0)); // input
 
-		VasculatureData node_data;
-		bool is_input = false;
-		node_data.SetData("Is Input", is_input);
-		bool is_output = false;
-		node_data.SetData("Is Output", is_output);
-		vascular_network->SetNodeData(node_data);
+        std::vector<NodePtr2> nodes;
+        for(unsigned i=0; i < points.size(); i++)
+        {
+            nodes.push_back(NodePtr2 (VascularNode<2>::Create(points[i])));
+        }
+
+		SegmentPtr2 p_segment1(CaVesselSegment<2>::Create(nodes[0], nodes[1]));
+
+        double impedance = 10.0;
+        p_segment1->SetImpedance(impedance);
+        vascular_network->SetSegmentProperties(p_segment1);
 
 		std::vector<std::pair<double, double> > extents = vascular_network->GetExtents();
 		double y_middle = (extents[1].first + extents[1].second) /2.0;
@@ -402,32 +355,32 @@ public:
 			{
 				if((*vessel_iterator)->GetStartNode()->GetLocation()[1] >  y_middle)
 				{
-					(*vessel_iterator)->GetStartNode()->SetData<bool>("Is Input", true);
-					(*vessel_iterator)->GetStartNode()->SetData<double>("Pressure", 3393);
+					(*vessel_iterator)->GetStartNode()->IsInputNode(true);
+					(*vessel_iterator)->GetStartNode()->SetPressure(3393);
 				}
 			}
 			if((*vessel_iterator)->GetEndNode()->GetNumberOfSegments() == 1)
 			{
 				if((*vessel_iterator)->GetEndNode()->GetLocation()[1] >  y_middle)
 				{
-					(*vessel_iterator)->GetEndNode()->SetData<bool>("Is Input", true);
-					(*vessel_iterator)->GetEndNode()->SetData<double>("Pressure", 3393);
+					(*vessel_iterator)->GetEndNode()->IsInputNode(true);
+					(*vessel_iterator)->GetEndNode()->SetPressure(3393);
 				}
 			}
 			if((*vessel_iterator)->GetStartNode()->GetNumberOfSegments() == 1)
 			{
 				if((*vessel_iterator)->GetStartNode()->GetLocation()[1] <=  y_middle)
 				{
-					(*vessel_iterator)->GetStartNode()->SetData<bool>("Is Output", true);
-					(*vessel_iterator)->GetStartNode()->SetData<double>("Pressure", 1993);
+					(*vessel_iterator)->GetStartNode()->IsOutputNode(true);
+					(*vessel_iterator)->GetStartNode()->SetPressure(1993);
 				}
 			}
 			if((*vessel_iterator)->GetEndNode()->GetNumberOfSegments() == 1)
 			{
 				if((*vessel_iterator)->GetEndNode()->GetLocation()[1] <=  y_middle)
 				{
-					(*vessel_iterator)->GetEndNode()->SetData<bool>("Is Output", true);
-					(*vessel_iterator)->GetEndNode()->SetData<double>("Pressure", 1993);
+					(*vessel_iterator)->GetEndNode()->IsOutputNode(true);
+					(*vessel_iterator)->GetEndNode()->SetPressure(1993);
 				}
 			}
 

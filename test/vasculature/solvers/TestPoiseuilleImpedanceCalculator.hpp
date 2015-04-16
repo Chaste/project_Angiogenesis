@@ -79,14 +79,13 @@ public:
 		boost::shared_ptr<CaVascularNetwork<3> > p_vascular_network(new CaVascularNetwork<3>());
 
 		p_vascular_network->AddVessel(p_vessel);
-
-		VasculatureData data;
 		double viscosity = 2e-3;
 		double radius = 5e-6;
-		data.SetData("Radius", radius);
-		data.SetData("Viscosity", viscosity);
-		p_vascular_network->SetVesselData(data);
-		p_vascular_network->SetSegmentData(data);
+
+		p_segment->SetRadius(radius);
+		p_segment->SetViscosity(viscosity);
+
+		p_vascular_network->SetSegmentProperties(p_segment);
 
 		PoiseuilleImpedanceCalculator<3> calculator;
 
@@ -94,18 +93,15 @@ public:
 
 		double expected_impedance = 8*viscosity*5/(M_PI*SmallPow(radius,4u));
 
-		TS_ASSERT_DELTA(p_vessel->GetData<double>("Impedance"),expected_impedance,1e-6);
-		TS_ASSERT_DELTA(p_segment->GetData<double>("Impedance"),expected_impedance,1e-6);
+		TS_ASSERT_DELTA(p_vessel->GetImpedance(),expected_impedance,1e-6);
+		TS_ASSERT_DELTA(p_segment->GetImpedance(),expected_impedance,1e-6);
 
-		p_segment->SetData("Radius",0.0);
-
+        p_segment->SetRadius(0.0);
 		TS_ASSERT_THROWS_THIS(calculator.Calculate(p_vascular_network),"Radius should be a positive number.");
 
-		p_segment->SetData("Radius",5e-6);
-		p_segment->SetData("Viscosity",0.0);
-
+        p_segment->SetRadius(5e-6);
+        p_segment->SetViscosity(0.0);
 		TS_ASSERT_THROWS_THIS(calculator.Calculate(p_vascular_network),"Viscosity should be a positive number.");
-
 	}
 
 };

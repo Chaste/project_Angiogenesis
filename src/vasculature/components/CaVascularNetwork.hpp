@@ -243,6 +243,11 @@ public:
 	 */
 	void SetNodeData(VasculatureData data);
 
+    /**
+        Set the properties of the segments in the network based on those of the prototype
+     */
+    void SetSegmentProperties(boost::shared_ptr<CaVesselSegment<DIM> >  prototype);
+
 	/**
         Apply the input data to all vessel segments in the network
 	 */

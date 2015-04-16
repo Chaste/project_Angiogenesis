@@ -141,7 +141,7 @@ void StructuralAdaptationSolver<DIM>::Implement(boost::shared_ptr<CaVascularNetw
 
     for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
     {
-    	previous_radii.push_back(segments[segment_index]->template GetData<double>("Radius"));
+    	previous_radii.push_back(segments[segment_index]->GetRadius());
     }
 
     while (max_radius_relative_change > mTolerance && time < SimulationTime::Instance()->GetTimeStep()*60.0 && iteration < mMaxIterations)
@@ -155,7 +155,7 @@ void StructuralAdaptationSolver<DIM>::Implement(boost::shared_ptr<CaVascularNetw
 
         for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
         {
-        	double current_radius = segments[segment_index]->template GetData<double>("Radius");
+        	double current_radius = segments[segment_index]->GetRadius();
 
         	relative_change.push_back(fabs(1.0 - current_radius/previous_radii[segment_index]));
         	previous_radii[segment_index] = current_radius;

@@ -78,15 +78,15 @@ void Alarcon03RadiusCalculator<DIM>::Calculate(boost::shared_ptr<CaVascularNetwo
 	for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
 	{
 
-		double mechanical_stimulus = segments[segment_index]->template GetData<double>("Mechanical Stimulus");
-		double metabolic_stimulus = segments[segment_index]->template GetData<double>("Metabolic Stimulus");
-		double upstream_conducted_stimulus = segments[segment_index]->template GetData<double>("Upstream Conducted Stimulus");
-		double downstream_stimulus = segments[segment_index]->template GetData<double>("Downstream Conducted Stimulus");
-		double shrinking_stimulus = segments[segment_index]->template GetData<double>("Shrinking Stimulus");
+		double mechanical_stimulus = segments[segment_index]->GetMechanicalStimulus();
+		double metabolic_stimulus = segments[segment_index]->GetMetabolicStimulus();
+		double upstream_conducted_stimulus = segments[segment_index]->GetUpstreamConductedStimulus();
+		double downstream_stimulus = segments[segment_index]->GetDownstreamConductedStimulus();
+		double shrinking_stimulus = segments[segment_index]->GetShrinkingStimulus();
 
 		double total_stimulus = mechanical_stimulus + metabolic_stimulus + upstream_conducted_stimulus + downstream_stimulus - shrinking_stimulus;
 
-		double radius = segments[segment_index]->template GetData<double>("Radius");
+		double radius = segments[segment_index]->GetRadius();
 
 		radius *= 1.0 + mTimeStep*total_stimulus;
 
@@ -99,23 +99,8 @@ void Alarcon03RadiusCalculator<DIM>::Calculate(boost::shared_ptr<CaVascularNetwo
 			radius = mMinRadius;
 		}
 
-		segments[segment_index]->SetData("Radius", radius);
+		segments[segment_index]->SetRadius(radius);
 	}
-
-	//\ todo remove below code when the vtk writer can handle segments
-	std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels = vascularNetwork->GetVessels();
-
-	for (unsigned vessel_index = 0; vessel_index < vessels.size(); vessel_index++)
-	{
-		double average_radius = 0.0;
-		for (unsigned segment_index = 0; segment_index < vessels[vessel_index]->GetNumberOfSegments(); segment_index++)
-		{
-			average_radius += vessels[vessel_index]->GetSegment(segment_index)->template GetData<double>("Radius");
-		}
-
-		vessels[vessel_index]->SetData("Average Radius", average_radius / double(vessels[vessel_index]->GetNumberOfSegments()));
-	}
-
 }
 
 // Explicit instantiation

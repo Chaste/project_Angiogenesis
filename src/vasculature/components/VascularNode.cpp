@@ -265,6 +265,20 @@ bool VascularNode<DIM>::IsCoincident(const boost::shared_ptr<VascularNode<DIM> >
 	return (GetLocation().IsSamePoint(pNode->GetLocation()));
 }
 
+
+template<unsigned DIM>
+bool VascularNode<DIM>::IsInputNode()
+{
+    return mIsInputNode;
+}
+
+
+template<unsigned DIM>
+bool VascularNode<DIM>::IsOutputNode()
+{
+    return mIsOutputNode;
+}
+
 template<unsigned DIM>
 void VascularNode<DIM>::RemoveCell()
 {
@@ -338,6 +352,19 @@ template<unsigned DIM>
 void VascularNode<DIM>::SetId(unsigned id)
 {
 	mId = id;
+}
+
+template<unsigned DIM>
+void VascularNode<DIM>::IsInputNode(bool inputNode)
+{
+    mIsInputNode = inputNode;
+}
+
+
+template<unsigned DIM>
+void VascularNode<DIM>::IsOutputNode(bool outputNode)
+{
+    mIsOutputNode = outputNode;
 }
 
 template<unsigned DIM>

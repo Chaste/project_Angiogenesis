@@ -268,6 +268,20 @@ public:
     bool IsCoincident(const ChastePoint<DIM>& rPoint) const;
 
     /**
+     *  Return true if the node is an input node
+     *
+     *  @return bool
+     */
+    bool IsInputNode();
+
+    /**
+     *  Return true if the node is an output node
+     *
+     *  @return bool
+     */
+    bool IsOutputNode();
+
+    /**
      *  Return true if the node is coincident with the input node
      *
      *  @return bool
@@ -321,6 +335,18 @@ public:
      *
      */
     void SetRadius(double radius);
+
+    /**
+     *  Set that the node is an input
+     *
+     */
+    void IsInputNode(bool isInput);
+
+    /**
+     *  Set that the node is an output
+     *
+     */
+    void IsOutputNode(bool isOutput);
 
     /**
      *  Set the location of the node. This breaks any links with an assigned Cell, so if there is an

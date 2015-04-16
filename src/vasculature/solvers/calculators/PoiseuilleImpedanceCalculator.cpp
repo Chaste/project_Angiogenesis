@@ -56,14 +56,13 @@ PoiseuilleImpedanceCalculator<DIM>::~PoiseuilleImpedanceCalculator()
 template<unsigned DIM>
 void PoiseuilleImpedanceCalculator<DIM>::Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork)
 {
-
 	std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
 
 	for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
 	{
 		double length = segments[segment_index]->GetLength();
-		double radius = segments[segment_index]->template GetData<double>("Radius");
-		double viscosity = segments[segment_index]->template GetData<double>("Viscosity");
+		double radius = segments[segment_index]->GetRadius();
+		double viscosity = segments[segment_index]->GetViscosity();
 
 		if (radius <= 0.0)
 		{
@@ -76,20 +75,7 @@ void PoiseuilleImpedanceCalculator<DIM>::Calculate(boost::shared_ptr<CaVascularN
 
 		double impedance = 8.0*viscosity*length/(M_PI*SmallPow(radius,4u));
 
-		segments[segment_index]->SetData("Impedance", impedance);
-	}
-
-	std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels = vascularNetwork->GetVessels();
-	for (unsigned vessel_index = 0; vessel_index < vessels.size(); vessel_index++)
-	{
-		double impedance = 0;
-
-		for (unsigned segment_index = 0; segment_index < vessels[vessel_index]->GetNumberOfSegments(); segment_index++)
-		{
-			impedance += vessels[vessel_index]->GetSegment(segment_index)-> template GetData<double>("Impedance");
-		}
-
-		vessels[vessel_index]->SetData("Impedance", impedance);
+		segments[segment_index]->SetImpedance(impedance);
 	}
 }
 

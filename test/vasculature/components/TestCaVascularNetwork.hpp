@@ -47,6 +47,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "OutputFileHandler.hpp"
 #include "FakePetscSetup.hpp"
 
+#include "Debug.hpp"
+
 class TestVesselNetwork : public AbstractCellBasedTestSuite
 {
 public:
@@ -184,7 +186,19 @@ public:
 
         TS_ASSERT_EQUALS(vessel_network.GetNodes().size(), 5u);
 
+        TS_ASSERT(vessel_network.NodeIsInNetwork(nodes[0]));
+        TS_ASSERT(vessel_network.NodeIsInNetwork(nodes[1]));
+        TS_ASSERT(vessel_network.NodeIsInNetwork(nodes[2]));
+        TS_ASSERT(vessel_network.NodeIsInNetwork(nodes[3]));
+        TS_ASSERT(vessel_network.NodeIsInNetwork(nodes[4]));
+
         vessel_network.MergeCoincidentNodes();
+
+        TS_ASSERT(vessel_network.NodeIsInNetwork(nodes[0]));
+        TS_ASSERT(!vessel_network.NodeIsInNetwork(nodes[1]));
+        TS_ASSERT(vessel_network.NodeIsInNetwork(nodes[2]));
+        TS_ASSERT(vessel_network.NodeIsInNetwork(nodes[3]));
+        TS_ASSERT(vessel_network.NodeIsInNetwork(nodes[4]));
 
         TS_ASSERT_EQUALS(vessel_network.GetNodes().size(), 4u);
 
@@ -213,6 +227,14 @@ public:
         VesselPtr3 pVessel4(CaVessel<3>::Create(pSegment4));
         vessel_network.AddVessel(pVessel4);
 
+        TS_ASSERT(vessel_network.NodeIsInNetwork(nodes[0]));
+        TS_ASSERT(!vessel_network.NodeIsInNetwork(nodes[1]));
+        TS_ASSERT(vessel_network.NodeIsInNetwork(nodes[2]));
+        TS_ASSERT(vessel_network.NodeIsInNetwork(nodes[3]));
+        TS_ASSERT(vessel_network.NodeIsInNetwork(nodes[4]));
+        TS_ASSERT(vessel_network.NodeIsInNetwork(node4));
+        TS_ASSERT(vessel_network.NodeIsInNetwork(node5));
+
         TS_ASSERT(vessel_network.IsConnected(nodes[0], nodes[4]));
         TS_ASSERT(!vessel_network.IsConnected(nodes[0], node5));
         TS_ASSERT(vessel_network.IsConnected(node4, node5));
@@ -223,14 +245,9 @@ public:
 
         std::vector<NodePtr3> query_nodes;
         query_nodes.push_back(nodes[0]);
-        query_nodes.push_back(nodes[1]);
+        query_nodes.push_back(nodes[2]);
         query_nodes.push_back(nodes[3]);
         query_nodes.push_back(nodes[4]);
-
-        for(unsigned i = 0; i < query_nodes.size(); i++)
-        {
-            std::cout << "numsegs: " << query_nodes[i]->GetNumberOfSegments() << std::endl;
-        }
 
         std::vector<bool> connected = vessel_network.IsConnected(source_nodes, query_nodes);
         TS_ASSERT(connected[0]);
