@@ -57,7 +57,6 @@ class CaVesselSegment;
  * Nodes are point locations along a vessel. They are useful for describing the positions of
  * vessel segments.
  */
-
 template<unsigned DIM>
 class VascularNode : public boost::enable_shared_from_this<VascularNode<DIM> >
 {
@@ -85,7 +84,7 @@ private:
     boost::shared_ptr<AbstractCellPopulation<DIM> > mpCellPopulation;
 
     /**
-     * Container for non-spatial node data.
+     * Container for generic node data.
      */
     VasculatureData mDataContainer;
 
@@ -104,19 +103,39 @@ private:
      */
     std::vector<boost::weak_ptr<CaVesselSegment<DIM> > > mVesselSegments;
 
+    /**
+     *   Pressure in the vessel at this node
+     */
+    double mPressure;
+
+    /**
+     *   Radius of the vessel at this node
+     */
+    double mRadius;
+
+    /**
+     *   Is the node an input node
+     */
+    bool mIsInputNode;
+
+    /**
+     *   Is the node an output node
+     */
+    bool mIsOutputNode;
+
 public:
 
     /*
      * Constructor
      *
-     * A node must be specified with a location.
+     * Create a node using a ChastePoint to specify the location
      */
     VascularNode(const ChastePoint<DIM>& rLocation);
 
     /*
      * Constructor
      *
-     * A node must be specified with a location.
+     * Create a node using XYZ coordinates
      */
     VascularNode(double point1, double point2, double point3 = 0.0);
     
@@ -145,6 +164,7 @@ public:
     /**
      *  Return the node data for the input key. An attempt is made
      *  to cast to type T.
+     *
      *  @return T data
      */
     template<typename T> T GetData(const std::string& rKey);
@@ -196,6 +216,18 @@ public:
      *  Return the number of attached segments
      */
     unsigned GetNumberOfSegments() const;
+
+    /**
+     *  Return the radius of the vessel at the node
+     */
+
+    double GetRadius() const;
+
+    /**
+     *  Return the pressure in the vessel at the node
+     */
+
+    double GetPressure() const;
 
     /**
      *  Return a boost::shared_ptr to VesselSegment index.
@@ -277,6 +309,18 @@ public:
      *
      */
     void SetLabel(const std::string& rLabel);
+
+    /**
+     *  Set the vessel pressure at this node
+     *
+     */
+    void SetPressure(double pressure);
+
+    /**
+     *  Set the vessel radius at this node
+     *
+     */
+    void SetRadius(double radius);
 
     /**
      *  Set the location of the node. This breaks any links with an assigned Cell, so if there is an

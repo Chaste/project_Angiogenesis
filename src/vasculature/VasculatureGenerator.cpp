@@ -54,7 +54,7 @@ void VasculatureGenerator<DIM>::PatternUnitByTranslation(boost::shared_ptr<CaVas
 {
 
 	// Get unit dimensions
-	std::set<boost::shared_ptr<VascularNode<DIM> > > nodes = input_unit->GetNodes();
+	std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = input_unit->GetNodes();
 
 	std::vector<double> max_vals;
 	std::vector<double> min_vals;
@@ -64,7 +64,7 @@ void VasculatureGenerator<DIM>::PatternUnitByTranslation(boost::shared_ptr<CaVas
 		min_vals.push_back(1.e6);
 	}
 
-	typename std::set<boost::shared_ptr<VascularNode<DIM> > >::iterator node_iter;
+	typename std::vector<boost::shared_ptr<VascularNode<DIM> > >::iterator node_iter;
 	for (node_iter=nodes.begin(); node_iter!=nodes.end(); node_iter++)
 	{
 		for(unsigned i=0; i <DIM; i++)

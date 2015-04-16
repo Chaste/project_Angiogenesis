@@ -43,8 +43,13 @@ CaVesselSegment<DIM>::CaVesselSegment(boost::shared_ptr<VascularNode<DIM> > pNod
   mDataContainer(),
   mId(0),
   mLabel(""),
-  mVessel(boost::weak_ptr<CaVessel<DIM> >())
+  mVessel(boost::weak_ptr<CaVessel<DIM> >()),
+  mRadius(1.0),
+  mHaematocrit(0.45),
+  mFlowRate(0.0),
+  mImpedance(0.0)
   {
+
   }
 
 template<unsigned DIM>
@@ -100,7 +105,7 @@ double CaVesselSegment<DIM>::GetDistance(const ChastePoint<DIM>& rPoint)
 	ChastePoint<DIM> location2 = GetNode(1)->GetLocation();
 
 	std::vector<double> segment_vector(DIM);
-	std::vector<double>  point_vector(DIM);
+	std::vector<double> point_vector(DIM);
 
 	// Get a vector along the segment and one from the point to one end of the segment
 	for(unsigned i=0; i<DIM; i++)
@@ -143,10 +148,10 @@ double CaVesselSegment<DIM>::GetDistance(const ChastePoint<DIM>& rPoint)
 
 	double distance_squared;
 
-	distance_squared = pow(projected_point[0] -rPoint[0],2) + pow(projected_point[1] -rPoint[1],2);
+	distance_squared = pow(projected_point[0]-rPoint[0], 2) + pow(projected_point[1]-rPoint[1], 2);
 	if(DIM==3)
 	{
-		distance_squared += pow(projected_point[2] -rPoint[2],2);
+		distance_squared += pow(projected_point[2]-rPoint[2],2);
 	}
 
 	return std::sqrt(distance_squared);
@@ -163,6 +168,7 @@ const std::string& CaVesselSegment<DIM>::rGetLabel() const
 {
 	return mLabel;
 }
+
 template<unsigned DIM>
 double CaVesselSegment<DIM>::GetLength() const
 {
@@ -176,6 +182,30 @@ double CaVesselSegment<DIM>::GetLength() const
 		length_squared += pow(point2[2] - point1[2], 2);
 	}
 	return std::sqrt(length_squared);
+}
+
+template<unsigned DIM>
+double CaVesselSegment<DIM>::GetRadius() const
+{
+	return mRadius;
+}
+
+template<unsigned DIM>
+double CaVesselSegment<DIM>::GetHaematocrit() const
+{
+	return mHaematocrit;
+}
+
+template<unsigned DIM>
+double CaVesselSegment<DIM>::GetFlowRate() const
+{
+	return mFlowRate;
+}
+
+template<unsigned DIM>
+double CaVesselSegment<DIM>::GetImpedance() const
+{
+	return mImpedance;
 }
 
 template<unsigned DIM>
@@ -399,6 +429,30 @@ template<unsigned DIM>
 void CaVesselSegment<DIM>::SetLabel(const std::string& rLabel)
 {
 	mLabel = rLabel;
+}
+
+template<unsigned DIM>
+void CaVesselSegment<DIM>::SetRadius(double radius)
+{
+	mRadius = radius;
+}
+
+template<unsigned DIM>
+void CaVesselSegment<DIM>::SetHaematocrit(double haematocrit)
+{
+	mHaematocrit = haematocrit;
+}
+
+template<unsigned DIM>
+void CaVesselSegment<DIM>::SetFlowRate(double flowRate)
+{
+	mFlowRate = flowRate;
+}
+
+template<unsigned DIM>
+void CaVesselSegment<DIM>::SetImpedance(double impedance)
+{
+	mImpedance = impedance;
 }
 
 template<unsigned DIM>

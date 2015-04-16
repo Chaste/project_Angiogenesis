@@ -86,6 +86,36 @@ private:
 	std::vector<boost::shared_ptr<CaVessel<DIM> > > mVessels;
 
 	/**
+       Container for vessel segments in the VesselNetwork.
+	 */
+	std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > mSegments;
+
+	/**
+	 *  Is the data in mSegments up to date.
+	 */
+	bool mSegmentsUpToDate;
+
+	/**
+       Container for nodes in the VesselNetwork.
+	 */
+	std::vector<boost::shared_ptr<VascularNode<DIM> > > mNodes;
+
+	/**
+	 *  Is the data in mNodes up to date.
+	 */
+	bool mNodesUpToDate;
+
+	/**
+       Container for vessel nodes in the VesselNetwork.
+	 */
+	std::vector<boost::shared_ptr<VascularNode<DIM> > > mVesselNodes;
+
+	/**
+	 *  Is the data in mVesselNodes up to date.
+	 */
+	bool mVesselNodesUpToDate;
+
+	/**
 	 * Container for non-spatial vessel network data.
 	 */
 	VasculatureData mDataContainer;
@@ -135,7 +165,7 @@ public:
 	/**
         Return the nodes in the network
 	 */
-	std::set<boost::shared_ptr<VascularNode<DIM> > > GetNodes();
+	std::vector<boost::shared_ptr<VascularNode<DIM> > > GetNodes();
 
 	/**
         Return the node with the prescribed index
@@ -146,11 +176,6 @@ public:
         Return the node with the prescribed index
 	 */
 	unsigned GetNodeIndex(boost::shared_ptr<VascularNode<DIM> > node);
-
-	/**
-        Return the nodes in the network in the form of a vector
-	 */
-	std::vector<boost::shared_ptr<VascularNode<DIM> > > GetVectorOfNodes();
 
 	/**
 	   Returns the number of nodes in the network.
@@ -170,7 +195,7 @@ public:
 	/**
 	    Return the only the nodes at the ends of vessels in the network
 	 */
-	std::set<boost::shared_ptr<VascularNode<DIM> > > GetVesselEndNodes();
+	std::vector<boost::shared_ptr<VascularNode<DIM> > > GetVesselEndNodes();
 
 	/**
 	   Return the Index of the specified vessel
@@ -234,6 +259,12 @@ public:
 	 */
 	void Translate(const std::vector<double>& rTranslationVector, bool copy = false);
 
+	void UpdateNodes();
+
+	void UpdateSegments();
+
+	void UpdateVesselNodes();
+
 	/**
      	 Write the VesselNetwork data to a file.
 	 */
@@ -250,7 +281,7 @@ private:
         Create a deep copy of all existing vessels and return a set of newly added nodes.
         This is useful for performing geometric transformations on the network.
 	 */
-	std::set<boost::shared_ptr<VascularNode<DIM> > > DeepCopyVessels();
+	std::vector<boost::shared_ptr<VascularNode<DIM> > > DeepCopyVessels();
 
 };
 

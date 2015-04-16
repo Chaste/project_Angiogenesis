@@ -56,7 +56,7 @@ public:
 
     std::map<std::string, boost::any> GetMap() const;
 
-    template<typename T> T GetData(const std::string& variableName);
+    template<typename T> T GetData(const std::string& variableName) const;
     
     std::vector<std::string> GetKeys(bool castable_to_double = false) const;
 

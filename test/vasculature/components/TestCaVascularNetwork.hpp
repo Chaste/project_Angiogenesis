@@ -94,7 +94,7 @@ public:
         vessel_network.AddVessel(pVessel1);
         vessel_network.AddVessels(vessels);
 
-        std::vector<boost::shared_ptr<VascularNode<3> > > nodeVector = vessel_network.GetVectorOfNodes();
+        std::vector<boost::shared_ptr<VascularNode<3> > > nodeVector = vessel_network.GetNodes();
 
         for (unsigned i = 0; i < nodeVector.size(); i++)
         {
@@ -237,7 +237,6 @@ public:
         TS_ASSERT(connected[1]);
         TS_ASSERT(connected[2]);
         TS_ASSERT(connected[3]);
-
 
         OutputFileHandler output_file_handler("TestVesselNetwork",false);
         std::string output_filename4 = output_file_handler.GetOutputDirectoryFullPath().append("ConnectedTestVesselNetwork.gv");

@@ -81,6 +81,13 @@ public:
 		TS_ASSERT_EQUALS(pSegment->GetId(), 5u);
 		TS_ASSERT_EQUALS(pSegment->rGetLabel().c_str(), label.c_str());
 
+		pSegment->SetRadius(5.0);
+        pSegment->SetHaematocrit(10.0);
+        pSegment->SetFlowRate(15.0);
+        TS_ASSERT_DELTA(pSegment->GetRadius(), 5.0, 1.e-6);
+        TS_ASSERT_DELTA(pSegment->GetHaematocrit(), 10.0, 1.e-6);
+        TS_ASSERT_DELTA(pSegment->GetFlowRate(), 15.0, 1.e-6);
+
 		// Test replacing a node
 		ChastePoint<2> point3(6.0, 7.0);
 		ChastePoint<2> point4(8.0, 9.0);

@@ -67,6 +67,16 @@ private:
 	 */
 	std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > mSegments;
 
+	/**
+	 *  Nodes
+	 */
+	std::vector<boost::shared_ptr<VascularNode<DIM> > > mNodes;
+
+	/**
+	 *  Is the data in mNodes up to date.
+	 */
+	bool mNodesUpToDate;
+
     /**
      * Container for non-spatial vessel data.
      */
@@ -169,7 +179,14 @@ public:
 	 *
 	 *  @return mId
 	 */
-	unsigned GetId();
+	unsigned GetId() const;
+
+	/**
+	 *  Return the Impedance
+	 *
+	 *  @return double
+	 */
+	double GetImpedance() const;
 
 	/**
 	 *  Return the Label
@@ -177,25 +194,37 @@ public:
 	 *  @return mLabel
 	 */
 	const std::string& rGetLabel();
-	
+
 	/**
 	 *  Return the length
 	 *
 	 *  @return double
 	 */
-	double GetLength();
+	double GetLength() const;
+
+	/**
+	 *  Return the radius
+	 *
+	 *  @return double
+	 */
+	double GetRadius() const;
+
+	/**
+	 *  Return the haematocrit
+	 */
+    double GetHaematocrit() const;
+
+	/**
+	 *  Return the flow rate
+	 */
+    double GetFlowRate() const;
 
 	/**
 	 *  Return the vessel's nodes
 	 *
 	 *  @return mLabel
 	 */
-	std::set<boost::shared_ptr<VascularNode<DIM> > > GetNodes();
-	
-	/**
-        Return the nodes in the vessel in the form of a vector
-	 */
-	std::vector<boost::shared_ptr<VascularNode<DIM> > > GetVectorOfNodes();
+	std::vector<boost::shared_ptr<VascularNode<DIM> > > GetNodes();
 
 	/**
 	 * Return the number of nodes in the vessel
@@ -264,6 +293,28 @@ public:
 	 */
 	void SetLabel(const std::string& label);
 	
+	/**
+	 *  Set the radius
+	 *
+	 *  @return double
+	 */
+	void SetRadius(double radius);
+
+	/**
+	 *  Set the haematocrit
+	 */
+    void SetHaematocrit(double haematocrit);
+
+	/**
+	 *  Set the flow rate
+	 */
+    void SetFlowRate(double flowRate);
+
+	/**
+	 *  Update the data in mNodes
+	 */
+    void UpdateNodes();
+
 private:
 
 	/**

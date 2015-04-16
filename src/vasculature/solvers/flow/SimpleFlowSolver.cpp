@@ -65,7 +65,7 @@ void SimpleFlowSolver<DIM>::Implement(boost::shared_ptr<CaVascularNetwork<DIM> >
 	 * segments between node i and node j. Practically this corresponds to only a single segment.
 	 */
 
-	std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = vascularNetwork->GetVectorOfNodes();
+	std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = vascularNetwork->GetNodes();
 	unsigned num_nodes = nodes.size();
 
 	// Get maximum number of segments attached to a node in the whole network. The system then has number of

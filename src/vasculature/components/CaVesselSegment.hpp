@@ -87,6 +87,27 @@ private:
 	 */
 	boost::weak_ptr<CaVessel<DIM> > mVessel;
 
+    /**
+     *   Radius of the vessel at this segment
+     */
+    double mRadius;
+
+    /**
+     *   Haematocrit in the vessel at this segment
+     */
+    double mHaematocrit;
+
+    /**
+     *   Blood flow rate in the vessel at this segment
+     */
+    double mFlowRate;
+
+    /**
+     *   Impedance of this vessel segment
+     */
+    double mImpedance;
+
+
 private:
 
     /*
@@ -159,6 +180,26 @@ public:
     double GetLength() const;
 
 	/**
+	 *  Return the radius
+	 */
+    double GetRadius() const;
+
+	/**
+	 *  Return the haematocrit
+	 */
+    double GetHaematocrit() const;
+
+	/**
+	 *  Return the impedance
+	 */
+    double GetImpedance() const;
+
+	/**
+	 *  Return the flow rate
+	 */
+    double GetFlowRate() const;
+
+	/**
 	 *  Return a point mid-way along the vessel segment
 	 */
     ChastePoint<DIM> GetMidPoint();
@@ -229,6 +270,26 @@ public:
 	 *  Assign the Id
 	 */
 	void SetId(unsigned id);
+
+	/**
+	 *  Set the radius
+	 */
+    void SetRadius(double radius);
+
+	/**
+	 *  Set the haematocrit
+	 */
+    void SetHaematocrit(double haematocrit);
+
+	/**
+	 *  Set the flow rate
+	 */
+    void SetFlowRate(double flowRate);
+
+	/**
+	 *  Set the impedance
+	 */
+    void SetImpedance(double impedance);
 
 	/**
 	 *  Assign the Label

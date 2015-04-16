@@ -50,6 +50,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 class TestVascularNode: public AbstractCellBasedTestSuite
 {
+
 public:
 
 	void TestConstructor() throw(Exception)
@@ -64,8 +65,13 @@ public:
         node1.SetId(5u);
         std::string label = "Inlet";
         node1.SetLabel(label);
+        node1.SetPressure(5.0);
+        node1.SetRadius(10.0);
+
         TS_ASSERT_EQUALS(node1.GetId(), 5u);
         TS_ASSERT_EQUALS(node1.rGetLabel().c_str(), label.c_str());
+        TS_ASSERT_DELTA(node1.GetPressure(), 5.0, 1.e-6);
+        TS_ASSERT_DELTA(node1.GetRadius(), 10.0, 1.e-6);
 
         // Test setting location and coincident methods
         ChastePoint<2> point(3.0, 4.0);

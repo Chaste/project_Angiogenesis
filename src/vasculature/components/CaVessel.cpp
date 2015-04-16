@@ -38,6 +38,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 template<unsigned DIM>
 CaVessel<DIM>::CaVessel(boost::shared_ptr<CaVesselSegment<DIM> > pSegment)
 : mSegments(std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >()),
+  mNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > >()),
+  mNodesUpToDate(false),
   mDataContainer(),
   mId(0),
   mLabel("")
@@ -49,6 +51,8 @@ CaVessel<DIM>::CaVessel(boost::shared_ptr<CaVesselSegment<DIM> > pSegment)
 template<unsigned DIM>
 CaVessel<DIM>::CaVessel(std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments)
 : mSegments(segments),
+  mNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > >()),
+  mNodesUpToDate(false),
   mDataContainer(),
   mId(0),
   mLabel("")
@@ -83,6 +87,8 @@ CaVessel<DIM>::CaVessel(std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > s
 template<unsigned DIM>
 CaVessel<DIM>::CaVessel(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes)
 : mSegments(std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >()),
+  mNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > >()),
+  mNodesUpToDate(false),
   mDataContainer(),
   mId(0),
   mLabel("")
@@ -165,6 +171,8 @@ void CaVessel<DIM>::AddSegment(boost::shared_ptr<CaVesselSegment<DIM> > pSegment
 	{
 		EXCEPTION("Input vessel segment does not coincide with any end of the vessel.");
 	}
+
+	mNodesUpToDate = false;
 }
 
 
@@ -225,6 +233,8 @@ void CaVessel<DIM>::AddSegments(std::vector<boost::shared_ptr<CaVesselSegment<DI
 		segments[i]->AddVessel(Shared());
 	}
 
+	mNodesUpToDate = false;
+
 }
 
 template<unsigned DIM>
@@ -248,29 +258,16 @@ std::vector<std::string> CaVessel<DIM>::GetDataKeys(bool castable_to_double) con
 template<unsigned DIM>
 boost::shared_ptr<VascularNode<DIM> > CaVessel<DIM>::GetEndNode()
 {
-	if (mSegments.size() == 1)
+	if(!mNodesUpToDate)
 	{
-		return mSegments.back()->GetNode(1);
+		UpdateNodes();
 	}
-	else
-	{
-		if (mSegments[mSegments.size() - 2]->HasNode(mSegments.back()->GetNode(0)))
-		{
-			return mSegments.back()->GetNode(1);
-		}
-		else if (mSegments[mSegments.size() - 2]->HasNode(mSegments.back()->GetNode(1)))
-		{
-			return mSegments.back()->GetNode(0);
-		}
-		else
-		{
-			EXCEPTION("Vessel segments at end of vessel are not connected correctly.");
-		}
-	}
+
+	return mNodes.back();
 }
 
 template<unsigned DIM>
-unsigned CaVessel<DIM>::GetId()
+unsigned CaVessel<DIM>::GetId() const
 {
 	return mId;
 }
@@ -282,7 +279,7 @@ const std::string& CaVessel<DIM>::rGetLabel()
 }
 
 template<unsigned DIM>
-double CaVessel<DIM>::GetLength()
+double CaVessel<DIM>::GetLength() const
 {
 	double length = 0.0;
 
@@ -294,29 +291,67 @@ double CaVessel<DIM>::GetLength()
 	return length;
 }
 
-template <unsigned DIM>
-std::set<boost::shared_ptr<VascularNode<DIM> > > CaVessel<DIM>::GetNodes()
+template<unsigned DIM>
+double CaVessel<DIM>::GetRadius() const
 {
-	std::set<boost::shared_ptr<VascularNode<DIM> > >  nodes;
+	double radius = 0.0;
 
-	typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator jt;
-	for(jt = mSegments.begin(); jt != mSegments.end(); jt++)
+	for (unsigned i = 0; i < mSegments.size(); i++)
 	{
-		nodes.insert((*jt)->GetNode(0));
-		nodes.insert((*jt)->GetNode(1));
+		radius += mSegments[i]->GetRadius();
 	}
 
-	return nodes;
+	return radius;
+}
+
+template<unsigned DIM>
+double CaVessel<DIM>::GetHaematocrit() const
+{
+	double haematocrit = 0.0;
+
+	for (unsigned i = 0; i < mSegments.size(); i++)
+	{
+		haematocrit += mSegments[i]->GetHaematocrit();
+	}
+
+	return haematocrit/double(mSegments.size());
+}
+
+template<unsigned DIM>
+double CaVessel<DIM>::GetFlowRate() const
+{
+	double flow_rate = 0.0;
+
+	for (unsigned i = 0; i < mSegments.size(); i++)
+	{
+		flow_rate += mSegments[i]->GetFlowRate();
+	}
+
+	return flow_rate/double(mSegments.size());
+}
+
+template<unsigned DIM>
+double CaVessel<DIM>::GetImpedance() const
+{
+	double impedance = 0.0;
+
+	for (unsigned i = 0; i < mSegments.size(); i++)
+	{
+		impedance += mSegments[i]->GetImpedance();
+	}
+
+	return impedance/double(mSegments.size());
 }
 
 template <unsigned DIM>
-std::vector<boost::shared_ptr<VascularNode<DIM> > > CaVessel<DIM>::GetVectorOfNodes()
+std::vector<boost::shared_ptr<VascularNode<DIM> > > CaVessel<DIM>::GetNodes()
 {
-	std::vector<boost::shared_ptr<VascularNode<DIM> > > vec_nodes;
-    std::set<boost::shared_ptr<VascularNode<DIM> > >  nodes = GetNodes();
-    std::copy(nodes.begin(), nodes.end(), std::back_inserter(vec_nodes));
+	if(!mNodesUpToDate)
+	{
+		UpdateNodes();
+	}
 
-    return vec_nodes;
+	return mNodes;
 }
 
 template<unsigned DIM>
@@ -353,26 +388,12 @@ std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > CaVessel<DIM>::GetSegment
 template<unsigned DIM>
 boost::shared_ptr<VascularNode<DIM> > CaVessel<DIM>::GetStartNode()
 {
+	if(!mNodesUpToDate)
+	{
+		UpdateNodes();
+	}
 
-	if (mSegments.size() == 1)
-	{
-		return mSegments.front()->GetNode(0);
-	}
-	else
-	{
-		if (mSegments[1]->HasNode(mSegments.front()->GetNode(0)))
-		{
-			return mSegments.front()->GetNode(1);
-		}
-		else if (mSegments[1]->HasNode(mSegments.front()->GetNode(1)))
-		{
-			return mSegments.front()->GetNode(0);
-		}
-		else
-		{
-			EXCEPTION("Vessel segments at start of vessel are not connected correctly.");
-		}
-	}
+	return mNodes.front();
 }
 
 template<unsigned DIM>
@@ -417,6 +438,8 @@ void CaVessel<DIM>::RemoveSegments(SegmentLocation::Value location)
 	{
 		EXCEPTION("You can only remove segments from the start or end of vessels.");
 	}
+
+	mNodesUpToDate = false;
 }
 
 template<unsigned DIM>
@@ -444,9 +467,80 @@ void CaVessel<DIM>::SetLabel(const std::string& label)
 }
 
 template<unsigned DIM>
+void CaVessel<DIM>::SetRadius(double radius)
+{
+	for (unsigned i = 0; i < mSegments.size(); i++)
+	{
+		mSegments[i]->SetRadius(radius);
+	}
+}
+
+template<unsigned DIM>
+void CaVessel<DIM>::SetHaematocrit(double haematocrit)
+{
+	for (unsigned i = 0; i < mSegments.size(); i++)
+	{
+		mSegments[i]->SetHaematocrit(haematocrit);
+	}
+}
+
+template<unsigned DIM>
+void CaVessel<DIM>::SetFlowRate(double flowRate)
+{
+	for (unsigned i = 0; i < mSegments.size(); i++)
+	{
+		mSegments[i]->SetFlowRate(flowRate);
+	}
+}
+
+template<unsigned DIM>
 boost::shared_ptr<CaVessel<DIM> > CaVessel<DIM>::Shared()
 {
 	return this->shared_from_this();
+}
+
+template<unsigned DIM>
+void CaVessel<DIM>::UpdateNodes()
+{
+
+	mNodes = std::vector<boost::shared_ptr<VascularNode<DIM> > >();
+
+	if (mSegments.size() == 1)
+	{
+		mNodes.push_back(mSegments[0]->GetNode(0));
+		mNodes.push_back(mSegments[0]->GetNode(1));
+	}
+
+	// Add the start and end nodes of the first segment and then
+	// the end nodes of every other segment
+	else
+	{
+		if (mSegments[1]->HasNode(mSegments[0]->GetNode(1)))
+		{
+			mNodes.push_back(mSegments[0]->GetNode(0));
+			mNodes.push_back(mSegments[0]->GetNode(1));
+		}
+		else if (mSegments[1]->HasNode(mSegments[0]->GetNode(1)))
+		{
+			mNodes.push_back(mSegments[0]->GetNode(1));
+			mNodes.push_back(mSegments[0]->GetNode(0));
+
+		}
+
+		for (unsigned idx = 1; idx < mSegments.size(); idx++)
+		{
+			if (mNodes[idx] == mSegments[idx]->GetNode(0))
+			{
+				mNodes.push_back(mSegments[idx]->GetNode(1));
+			}
+			else
+			{
+				mNodes.push_back(mSegments[idx]->GetNode(0));
+			}
+		}
+	}
+
+	mNodesUpToDate = true;
 }
 
 // Explicit instantiation

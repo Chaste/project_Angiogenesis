@@ -44,7 +44,7 @@ VasculatureData::~VasculatureData()
 {
 }
 
-template<typename T> T VasculatureData::GetData(const std::string& variableName)
+template<typename T> T VasculatureData::GetData(const std::string& variableName) const
 {
 	// Try to return the data in the form of the requested type
 	try
@@ -123,11 +123,10 @@ template<typename T> void VasculatureData::SetData(const std::string& variableNa
 }
 
 // Explicit instantiation
-
-template bool VasculatureData::GetData<bool>(const std::string& variableName);
-template double VasculatureData::GetData<double>(const std::string& variableName);
-template unsigned VasculatureData::GetData<unsigned>(const std::string& variableName);
-template std::vector<double> VasculatureData::GetData<std::vector<double> >(const std::string& variableName);
+template bool VasculatureData::GetData<bool>(const std::string& variableName) const;
+template double VasculatureData::GetData<double>(const std::string& variableName) const;
+template unsigned VasculatureData::GetData<unsigned>(const std::string& variableName) const;
+template std::vector<double> VasculatureData::GetData<std::vector<double> >(const std::string& variableName) const;
 
 template bool VasculatureData::IsType<bool>(const std::string& variableName);
 template bool VasculatureData::IsType<double>(const std::string& variableName);

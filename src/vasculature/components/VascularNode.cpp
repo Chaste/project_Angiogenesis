@@ -46,7 +46,11 @@ VascularNode<DIM>::VascularNode(const ChastePoint<DIM>& rLocation)
 	  mDataContainer(),
 	  mId(0),
 	  mLabel(""),
-	  mVesselSegments(std::vector<boost::weak_ptr<CaVesselSegment<DIM> > >())
+	  mVesselSegments(std::vector<boost::weak_ptr<CaVesselSegment<DIM> > >()),
+	  mPressure(0.0),
+	  mRadius(0.0),
+	  mIsInputNode(false),
+	  mIsOutputNode(false)
 {
 }
 
@@ -58,7 +62,11 @@ VascularNode<DIM>::VascularNode(double point1, double point2, double point3)
       mDataContainer(),
       mId(0),
       mLabel(""),
-      mVesselSegments(std::vector<boost::weak_ptr<CaVesselSegment<DIM> > >())
+      mVesselSegments(std::vector<boost::weak_ptr<CaVesselSegment<DIM> > >()),
+	  mPressure(0.0),
+	  mRadius(1.0),
+	  mIsInputNode(false),
+	  mIsOutputNode(false)
 {
 }
 
@@ -174,6 +182,18 @@ ChastePoint<DIM> VascularNode<DIM>::GetLocation() const
 	{
 		return mLocation;
 	}
+}
+
+template<unsigned DIM>
+double VascularNode<DIM>::GetPressure() const
+{
+	return mPressure;
+}
+
+template<unsigned DIM>
+double VascularNode<DIM>::GetRadius() const
+{
+	return mRadius;
 }
 
 template<unsigned DIM>
@@ -334,6 +354,18 @@ void VascularNode<DIM>::SetLocation(const ChastePoint<DIM>& rLocation)
 		mpCell = CellPtr();
 	}
 	mLocation = rLocation;
+}
+
+template<unsigned DIM>
+void VascularNode<DIM>::SetPressure(double pressure)
+{
+	mPressure = pressure;
+}
+
+template<unsigned DIM>
+void VascularNode<DIM>::SetRadius(double radius)
+{
+	mRadius = radius;
 }
 
 // Explicit instantiation
