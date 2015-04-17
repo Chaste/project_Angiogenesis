@@ -88,8 +88,10 @@ void SimpleFlowSolver<DIM>::Implement(boost::shared_ptr<CaVascularNetwork<DIM> >
 	// Set up the system
 	PetscInt lhsVectorSize = num_nodes;
 	LinearSystem linearSystem(lhsVectorSize, max_num_segments + 1);
-	linearSystem.SetKspType("preonly");
-	linearSystem.SetPcType("lu");
+    linearSystem.SetPcType("lu");
+    PetscOptionsSetValue("-pc_factor_mat_solver_package", "umfpack");
+    PetscOptionsSetValue("-pc_factor_zeropivot", 0);
+    linearSystem.SetKspType("gmres");
 
 	for (unsigned node_index = 0; node_index < num_nodes; node_index++)
 	{

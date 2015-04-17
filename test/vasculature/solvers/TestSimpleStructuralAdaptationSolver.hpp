@@ -139,7 +139,7 @@ public:
 		solver.SetOutputFileName(progress_output_filename);
 		solver.SetTolerance(0.0001);
 		solver.SetTimeIncrement(0.0001);
-		solver.SetMaxIterations(1000);
+		solver.SetMaxIterations(10000);
 
 		solver.Implement(vascular_network);
 
