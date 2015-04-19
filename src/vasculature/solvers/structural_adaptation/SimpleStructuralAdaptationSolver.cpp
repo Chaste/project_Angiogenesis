@@ -61,6 +61,13 @@ SimpleStructuralAdaptationSolver<DIM>::~SimpleStructuralAdaptationSolver()
 
 // setters
 template<unsigned DIM>
+void SimpleStructuralAdaptationSolver<DIM>::SetUpFlowSolver(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork)
+{
+	mFlowSolver->SetUp(vascularNetwork);
+}
+
+
+template<unsigned DIM>
 void SimpleStructuralAdaptationSolver<DIM>::SetRadiusCalculator(boost::shared_ptr<Alarcon03RadiusCalculator<DIM> > pCalculator)
 {
     mRadiusCalculator = pCalculator;
@@ -131,6 +138,10 @@ void SimpleStructuralAdaptationSolver<DIM>::Iterate(boost::shared_ptr<CaVascular
 	mViscosityCalculator->Calculate(vascularNetwork);
 	mImpedanceCalculator->Calculate(vascularNetwork);
 
+	if (mFlowSolver->IsSetUp())
+	{
+		mFlowSolver->UpdateImpedances();
+	}
 	mFlowSolver->Implement(vascularNetwork);
 
     mHaematocritCalculator->Calculate(vascularNetwork);

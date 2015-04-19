@@ -79,6 +79,8 @@ public:
     virtual ~SimpleStructuralAdaptationSolver();
 
     // setters
+    void SetUpFlowSolver(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
+
     void SetRadiusCalculator(boost::shared_ptr<Alarcon03RadiusCalculator<DIM> > pCalculator);
 
     void SetMetabolicStimulusCalculator(boost::shared_ptr<Alarcon03MetabolicStimulusCalculator<DIM> > pCalculator);

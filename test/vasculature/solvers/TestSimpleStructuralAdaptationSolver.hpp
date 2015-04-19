@@ -37,11 +37,12 @@ public:
 	void TestStructuralAdaptationOfHexagonalNetwork() throw(Exception)
 	{
 		// Specify the network dimensions
-		double vessel_length = 80e-6;
+		double vessel_length = 80.0e-6;
 
 		// Generate the network
 		VasculatureGenerator<2> vascular_network_generator;
-		boost::shared_ptr<CaVascularNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(1e-3,1e-3,vessel_length);
+		boost::shared_ptr<CaVascularNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(7500.0e-6,
+				 7500.0e-6, vessel_length);
 
         std::vector<ChastePoint<2> > points;
         points.push_back(ChastePoint<2>(0, 0));
@@ -55,12 +56,11 @@ public:
 
         SegmentPtr2 p_segment(CaVesselSegment<2>::Create(nodes[0], nodes[1]));
 
-		double radius = 1e-5;
+		double radius = 10.0e-6;
 		p_segment->SetRadius(radius);
 		double haematocrit = 0.45;
 		p_segment->SetHaematocrit(haematocrit);
         vascular_network->SetSegmentProperties(p_segment);
-
 
 		std::vector<std::pair<double, double> > extents = vascular_network->GetExtents();
 		double y_middle = (extents[1].first + extents[1].second) /2.0;
@@ -133,14 +133,12 @@ public:
 		std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("HexagonalVesselNetwork.vtp");
 		std::string progress_output_filename = output_file_handler.GetOutputDirectoryFullPath().append("HexagonalVesselNetwork_SAAProgress.dat");
 
-
 		SimpleStructuralAdaptationSolver<2> solver;
 		solver.SetWriteOutput(true);
 		solver.SetOutputFileName(progress_output_filename);
-		solver.SetTolerance(0.0001);
+		solver.SetTolerance(0.001);
 		solver.SetTimeIncrement(0.0001);
-		solver.SetMaxIterations(10000);
-
+		solver.SetMaxIterations(100);
 		solver.Implement(vascular_network);
 
 		// Write the network to file

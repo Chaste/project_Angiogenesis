@@ -92,8 +92,8 @@ public:
 		p_vessel->GetEndNode()->SetPressure(1000.5);
 
 		SimpleFlowSolver<3> solver;
-
-		solver.Implement(p_vascular_network);
+		solver.SetUp(p_vascular_network);
+		solver.Implement();
 
 		TS_ASSERT_DELTA(p_vessel->GetStartNode()->GetPressure(),3393,1e-6);
 		TS_ASSERT_DELTA(p_vessel->GetEndNode()->GetPressure(),1000.5,1e-6);
@@ -101,10 +101,8 @@ public:
 		TS_ASSERT_DELTA(p_vessel->GetFlowRate(),(3393-1000.5)/impedance,1e-6);
 		TS_ASSERT_DELTA(p_segment->GetFlowRate(),(3393-1000.5)/impedance,1e-6);
 
-		p_segment->SetImpedance(0.0);
-
-		TS_ASSERT_THROWS_THIS(solver.Implement(p_vascular_network),"Impedance should be a positive number.");
-
+		p_segment->SetImpedance(-1.0);
+		TS_ASSERT_THROWS_THIS(solver.UpdateImpedances(),"Impedance should be a positive number.");
 	}
 
 	void TestFlowThroughSingleVesselWithMultipleSegments() throw(Exception)
@@ -153,8 +151,8 @@ public:
 		p_vessel->GetEndNode()->SetPressure(1000.5);
 
 		SimpleFlowSolver<3> solver;
-
-		solver.Implement(p_vascular_network);
+		solver.SetUp(p_vascular_network);
+		solver.Implement();
 
 		for (unsigned i = 0; i < nodes.size(); i++)
 		{
@@ -181,7 +179,10 @@ public:
 		points.push_back(ChastePoint<3>(0, 0, 0)); // input
 		points.push_back(ChastePoint<3>(0, 1.0, 0)); // input
 		points.push_back(ChastePoint<3>(1.0, 0.5, 0)); // bifurcation
-		points.push_back(ChastePoint<3>(1.0, 1.0, 0)); // output
+		points.push_back(ChastePoint<3>(1.0, 1.0, 0));
+		points.push_back(ChastePoint<3>(2.0, 1.0, 0));
+		points.push_back(ChastePoint<3>(3.0, 1.0, 0));
+		points.push_back(ChastePoint<3>(4.0, 1.0, 0)); // output
 
 		std::vector<NodePtr3> nodes;
 		for(unsigned i=0; i < points.size(); i++)
@@ -192,15 +193,24 @@ public:
 		SegmentPtr3 p_segment1(CaVesselSegment<3>::Create(nodes[0], nodes[2]));
 		SegmentPtr3 p_segment2(CaVesselSegment<3>::Create(nodes[1], nodes[2]));
 		SegmentPtr3 p_segment3(CaVesselSegment<3>::Create(nodes[3], nodes[2]));
+		SegmentPtr3 p_segment4(CaVesselSegment<3>::Create(nodes[4], nodes[3]));
+		SegmentPtr3 p_segment5(CaVesselSegment<3>::Create(nodes[5], nodes[4]));
+		SegmentPtr3 p_segment6(CaVesselSegment<3>::Create(nodes[6], nodes[5]));
 
 		VesselPtr3 p_vessel1(CaVessel<3>::Create(p_segment1));
 		VesselPtr3 p_vessel2(CaVessel<3>::Create(p_segment2));
 		VesselPtr3 p_vessel3(CaVessel<3>::Create(p_segment3));
+		VesselPtr3 p_vessel4(CaVessel<3>::Create(p_segment4));
+		VesselPtr3 p_vessel5(CaVessel<3>::Create(p_segment5));
+		VesselPtr3 p_vessel6(CaVessel<3>::Create(p_segment6));
 
 		std::vector<VesselPtr3> vessels;
 		vessels.push_back(p_vessel1); // lower input vessel
 		vessels.push_back(p_vessel2); // upper input vessel
-		vessels.push_back(p_vessel3); // output vessel
+		vessels.push_back(p_vessel3);
+		vessels.push_back(p_vessel4);
+		vessels.push_back(p_vessel5);
+		vessels.push_back(p_vessel6);
 
 		// Generate the network
 		boost::shared_ptr<CaVascularNetwork<3> > p_vascular_network(new CaVascularNetwork<3>());
@@ -217,29 +227,28 @@ public:
 		nodes[1]->IsInputNode(true);
 		nodes[1]->SetPressure(3393);
 
-		nodes[3]->IsOutputNode(true);
-		nodes[3]->SetPressure(1000.5);
+		nodes[6]->IsOutputNode(true);
+		nodes[6]->SetPressure(1000.5);
 
 		SimpleFlowSolver<3> solver;
-
-		solver.Implement(p_vascular_network);
-
+		solver.SetUp(p_vascular_network);
+		solver.Implement();
 
 		TS_ASSERT_DELTA(nodes[0]->GetPressure(),3393,1e-6);
 		TS_ASSERT_DELTA(nodes[1]->GetPressure(),3393,1e-6);
-		TS_ASSERT_DELTA(nodes[2]->GetPressure(),(2*3393 + 1000.5)/3,1e-6);
-		TS_ASSERT_DELTA(nodes[3]->GetPressure(),1000.5,1e-6);
+		TS_ASSERT_DELTA(nodes[2]->GetPressure(),(2.0*3393.0/10.0 + 1000.5/40.0)/(1.0/40.0 + 2.0/10.0),1e-6);
+		TS_ASSERT_DELTA(nodes[6]->GetPressure(),1000.5,1e-6);
 
 		TS_ASSERT_DELTA(vessels[0]->GetFlowRate(),(3393-nodes[2]->GetPressure())/impedance,1e-6);
 		TS_ASSERT_DELTA(vessels[1]->GetFlowRate(),(3393-nodes[2]->GetPressure())/impedance,1e-6);
-		TS_ASSERT_DELTA(vessels[2]->GetFlowRate(),-(nodes[2]->GetPressure()-1000.5)/impedance,1e-6);
+		TS_ASSERT_DELTA(vessels[5]->GetFlowRate(),-(nodes[2]->GetPressure()-1000.5)/(4.0 * impedance),1e-6);
 
 		TS_ASSERT_DELTA(p_segment1->GetFlowRate(),(3393-nodes[2]->GetPressure())/impedance,1e-6);
 		TS_ASSERT_DELTA(p_segment2->GetFlowRate(),(3393-nodes[2]->GetPressure())/impedance,1e-6);
-		TS_ASSERT_DELTA(p_segment3->GetFlowRate(),-(nodes[2]->GetPressure()-1000.5)/impedance,1e-6);
+		TS_ASSERT_DELTA(p_segment6->GetFlowRate(),-(nodes[2]->GetPressure()-1000.5)/(4.0 * impedance),1e-6);
 
 		double kirchoff_residual = vessels[0]->GetFlowRate() + vessels[1]->GetFlowRate() +
-									vessels[2]->GetFlowRate();
+									vessels[5]->GetFlowRate();
 
 		TS_ASSERT_DELTA(kirchoff_residual,0,1e-6);
 
@@ -293,8 +302,8 @@ public:
 		nodes[3]->SetPressure(1000.5);
 
 		SimpleFlowSolver<3> solver;
-
-		solver.Implement(p_vascular_network);
+		solver.SetUp(p_vascular_network);
+		solver.Implement();
 
 		TS_ASSERT_DELTA(nodes[0]->GetPressure(),3393,1e-6);
 		TS_ASSERT_DELTA(nodes[1]->GetPressure(),3393,1e-6);
@@ -387,7 +396,8 @@ public:
 		}
 
 		SimpleFlowSolver<2> solver;
-		solver.Implement(vascular_network);
+		solver.SetUp(vascular_network);
+		solver.Implement();
 
 		// Write the network to file
 		OutputFileHandler output_file_handler("TestSimpleFlowSolver", false);

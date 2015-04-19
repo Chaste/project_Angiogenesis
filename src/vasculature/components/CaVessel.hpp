@@ -175,6 +175,12 @@ public:
 	boost::shared_ptr<VascularNode<DIM> > GetEndNode();
 
 	/**
+       @return shared pointer to the node at the opposite end of the vessel
+       to the supplied one.
+	 */
+	boost::shared_ptr<VascularNode<DIM> > GetNodeAtOppositeEnd(boost::shared_ptr<VascularNode<DIM> > pQueryNode);
+
+	/**
 	 *  Return the Id
 	 *
 	 *  @return mId

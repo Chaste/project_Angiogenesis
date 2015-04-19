@@ -4,7 +4,7 @@ vasculature/components/TestCaVessel.hpp
 vasculature/components/TestCaVascularNetwork.hpp
 vasculature/solvers/TestPoiseuilleImpedanceCalculator.hpp
 vasculature/solvers/TestSimpleFlowSolver.hpp
-vasculature/solvers/TestSimpleStructuralAdaptationAlgorithm.hpp
+vasculature/solvers/TestSimpleStructuralAdaptationSolver.hpp
 vasculature/TestVasculatureData.hpp
 vasculature/TestVasculatureGenerator.hpp
 cell/TestVascularCellProperty.hpp

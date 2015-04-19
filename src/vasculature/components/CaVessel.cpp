@@ -267,6 +267,28 @@ boost::shared_ptr<VascularNode<DIM> > CaVessel<DIM>::GetEndNode()
 }
 
 template<unsigned DIM>
+boost::shared_ptr<VascularNode<DIM> > CaVessel<DIM>::GetNodeAtOppositeEnd(boost::shared_ptr<VascularNode<DIM> > pQueryNode)
+{
+	if(!mNodesUpToDate)
+	{
+		UpdateNodes();
+	}
+
+	if(pQueryNode == GetStartNode())
+	{
+		return GetEndNode();
+	}
+	else if (pQueryNode == GetEndNode())
+	{
+		return GetStartNode();
+	}
+	else
+	{
+		EXCEPTION("Query node is not at either end of the vessel.");
+	}
+}
+
+template<unsigned DIM>
 unsigned CaVessel<DIM>::GetId() const
 {
 	return mId;

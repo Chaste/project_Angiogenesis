@@ -37,11 +37,26 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define SIMPLEFLOWSOLVER_HPP_
 
 #include <boost/shared_ptr.hpp>
+#include "VascularNode.hpp"
+#include "CaVessel.hpp"
 #include "CaVascularNetwork.hpp"
+#include "LinearSystem.hpp"
 
 template<unsigned DIM>
 class SimpleFlowSolver
 {
+private:
+
+	std::vector<boost::shared_ptr<VascularNode<DIM> > > mNodes;
+	std::vector<boost::shared_ptr<CaVessel<DIM> > > mVessels;
+	boost::shared_ptr<CaVascularNetwork<DIM> > mpVesselNetwork;
+	std::vector<std::vector<unsigned> > mNodeVesselConnectivity;
+	std::vector<std::vector<unsigned> > mNodeNodeConnectivity;
+	std::vector<unsigned> mBoundaryConditionNodeIndices;
+	std::vector<unsigned> mUnconnectedNodeIndices;
+	boost::shared_ptr<LinearSystem> mpLinearSystem;
+	double mMultiplier;
+	bool mIsSetUp;
 
 public:
 
@@ -55,10 +70,22 @@ public:
 	 */
 	~SimpleFlowSolver();
 
+	bool IsSetUp();
+
+	/**
+	 * Set up the flow solver;
+	 */
+	void SetUp(boost::shared_ptr<CaVascularNetwork<DIM> > pVascularNetwork = boost::shared_ptr<CaVascularNetwork<DIM> >());
+
+	/**
+	 * Update the impedances in the system matrix
+	 */
+	void UpdateImpedances();
+
 	/**
 	 * Implement flow solver;
 	 */
-	void Implement(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
+	void Implement(boost::shared_ptr<CaVascularNetwork<DIM> > pVascularNetwork = boost::shared_ptr<CaVascularNetwork<DIM> >());
 
 };
 

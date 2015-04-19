@@ -178,14 +178,19 @@ public:
 	unsigned GetNodeIndex(boost::shared_ptr<VascularNode<DIM> > node);
 
 	/**
-	   Returns the number of nodes in the network.
+	   Return the number of nodes in the network.
 	 */
 	unsigned GetNumberOfNodes();
 
 	/**
-	   Returns the number of vessels in the network.
+	   Return the number of vessels in the network.
 	 */
 	unsigned GetNumberOfVessels();
+
+	/**
+	   Return the number of branches on the most highly connected node
+	 */
+	unsigned GetMaxBranchesOnNode();
 
 	/**
         Return the vessel with the specified index in the network
@@ -216,6 +221,16 @@ public:
         Return the vessels in the network
 	 */
 	std::vector<boost::shared_ptr<CaVessel<DIM> > > GetVessels();
+
+	/**
+        Return the indices of each node attached to a node
+	 */
+	std::vector<std::vector<unsigned> > GetNodeNodeConnectivity();
+
+	/**
+        Return the indices of each vessel attached to a node
+	 */
+	std::vector<std::vector<unsigned> > GetNodeVesselConnectivity();
 
 	/**
         Return whether a node is connected to a source node.
