@@ -50,7 +50,7 @@ SimpleFlowSolver<DIM>::SimpleFlowSolver()
 	  mBoundaryConditionNodeIndices(std::vector<unsigned> ()),
 	  mUnconnectedNodeIndices(std::vector<unsigned> ()),
 	  mpLinearSystem(boost::shared_ptr<LinearSystem>()),
-	  mMultiplier(1.0e6),
+	  mMultiplier(1.0e12),
 	  mIsSetUp(false)
 {
 
@@ -77,10 +77,10 @@ void SimpleFlowSolver<DIM>::SetUp(boost::shared_ptr<CaVascularNetwork<DIM> > pVa
 
 	// If the network is small the preconditioner is turned off in LinearSystem,
 	// so an iterative solver is used instead.
-	if (num_nodes >= 6)
+//	if (nm_nodes >= 6)
 	{
-		//mpLinearSystem->SetPcType("lu");
-		//mpLinearSystem->SetKspType("preonly");
+		mpLinearSystem->SetPcType("lu");
+		mpLinearSystem->SetKspType("preonly");
 	}
 
     // Get the node-vessel and node-node connectivity
@@ -140,15 +140,13 @@ void SimpleFlowSolver<DIM>::UpdateImpedances()
 
 		if(is_bc_node or is_unconnected_node)
 		{
-			//mpLinearSystem->AddToMatrixElement(node_index, node_index, mMultiplier);
-			mpLinearSystem->AddToMatrixElement(node_index, node_index, mMultiplier);
+			mpLinearSystem->AddToMatrixElement(node_index, node_index, 1.0);
 		}
 		else
 		{
 			for (unsigned vessel_index = 0; vessel_index < mNodeVesselConnectivity[node_index].size(); vessel_index++)
 			{
 				double impedance = scaled_impedances[mNodeVesselConnectivity[node_index][vessel_index]];
-
 				// Add the inverse impedances to the linear system
 				mpLinearSystem->AddToMatrixElement(node_index, node_index, (-1/impedance) * mMultiplier); // Aii
 				mpLinearSystem->AddToMatrixElement(node_index, mNodeNodeConnectivity[node_index][vessel_index], (+1/impedance)*mMultiplier); // Aij
@@ -161,7 +159,7 @@ void SimpleFlowSolver<DIM>::UpdateImpedances()
 	for (unsigned bc_index = 0; bc_index < mBoundaryConditionNodeIndices.size(); bc_index++)
 	{
 		mpLinearSystem->SetRhsVectorElement(mBoundaryConditionNodeIndices[bc_index],
-				mNodes[mBoundaryConditionNodeIndices[bc_index]]->GetPressure()*mMultiplier);
+				mNodes[mBoundaryConditionNodeIndices[bc_index]]->GetPressure());
 	}
 }
 
@@ -181,8 +179,8 @@ void SimpleFlowSolver<DIM>::Implement(boost::shared_ptr<CaVascularNetwork<DIM> >
 
 	// Assemble and solve the final system
 	mpLinearSystem->AssembleFinalLinearSystem();
-	mpLinearSystem->DisplayMatrix();
-	mpLinearSystem->DisplayRhs();
+	//mpLinearSystem->DisplayMatrix();
+	//mpLinearSystem->DisplayRhs();
 	Vec solution = PetscTools::CreateVec(mNodes.size());
 	solution = mpLinearSystem->Solve();
 
@@ -190,8 +188,8 @@ void SimpleFlowSolver<DIM>::Implement(boost::shared_ptr<CaVascularNetwork<DIM> >
 	ReplicatableVector a(solution);
 	for (unsigned node_index = 0; node_index < mNodes.size(); node_index++)
 	{
+        //std::cout << "pressure: " << a[node_index] << std::endl;
 		mNodes[node_index]->SetPressure(a[node_index]);
-		//std::cout << "p1_" << a[node_index] << std::endl;
 	}
 
 	/**
@@ -201,10 +199,12 @@ void SimpleFlowSolver<DIM>::Implement(boost::shared_ptr<CaVascularNetwork<DIM> >
 	{
 		double start_node_pressure = mVessels[vessel_index]->GetStartNode()->GetPressure();
 		double end_node_pressure = mVessels[vessel_index]->GetEndNode()->GetPressure();
-
-		//std::cout << "ps_" << start_node_pressure << "pe_" << end_node_pressure <<std::endl;
-
 		double flow_rate = (start_node_pressure - end_node_pressure)/mVessels[vessel_index]->GetImpedance();
+
+	    if (fabs(flow_rate) < pow(10.0,-20))
+	    {
+	        flow_rate = 0.0;
+	    }
 
 		std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = mVessels[vessel_index]->GetSegments();
 		double pressure = start_node_pressure;

@@ -88,6 +88,7 @@ void Alarcon03RadiusCalculator<DIM>::Calculate(boost::shared_ptr<CaVascularNetwo
 
 		double radius = segments[segment_index]->GetRadius();
 
+//		std::cout << "step "<< mTimeStep << " stim "<< mechanical_stimulus << std::endl;
 		radius *= 1.0 + mTimeStep*total_stimulus;
 
 		if (radius > mMaxRadius)

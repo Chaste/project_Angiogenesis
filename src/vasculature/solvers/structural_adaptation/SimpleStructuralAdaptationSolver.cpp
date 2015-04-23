@@ -34,6 +34,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include "SimpleStructuralAdaptationSolver.hpp"
+#include "ConstantHaematocritSolver.hpp"
+
 
 template<unsigned DIM>
 SimpleStructuralAdaptationSolver<DIM>::SimpleStructuralAdaptationSolver()
@@ -123,7 +125,7 @@ void SimpleStructuralAdaptationSolver<DIM>::SetNodePressureCalculator(boost::sha
 }
 
 template<unsigned DIM>
-void SimpleStructuralAdaptationSolver<DIM>::SetHaematocritCalculator(boost::shared_ptr<ConstantHaematocritSolver<DIM> > pCalculator)
+void SimpleStructuralAdaptationSolver<DIM>::SetHaematocritCalculator(boost::shared_ptr<AbstractHaematocritSolver<DIM> > pCalculator)
 {
     mHaematocritCalculator = pCalculator;
 }
@@ -142,7 +144,11 @@ void SimpleStructuralAdaptationSolver<DIM>::Iterate(boost::shared_ptr<CaVascular
 	{
 		mFlowSolver->UpdateImpedances();
 	}
-	mFlowSolver->Implement(vascularNetwork);
+	else
+	{
+	    mFlowSolver->SetUp(vascularNetwork);
+	}
+	mFlowSolver->Implement();
 
     mHaematocritCalculator->Calculate(vascularNetwork);
 

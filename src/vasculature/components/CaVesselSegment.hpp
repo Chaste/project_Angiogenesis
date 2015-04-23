@@ -58,7 +58,7 @@ template<unsigned DIM>
 class CaVesselSegment : public boost::enable_shared_from_this<CaVesselSegment<DIM> >
 {
 
-	friend class CaVessel<DIM>;
+    friend class CaVessel<DIM>;
 
 private:
 
@@ -70,7 +70,7 @@ private:
     /**
      * Container for non-spatial segment data.
      */
-	VasculatureData mDataContainer;
+    VasculatureData mDataContainer;
 
     /**
      * Id tag, can be useful for storing segment-vessel relationships in the VesselNetwork class.
@@ -82,10 +82,10 @@ private:
      */
     std::string mLabel;
 
-	/**
-	 *   Weak pointer to the vessel owning this segment
-	 */
-	boost::weak_ptr<CaVessel<DIM> > mVessel;
+    /**
+     *   Weak pointer to the vessel owning this segment
+     */
+    boost::weak_ptr<CaVessel<DIM> > mVessel;
 
     /**
      *   Radius of the vessel at this segment
@@ -162,7 +162,7 @@ public:
      * Destructor
      */
     ~CaVesselSegment();
-    
+
     /**
      *  Return the segment data for the input key. An attempt is made
      *  to cast to type T.
@@ -170,13 +170,13 @@ public:
      */
     template<typename T> T GetData(const std::string& rKey);
 
-	/**
-	 *  Return a const reference to the segment's non-spatial data container.
-	 *
-	 *  @return mDataContainer
-	 */
-	const VasculatureData& rGetDataContainer() const;
-	
+    /**
+     *  Return a const reference to the segment's non-spatial data container.
+     *
+     *  @return mDataContainer
+     */
+    const VasculatureData& rGetDataContainer() const;
+
     /**
      *  Return a vector of data keys for the segment. Input true if
      *  the corresponding value should be castable to double.
@@ -191,47 +191,52 @@ public:
      *  Otherwise it is the distance to the nearest vascular node.
      *
      *  @return double
-    */
+     */
     double GetDistance(const ChastePoint<DIM>& rPoint);
 
-	/**
-	 *  Return the Id
-	 *
-	 *  @return mId
-	 */
-	unsigned GetId() const;
-	
-	/**
-	 *  Return the Label
-	 *
-	 *  @return mLabel
-	 */
-	const std::string& rGetLabel() const;
+    /**
+     *  Return the Id
+     *
+     *  @return mId
+     */
+    unsigned GetId() const;
 
-	/**
-	 *  Return the length
-	 */
+    /**
+     *  Return the Label
+     *
+     *  @return mLabel
+     */
+    const std::string& rGetLabel() const;
+
+    /**
+     *  Return the length
+     */
     double GetLength() const;
 
-	/**
-	 *  Return the radius
-	 */
+    /**
+     *  Return the radius
+     */
     double GetRadius() const;
 
-	/**
-	 *  Return the haematocrit
-	 */
+    /**
+     *  Return the haematocrit
+     */
     double GetHaematocrit() const;
 
-	/**
-	 *  Return the impedance
-	 */
+    /**
+     *  Return the impedance
+     */
     double GetImpedance() const;
 
-	/**
-	 *  Return the flow rate
-	 */
+    /**
+     *  Return the flow rate
+     */
     double GetFlowRate() const;
+
+    /**
+     *  Return the flow velocity
+     */
+    double GetFlowVelocity() const;
 
     /**
      *  Return the viscosity
@@ -268,16 +273,16 @@ public:
      */
     double GetShrinkingStimulus() const;
 
-	/**
-	 *  Return a point mid-way along the vessel segment
-	 */
+    /**
+     *  Return a point mid-way along the vessel segment
+     */
     ChastePoint<DIM> GetMidPoint();
-    
+
     /**
        Return a pointer to the node specified by the index
      */
     boost::shared_ptr<VascularNode<DIM> > GetNode(unsigned index);
-    
+
     /**
        Return the segment nodes as a pair
      */
@@ -294,13 +299,13 @@ public:
      */
     ChastePoint<DIM> GetUnitTangent();
 
-	/**
-	 *  Return a boost::shared_ptr to the vessel.
-	 *
-	 * @return mAdjoiningVessels[i]
-	 */
-	boost::shared_ptr<CaVessel<DIM> > GetVessel();
-	
+    /**
+     *  Return a boost::shared_ptr to the vessel.
+     *
+     * @return mAdjoiningVessels[i]
+     */
+    boost::shared_ptr<CaVessel<DIM> > GetVessel();
+
     /**
      *  Return true if the segment has data corresponding to the input key.
      *
@@ -328,36 +333,36 @@ public:
      */
     template<typename T> void SetData(const std::string& rKey, T value);
 
-	/**
-	 *  Over-write the segment's non-spatial DataContainer
-	 *
-	 *  This can be useful when copying data from an existing segment.
-	 */
-	void SetDataContainer(const VasculatureData& rDataContainer);
+    /**
+     *  Over-write the segment's non-spatial DataContainer
+     *
+     *  This can be useful when copying data from an existing segment.
+     */
+    void SetDataContainer(const VasculatureData& rDataContainer);
 
-	/**
-	 *  Assign the Id
-	 */
-	void SetId(unsigned id);
+    /**
+     *  Assign the Id
+     */
+    void SetId(unsigned id);
 
-	/**
-	 *  Set the radius
-	 */
+    /**
+     *  Set the radius
+     */
     void SetRadius(double radius);
 
-	/**
-	 *  Set the haematocrit
-	 */
+    /**
+     *  Set the haematocrit
+     */
     void SetHaematocrit(double haematocrit);
 
-	/**
-	 *  Set the flow rate
-	 */
+    /**
+     *  Set the flow rate
+     */
     void SetFlowRate(double flowRate);
 
-	/**
-	 *  Set the impedance
-	 */
+    /**
+     *  Set the impedance
+     */
     void SetImpedance(double impedance);
 
     /**
@@ -395,10 +400,10 @@ public:
      */
     void SetShrinkingStimulus(double value);
 
-	/**
-	 *  Assign the Label
-	 */
-	void SetLabel(const std::string& rLabel);
+    /**
+     *  Assign the Label
+     */
+    void SetLabel(const std::string& rLabel);
 
 private:
 
@@ -407,17 +412,17 @@ private:
 
        @return boost::shared_ptr<VesselSegment<DIM> >
      */
-	boost::shared_ptr<CaVesselSegment<DIM> > Shared();
+    boost::shared_ptr<CaVesselSegment<DIM> > Shared();
 
-	/**
+    /**
        Adds an adjoining Vessel to the segment.
-	 */
-	void AddVessel(boost::shared_ptr<CaVessel<DIM> > pVessel);
+     */
+    void AddVessel(boost::shared_ptr<CaVessel<DIM> > pVessel);
 
-	/**
+    /**
        Removes an adjoining vessel from the segment.
-	 */
-	void RemoveVessel();
+     */
+    void RemoveVessel();
 };
 
 #endif /* CAVASCULARNETWORK_HPP_ */

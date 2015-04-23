@@ -225,6 +225,17 @@ unsigned CaVascularNetwork<DIM>::GetNumberOfNodes()
 }
 
 template <unsigned DIM>
+unsigned CaVascularNetwork<DIM>::GetNumberOfVesselNodes()
+{
+    if(!mVesselNodesUpToDate)
+    {
+        UpdateVesselNodes();
+    }
+
+    return mVesselNodes.size();
+}
+
+template <unsigned DIM>
 unsigned CaVascularNetwork<DIM>::GetNodeIndex(boost::shared_ptr<VascularNode<DIM> > node)
 {
     std::vector<boost::shared_ptr<VascularNode<DIM> > > vec_nodes = GetNodes();

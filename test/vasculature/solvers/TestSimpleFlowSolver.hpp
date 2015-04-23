@@ -41,9 +41,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "OutputFileHandler.hpp"
 #include "SmartPointers.hpp"
 #include "VasculatureGenerator.hpp"
-#include "FakePetscSetup.hpp"
 #include "SimpleFlowSolver.hpp"
 #include "VasculatureData.hpp"
+#include "FakePetscSetup.hpp"
 
 #include "Debug.hpp"
 
@@ -81,7 +81,7 @@ public:
 
 		p_vascular_network->AddVessel(p_vessel);
 
-		double impedance = 10.0;
+        double impedance = 1.e14;
 		p_segment->SetImpedance(impedance);
 		p_vascular_network->SetSegmentProperties(p_segment);
 
@@ -140,7 +140,7 @@ public:
 
 		p_vascular_network->AddVessel(p_vessel);
 
-        double impedance = 10.0;
+        double impedance = 1.e14;
         p_segment1->SetImpedance(impedance);
         p_vascular_network->SetSegmentProperties(p_segment1);
 
@@ -170,6 +170,53 @@ public:
 		}
 
 	}
+
+    void TestFlowThroughMultipleVessels() throw(Exception)
+    {
+
+        // Make some nodes
+        std::vector<ChastePoint<3> > points;
+        points.push_back(ChastePoint<3>(1.0, 0, 0));
+        points.push_back(ChastePoint<3>(2.0, 0, 0));
+        points.push_back(ChastePoint<3>(3.0, 0, 0));
+
+        std::vector<NodePtr3> nodes;
+        for(unsigned i=0; i < points.size(); i++)
+        {
+            nodes.push_back(NodePtr3 (VascularNode<3>::Create(points[i])));
+        }
+
+        SegmentPtr3 p_segment1(CaVesselSegment<3>::Create(nodes[0], nodes[1]));
+        SegmentPtr3 p_segment2(CaVesselSegment<3>::Create(nodes[1], nodes[2]));
+
+        VesselPtr3 p_vessel1(CaVessel<3>::Create(p_segment1));
+        VesselPtr3 p_vessel2(CaVessel<3>::Create(p_segment2));
+
+        // Generate the network
+        boost::shared_ptr<CaVascularNetwork<3> > p_vascular_network(new CaVascularNetwork<3>());
+
+        p_vascular_network->AddVessel(p_vessel1);
+        p_vascular_network->AddVessel(p_vessel2);
+
+        double impedance = 1.e14;
+        p_segment1->SetImpedance(impedance);
+        p_vascular_network->SetSegmentProperties(p_segment1);
+
+        nodes[0]->IsInputNode(true);
+        nodes[0]->SetPressure(3393);
+        nodes[2]->IsOutputNode(true);
+        nodes[2]->SetPressure(1000.5);
+
+        SimpleFlowSolver<3> solver;
+        solver.SetUp(p_vascular_network);
+        solver.Implement();
+
+        TS_ASSERT_DELTA(p_vessel1->GetStartNode()->GetPressure(),3393,1e-6);
+        TS_ASSERT_DELTA(p_vessel2->GetEndNode()->GetPressure(),1000.5,1e-6);
+        TS_ASSERT_DELTA(nodes[1]->GetPressure(),(3393 + 1000.5) / 2.0, 1e-6);
+        TS_ASSERT_DELTA(p_vessel1->GetFlowRate(),(3393-1000.5)/(2.0 * impedance),1e-6);
+
+    }
 
 	void TestFlowThroughBifurcation() throw(Exception)
 	{
@@ -217,7 +264,7 @@ public:
 
 		p_vascular_network->AddVessels(vessels);
 
-        double impedance = 10.0;
+        double impedance = 1.e14;;
         p_segment1->SetImpedance(impedance);
         p_vascular_network->SetSegmentProperties(p_segment1);
 
@@ -288,7 +335,7 @@ public:
 
 		p_vascular_network->AddVessels(vessels);
 
-        double impedance = 10.0;
+        double impedance = 1.e14;
         p_segment1->SetImpedance(impedance);
         p_vascular_network->SetSegmentProperties(p_segment1);
 
@@ -347,7 +394,7 @@ public:
 
 		SegmentPtr2 p_segment1(CaVesselSegment<2>::Create(nodes[0], nodes[1]));
 
-        double impedance = 10.0;
+        double impedance = 1.e14;
         p_segment1->SetImpedance(impedance);
         vascular_network->SetSegmentProperties(p_segment1);
 

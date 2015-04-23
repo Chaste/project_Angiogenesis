@@ -353,6 +353,19 @@ double CaVessel<DIM>::GetFlowRate() const
 }
 
 template<unsigned DIM>
+double CaVessel<DIM>::GetFlowVelocity() const
+{
+    double flow_velocity = 0.0;
+
+    for (unsigned i = 0; i < mSegments.size(); i++)
+    {
+        flow_velocity += mSegments[i]->GetFlowVelocity();
+    }
+
+    return flow_velocity/double(mSegments.size());
+}
+
+template<unsigned DIM>
 double CaVessel<DIM>::GetImpedance() const
 {
 	double impedance = 0.0;

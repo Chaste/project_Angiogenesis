@@ -182,6 +182,11 @@ public:
 	 */
 	unsigned GetNumberOfNodes();
 
+    /**
+       Return the number of vessel nodes in the network.
+     */
+    unsigned GetNumberOfVesselNodes();
+
 	/**
 	   Return the number of vessels in the network.
 	 */

@@ -37,7 +37,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _SimpleStructuralAdaptationSolver_hpp
 
 #include "StructuralAdaptationSolver.hpp"
-#include "ConstantHaematocritSolver.hpp"
+#include "AbstractHaematocritSolver.hpp"
 #include "SimpleFlowSolver.hpp"
 #include "Alarcon03MetabolicStimulusCalculator.hpp"
 #include "Alarcon03RadiusCalculator.hpp"
@@ -54,7 +54,7 @@ class SimpleStructuralAdaptationSolver : public StructuralAdaptationSolver<DIM>
 
 private:
 
-    boost::shared_ptr<ConstantHaematocritSolver<DIM> > mHaematocritCalculator;
+    boost::shared_ptr<AbstractHaematocritSolver<DIM> > mHaematocritCalculator;
     boost::shared_ptr<SimpleFlowSolver<DIM> > mFlowSolver;
     boost::shared_ptr<Alarcon03RadiusCalculator<DIM> > mRadiusCalculator;
     boost::shared_ptr<Alarcon03MetabolicStimulusCalculator<DIM> > mMetabolicStimulusCalculator;
@@ -99,7 +99,7 @@ public:
 
     void SetNodePressureCalculator(boost::shared_ptr<SimpleFlowSolver<DIM> > pCalculator);
 
-    void SetHaematocritCalculator(boost::shared_ptr<ConstantHaematocritSolver<DIM> > pCalculator);
+    void SetHaematocritCalculator(boost::shared_ptr<AbstractHaematocritSolver<DIM> > pCalculator);
 
     // method for performing the Calculation
     virtual void Iterate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);

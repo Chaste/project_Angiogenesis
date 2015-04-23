@@ -232,6 +232,11 @@ public:
 	 */
     double GetFlowRate() const;
 
+    /**
+     *  Return the flow velocity
+     */
+    double GetFlowVelocity() const;
+
 	/**
 	 *  Return the vessel's nodes
 	 *

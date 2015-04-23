@@ -32,46 +32,44 @@
 //OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // */
-//
-//#ifndef _Alarcon03HaematocritCalculator_hpp
-//#define _Alarcon03HaematocritCalculator_hpp
-//
-//#include "AbstractHaematocritCalculator.hpp"
-//#include "CaVascularNetwork.hpp"
-//#include <boost/shared_ptr.hpp>
-//
-//// currently Calculator doesn't work for vessel networks containting sprouts with self loops and loops where secondary
-//// sprouts loop back around to join their primary (parent sprout) - see notes 11/07/12
-//
-//template<unsigned DIM>
-//class Alarcon03HaematocritCalculator : public AbstractHaematocritCalculator<DIM>
-//{
-//
-//private:
-//
-//    double mTHR;
-//    double mAlpha;
-//	double mHaematocrit;
-//
-//public:
-//
-//    // constructor
-//    Alarcon03HaematocritCalculator(double haematocrit = 0.45);
-//
-//    /**
-//     *  destructor.
-//     */
-//    ~Alarcon03HaematocritCalculator();
-//
-//    void SetTHR(double thr);
-//
-//    void SetAlpha(double alpha);
-//
-//    void SetHaematocrit(double haematocrit);
-//
-//    // method for performing the Calculation
-//    void Caclulate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
-//
-//};
-//
-//#endif
+
+#ifndef _Alarcon03HaematocritSolver_hpp
+#define _Alarcon03HaematocritSolver_hpp
+
+#include "AbstractHaematocritSolver.hpp"
+#include "CaVascularNetwork.hpp"
+#include <boost/shared_ptr.hpp>
+
+
+template<unsigned DIM>
+class Alarcon03HaematocritSolver : public AbstractHaematocritSolver<DIM>
+{
+
+private:
+
+    double mTHR;
+    double mAlpha;
+	double mHaematocrit;
+
+public:
+
+    // constructor
+    Alarcon03HaematocritSolver(double haematocrit = 0.45);
+
+    /**
+     *  destructor.
+     */
+    ~Alarcon03HaematocritSolver();
+
+    void SetTHR(double thr);
+
+    void SetAlpha(double alpha);
+
+    void SetHaematocrit(double haematocrit);
+
+    // method for performing the Calculation
+    void Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
+
+};
+
+#endif

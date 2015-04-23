@@ -210,6 +210,12 @@ double CaVesselSegment<DIM>::GetFlowRate() const
 }
 
 template<unsigned DIM>
+double CaVesselSegment<DIM>::GetFlowVelocity() const
+{
+    return mFlowRate / (M_PI * mRadius * mRadius);
+}
+
+template<unsigned DIM>
 double CaVesselSegment<DIM>::GetImpedance() const
 {
 	return mImpedance;
@@ -230,13 +236,13 @@ double CaVesselSegment<DIM>::GetWallShearStress()  const
 template<unsigned DIM>
 double CaVesselSegment<DIM>::GetMechanicalStimulus()  const
 {
-    return mWallShearStress;
+    return mMechanicalStimulus;
 }
 
 template<unsigned DIM>
 double CaVesselSegment<DIM>::GetMetabolicStimulus()  const
 {
-    return mMechanicalStimulus;
+    return mMetabolicStimulus;
 }
 
 template<unsigned DIM>

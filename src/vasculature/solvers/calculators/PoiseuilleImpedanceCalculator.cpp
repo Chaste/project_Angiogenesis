@@ -74,7 +74,6 @@ void PoiseuilleImpedanceCalculator<DIM>::Calculate(boost::shared_ptr<CaVascularN
 		}
 
 		double impedance = 8.0*viscosity*length/(M_PI*SmallPow(radius,4u));
-
 		segments[segment_index]->SetImpedance(impedance);
 	}
 }
