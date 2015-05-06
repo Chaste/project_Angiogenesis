@@ -148,9 +148,9 @@ public:
 	boost::shared_ptr<VascularNode<DIM> > GetNearestNode(ChastePoint<DIM>& rLocation);
 
 	/**
-         Get the segment nearest to the specified location
+         Get the segment nearest to the specified location and the distance to it
 	 */
-	boost::shared_ptr<CaVesselSegment<DIM> > GetNearestSegment(const ChastePoint<DIM>& rLocation);
+	std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> GetNearestSegment(const ChastePoint<DIM>& rLocation);
 
 	/**
          Get the segment nearest to the specified location

@@ -162,7 +162,7 @@ boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::GetNearestNode(Cha
 }
 
 template <unsigned DIM>
-boost::shared_ptr<CaVesselSegment<DIM> > CaVascularNetwork<DIM>::GetNearestSegment(const ChastePoint<DIM>& rLocation)
+std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double>  CaVascularNetwork<DIM>::GetNearestSegment(const ChastePoint<DIM>& rLocation)
 {
     boost::shared_ptr<CaVesselSegment<DIM> > nearest_segment;
     double min_distance = 1.e12;
@@ -182,13 +182,15 @@ boost::shared_ptr<CaVesselSegment<DIM> > CaVascularNetwork<DIM>::GetNearestSegme
             }
         }
     }
-    return nearest_segment;
+    std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> return_pair =
+    		std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double>(nearest_segment, min_distance);
+    return return_pair;
 }
 
 template <unsigned DIM>
 boost::shared_ptr<CaVessel<DIM> > CaVascularNetwork<DIM>::GetNearestVessel(const ChastePoint<DIM>& rLocation)
 {
-    return GetNearestSegment(rLocation)->GetVessel();
+    return GetNearestSegment(rLocation).first->GetVessel();
 }
 
 template <unsigned DIM>
@@ -788,6 +790,11 @@ void CaVascularNetwork<DIM>::Write(const std::string& filename, bool geometry_on
     pImpedanceInfo->SetNumberOfTuples(mVessels.size()); // number of tuples is number of vessels
     pImpedanceInfo->SetName("Impedance");
     pVesselInfoVector.push_back(pImpedanceInfo);
+    vtkSmartPointer<vtkDoubleArray> pHaematocritInfo = vtkSmartPointer<vtkDoubleArray>::New();
+    pHaematocritInfo->SetNumberOfComponents(1); // all scalar data - has one entry
+    pHaematocritInfo->SetNumberOfTuples(mVessels.size()); // number of tuples is number of vessels
+    pHaematocritInfo->SetName("Haematocrit");
+    pVesselInfoVector.push_back(pHaematocritInfo);
 
     unsigned numberOfNodes = 0;
     typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator it2;
@@ -959,6 +966,7 @@ void CaVascularNetwork<DIM>::Write(const std::string& filename, bool geometry_on
         pVesselInfoVector[key_index++]->SetValue(vessel_index, fabs((*it)->GetFlowRate()));
         pVesselInfoVector[key_index++]->SetValue(vessel_index, (*it)->GetViscosity());
         pVesselInfoVector[key_index++]->SetValue(vessel_index, (*it)->GetImpedance());
+        pVesselInfoVector[key_index++]->SetValue(vessel_index, (*it)->GetHaematocrit());
         vessel_index++;
     }
     pPolyData->SetPoints(pPoints);
