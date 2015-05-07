@@ -295,7 +295,7 @@ boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateHe
 
         // Determine the number of repeating hexagonal units in the x and y directions based on the input height, width and vessel length
         double horizontal_vessel_length = vessel_length;
-        double diagonal_vessel_length = vessel_length/std::sqrt(2);
+        double diagonal_vessel_length = floor(vessel_length/(std::sqrt(2)*2e-5)+0.5)*2e-5;
         unsigned units_in_x_direction = floor(((width-horizontal_vessel_length-2.0*diagonal_vessel_length)/
                         (2.0*(horizontal_vessel_length+diagonal_vessel_length))));
         unsigned units_in_y_direction = floor(((height)/(2.0*diagonal_vessel_length)));

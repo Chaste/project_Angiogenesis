@@ -35,6 +35,8 @@
 #include <stdio.h>
 #include "Alarcon03HaematocritSolver.hpp"
 #include "LinearSystem.hpp"
+#include "VascularNode.hpp"
+#include "CaVessel.hpp"
 #include "Exception.hpp"
 #include "ReplicatableVector.hpp"
 
@@ -88,183 +90,167 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<CaVascularNetw
     {
         for (unsigned j = 0; j < nodes[i]->GetNumberOfSegments(); j++)
         {
-            if (nodes[i] == nodes[i]->GetVesselSegment(j)->GetVessel()->GetStartNode())
+            boost::shared_ptr<CaVessel<DIM> > p_vessel = nodes[i]->GetVesselSegment(j)->GetVessel();
+            unsigned vessel_index = vascularNetwork->GetVesselIndex(p_vessel);
+            double flow_velocity = p_vessel->GetFlowVelocity();
+            if (nodes[i] == p_vessel->GetStartNode())
             {
-                if (nodes[i]->GetVesselSegment(j)->GetFlowVelocity() < 0)
+                if (flow_velocity < 0)
                 {
-                    VesselsFlowingIntoNode[i].push_back(vascularNetwork->GetVesselIndex(nodes[i]->GetVesselSegment(j)->GetVessel()));
+                    VesselsFlowingIntoNode[i].push_back(vessel_index);
                 }
-                if (nodes[i]->GetVesselSegment(j)->GetFlowVelocity() > 0)
+                else if (flow_velocity > 0)
                 {
-                    VesselsFlowingOutOfNode[i].push_back(vascularNetwork->GetVesselIndex(nodes[i]->GetVesselSegment(j)->GetVessel()));
+                    VesselsFlowingOutOfNode[i].push_back(vessel_index);
                 }
-                if (nodes[i]->GetVesselSegment(j)->GetFlowVelocity() == 0)
+                else
                 {
-                    VesselsAttachedToNodeWithZeroFlow[i].push_back(vascularNetwork->GetVesselIndex(nodes[i]->GetVesselSegment(j)->GetVessel()));
+                    VesselsAttachedToNodeWithZeroFlow[i].push_back(vessel_index);
                 }
             }
-            if (nodes[i] == nodes[i]->GetVesselSegment(j)->GetVessel()->GetEndNode() && nodes[i]->GetVesselSegment(j)->GetVessel()->GetEndNode() !=
-                    nodes[i]->GetVesselSegment(j)->GetVessel()->GetStartNode())
+            else
             {
-                if (nodes[i]->GetVesselSegment(j)->GetFlowVelocity() > 0)
+                if (flow_velocity > 0)
                 {
-                    VesselsFlowingIntoNode[i].push_back(vascularNetwork->GetVesselIndex(nodes[i]->GetVesselSegment(j)->GetVessel()));
+                    VesselsFlowingIntoNode[i].push_back(vessel_index);
                 }
-                if (nodes[i]->GetVesselSegment(j)->GetFlowVelocity() < 0)
+                else if (flow_velocity < 0)
                 {
-                    VesselsFlowingOutOfNode[i].push_back(vascularNetwork->GetVesselIndex(nodes[i]->GetVesselSegment(j)->GetVessel()));
+                    VesselsFlowingOutOfNode[i].push_back(vessel_index);
                 }
-                if (nodes[i]->GetVesselSegment(j)->GetFlowVelocity() == 0)
+                else
                 {
-                    VesselsAttachedToNodeWithZeroFlow[i].push_back(vascularNetwork->GetVesselIndex(nodes[i]->GetVesselSegment(j)->GetVessel()));
+                    VesselsAttachedToNodeWithZeroFlow[i].push_back(vessel_index);
                 }
             }
         }
-
-        assert(nodes[i]->GetNumberOfSegments() == VesselsAttachedToNodeWithZeroFlow[i].size() + VesselsFlowingOutOfNode[i].size() + VesselsFlowingIntoNode[i].size());
     }
 
     // Set up the system
+    unsigned number_of_vessels = vascularNetwork->GetNumberOfVessels();
     PetscInt lhsVectorSize = vascularNetwork->GetNumberOfVessels();
-    LinearSystem linearSystem(lhsVectorSize, 3);
-    linearSystem.SetPcType("lu");
-    PetscOptionsSetValue("-pc_factor_mat_solver_package", "umfpack");
-    PetscOptionsSetValue("-pc_factor_zeropivot", 0);
-    linearSystem.SetKspType("gmres");
-
-    unsigned EquationNumber = 0;
-
-    // equations which say that arterial input vessels have an arterial haematocrit level
-
-    for (unsigned i = 0; i < vascularNetwork->GetNumberOfVesselNodes(); i++)
+    unsigned pre_allocation_value;
+    if(number_of_vessels < 3)
     {
-        if (nodes[i]->IsInputNode())
+        pre_allocation_value  = number_of_vessels;
+    }
+    else
+    {
+        pre_allocation_value = 3;
+    }
+
+    LinearSystem linearSystem(lhsVectorSize, pre_allocation_value);
+//    if(lhsVectorSize > 6)
+//    {
+//        linearSystem.SetPcType("lu");
+//        linearSystem.SetKspType("preonly");
+//    }
+
+    // Set the haematocrit of input vessels to the arterial level
+    unsigned number_of_vessel_nodes = nodes.size();
+    unsigned equation_number = 0;
+    for (unsigned idx = 0; idx < number_of_vessel_nodes; idx++)
+    {
+        if (nodes[idx]->IsInputNode())
         {
-            linearSystem.AssembleIntermediateLinearSystem();
-            linearSystem.AddToMatrixElement(EquationNumber, vascularNetwork->GetVesselIndex(nodes[i]->GetVesselSegment(0)->GetVessel()), 1);
-            linearSystem.AssembleIntermediateLinearSystem();
-            linearSystem.SetRhsVectorElement(EquationNumber, mHaematocrit);
-            EquationNumber++;
+            for (unsigned jdx = 0; jdx < nodes[idx]->GetNumberOfSegments(); jdx++)
+            {
+                linearSystem.AddToMatrixElement(equation_number, vascularNetwork->GetVesselIndex(nodes[idx]->GetVesselSegment(jdx)->GetVessel()), 1);
+                linearSystem.SetRhsVectorElement(equation_number, mHaematocrit);
+                equation_number++;
+            }
         }
     }
 
-    for (unsigned i = 0; i < vascularNetwork->GetNumberOfVesselNodes(); i++)
+    // Haematocrit conservation equations
+    for (unsigned i = 0; i < number_of_vessel_nodes; i++)
     {
+        unsigned number_of_inflow_vessels = VesselsFlowingIntoNode[i].size();
+        unsigned number_of_outflow_vessels = VesselsFlowingOutOfNode[i].size();
+        unsigned number_of_no_flow_vessels = VesselsAttachedToNodeWithZeroFlow[i].size();
 
-        if (VesselsFlowingIntoNode[i].size() + VesselsFlowingOutOfNode[i].size() + VesselsAttachedToNodeWithZeroFlow[i].size() > 3)
+        if (number_of_inflow_vessels + number_of_outflow_vessels + number_of_no_flow_vessels > 3)
         {
-            unsigned totalNumberOfVesselsAttachedToNode = VesselsFlowingIntoNode[i].size() + VesselsFlowingOutOfNode[i].size() + VesselsAttachedToNodeWithZeroFlow[i].size();
-
-            cout << "Error: Alarcon03HaematocritSolver is not equipped to handle vessel networks where more than 3 vessels unsignedersect at a node pounsigned in the network. Perhaps replace this calculation with a constant haematocrit calculation.\n";
-            assert(totalNumberOfVesselsAttachedToNode <= 3);
+            EXCEPTION("The maximum number of coincident vessels at a node is 3.");
         }
-
-        if (VesselsFlowingIntoNode[i].size() + VesselsFlowingOutOfNode[i].size() == 2)
+        else if (number_of_inflow_vessels + number_of_outflow_vessels == 2)
         {
-            // must be one flow going in to node and one flowing out for conservation
-            assert(VesselsFlowingIntoNode[i].size() == 1 && VesselsFlowingOutOfNode[i].size() == 1);
-
-            linearSystem.AssembleIntermediateLinearSystem();
-            linearSystem.AddToMatrixElement(EquationNumber, VesselsFlowingIntoNode[i][0], 1);
-            linearSystem.AssembleIntermediateLinearSystem();
-            linearSystem.AddToMatrixElement(EquationNumber, VesselsFlowingOutOfNode[i][0], -1);
-            EquationNumber++;
+            if(!(number_of_inflow_vessels == 1 && number_of_outflow_vessels == 1))
+            {
+                EXCEPTION("Nodes with two conincident vessels must have one inflow and one outflow vessel.");
+            }
+            // output haematocrit equals input haematocrit
+            linearSystem.AddToMatrixElement(equation_number, VesselsFlowingIntoNode[i][0], 1);
+            linearSystem.AddToMatrixElement(equation_number, VesselsFlowingOutOfNode[i][0], -1);
+            equation_number++;
         }
-
-        if (VesselsFlowingIntoNode[i].size() + VesselsFlowingOutOfNode[i].size() == 3)
+        else if (VesselsFlowingIntoNode[i].size() + VesselsFlowingOutOfNode[i].size() == 3)
         {
-
             if (VesselsFlowingIntoNode[i].size() == 2)
             {
-                // conservation equation for node
-                linearSystem.AssembleIntermediateLinearSystem();
-                linearSystem.AddToMatrixElement(EquationNumber, VesselsFlowingIntoNode[i][0], 1);
-                linearSystem.AssembleIntermediateLinearSystem();
-                linearSystem.AddToMatrixElement(EquationNumber, VesselsFlowingIntoNode[i][1], 1);
-                linearSystem.AssembleIntermediateLinearSystem();
-                linearSystem.AddToMatrixElement(EquationNumber, VesselsFlowingOutOfNode[i][0], -1);
-                EquationNumber++;
-
+                // output haematocrit equals sum of input haematocrits
+                linearSystem.AddToMatrixElement(equation_number, VesselsFlowingIntoNode[i][0], 1);
+                linearSystem.AddToMatrixElement(equation_number, VesselsFlowingIntoNode[i][1], 1);
+                linearSystem.AddToMatrixElement(equation_number, VesselsFlowingOutOfNode[i][0], -1);
+                equation_number++;
             }
-            if (VesselsFlowingIntoNode[i].size() == 1)
+            else if (VesselsFlowingIntoNode[i].size() == 1)
             {
-                // conservation equation for node
-                linearSystem.AssembleIntermediateLinearSystem();
-                linearSystem.AddToMatrixElement(EquationNumber, VesselsFlowingIntoNode[i][0], 1);
-                linearSystem.AssembleIntermediateLinearSystem();
-                linearSystem.AddToMatrixElement(EquationNumber, VesselsFlowingOutOfNode[i][0], -1);
-                linearSystem.AssembleIntermediateLinearSystem();
-                linearSystem.AddToMatrixElement(EquationNumber, VesselsFlowingOutOfNode[i][1], -1);
-                EquationNumber++;
+                // bifurcation
+                linearSystem.AddToMatrixElement(equation_number, VesselsFlowingIntoNode[i][0], 1);
+                linearSystem.AddToMatrixElement(equation_number, VesselsFlowingOutOfNode[i][0], -1);
+                linearSystem.AddToMatrixElement(equation_number, VesselsFlowingOutOfNode[i][1], -1);
+                equation_number++;
 
+                double out_flow_velocity0 = fabs(vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][0])->GetFlowVelocity());
+                double out_flow_velocity1 = fabs(vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][1])->GetFlowVelocity());
 
-                if (fabs(vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][0])->GetFlowVelocity()) >= fabs(vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][1])->GetFlowVelocity()))
+                if (out_flow_velocity0 >= out_flow_velocity1)
                 {
-                    if (fabs(vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][0])->GetFlowVelocity()) < mTHR*fabs(vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][1])->GetFlowVelocity()))
+                    if (out_flow_velocity0 < mTHR*out_flow_velocity1)
                     {
-                        linearSystem.AssembleIntermediateLinearSystem();
-                        linearSystem.AddToMatrixElement(EquationNumber, VesselsFlowingOutOfNode[i][0], 1);
-                        linearSystem.AssembleIntermediateLinearSystem();
-                        linearSystem.AddToMatrixElement(EquationNumber, VesselsFlowingOutOfNode[i][1], -mAlpha*(fabs(vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][0])->GetFlowVelocity())/fabs(vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][1])->GetFlowVelocity())));
+                        linearSystem.AddToMatrixElement(equation_number, VesselsFlowingOutOfNode[i][0], 1);
+                        linearSystem.AddToMatrixElement(equation_number, VesselsFlowingOutOfNode[i][1], -mAlpha*(out_flow_velocity0/out_flow_velocity1));
                     }
                     else
                     {
-                        linearSystem.AssembleIntermediateLinearSystem();
-                        linearSystem.AddToMatrixElement(EquationNumber, VesselsFlowingOutOfNode[i][0], 1);
-                        linearSystem.AssembleIntermediateLinearSystem();
-                        linearSystem.AddToMatrixElement(EquationNumber, VesselsFlowingIntoNode[i][0], -1);
+                        linearSystem.AddToMatrixElement(equation_number, VesselsFlowingOutOfNode[i][0], 1);
+                        linearSystem.AddToMatrixElement(equation_number, VesselsFlowingIntoNode[i][0], -1);
                     }
 
                 }
-
-                if (fabs(vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][1])->GetFlowVelocity()) > fabs(vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][0])->GetFlowVelocity()))
+                else
                 {
-                    if (fabs(vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][1])->GetFlowVelocity()) < mTHR*fabs(vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][0])->GetFlowVelocity()))
+                    if (out_flow_velocity1 < mTHR*out_flow_velocity0)
                     {
-                        linearSystem.AssembleIntermediateLinearSystem();
-                        linearSystem.AddToMatrixElement(EquationNumber, VesselsFlowingOutOfNode[i][1], 1);
-                        linearSystem.AssembleIntermediateLinearSystem();
-                        linearSystem.AddToMatrixElement(EquationNumber, VesselsFlowingOutOfNode[i][0], -mAlpha*(fabs(vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][1])->GetFlowVelocity())/fabs(vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][0])->GetFlowVelocity())));
+                        linearSystem.AddToMatrixElement(equation_number, VesselsFlowingOutOfNode[i][1], 1);
+                        linearSystem.AddToMatrixElement(equation_number, VesselsFlowingOutOfNode[i][0], -mAlpha*(out_flow_velocity1/out_flow_velocity0));
                     }
                     else
                     {
-                        linearSystem.AssembleIntermediateLinearSystem();
-                        linearSystem.AddToMatrixElement(EquationNumber, VesselsFlowingOutOfNode[i][1], 1);
-                        linearSystem.AssembleIntermediateLinearSystem();
-                        linearSystem.AddToMatrixElement(EquationNumber, VesselsFlowingIntoNode[i][0], -1);
+                        linearSystem.AddToMatrixElement(equation_number, VesselsFlowingOutOfNode[i][1], 1);
+                        linearSystem.AddToMatrixElement(equation_number, VesselsFlowingIntoNode[i][0], -1);
                     }
-
                 }
-
-
-                EquationNumber++;
-
+                equation_number++;
             }
-
         }
-
     }
 
-    // equations which say that vessels with zero flow have zero haematocrit in
-
-    for (unsigned i = 0; i < vascularNetwork->GetNumberOfVessels(); i++)
+    // zero flow vessels have zero haematocrit
+    linearSystem.AssembleIntermediateLinearSystem();
+    for (unsigned idx = 0; idx < number_of_vessels; idx++)
     {
-        if (vascularNetwork->GetVessel(i)->GetFlowVelocity() == 0)
+        if (vascularNetwork->GetVessel(idx)->GetFlowVelocity() == 0)
         {
-            linearSystem.AssembleIntermediateLinearSystem();
-            linearSystem.SetMatrixElement(EquationNumber, i, 1.0);
-            //            linearSystem.AssembleIntermediateLinearSystem();
-            //            linearSystem.SetRhsVectorElement(EquationNumber, 0.0);
-            EquationNumber++;
+            linearSystem.AddToMatrixElement(equation_number, idx, 1.0);
+            equation_number++;
         }
     }
 
-    linearSystem.AssembleFinalLinearSystem();
-
-    Vec solution = PetscTools::CreateVec(vascularNetwork->GetNumberOfVessels());
-    Vec initialGuess = PetscTools::CreateVec(vascularNetwork->GetNumberOfVessels());
-
-    for (unsigned i = 0; i < vascularNetwork->GetNumberOfVessels(); i++)
+    Vec solution = PetscTools::CreateVec(number_of_vessels);
+    Vec initialGuess = PetscTools::CreateVec(number_of_vessels);
+    for (unsigned i = 0; i < number_of_vessels; i++)
     {
         if (vascularNetwork->GetVessel(i)->GetFlowRate() == 0)
         {
@@ -276,31 +262,25 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<CaVascularNetw
         }
     }
 
-    try
-    {
-        solution = linearSystem.Solve(initialGuess);
-    }
-    catch (Exception &e)
-    {
-        std::cout << e.GetMessage() << std::endl;
-    }
+     // Does an initial guess do anything with a direct solver?
+    linearSystem.AssembleFinalLinearSystem();
+    linearSystem.DisplayMatrix();
+    linearSystem.DisplayRhs();
+    solution = linearSystem.Solve(initialGuess);
+    solution = linearSystem.Solve();
 
     // deal with minor rounding errors in calculation
-
     ReplicatableVector a(solution);
-
-    for (unsigned i = 0; i < vascularNetwork->GetNumberOfVessels(); i++)
+    for (unsigned i = 0; i < number_of_vessels; i++)
     {
         if (a[i] < pow(10.0,-15))
         {
             a[i] = 0;
         }
-
     }
 
     // assign haematocrit levels to vessels
-
-    for (unsigned i = 0; i < vascularNetwork->GetNumberOfVessels(); i++)
+    for (unsigned i = 0; i < number_of_vessels; i++)
     {
         for (unsigned jdx = 0; jdx < vascularNetwork->GetVessel(i)->GetNumberOfSegments(); jdx++)
         {
@@ -308,16 +288,9 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<CaVascularNetw
         }
     }
 
-    /*
-     * clean up
-     */
     PetscTools::Destroy(solution);
     PetscTools::Destroy(initialGuess);
-
 }
-
-
 // Explicit instantiation
-
 template class Alarcon03HaematocritSolver<2>;
 template class Alarcon03HaematocritSolver<3>;
