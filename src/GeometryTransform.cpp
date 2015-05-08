@@ -50,20 +50,13 @@ GeometryTransform<DIM>::~GeometryTransform()
 }
 
 template<unsigned DIM>
-std::vector<ChastePoint<DIM> > GeometryTransform<DIM>::Translate(std::vector<ChastePoint<DIM> > points, std::vector<double> translation_vector)
+std::vector<ChastePoint<DIM> > GeometryTransform<DIM>::Translate(std::vector<ChastePoint<DIM> > points, c_vector<double, DIM> translation_vector)
 {
 	std::vector<ChastePoint<DIM> > new_points;
 	typename std::vector<ChastePoint<DIM> >::iterator it;
-
 	for(it = points.begin(); it != points.end(); it++)
 	{
-		std::vector<double> coords;
-		for (unsigned i=0; i <DIM; i++)
-		{
-			coords.push_back((*it)[i] + translation_vector[i]);
-		}
-
-		new_points.push_back((ChastePoint<DIM> (coords)));
+		new_points.push_back((ChastePoint<DIM> ((*it).rGetLocation() + translation_vector)));
 	}
 	return new_points;
 }

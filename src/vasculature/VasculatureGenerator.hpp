@@ -43,6 +43,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CaVessel.hpp"
 #include "CaVascularNetwork.hpp"
 #include "VascularNode.hpp"
+#include "UblasIncludes.hpp"
 
 #ifdef CHASTE_VTK
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the strstream deprecated warning for now (gcc4.3)
@@ -99,7 +100,7 @@ public:
     /*
      * Creates a single vessel
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateSingleVessel(double vessel_length);
+    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateSingleVessel(c_vector<double, DIM> startPosition, double vessel_length = 100.0);
 
 
 	#ifdef CHASTE_VTK

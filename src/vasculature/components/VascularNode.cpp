@@ -71,6 +71,22 @@ VascularNode<DIM>::VascularNode(double point1, double point2, double point3)
 }
 
 template<unsigned DIM>
+VascularNode<DIM>::VascularNode(c_vector<double, DIM> location)
+    : mLocation(ChastePoint<DIM>(location)),
+      mpCell(CellPtr()),
+      mpCellPopulation(boost::shared_ptr<AbstractCellPopulation<DIM> >()),
+      mDataContainer(),
+      mId(0),
+      mLabel(""),
+      mVesselSegments(std::vector<boost::weak_ptr<CaVesselSegment<DIM> > >()),
+	  mPressure(0.0),
+	  mRadius(1.0),
+	  mIsInputNode(false),
+	  mIsOutputNode(false)
+{
+}
+
+template<unsigned DIM>
 VascularNode<DIM>::~VascularNode()
 {
 }
@@ -110,6 +126,13 @@ template<unsigned DIM>
 boost::shared_ptr<VascularNode<DIM> >VascularNode<DIM>::Create(double point1, double point2, double point3)
 {
     MAKE_PTR_ARGS(VascularNode<DIM>, pSelf, (point1, point2, point3));
+    return pSelf;
+}
+
+template<unsigned DIM>
+boost::shared_ptr<VascularNode<DIM> >VascularNode<DIM>::Create(c_vector<double, DIM> location)
+{
+    MAKE_PTR_ARGS(VascularNode<DIM>, pSelf, (location));
     return pSelf;
 }
 

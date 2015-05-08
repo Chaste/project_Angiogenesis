@@ -41,6 +41,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include "SmartPointers.hpp"
 #include "ChastePoint.hpp"
+#include "UblasIncludes.hpp"
 
 /*
     A collection of simple geometric transformations
@@ -65,7 +66,7 @@ public:
     /*
      * Translate
      */
-    std::vector<ChastePoint<DIM> > Translate(std::vector<ChastePoint<DIM> > points, std::vector<double> translation_vector);
+    std::vector<ChastePoint<DIM> > Translate(std::vector<ChastePoint<DIM> > points, c_vector<double, DIM> translation_vector);
 
 };
 

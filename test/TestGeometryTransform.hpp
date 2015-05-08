@@ -41,6 +41,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "FakePetscSetup.hpp"
 #include "ChastePoint.hpp"
 #include "GeometryTransform.hpp"
+#include "UblasIncludes.hpp"
 
 class TestGeometryTransform : public CxxTest::TestSuite
 {
@@ -62,12 +63,14 @@ public:
 		points_3d.push_back(point4);
 
 		// Move them
-		std::vector<double> translation_vector_2d;
-		translation_vector_2d.push_back(3.5);
-		translation_vector_2d.push_back(5.6);
+		c_vector<double, 2> translation_vector_2d;
+		translation_vector_2d[0] = 3.5;
+		translation_vector_2d[1] = 5.6;
 
-		std::vector<double> translation_vector_3d = translation_vector_2d;
-		translation_vector_3d.push_back(-12.8);
+		c_vector<double, 3> translation_vector_3d;
+		translation_vector_3d[0] = 3.5;
+		translation_vector_3d[1] = 5.6;
+		translation_vector_3d[2] = -12.8;
 
 		GeometryTransform<2> transform_2d;
 		GeometryTransform<3> transform_3d;

@@ -69,6 +69,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SmartPointers.hpp"
 #include "VasculatureData.hpp"
 #include "GeometryTransform.hpp"
+#include "UblasIncludes.hpp"
 
 /*
     A vessel network is a collection of vessels
@@ -282,7 +283,7 @@ public:
 	 * Translates the network along the provided vector, if a copy is requested the original vessels are copied
 	 * (without original non-spatial data) and the new vessels are translated.
 	 */
-	void Translate(const std::vector<double>& rTranslationVector, bool copy = false);
+	void Translate(const c_vector<double, DIM>& rTranslationVector, bool copy = false);
 
 	void UpdateNodes();
 

@@ -45,9 +45,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CaVesselSegment.hpp"
 #include "CaVascularNetwork.hpp"
 #include "OutputFileHandler.hpp"
+#include "UblasIncludes.hpp"
 #include "FakePetscSetup.hpp"
-
-#include "Debug.hpp"
 
 class TestVesselNetwork : public AbstractCellBasedTestSuite
 {
@@ -136,10 +135,10 @@ public:
         vessel_network.Write(output_filename, true);
 
         // Move the network
-        std::vector<double> translation_vector_3d;
-        translation_vector_3d.push_back(3.5);
-        translation_vector_3d.push_back(5.6);
-        translation_vector_3d.push_back(-12.8);
+        c_vector<double, 3> translation_vector_3d;
+        translation_vector_3d[0] = 3.5;
+        translation_vector_3d[1] = 5.6;
+        translation_vector_3d[2] = -12.8;
 
         vessel_network.Translate(translation_vector_3d);
         vessel_network.Translate(translation_vector_3d, true);

@@ -697,7 +697,7 @@ void CaVascularNetwork<DIM>::SetSegmentProperties(boost::shared_ptr<CaVesselSegm
 }
 
 template <unsigned DIM>
-void CaVascularNetwork<DIM>::Translate(const std::vector<double>& rTranslationVector, bool copy)
+void CaVascularNetwork<DIM>::Translate(const c_vector<double, DIM>& rTranslationVector, bool copy)
 {
     //	Get a vector of points corresponding to nodes, move the points
     typename std::vector<boost::shared_ptr<VascularNode<DIM> > >::iterator node_iter;

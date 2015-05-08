@@ -81,20 +81,18 @@ void VasculatureGenerator<DIM>::PatternUnitByTranslation(boost::shared_ptr<CaVas
 	}
 //
 	// Get the translation vector
-	std::vector<double> base_translation_vector;
+	c_vector<double, DIM> base_translation_vector;
 	for(unsigned i=0; i <DIM; i++)
 	{
-		base_translation_vector.push_back(max_vals[i] - min_vals[i]);
+		base_translation_vector[i] = max_vals[i] - min_vals[i];
 	}
 
 	// Copy the vessels and translate the new ones a specified number of
 	// times in each direction. The translate method also merges the nodes.
-	std::vector<double> translation_vector;
-	translation_vector.push_back(0.0);
-	translation_vector.push_back(0.0);
-	if(DIM>2)
+	c_vector<double, DIM> translation_vector;
+	for(unsigned i=0; i <DIM; i++)
 	{
-		translation_vector.push_back(0.0);
+		translation_vector[i] = 0.0;
 	}
 
 	for(unsigned i=0; i < number_in_direction1; i++)
@@ -241,7 +239,7 @@ boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateBi
 }
 
 template<unsigned DIM>
-boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateSingleVessel(double vessel_length)
+boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateSingleVessel(c_vector<double, DIM> startPosition, double vessel_length)
 {
 	std::vector<ChastePoint<DIM> > points;
 
@@ -276,6 +274,7 @@ boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateSi
 	// Generate the network
 	boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork(new CaVascularNetwork<DIM>());
 	pNetwork->AddVessels(vessels);
+	pNetwork->Translate(startPosition);
 	return pNetwork;
 }
 

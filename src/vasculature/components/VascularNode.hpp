@@ -46,6 +46,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "AbstractCellPopulation.hpp"
 #include "SmartVasculaturePointers.hpp"
 #include "VasculatureData.hpp"
+#include "UblasIncludes.hpp"
 
 /**
  *  Forward declaration to allow segments to manage adding and removing themselves from nodes.
@@ -140,6 +141,13 @@ public:
     VascularNode(double point1, double point2, double point3 = 0.0);
     
     /*
+     * Constructor
+     *
+     * Create a node using c_vector
+     */
+    VascularNode(c_vector<double, DIM> location);
+
+    /*
      * Destructor
      */
     ~VascularNode();
@@ -153,6 +161,11 @@ public:
      * Construct a new instance of the class and return a shared pointer to it.
      */
     static boost::shared_ptr<VascularNode<DIM> > Create(double point1, double point2, double point3 = 0.0);
+
+    /*
+     * Construct a new instance of the class and return a shared pointer to it.
+     */
+    static boost::shared_ptr<VascularNode<DIM> > Create(c_vector<double, DIM> location);
 
     /**
      *  Return a pointer to the associated Cell.
