@@ -77,7 +77,7 @@ void SimpleFlowSolver<DIM>::SetUp(boost::shared_ptr<CaVascularNetwork<DIM> > pVa
 
 	// If the network is small the preconditioner is turned off in LinearSystem,
 	// so an iterative solver is used instead.
-//	if (nm_nodes >= 6)
+	if (num_nodes >= 6)
 	{
 		mpLinearSystem->SetPcType("lu");
 		mpLinearSystem->SetKspType("preonly");

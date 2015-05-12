@@ -95,7 +95,7 @@ public:
     /*
      * Creates a bifurcation repeating unit
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateBifurcationUnit(double vessel_length);
+    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateBifurcationUnit(c_vector<double, DIM> startPosition, double vessel_length);
 
     /*
      * Creates a single vessel

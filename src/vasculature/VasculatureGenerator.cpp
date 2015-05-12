@@ -186,7 +186,7 @@ boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateHe
 }
 
 template<unsigned DIM>
-boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateBifurcationUnit(double vessel_length)
+boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateBifurcationUnit(c_vector<double, DIM> startPosition, double vessel_length)
 {
 	// Generate the nodes
 	std::vector<ChastePoint<DIM> > points;
@@ -235,6 +235,7 @@ boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateBi
 	// Generate the network
 	boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork(new CaVascularNetwork<DIM>());
 	pNetwork->AddVessels(vessels);
+	pNetwork->Translate(startPosition);
 	return pNetwork;
 }
 
