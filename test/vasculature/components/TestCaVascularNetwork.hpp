@@ -172,8 +172,12 @@ public:
         vessel_network.AddVessel(pVessel1);
 
         // Do the divide
-        vessel_network.DivideVessel(pVessel1, ChastePoint<3>(1.0, 0.0, 0.0));
+        vessel_network.DivideVessel(pVessel1, ChastePoint<3>(0.66, 0.0, 0.0));
         TS_ASSERT_EQUALS(vessel_network.GetNumberOfVessels(), 2u);
+        TS_ASSERT_DELTA(vessel_network.GetVessel(0)->GetSegment(0)->GetNode(0)->GetLocation()[0], 0.0, 1.e-6);
+        TS_ASSERT_DELTA(vessel_network.GetVessel(0)->GetSegment(0)->GetNode(1)->GetLocation()[0], 0.66, 1.e-6);
+        TS_ASSERT_DELTA(vessel_network.GetVessel(1)->GetSegment(0)->GetNode(0)->GetLocation()[0], 0.66, 1.e-6);
+        TS_ASSERT_DELTA(vessel_network.GetVessel(1)->GetSegment(0)->GetNode(1)->GetLocation()[0], 2.0, 1.e-6);
     }
 
     void TestConnnectedMethods() throw(Exception)

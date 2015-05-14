@@ -82,7 +82,6 @@ void CaVascularNetwork<DIM>::RemoveVessel(boost::shared_ptr<CaVessel<DIM> > pVes
 {
 
     typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator it = std::find(mVessels.begin(), mVessels.end(), pVessel);
-
     if(it != mVessels.end())
     {
         mVessels.erase(it);
@@ -95,7 +94,6 @@ void CaVascularNetwork<DIM>::RemoveVessel(boost::shared_ptr<CaVessel<DIM> > pVes
     mSegmentsUpToDate = false;
     mNodesUpToDate = false;
     mVesselNodesUpToDate = false;
-
 }
 
 template <unsigned DIM>
@@ -828,7 +826,6 @@ void CaVascularNetwork<DIM>::DivideVessel(boost::shared_ptr<CaVessel<DIM> > pVes
     {
         end_segments.push_back(pVessel->GetSegment(i));
     }
-
     boost::shared_ptr<CaVessel<DIM> > p_new_vessel1 = CaVessel<DIM>::Create(start_segments);
     boost::shared_ptr<CaVessel<DIM> > p_new_vessel2 = CaVessel<DIM>::Create(end_segments);
     p_new_vessel1->CopyDataFromExistingVessel(pVessel);
@@ -837,7 +834,6 @@ void CaVascularNetwork<DIM>::DivideVessel(boost::shared_ptr<CaVessel<DIM> > pVes
     AddVessel(p_new_vessel1);
     AddVessel(p_new_vessel2);
     RemoveVessel(pVessel);
-
 }
 
 template <unsigned DIM>
@@ -852,9 +848,7 @@ void CaVascularNetwork<DIM>::Write(const std::string& filename, bool geometry_on
 
     // Set up vessel info arrays
     std::map<std::string, boost::any >::iterator map_iterator;
-
     std::map<std::string, boost::any > data_map = mVessels[0]->rGetDataContainer().GetMap();
-
     for(map_iterator = data_map.begin(); map_iterator != data_map.end(); map_iterator++)
     {
         vtkSmartPointer<vtkDoubleArray> pVesselInfo = vtkSmartPointer<vtkDoubleArray>::New();

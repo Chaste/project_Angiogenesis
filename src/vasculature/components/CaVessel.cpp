@@ -477,7 +477,6 @@ bool CaVessel<DIM>::IsConnectedTo(boost::shared_ptr<CaVessel<DIM> > pOtherVessel
 template<unsigned DIM>
 void CaVessel<DIM>::DivideSegment(ChastePoint<DIM> location)
 {
-
     // Identify segment
     boost::shared_ptr<CaVesselSegment<DIM> > pVesselSegment;
     for (unsigned i = 0; i < mSegments.size(); i++)
@@ -496,8 +495,6 @@ void CaVessel<DIM>::DivideSegment(ChastePoint<DIM> location)
     {
         EXCEPTION("Specified location is not on a segment in this vessel.");
     }
-
-
 
     // The node's data is averaged from the original segments's nodes
     // Get the closest node
@@ -529,23 +526,25 @@ void CaVessel<DIM>::DivideSegment(ChastePoint<DIM> location)
     p_new_segment0->CopyDataFromExistingSegment(pVesselSegment);
     p_new_segment1->CopyDataFromExistingSegment(pVesselSegment);
 
-    // Add new segments
-    typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator it = std::find(mSegments.begin(), mSegments.end(), pVesselSegment);
+    // Add new segments, ensuring they are correctly ordered
     std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > newSegments;
-
-    if ((*(it-1))->GetNode(0)->IsCoincident((*it)->GetNode(0)->GetLocation()) || (*(it-1))->GetNode(1)->IsCoincident((*it)->GetNode(0)->GetLocation()))
+    typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator it = std::find(mSegments.begin(), mSegments.end(), pVesselSegment);
+    if(mSegments.size() == 1)
     {
-        // p_new_segment0 comes before p_new_segment1 in segment array
         newSegments.push_back(p_new_segment0);
         newSegments.push_back(p_new_segment1);
-        mSegments.insert(it, newSegments.begin(), newSegments.end());
     }
+    else if((*(it-1))->IsConnectedTo(p_new_segment0))
+	{
+        newSegments.push_back(p_new_segment0);
+        newSegments.push_back(p_new_segment1);
+	}
     else
     {
         newSegments.push_back(p_new_segment1);
         newSegments.push_back(p_new_segment0);
-        mSegments.insert(it, newSegments.begin(), newSegments.end());
     }
+    mSegments.insert(it, newSegments.begin(), newSegments.end());
 
     // Remove old segment
     it = std::find(mSegments.begin(), mSegments.end(), pVesselSegment);
@@ -581,7 +580,6 @@ void CaVessel<DIM>::DivideSegment(ChastePoint<DIM> location)
     }
 
     mNodesUpToDate = false;
-
 }
 
 template<unsigned DIM>

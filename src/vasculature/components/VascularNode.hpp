@@ -38,7 +38,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <vector>
 #include <string>
-#include <boost/weak_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include "ChastePoint.hpp"
 #include "Exception.hpp"
