@@ -88,6 +88,23 @@ void CaVesselSegment<DIM>::AddVessel(boost::shared_ptr<CaVessel<DIM> > pVessel)
 }
 
 template<unsigned DIM>
+void CaVesselSegment<DIM>::CopyDataFromExistingSegment(boost::shared_ptr<CaVesselSegment<DIM> > pTargetSegment)
+{
+      mDataContainer.SetMap(pTargetSegment->rGetDataContainer().GetMap());
+      mRadius = pTargetSegment->GetRadius();
+      mHaematocrit = pTargetSegment->GetHaematocrit();
+      mFlowRate = pTargetSegment->GetFlowRate();
+      mImpedance = pTargetSegment->GetImpedance();
+      mViscosity = pTargetSegment->GetViscosity();
+      mWallShearStress = pTargetSegment->GetWallShearStress();
+      mMechanicalStimulus = pTargetSegment->GetMechanicalStimulus();
+      mMetabolicStimulus = pTargetSegment->GetMetabolicStimulus();
+      mUpstreamConductedStimulus = pTargetSegment->GetUpstreamConductedStimulus();
+      mDownstreamConductedStimulus = pTargetSegment->GetDownstreamConductedStimulus();
+      mShrinkingStimulus = pTargetSegment->GetShrinkingStimulus();
+}
+
+template<unsigned DIM>
 const VasculatureData& CaVesselSegment<DIM>::rGetDataContainer() const
 {
 	return mDataContainer;

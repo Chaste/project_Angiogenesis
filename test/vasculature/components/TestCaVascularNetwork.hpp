@@ -147,6 +147,35 @@ public:
 
     }
 
+    void TestDivideSingleVessel() throw(Exception)
+    {
+        // Make some nodes
+        std::vector<ChastePoint<3> > points;
+        points.push_back(ChastePoint<3>(0.0, 0.0, 0.0));
+        points.push_back(ChastePoint<3>(2.0, 0.0, 0.0));
+
+        std::vector<NodePtr3> nodes;
+        for(unsigned i=0; i < points.size(); i++)
+        {
+            nodes.push_back(NodePtr3 (VascularNode<3>::Create(points[i])));
+        }
+        nodes.push_back(NodePtr3 (VascularNode<3>::Create(points[1])));
+
+        // Make some segments
+        SegmentPtr3 pSegment1(CaVesselSegment<3>::Create(nodes[0], nodes[1]));
+
+        // Make some vessels
+        VesselPtr3 pVessel1(CaVessel<3>::Create(pSegment1));
+
+        // Make a network
+        CaVascularNetwork<3> vessel_network;
+        vessel_network.AddVessel(pVessel1);
+
+        // Do the divide
+        vessel_network.DivideVessel(pVessel1, ChastePoint<3>(1.0, 0.0, 0.0));
+        TS_ASSERT_EQUALS(vessel_network.GetNumberOfVessels(), 2u);
+    }
+
     void TestConnnectedMethods() throw(Exception)
     {
         // Make some nodes

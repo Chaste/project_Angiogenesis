@@ -124,6 +124,11 @@ private:
      */
     bool mIsOutputNode;
 
+    /**
+     * Is the node migrating
+     */
+    bool mIsMigrating;
+
 public:
 
     /*
@@ -132,6 +137,14 @@ public:
      * Create a node using a ChastePoint to specify the location
      */
     VascularNode(const ChastePoint<DIM>& rLocation);
+
+    /*
+     * Copy constructor
+     *
+     * Create a node using a ChastePoint to specify the location
+     */
+    VascularNode(const VascularNode<DIM>& pExistingNode);
+
 
     /*
      * Constructor
@@ -187,7 +200,7 @@ public:
      *
      *  @return mDataContainer
      */
-    const VasculatureData& rGetDataContainer();
+    const VasculatureData& rGetDataContainer() const;
     
     /**
      *  Return a vector of data keys for the node. Input true if
@@ -285,14 +298,19 @@ public:
      *
      *  @return bool
      */
-    bool IsInputNode();
+    bool IsInputNode() const;
+
+    /*
+     * Returns whether the node is actively migrating
+     */
+    bool IsMigrating() const;
 
     /**
      *  Return true if the node is an output node
      *
      *  @return bool
      */
-    bool IsOutputNode();
+    bool IsOutputNode() const;
 
     /**
      *  Return true if the node is coincident with the input node
@@ -350,16 +368,22 @@ public:
     void SetRadius(double radius);
 
     /**
-     *  Set that the node is an input
+     *  Set that the node is an input node
      *
      */
     void IsInputNode(bool isInput);
 
     /**
-     *  Set that the node is an output
+     *  Set that the node is an output node
      *
      */
     void IsOutputNode(bool isOutput);
+
+    /**
+     *  Set that the node is migrating
+     *
+     */
+    void IsMigrating(bool isMigrating);
 
     /**
      *  Set the location of the node. This breaks any links with an assigned Cell, so if there is an

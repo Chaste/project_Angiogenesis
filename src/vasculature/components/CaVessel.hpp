@@ -147,6 +147,11 @@ public:
 	 */
 	void AddSegments(std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > pSegments);
 	
+    /*
+     * Copy the member data and VasculatureData from the input vessel.
+     */
+    void CopyDataFromExistingVessel(boost::shared_ptr<CaVessel<DIM> > pTargetVessel);
+
     /**
      *  Return the vessel data for the input key. An attempt is made
      *  to cast to type T.
@@ -282,6 +287,11 @@ public:
      */
     bool IsConnectedTo(boost::shared_ptr<CaVessel<DIM> > pOtherVessel);
     
+    /**
+       Divide the vessel at the specified location
+     */
+    void DivideSegment(ChastePoint<DIM> location);
+
 	/**
        Remove segments from the ends of a vessel
 	 */

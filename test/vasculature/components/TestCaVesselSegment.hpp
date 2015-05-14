@@ -154,6 +154,11 @@ public:
     	ChastePoint<2> point5(7.0, 7.0); // projection is inside segment
     	TS_ASSERT_DELTA(pSegment->GetDistance(point5), distance1, 1.e-3);
 
+    	TS_ASSERT_DELTA(pSegment->GetDistance(pNode1->GetLocation()), 0, 1.e-6);
+
+    	ChastePoint<2> point8(7.0, 7.0); // projection is inside segment
+    	TS_ASSERT_DELTA(pSegment->GetDistance(ChastePoint<2>(7.0,8.0)), 0, 1.e-6);
+
     	ChastePoint<2> point6(10.0, 10.0); // projection is outside segment
     	TS_ASSERT_DELTA(pSegment->GetDistance(point6), distance2, 1.e-3);
 

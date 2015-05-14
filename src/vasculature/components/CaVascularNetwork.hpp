@@ -143,6 +143,11 @@ public:
 	 */
 	void AddVessels(std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels);
 
+	/*
+	 * Removes a vessel from the network
+	 */
+	void RemoveVessel(boost::shared_ptr<CaVessel<DIM> > pVessel);
+
 	/**
         Get the node nearest to the specified location
 	 */
@@ -284,6 +289,11 @@ public:
 	 * (without original non-spatial data) and the new vessels are translated.
 	 */
 	void Translate(const c_vector<double, DIM>& rTranslationVector, bool copy = false);
+
+	/*
+	 * Divides a vessel into two at the specified location.
+	 */
+	void DivideVessel(boost::shared_ptr<CaVessel<DIM> > pVessel, ChastePoint<DIM> location);
 
 	void UpdateNodes();
 

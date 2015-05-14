@@ -50,8 +50,31 @@ VascularNode<DIM>::VascularNode(const ChastePoint<DIM>& rLocation)
 	  mPressure(0.0),
 	  mRadius(0.0),
 	  mIsInputNode(false),
-	  mIsOutputNode(false)
+	  mIsOutputNode(false),
+	  mIsMigrating(false)
 {
+}
+
+template<unsigned DIM>
+VascularNode<DIM>::VascularNode(const VascularNode<DIM>& rExistingNode)
+: boost::enable_shared_from_this<VascularNode<DIM> >(),
+  mLocation(rExistingNode.GetLocation()),
+  mpCell(CellPtr()),
+  mpCellPopulation(boost::shared_ptr<AbstractCellPopulation<DIM> >()),
+  mDataContainer(),
+  mId(0),
+  mLabel(""),
+  mVesselSegments(std::vector<boost::weak_ptr<CaVesselSegment<DIM> > >()),
+  mPressure(rExistingNode.GetPressure()),
+  mRadius(rExistingNode.GetRadius()),
+  mIsInputNode(),
+  mIsOutputNode(),
+  mIsMigrating()
+{
+    mDataContainer.SetMap(rExistingNode.rGetDataContainer().GetMap());
+    mIsInputNode = rExistingNode.IsInputNode();
+    mIsOutputNode = rExistingNode.IsOutputNode();
+    mIsMigrating = rExistingNode.IsMigrating();
 }
 
 template<unsigned DIM>
@@ -66,7 +89,8 @@ VascularNode<DIM>::VascularNode(double point1, double point2, double point3)
 	  mPressure(0.0),
 	  mRadius(1.0),
 	  mIsInputNode(false),
-	  mIsOutputNode(false)
+	  mIsOutputNode(false),
+      mIsMigrating(false)
 {
 }
 
@@ -82,7 +106,8 @@ VascularNode<DIM>::VascularNode(c_vector<double, DIM> location)
 	  mPressure(0.0),
 	  mRadius(1.0),
 	  mIsInputNode(false),
-	  mIsOutputNode(false)
+	  mIsOutputNode(false),
+      mIsMigrating(false)
 {
 }
 
@@ -150,7 +175,7 @@ CellPtr VascularNode<DIM>::GetCell() const
 }
 
 template<unsigned DIM>
-const VasculatureData& VascularNode<DIM>::rGetDataContainer()
+const VasculatureData& VascularNode<DIM>::rGetDataContainer() const
 {
 	return mDataContainer;
 }
@@ -290,16 +315,22 @@ bool VascularNode<DIM>::IsCoincident(const boost::shared_ptr<VascularNode<DIM> >
 
 
 template<unsigned DIM>
-bool VascularNode<DIM>::IsInputNode()
+bool VascularNode<DIM>::IsInputNode() const
 {
     return mIsInputNode;
 }
 
 
 template<unsigned DIM>
-bool VascularNode<DIM>::IsOutputNode()
+bool VascularNode<DIM>::IsOutputNode() const
 {
     return mIsOutputNode;
+}
+
+template<unsigned DIM>
+bool VascularNode<DIM>::IsMigrating() const
+{
+    return mIsMigrating;
 }
 
 template<unsigned DIM>
@@ -388,6 +419,12 @@ template<unsigned DIM>
 void VascularNode<DIM>::IsOutputNode(bool outputNode)
 {
     mIsOutputNode = outputNode;
+}
+
+template<unsigned DIM>
+void VascularNode<DIM>::IsMigrating(bool isMigrating)
+{
+    mIsMigrating = isMigrating;
 }
 
 template<unsigned DIM>

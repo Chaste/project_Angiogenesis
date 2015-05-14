@@ -163,6 +163,11 @@ public:
      */
     ~CaVesselSegment();
 
+    /*
+     * Copy the member data and VasculatureData from the input segment.
+     */
+    void CopyDataFromExistingSegment(boost::shared_ptr<CaVesselSegment<DIM> > pTargetSegment);
+
     /**
      *  Return the segment data for the input key. An attempt is made
      *  to cast to type T.

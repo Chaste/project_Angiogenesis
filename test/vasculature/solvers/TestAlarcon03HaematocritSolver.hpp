@@ -35,113 +35,138 @@ class TestSimpleStructuralAdaptationSolver : public CxxTest::TestSuite
 
 public:
 
-    void TestStructuralAdaptationOfTwoVesselNetwork() throw(Exception)
+    void TestTwoVesselNetwork() throw(Exception)
     {
         NodePtr2 p_node1 = VascularNode<2>::Create(0.0, 0.0);
         NodePtr2 p_node2 = VascularNode<2>::Create(80.0e-6, 0.0);
         NodePtr2 p_node3 = VascularNode<2>::Create(160.0e-6, 0.0);
+        p_node1->IsInputNode(true);
 
         SegmentPtr2 p_segment1(CaVesselSegment<2>::Create(p_node1, p_node2));
         SegmentPtr2 p_segment2(CaVesselSegment<2>::Create(p_node2, p_node3));
 
-        p_node1->IsInputNode(true);
-        p_node1->SetPressure(3322);
-        p_node3->IsOutputNode(true);
-        p_node3->SetPressure(1993);
-
         VesselPtr2 p_vessel1(CaVessel<2>::Create(p_segment1));
         VesselPtr2 p_vessel2(CaVessel<2>::Create(p_segment2));
+        p_vessel1->SetFlowRate(1.0);
+        p_vessel2->SetFlowRate(2.0);
 
         boost::shared_ptr<CaVascularNetwork<2> > p_network = boost::shared_ptr<CaVascularNetwork<2> >(new CaVascularNetwork<2>);
         p_network->AddVessel(p_vessel1);
         p_network->AddVessel(p_vessel2);
 
-        double radius = 10.0e-6;
-        p_segment1->SetRadius(radius);
-        double haematocrit = 0.45;
-        p_segment1->SetHaematocrit(haematocrit);
-        p_network->SetSegmentProperties(p_segment1);
+        boost::shared_ptr<Alarcon03HaematocritSolver<2> > p_haematocrit_calculator(new Alarcon03HaematocritSolver<2>());
+        p_haematocrit_calculator->Calculate(p_network);
 
-        SimulationTime* p_simulation_time = SimulationTime::Instance();
-        p_simulation_time->SetStartTime(0.0);
-        p_simulation_time->SetEndTimeAndNumberOfTimeSteps(30, 1);
-
-        // Write the network to file
-        OutputFileHandler output_file_handler("TestSimpleStructuralAdaptationSolver", false);
-        std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("TwoVesselNetwork.vtp");
-        std::string progress_output_filename = output_file_handler.GetOutputDirectoryFullPath().append("TwoVesselNetwork_SAAProgress.dat");
-
-        SimpleStructuralAdaptationSolver<2> solver;
-        solver.SetWriteOutput(true);
-        solver.SetOutputFileName(progress_output_filename);
-        solver.SetTolerance(0.0001);
-        solver.SetTimeIncrement(0.0001);
-        //		solver.SetMaxIterations(1);
-        solver.Implement(p_network);
-
-        // Write the network to file
-        p_network->Write(output_filename);
-
-        TS_ASSERT_DELTA(p_node2->GetPressure(),(3322.0 + 1993.0) / 2.0, 1e-6);
-        TS_ASSERT_DELTA(abs(p_segment1->GetFlowRate()),abs(p_segment2->GetFlowRate()),1e-6);
-        p_simulation_time->Destroy();
+        TS_ASSERT_DELTA(p_vessel1->GetHaematocrit(),0.45, 1e-6);
+        TS_ASSERT_DELTA(p_vessel2->GetHaematocrit(),0.45, 1e-6);
     }
 
-    void TestStructuralAdaptationOfOneVesselNetwork() throw(Exception)
+    void TestBifurcationInflowNetwork() throw(Exception)
     {
         NodePtr2 p_node1 = VascularNode<2>::Create(0.0, 0.0);
         NodePtr2 p_node2 = VascularNode<2>::Create(80.0e-6, 0.0);
-
-        SegmentPtr2 p_segment1(CaVesselSegment<2>::Create(p_node1, p_node2));
-
+        NodePtr2 p_node3 = VascularNode<2>::Create(160.0e-6, 0.0);
+        NodePtr2 p_node4 = VascularNode<2>::Create(200.0e-6, 0.0);
         p_node1->IsInputNode(true);
-        p_node1->SetPressure(3322);
-        p_node2->IsOutputNode(true);
-        p_node2->SetPressure(1993);
+        p_node2->IsInputNode(true);
+
+        SegmentPtr2 p_segment1(CaVesselSegment<2>::Create(p_node1, p_node3));
+        SegmentPtr2 p_segment2(CaVesselSegment<2>::Create(p_node2, p_node3));
+        SegmentPtr2 p_segment3(CaVesselSegment<2>::Create(p_node3, p_node4));
 
         VesselPtr2 p_vessel1(CaVessel<2>::Create(p_segment1));
+        VesselPtr2 p_vessel2(CaVessel<2>::Create(p_segment2));
+        VesselPtr2 p_vessel3(CaVessel<2>::Create(p_segment3));
+        p_vessel1->SetFlowRate(1.0);
+        p_vessel2->SetFlowRate(1.0);
+        p_vessel3->SetFlowRate(1.0);
 
         boost::shared_ptr<CaVascularNetwork<2> > p_network = boost::shared_ptr<CaVascularNetwork<2> >(new CaVascularNetwork<2>);
         p_network->AddVessel(p_vessel1);
+        p_network->AddVessel(p_vessel2);
+        p_network->AddVessel(p_vessel3);
 
-        double radius = 10.0e-6;
-        p_segment1->SetRadius(radius);
-        double haematocrit = 0.45;
-        p_segment1->SetHaematocrit(haematocrit);
-        p_network->SetSegmentProperties(p_segment1);
+        boost::shared_ptr<Alarcon03HaematocritSolver<2> > p_haematocrit_calculator(new Alarcon03HaematocritSolver<2>());
+        p_haematocrit_calculator->Calculate(p_network);
 
-        SimulationTime* p_simulation_time = SimulationTime::Instance();
-        p_simulation_time->SetStartTime(0.0);
-        p_simulation_time->SetEndTimeAndNumberOfTimeSteps(30, 1);
-
-        // Write the network to file
-        OutputFileHandler output_file_handler("TestSimpleStructuralAdaptationSolver", false);
-        std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("OneVesselNetwork.vtp");
-        std::string progress_output_filename = output_file_handler.GetOutputDirectoryFullPath().append("OneVesselNetwork_SAAProgress.dat");
-
-        SimpleStructuralAdaptationSolver<2> solver;
-        solver.SetWriteOutput(true);
-        solver.SetOutputFileName(progress_output_filename);
-        solver.SetTolerance(0.0001);
-        solver.SetTimeIncrement(0.0001);
-        //        solver.SetMaxIterations(1);
-        solver.Implement(p_network);
-
-        // Write the network to file
-        p_network->Write(output_filename);
-
-        p_simulation_time->Destroy();
+        TS_ASSERT_DELTA(p_vessel1->GetHaematocrit(),0.45, 1e-6);
+        TS_ASSERT_DELTA(p_vessel2->GetHaematocrit(),0.45, 1e-6);
+        TS_ASSERT_DELTA(p_vessel3->GetHaematocrit(),0.9, 1e-6);
     }
 
-    void TestStructuralAdaptationOfHexagonalNetworkConstantHaematocrit() throw(Exception)
-	{
+    void TestBifurcationOutflowNetwork() throw(Exception)
+    {
+        NodePtr2 p_node1 = VascularNode<2>::Create(0.0, 0.0);
+        NodePtr2 p_node2 = VascularNode<2>::Create(80.0e-6, 0.0);
+        NodePtr2 p_node3 = VascularNode<2>::Create(160.0e-6, 0.0);
+        NodePtr2 p_node4 = VascularNode<2>::Create(200.0e-6, 0.0);
+        p_node4->IsInputNode(true);
+
+        SegmentPtr2 p_segment1(CaVesselSegment<2>::Create(p_node1, p_node3));
+        SegmentPtr2 p_segment2(CaVesselSegment<2>::Create(p_node2, p_node3));
+        SegmentPtr2 p_segment3(CaVesselSegment<2>::Create(p_node3, p_node4));
+
+        VesselPtr2 p_vessel1(CaVessel<2>::Create(p_segment1));
+        VesselPtr2 p_vessel2(CaVessel<2>::Create(p_segment2));
+        VesselPtr2 p_vessel3(CaVessel<2>::Create(p_segment3));
+        p_vessel1->SetFlowRate(-1.0);
+        p_vessel2->SetFlowRate(-1.0);
+        p_vessel3->SetFlowRate(-1.0);
+
+        boost::shared_ptr<CaVascularNetwork<2> > p_network = boost::shared_ptr<CaVascularNetwork<2> >(new CaVascularNetwork<2>);
+        p_network->AddVessel(p_vessel1);
+        p_network->AddVessel(p_vessel2);
+        p_network->AddVessel(p_vessel3);
+
+        boost::shared_ptr<Alarcon03HaematocritSolver<2> > p_haematocrit_calculator(new Alarcon03HaematocritSolver<2>());
+        p_haematocrit_calculator->Calculate(p_network);
+
+        TS_ASSERT_DELTA(p_vessel1->GetHaematocrit(),0.15, 1e-6);
+        TS_ASSERT_DELTA(p_vessel2->GetHaematocrit(),0.3, 1e-6);
+        TS_ASSERT_DELTA(p_vessel3->GetHaematocrit(),0.45, 1e-6);
+    }
+
+    void TestBifurcationOutflowNetworkBiasedFlow() throw(Exception)
+    {
+        NodePtr2 p_node1 = VascularNode<2>::Create(0.0, 0.0);
+        NodePtr2 p_node2 = VascularNode<2>::Create(80.0e-6, 0.0);
+        NodePtr2 p_node3 = VascularNode<2>::Create(160.0e-6, 0.0);
+        NodePtr2 p_node4 = VascularNode<2>::Create(200.0e-6, 0.0);
+        p_node4->IsInputNode(true);
+
+        SegmentPtr2 p_segment1(CaVesselSegment<2>::Create(p_node1, p_node3));
+        SegmentPtr2 p_segment2(CaVesselSegment<2>::Create(p_node2, p_node3));
+        SegmentPtr2 p_segment3(CaVesselSegment<2>::Create(p_node3, p_node4));
+
+        VesselPtr2 p_vessel1(CaVessel<2>::Create(p_segment1));
+        VesselPtr2 p_vessel2(CaVessel<2>::Create(p_segment2));
+        VesselPtr2 p_vessel3(CaVessel<2>::Create(p_segment3));
+        p_vessel1->SetFlowRate(-1.0);
+        p_vessel2->SetFlowRate(-3.0);
+        p_vessel3->SetFlowRate(-1.0);
+
+        boost::shared_ptr<CaVascularNetwork<2> > p_network = boost::shared_ptr<CaVascularNetwork<2> >(new CaVascularNetwork<2>);
+        p_network->AddVessel(p_vessel1);
+        p_network->AddVessel(p_vessel2);
+        p_network->AddVessel(p_vessel3);
+
+        boost::shared_ptr<Alarcon03HaematocritSolver<2> > p_haematocrit_calculator(new Alarcon03HaematocritSolver<2>());
+        p_haematocrit_calculator->Calculate(p_network);
+
+        TS_ASSERT_DELTA(p_vessel1->GetHaematocrit(),0.0, 1e-6);
+        TS_ASSERT_DELTA(p_vessel2->GetHaematocrit(),0.45, 1e-6);
+        TS_ASSERT_DELTA(p_vessel3->GetHaematocrit(),0.45, 1e-6);
+    }
+    void TestStructuralAdaptationOfHexagonalNetworkAlarcon03Haematocrit() throw(Exception)
+    {
         // Specify the network dimensions
-        double vessel_length = 82.0e-6;
+        double vessel_length = 80.0e-6;
 
         // Generate the network
         VasculatureGenerator<2> vascular_network_generator;
         boost::shared_ptr<CaVascularNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(800.0e-6,
-                                                                                                                        1000.0e-6, vessel_length);
+                                                                                                                        1000.0e-6,
+                                                                                                                        vessel_length);
 
         std::vector<ChastePoint<2> > points;
         points.push_back(ChastePoint<2>(0, 0));
@@ -227,23 +252,26 @@ public:
         p_simulation_time->SetEndTimeAndNumberOfTimeSteps(30, 1);
 
         // Write the network to file
-        OutputFileHandler output_file_handler("TestSimpleStructuralAdaptationSolver", false);
-        std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("HexagonalVesselNetwork_ConstantHaematocrit.vtp");
-        std::string progress_output_filename = output_file_handler.GetOutputDirectoryFullPath().append("HexagonalVesselNetwork_ConstantHaematocrit_SAAProgress.dat");
+        OutputFileHandler output_file_handler("TestAlarcon03HaematocritSolver", false);
+        std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("HexagonalVesselNetwork_Alarcon03Haematocrit.vtp");
+        std::string progress_output_filename = output_file_handler.GetOutputDirectoryFullPath().append("HexagonalVesselNetwork_Alarcon03Haematocrit_SAAProgress.dat");
 
         SimpleStructuralAdaptationSolver<2> solver;
+        boost::shared_ptr<Alarcon03HaematocritSolver<2> > pHCalculator(new Alarcon03HaematocritSolver<2>());
+        solver.SetHaematocritCalculator(pHCalculator);
+
         solver.SetWriteOutput(true);
         solver.SetOutputFileName(progress_output_filename);
         solver.SetTolerance(0.0001);
         solver.SetTimeIncrement(0.0001);
-        solver.SetMaxIterations(10000);
+        solver.SetMaxIterations(1);
         solver.Implement(vascular_network);
 
         // Write the network to file
         vascular_network->Write(output_filename);
-
         p_simulation_time->Destroy();
-	}
+
+    }
 };
 
 #endif

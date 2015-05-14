@@ -238,6 +238,12 @@ void CaVessel<DIM>::AddSegments(std::vector<boost::shared_ptr<CaVesselSegment<DI
 }
 
 template<unsigned DIM>
+void CaVessel<DIM>::CopyDataFromExistingVessel(boost::shared_ptr<CaVessel<DIM> > pTargetVessel)
+{
+      mDataContainer.SetMap(pTargetVessel->rGetDataContainer().GetMap());
+}
+
+template<unsigned DIM>
 template<typename T> T CaVessel<DIM>::GetData(const std::string& variableName)
 {
 	return mDataContainer.GetData<T>(variableName);
@@ -405,6 +411,10 @@ std::vector<boost::shared_ptr<VascularNode<DIM> > > CaVessel<DIM>::GetNodes()
 template<unsigned DIM>
 unsigned CaVessel<DIM>::GetNumberOfNodes()
 {
+    if(!mNodesUpToDate)
+    {
+        UpdateNodes();
+    }
 	return GetNumberOfSegments() + 1;
 }
 
@@ -462,6 +472,116 @@ bool CaVessel<DIM>::IsConnectedTo(boost::shared_ptr<CaVessel<DIM> > pOtherVessel
 	{
 		return false;
 	}
+}
+
+template<unsigned DIM>
+void CaVessel<DIM>::DivideSegment(ChastePoint<DIM> location)
+{
+
+    // Identify segment
+    boost::shared_ptr<CaVesselSegment<DIM> > pVesselSegment;
+    for (unsigned i = 0; i < mSegments.size(); i++)
+    {
+        if (mSegments[i]->GetDistance(location) <= 1e-6)
+        {
+            pVesselSegment = mSegments[i];
+
+            if (pVesselSegment->GetNode(0)->IsCoincident(location) || pVesselSegment->GetNode(1)->IsCoincident(location))
+            {
+                return;
+            }
+        }
+    }
+    if(!pVesselSegment)
+    {
+        EXCEPTION("Specified location is not on a segment in this vessel.");
+    }
+
+
+
+    // The node's data is averaged from the original segments's nodes
+    // Get the closest node
+    double distance0 = pVesselSegment->GetNode(0)->GetDistance(location);
+    double distance1 = pVesselSegment->GetNode(1)->GetDistance(location);
+    unsigned closest_index;
+
+    if(distance0 <= distance1)
+    {
+        closest_index = 0;
+    }
+    else
+    {
+        closest_index = 1;
+    }
+
+    // Make a copy of the closest node
+    boost::shared_ptr<VascularNode<DIM> > p_new_node = boost::shared_ptr<VascularNode<DIM> > (new VascularNode<DIM>(*pVesselSegment->GetNode(closest_index)));
+    p_new_node->SetLocation(location);
+    p_new_node->IsMigrating(false);
+
+    // Make two new segments
+    boost::shared_ptr<CaVesselSegment<DIM> > p_new_segment0 =
+            boost::shared_ptr<CaVesselSegment<DIM> > (new CaVesselSegment<DIM>(pVesselSegment->GetNode(0), p_new_node));
+
+    boost::shared_ptr<CaVesselSegment<DIM> > p_new_segment1 =
+            boost::shared_ptr<CaVesselSegment<DIM> > (new CaVesselSegment<DIM>(p_new_node, pVesselSegment->GetNode(1)));
+
+    p_new_segment0->CopyDataFromExistingSegment(pVesselSegment);
+    p_new_segment1->CopyDataFromExistingSegment(pVesselSegment);
+
+    // Add new segments
+    typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator it = std::find(mSegments.begin(), mSegments.end(), pVesselSegment);
+    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > newSegments;
+
+    if ((*(it-1))->GetNode(0)->IsCoincident((*it)->GetNode(0)->GetLocation()) || (*(it-1))->GetNode(1)->IsCoincident((*it)->GetNode(0)->GetLocation()))
+    {
+        // p_new_segment0 comes before p_new_segment1 in segment array
+        newSegments.push_back(p_new_segment0);
+        newSegments.push_back(p_new_segment1);
+        mSegments.insert(it, newSegments.begin(), newSegments.end());
+    }
+    else
+    {
+        newSegments.push_back(p_new_segment1);
+        newSegments.push_back(p_new_segment0);
+        mSegments.insert(it, newSegments.begin(), newSegments.end());
+    }
+
+    // Remove old segment
+    it = std::find(mSegments.begin(), mSegments.end(), pVesselSegment);
+
+    if(it != mSegments.end())
+    {
+        mSegments.erase(it);
+        pVesselSegment->RemoveVessel();
+    }
+    else
+    {
+        EXCEPTION("Vessel segment is not contained inside vessel.");
+    }
+
+    for (unsigned i = 0; i < mSegments.size(); i++)
+    {
+        for (unsigned j = 0; j < mSegments.size(); j++)
+        {
+            if (i != j && i != j-1 && i != j+1)
+            {
+                if(mSegments[i]->IsConnectedTo(mSegments[j]))
+                {
+                    EXCEPTION("Input vessel segments are not correctly connected.");
+                }
+            }
+        }
+    }
+
+    // Add the vessel to the segments
+    for (unsigned i = 0; i < newSegments.size(); i++)
+    {
+        newSegments[i]->AddVessel(Shared());
+    }
+
+    mNodesUpToDate = false;
+
 }
 
 template<unsigned DIM>

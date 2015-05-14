@@ -78,6 +78,27 @@ void CaVascularNetwork<DIM>::AddVessels(std::vector<boost::shared_ptr<CaVessel<D
 }
 
 template <unsigned DIM>
+void CaVascularNetwork<DIM>::RemoveVessel(boost::shared_ptr<CaVessel<DIM> > pVessel)
+{
+
+    typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator it = std::find(mVessels.begin(), mVessels.end(), pVessel);
+
+    if(it != mVessels.end())
+    {
+        mVessels.erase(it);
+    }
+    else
+    {
+        EXCEPTION("Vessel is not contained inside network.");
+    }
+
+    mSegmentsUpToDate = false;
+    mNodesUpToDate = false;
+    mVesselNodesUpToDate = false;
+
+}
+
+template <unsigned DIM>
 std::vector<std::pair<double, double> > CaVascularNetwork<DIM>::GetExtents()
 {
     double x_max = -DBL_MAX;
@@ -733,6 +754,90 @@ void CaVascularNetwork<DIM>::Translate(const c_vector<double, DIM>& rTranslation
     {
         MergeCoincidentNodes();
     }
+}
+
+template <unsigned DIM>
+void CaVascularNetwork<DIM>::DivideVessel(boost::shared_ptr<CaVessel<DIM> > pVessel, ChastePoint<DIM> location)
+{
+
+    // assert that location must not soley be on the end of a vessel
+    // it may, however, be on the end of a vessel and lie in the middle of the vessel too
+
+    boost::shared_ptr<CaVesselSegment<DIM> > pVesselSegment;
+
+    if (pVessel->GetStartNode()->IsCoincident(location) || pVessel->GetEndNode()->IsCoincident(location) )
+    {
+        unsigned locatedInsideVessel = 0;
+
+        for (unsigned i = 0; i < pVessel->GetNumberOfSegments(); i++)
+        {
+            if (pVessel->GetSegment(i)->GetDistance(location) <= 1e-6)
+            {
+                locatedInsideVessel++;
+                if (i != 0 && i != pVessel->GetNumberOfSegments() - 1)
+                {
+
+                    pVesselSegment = pVessel->GetSegment(i);
+                }
+            }
+        }
+
+        // vessel may only ever be allowed to exist twice in the same location
+        // this is also only applicable when a vessel is looping around on itself
+        assert(locatedInsideVessel == 2);
+        // both vessel nodes cannot be present at the same location in this case
+        assert(!pVessel->GetStartNode()->IsCoincident(pVessel->GetEndNode()));
+    }
+    else
+    {
+        bool locatedInsideVessel = false;
+
+        for (unsigned i = 0; i < pVessel->GetNumberOfSegments(); i++)
+        {
+            if (pVessel->GetSegment(i)->GetDistance(location) <= 1e-6)
+            {
+                locatedInsideVessel = true;
+                pVesselSegment = pVessel->GetSegment(i);
+                break;
+            }
+        }
+
+        assert(locatedInsideVessel);
+    }
+
+    assert(pVesselSegment);
+
+    pVessel->DivideSegment(location);
+
+    // create two new vessels and give them the properties of the vessel to be divided and appropriately divide the vessel segments of the divided vessel between the two new vessels
+    // new vessels will share a new common vessel network node
+    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > start_segments;
+    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > end_segments;
+    unsigned segment_index;
+    for (unsigned i = 0; i < pVessel->GetNumberOfSegments(); i++)
+    {
+        start_segments.push_back(pVessel->GetSegment(i));
+        if (pVessel->GetSegment(i)->GetNode(0)->IsCoincident(location) )
+        {
+            segment_index = i;
+            break;
+        }
+    }
+
+    for (unsigned i = segment_index; i < pVessel->GetNumberOfSegments(); i++)
+    {
+        end_segments.push_back(pVessel->GetSegment(i));
+    }
+
+    boost::shared_ptr<CaVessel<DIM> > p_new_vessel1 = CaVessel<DIM>::Create(start_segments);
+    boost::shared_ptr<CaVessel<DIM> > p_new_vessel2 = CaVessel<DIM>::Create(end_segments);
+    p_new_vessel1->CopyDataFromExistingVessel(pVessel);
+    p_new_vessel2->CopyDataFromExistingVessel(pVessel);
+
+    AddVessel(p_new_vessel1);
+    AddVessel(p_new_vessel2);
+    RemoveVessel(pVessel);
+
 }
 
 template <unsigned DIM>
