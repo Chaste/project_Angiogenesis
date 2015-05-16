@@ -91,7 +91,7 @@ void SimpleFlowSolver<DIM>::SetUp(boost::shared_ptr<CaVascularNetwork<DIM> > pVa
 	std::vector<boost::shared_ptr<VascularNode<DIM> > > boundary_condition_nodes;
 	for (unsigned node_index = 0; node_index < num_nodes; node_index++)
 	{
-		if (mNodes[node_index]->IsInputNode() || mNodes[node_index]->IsOutputNode())
+		if (mNodes[node_index]->GetFlowProperties()->IsInputNode() || mNodes[node_index]->GetFlowProperties()->IsOutputNode())
 		{
 			boundary_condition_nodes.push_back(mNodes[node_index]);
 			mBoundaryConditionNodeIndices.push_back(node_index);
@@ -159,7 +159,7 @@ void SimpleFlowSolver<DIM>::UpdateImpedances()
 	for (unsigned bc_index = 0; bc_index < mBoundaryConditionNodeIndices.size(); bc_index++)
 	{
 		mpLinearSystem->SetRhsVectorElement(mBoundaryConditionNodeIndices[bc_index],
-				mNodes[mBoundaryConditionNodeIndices[bc_index]]->GetPressure());
+				mNodes[mBoundaryConditionNodeIndices[bc_index]]->GetFlowProperties()->GetPressure());
 	}
 }
 
@@ -189,7 +189,7 @@ void SimpleFlowSolver<DIM>::Implement(boost::shared_ptr<CaVascularNetwork<DIM> >
 	for (unsigned node_index = 0; node_index < mNodes.size(); node_index++)
 	{
         //std::cout << "pressure: " << a[node_index] << std::endl;
-		mNodes[node_index]->SetPressure(a[node_index]);
+		mNodes[node_index]->GetFlowProperties()->SetPressure(a[node_index]);
 	}
 
 	/**
@@ -197,8 +197,8 @@ void SimpleFlowSolver<DIM>::Implement(boost::shared_ptr<CaVascularNetwork<DIM> >
 	 */
 	for (unsigned vessel_index = 0; vessel_index < mVessels.size(); vessel_index++)
 	{
-		double start_node_pressure = mVessels[vessel_index]->GetStartNode()->GetPressure();
-		double end_node_pressure = mVessels[vessel_index]->GetEndNode()->GetPressure();
+		double start_node_pressure = mVessels[vessel_index]->GetStartNode()->GetFlowProperties()->GetPressure();
+		double end_node_pressure = mVessels[vessel_index]->GetEndNode()->GetFlowProperties()->GetPressure();
 		double flow_rate = (start_node_pressure - end_node_pressure)/mVessels[vessel_index]->GetImpedance();
 
 	    if (fabs(flow_rate) < pow(10.0,-20))
@@ -210,11 +210,11 @@ void SimpleFlowSolver<DIM>::Implement(boost::shared_ptr<CaVascularNetwork<DIM> >
 		double pressure = start_node_pressure;
 		for (unsigned segment_index = 0; segment_index < segments.size()-1; segment_index++)
 		{
-			pressure -= segments[segment_index]->GetImpedance() * flow_rate;
-			segments[segment_index]->GetNode(1)->SetPressure(pressure);
-			segments[segment_index]->SetFlowRate(flow_rate);
+			pressure -= segments[segment_index]->GetFlowProperties()->GetImpedance() * flow_rate;
+			segments[segment_index]->GetNode(1)->GetFlowProperties()->SetPressure(pressure);
+			segments[segment_index]->GetFlowProperties()->SetFlowRate(flow_rate);
 		}
-		segments[segments.size() - 1]->SetFlowRate(flow_rate);
+		segments[segments.size() - 1]->GetFlowProperties()->SetFlowRate(flow_rate);
 	}
 
 	/*

@@ -92,14 +92,14 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<CaVascularNetw
         {
             boost::shared_ptr<CaVessel<DIM> > p_vessel = nodes[i]->GetVesselSegment(j)->GetVessel();
             unsigned vessel_index = vascularNetwork->GetVesselIndex(p_vessel);
-            double flow_velocity = p_vessel->GetFlowVelocity();
+            double flow_rate = p_vessel->GetFlowRate();
             if (nodes[i] == p_vessel->GetStartNode())
             {
-                if (flow_velocity < 0)
+                if (flow_rate < 0)
                 {
                     VesselsFlowingIntoNode[i].push_back(vessel_index);
                 }
-                else if (flow_velocity > 0)
+                else if (flow_rate > 0)
                 {
                     VesselsFlowingOutOfNode[i].push_back(vessel_index);
                 }
@@ -110,11 +110,11 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<CaVascularNetw
             }
             else
             {
-                if (flow_velocity > 0)
+                if (flow_rate > 0)
                 {
                     VesselsFlowingIntoNode[i].push_back(vessel_index);
                 }
-                else if (flow_velocity < 0)
+                else if (flow_rate < 0)
                 {
                     VesselsFlowingOutOfNode[i].push_back(vessel_index);
                 }
@@ -140,18 +140,18 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<CaVascularNetw
     }
 
     LinearSystem linearSystem(lhsVectorSize, pre_allocation_value);
-//    if(lhsVectorSize > 6)
-//    {
-//        linearSystem.SetPcType("lu");
-//        linearSystem.SetKspType("preonly");
-//    }
+    if(lhsVectorSize > 6)
+    {
+        linearSystem.SetPcType("lu");
+        linearSystem.SetKspType("preonly");
+    }
 
     // Set the haematocrit of input vessels to the arterial level
     unsigned number_of_vessel_nodes = nodes.size();
     unsigned equation_number = 0;
     for (unsigned idx = 0; idx < number_of_vessel_nodes; idx++)
     {
-        if (nodes[idx]->IsInputNode())
+        if (nodes[idx]->GetFlowProperties()->IsInputNode())
         {
             for (unsigned jdx = 0; jdx < nodes[idx]->GetNumberOfSegments(); jdx++)
             {
@@ -202,8 +202,10 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<CaVascularNetw
                 linearSystem.AddToMatrixElement(equation_number, VesselsFlowingOutOfNode[i][1], -1);
                 equation_number++;
 
-                double out_flow_velocity0 = fabs(vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][0])->GetFlowVelocity());
-                double out_flow_velocity1 = fabs(vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][1])->GetFlowVelocity());
+                double radius0 = vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][0])->GetRadius();
+                double radius1 = vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][1])->GetRadius();
+                double out_flow_velocity0 = fabs(vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][0])->GetFlowRate())/(M_PI * radius0 * radius0);
+                double out_flow_velocity1 = fabs(vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][1])->GetFlowRate())/(M_PI * radius1 * radius1);
 
                 if (out_flow_velocity0 >= out_flow_velocity1)
                 {
@@ -241,7 +243,7 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<CaVascularNetw
     linearSystem.AssembleIntermediateLinearSystem();
     for (unsigned idx = 0; idx < number_of_vessels; idx++)
     {
-        if (vascularNetwork->GetVessel(idx)->GetFlowVelocity() == 0)
+        if (vascularNetwork->GetVessel(idx)->GetFlowRate() == 0)
         {
             linearSystem.AddToMatrixElement(equation_number, idx, 1.0);
             equation_number++;
@@ -284,7 +286,7 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<CaVascularNetw
     {
         for (unsigned jdx = 0; jdx < vascularNetwork->GetVessel(i)->GetNumberOfSegments(); jdx++)
         {
-            vascularNetwork->GetVessel(i)->GetSegment(jdx)->SetHaematocrit(double(a[i]));
+            vascularNetwork->GetVessel(i)->GetSegment(jdx)->GetFlowProperties()->SetHaematocrit(double(a[i]));
         }
     }
 

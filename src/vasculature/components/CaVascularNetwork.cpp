@@ -708,10 +708,10 @@ void CaVascularNetwork<DIM>::SetSegmentProperties(boost::shared_ptr<CaVesselSegm
     for(it = segments.begin(); it != segments.end(); it++)
     {
         (*it)->SetRadius(prototype->GetRadius());
-        (*it)->SetImpedance(prototype->GetImpedance());
-        (*it)->SetHaematocrit(prototype->GetHaematocrit());
-        (*it)->SetFlowRate(prototype->GetFlowRate());
-        (*it)->SetViscosity(prototype->GetViscosity());
+        (*it)->GetFlowProperties()->SetImpedance(prototype->GetFlowProperties()->GetImpedance());
+        (*it)->GetFlowProperties()->SetHaematocrit(prototype->GetFlowProperties()->GetHaematocrit());
+        (*it)->GetFlowProperties()->SetFlowRate(prototype->GetFlowProperties()->GetFlowRate());
+        (*it)->GetFlowProperties()->SetViscosity(prototype->GetFlowProperties()->GetViscosity());
     }
 }
 
@@ -983,9 +983,9 @@ void CaVascularNetwork<DIM>::Write(const std::string& filename, bool geometry_on
                     key_index++;
                 }
             }
-            pNodeInfoVector[key_index++]->SetValue(node_index, segments[i]->GetNode(0)->GetPressure());
-            pNodeInfoVector[key_index++]->SetValue(node_index, double(segments[i]->GetNode(0)->IsInputNode()));
-            pNodeInfoVector[key_index++]->SetValue(node_index, double(segments[i]->GetNode(0)->IsOutputNode()));
+            pNodeInfoVector[key_index++]->SetValue(node_index, segments[i]->GetNode(0)->GetFlowProperties()->GetPressure());
+            pNodeInfoVector[key_index++]->SetValue(node_index, double(segments[i]->GetNode(0)->GetFlowProperties()->IsInputNode()));
+            pNodeInfoVector[key_index++]->SetValue(node_index, double(segments[i]->GetNode(0)->GetFlowProperties()->IsOutputNode()));
             node_index++;
 
             pLine->GetPointIds()->InsertId(i, pointId);
@@ -1027,9 +1027,9 @@ void CaVascularNetwork<DIM>::Write(const std::string& filename, bool geometry_on
                         key_index++;
                     }
                 }
-                pNodeInfoVector[key_index++]->SetValue(node_index, segments[i]->GetNode(1)->GetPressure());
-                pNodeInfoVector[key_index++]->SetValue(node_index, double(segments[i]->GetNode(1)->IsInputNode()));
-                pNodeInfoVector[key_index++]->SetValue(node_index, double(segments[i]->GetNode(1)->IsOutputNode()));
+                pNodeInfoVector[key_index++]->SetValue(node_index, segments[i]->GetNode(1)->GetFlowProperties()->GetPressure());
+                pNodeInfoVector[key_index++]->SetValue(node_index, double(segments[i]->GetNode(1)->GetFlowProperties()->IsInputNode()));
+                pNodeInfoVector[key_index++]->SetValue(node_index, double(segments[i]->GetNode(1)->GetFlowProperties()->IsOutputNode()));
                 node_index++;
             }
         }

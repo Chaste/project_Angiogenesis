@@ -78,11 +78,11 @@ void Alarcon03RadiusCalculator<DIM>::Calculate(boost::shared_ptr<CaVascularNetwo
 	for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
 	{
 
-		double mechanical_stimulus = segments[segment_index]->GetMechanicalStimulus();
-		double metabolic_stimulus = segments[segment_index]->GetMetabolicStimulus();
-		double upstream_conducted_stimulus = segments[segment_index]->GetUpstreamConductedStimulus();
-		double downstream_stimulus = segments[segment_index]->GetDownstreamConductedStimulus();
-		double shrinking_stimulus = segments[segment_index]->GetShrinkingStimulus();
+		double mechanical_stimulus = segments[segment_index]->GetFlowProperties()->GetMechanicalStimulus();
+		double metabolic_stimulus = segments[segment_index]->GetFlowProperties()->GetMetabolicStimulus();
+		double upstream_conducted_stimulus = segments[segment_index]->GetFlowProperties()->GetUpstreamConductedStimulus();
+		double downstream_stimulus = segments[segment_index]->GetFlowProperties()->GetDownstreamConductedStimulus();
+		double shrinking_stimulus = segments[segment_index]->GetFlowProperties()->GetShrinkingStimulus();
 
 		double total_stimulus = mechanical_stimulus + metabolic_stimulus + upstream_conducted_stimulus + downstream_stimulus - shrinking_stimulus;
 

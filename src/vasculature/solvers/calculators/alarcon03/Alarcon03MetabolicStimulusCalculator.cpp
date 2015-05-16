@@ -109,8 +109,8 @@ void Alarcon03MetabolicStimulusCalculator<DIM>::Calculate(boost::shared_ptr<CaVa
 	{
 
 		double metabolic_stimulus;
-		double haematocrit = segments[segment_index]->GetHaematocrit();
-		double flow_rate = fabs(segments[segment_index]->GetFlowRate());
+		double haematocrit = segments[segment_index]->GetFlowProperties()->GetHaematocrit();
+		double flow_rate = fabs(segments[segment_index]->GetFlowProperties()->GetFlowRate());
 
 		if (flow_rate > 0.0)
 		{
@@ -130,7 +130,7 @@ void Alarcon03MetabolicStimulusCalculator<DIM>::Calculate(boost::shared_ptr<CaVa
 			metabolic_stimulus = 0;
 		}
 
-		segments[segment_index]->SetMetabolicStimulus(metabolic_stimulus);
+		segments[segment_index]->GetFlowProperties()->SetMetabolicStimulus(metabolic_stimulus);
 	}
 }
 

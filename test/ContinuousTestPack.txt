@@ -8,5 +8,4 @@ vasculature/solvers/TestSimpleStructuralAdaptationSolver.hpp
 vasculature/solvers/TestAlarcon03HaematocritSolver.hpp
 vasculature/TestVasculatureData.hpp
 vasculature/TestVasculatureGenerator.hpp
-cell/TestVascularCellProperty.hpp
 TestGeometryTransform.hpp

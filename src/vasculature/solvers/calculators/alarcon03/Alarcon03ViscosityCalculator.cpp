@@ -57,7 +57,7 @@ void Alarcon03ViscosityCalculator<DIM>::Calculate(boost::shared_ptr<CaVascularNe
 	{
 		double radius = pow(10.0, 6)*segments[segment_index]->GetRadius(); // scale radius
 
-		double haematocrit = segments[segment_index]->GetHaematocrit();
+		double haematocrit = segments[segment_index]->GetFlowProperties()->GetHaematocrit();
 		double plasma_viscosity = 3.5*pow(10.0, -3.0);
 
 		double power_term_1 = 1.0/(1.0 + pow(10.0, -11.0)*pow(2.0*radius, 12.0));
@@ -70,7 +70,7 @@ void Alarcon03ViscosityCalculator<DIM>::Calculate(boost::shared_ptr<CaVascularNe
 
 		double viscosity = plasma_viscosity * mu_rel;
 
-		segments[segment_index]->SetViscosity(viscosity);
+		segments[segment_index]->GetFlowProperties()->SetViscosity(viscosity);
 	}
     
 }

@@ -59,11 +59,11 @@ void Alarcon03WallShearStressCalculator<DIM>::Calculate(boost::shared_ptr<CaVasc
 	for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
 	{
 		double radius = segments[segment_index]->GetRadius();
-		double flow_rate = fabs(segments[segment_index]->GetFlowRate());
-		double viscosity = segments[segment_index]->GetViscosity();
+		double flow_rate = fabs(segments[segment_index]->GetFlowProperties()->GetFlowRate());
+		double viscosity = segments[segment_index]->GetFlowProperties()->GetViscosity();
 
 	    double wall_shear_stress = 8.0 * viscosity * flow_rate / (M_PI * SmallPow(radius, 3));
-	    segments[segment_index]->SetWallShearStress(wall_shear_stress);
+	    segments[segment_index]->GetFlowProperties()->SetWallShearStress(wall_shear_stress);
 	}
 }
 

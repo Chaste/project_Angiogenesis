@@ -1,157 +1,210 @@
 /*
 
-Copyright (c) 2005-2015, University of Oxford.
-All rights reserved.
+ Copyright (c) 2005-2015, University of Oxford.
+ All rights reserved.
 
-University of Oxford means the Chancellor, Masters and Scholars of the
-University of Oxford, having an administrative office at Wellington
-Square, Oxford OX1 2JD, UK.
+ University of Oxford means the Chancellor, Masters and Scholars of the
+ University of Oxford, having an administrative office at Wellington
+ Square, Oxford OX1 2JD, UK.
 
-This file is part of Chaste.
+ This file is part of Chaste.
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
  * Redistributions of source code must retain the above copyright notice,
-   this list of conditions and the following disclaimer.
+ this list of conditions and the following disclaimer.
  * Redistributions in binary form must reproduce the above copyright notice,
-   this list of conditions and the following disclaimer in the documentation
-   and/or other materials provided with the distribution.
+ this list of conditions and the following disclaimer in the documentation
+ and/or other materials provided with the distribution.
  * Neither the name of the University of Oxford nor the names of its
-   contributors may be used to endorse or promote products derived from this
-   software without specific prior written permission.
+ contributors may be used to endorse or promote products derived from this
+ software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
-GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
-OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
 #ifndef TESTVASCULARNODE_HPP_
 #define TESTVASCULARNODE_HPP_
 
+#include "Exception.hpp"
 #include "AbstractCellBasedTestSuite.hpp"
-#include "SmartVasculaturePointers.hpp"
-#include "CaVesselSegment.hpp"
-#include "VascularNode.hpp"
-#include "VasculatureData.hpp"
 #include "ChastePoint.hpp"
 #include "CellsGenerator.hpp"
 #include "FixedDurationGenerationBasedCellCycleModel.hpp"
 #include "CaBasedCellPopulation.hpp"
 #include "PottsMeshGenerator.hpp"
+#include "UblasIncludes.hpp"
+#include "SmartPointers.hpp"
+#include "SmartVasculaturePointers.hpp"
+#include "CaVesselSegment.hpp"
+#include "VascularNode.hpp"
+#include "VasculatureData.hpp"
+#include "NodeFlowProperties.hpp"
 #include "FakePetscSetup.hpp"
 
-#include "Debug.hpp"
-
-class TestVascularNode: public AbstractCellBasedTestSuite
+class TestVascularNode : public AbstractCellBasedTestSuite
 {
 
 public:
 
-	void TestConstructor() throw(Exception)
+    void TestConstructorAndLocationMethods() throw (Exception)
     {
-        // Make some nodes and node pointers using explicit coordinates and Chaste points
-		VascularNode<2> node1(0.0, 0.0);
-        VascularNode<3> node2(ChastePoint<3> (1.0, 1.0, 1.0));
-        MAKE_VN_PTR_ARGS(VascularNode<3>, pNode3, (2.0, 2.0, 3.0));
-        MAKE_VN_PTR_ARGS(VascularNode<2>, pNode4, (ChastePoint<2> (3.0, 4.0)));
+        // Set up some points and locations
+        ChastePoint<3> point1(1.0, 2.0, 3.0);
+        c_vector<double, 2> location1;
+        location1[0] = 1.0;
+        location1[1] = 2.0;
+        ChastePoint<2> point2(5.0, 6.0);
 
-        // Test simple Getters and Setters
-        node1.SetId(5u);
-        std::string label = "Inlet";
-        node1.SetLabel(label);
-        node1.SetPressure(5.0);
-        node1.SetRadius(10.0);
+        // Regular Constructors
+        VascularNode<2> node1(0.0, 0.0);
+        VascularNode<3> node2(point1);
+        VascularNode<2> node3(location1);
+        VascularNode<2> node4(node3);
 
-        TS_ASSERT_EQUALS(node1.GetId(), 5u);
-        TS_ASSERT_EQUALS(node1.rGetLabel().c_str(), label.c_str());
-        TS_ASSERT_DELTA(node1.GetPressure(), 5.0, 1.e-6);
-        TS_ASSERT_DELTA(node1.GetRadius(), 10.0, 1.e-6);
+        // Pointer Factory Constructors
+        MAKE_VN_PTR_ARGS(VascularNode<3>, p_node_1, (2.0, 3.0, 4.0));
+        MAKE_VN_PTR_ARGS(VascularNode<2>, p_node_2, (point2));
+        MAKE_VN_PTR_ARGS(VascularNode<3>, p_node_3, (location1));
+        MAKE_VN_PTR_ARGS(VascularNode<2>, p_node_4, (node3));
+        MAKE_VN_PTR_ARGS(VascularNode<2>, p_node_5, (p_node_4));
 
-        // Test setting location and coincident methods
-        ChastePoint<2> point(3.0, 4.0);
-        node1.SetLocation(point);
-        TS_ASSERT(node1.IsCoincident(point));
-        TS_ASSERT(node1.IsCoincident(pNode4));
-
-        // Test distance calculation method
-        ChastePoint<2> test_point(2.0, 2.0);
-        ChastePoint<3> test_point2(2.0, 2.0, 2.0);
-        TS_ASSERT_DELTA(node1.GetDistance(test_point), std::sqrt(5.0), 1.e-6);
-        TS_ASSERT_DELTA(node2.GetDistance(test_point2), std::sqrt(3.0), 1.e-6);
+        // Test the location methods
+        TS_ASSERT_DELTA(p_node_1->GetLocation()[0], 2.0, 1.e-6);
+        TS_ASSERT_DELTA(p_node_1->GetLocation()[1], 3.0, 1.e-6);
+        TS_ASSERT_DELTA(p_node_1->GetLocation()[2], 4.0, 1.e-6);
+        TS_ASSERT_DELTA(p_node_5->GetLocationVector()[0], 1.0, 1.e-6);
+        TS_ASSERT_DELTA(p_node_5->GetLocationVector()[1], 2.0, 1.e-6);
     }
 
-	void TestAccessingData() throw(Exception)
+    void TestSimpleGetAndSetMethods() throw (Exception)
     {
         // Make a node
-        VascularNode<3> node(1.0, 1.0, 2.0);
+        MAKE_VN_PTR_ARGS(VascularNode<3>, p_node, (1.0, 2.0, 3.0));
 
-        // Set some data
-        double radius = 5.5;
-        std::string key ="radius";
-        node.SetData(key, radius);
+        // Test simple Getters and Setters
+        p_node->SetId(5u);
+        std::string label = "Inlet";
+        p_node->SetLabel(label);
+        p_node->GetFlowProperties()->SetPressure(5.0);
+        p_node->SetRadius(10.0);
+        p_node->GetFlowProperties()->SetIsInputNode(true);
+        p_node->GetFlowProperties()->SetIsOutputNode(true);
+        p_node->SetIsMigrating(true);
+
+        TS_ASSERT_EQUALS(p_node->GetId(), 5u);
+        TS_ASSERT_EQUALS(p_node->rGetLabel().c_str(), label.c_str());
+        TS_ASSERT_DELTA(p_node->GetFlowProperties()->GetPressure(), 5.0, 1.e-6);
+        TS_ASSERT_DELTA(p_node->GetRadius(), 10.0, 1.e-6);
+        TS_ASSERT(p_node->GetFlowProperties()->IsInputNode());
+        TS_ASSERT(p_node->GetFlowProperties()->IsOutputNode());
+        TS_ASSERT(p_node->IsMigrating());
+
+        // Test setting node flow properties
+        NodeFlowProperties node_flow_properties;
+        node_flow_properties.SetPressure(12.0);
+        p_node->SetFlowProperties(node_flow_properties);
+
+        // Check the data map for the vtk writer
+        std::map<std::string, double> vtk_data = p_node->GetVtkData();
+        TS_ASSERT_DELTA(vtk_data["Id"], 5.0, 1.e-6);
+        TS_ASSERT_DELTA(vtk_data["Radius"], 10.0, 1.e-6);
+        TS_ASSERT_DELTA(vtk_data["Pressure"], 12.0, 1.e-6);
+        TS_ASSERT_DELTA(vtk_data["IsInputNode"], 0.0, 1.e-6);
+        TS_ASSERT_DELTA(vtk_data["IsOutputNode"], 0.0, 1.e-6);
+        TS_ASSERT_DELTA(vtk_data["IsMigrating"], 1.0, 1.e-6);
+    }
+
+    void TestDistanceAndConincidentMethods() throw (Exception)
+    {
+        // Set up some points nodes
+        MAKE_VN_PTR_ARGS(VascularNode<3>, p_node_1, (1.0, 2.0, 3.0));
+        MAKE_VN_PTR_ARGS(VascularNode<3>, p_node_2, (1.0, 2.0, 3.0));
+        MAKE_VN_PTR_ARGS(VascularNode<3>, p_node_3, (4.0, 5.0, 6.0));
+        c_vector<double, 3> location1;
+        location1[0] = 6.0;
+        location1[1] = 7.0;
+        location1[2] = 8.0;
+        ChastePoint<3> point1(1.0, 2.0, 3.0);
+
+        // Coincident methods
+        TS_ASSERT(p_node_1->IsCoincident(p_node_2));
+        TS_ASSERT(p_node_1->IsCoincident(point1));
+
+        // Distance methods
+        TS_ASSERT_DELTA(p_node_1->GetDistance(p_node_3), std::sqrt(27.0), 1.e-6);
+        TS_ASSERT_DELTA(p_node_1->GetDistance(location1), std::sqrt(75.0), 1.e-6);
+        TS_ASSERT_DELTA(p_node_1->GetDistance(point1), 0.0, 1.e-6);
+    }
+
+    void TestAccessingData() throw (Exception)
+    {
+        VascularNode<3> node;
+        std::string key ="My Key";
+        double value = 5.5;
+        node.SetData(key, value);
 
         // Check the key is set
-        TS_ASSERT(node.HasDataKey("radius"));
+        TS_ASSERT(node.HasDataKey(key));
         TS_ASSERT_EQUALS(node.GetDataKeys()[0].c_str(), key.c_str());
 
-        bool value_is_castable_to_double = true;
-        TS_ASSERT_EQUALS(node.GetDataKeys(value_is_castable_to_double)[0].c_str(), key.c_str());
+        bool castable_to_double = true;
+        TS_ASSERT_EQUALS(node.GetDataKeys(castable_to_double)[0].c_str(), key.c_str());
 
         // Check the key value is retrieved
-        TS_ASSERT_DELTA(node.GetData<double>("radius"), radius, 1.e-6);
-        TS_ASSERT_DELTA(node.rGetDataContainer().GetData<double>("radius"), radius, 1.e-6);
+        TS_ASSERT_DELTA(node.GetData<double>(key), value, 1.e-6);
+        TS_ASSERT_DELTA(node.rGetDataContainer().GetData<double>(key), value, 1.e-6);
 
         // Replace the existing data container with a new one
         VasculatureData data_container;
-        double haematocrit = 7.5;
-        data_container.SetData("haematocrit", haematocrit);
+        double new_value = 7.5;
+        data_container.SetData("New Key", new_value);
         node.SetDataContainer(data_container);
-        TS_ASSERT_DELTA(node.GetData<double>("haematocrit"), haematocrit, 1.e-6);
+        TS_ASSERT_DELTA(node.GetData<double>("New Key"), new_value, 1.e-6);
     }
 
-	void TestAddingAndRemovingVesselSegments() throw(Exception)
+    void TestAddingAndRemovingVesselSegments() throw (Exception)
     {
         // Make some nodes
-        MAKE_VN_PTR_ARGS(VascularNode<2>, pNode, (4.0, 3.0));
-        MAKE_VN_PTR_ARGS(VascularNode<2>, pNode2, (4.0, 5.0));
-        MAKE_VN_PTR_ARGS(VascularNode<2>, pNode3, (0.5, 0.6));
+        MAKE_VN_PTR_ARGS(VascularNode<2>, p_node_1, (0.0));
+        MAKE_VN_PTR_ARGS(VascularNode<2>, p_node_2, (1.0));
+        MAKE_VN_PTR_ARGS(VascularNode<2>, p_node_3, (2.0));
 
         // Make some vessel segments
-        MAKE_VN_PTR_ARGS(CaVesselSegment<2>, pVesselSegment, (pNode, pNode2));
-        MAKE_VN_PTR_ARGS(CaVesselSegment<2>, pVesselSegment2, (pNode2, pNode3));
-
-        TS_ASSERT(pNode->IsAttachedTo(pVesselSegment));
-        TS_ASSERT(!pNode3->IsAttachedTo(pVesselSegment));
-
-        TS_ASSERT_DELTA(pVesselSegment->GetLength(), 2.0, 1.e-6);
+        MAKE_VN_PTR_ARGS(CaVesselSegment<2>, p_segment1, (p_node_1, p_node_2));
+        MAKE_VN_PTR_ARGS(CaVesselSegment<2>, p_segment2, (p_node_2, p_node_3));
 
         // Check that the vessel segments have been suitably added to the nodes.
-        TS_ASSERT_EQUALS(pNode->GetNumberOfSegments(), 1u);
-        TS_ASSERT_EQUALS(pNode2->GetNumberOfSegments(), 2u);
+        TS_ASSERT(p_node_1->IsAttachedTo(p_segment1));
+        TS_ASSERT(!p_node_3->IsAttachedTo(p_segment1));
+        TS_ASSERT_EQUALS(p_node_1->GetNumberOfSegments(), 1u);
+        TS_ASSERT_EQUALS(p_node_2->GetNumberOfSegments(), 2u);
 
         // Check that the segments are correctly retrieved from the node.
-        TS_ASSERT(pNode2->IsCoincident(pNode2->GetVesselSegment(0)->GetNode(1)));
-        TS_ASSERT(pNode2->IsCoincident(pNode2->GetVesselSegments()[0]->GetNode(1)));
-        TS_ASSERT_THROWS_THIS(pNode2->GetVesselSegment(3), "Attempted to access a segment with an out of range index.");
+        TS_ASSERT(p_node_2->IsCoincident(p_node_2->GetVesselSegment(0)->GetNode(1)));
+        TS_ASSERT(p_node_2->IsCoincident(p_node_2->GetVesselSegments()[0]->GetNode(1)));
+        TS_ASSERT_THROWS_THIS(p_node_2->GetVesselSegment(3), "Attempted to access a segment with an out of range index.");
 
         // Check that the vessel segment connectivity is updated when a node is replaced.
-        pVesselSegment2->ReplaceNode(1, pNode);
-        TS_ASSERT_EQUALS(pNode->GetNumberOfSegments(), 2u);
-        TS_ASSERT_EQUALS(pNode3->GetNumberOfSegments(), 0u);
+        p_segment2->ReplaceNode(1, p_node_1);
+        TS_ASSERT_EQUALS(p_node_1->GetNumberOfSegments(), 2u);
+        TS_ASSERT_EQUALS(p_node_3->GetNumberOfSegments(), 0u);
 
         // Check that a node can't be replaced with one that's already there
-        TS_ASSERT_THROWS_THIS(pVesselSegment2->ReplaceNode(0, pNode), "This segment is already attached to this node.");
+        TS_ASSERT_THROWS_THIS(p_segment2->ReplaceNode(0, p_node_1), "This segment is already attached to this node.");
     }
 
-    void TestAddingAndRemovingCells() throw(Exception)
+    void TestAddingAndRemovingCells() throw (Exception)
     {
         // Make a node
         VascularNode<2> node(4.0, 3.0);
@@ -166,7 +219,7 @@ public:
         TS_ASSERT_THROWS_THIS(node.SetCell(cells[0]), "Attempted to add a Cell without first adding a CellPopulation.");
 
         // Check that a suitable exception is thrown if the node doesn't have a cell yet
-        TS_ASSERT_THROWS_THIS(node.GetCell(), "A Cell has been requested but none have been assigned to this Node.") ;
+        TS_ASSERT_THROWS_THIS(node.GetCell(), "A Cell has been requested but none have been assigned to this Node.");
 
         // Create a simple 2D PottsMesh
         PottsMeshGenerator<2> generator(5, 0, 0, 5, 0, 0);

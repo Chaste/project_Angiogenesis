@@ -64,13 +64,13 @@ void ConstantHaematocritSolver<DIM>::Calculate(boost::shared_ptr<CaVascularNetwo
 
 	for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
 	{
-		if(fabs(segments[segment_index]->GetFlowRate()) == 0.0)
+		if(fabs(segments[segment_index]->GetFlowProperties()->GetFlowRate()) == 0.0)
 		{
-			segments[segment_index]->SetHaematocrit(0.0);
+			segments[segment_index]->GetFlowProperties()->SetHaematocrit(0.0);
 		}
 		else
 		{
-			segments[segment_index]->SetHaematocrit(mHaematocrit);
+			segments[segment_index]->GetFlowProperties()->SetHaematocrit(mHaematocrit);
 		}
 	}
 }

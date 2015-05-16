@@ -62,7 +62,7 @@ void PoiseuilleImpedanceCalculator<DIM>::Calculate(boost::shared_ptr<CaVascularN
 	{
 		double length = segments[segment_index]->GetLength();
 		double radius = segments[segment_index]->GetRadius();
-		double viscosity = segments[segment_index]->GetViscosity();
+		double viscosity = segments[segment_index]->GetFlowProperties()->GetViscosity();
 
 		if (radius <= 0.0)
 		{
@@ -74,7 +74,7 @@ void PoiseuilleImpedanceCalculator<DIM>::Calculate(boost::shared_ptr<CaVascularN
 		}
 
 		double impedance = 8.0*viscosity*length/(M_PI*SmallPow(radius,4u));
-		segments[segment_index]->SetImpedance(impedance);
+		segments[segment_index]->GetFlowProperties()->SetImpedance(impedance);
 	}
 }
 
