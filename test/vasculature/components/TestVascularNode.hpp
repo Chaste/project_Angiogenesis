@@ -117,12 +117,12 @@ public:
 
         // Check the data map for the vtk writer
         std::map<std::string, double> vtk_data = p_node->GetVtkData();
-        TS_ASSERT_DELTA(vtk_data["Id"], 5.0, 1.e-6);
-        TS_ASSERT_DELTA(vtk_data["Radius"], 10.0, 1.e-6);
-        TS_ASSERT_DELTA(vtk_data["Pressure"], 12.0, 1.e-6);
-        TS_ASSERT_DELTA(vtk_data["IsInputNode"], 0.0, 1.e-6);
-        TS_ASSERT_DELTA(vtk_data["IsOutputNode"], 0.0, 1.e-6);
-        TS_ASSERT_DELTA(vtk_data["IsMigrating"], 1.0, 1.e-6);
+        TS_ASSERT_DELTA(vtk_data["Node Id"], 5.0, 1.e-6);
+        TS_ASSERT_DELTA(vtk_data["Node Radius"], 10.0, 1.e-6);
+        TS_ASSERT_DELTA(vtk_data["Node Pressure"], 12.0, 1.e-6);
+        TS_ASSERT_DELTA(vtk_data["Node Is Input"], 0.0, 1.e-6);
+        TS_ASSERT_DELTA(vtk_data["Node Is Output"], 0.0, 1.e-6);
+        TS_ASSERT_DELTA(vtk_data["Node Is Migrating"], 1.0, 1.e-6);
     }
 
     void TestDistanceAndConincidentMethods() throw (Exception)

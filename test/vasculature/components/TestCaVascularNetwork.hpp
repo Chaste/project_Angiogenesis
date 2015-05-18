@@ -59,58 +59,50 @@ public:
     typedef boost::shared_ptr<CaVessel<2> > VesselPtr2;
     typedef boost::shared_ptr<CaVessel<3> > VesselPtr3;
 
-    void TestConstructor() throw(Exception)
+    void TestAddingVessels() throw(Exception)
     {
         // Make some nodes
-        std::vector<ChastePoint<3> > points;
-        points.push_back(ChastePoint<3>(1.0, 2.0, 6.0));
-        points.push_back(ChastePoint<3>(3.0, 4.0, 7.0));
-        points.push_back(ChastePoint<3>(3.0, 4.0, 7.0));
-        points.push_back(ChastePoint<3>(3.0, 4.0, 8.0));
-        points.push_back(ChastePoint<3>(3.0, 4.0, 9.0));
-
         std::vector<NodePtr3> nodes;
-        for(unsigned i=0; i < points.size(); i++)
+        for(unsigned idx=0; idx < 4; idx++)
         {
-            nodes.push_back(NodePtr3 (VascularNode<3>::Create(points[i])));
+            nodes.push_back(VascularNode<3>::Create(double(idx), 0.0, 0.0));
         }
-        nodes.push_back(NodePtr3 (VascularNode<3>::Create(points[1])));
-
-        // Make some segments
-        SegmentPtr3 pSegment1(CaVesselSegment<3>::Create(nodes[0], nodes[1]));
-        SegmentPtr3 pSegment2(CaVesselSegment<3>::Create(nodes[2], nodes[3]));
-        SegmentPtr3 pSegment3(CaVesselSegment<3>::Create(nodes[3], nodes[4]));
 
         // Make some vessels
-        VesselPtr3 pVessel1(CaVessel<3>::Create(pSegment1));
-        VesselPtr3 pVessel2(CaVessel<3>::Create(pSegment2));
-        VesselPtr3 pVessel3(CaVessel<3>::Create(pSegment3));
-
         std::vector<VesselPtr3> vessels;
-        vessels.push_back(pVessel2);
-        vessels.push_back(pVessel3);
+        for(unsigned idx=0; idx < 1; idx++)
+        {
+            vessels.push_back(CaVessel<3>::Create(CaVesselSegment<3>::Create(nodes[idx], nodes[idx+1])));
+        }
+        VesselPtr3 p_end_vessel = CaVessel<3>::Create(CaVesselSegment<3>::Create(nodes[2], nodes[3]));
 
         // Make a network
         CaVascularNetwork<3> vessel_network;
-        vessel_network.AddVessel(pVessel1);
         vessel_network.AddVessels(vessels);
-
-        std::vector<boost::shared_ptr<VascularNode<3> > > nodeVector = vessel_network.GetNodes();
-
-        for (unsigned i = 0; i < nodeVector.size(); i++)
-        {
-        	TS_ASSERT_EQUALS(vessel_network.GetNodeIndex(nodeVector[i]),i);
-        }
-
-        NodePtr3 p_not_in_network = VascularNode<3>::Create(points[0]);
-
-        TS_ASSERT_THROWS_THIS(vessel_network.GetNodeIndex(p_not_in_network),"Node is not in the network.");
-
-        TS_ASSERT_EQUALS(vessel_network.GetNodes().size(), 5u);
-
-        vessel_network.MergeCoincidentNodes();
+        vessel_network.AddVessel(p_end_vessel);
 
         TS_ASSERT_EQUALS(vessel_network.GetNodes().size(), 4u);
+    }
+
+    void TestSettingNetworkData() throw(Exception)
+    {
+        // Make some nodes
+        std::vector<NodePtr3> nodes;
+        for(unsigned idx=0; idx < 4; idx++)
+        {
+            nodes.push_back(VascularNode<3>::Create(double(idx), 0.0, 0.0));
+        }
+
+        // Make some vessels
+        std::vector<VesselPtr3> vessels;
+        for(unsigned idx=0; idx < 2; idx++)
+        {
+            vessels.push_back(CaVessel<3>::Create(CaVesselSegment<3>::Create(nodes[idx], nodes[idx+1])));
+        }
+
+        // Make a network
+        CaVascularNetwork<3> vessel_network;
+        vessel_network.AddVessels(vessels);
 
         // Make some network data
         VasculatureData data;
@@ -123,56 +115,77 @@ public:
         data.SetData("Has Flow", has_flow);
         data.SetData("SomeIndex", some_index);
         vessel_network.SetVesselData(data);
+    }
 
-        VasculatureData node_data;
-        double pressure = 10.0;
-        node_data.SetData("Pressure", pressure);
-        vessel_network.SetNodeData(node_data);
+    void TestCopyingAndMovingNetwork() throw(Exception)
+    {
+        // Make some nodes
+        std::vector<NodePtr3> nodes;
+        for(unsigned idx=0; idx < 4; idx++)
+        {
+            nodes.push_back(VascularNode<3>::Create(double(idx), 0.0, 0.0));
+        }
 
-        // Try writing to file
-        OutputFileHandler output_file_handler("TestVesselNetwork");
-        std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("GenericVesselNetwork.vtp");
-        vessel_network.Write(output_filename, true);
+        // Make some vessels
+        std::vector<VesselPtr3> vessels;
+        for(unsigned idx=0; idx < 3; idx++)
+        {
+            vessels.push_back(CaVessel<3>::Create(CaVesselSegment<3>::Create(nodes[idx], nodes[idx+1])));
+        }
+
+        // Make a network
+        CaVascularNetwork<3> vessel_network;
+        vessel_network.AddVessels(vessels);
 
         // Move the network
-        c_vector<double, 3> translation_vector_3d;
-        translation_vector_3d[0] = 3.5;
-        translation_vector_3d[1] = 5.6;
-        translation_vector_3d[2] = -12.8;
+        c_vector<double, 3> translation_vector;
+        translation_vector[0] = 0.0;
+        translation_vector[1] = 2.0;
+        translation_vector[2] = 0.0;
 
-        vessel_network.Translate(translation_vector_3d);
-        vessel_network.Translate(translation_vector_3d, true);
-        std::string output_filename2 = output_file_handler.GetOutputDirectoryFullPath().append("GenericVesselNetwork_TranslatedCopy.vtp");
-        vessel_network.Write(output_filename2, true);
+        vessel_network.Translate(translation_vector);
+        TS_ASSERT_DELTA(vessel_network.GetVessel(0)->GetSegment(0)->GetNode(0)->GetLocation()[0], 0.0, 1.e-6);
+        TS_ASSERT_DELTA(vessel_network.GetVessel(0)->GetSegment(0)->GetNode(0)->GetLocation()[1], 2.0, 1.e-6);
+        TS_ASSERT_DELTA(vessel_network.GetVessel(0)->GetSegment(0)->GetNode(1)->GetLocation()[0], 1.0, 1.e-6);
+        TS_ASSERT_DELTA(vessel_network.GetVessel(0)->GetSegment(0)->GetNode(1)->GetLocation()[1], 2.0, 1.e-6);
+        TS_ASSERT_DELTA(vessel_network.GetVessel(1)->GetSegment(0)->GetNode(1)->GetLocation()[0], 2.0, 1.e-6);
+        TS_ASSERT_DELTA(vessel_network.GetVessel(1)->GetSegment(0)->GetNode(1)->GetLocation()[1], 2.0, 1.e-6);
 
+        // Copy the network
+        std::vector<boost::shared_ptr<CaVessel<3> > > copied_vessels = vessel_network.CopyVessels();
+        TS_ASSERT_EQUALS(vessel_network.GetNumberOfVessels(), 6u);
+
+        // Move the new vessels
+        c_vector<double, 3> translation_vector2;
+        translation_vector2[0] = 0.0;
+        translation_vector2[1] = 0.0;
+        translation_vector2[2] = 3.0;
+        vessel_network.Translate(translation_vector2, copied_vessels);
+        TS_ASSERT_DELTA(vessel_network.GetVessel(3)->GetSegment(0)->GetNode(1)->GetLocation()[0], 1.0, 1.e-6);
+        TS_ASSERT_DELTA(vessel_network.GetVessel(3)->GetSegment(0)->GetNode(1)->GetLocation()[1], 2.0, 1.e-6);
+        TS_ASSERT_DELTA(vessel_network.GetVessel(3)->GetSegment(0)->GetNode(1)->GetLocation()[2], 3.0, 1.e-6);
+
+        // Write the network
+        OutputFileHandler output_file_handler("TestVesselNetwork", false);
+        std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("CopiedTranslatedNetwork.vtp");
+        vessel_network.Write(output_filename);
     }
 
     void TestDivideSingleVessel() throw(Exception)
     {
         // Make some nodes
-        std::vector<ChastePoint<3> > points;
-        points.push_back(ChastePoint<3>(0.0, 0.0, 0.0));
-        points.push_back(ChastePoint<3>(2.0, 0.0, 0.0));
-
         std::vector<NodePtr3> nodes;
-        for(unsigned i=0; i < points.size(); i++)
+        for(unsigned idx=0; idx < 2; idx++)
         {
-            nodes.push_back(NodePtr3 (VascularNode<3>::Create(points[i])));
+            nodes.push_back(VascularNode<3>::Create(2.0 * double(idx)));
         }
-        nodes.push_back(NodePtr3 (VascularNode<3>::Create(points[1])));
-
-        // Make some segments
-        SegmentPtr3 pSegment1(CaVesselSegment<3>::Create(nodes[0], nodes[1]));
-
-        // Make some vessels
-        VesselPtr3 pVessel1(CaVessel<3>::Create(pSegment1));
 
         // Make a network
         CaVascularNetwork<3> vessel_network;
-        vessel_network.AddVessel(pVessel1);
+        vessel_network.AddVessel(CaVessel<3>::Create(CaVesselSegment<3>::Create(nodes[0], nodes[1])));
 
         // Do the divide
-        vessel_network.DivideVessel(pVessel1, ChastePoint<3>(0.66, 0.0, 0.0));
+        vessel_network.DivideVessel(vessel_network.GetVessel(0), ChastePoint<3>(0.66, 0.0, 0.0));
         TS_ASSERT_EQUALS(vessel_network.GetNumberOfVessels(), 2u);
         TS_ASSERT_DELTA(vessel_network.GetVessel(0)->GetSegment(0)->GetNode(0)->GetLocation()[0], 0.0, 1.e-6);
         TS_ASSERT_DELTA(vessel_network.GetVessel(0)->GetSegment(0)->GetNode(1)->GetLocation()[0], 0.66, 1.e-6);
@@ -234,23 +247,6 @@ public:
 
         TS_ASSERT_EQUALS(vessel_network.GetNodes().size(), 4u);
 
-        // Make some network data
-        VasculatureData data;
-        double radius = 10.0;
-        double haematocrit = 0.4;
-        bool has_flow = true;
-        unsigned some_index = 5u;
-        data.SetData("Radius", radius);
-        data.SetData("Haematocrit", haematocrit);
-        data.SetData("Has Flow", has_flow);
-        data.SetData("SomeIndex", some_index);
-        vessel_network.SetVesselData(data);
-
-        VasculatureData node_data;
-        double pressure = 10.0;
-        node_data.SetData("Pressure", pressure);
-        vessel_network.SetNodeData(node_data);
-
         NodePtr3 node4 = VascularNode<3>::Create(1.0 , 1.0 , 1.0);
         NodePtr3 node5 = VascularNode<3>::Create(5.0 , 5.0 , 1.0);
         SegmentPtr3 pSegment4(CaVesselSegment<3>::Create(node4, node5));
@@ -289,10 +285,8 @@ public:
 
         OutputFileHandler output_file_handler("TestVesselNetwork",false);
         std::string output_filename4 = output_file_handler.GetOutputDirectoryFullPath().append("ConnectedTestVesselNetwork.gv");
-        vessel_network.VisualiseVesselConnectivity(output_filename4);
+        vessel_network.WriteConnectivity(output_filename4);
     }
-
-
 };
 
 #endif /*TESTVESSELNETWORK_HPP_*/

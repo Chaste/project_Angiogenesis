@@ -54,9 +54,9 @@ double NodeFlowProperties::GetPressure() const
 std::map<std::string, double> NodeFlowProperties::GetVtkData() const
 {
     std::map<std::string, double> vtk_data;
-    vtk_data["Pressure"] = GetPressure();
-    vtk_data["IsInputNode"] = double(IsInputNode());
-    vtk_data["IsOutputNode"] = double(IsOutputNode());
+    vtk_data["Node Pressure"] = GetPressure();
+    vtk_data["Node Is Input"] = double(IsInputNode());
+    vtk_data["Node Is Output"] = double(IsOutputNode());
     return vtk_data;
 }
 

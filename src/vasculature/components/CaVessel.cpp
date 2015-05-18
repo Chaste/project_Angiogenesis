@@ -33,6 +33,10 @@
 
  */
 
+#include "SmartPointers.hpp"
+#include "SmartVasculaturePointers.hpp"
+#include "Exception.hpp"
+
 #include "CaVessel.hpp"
 
 template<unsigned DIM>
@@ -299,7 +303,7 @@ unsigned CaVessel<DIM>::GetId() const
 }
 
 template<unsigned DIM>
-const std::string& CaVessel<DIM>::rGetLabel()
+const std::string& CaVessel<DIM>::rGetLabel() const
 {
     return mLabel;
 }
@@ -327,7 +331,7 @@ double CaVessel<DIM>::GetRadius() const
         radius += mSegments[i]->GetRadius();
     }
 
-    return radius;
+    return radius / (double(mSegments.size()));
 }
 
 template<unsigned DIM>
@@ -437,6 +441,19 @@ boost::shared_ptr<VascularNode<DIM> > CaVessel<DIM>::GetStartNode()
     }
 
     return mNodes.front();
+}
+
+template<unsigned DIM>
+std::map<std::string, double> CaVessel<DIM>::GetVtkData() const
+{
+    std::map<std::string, double> vtk_data;
+    vtk_data["Vessel Id"] = double(GetId());
+    vtk_data["Vessel Radius"] = GetRadius();
+    vtk_data["Vessel Impedance"] = GetImpedance();
+    vtk_data["Vessel Haematocrit"] = GetHaematocrit();
+    vtk_data["Vessel Flow Rate"] = GetFlowRate();
+    vtk_data["Vessel Viscosity"] = GetViscosity();
+    return vtk_data;
 }
 
 template<unsigned DIM>

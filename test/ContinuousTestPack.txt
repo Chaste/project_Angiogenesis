@@ -6,6 +6,7 @@ vasculature/solvers/TestPoiseuilleImpedanceCalculator.hpp
 vasculature/solvers/TestSimpleFlowSolver.hpp
 vasculature/solvers/TestSimpleStructuralAdaptationSolver.hpp
 vasculature/solvers/TestAlarcon03HaematocritSolver.hpp
+vasculature/solvers/TestAlarcon03MechanicalStimulusCalculator.hpp
+vasculature/solvers/TestAlarcon03MetabolicStimulusCalculator.hpp
 vasculature/TestVasculatureData.hpp
 vasculature/TestVasculatureGenerator.hpp
-TestGeometryTransform.hpp

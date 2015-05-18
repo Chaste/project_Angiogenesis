@@ -60,7 +60,6 @@ class VascularNode;
  * their end nodes. Nodes cannot be created by the vessel segment class, they are
  * instead managed by the VascularNetwork class. Segments must always have two nodes.
  */
-
 template<unsigned DIM>
 class CaVesselSegment : public boost::enable_shared_from_this<CaVesselSegment<DIM> >
 {

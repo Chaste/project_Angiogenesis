@@ -33,13 +33,26 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#include "CaVascularNetwork.hpp"
-
+#include <iostream>
+#include <math.h>
+#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the boost deprecated warning for now (gcc4.3)
 #include <boost/graph/graphviz.hpp>
-#include <algorithm>
+#include <boost/graph/visitors.hpp>
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/breadth_first_search.hpp>
+#include <boost/pending/indirect_cmp.hpp>
+#ifdef CHASTE_VTK
+#include <vtkDoubleArray.h>
+#include <vtkCellData.h>
+#include <vtkCellArray.h>
+#include <vtkPointData.h>
+#include <vtkLine.h>
+#include <vtkXMLPolyDataWriter.h>
+#endif // CHASTE_VTK
+#include "SmartPointers.hpp"
 #include "OutputFileHandler.hpp"
 
-#include "Debug.hpp"
+#include "CaVascularNetwork.hpp"
 
 template <unsigned DIM>
 CaVascularNetwork<DIM>::CaVascularNetwork()
@@ -75,6 +88,37 @@ void CaVascularNetwork<DIM>::AddVessels(std::vector<boost::shared_ptr<CaVessel<D
     mSegmentsUpToDate = false;
     mNodesUpToDate = false;
     mVesselNodesUpToDate = false;
+}
+
+template <unsigned DIM>
+std::vector<boost::shared_ptr<CaVessel<DIM> > > CaVascularNetwork<DIM>::CopyVessels()
+{
+    return CopyVessels(mVessels);
+}
+
+template <unsigned DIM>
+std::vector<boost::shared_ptr<CaVessel<DIM> > > CaVascularNetwork<DIM>::CopyVessels(std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels)
+{
+    typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator vessel_iter;
+    std::vector<boost::shared_ptr<CaVessel<DIM> > > new_vessels;
+    for(vessel_iter = vessels.begin(); vessel_iter != vessels.end(); vessel_iter++)
+    {
+        typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator segment_iter;
+        std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > new_segments;
+        std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = (*vessel_iter)->GetSegments();
+        for(segment_iter = segments.begin(); segment_iter != segments.end(); segment_iter++)
+        {
+            ChastePoint<DIM> node0_location = (*segment_iter)->GetNode(0)->GetLocation();
+            ChastePoint<DIM> node1_location = (*segment_iter)->GetNode(1)->GetLocation();
+            new_segments.push_back(CaVesselSegment<DIM>::Create(VascularNode<DIM>::Create(node0_location),
+                                                                VascularNode<DIM>::Create(node1_location)));
+        }
+        new_vessels.push_back(CaVessel<DIM>::Create(new_segments));
+    }
+
+    MergeCoincidentNodes(new_vessels);
+    AddVessels(new_vessels);
+    return new_vessels;
 }
 
 template <unsigned DIM>
@@ -151,16 +195,20 @@ std::vector<std::pair<double, double> > CaVascularNetwork<DIM>::GetExtents()
     }
 
     std::vector<std::pair<double, double> > container;
-
     container.push_back(std::pair<double, double>(x_min, x_max));
     container.push_back(std::pair<double, double>(y_min, y_max));
     container.push_back(std::pair<double, double>(z_min, z_max));
-
     return container;
 }
 
 template <unsigned DIM>
 boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::GetNearestNode(ChastePoint<DIM>& rLocation)
+{
+    return GetNearestNode(rLocation.rGetLocation());
+}
+
+template <unsigned DIM>
+boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::GetNearestNode(c_vector<double, DIM> location)
 {
     std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = GetNodes();
     boost::shared_ptr<VascularNode<DIM> > nearest_node;
@@ -170,7 +218,7 @@ boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::GetNearestNode(Cha
     for(node_iter = nodes.begin(); node_iter != nodes.end(); node_iter++)
     {
 
-        double node_distance = (*node_iter)->GetDistance(rLocation);
+        double node_distance = (*node_iter)->GetDistance(location);
         if (node_distance < min_distance)
         {
             min_distance = node_distance;
@@ -183,26 +231,28 @@ boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::GetNearestNode(Cha
 template <unsigned DIM>
 std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double>  CaVascularNetwork<DIM>::GetNearestSegment(const ChastePoint<DIM>& rLocation)
 {
-    boost::shared_ptr<CaVesselSegment<DIM> > nearest_segment;
-    double min_distance = 1.e12;
+    return GetNearestSegment(rLocation.rGetLocation());
+}
 
-    typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator vessel_iter;
+template <unsigned DIM>
+std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double>  CaVascularNetwork<DIM>::GetNearestSegment(c_vector<double, DIM> location)
+{
+    boost::shared_ptr<CaVesselSegment<DIM> > nearest_segment;
+    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = GetVesselSegments();
+
+    double min_distance = 1.e12;
     typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator segment_iter;
-    for(vessel_iter = mVessels.begin(); vessel_iter != mVessels.end(); vessel_iter++)
+    for(segment_iter = segments.begin(); segment_iter != segments.end(); segment_iter++)
     {
-        std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = (*vessel_iter)->GetSegments();
-        for(segment_iter = segments.begin(); segment_iter != segments.end(); segment_iter++)
+        double segment_distance = (*segment_iter)->GetDistance(location);
+        if (segment_distance < min_distance)
         {
-            double segment_distance = (*segment_iter)->GetDistance(rLocation);
-            if (segment_distance < min_distance)
-            {
-                min_distance = segment_distance;
-                nearest_segment = (*segment_iter) ;
-            }
+            min_distance = segment_distance;
+            nearest_segment = (*segment_iter) ;
         }
     }
     std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> return_pair =
-    		std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double>(nearest_segment, min_distance);
+            std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double>(nearest_segment, min_distance);
     return return_pair;
 }
 
@@ -210,6 +260,12 @@ template <unsigned DIM>
 boost::shared_ptr<CaVessel<DIM> > CaVascularNetwork<DIM>::GetNearestVessel(const ChastePoint<DIM>& rLocation)
 {
     return GetNearestSegment(rLocation).first->GetVessel();
+}
+
+template <unsigned DIM>
+boost::shared_ptr<CaVessel<DIM> > CaVascularNetwork<DIM>::GetNearestVessel(c_vector<double, DIM> location)
+{
+    return GetNearestSegment(location).first->GetVessel();
 }
 
 template <unsigned DIM>
@@ -357,7 +413,6 @@ std::vector<std::vector<unsigned> > CaVascularNetwork<DIM>::GetNodeVesselConnect
 			unsigned vessel_index = std::distance(vessels.begin(), vessel_iter);
 			vessel_indexes.push_back(vessel_index);
 		}
-
 		connectivity.push_back(vessel_indexes);
 	}
 	return connectivity;
@@ -403,14 +458,10 @@ unsigned CaVascularNetwork<DIM>::GetVesselIndex(boost::shared_ptr<CaVessel<DIM> 
 template <unsigned DIM>
 unsigned CaVascularNetwork<DIM>::GetVesselSegmentIndex(boost::shared_ptr<CaVesselSegment<DIM> > pVesselSegment)
 {
-    if(!mSegmentsUpToDate)
-    {
-        UpdateSegments();
-    }
-
     unsigned index = 0;
+    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = GetVesselSegments();
     typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator it;
-    for(it = mSegments.begin(); it != mSegments.end(); it++)
+    for(it = segments.begin(); it != segments.end(); it++)
     {
         if(*it == pVesselSegment)
         {
@@ -525,7 +576,6 @@ bool CaVascularNetwork<DIM>::IsConnected(boost::shared_ptr<VascularNode<DIM> > p
     return (dtime[pEquivalentQueryNode->GetId()] > 0);
 }
 
-// Asks the question of whether the query nodes are connected to each of the source nodes ...
 template <unsigned DIM>
 std::vector<bool > CaVascularNetwork<DIM>::IsConnected(std::vector<boost::shared_ptr<VascularNode<DIM> > > sourceNodes,
                                                        std::vector<boost::shared_ptr<VascularNode<DIM> > > queryNodes)
@@ -612,17 +662,31 @@ template <unsigned DIM>
 bool CaVascularNetwork<DIM>::NodeIsInNetwork(boost::shared_ptr<VascularNode<DIM> > pSourceNode)
 {
     std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = GetNodes();
-
     return (std::find(nodes.begin(), nodes.end(), pSourceNode) != nodes.end());
 }
 
 template <unsigned DIM>
 void CaVascularNetwork<DIM>::MergeCoincidentNodes()
 {
-    // Loop through the nodes, if they are coincident but not identical replace
-    // one of them. Nodes in the inner iteration loop are the ones replaced.
     std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = GetNodes();
+    MergeCoincidentNodes(nodes);
+}
 
+template <unsigned DIM>
+void CaVascularNetwork<DIM>::MergeCoincidentNodes(std::vector<boost::shared_ptr<CaVessel<DIM> > > pVessels)
+{
+    std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes;
+    for(unsigned idx = 0; idx <pVessels.size(); idx++)
+    {
+        std::vector<boost::shared_ptr<VascularNode<DIM> > > vessel_nodes = pVessels[idx]->GetNodes();
+        nodes.insert(nodes.end(), vessel_nodes.begin(), vessel_nodes.end());
+    }
+    MergeCoincidentNodes(nodes);
+}
+
+template <unsigned DIM>
+void CaVascularNetwork<DIM>::MergeCoincidentNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes)
+{
     typename std::vector<boost::shared_ptr<VascularNode<DIM> > >::iterator it;
     typename std::vector<boost::shared_ptr<VascularNode<DIM> > >::iterator it2;
     typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator it3;
@@ -716,41 +780,25 @@ void CaVascularNetwork<DIM>::SetSegmentProperties(boost::shared_ptr<CaVesselSegm
 }
 
 template <unsigned DIM>
-void CaVascularNetwork<DIM>::Translate(const c_vector<double, DIM>& rTranslationVector, bool copy)
+void CaVascularNetwork<DIM>::Translate(const c_vector<double, DIM>& rTranslationVector)
 {
-    //	Get a vector of points corresponding to nodes, move the points
-    typename std::vector<boost::shared_ptr<VascularNode<DIM> > >::iterator node_iter;
-    std::vector<boost::shared_ptr<VascularNode<DIM> > >  nodes;
-    std::vector<ChastePoint<DIM> > points;
+    Translate(rTranslationVector, mVessels);
+}
 
-    if(!copy)
+template <unsigned DIM>
+void CaVascularNetwork<DIM>::Translate(const c_vector<double, DIM>& rTranslationVector, std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels)
+{
+    std::set<boost::shared_ptr<VascularNode<DIM> > > nodes;
+    for(unsigned idx = 0; idx <vessels.size(); idx++)
     {
-        nodes = GetNodes();
-    }
-    else
-    {
-        nodes = DeepCopyVessels();
+        std::vector<boost::shared_ptr<VascularNode<DIM> > > vessel_nodes = vessels[idx]->GetNodes();
+        std::copy(vessel_nodes.begin(), vessel_nodes.end(), std::inserter(nodes, nodes.begin()));
     }
 
+    typename std::set<boost::shared_ptr<VascularNode<DIM> > >::iterator node_iter;
     for(node_iter = nodes.begin(); node_iter != nodes.end(); node_iter++)
     {
-        points.push_back((*node_iter)->GetLocation());
-    }
-
-    GeometryTransform<DIM> transform;
-    std::vector<ChastePoint<DIM> > new_points = transform.Translate(points, rTranslationVector);
-
-    unsigned count = 0u;
-    for(node_iter = nodes.begin(); node_iter != nodes.end(); node_iter++)
-    {
-        (*node_iter)->SetLocation(new_points[count]);
-        count++;
-    }
-
-    // Merge coincident nodes
-    if(copy)
-    {
-        MergeCoincidentNodes();
+        (*node_iter)->SetLocation((*node_iter)->GetLocationVector() + rTranslationVector);
     }
 }
 
@@ -836,24 +884,19 @@ void CaVascularNetwork<DIM>::DivideVessel(boost::shared_ptr<CaVessel<DIM> > pVes
     RemoveVessel(pVessel);
 }
 
+#ifdef CHASTE_VTK
 template <unsigned DIM>
-void CaVascularNetwork<DIM>::Write(const std::string& filename, bool geometry_only)
+vtkSmartPointer<vtkPolyData> CaVascularNetwork<DIM>::GetVtk()
 {
-    vtkSmartPointer<vtkPolyData> pPolyData = vtkSmartPointer<vtkPolyData>::New();
-    vtkSmartPointer<vtkPoints> pPoints= vtkSmartPointer<vtkPoints>::New();
-    vtkSmartPointer<vtkCellArray> pLines = vtkSmartPointer<vtkCellArray>::New();
-
+    // Set up the vessel and node data arrays.
     std::vector<vtkSmartPointer<vtkDoubleArray> > pVesselInfoVector;
-    std::vector<vtkSmartPointer<vtkDoubleArray> > pNodeInfoVector;
-
-    // Set up vessel info arrays
     std::map<std::string, boost::any >::iterator map_iterator;
-    std::map<std::string, boost::any > data_map = mVessels[0]->rGetDataContainer().GetMap();
-    for(map_iterator = data_map.begin(); map_iterator != data_map.end(); map_iterator++)
+    std::map<std::string, boost::any > generic_data_map = mVessels[0]->rGetDataContainer().GetMap();
+    for(map_iterator = generic_data_map.begin(); map_iterator != generic_data_map.end(); map_iterator++)
     {
         vtkSmartPointer<vtkDoubleArray> pVesselInfo = vtkSmartPointer<vtkDoubleArray>::New();
-        pVesselInfo->SetNumberOfComponents(1); // all scalar data - has one entry
-        pVesselInfo->SetNumberOfTuples(mVessels.size()); // number of tuples is number of vessels
+        pVesselInfo->SetNumberOfComponents(1);
+        pVesselInfo->SetNumberOfTuples(mVessels.size());
         pVesselInfo->SetName((*map_iterator).first.c_str());
 
         // Only write information that can be cast to double
@@ -863,38 +906,20 @@ void CaVascularNetwork<DIM>::Write(const std::string& filename, bool geometry_on
             pVesselInfoVector.push_back(pVesselInfo);
         }
     }
+    std::map<std::string, double>::iterator vessel_map_iterator;
+    std::map<std::string, double> vessel_data_map = mVessels[0]->GetVtkData();
+    for(vessel_map_iterator = vessel_data_map.begin(); vessel_map_iterator != vessel_data_map.end(); vessel_map_iterator++)
+    {
+        vtkSmartPointer<vtkDoubleArray> pVesselInfo = vtkSmartPointer<vtkDoubleArray>::New();
+        pVesselInfo->SetNumberOfComponents(1);
+        pVesselInfo->SetNumberOfTuples(mVessels.size());
+        pVesselInfo->SetName((*vessel_map_iterator).first.c_str());
 
-    vtkSmartPointer<vtkDoubleArray> pRadiusInfo = vtkSmartPointer<vtkDoubleArray>::New();
-    pRadiusInfo->SetNumberOfComponents(1); // all scalar data - has one entry
-    pRadiusInfo->SetNumberOfTuples(mVessels.size()); // number of tuples is number of vessels
-    pRadiusInfo->SetName("Radius");
-    pVesselInfoVector.push_back(pRadiusInfo);
-    vtkSmartPointer<vtkDoubleArray> pFlowRateInfo = vtkSmartPointer<vtkDoubleArray>::New();
-    pFlowRateInfo->SetNumberOfComponents(1); // all scalar data - has one entry
-    pFlowRateInfo->SetNumberOfTuples(mVessels.size()); // number of tuples is number of vessels
-    pFlowRateInfo->SetName("Flow Rate");
-    pVesselInfoVector.push_back(pFlowRateInfo);
-    vtkSmartPointer<vtkDoubleArray> pAbsFlowRateInfo = vtkSmartPointer<vtkDoubleArray>::New();
-    pAbsFlowRateInfo->SetNumberOfComponents(1); // all scalar data - has one entry
-    pAbsFlowRateInfo->SetNumberOfTuples(mVessels.size()); // number of tuples is number of vessels
-    pAbsFlowRateInfo->SetName("Absolute Flow Rate");
-    pVesselInfoVector.push_back(pAbsFlowRateInfo);
-    vtkSmartPointer<vtkDoubleArray> pViscosityInfo = vtkSmartPointer<vtkDoubleArray>::New();
-    pViscosityInfo->SetNumberOfComponents(1); // all scalar data - has one entry
-    pViscosityInfo->SetNumberOfTuples(mVessels.size()); // number of tuples is number of vessels
-    pViscosityInfo->SetName("Viscosity");
-    pVesselInfoVector.push_back(pViscosityInfo);
-    vtkSmartPointer<vtkDoubleArray> pImpedanceInfo = vtkSmartPointer<vtkDoubleArray>::New();
-    pImpedanceInfo->SetNumberOfComponents(1); // all scalar data - has one entry
-    pImpedanceInfo->SetNumberOfTuples(mVessels.size()); // number of tuples is number of vessels
-    pImpedanceInfo->SetName("Impedance");
-    pVesselInfoVector.push_back(pImpedanceInfo);
-    vtkSmartPointer<vtkDoubleArray> pHaematocritInfo = vtkSmartPointer<vtkDoubleArray>::New();
-    pHaematocritInfo->SetNumberOfComponents(1); // all scalar data - has one entry
-    pHaematocritInfo->SetNumberOfTuples(mVessels.size()); // number of tuples is number of vessels
-    pHaematocritInfo->SetName("Haematocrit");
-    pVesselInfoVector.push_back(pHaematocritInfo);
+        pVesselInfoVector.push_back(pVesselInfo);
+    }
 
+    // Set up node info arrays
+    std::vector<vtkSmartPointer<vtkDoubleArray> > pNodeInfoVector;
     unsigned numberOfNodes = 0;
     typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator it2;
     for(it2 = mVessels.begin(); it2 < mVessels.end(); it2++)
@@ -902,40 +927,38 @@ void CaVascularNetwork<DIM>::Write(const std::string& filename, bool geometry_on
         numberOfNodes += (*it2)->GetNumberOfNodes();
     }
 
-    // Set up node info arrays
-    std::map<std::string, boost::any >::iterator map_iterator5;
-    std::map<std::string, boost::any > data_map2 = mVessels[0]->GetStartNode()->rGetDataContainer().GetMap();
-    for(map_iterator5 = data_map2.begin(); map_iterator5 != data_map2.end(); map_iterator5++)
+    std::map<std::string, boost::any>::iterator generic_node_map_iterator;
+    std::map<std::string, boost::any> generic_node_map = mVessels[0]->GetStartNode()->rGetDataContainer().GetMap();
+    for(generic_node_map_iterator = generic_node_map.begin(); generic_node_map_iterator != generic_node_map.end(); generic_node_map_iterator++)
     {
         vtkSmartPointer<vtkDoubleArray> pNodeInfo = vtkSmartPointer<vtkDoubleArray>::New();
-        pNodeInfo->SetNumberOfComponents(1); // all scalar data - has one entry
-        pNodeInfo->SetNumberOfTuples(numberOfNodes); // number of tuples is number of vessels
-        pNodeInfo->SetName((*map_iterator5).first.c_str());
+        pNodeInfo->SetNumberOfComponents(1);
+        pNodeInfo->SetNumberOfTuples(numberOfNodes);
+        pNodeInfo->SetName((*generic_node_map_iterator).first.c_str());
 
         // Only write information that can be cast to double
-        if (map_iterator5->second.type() == typeid(double) || map_iterator5->second.type() == typeid(unsigned) ||
-                map_iterator5->second.type() == typeid(bool))
+        if (generic_node_map_iterator->second.type() == typeid(double) || generic_node_map_iterator->second.type() == typeid(unsigned) ||
+                generic_node_map_iterator->second.type() == typeid(bool))
         {
             pNodeInfoVector.push_back(pNodeInfo);
         }
     }
 
-    vtkSmartPointer<vtkDoubleArray> pPressureInfo = vtkSmartPointer<vtkDoubleArray>::New();
-    pPressureInfo->SetNumberOfComponents(1); // all scalar data - has one entry
-    pPressureInfo->SetNumberOfTuples(numberOfNodes); // number of tuples is number of vessels
-    pPressureInfo->SetName("Pressure");
-    pNodeInfoVector.push_back(pPressureInfo);
-    vtkSmartPointer<vtkDoubleArray> pInputInfo = vtkSmartPointer<vtkDoubleArray>::New();
-    pInputInfo->SetNumberOfComponents(1); // all scalar data - has one entry
-    pInputInfo->SetNumberOfTuples(numberOfNodes); // number of tuples is number of vessels
-    pInputInfo->SetName("Is input node");
-    pNodeInfoVector.push_back(pInputInfo);
-    vtkSmartPointer<vtkDoubleArray> pOutputInfo = vtkSmartPointer<vtkDoubleArray>::New();
-    pOutputInfo->SetNumberOfComponents(1); // all scalar data - has one entry
-    pOutputInfo->SetNumberOfTuples(numberOfNodes); // number of tuples is number of vessels
-    pOutputInfo->SetName("Is output node");
-    pNodeInfoVector.push_back(pOutputInfo);
+    std::map<std::string, double>::iterator vtk_node_map_iterator;
+    std::map<std::string, double> vtk_node_map = mVessels[0]->GetStartNode()->GetVtkData();
+    for(vtk_node_map_iterator = vtk_node_map.begin(); vtk_node_map_iterator != vtk_node_map.end(); vtk_node_map_iterator++)
+    {
+        vtkSmartPointer<vtkDoubleArray> pNodeInfo = vtkSmartPointer<vtkDoubleArray>::New();
+        pNodeInfo->SetNumberOfComponents(1);
+        pNodeInfo->SetNumberOfTuples(numberOfNodes);
+        pNodeInfo->SetName((*vtk_node_map_iterator).first.c_str());
+        pNodeInfoVector.push_back(pNodeInfo);
+    }
 
+    // Create the geometric data
+    vtkSmartPointer<vtkPolyData> pPolyData = vtkSmartPointer<vtkPolyData>::New();
+    vtkSmartPointer<vtkPoints> pPoints= vtkSmartPointer<vtkPoints>::New();
+    vtkSmartPointer<vtkCellArray> pLines = vtkSmartPointer<vtkCellArray>::New();
 
     unsigned vessel_index=0;
     unsigned node_index = 0;
@@ -945,9 +968,9 @@ void CaVascularNetwork<DIM>::Write(const std::string& filename, bool geometry_on
         vtkSmartPointer<vtkLine> pLine = vtkSmartPointer<vtkLine>::New();
         std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = (*it)->GetSegments();
 
-
         for(unsigned i = 0; i < segments.size(); i++)
         {
+            // Add the point for each node
             ChastePoint<DIM> location = segments[i]->GetNode(0)->GetLocation();
             vtkIdType pointId;
             if(DIM == 2)
@@ -958,114 +981,130 @@ void CaVascularNetwork<DIM>::Write(const std::string& filename, bool geometry_on
             {
                 pointId = pPoints->InsertNextPoint(location[0], location[1], location[2]);
             }
-            std::map<std::string, boost::any >::iterator map_iterator3;
-            unsigned key_index = 0;
 
-            std::map<std::string, boost::any > data_map3 = segments[i]->GetNode(0)->rGetDataContainer().GetMap();
-            for(map_iterator3 = data_map3.begin(); map_iterator3 != data_map3.end(); map_iterator3++)
+            std::map<std::string, double> vtk_node_data = segments[i]->GetNode(0)->GetVtkData();
+            std::map<std::string, boost::any> generic_node_data = segments[i]->GetNode(0)->rGetDataContainer().GetMap();
+            // Add the node data
+            for(unsigned idx=0; idx < pNodeInfoVector.size(); idx++)
             {
-                if (map_iterator3->second.type() == typeid(double))
+                // Get the key
+                std::string key = pNodeInfoVector[idx]->GetName();
+
+                // If it is in the vtk data use it
+                if(vtk_node_data.count(key) == 1)
                 {
-                    double cast_value = boost::any_cast<double>(map_iterator3->second);
-                    pNodeInfoVector[key_index]->SetValue(node_index, cast_value );
-                    key_index++;
+                    pNodeInfoVector[idx]->SetValue(node_index, vtk_node_data[key]);
                 }
-                if (map_iterator3->second.type() == typeid(unsigned))
+                // Otherwise check the generic data
+                else if(generic_node_data.count(key) == 1)
                 {
-                    double cast_value = (double)boost::any_cast<unsigned>(map_iterator3->second);
-                    pNodeInfoVector[key_index]->SetValue(node_index, cast_value );
-                    key_index++;
-                }
-                if (map_iterator3->second.type() == typeid(bool))
-                {
-                    double cast_value = (double)boost::any_cast<bool>(map_iterator3->second);
-                    pNodeInfoVector[key_index]->SetValue(node_index, cast_value );
-                    key_index++;
+                    if(generic_node_data[key].type() == typeid(double))
+                    {
+                        double cast_value = boost::any_cast<double>(generic_node_data[key]);
+                        pNodeInfoVector[idx]->SetValue(node_index, cast_value);
+                    }
+                    else if(generic_node_data[key].type() == typeid(unsigned))
+                    {
+                        double cast_value = double(boost::any_cast<unsigned>(generic_node_data[key]));
+                        pNodeInfoVector[idx]->SetValue(node_index, cast_value);
+                    }
+                    else if(generic_node_data[key].type() == typeid(bool))
+                    {
+                        double cast_value = double(boost::any_cast<bool>(generic_node_data[key]));
+                        pNodeInfoVector[idx]->SetValue(node_index, cast_value);
+                    }
                 }
             }
-            pNodeInfoVector[key_index++]->SetValue(node_index, segments[i]->GetNode(0)->GetFlowProperties()->GetPressure());
-            pNodeInfoVector[key_index++]->SetValue(node_index, double(segments[i]->GetNode(0)->GetFlowProperties()->IsInputNode()));
-            pNodeInfoVector[key_index++]->SetValue(node_index, double(segments[i]->GetNode(0)->GetFlowProperties()->IsOutputNode()));
             node_index++;
-
             pLine->GetPointIds()->InsertId(i, pointId);
+
+            // Do an extra insert for the last node in the segment
             if (i == segments.size() - 1)
             {
+                // Add the point for each node
+                ChastePoint<DIM> location = segments[i]->GetNode(1)->GetLocation();
                 vtkIdType pointId2;
-                ChastePoint<DIM> location2 = segments[i]->GetNode(1)->GetLocation();
                 if(DIM == 2)
                 {
-                    pointId2 = pPoints->InsertNextPoint(location2[0], location2[1], 0.0);
+                    pointId2 = pPoints->InsertNextPoint(location[0], location[1], 0.0);
                 }
                 else
                 {
-                    pointId2 = pPoints->InsertNextPoint(location2[0], location2[1], location2[2]);
+                    pointId2 = pPoints->InsertNextPoint(location[0], location[1], location[2]);
                 }
-                pLine->GetPointIds()->InsertId(i + 1, pointId2);
-                std::map<std::string, boost::any >::iterator map_iterator4;
 
-                unsigned key_index = 0;
-                std::map<std::string, boost::any > data_map4 = segments[i]->GetNode(1)->rGetDataContainer().GetMap();
-                for(map_iterator4 = data_map4.begin(); map_iterator4 != data_map4.end(); map_iterator4++)
+                std::map<std::string, double> vtk_node_data = segments[i]->GetNode(1)->GetVtkData();
+                std::map<std::string, boost::any> generic_node_data = segments[i]->GetNode(1)->rGetDataContainer().GetMap();
+                // Add the node data
+                for(unsigned idx=0; idx < pNodeInfoVector.size(); idx++)
                 {
-                    if (map_iterator4->second.type() == typeid(double))
+                    // Get the key
+                    std::string key = pNodeInfoVector[idx]->GetName();
+
+                    // If it is in the vtk data use it
+                    if(vtk_node_data.count(key) == 1)
                     {
-                        double cast_value = boost::any_cast<double>(map_iterator4->second);
-                        pNodeInfoVector[key_index]->SetValue(node_index, cast_value );
-                        key_index++;
+                        pNodeInfoVector[idx]->SetValue(node_index, vtk_node_data[key]);
                     }
-                    if (map_iterator4->second.type() == typeid(unsigned))
+                    // Otherwise check the generic data
+                    else if(generic_node_data.count(key) == 1)
                     {
-                        double cast_value = (double)boost::any_cast<unsigned>(map_iterator4->second);
-                        pNodeInfoVector[key_index]->SetValue(node_index, cast_value );
-                        key_index++;
-                    }
-                    if (map_iterator4->second.type() == typeid(bool))
-                    {
-                        double cast_value = (double)boost::any_cast<bool>(map_iterator4->second);
-                        pNodeInfoVector[key_index]->SetValue(node_index, cast_value );
-                        key_index++;
+                        if(generic_node_data[key].type() == typeid(double))
+                        {
+                            double cast_value = boost::any_cast<double>(generic_node_data[key]);
+                            pNodeInfoVector[idx]->SetValue(node_index, cast_value);
+                        }
+                        else if(generic_node_data[key].type() == typeid(unsigned))
+                        {
+                            double cast_value = double(boost::any_cast<unsigned>(generic_node_data[key]));
+                            pNodeInfoVector[idx]->SetValue(node_index, cast_value);
+                        }
+                        else if(generic_node_data[key].type() == typeid(bool))
+                        {
+                            double cast_value = double(boost::any_cast<bool>(generic_node_data[key]));
+                            pNodeInfoVector[idx]->SetValue(node_index, cast_value);
+                        }
                     }
                 }
-                pNodeInfoVector[key_index++]->SetValue(node_index, segments[i]->GetNode(1)->GetFlowProperties()->GetPressure());
-                pNodeInfoVector[key_index++]->SetValue(node_index, double(segments[i]->GetNode(1)->GetFlowProperties()->IsInputNode()));
-                pNodeInfoVector[key_index++]->SetValue(node_index, double(segments[i]->GetNode(1)->GetFlowProperties()->IsOutputNode()));
                 node_index++;
+                pLine->GetPointIds()->InsertId(i + 1, pointId2);
             }
         }
         pLines->InsertNextCell(pLine);
 
-        std::map<std::string, boost::any >::iterator map_iterator2;
-        std::map<std::string, boost::any > data_map5 = (*it)->rGetDataContainer().GetMap();
-
-        unsigned key_index = 0;
-        for(map_iterator2 = data_map5.begin(); map_iterator2 != data_map5.end(); map_iterator2++)
+        // Add the vessel data
+        std::map<std::string, double> vtk_vessel_data = (*it)->GetVtkData();
+        std::map<std::string, boost::any> generic_vessel_data = (*it)->rGetDataContainer().GetMap();
+        // Add the node data
+        for(unsigned idx=0; idx < pVesselInfoVector.size(); idx++)
         {
-            if (map_iterator2->second.type() == typeid(double))
+            // Get the key
+            std::string key = pVesselInfoVector[idx]->GetName();
+            // If it is in the vtk data use it
+            if(vtk_vessel_data.count(key) == 1)
             {
-                double cast_value = boost::any_cast<double>(map_iterator2->second);
-                pVesselInfoVector[key_index]->SetValue(vessel_index, cast_value );
-                key_index++;
+                pVesselInfoVector[idx]->SetValue(vessel_index, vtk_vessel_data[key]);
             }
-            if (map_iterator2->second.type() == typeid(unsigned))
+            // Otherwise check the generic data
+            else if(generic_vessel_data.count(key) == 1)
             {
-                double cast_value = (double)boost::any_cast<unsigned>(map_iterator2->second);
-                pVesselInfoVector[key_index]->SetValue(vessel_index, cast_value );
-                key_index++;
-            }
-            if (map_iterator2->second.type() == typeid(bool))
-            {
-                double cast_value = (double)boost::any_cast<bool>(map_iterator2->second);
-                pVesselInfoVector[key_index]->SetValue(vessel_index, cast_value );
-                key_index++;
+                if(generic_vessel_data[key].type() == typeid(double))
+                {
+                    double cast_value = boost::any_cast<double>(generic_vessel_data[key]);
+                    pVesselInfoVector[idx]->SetValue(vessel_index, cast_value);
+                }
+                else if(generic_vessel_data[key].type() == typeid(unsigned))
+                {
+                    double cast_value = double(boost::any_cast<unsigned>(generic_vessel_data[key]));
+                    pVesselInfoVector[idx]->SetValue(vessel_index, cast_value);
+                }
+                else if(generic_vessel_data[key].type() == typeid(bool))
+                {
+                    double cast_value = double(boost::any_cast<bool>(generic_vessel_data[key]));
+                    pVesselInfoVector[idx]->SetValue(vessel_index, cast_value);
+                }
             }
         }
-        pVesselInfoVector[key_index++]->SetValue(vessel_index, (*it)->GetRadius());
-        pVesselInfoVector[key_index++]->SetValue(vessel_index, (*it)->GetFlowRate());
-        pVesselInfoVector[key_index++]->SetValue(vessel_index, fabs((*it)->GetFlowRate()));
-        pVesselInfoVector[key_index++]->SetValue(vessel_index, (*it)->GetViscosity());
-        pVesselInfoVector[key_index++]->SetValue(vessel_index, (*it)->GetImpedance());
-        pVesselInfoVector[key_index++]->SetValue(vessel_index, (*it)->GetHaematocrit());
         vessel_index++;
     }
     pPolyData->SetPoints(pPoints);
@@ -1080,24 +1119,26 @@ void CaVascularNetwork<DIM>::Write(const std::string& filename, bool geometry_on
     {
         pPolyData->GetPointData()->AddArray(pNodeInfoVector[i]);
     }
-
-    vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-    writer->SetFileName(filename.c_str());
-    writer->SetInput(pPolyData);
-    writer->Write();
+    return pPolyData;
 }
 
 template <unsigned DIM>
-void CaVascularNetwork<DIM>::VisualiseVesselConnectivity(std::string output_filename)
+void CaVascularNetwork<DIM>::Write(const std::string& filename)
 {
+    vtkSmartPointer<vtkPolyData> p_polydata = GetVtk();
+    vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
+    writer->SetFileName(filename.c_str());
+    writer->SetInput(p_polydata);
+    writer->Write();
+}
+#endif // CHASTE_VTK
 
+template <unsigned DIM>
+void CaVascularNetwork<DIM>::WriteConnectivity(const std::string& output_filename)
+{
     // construct graph representation of vessel network
-    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS> Graph;
-
-    Graph G;
-
+    boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS> G;
     typename std::vector<boost::shared_ptr<VascularNode<DIM> > >::iterator node_iterator;
-
     std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = GetVesselEndNodes();
 
     for (node_iterator = nodes.begin(); node_iterator != nodes.end(); node_iterator++)
@@ -1123,56 +1164,16 @@ void CaVascularNetwork<DIM>::VisualiseVesselConnectivity(std::string output_file
     }
 
     std::ofstream outf(output_filename.c_str());
-
     boost::dynamic_properties dp;
     dp.property("node_id", get(boost::vertex_index, G));
     write_graphviz_dp(outf, G, dp);
 }
 
-template <unsigned DIM>
-std::vector<boost::shared_ptr<VascularNode<DIM> > > CaVascularNetwork<DIM>::DeepCopyVessels()
-{
-    std::set<boost::shared_ptr<VascularNode<DIM> > >  nodes;
-
-    // Deep copy each of the vessels
-    // loop through the vessels, segments and nodes and recreate new instances
-    typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator vessel_iter;
-    typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator segment_iter;
-    std::vector<boost::shared_ptr<CaVessel<DIM> > > new_vessels;
-
-    for(vessel_iter = mVessels.begin(); vessel_iter != mVessels.end(); vessel_iter++)
-    {
-        std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > new_segments;
-        std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = (*vessel_iter)->GetSegments();
-
-        for(segment_iter = segments.begin(); segment_iter != segments.end(); segment_iter++)
-        {
-            ChastePoint<DIM> node0_location = (*segment_iter)->GetNode(0)->GetLocation();
-            ChastePoint<DIM> node1_location = (*segment_iter)->GetNode(1)->GetLocation();
-
-            boost::shared_ptr<VascularNode<DIM> > pNode0(VascularNode<DIM>::Create(node0_location));
-            boost::shared_ptr<VascularNode<DIM> > pNode1(VascularNode<DIM>::Create(node1_location));
-            nodes.insert(pNode0);
-            nodes.insert(pNode1);
-
-            boost::shared_ptr<CaVesselSegment<DIM> > pSegment(CaVesselSegment<DIM>::Create(pNode0, pNode1));
-            new_segments.push_back(pSegment);
-        }
-        boost::shared_ptr<CaVessel<DIM> > pVessel(CaVessel<DIM>::Create(new_segments));
-        new_vessels.push_back(pVessel);
-    }
-    AddVessels(new_vessels);
-
-    std::vector<boost::shared_ptr<VascularNode<DIM> > > vec_nodes;
-    std::copy(nodes.begin(), nodes.end(), std::back_inserter(vec_nodes));
-    return vec_nodes;
-}
 
 template<unsigned DIM>
 void CaVascularNetwork<DIM>::UpdateNodes()
 {
     mNodes = std::vector<boost::shared_ptr<VascularNode<DIM> > >();
-
     std::set<boost::shared_ptr<VascularNode<DIM> > >  nodes;
 
     typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator it;
@@ -1181,9 +1182,7 @@ void CaVascularNetwork<DIM>::UpdateNodes()
         std::vector<boost::shared_ptr<VascularNode<DIM> > > vessel_nodes = (*it)->GetNodes();
         std::copy(vessel_nodes.begin(), vessel_nodes.end(), std::inserter(nodes, nodes.begin()));
     }
-
     std::copy(nodes.begin(), nodes.end(), std::back_inserter(mNodes));
-
     mNodesUpToDate = true;
 }
 
@@ -1191,14 +1190,12 @@ template<unsigned DIM>
 void CaVascularNetwork<DIM>::UpdateSegments()
 {
     mSegments = std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >();
-
     typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator it;
     for(it = mVessels.begin(); it != mVessels.end(); it++)
     {
         std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > vessel_segments = (*it)->GetSegments();
         std::copy(vessel_segments.begin(), vessel_segments.end(), std::back_inserter(mSegments));
     }
-
     mSegmentsUpToDate = true;
 }
 
@@ -1206,7 +1203,6 @@ template<unsigned DIM>
 void CaVascularNetwork<DIM>::UpdateVesselNodes()
 {
     mVesselNodes = std::vector<boost::shared_ptr<VascularNode<DIM> > >();
-
     std::set<boost::shared_ptr<VascularNode<DIM> > >  nodes;
 
     typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator it;
@@ -1217,9 +1213,7 @@ void CaVascularNetwork<DIM>::UpdateVesselNodes()
         boost::shared_ptr<VascularNode<DIM> > vessel_node2 = (*it)->GetEndNode();
         nodes.insert(vessel_node2);
     }
-
     std::copy(nodes.begin(), nodes.end(), std::back_inserter(mVesselNodes));
-
     mVesselNodesUpToDate = true;
 }
 

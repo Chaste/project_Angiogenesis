@@ -37,17 +37,16 @@
 #define CAVESSEL_HPP_
 
 #include <vector>
-#include <iostream>
 #include <map>
 #include <boost/enable_shared_from_this.hpp>
-#include "SmartPointers.hpp"
-#include "SmartVasculaturePointers.hpp"
-#include "Exception.hpp"
 #include "ChastePoint.hpp"
 #include "VascularNode.hpp"
 #include "CaVesselSegment.hpp"
 #include "VasculatureData.hpp"
 
+/**
+ *  Struct to denote segment locations on the vessel
+ */
 struct SegmentLocation
 {
     enum Value
@@ -56,6 +55,13 @@ struct SegmentLocation
     };
 };
 
+/**
+ * This is a class for vessels.
+ * .
+ * Vessel are a collection of connected straight-line segments, i.e. a poly-line.
+ * Vessel data and properties are derived from averaging or summing over their
+ * segments as required.
+ */
 template<unsigned DIM>
 class CaVessel : public boost::enable_shared_from_this<CaVessel<DIM> >
 {
@@ -210,7 +216,7 @@ public:
      *
      *  @return mLabel
      */
-    const std::string& rGetLabel();
+    const std::string& rGetLabel() const;
 
     /**
      *  Return the length
@@ -268,6 +274,13 @@ public:
      @return shared pointer to the first node of the first segment
      */
     boost::shared_ptr<VascularNode<DIM> > GetStartNode();
+
+    /**
+     * Return a map of vessel data for use by the vtk writer
+     *
+     * @return a map of vessel data for use by the vtk writer
+     */
+    std::map<std::string, double> GetVtkData() const;
 
     /**
      *  Return true if the vessel has data corresponding to the input key.
