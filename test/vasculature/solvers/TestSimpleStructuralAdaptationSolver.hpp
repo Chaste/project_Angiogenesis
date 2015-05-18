@@ -44,10 +44,10 @@ public:
         SegmentPtr2 p_segment1(CaVesselSegment<2>::Create(p_node1, p_node2));
         SegmentPtr2 p_segment2(CaVesselSegment<2>::Create(p_node2, p_node3));
 
-        p_node1->IsInputNode(true);
-        p_node1->SetPressure(3322);
-        p_node3->IsOutputNode(true);
-        p_node3->SetPressure(1993);
+        p_node1->GetFlowProperties()->SetIsInputNode(true);
+        p_node1->GetFlowProperties()->SetPressure(3322);
+        p_node3->GetFlowProperties()->SetIsOutputNode(true);
+        p_node3->GetFlowProperties()->SetPressure(1993);
 
         VesselPtr2 p_vessel1(CaVessel<2>::Create(p_segment1));
         VesselPtr2 p_vessel2(CaVessel<2>::Create(p_segment2));
@@ -59,7 +59,7 @@ public:
         double radius = 10.0e-6;
         p_segment1->SetRadius(radius);
         double haematocrit = 0.45;
-        p_segment1->SetHaematocrit(haematocrit);
+        p_segment1->GetFlowProperties()->SetHaematocrit(haematocrit);
         p_network->SetSegmentProperties(p_segment1);
 
         SimulationTime* p_simulation_time = SimulationTime::Instance();
@@ -82,8 +82,8 @@ public:
         // Write the network to file
         p_network->Write(output_filename);
 
-        TS_ASSERT_DELTA(p_node2->GetPressure(),(3322.0 + 1993.0) / 2.0, 1e-6);
-        TS_ASSERT_DELTA(abs(p_segment1->GetFlowRate()),abs(p_segment2->GetFlowRate()),1e-6);
+        TS_ASSERT_DELTA(p_node2->GetFlowProperties()->GetPressure(),(3322.0 + 1993.0) / 2.0, 1e-6);
+        TS_ASSERT_DELTA(abs(p_segment1->GetFlowProperties()->GetFlowRate()),abs(p_segment2->GetFlowProperties()->GetFlowRate()),1e-6);
         p_simulation_time->Destroy();
     }
 
@@ -94,10 +94,10 @@ public:
 
         SegmentPtr2 p_segment1(CaVesselSegment<2>::Create(p_node1, p_node2));
 
-        p_node1->IsInputNode(true);
-        p_node1->SetPressure(3322);
-        p_node2->IsOutputNode(true);
-        p_node2->SetPressure(1993);
+        p_node1->GetFlowProperties()->SetIsInputNode(true);
+        p_node1->GetFlowProperties()->SetPressure(3322);
+        p_node2->GetFlowProperties()->SetIsOutputNode(true);
+        p_node2->GetFlowProperties()->SetPressure(1993);
 
         VesselPtr2 p_vessel1(CaVessel<2>::Create(p_segment1));
 
@@ -107,7 +107,7 @@ public:
         double radius = 10.0e-6;
         p_segment1->SetRadius(radius);
         double haematocrit = 0.45;
-        p_segment1->SetHaematocrit(haematocrit);
+        p_segment1->GetFlowProperties()->SetHaematocrit(haematocrit);
         p_network->SetSegmentProperties(p_segment1);
 
         SimulationTime* p_simulation_time = SimulationTime::Instance();
@@ -158,7 +158,7 @@ public:
         double radius = 10.0e-6;
         p_segment->SetRadius(radius);
         double haematocrit = 0.45;
-        p_segment->SetHaematocrit(haematocrit);
+        p_segment->GetFlowProperties()->SetHaematocrit(haematocrit);
         vascular_network->SetSegmentProperties(p_segment);
 
         std::vector<std::pair<double, double> > extents = vascular_network->GetExtents();
@@ -177,8 +177,8 @@ public:
                 {
                     if((*vessel_iterator)->GetStartNode()->GetLocation()[0] >  x_middle)
                     {
-                        (*vessel_iterator)->GetStartNode()->IsInputNode(true);
-                        (*vessel_iterator)->GetStartNode()->SetPressure(3320);
+                        (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetIsInputNode(true);
+                        (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetPressure(3320);
                     }
                 }
             }
@@ -188,8 +188,8 @@ public:
                 {
                     if((*vessel_iterator)->GetStartNode()->GetLocation()[0] >  x_middle)
                     {
-                        (*vessel_iterator)->GetEndNode()->IsInputNode(true);
-                        (*vessel_iterator)->GetEndNode()->SetPressure(3320);
+                        (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetIsInputNode(true);
+                        (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetPressure(3320);
                     }
                 }
             }
@@ -199,8 +199,8 @@ public:
                 {
                     if((*vessel_iterator)->GetStartNode()->GetLocation()[0] <  x_middle)
                     {
-                        (*vessel_iterator)->GetStartNode()->IsOutputNode(true);
-                        (*vessel_iterator)->GetStartNode()->SetPressure(2090);
+                        (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetIsOutputNode(true);
+                        (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetPressure(2090);
                     }
                 }
             }
@@ -210,8 +210,8 @@ public:
                 {
                     if((*vessel_iterator)->GetStartNode()->GetLocation()[0] <  x_middle)
                     {
-                        (*vessel_iterator)->GetEndNode()->IsOutputNode(true);
-                        (*vessel_iterator)->GetEndNode()->SetPressure(2090);
+                        (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetIsOutputNode(true);
+                        (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetPressure(2090);
                     }
                 }
             }

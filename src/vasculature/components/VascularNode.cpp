@@ -273,6 +273,7 @@ std::map<std::string, double> VascularNode<DIM>::GetVtkData() const
     std::map<std::string, double> flow_data = mpNodeFlowProperties->GetVtkData();
     vtk_data.insert(flow_data.begin(), flow_data.end());
     vtk_data["Id"] = double(GetId());
+    vtk_data["Radius"] = GetRadius();
     vtk_data["IsMigrating"] = double(IsMigrating());
     return vtk_data;
 }

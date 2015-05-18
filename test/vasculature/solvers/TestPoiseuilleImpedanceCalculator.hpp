@@ -83,7 +83,7 @@ public:
 		double radius = 5e-6;
 
 		p_segment->SetRadius(radius);
-		p_segment->SetViscosity(viscosity);
+		p_segment->GetFlowProperties()->SetViscosity(viscosity);
 
 		p_vascular_network->SetSegmentProperties(p_segment);
 
@@ -94,13 +94,13 @@ public:
 		double expected_impedance = 8*viscosity*5/(M_PI*SmallPow(radius,4u));
 
 		TS_ASSERT_DELTA(p_vessel->GetImpedance(),expected_impedance,1e-6);
-		TS_ASSERT_DELTA(p_segment->GetImpedance(),expected_impedance,1e-6);
+		TS_ASSERT_DELTA(p_segment->GetFlowProperties()->GetImpedance(),expected_impedance,1e-6);
 
         p_segment->SetRadius(0.0);
 		TS_ASSERT_THROWS_THIS(calculator.Calculate(p_vascular_network),"Radius should be a positive number.");
 
         p_segment->SetRadius(5e-6);
-        p_segment->SetViscosity(0.0);
+        p_segment->GetFlowProperties()->SetViscosity(0.0);
 		TS_ASSERT_THROWS_THIS(calculator.Calculate(p_vascular_network),"Viscosity should be a positive number.");
 	}
 
