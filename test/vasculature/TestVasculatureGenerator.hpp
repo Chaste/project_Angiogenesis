@@ -47,7 +47,7 @@ class TestVasculatureGenerator : public CxxTest::TestSuite
 {
 public:
 
-    void DontTestGenerateAndWriteHexagonalNetwork() throw (Exception)
+    void TestGenerateAndWriteHexagonalNetwork() throw (Exception)
     {
         // Specify the network dimensions
         double vessel_length = 5.0;
@@ -68,7 +68,7 @@ public:
         vascular_network->Write(output_filename);
     }
 
-    void DontTestGenerate3dHexagonalNetwork() throw (Exception)
+    void TestGenerate3dHexagonalNetwork() throw (Exception)
     {
         // Specify the network dimensions
         double vessel_length = 40.0;
@@ -116,7 +116,7 @@ public:
     }
 
 #ifdef CHASTE_VTK
-    void DontTestGeneratorWithVtkInput() throw(Exception)
+    void TestGeneratorWithVtkInput() throw(Exception)
     {
         // Locate the input file
         FileFinder fileFinder("projects/Angiogenesis/test/data/tapmeier_network.vtp", RelativeTo::ChasteSourceRoot);
