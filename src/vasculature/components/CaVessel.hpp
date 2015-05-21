@@ -297,7 +297,7 @@ public:
     /**
      Divide the vessel at the specified location
      */
-    void DivideSegment(ChastePoint<DIM> location);
+    boost::shared_ptr<VascularNode<DIM> > DivideSegment(ChastePoint<DIM> location);
 
     /**
      Remove segments from the ends of a vessel

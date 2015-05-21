@@ -202,7 +202,7 @@ std::vector<std::pair<double, double> > CaVascularNetwork<DIM>::GetExtents()
 }
 
 template <unsigned DIM>
-boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::GetNearestNode(ChastePoint<DIM>& rLocation)
+boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::GetNearestNode(const ChastePoint<DIM>& rLocation)
 {
     return GetNearestNode(rLocation.rGetLocation());
 }
@@ -266,6 +266,22 @@ template <unsigned DIM>
 boost::shared_ptr<CaVessel<DIM> > CaVascularNetwork<DIM>::GetNearestVessel(c_vector<double, DIM> location)
 {
     return GetNearestSegment(location).first->GetVessel();
+}
+
+template <unsigned DIM>
+unsigned CaVascularNetwork<DIM>::NumberOfNodesNearLocation(const ChastePoint<DIM>& rLocation, double radius)
+{
+    std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = GetNodes();
+    unsigned num_nodes = 0;
+
+    for(unsigned idx = 0; idx < nodes.size(); idx++)
+    {
+        if(nodes[idx]->GetDistance(rLocation) <= radius + 1.e-6)
+        {
+            num_nodes++;
+        }
+    }
+    return num_nodes;
 }
 
 template <unsigned DIM>
@@ -803,7 +819,7 @@ void CaVascularNetwork<DIM>::Translate(const c_vector<double, DIM>& rTranslation
 }
 
 template <unsigned DIM>
-void CaVascularNetwork<DIM>::DivideVessel(boost::shared_ptr<CaVessel<DIM> > pVessel, ChastePoint<DIM> location)
+boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::DivideVessel(boost::shared_ptr<CaVessel<DIM> > pVessel, ChastePoint<DIM> location)
 {
 
     // assert that location must not soley be on the end of a vessel
@@ -830,9 +846,15 @@ void CaVascularNetwork<DIM>::DivideVessel(boost::shared_ptr<CaVessel<DIM> > pVes
 
         // vessel may only ever be allowed to exist twice in the same location
         // this is also only applicable when a vessel is looping around on itself
-        assert(locatedInsideVessel == 2);
+        if(locatedInsideVessel != 2)
+        {
+            EXCEPTION("If the location of a divide coincides with the end of a vessel then there must be at least one other segment in the centre of that vessel at which the vessel can be divided. A vessel cannot be divided at its end.");
+        }
         // both vessel nodes cannot be present at the same location in this case
-        assert(!pVessel->GetStartNode()->IsCoincident(pVessel->GetEndNode()));
+        if(pVessel->GetStartNode()->IsCoincident(pVessel->GetEndNode()))
+        {
+            EXCEPTION("If the location of a divide is on the end of a vessel the two ends of a vessel cannot coincide.");
+        }
     }
     else
     {
@@ -848,12 +870,15 @@ void CaVascularNetwork<DIM>::DivideVessel(boost::shared_ptr<CaVessel<DIM> > pVes
             }
         }
 
-        assert(locatedInsideVessel);
+        if(!locatedInsideVessel)
+        {
+            EXCEPTION("The division cannot take place at the location specified since the vessel does not exist at that location.");
+        }
     }
 
     assert(pVesselSegment);
 
-    pVessel->DivideSegment(location);
+    boost::shared_ptr<VascularNode<DIM> > p_new_node = pVessel->DivideSegment(location);
 
     // create two new vessels and give them the properties of the vessel to be divided and appropriately divide the vessel segments of the divided vessel between the two new vessels
     // new vessels will share a new common vessel network node
@@ -882,6 +907,43 @@ void CaVascularNetwork<DIM>::DivideVessel(boost::shared_ptr<CaVessel<DIM> > pVes
     AddVessel(p_new_vessel1);
     AddVessel(p_new_vessel2);
     RemoveVessel(pVessel);
+
+    return p_new_node;
+}
+
+template <unsigned DIM>
+boost::shared_ptr<CaVessel<DIM> > CaVascularNetwork<DIM>::FormSprout(ChastePoint<DIM> sproutBaseLocation, ChastePoint<DIM> sproutTipLocation)
+{
+
+    // locate vessel at which the location of the sprout base exists
+
+    std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> nearest_segment = GetNearestSegment(sproutBaseLocation);
+    if (nearest_segment.second > 1e-6)
+    {
+        EXCEPTION("No vessel located at sprout base.");
+    }
+
+    // divide vessel at location of sprout base
+
+    boost::shared_ptr<VascularNode<DIM> > p_new_node = DivideVessel(nearest_segment.first->GetVessel(), sproutBaseLocation);
+
+    if(p_new_node->IsMigrating())
+    {
+        EXCEPTION("Cannot form sprout at a location which is migrating (we assume migrating nodes are occupied by a tip cell).");
+    }
+
+    // create new vessel
+
+    boost::shared_ptr<VascularNode<DIM> > p_new_node_at_tip = VascularNode<DIM>::Create(p_new_node);
+    p_new_node_at_tip->SetLocation(sproutTipLocation);
+    p_new_node_at_tip->SetIsMigrating(true);
+    boost::shared_ptr<CaVesselSegment<DIM> > p_new_segment = CaVesselSegment<DIM>::Create(p_new_node,p_new_node_at_tip);
+    p_new_segment->CopyDataFromExistingSegment(nearest_segment.first);
+    boost::shared_ptr<CaVessel<DIM> > p_new_vessel = CaVessel<DIM>::Create(p_new_segment);
+    AddVessel(p_new_vessel);
+
+    return p_new_vessel;
+
 }
 
 #ifdef CHASTE_VTK

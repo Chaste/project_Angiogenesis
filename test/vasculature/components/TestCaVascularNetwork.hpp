@@ -171,28 +171,6 @@ public:
         vessel_network.Write(output_filename);
     }
 
-    void TestDivideSingleVessel() throw(Exception)
-    {
-        // Make some nodes
-        std::vector<NodePtr3> nodes;
-        for(unsigned idx=0; idx < 2; idx++)
-        {
-            nodes.push_back(VascularNode<3>::Create(2.0 * double(idx)));
-        }
-
-        // Make a network
-        CaVascularNetwork<3> vessel_network;
-        vessel_network.AddVessel(CaVessel<3>::Create(CaVesselSegment<3>::Create(nodes[0], nodes[1])));
-
-        // Do the divide
-        vessel_network.DivideVessel(vessel_network.GetVessel(0), ChastePoint<3>(0.66, 0.0, 0.0));
-        TS_ASSERT_EQUALS(vessel_network.GetNumberOfVessels(), 2u);
-        TS_ASSERT_DELTA(vessel_network.GetVessel(0)->GetSegment(0)->GetNode(0)->GetLocation()[0], 0.0, 1.e-6);
-        TS_ASSERT_DELTA(vessel_network.GetVessel(0)->GetSegment(0)->GetNode(1)->GetLocation()[0], 0.66, 1.e-6);
-        TS_ASSERT_DELTA(vessel_network.GetVessel(1)->GetSegment(0)->GetNode(0)->GetLocation()[0], 0.66, 1.e-6);
-        TS_ASSERT_DELTA(vessel_network.GetVessel(1)->GetSegment(0)->GetNode(1)->GetLocation()[0], 2.0, 1.e-6);
-    }
-
     void TestConnnectedMethods() throw(Exception)
     {
         // Make some nodes
@@ -240,8 +218,8 @@ public:
         vessel_network.MergeCoincidentNodes();
 
         TS_ASSERT(vessel_network.NodeIsInNetwork(nodes[0]));
-        TS_ASSERT(!vessel_network.NodeIsInNetwork(nodes[1]));
-        TS_ASSERT(vessel_network.NodeIsInNetwork(nodes[2]));
+        // exclusive or (!A != !B)
+        TS_ASSERT(!vessel_network.NodeIsInNetwork(nodes[1]) != !vessel_network.NodeIsInNetwork(nodes[2]));
         TS_ASSERT(vessel_network.NodeIsInNetwork(nodes[3]));
         TS_ASSERT(vessel_network.NodeIsInNetwork(nodes[4]));
 
@@ -256,8 +234,8 @@ public:
         vessel_network.AddVessel(pVessel4);
 
         TS_ASSERT(vessel_network.NodeIsInNetwork(nodes[0]));
-        TS_ASSERT(!vessel_network.NodeIsInNetwork(nodes[1]));
-        TS_ASSERT(vessel_network.NodeIsInNetwork(nodes[2]));
+        // exclusive or (!A != !B)
+        TS_ASSERT(!vessel_network.NodeIsInNetwork(nodes[1]) != !vessel_network.NodeIsInNetwork(nodes[2]));
         TS_ASSERT(vessel_network.NodeIsInNetwork(nodes[3]));
         TS_ASSERT(vessel_network.NodeIsInNetwork(nodes[4]));
         TS_ASSERT(vessel_network.NodeIsInNetwork(node4));
@@ -273,7 +251,14 @@ public:
 
         std::vector<NodePtr3> query_nodes;
         query_nodes.push_back(nodes[0]);
-        query_nodes.push_back(nodes[2]);
+        if (vessel_network.NodeIsInNetwork(nodes[1]))
+        {
+            query_nodes.push_back(nodes[1]);
+        }
+        if (vessel_network.NodeIsInNetwork(nodes[2]))
+        {
+            query_nodes.push_back(nodes[2]);
+        }
         query_nodes.push_back(nodes[3]);
         query_nodes.push_back(nodes[4]);
 
@@ -287,6 +272,2443 @@ public:
         std::string output_filename4 = output_file_handler.GetOutputDirectoryFullPath().append("ConnectedTestVesselNetwork.gv");
         vessel_network.WriteConnectivity(output_filename4);
     }
+
+    void TestDivideSingleVessel() throw(Exception)
+    {
+         // Make some nodes
+         std::vector<NodePtr3> nodes;
+         for(unsigned idx=0; idx < 2; idx++)
+         {
+             nodes.push_back(VascularNode<3>::Create(2.0 * double(idx)));
+         }
+
+         // Make a network
+         CaVascularNetwork<3> vessel_network;
+         vessel_network.AddVessel(CaVessel<3>::Create(CaVesselSegment<3>::Create(nodes[0], nodes[1])));
+
+         TS_ASSERT_EQUALS(vessel_network.GetNumberOfVessels(), 1u);
+         TS_ASSERT_EQUALS(vessel_network.GetNumberOfNodes(), 2u);
+
+         // Do the divide
+         vessel_network.DivideVessel(vessel_network.GetVessel(0), ChastePoint<3>(0.66, 0.0, 0.0));
+         TS_ASSERT_EQUALS(vessel_network.GetNumberOfVessels(), 2u);
+         TS_ASSERT_EQUALS(vessel_network.GetNumberOfNodes(), 3u);
+         TS_ASSERT_DELTA(vessel_network.GetVessel(0)->GetSegment(0)->GetNode(0)->GetLocation()[0], 0.0, 1.e-6);
+         TS_ASSERT_DELTA(vessel_network.GetVessel(0)->GetSegment(0)->GetNode(1)->GetLocation()[0], 0.66, 1.e-6);
+         TS_ASSERT_DELTA(vessel_network.GetVessel(1)->GetSegment(0)->GetNode(0)->GetLocation()[0], 0.66, 1.e-6);
+         TS_ASSERT_DELTA(vessel_network.GetVessel(1)->GetSegment(0)->GetNode(1)->GetLocation()[0], 2.0, 1.e-6);
+    }
+
+    void TestDividingSingleVesselWithMultipleSegments() throw(Exception)
+    {
+
+        // Make some nodes
+        std::vector<ChastePoint<3> > points;
+        points.push_back(ChastePoint<3>(1.0, 0, 0));
+        points.push_back(ChastePoint<3>(2.0, 0, 0));
+        points.push_back(ChastePoint<3>(3.0, 0, 0));
+        points.push_back(ChastePoint<3>(4.0, 0, 0));
+        points.push_back(ChastePoint<3>(5.0, 0, 0));
+
+        std::vector<NodePtr3> nodes;
+        for(unsigned i=0; i < points.size(); i++)
+        {
+            nodes.push_back(NodePtr3 (VascularNode<3>::Create(points[i])));
+        }
+
+        SegmentPtr3 p_segment1(CaVesselSegment<3>::Create(nodes[0], nodes[1]));
+        SegmentPtr3 p_segment2(CaVesselSegment<3>::Create(nodes[1], nodes[2]));
+        SegmentPtr3 p_segment3(CaVesselSegment<3>::Create(nodes[2], nodes[3]));
+        SegmentPtr3 p_segment4(CaVesselSegment<3>::Create(nodes[3], nodes[4]));
+
+        std::vector<SegmentPtr3>  segments;
+        segments.push_back(p_segment1);
+        segments.push_back(p_segment2);
+        segments.push_back(p_segment3);
+        segments.push_back(p_segment4);
+
+        VesselPtr3 p_vessel(CaVessel<3>::Create(segments));
+
+        // Generate the network
+        CaVascularNetwork<3> p_vascular_network;
+
+        p_vascular_network.AddVessel(p_vessel);
+
+        TS_ASSERT_EQUALS(p_vascular_network.GetNumberOfVessels(), 1u);
+        TS_ASSERT_EQUALS(p_vascular_network.GetNumberOfNodes(), 5u);
+
+        // Do the divide
+        p_vascular_network.DivideVessel(p_vascular_network.GetVessel(0), ChastePoint<3>(3.0, 0.0, 0.0));
+
+        TS_ASSERT_EQUALS(p_vascular_network.GetNumberOfVessels(), 2u);
+        TS_ASSERT_EQUALS(p_vascular_network.GetNumberOfNodes(), 5u);
+        TS_ASSERT_DELTA(p_vascular_network.GetVessel(0)->GetSegment(0)->GetNode(0)->GetLocation()[0], 1.0, 1.e-6);
+        TS_ASSERT_DELTA(p_vascular_network.GetVessel(0)->GetSegment(0)->GetNode(1)->GetLocation()[0], 2.0, 1.e-6);
+        TS_ASSERT_DELTA(p_vascular_network.GetVessel(0)->GetSegment(1)->GetNode(0)->GetLocation()[0], 2.0, 1.e-6);
+        TS_ASSERT_DELTA(p_vascular_network.GetVessel(0)->GetSegment(1)->GetNode(1)->GetLocation()[0], 3.0, 1.e-6);
+        TS_ASSERT_DELTA(p_vascular_network.GetVessel(1)->GetSegment(0)->GetNode(0)->GetLocation()[0], 3.0, 1.e-6);
+        TS_ASSERT_DELTA(p_vascular_network.GetVessel(1)->GetSegment(0)->GetNode(1)->GetLocation()[0], 4.0, 1.e-6);
+        TS_ASSERT_DELTA(p_vascular_network.GetVessel(1)->GetSegment(1)->GetNode(0)->GetLocation()[0], 4.0, 1.e-6);
+        TS_ASSERT_DELTA(p_vascular_network.GetVessel(1)->GetSegment(1)->GetNode(1)->GetLocation()[0], 5.0, 1.e-6);
+
+        TS_ASSERT_THROWS_ANYTHING(p_vascular_network.DivideVessel(p_vascular_network.GetVessel(0), ChastePoint<3>(4.5, 0.0, 0.0)));
+
+        // Do the divide
+        p_vascular_network.DivideVessel(p_vascular_network.GetVessel(1), ChastePoint<3>(4.5, 0.0, 0.0));
+
+        TS_ASSERT_EQUALS(p_vascular_network.GetNumberOfVessels(), 3u);
+        TS_ASSERT_EQUALS(p_vascular_network.GetNumberOfNodes(), 6u);
+        TS_ASSERT_DELTA(p_vascular_network.GetVessel(0)->GetSegment(0)->GetNode(0)->GetLocation()[0], 1.0, 1.e-6);
+        TS_ASSERT_DELTA(p_vascular_network.GetVessel(0)->GetSegment(0)->GetNode(1)->GetLocation()[0], 2.0, 1.e-6);
+        TS_ASSERT_DELTA(p_vascular_network.GetVessel(0)->GetSegment(1)->GetNode(0)->GetLocation()[0], 2.0, 1.e-6);
+        TS_ASSERT_DELTA(p_vascular_network.GetVessel(0)->GetSegment(1)->GetNode(1)->GetLocation()[0], 3.0, 1.e-6);
+        TS_ASSERT_DELTA(p_vascular_network.GetVessel(1)->GetSegment(0)->GetNode(0)->GetLocation()[0], 3.0, 1.e-6);
+        TS_ASSERT_DELTA(p_vascular_network.GetVessel(1)->GetSegment(0)->GetNode(1)->GetLocation()[0], 4.0, 1.e-6);
+        TS_ASSERT_DELTA(p_vascular_network.GetVessel(1)->GetSegment(1)->GetNode(0)->GetLocation()[0], 4.0, 1.e-6);
+        TS_ASSERT_DELTA(p_vascular_network.GetVessel(1)->GetSegment(1)->GetNode(1)->GetLocation()[0], 4.5, 1.e-6);
+        TS_ASSERT_DELTA(p_vascular_network.GetVessel(2)->GetSegment(0)->GetNode(0)->GetLocation()[0], 4.5, 1.e-6);
+        TS_ASSERT_DELTA(p_vascular_network.GetVessel(2)->GetSegment(0)->GetNode(1)->GetLocation()[0], 5.0, 1.e-6);
+
+    }
+
+    /**
+     * Sprout formation tests
+     */
+
+    void TestFormSproutWhichFormsAnastomosisWithExistingNodeImmediately()
+    {
+
+        boost::shared_ptr<CaVascularNetwork<2> > p_vessel_network(new CaVascularNetwork<2>());
+        std::vector<boost::shared_ptr<VascularNode<2> > > nodes1;
+        nodes1.push_back(VascularNode<2>::Create(4,0));
+        nodes1.push_back(VascularNode<2>::Create(4,1));
+        nodes1.push_back(VascularNode<2>::Create(4,2));
+        boost::shared_ptr<CaVessel<2> > p_vessel1 = CaVessel<2>::Create(nodes1);
+
+        std::vector<boost::shared_ptr<VascularNode<2> > > nodes2;
+        nodes2.push_back(VascularNode<2>::Create(4,2));
+        nodes2.push_back(VascularNode<2>::Create(5,3));
+        nodes2.push_back(VascularNode<2>::Create(6,4));
+        nodes2.push_back(VascularNode<2>::Create(7,5));
+        nodes2.push_back(VascularNode<2>::Create(8,6));
+        boost::shared_ptr<CaVessel<2> > p_vessel2 = CaVessel<2>::Create(nodes2);
+
+        std::vector<boost::shared_ptr<VascularNode<2> > > nodes3;
+        nodes3.push_back(VascularNode<2>::Create(8,6));
+        nodes3.push_back(VascularNode<2>::Create(7,6));
+        boost::shared_ptr<CaVessel<2> > p_vessel3 = CaVessel<2>::Create(nodes3);
+
+        std::vector<boost::shared_ptr<VascularNode<2> > > nodes4;
+        nodes4.push_back(VascularNode<2>::Create(7,6));
+        nodes4.push_back(VascularNode<2>::Create(7,7));
+        nodes4.push_back(VascularNode<2>::Create(7,8));
+        nodes4.push_back(VascularNode<2>::Create(7,9));
+        boost::shared_ptr<CaVessel<2> > p_vessel4 = CaVessel<2>::Create(nodes4);
+
+        std::vector<boost::shared_ptr<VascularNode<2> > > nodes5;
+        nodes5.push_back(VascularNode<2>::Create(7,6));
+        nodes5.push_back(VascularNode<2>::Create(6,6));
+        nodes5.push_back(VascularNode<2>::Create(5,6));
+        nodes5.push_back(VascularNode<2>::Create(4,6));
+        nodes5.push_back(VascularNode<2>::Create(3,6));
+        nodes5.push_back(VascularNode<2>::Create(2,6));
+        nodes5.push_back(VascularNode<2>::Create(1,6));
+        nodes5.push_back(VascularNode<2>::Create(0,6));
+        boost::shared_ptr<CaVessel<2> > p_vessel5 = CaVessel<2>::Create(nodes5);
+
+        std::vector<boost::shared_ptr<VascularNode<2> > > nodes6;
+        nodes6.push_back(VascularNode<2>::Create(0,6));
+        nodes6.push_back(VascularNode<2>::Create(1,5));
+        nodes6.push_back(VascularNode<2>::Create(2,4));
+        nodes6.push_back(VascularNode<2>::Create(3,3));
+        nodes6.push_back(VascularNode<2>::Create(4,2));
+        boost::shared_ptr<CaVessel<2> > p_vessel6 = CaVessel<2>::Create(nodes6);
+
+        p_vessel_network->AddVessel(p_vessel1);
+        p_vessel_network->AddVessel(p_vessel2);
+        p_vessel_network->AddVessel(p_vessel3);
+        p_vessel_network->AddVessel(p_vessel4);
+        p_vessel_network->AddVessel(p_vessel5);
+        p_vessel_network->AddVessel(p_vessel6);
+
+        p_vessel_network->MergeCoincidentNodes();
+
+        // form sprout
+        ChastePoint<2> sproutBaseLocation(7,7);
+        ChastePoint<2> sproutTipLocation(8,6);
+        boost::shared_ptr<CaVessel<2> > newSprout = p_vessel_network->FormSprout(sproutBaseLocation, sproutTipLocation);
+
+        // check locations of nodes
+        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,0)) == 1);
+        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,2)) == 1);
+        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(8,6)) == 2);
+        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(7,6)) == 1);
+        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(7,7)) == 1);
+        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(7,9)) == 1);
+        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(0,6)) == 1);
+
+        // check number of vessels attached to each node
+        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,0))->GetNumberOfSegments() == 1)
+        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,2))->GetNumberOfSegments() == 3);
+        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(7,6))->GetNumberOfSegments() == 3);
+        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(7,7))->GetNumberOfSegments() == 3);
+        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(7,9))->GetNumberOfSegments() == 1)
+        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(0,6))->GetNumberOfSegments() == 2);
+
+        // check active tips
+        TS_ASSERT(newSprout->GetSegment(0)->GetNode(1)->IsMigrating());
+
+        // test number of vessels and nodes in network
+        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfNodes(),22u);
+        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfVessels(),8u);
+
+        // test that vessels are in network
+        TS_ASSERT_THROWS_NOTHING(p_vessel_network->GetVesselIndex(p_vessel1));
+        TS_ASSERT_THROWS_NOTHING(p_vessel_network->GetVesselIndex(p_vessel2));
+        TS_ASSERT_THROWS_NOTHING(p_vessel_network->GetVesselIndex(p_vessel3));
+        TS_ASSERT_THROWS_ANYTHING(p_vessel_network->GetVesselIndex(p_vessel4));
+        TS_ASSERT_THROWS_NOTHING(p_vessel_network->GetVesselIndex(p_vessel5));
+        TS_ASSERT_THROWS_NOTHING(p_vessel_network->GetVesselIndex(p_vessel6));
+        TS_ASSERT_THROWS_NOTHING(p_vessel_network->GetVesselIndex(newSprout));
+
+        // test that nodes are in network
+        TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel1->GetStartNode()));
+        TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel1->GetEndNode()));
+        TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel2->GetStartNode()));
+        TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel2->GetEndNode()));
+        TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel3->GetStartNode()));
+        TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel3->GetEndNode()));
+        TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel4->GetStartNode()));
+        TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel4->GetEndNode()));
+        TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel5->GetStartNode()));
+        TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel5->GetEndNode()));
+        TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel6->GetStartNode()));
+        TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel6->GetEndNode()));
+        TS_ASSERT(p_vessel_network->NodeIsInNetwork(newSprout->GetStartNode()));
+        TS_ASSERT(p_vessel_network->NodeIsInNetwork(newSprout->GetEndNode()));
+    }
+
+
+//    void testFormSproutOnVesselWhichIsAttachedAtBothEndsToOtherVessels()
+//    {
+//
+//        // set up spatial mesh
+//
+//        int DomainSize_X = 10;
+//        int DomainSize_Y = 10;
+//        int DomainSize_Z = 1;
+//        double dx = 20*pow(10.0,-6); // metres
+//        const int dimensionality = 2;
+//
+//        /*
+//         * Set up SimulationTime object.  This must be set up in order for structural adaptation algorithm
+//         * to run.
+//         */
+//        SimulationTime* p_simulation_time = SimulationTime::Instance();
+//        p_simulation_time->SetStartTime(0.0);
+//        p_simulation_time->SetEndTimeAndNumberOfTimeSteps(30, 1);
+//
+//        boost::shared_ptr<OnLatticeMesh<dimensionality,int> > spatialmesh(new OnLatticeMesh<dimensionality,int>(dx,DomainSize_X,DomainSize_Y,DomainSize_Z));
+//
+//        // set up test vasular network
+//
+//        boost::shared_ptr<CaVascularNetwork<2> > vesselNetwork(new CaVascularNetwork<2>(spatialmesh));
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel1(new Vessel<2,int>());
+//        vessel1->SetNode1Location(ChastePoint<2>(4,0));
+//        vessel1->SetNode2Location(ChastePoint<2>(4,2));
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,0), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,1), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,2), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel2(new Vessel<2,int>());
+//        vessel2->SetNode1Location(ChastePoint<2>(4,2));
+//        vessel2->SetNode2Location(ChastePoint<2>(8,6));
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,2), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(5,3), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(6,4), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(7,5), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(8,6), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel3(new Vessel<2,int>());
+//        vessel3->SetNode1Location(ChastePoint<2>(8,6));
+//        vessel3->SetNode2Location(ChastePoint<2>(7,6));
+//        vessel3->SetNextVesselSegmentCoordinate(ChastePoint<2>(8,6), spatialmesh->GetSpatialMeshSize());
+//        vessel3->SetNextVesselSegmentCoordinate(ChastePoint<2>(7,6), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel4(new Vessel<2,int>());
+//        vessel4->SetNode1Location(ChastePoint<2>(7,6));
+//        vessel4->SetNode2Location(ChastePoint<2>(7,9));
+//        vessel4->SetNextVesselSegmentCoordinate(ChastePoint<2>(7,6), spatialmesh->GetSpatialMeshSize());
+//        vessel4->SetNextVesselSegmentCoordinate(ChastePoint<2>(7,7), spatialmesh->GetSpatialMeshSize());
+//        vessel4->SetNextVesselSegmentCoordinate(ChastePoint<2>(7,8), spatialmesh->GetSpatialMeshSize());
+//        vessel4->SetNextVesselSegmentCoordinate(ChastePoint<2>(7,9), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel5(new Vessel<2,int>());
+//        vessel5->SetNode1Location(ChastePoint<2>(7,6));
+//        vessel5->SetNode2Location(ChastePoint<2>(0,6));
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(7,6), spatialmesh->GetSpatialMeshSize());
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(6,6), spatialmesh->GetSpatialMeshSize());
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(5,6), spatialmesh->GetSpatialMeshSize());
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,6), spatialmesh->GetSpatialMeshSize());
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(3,6), spatialmesh->GetSpatialMeshSize());
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(2,6), spatialmesh->GetSpatialMeshSize());
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(1,6), spatialmesh->GetSpatialMeshSize());
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(0,6), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel6(new Vessel<2,int>());
+//        vessel6->SetNode1Location(ChastePoint<2>(0,6));
+//        vessel6->SetNode2Location(ChastePoint<2>(4,2));
+//        vessel6->SetNextVesselSegmentCoordinate(ChastePoint<2>(0,6), spatialmesh->GetSpatialMeshSize());
+//        vessel6->SetNextVesselSegmentCoordinate(ChastePoint<2>(1,5), spatialmesh->GetSpatialMeshSize());
+//        vessel6->SetNextVesselSegmentCoordinate(ChastePoint<2>(2,4), spatialmesh->GetSpatialMeshSize());
+//        vessel6->SetNextVesselSegmentCoordinate(ChastePoint<2>(3,3), spatialmesh->GetSpatialMeshSize());
+//        vessel6->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,2), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        p_vessel_network->AddVessel(vessel1);
+//        p_vessel_network->AddVessel(vessel2);
+//        p_vessel_network->AddVessel(vessel3);
+//        p_vessel_network->AddVessel(vessel4);
+//        p_vessel_network->AddVessel(vessel5);
+//        p_vessel_network->AddVessel(vessel6);
+//
+//        vessel1->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel1->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel2->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel2->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel3->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel3->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel4->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel4->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel5->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel5->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel6->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel6->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        p_vessel_network->SetOutputNode(ChastePoint<2>(7,9));
+//        p_vessel_network->SetInputNode(ChastePoint<2>(4,0));
+//
+//        // test initial state of vascular network
+//
+//        // check locations of nodes
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,0)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,2)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(8,6)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(7,6)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(7,9)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(0,6)) == 1);
+//
+//        // check number of vessels attached to each node
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,0))->GetNumberOfSegments() == 1)
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,2))->GetNumberOfSegments() == 3);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(8,6))->GetNumberOfSegments() == 2)
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(7,6))->GetNumberOfSegments() == 3);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(7,9))->GetNumberOfSegments() == 1)
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(0,6))->GetNumberOfSegments() == 2);
+//
+//        // check active tips
+//        TS_ASSERT(vessel1->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel1->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel2->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel2->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel3->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel3->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel4->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel4->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel5->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel5->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel6->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel6->ActiveTipCellLocatedAtNode2() == false);
+//
+//        // test number of vessels and nodes in network
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfNodes(),6);
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfVessels(),6);
+//
+//        // test that vessels are in network
+//
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel1));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel2));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel3));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel4));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel5));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel6));
+//
+//        // test that nodes are in network
+//
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel3->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel3->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel4->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel4->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel5->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel5->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel6->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel6->GetEndNode()));
+//
+//        p_vessel_network->CheckForConsistency();
+//
+//        // perform structural adaptation algorithm on network
+//
+//        boost::shared_ptr<SimpleStructuralAdaptationAlgorithm<2,int> > structuralAdaptationAlgorithm(new SimpleStructuralAdaptationAlgorithm<2,int>());
+//        // override default calculations
+//        boost::shared_ptr<ConstantHaematocritCalculation<dimensionality,int> > haematocritcalculation(new ConstantHaematocritCalculation<dimensionality,int>());
+//        structuralAdaptationAlgorithm->SetHaematocritCalculation(haematocritcalculation);
+//
+//        p_vessel_network->accept(structuralAdaptationAlgorithm);
+//
+//        string testoutputdirectory = "VesselNetworkTests/";
+//        string testsubdirectory = "FormSproutOnVesselWhichIsAttachedAtBothEndsToOtherVessels/";
+//        string directory;
+//        directory.append(testoutputdirectory);
+//        directory.append(testsubdirectory);
+//
+//        OutputFileHandler output_file_handler(directory, true);
+//
+//        string initialStateFilename;
+//        initialStateFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        initialStateFilename.append("VesselNetworkDataInitial.vtk");
+//
+//        string initialDataSummaryFilename;
+//        initialDataSummaryFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        initialDataSummaryFilename.append("InitialVesselNetworkDataSummary.txt");
+//
+//        string finalStateFilename;
+//        finalStateFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        finalStateFilename.append("VesselNetworkDataFinal.vtk");
+//
+//        string finalDataSummaryFilename;
+//        finalDataSummaryFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        finalDataSummaryFilename.append("FinalVesselNetworkDataSummary.txt");
+//
+//        // print out and save some data about the vessel network before forrmation of sprout
+//
+//        p_vessel_network->SaveVasculatureDataToFile(initialStateFilename);
+//
+//        PrintVascularNetworkDataToFile(vesselNetwork, initialDataSummaryFilename);
+//
+//        // form sprout
+//
+//        ChastePoint<2> sproutBaseLocation(4,6,0);
+//        ChastePoint<2> sproutTipLocation(4,7,0);
+//
+//        boost::shared_ptr<Vessel<2,int> > newSprout(new Vessel<2,int>());
+//
+//        newSprout = p_vessel_network->FormSprout(p_vessel_network->GetVessel(ChastePoint<2>(4,6,0),0), sproutBaseLocation, sproutTipLocation);
+//
+//        // perform structural adaptation algorithm on new vessel network
+//
+//        p_vessel_network->accept(structuralAdaptationAlgorithm);
+//
+//        // print out and save some data about the vessel network after forrmation of sprout
+//
+//        p_vessel_network->SaveVasculatureDataToFile(finalStateFilename);
+//
+//        PrintVascularNetworkDataToFile(vesselNetwork, finalDataSummaryFilename);
+//
+//        // test final state of vascular network
+//
+//        // check locations of nodes
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,0)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,2)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(8,6)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(7,6)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,7)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,6)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(7,9)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(0,6)) == 1);
+//
+//        // check number of vessels attached to each node
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,0))->GetNumberOfSegments() == 1)
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,2))->GetNumberOfSegments() == 3);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(8,6))->GetNumberOfSegments() == 2)
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(7,6))->GetNumberOfSegments() == 3);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,7))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,6))->GetNumberOfSegments() == 3);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(7,9))->GetNumberOfSegments() == 1)
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(0,6))->GetNumberOfSegments() == 2);
+//
+//        // check active tips
+//        for (int i = 0; i < p_vessel_network->GetNumberOfVessels(); i++)
+//        {
+//            if (newSprout == p_vessel_network->GetVessel(i))
+//            {
+//                TS_ASSERT(p_vessel_network->GetVessel(i)->ActiveTipCellLocatedAtNode1() == false);
+//                TS_ASSERT(p_vessel_network->GetVessel(i)->ActiveTipCellLocatedAtNode2() == true);
+//            }
+//            else
+//            {
+//                TS_ASSERT(p_vessel_network->GetVessel(i)->ActiveTipCellLocatedAtNode1() == false);
+//                TS_ASSERT(p_vessel_network->GetVessel(i)->ActiveTipCellLocatedAtNode2() == false);
+//            }
+//        }
+//
+//        // test number of vessels and nodes in network
+//
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfNodes(),8);
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfVessels(),8);
+//
+//        // test that vessels are in network
+//
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel1));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel2));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel3));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel4));
+//        TS_ASSERT(!p_vessel_network->VesselIsInNetwork(vessel5));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel6));
+//
+//        // test that nodes are in network
+//
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel3->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel3->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel4->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel4->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel5->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel5->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel6->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel6->GetEndNode()));
+//
+//        // check for consistency between node and vessel circular references
+//
+//        for (int i = 0; i < p_vessel_network->GetNumberOfVessels(); i++)
+//        {
+//            TS_ASSERT(p_vessel_network->GetVessel(i)->GetStartNode()->IsAttachedToVessel(p_vessel_network->GetVessel(i)));
+//            TS_ASSERT(p_vessel_network->GetVessel(i)->GetEndNode()->IsAttachedToVessel(p_vessel_network->GetVessel(i)));
+//            TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel_network->GetVessel(i)->GetStartNode()));
+//            TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel_network->GetVessel(i)->GetEndNode()));
+//        }
+//
+//        for (int i = 0; i < p_vessel_network->GetNumberOfNodes(); i++)
+//        {
+//            for (int j = 0; j < p_vessel_network->GetNode(i)->GetNumberOfSegments(); j++)
+//            {
+//                TS_ASSERT(p_vessel_network->GetNode(i)->GetAdjoiningVessel(j)->IsAttachedToNode(p_vessel_network->GetNode(i)));
+//                TS_ASSERT(p_vessel_network->VesselIsInNetwork(p_vessel_network->GetNode(i)->GetAdjoiningVessel(j)));
+//            }
+//        }
+//
+//        p_vessel_network->CheckForConsistency();
+//
+//        SimulationTime::Destroy();
+//    }
+//
+//    void testFormSproutOnVesselWhichIsAttachedAtOneEndToOtherVessels()
+//    {
+//
+//        // set up spatial mesh
+//
+//        int DomainSize_X = 10;
+//        int DomainSize_Y = 10;
+//        int DomainSize_Z = 1;
+//        double dx = 20*pow(10.0,-6); // metres
+//        const int dimensionality = 2;
+//
+//        /*
+//         * Set up SimulationTime object.  This must be set up in order for structural adaptation algorithm
+//         * to run.
+//         */
+//        SimulationTime* p_simulation_time = SimulationTime::Instance();
+//        p_simulation_time->SetStartTime(0.0);
+//        p_simulation_time->SetEndTimeAndNumberOfTimeSteps(30, 1);
+//
+//        boost::shared_ptr<OnLatticeMesh<dimensionality,int> > spatialmesh(new OnLatticeMesh<dimensionality,int>(dx,DomainSize_X,DomainSize_Y,DomainSize_Z));
+//
+//        // set up test vasular network
+//
+//        boost::shared_ptr<CaVascularNetwork<2> > vesselNetwork(new CaVascularNetwork<2>(spatialmesh));
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel1(new Vessel<2,int>());
+//        vessel1->SetNode1Location(ChastePoint<2>(4,0));
+//        vessel1->SetNode2Location(ChastePoint<2>(4,2));
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,0), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,1), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,2), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel2(new Vessel<2,int>());
+//        vessel2->SetNode1Location(ChastePoint<2>(4,2));
+//        vessel2->SetNode2Location(ChastePoint<2>(8,6));
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,2), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(5,3), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(6,4), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(7,5), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(8,6), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel3(new Vessel<2,int>());
+//        vessel3->SetNode1Location(ChastePoint<2>(8,6));
+//        vessel3->SetNode2Location(ChastePoint<2>(7,6));
+//        vessel3->SetNextVesselSegmentCoordinate(ChastePoint<2>(8,6), spatialmesh->GetSpatialMeshSize());
+//        vessel3->SetNextVesselSegmentCoordinate(ChastePoint<2>(7,6), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel4(new Vessel<2,int>());
+//        vessel4->SetNode1Location(ChastePoint<2>(7,6));
+//        vessel4->SetNode2Location(ChastePoint<2>(7,9));
+//        vessel4->SetNextVesselSegmentCoordinate(ChastePoint<2>(7,6), spatialmesh->GetSpatialMeshSize());
+//        vessel4->SetNextVesselSegmentCoordinate(ChastePoint<2>(7,7), spatialmesh->GetSpatialMeshSize());
+//        vessel4->SetNextVesselSegmentCoordinate(ChastePoint<2>(7,8), spatialmesh->GetSpatialMeshSize());
+//        vessel4->SetNextVesselSegmentCoordinate(ChastePoint<2>(7,9), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel5(new Vessel<2,int>());
+//        vessel5->SetNode1Location(ChastePoint<2>(7,6));
+//        vessel5->SetNode2Location(ChastePoint<2>(0,6));
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(7,6), spatialmesh->GetSpatialMeshSize());
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(6,6), spatialmesh->GetSpatialMeshSize());
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(5,6), spatialmesh->GetSpatialMeshSize());
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,6), spatialmesh->GetSpatialMeshSize());
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(3,6), spatialmesh->GetSpatialMeshSize());
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(2,6), spatialmesh->GetSpatialMeshSize());
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(1,6), spatialmesh->GetSpatialMeshSize());
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(0,6), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel6(new Vessel<2,int>());
+//        vessel6->SetNode1Location(ChastePoint<2>(0,6));
+//        vessel6->SetNode2Location(ChastePoint<2>(4,2));
+//        vessel6->SetNextVesselSegmentCoordinate(ChastePoint<2>(0,6), spatialmesh->GetSpatialMeshSize());
+//        vessel6->SetNextVesselSegmentCoordinate(ChastePoint<2>(1,5), spatialmesh->GetSpatialMeshSize());
+//        vessel6->SetNextVesselSegmentCoordinate(ChastePoint<2>(2,4), spatialmesh->GetSpatialMeshSize());
+//        vessel6->SetNextVesselSegmentCoordinate(ChastePoint<2>(3,3), spatialmesh->GetSpatialMeshSize());
+//        vessel6->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,2), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        p_vessel_network->AddVessel(vessel1);
+//        p_vessel_network->AddVessel(vessel2);
+//        p_vessel_network->AddVessel(vessel3);
+//        p_vessel_network->AddVessel(vessel4);
+//        p_vessel_network->AddVessel(vessel5);
+//        p_vessel_network->AddVessel(vessel6);
+//
+//        vessel1->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel1->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel2->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel2->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel3->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel3->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel4->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel4->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel5->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel5->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel6->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel6->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        p_vessel_network->SetOutputNode(ChastePoint<2>(7,9));
+//        p_vessel_network->SetInputNode(ChastePoint<2>(4,0));
+//
+//        // test initial state of vascular network
+//
+//        // check locations of nodes
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,0)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,2)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(8,6)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(7,6)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(7,9)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(0,6)) == 1);
+//
+//        // check number of vessels attached to each node
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,0))->GetNumberOfSegments() == 1)
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,2))->GetNumberOfSegments() == 3);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(8,6))->GetNumberOfSegments() == 2)
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(7,6))->GetNumberOfSegments() == 3);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(7,9))->GetNumberOfSegments() == 1)
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(0,6))->GetNumberOfSegments() == 2);
+//
+//        // check active tips
+//        TS_ASSERT(vessel1->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel1->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel2->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel2->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel3->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel3->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel4->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel4->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel5->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel5->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel6->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel6->ActiveTipCellLocatedAtNode2() == false);
+//
+//        // test number of vessels and nodes in network
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfNodes(),6);
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfVessels(),6);
+//
+//        // test that vessels are in network
+//
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel1));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel2));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel3));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel4));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel5));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel6));
+//
+//        // test that nodes are in network
+//
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel3->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel3->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel4->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel4->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel5->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel5->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel6->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel6->GetEndNode()));
+//
+//        p_vessel_network->CheckForConsistency();
+//
+//        // perform structural adaptation algorithm on network
+//
+//        boost::shared_ptr<SimpleStructuralAdaptationAlgorithm<2,int> > structuralAdaptationAlgorithm(new SimpleStructuralAdaptationAlgorithm<2,int>());
+//        // override default calculations
+//        boost::shared_ptr<ConstantHaematocritCalculation<dimensionality,int> > haematocritcalculation(new ConstantHaematocritCalculation<dimensionality,int>());
+//        structuralAdaptationAlgorithm->SetHaematocritCalculation(haematocritcalculation);
+//
+//        p_vessel_network->accept(structuralAdaptationAlgorithm);
+//
+//        string testoutputdirectory = "VesselNetworkTests/";
+//        string testsubdirectory = "FormSproutOnVesselWhichIsAttachedAtOneEndToOtherVessels/";
+//        string directory;
+//        directory.append(testoutputdirectory);
+//        directory.append(testsubdirectory);
+//
+//        OutputFileHandler output_file_handler(directory, true);
+//
+//        string initialStateFilename;
+//        initialStateFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        initialStateFilename.append("VesselNetworkDataInitial.vtk");
+//
+//        string initialDataSummaryFilename;
+//        initialDataSummaryFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        initialDataSummaryFilename.append("InitialVesselNetworkDataSummary.txt");
+//
+//        string finalStateFilename;
+//        finalStateFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        finalStateFilename.append("VesselNetworkDataFinal.vtk");
+//
+//        string finalDataSummaryFilename;
+//        finalDataSummaryFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        finalDataSummaryFilename.append("FinalVesselNetworkDataSummary.txt");
+//
+//        // print out and save some data about the vessel network before forrmation of sprout
+//
+//        p_vessel_network->SaveVasculatureDataToFile(initialStateFilename);
+//
+//        PrintVascularNetworkDataToFile(vesselNetwork, initialDataSummaryFilename);
+//
+//        // form sprout
+//
+//        ChastePoint<2> sproutBaseLocation(7,7,0);
+//        ChastePoint<2> sproutTipLocation(8,7,0);
+//
+//        boost::shared_ptr<Vessel<2,int> > newSprout(new Vessel<2,int>());
+//
+//        newSprout = p_vessel_network->FormSprout(p_vessel_network->GetVessel(ChastePoint<2>(7,7,0),0), sproutBaseLocation, sproutTipLocation);
+//
+//        // perform structural adaptation algorithm on new vessel network
+//
+//        p_vessel_network->accept(structuralAdaptationAlgorithm);
+//
+//        // print out and save some data about the vessel network after forrmation of sprout
+//
+//        p_vessel_network->SaveVasculatureDataToFile(finalStateFilename);
+//
+//        PrintVascularNetworkDataToFile(vesselNetwork, finalDataSummaryFilename);
+//
+//        // test final state of vascular network
+//
+//        // check locations of nodes
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,0)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,2)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(8,6)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(7,6)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(7,7)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(8,7)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(7,9)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(0,6)) == 1);
+//
+//        // check number of vessels attached to each node
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,0))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,2))->GetNumberOfSegments() == 3);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(8,6))->GetNumberOfSegments() == 2);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(7,6))->GetNumberOfSegments() == 3);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(7,7))->GetNumberOfSegments() == 3);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(8,7))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(7,9))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(0,6))->GetNumberOfSegments() == 2);
+//
+//        // check active tips
+//        for (int i = 0; i < p_vessel_network->GetNumberOfVessels(); i++)
+//        {
+//            if (newSprout == p_vessel_network->GetVessel(i))
+//            {
+//                TS_ASSERT(p_vessel_network->GetVessel(i)->ActiveTipCellLocatedAtNode1() == false);
+//                TS_ASSERT(p_vessel_network->GetVessel(i)->ActiveTipCellLocatedAtNode2() == true);
+//            }
+//            else
+//            {
+//                TS_ASSERT(p_vessel_network->GetVessel(i)->ActiveTipCellLocatedAtNode1() == false);
+//                TS_ASSERT(p_vessel_network->GetVessel(i)->ActiveTipCellLocatedAtNode2() == false);
+//            }
+//        }
+//
+//        // test number of vessels and nodes in network
+//
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfNodes(),8);
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfVessels(),8);
+//
+//        // test that vessels are in network
+//
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel1));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel2));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel3));
+//        TS_ASSERT(!p_vessel_network->VesselIsInNetwork(vessel4));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel5));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel6));
+//
+//        // test that nodes are in network
+//
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel3->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel3->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel4->GetStartNode()));
+//        TS_ASSERT(!p_vessel_network->NodeIsInNetwork(vessel4->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel5->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel5->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel6->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel6->GetEndNode()));
+//
+//        // check for consistency between node and vessel circular references
+//
+//        for (int i = 0; i < p_vessel_network->GetNumberOfVessels(); i++)
+//        {
+//            TS_ASSERT(p_vessel_network->GetVessel(i)->GetStartNode()->IsAttachedToVessel(p_vessel_network->GetVessel(i)));
+//            TS_ASSERT(p_vessel_network->GetVessel(i)->GetEndNode()->IsAttachedToVessel(p_vessel_network->GetVessel(i)));
+//            TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel_network->GetVessel(i)->GetStartNode()));
+//            TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel_network->GetVessel(i)->GetEndNode()));
+//        }
+//
+//        for (int i = 0; i < p_vessel_network->GetNumberOfNodes(); i++)
+//        {
+//            for (int j = 0; j < p_vessel_network->GetNode(i)->GetNumberOfSegments(); j++)
+//            {
+//                TS_ASSERT(p_vessel_network->GetNode(i)->GetAdjoiningVessel(j)->IsAttachedToNode(p_vessel_network->GetNode(i)));
+//                TS_ASSERT(p_vessel_network->VesselIsInNetwork(p_vessel_network->GetNode(i)->GetAdjoiningVessel(j)));
+//            }
+//        }
+//
+//        p_vessel_network->CheckForConsistency();
+//
+//        SimulationTime::Destroy();
+//
+//    }
+//
+//    void testFormSproutOnVesselWhichFormsASelfLoop()
+//    {
+//
+//        // set up spatial mesh
+//
+//        int DomainSize_X = 10;
+//        int DomainSize_Y = 10;
+//        int DomainSize_Z = 1;
+//        double dx = 20*pow(10.0,-6); // metres
+//        const int dimensionality = 2;
+//
+//        /*
+//         * Set up SimulationTime object.  This must be set up in order for structural adaptation algorithm
+//         * to run.
+//         */
+//        SimulationTime* p_simulation_time = SimulationTime::Instance();
+//        p_simulation_time->SetStartTime(0.0);
+//        p_simulation_time->SetEndTimeAndNumberOfTimeSteps(30, 1);
+//
+//        boost::shared_ptr<OnLatticeMesh<dimensionality,int> > spatialmesh(new OnLatticeMesh<dimensionality,int>(dx,DomainSize_X,DomainSize_Y,DomainSize_Z));
+//
+//        // set up test vasular network
+//
+//        boost::shared_ptr<CaVascularNetwork<2> > vesselNetwork(new CaVascularNetwork<2>(spatialmesh));
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel1(new Vessel<2,int>());
+//        vessel1->SetNode1Location(ChastePoint<2>(1,0));
+//        vessel1->SetNode2Location(ChastePoint<2>(1,4));
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(1,0), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(1,1), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(1,2), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(1,3), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(1,4), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel2(new Vessel<2,int>());
+//        vessel2->SetNode1Location(ChastePoint<2>(1,4));
+//        vessel2->SetNode2Location(ChastePoint<2>(1,7));
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(1,4), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(1,5), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(1,6), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(1,7), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel3(new Vessel<2,int>());
+//        vessel3->SetNode1Location(ChastePoint<2>(1,7));
+//        vessel3->SetNode2Location(ChastePoint<2>(1,9));
+//        vessel3->SetNextVesselSegmentCoordinate(ChastePoint<2>(1,7), spatialmesh->GetSpatialMeshSize());
+//        vessel3->SetNextVesselSegmentCoordinate(ChastePoint<2>(1,8), spatialmesh->GetSpatialMeshSize());
+//        vessel3->SetNextVesselSegmentCoordinate(ChastePoint<2>(1,9), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel4(new Vessel<2,int>());
+//        vessel4->SetNode1Location(ChastePoint<2>(1,4));
+//        vessel4->SetNode2Location(ChastePoint<2>(3,4));
+//        vessel4->SetNextVesselSegmentCoordinate(ChastePoint<2>(1,4), spatialmesh->GetSpatialMeshSize());
+//        vessel4->SetNextVesselSegmentCoordinate(ChastePoint<2>(2,4), spatialmesh->GetSpatialMeshSize());
+//        vessel4->SetNextVesselSegmentCoordinate(ChastePoint<2>(3,4), spatialmesh->GetSpatialMeshSize());
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel5(new Vessel<2,int>());
+//        vessel5->SetNode1Location(ChastePoint<2>(3,4));
+//        vessel5->SetNode2Location(ChastePoint<2>(1,7));
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(3,4), spatialmesh->GetSpatialMeshSize());
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(3,5), spatialmesh->GetSpatialMeshSize());
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(3,6), spatialmesh->GetSpatialMeshSize());
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(3,7), spatialmesh->GetSpatialMeshSize());
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(2,7), spatialmesh->GetSpatialMeshSize());
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(1,7), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel6(new Vessel<2,int>());
+//        vessel6->SetNode1Location(ChastePoint<2>(3,4));
+//        vessel6->SetNode2Location(ChastePoint<2>(6,4));
+//        vessel6->SetNextVesselSegmentCoordinate(ChastePoint<2>(3,4), spatialmesh->GetSpatialMeshSize());
+//        vessel6->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,4), spatialmesh->GetSpatialMeshSize());
+//        vessel6->SetNextVesselSegmentCoordinate(ChastePoint<2>(5,4), spatialmesh->GetSpatialMeshSize());
+//        vessel6->SetNextVesselSegmentCoordinate(ChastePoint<2>(6,4), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel7(new Vessel<2,int>());
+//        vessel7->SetNode1Location(ChastePoint<2>(6,4));
+//        vessel7->SetNode2Location(ChastePoint<2>(6,4));
+//        vessel7->SetNextVesselSegmentCoordinate(ChastePoint<2>(6,4), spatialmesh->GetSpatialMeshSize());
+//        vessel7->SetNextVesselSegmentCoordinate(ChastePoint<2>(6,5), spatialmesh->GetSpatialMeshSize());
+//        vessel7->SetNextVesselSegmentCoordinate(ChastePoint<2>(6,6), spatialmesh->GetSpatialMeshSize());
+//        vessel7->SetNextVesselSegmentCoordinate(ChastePoint<2>(6,7), spatialmesh->GetSpatialMeshSize());
+//        vessel7->SetNextVesselSegmentCoordinate(ChastePoint<2>(7,7), spatialmesh->GetSpatialMeshSize());
+//        vessel7->SetNextVesselSegmentCoordinate(ChastePoint<2>(8,7), spatialmesh->GetSpatialMeshSize());
+//        vessel7->SetNextVesselSegmentCoordinate(ChastePoint<2>(8,6), spatialmesh->GetSpatialMeshSize());
+//        vessel7->SetNextVesselSegmentCoordinate(ChastePoint<2>(8,5), spatialmesh->GetSpatialMeshSize());
+//        vessel7->SetNextVesselSegmentCoordinate(ChastePoint<2>(8,4), spatialmesh->GetSpatialMeshSize());
+//        vessel7->SetNextVesselSegmentCoordinate(ChastePoint<2>(7,4), spatialmesh->GetSpatialMeshSize());
+//        vessel7->SetNextVesselSegmentCoordinate(ChastePoint<2>(6,4), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        p_vessel_network->AddVessel(vessel1);
+//        p_vessel_network->AddVessel(vessel2);
+//        p_vessel_network->AddVessel(vessel3);
+//        p_vessel_network->AddVessel(vessel4);
+//        p_vessel_network->AddVessel(vessel5);
+//        p_vessel_network->AddVessel(vessel6);
+//        p_vessel_network->AddVessel(vessel7);
+//
+//        vessel1->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel1->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel2->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel2->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel3->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel3->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel4->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel4->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel5->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel5->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel6->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel6->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel7->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel7->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        p_vessel_network->SetOutputNode(ChastePoint<2>(1,0));
+//        p_vessel_network->SetInputNode(ChastePoint<2>(1,9));
+//
+//
+//        // test initial state of vascular network
+//
+//        // check locations of nodes
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(1,0)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(1,4)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(1,7)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(1,9)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(3,4)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(6,4)) == 1);
+//
+//        // check number of vessels attached to each node
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(1,0))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(1,4))->GetNumberOfSegments() == 3);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(1,7))->GetNumberOfSegments() == 3);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(1,9))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(3,4))->GetNumberOfSegments() == 3);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(6,4))->GetNumberOfSegments() == 3); // two of these are the same
+//
+//        // check active tips
+//        TS_ASSERT(vessel1->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel1->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel2->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel2->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel3->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel3->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel4->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel4->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel5->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel5->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel6->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel6->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel7->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel7->ActiveTipCellLocatedAtNode2() == false);
+//
+//        // test number of vessels and nodes in network
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfNodes(),6);
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfVessels(),7);
+//
+//        // test that vessels are in network
+//
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel1));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel2));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel3));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel4));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel5));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel6));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel7));
+//
+//        // test that nodes are in network
+//
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel3->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel3->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel4->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel4->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel5->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel5->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel6->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel6->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel7->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel7->GetEndNode()));
+//
+//        p_vessel_network->CheckForConsistency();
+//
+//        // perform structural adaptation algorithm on network
+//
+//        boost::shared_ptr<SimpleStructuralAdaptationAlgorithm<2,int> > structuralAdaptationAlgorithm(new SimpleStructuralAdaptationAlgorithm<2,int>());
+//        // override default calculations
+//        boost::shared_ptr<ConstantHaematocritCalculation<dimensionality,int> > haematocritcalculation(new ConstantHaematocritCalculation<dimensionality,int>());
+//        structuralAdaptationAlgorithm->SetHaematocritCalculation(haematocritcalculation);
+//
+//        p_vessel_network->accept(structuralAdaptationAlgorithm);
+//
+//        string testoutputdirectory = "VesselNetworkTests/";
+//        string testsubdirectory = "FormSproutOnVesselWhichFormsASelfLoop/";
+//        string directory;
+//        directory.append(testoutputdirectory);
+//        directory.append(testsubdirectory);
+//
+//        OutputFileHandler output_file_handler(directory, true);
+//
+//        string initialStateFilename;
+//        initialStateFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        initialStateFilename.append("VesselNetworkDataInitial.vtk");
+//
+//        string initialDataSummaryFilename;
+//        initialDataSummaryFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        initialDataSummaryFilename.append("InitialVesselNetworkDataSummary.txt");
+//
+//        string finalStateFilename;
+//        finalStateFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        finalStateFilename.append("VesselNetworkDataFinal.vtk");
+//
+//        string finalDataSummaryFilename;
+//        finalDataSummaryFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        finalDataSummaryFilename.append("FinalVesselNetworkDataSummary.txt");
+//
+//        // print out and save some data about the vessel network before forrmation of sprout
+//
+//        p_vessel_network->SaveVasculatureDataToFile(initialStateFilename);
+//
+//        PrintVascularNetworkDataToFile(vesselNetwork, initialDataSummaryFilename);
+//
+//        // form sprout
+//
+//        ChastePoint<2> sproutBaseLocation(8,7,0);
+//        ChastePoint<2> sproutTipLocation(9,8,0);
+//
+//        boost::shared_ptr<Vessel<2,int> > newSprout(new Vessel<2,int>());
+//
+//        newSprout = p_vessel_network->FormSprout(p_vessel_network->GetVessel(ChastePoint<2>(8,7,0),0), sproutBaseLocation, sproutTipLocation);
+//
+//        // perform structural adaptation algorithm on new vessel network
+//
+//        p_vessel_network->accept(structuralAdaptationAlgorithm);
+//
+//        // print out and save some data about the vessel network after forrmation of sprout
+//
+//        p_vessel_network->SaveVasculatureDataToFile(finalStateFilename);
+//
+//        PrintVascularNetworkDataToFile(vesselNetwork, finalDataSummaryFilename);
+//
+//        // test final state of vascular network
+//
+//        // check locations of nodes
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(1,0)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(1,4)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(1,7)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(1,9)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(3,4)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(6,4)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(8,7)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(9,8)) == 1);
+//
+//        // check number of vessels attached to each node
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(1,0))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(1,4))->GetNumberOfSegments() == 3);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(1,7))->GetNumberOfSegments() == 3);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(1,9))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(3,4))->GetNumberOfSegments() == 3);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(6,4))->GetNumberOfSegments() == 3);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(8,7))->GetNumberOfSegments() == 3);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(9,8))->GetNumberOfSegments() == 1);
+//
+//        // check active tips
+//        for (int i = 0; i < p_vessel_network->GetNumberOfVessels(); i++)
+//        {
+//            if (newSprout == p_vessel_network->GetVessel(i))
+//            {
+//                TS_ASSERT(p_vessel_network->GetVessel(i)->ActiveTipCellLocatedAtNode1() == false);
+//                TS_ASSERT(p_vessel_network->GetVessel(i)->ActiveTipCellLocatedAtNode2() == true);
+//            }
+//            else
+//            {
+//                TS_ASSERT(p_vessel_network->GetVessel(i)->ActiveTipCellLocatedAtNode1() == false);
+//                TS_ASSERT(p_vessel_network->GetVessel(i)->ActiveTipCellLocatedAtNode2() == false);
+//            }
+//        }
+//
+//        // test number of vessels and nodes in network
+//
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfNodes(),8);
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfVessels(),9);
+//
+//        // test that vessels are in network
+//
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel1));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel2));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel3));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel4));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel5));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel6));
+//        TS_ASSERT(!p_vessel_network->VesselIsInNetwork(vessel7));
+//
+//        // test that nodes are in network
+//
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel3->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel3->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel4->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel4->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel5->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel5->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel6->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel6->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel7->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel7->GetEndNode()));
+//
+//        // check for consistency between node and vessel circular references
+//
+//        for (int i = 0; i < p_vessel_network->GetNumberOfVessels(); i++)
+//        {
+//            TS_ASSERT(p_vessel_network->GetVessel(i)->GetStartNode()->IsAttachedToVessel(p_vessel_network->GetVessel(i)));
+//            TS_ASSERT(p_vessel_network->GetVessel(i)->GetEndNode()->IsAttachedToVessel(p_vessel_network->GetVessel(i)));
+//            TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel_network->GetVessel(i)->GetStartNode()));
+//            TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel_network->GetVessel(i)->GetEndNode()));
+//        }
+//
+//        for (int i = 0; i < p_vessel_network->GetNumberOfNodes(); i++)
+//        {
+//            for (int j = 0; j < p_vessel_network->GetNode(i)->GetNumberOfSegments(); j++)
+//            {
+//                TS_ASSERT(p_vessel_network->GetNode(i)->GetAdjoiningVessel(j)->IsAttachedToNode(p_vessel_network->GetNode(i)));
+//                TS_ASSERT(p_vessel_network->VesselIsInNetwork(p_vessel_network->GetNode(i)->GetAdjoiningVessel(j)));
+//            }
+//        }
+//
+//        p_vessel_network->CheckForConsistency();
+//
+//        SimulationTime::Destroy();
+//
+//    }
+//
+//    void testFormSproutOnNodeWhereTwoVesselsIntersect()
+//    {
+//
+//        // set up spatial mesh
+//
+//        int DomainSize_X = 10;
+//        int DomainSize_Y = 10;
+//        int DomainSize_Z = 1;
+//        double dx = 20*pow(10.0,-6); // metres
+//        const int dimensionality = 2;
+//
+//        /*
+//         * Set up SimulationTime object.  This must be set up in order for structural adaptation algorithm
+//         * to run.
+//         */
+//        SimulationTime* p_simulation_time = SimulationTime::Instance();
+//        p_simulation_time->SetStartTime(0.0);
+//        p_simulation_time->SetEndTimeAndNumberOfTimeSteps(30, 1);
+//
+//        boost::shared_ptr<OnLatticeMesh<dimensionality,int> > spatialmesh(new OnLatticeMesh<dimensionality,int>(dx,DomainSize_X,DomainSize_Y,DomainSize_Z));
+//        spatialmesh->SetVolumeFractionOccupiedByVessel(0.3);
+//        // set up test vasular network
+//
+//        boost::shared_ptr<CaVascularNetwork<2> > vesselNetwork(new CaVascularNetwork<2>(spatialmesh));
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel1(new Vessel<2,int>());
+//        vessel1->SetNode1Location(ChastePoint<2>(4,0));
+//        vessel1->SetNode2Location(ChastePoint<2>(4,5));
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,0), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,1), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,2), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,3), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,4), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,5), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel2(new Vessel<2,int>());
+//        vessel2->SetNode1Location(ChastePoint<2>(4,5));
+//        vessel2->SetNode2Location(ChastePoint<2>(4,9));
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,5), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,6), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,7), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,8), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,9), spatialmesh->GetSpatialMeshSize());
+//
+//
+//
+//
+//        p_vessel_network->AddVessel(vessel1);
+//        p_vessel_network->AddVessel(vessel2);
+//
+//
+//        vessel1->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel1->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel2->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel2->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//
+//        p_vessel_network->SetOutputNode(ChastePoint<2>(4,9));
+//        p_vessel_network->SetInputNode(ChastePoint<2>(4,0));
+//
+//        // test initial state of vascular network
+//
+//        // check locations of nodes
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,0)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,5)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,9)) == 1);
+//
+//
+//        // check number of vessels attached to each node
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,0))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,5))->GetNumberOfSegments() == 2);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,9))->GetNumberOfSegments() == 1);
+//
+//
+//        // check active tips
+//        TS_ASSERT(vessel1->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel1->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel2->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel2->ActiveTipCellLocatedAtNode2() == false);
+//
+//
+//        // test number of vessels and nodes in network
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfNodes(),3);
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfVessels(),2);
+//
+//        // test that vessels are in network
+//
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel1));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel2));
+//
+//
+//        // test that nodes are in network
+//
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetEndNode()));
+//
+//
+//        p_vessel_network->CheckForConsistency();
+//
+//        // perform structural adaptation algorithm on network
+//
+//        boost::shared_ptr<SimpleStructuralAdaptationAlgorithm<2,int> > structuralAdaptationAlgorithm(new SimpleStructuralAdaptationAlgorithm<2,int>());
+//        // override default calculations
+//        boost::shared_ptr<ConstantHaematocritCalculation<dimensionality,int> > haematocritcalculation(new ConstantHaematocritCalculation<dimensionality,int>());
+//        structuralAdaptationAlgorithm->SetHaematocritCalculation(haematocritcalculation);
+//
+//        p_vessel_network->accept(structuralAdaptationAlgorithm);
+//
+//        string testoutputdirectory = "VesselNetworkTests/";
+//        string testsubdirectory = "FormSproutOnNodeWhereTwoVesselsIntersect/";
+//        string directory;
+//        directory.append(testoutputdirectory);
+//        directory.append(testsubdirectory);
+//
+//        OutputFileHandler output_file_handler(directory, true);
+//
+//        string initialStateFilename;
+//        initialStateFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        initialStateFilename.append("VesselNetworkDataInitial.vtk");
+//
+//        string initialDataSummaryFilename;
+//        initialDataSummaryFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        initialDataSummaryFilename.append("InitialVesselNetworkDataSummary.txt");
+//
+//        string finalStateFilename;
+//        finalStateFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        finalStateFilename.append("VesselNetworkDataFinal.vtk");
+//
+//        string finalDataSummaryFilename;
+//        finalDataSummaryFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        finalDataSummaryFilename.append("FinalVesselNetworkDataSummary.txt");
+//
+//        // print out and save some data about the vessel network before forrmation of sprout
+//
+//        p_vessel_network->SaveVasculatureDataToFile(initialStateFilename);
+//
+//        PrintVascularNetworkDataToFile(vesselNetwork, initialDataSummaryFilename);
+//
+//        // form sprout
+//
+//        ChastePoint<2> sproutBaseLocation(4,5,0);
+//        ChastePoint<2> sproutTipLocation(5,5,0);
+//
+//        boost::shared_ptr<Vessel<2,int> > newSprout(new Vessel<2,int>());
+//
+//        newSprout = p_vessel_network->FormSprout(p_vessel_network->GetVessel(ChastePoint<2>(4,5,0),0), sproutBaseLocation, sproutTipLocation);
+//
+//        // perform structural adaptation algorithm on new vessel network
+//
+//        p_vessel_network->accept(structuralAdaptationAlgorithm);
+//
+//        // print out and save some data about the vessel network after forrmation of sprout
+//
+//        p_vessel_network->SaveVasculatureDataToFile(finalStateFilename);
+//
+//        PrintVascularNetworkDataToFile(vesselNetwork, finalDataSummaryFilename);
+//
+//        // test final state of vascular network
+//
+//        // check locations of nodes
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,0)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,5)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(5,5)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,9)) == 1);
+//
+//
+//        // check number of vessels attached to each node
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,0))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,5))->GetNumberOfSegments() == 3);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(5,5))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,9))->GetNumberOfSegments() == 1);
+//
+//        // check active tips
+//        for (int i = 0; i < p_vessel_network->GetNumberOfVessels(); i++)
+//        {
+//            if (newSprout == p_vessel_network->GetVessel(i))
+//            {
+//                TS_ASSERT(p_vessel_network->GetVessel(i)->ActiveTipCellLocatedAtNode1() == false);
+//                TS_ASSERT(p_vessel_network->GetVessel(i)->ActiveTipCellLocatedAtNode2() == true);
+//            }
+//            else
+//            {
+//                TS_ASSERT(p_vessel_network->GetVessel(i)->ActiveTipCellLocatedAtNode1() == false);
+//                TS_ASSERT(p_vessel_network->GetVessel(i)->ActiveTipCellLocatedAtNode2() == false);
+//            }
+//        }
+//
+//        // test number of vessels and nodes in network
+//
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfNodes(),4);
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfVessels(),3);
+//
+//        // test that vessels are in network
+//
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel1));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel2));
+//
+//
+//        // test that nodes are in network
+//
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetEndNode()));
+//
+//
+//        // check for consistency between node and vessel circular references
+//
+//        for (int i = 0; i < p_vessel_network->GetNumberOfVessels(); i++)
+//        {
+//            TS_ASSERT(p_vessel_network->GetVessel(i)->GetStartNode()->IsAttachedToVessel(p_vessel_network->GetVessel(i)));
+//            TS_ASSERT(p_vessel_network->GetVessel(i)->GetEndNode()->IsAttachedToVessel(p_vessel_network->GetVessel(i)));
+//            TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel_network->GetVessel(i)->GetStartNode()));
+//            TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel_network->GetVessel(i)->GetEndNode()));
+//        }
+//
+//        for (int i = 0; i < p_vessel_network->GetNumberOfNodes(); i++)
+//        {
+//            for (int j = 0; j < p_vessel_network->GetNode(i)->GetNumberOfSegments(); j++)
+//            {
+//                TS_ASSERT(p_vessel_network->GetNode(i)->GetAdjoiningVessel(j)->IsAttachedToNode(p_vessel_network->GetNode(i)));
+//                TS_ASSERT(p_vessel_network->VesselIsInNetwork(p_vessel_network->GetNode(i)->GetAdjoiningVessel(j)));
+//            }
+//        }
+//
+//        p_vessel_network->CheckForConsistency();
+//
+//        SimulationTime::Destroy();
+//
+//    }
+//
+//    void testFormSproutOnTipCell()
+//    {
+//
+//        // set up spatial mesh
+//
+//        int DomainSize_X = 10;
+//        int DomainSize_Y = 10;
+//        int DomainSize_Z = 1;
+//        double dx = 20*pow(10.0,-6); // metres
+//        const int dimensionality = 2;
+//
+//        /*
+//         * Set up SimulationTime object.  This must be set up in order for structural adaptation algorithm
+//         * to run.
+//         */
+//        SimulationTime* p_simulation_time = SimulationTime::Instance();
+//        p_simulation_time->SetStartTime(0.0);
+//        p_simulation_time->SetEndTimeAndNumberOfTimeSteps(30, 1);
+//
+//        boost::shared_ptr<OnLatticeMesh<dimensionality,int> > spatialmesh(new OnLatticeMesh<dimensionality,int>(dx,DomainSize_X,DomainSize_Y,DomainSize_Z));
+//        spatialmesh->SetVolumeFractionOccupiedByVessel(0.3);
+//        // set up test vasular network
+//
+//        boost::shared_ptr<CaVascularNetwork<2> > vesselNetwork(new CaVascularNetwork<2>(spatialmesh));
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel1(new Vessel<2,int>());
+//        vessel1->SetNode1Location(ChastePoint<2>(4,0));
+//        vessel1->SetNode2Location(ChastePoint<2>(4,5));
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,0), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,1), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,2), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,3), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,4), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,5), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel2(new Vessel<2,int>());
+//        vessel2->SetNode1Location(ChastePoint<2>(4,5));
+//        vessel2->SetNode2Location(ChastePoint<2>(4,9));
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,5), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,6), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,7), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,8), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,9), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        p_vessel_network->AddVessel(vessel1);
+//        p_vessel_network->AddVessel(vessel2);
+//
+//
+//        vessel1->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel1->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel2->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel2->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//
+//        p_vessel_network->SetOutputNode(ChastePoint<2>(4,9));
+//        p_vessel_network->SetInputNode(ChastePoint<2>(4,0));
+//
+//        // test initial state of vascular network
+//
+//        // check locations of nodes
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,0)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,5)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,9)) == 1);
+//
+//
+//        // check number of vessels attached to each node
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,0))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,5))->GetNumberOfSegments() == 2);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,9))->GetNumberOfSegments() == 1);
+//
+//
+//        // check active tips
+//        TS_ASSERT(vessel1->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel1->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel2->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel2->ActiveTipCellLocatedAtNode2() == false);
+//
+//
+//        // test number of vessels and nodes in network
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfNodes(),3);
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfVessels(),2);
+//
+//        // test that vessels are in network
+//
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel1));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel2));
+//
+//
+//        // test that nodes are in network
+//
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetEndNode()));
+//
+//
+//        p_vessel_network->CheckForConsistency();
+//
+//        // perform structural adaptation algorithm on network
+//
+//        boost::shared_ptr<SimpleStructuralAdaptationAlgorithm<2,int> > structuralAdaptationAlgorithm(new SimpleStructuralAdaptationAlgorithm<2,int>());
+//        // override default calculations
+//        boost::shared_ptr<ConstantHaematocritCalculation<dimensionality,int> > haematocritcalculation(new ConstantHaematocritCalculation<dimensionality,int>());
+//        structuralAdaptationAlgorithm->SetHaematocritCalculation(haematocritcalculation);
+//
+//        p_vessel_network->accept(structuralAdaptationAlgorithm);
+//
+//        // form sprout
+//
+//        ChastePoint<2> sproutBaseLocation(4,5,0);
+//        ChastePoint<2> sproutTipLocation(5,5,0);
+//
+//        boost::shared_ptr<Vessel<2,int> > newSprout(new Vessel<2,int>());
+//
+//        newSprout = p_vessel_network->FormSprout(p_vessel_network->GetVessel(ChastePoint<2>(4,5,0),0), sproutBaseLocation, sproutTipLocation);
+//
+//        string testoutputdirectory = "VesselNetworkTests/";
+//        string testsubdirectory = "FormSproutOnTipCell/";
+//        string directory;
+//        directory.append(testoutputdirectory);
+//        directory.append(testsubdirectory);
+//
+//        OutputFileHandler output_file_handler(directory, true);
+//
+//        string initialStateFilename;
+//        initialStateFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        initialStateFilename.append("VesselNetworkDataInitial.vtk");
+//
+//        string initialDataSummaryFilename;
+//        initialDataSummaryFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        initialDataSummaryFilename.append("InitialVesselNetworkDataSummary.txt");
+//        // print out and save some data about the vessel network before forrmation of sprout
+//
+//        p_vessel_network->SaveVasculatureDataToFile(initialStateFilename);
+//
+//        PrintVascularNetworkDataToFile(vesselNetwork, initialDataSummaryFilename);
+//
+//
+//        // perform structural adaptation algorithm on new vessel network
+//
+//        p_vessel_network->accept(structuralAdaptationAlgorithm);
+//
+//        p_vessel_network->CheckForConsistency();
+//
+//        ChastePoint<2> sproutBaseLocation2(5,5,0);
+//        ChastePoint<2> sproutTipLocation2(5,6,0);
+//
+//        boost::shared_ptr<Vessel<2,int> > newSprout2(new Vessel<2,int>());
+//
+//        TS_ASSERT_THROWS(p_vessel_network->FormSprout(newSprout, sproutBaseLocation2, sproutTipLocation2),Exception);
+//
+//
+//        SimulationTime::Destroy();
+//
+//    }
+//
+//    void testFormSproutOnOutputNode()
+//    {
+//
+//        // set up spatial mesh
+//
+//        int DomainSize_X = 10;
+//        int DomainSize_Y = 10;
+//        int DomainSize_Z = 1;
+//        double dx = 20*pow(10.0,-6); // metres
+//        const int dimensionality = 2;
+//
+//        /*
+//         * Set up SimulationTime object.  This must be set up in order for structural adaptation algorithm
+//         * to run.
+//         */
+//        SimulationTime* p_simulation_time = SimulationTime::Instance();
+//        p_simulation_time->SetStartTime(0.0);
+//        p_simulation_time->SetEndTimeAndNumberOfTimeSteps(30, 1);
+//
+//        boost::shared_ptr<OnLatticeMesh<dimensionality,int> > spatialmesh(new OnLatticeMesh<dimensionality,int>(dx,DomainSize_X,DomainSize_Y,DomainSize_Z));
+//        spatialmesh->SetVolumeFractionOccupiedByVessel(0.3);
+//        // set up test vasular network
+//
+//        boost::shared_ptr<CaVascularNetwork<2> > vesselNetwork(new CaVascularNetwork<2>(spatialmesh));
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel1(new Vessel<2,int>());
+//        vessel1->SetNode1Location(ChastePoint<2>(4,0));
+//        vessel1->SetNode2Location(ChastePoint<2>(4,5));
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,0), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,1), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,2), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,3), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,4), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,5), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel2(new Vessel<2,int>());
+//        vessel2->SetNode1Location(ChastePoint<2>(4,5));
+//        vessel2->SetNode2Location(ChastePoint<2>(4,9));
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,5), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,6), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,7), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,8), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,9), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        p_vessel_network->AddVessel(vessel1);
+//        p_vessel_network->AddVessel(vessel2);
+//
+//
+//        vessel1->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel1->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel2->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel2->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//
+//        p_vessel_network->SetOutputNode(ChastePoint<2>(4,9));
+//        p_vessel_network->SetInputNode(ChastePoint<2>(4,0));
+//
+//        // test initial state of vascular network
+//
+//        // check locations of nodes
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,0)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,5)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,9)) == 1);
+//
+//
+//        // check number of vessels attached to each node
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,0))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,5))->GetNumberOfSegments() == 2);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,9))->GetNumberOfSegments() == 1);
+//
+//
+//        // check active tips
+//        TS_ASSERT(vessel1->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel1->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel2->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel2->ActiveTipCellLocatedAtNode2() == false);
+//
+//
+//        // test number of vessels and nodes in network
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfNodes(),3);
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfVessels(),2);
+//
+//        // test that vessels are in network
+//
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel1));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel2));
+//
+//
+//        // test that nodes are in network
+//
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetEndNode()));
+//
+//
+//        p_vessel_network->CheckForConsistency();
+//
+//        // perform structural adaptation algorithm on network
+//
+//        boost::shared_ptr<SimpleStructuralAdaptationAlgorithm<2,int> > structuralAdaptationAlgorithm(new SimpleStructuralAdaptationAlgorithm<2,int>());
+//        // override default calculations
+//        boost::shared_ptr<ConstantHaematocritCalculation<dimensionality,int> > haematocritcalculation(new ConstantHaematocritCalculation<dimensionality,int>());
+//        structuralAdaptationAlgorithm->SetHaematocritCalculation(haematocritcalculation);
+//
+//        p_vessel_network->accept(structuralAdaptationAlgorithm);
+//
+//        // form sprout
+//
+//        ChastePoint<2> sproutBaseLocation(4,9,0);
+//        ChastePoint<2> sproutTipLocation(5,9,0);
+//
+//        TS_ASSERT_THROWS(p_vessel_network->FormSprout(p_vessel_network->GetVessel(sproutBaseLocation,0), sproutBaseLocation, sproutTipLocation),Exception);
+//
+//
+//        SimulationTime::Destroy();
+//
+//    }
+//
+//    void testFormSproutOnInputNode()
+//    {
+//
+//        // set up spatial mesh
+//
+//        int DomainSize_X = 10;
+//        int DomainSize_Y = 10;
+//        int DomainSize_Z = 1;
+//        double dx = 20*pow(10.0,-6); // metres
+//        const int dimensionality = 2;
+//
+//        /*
+//         * Set up SimulationTime object.  This must be set up in order for structural adaptation algorithm
+//         * to run.
+//         */
+//        SimulationTime* p_simulation_time = SimulationTime::Instance();
+//        p_simulation_time->SetStartTime(0.0);
+//        p_simulation_time->SetEndTimeAndNumberOfTimeSteps(30, 1);
+//
+//        boost::shared_ptr<OnLatticeMesh<dimensionality,int> > spatialmesh(new OnLatticeMesh<dimensionality,int>(dx,DomainSize_X,DomainSize_Y,DomainSize_Z));
+//        spatialmesh->SetVolumeFractionOccupiedByVessel(0.3);
+//        // set up test vasular network
+//
+//        boost::shared_ptr<CaVascularNetwork<2> > vesselNetwork(new CaVascularNetwork<2>(spatialmesh));
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel1(new Vessel<2,int>());
+//        vessel1->SetNode1Location(ChastePoint<2>(4,0));
+//        vessel1->SetNode2Location(ChastePoint<2>(4,5));
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,0), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,1), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,2), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,3), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,4), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,5), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel2(new Vessel<2,int>());
+//        vessel2->SetNode1Location(ChastePoint<2>(4,5));
+//        vessel2->SetNode2Location(ChastePoint<2>(4,9));
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,5), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,6), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,7), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,8), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,9), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        p_vessel_network->AddVessel(vessel1);
+//        p_vessel_network->AddVessel(vessel2);
+//
+//
+//        vessel1->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel1->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel2->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel2->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//
+//        p_vessel_network->SetOutputNode(ChastePoint<2>(4,9));
+//        p_vessel_network->SetInputNode(ChastePoint<2>(4,0));
+//
+//        // test initial state of vascular network
+//
+//        // check locations of nodes
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,0)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,5)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,9)) == 1);
+//
+//
+//        // check number of vessels attached to each node
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,0))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,5))->GetNumberOfSegments() == 2);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,9))->GetNumberOfSegments() == 1);
+//
+//
+//        // check active tips
+//        TS_ASSERT(vessel1->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel1->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel2->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel2->ActiveTipCellLocatedAtNode2() == false);
+//
+//
+//        // test number of vessels and nodes in network
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfNodes(),3);
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfVessels(),2);
+//
+//        // test that vessels are in network
+//
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel1));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel2));
+//
+//
+//        // test that nodes are in network
+//
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetEndNode()));
+//
+//
+//        p_vessel_network->CheckForConsistency();
+//
+//        // perform structural adaptation algorithm on network
+//
+//        boost::shared_ptr<SimpleStructuralAdaptationAlgorithm<2,int> > structuralAdaptationAlgorithm(new SimpleStructuralAdaptationAlgorithm<2,int>());
+//        // override default calculations
+//        boost::shared_ptr<ConstantHaematocritCalculation<dimensionality,int> > haematocritcalculation(new ConstantHaematocritCalculation<dimensionality,int>());
+//        structuralAdaptationAlgorithm->SetHaematocritCalculation(haematocritcalculation);
+//
+//        p_vessel_network->accept(structuralAdaptationAlgorithm);
+//
+//        // form sprout
+//
+//        ChastePoint<2> sproutBaseLocation(4,0,0);
+//        ChastePoint<2> sproutTipLocation(5,0,0);
+//
+//        TS_ASSERT_THROWS(p_vessel_network->FormSprout(p_vessel_network->GetVessel(sproutBaseLocation,0), sproutBaseLocation, sproutTipLocation),Exception);
+//
+//
+//        SimulationTime::Destroy();
+//
+//    }
+//
+//    void testFormSproutOnNodeWhereThreeVesselsIntersect()
+//    {
+//
+//        // set up spatial mesh
+//
+//        int DomainSize_X = 10;
+//        int DomainSize_Y = 10;
+//        int DomainSize_Z = 1;
+//        double dx = 20*pow(10.0,-6); // metres
+//        const int dimensionality = 2;
+//
+//        /*
+//         * Set up SimulationTime object.  This must be set up in order for structural adaptation algorithm
+//         * to run.
+//         */
+//        SimulationTime* p_simulation_time = SimulationTime::Instance();
+//        p_simulation_time->SetStartTime(0.0);
+//        p_simulation_time->SetEndTimeAndNumberOfTimeSteps(30, 1);
+//
+//        boost::shared_ptr<OnLatticeMesh<dimensionality,int> > spatialmesh(new OnLatticeMesh<dimensionality,int>(dx,DomainSize_X,DomainSize_Y,DomainSize_Z));
+//        spatialmesh->SetVolumeFractionOccupiedByVessel(0.25);
+//        // set up test vasular network
+//
+//        boost::shared_ptr<CaVascularNetwork<2> > vesselNetwork(new CaVascularNetwork<2>(spatialmesh));
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel1(new Vessel<2,int>());
+//        vessel1->SetNode1Location(ChastePoint<2>(4,0));
+//        vessel1->SetNode2Location(ChastePoint<2>(4,5));
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,0), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,1), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,2), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,3), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,4), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,5), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel2(new Vessel<2,int>());
+//        vessel2->SetNode1Location(ChastePoint<2>(4,5));
+//        vessel2->SetNode2Location(ChastePoint<2>(4,9));
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,5), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,6), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,7), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,8), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,9), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel3(new Vessel<2,int>());
+//        vessel3->SetNode1Location(ChastePoint<2>(4,5));
+//        vessel3->SetNode2Location(ChastePoint<2>(0,5));
+//        vessel3->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,5), spatialmesh->GetSpatialMeshSize());
+//        vessel3->SetNextVesselSegmentCoordinate(ChastePoint<2>(3,5), spatialmesh->GetSpatialMeshSize());
+//        vessel3->SetNextVesselSegmentCoordinate(ChastePoint<2>(2,5), spatialmesh->GetSpatialMeshSize());
+//        vessel3->SetNextVesselSegmentCoordinate(ChastePoint<2>(1,5), spatialmesh->GetSpatialMeshSize());
+//        vessel3->SetNextVesselSegmentCoordinate(ChastePoint<2>(0,5), spatialmesh->GetSpatialMeshSize());
+//
+//        p_vessel_network->AddVessel(vessel1);
+//        p_vessel_network->AddVessel(vessel2);
+//        p_vessel_network->AddVessel(vessel3);
+//
+//
+//        vessel1->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel1->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel2->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel2->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel3->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel3->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        p_vessel_network->SetOutputNode(ChastePoint<2>(4,9));
+//        p_vessel_network->SetInputNode(ChastePoint<2>(4,0));
+//        p_vessel_network->SetInputNode(ChastePoint<2>(0,5));
+//
+//        // test initial state of vascular network
+//
+//        // check locations of nodes
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,0)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,5)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,9)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(0,5)) == 1);
+//
+//        // check number of vessels attached to each node
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,0))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,5))->GetNumberOfSegments() == 3);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,9))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(0,5))->GetNumberOfSegments() == 1);
+//
+//
+//        // check active tips
+//        TS_ASSERT(vessel1->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel1->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel2->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel2->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel3->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel3->ActiveTipCellLocatedAtNode2() == false);
+//
+//
+//        // test number of vessels and nodes in network
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfNodes(),4);
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfVessels(),3);
+//
+//        // test that vessels are in network
+//
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel1));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel2));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel3));
+//
+//        // test that nodes are in network
+//
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel3->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel3->GetEndNode()));
+//
+//
+//        p_vessel_network->CheckForConsistency();
+//
+//        // perform structural adaptation algorithm on network
+//
+//        boost::shared_ptr<SimpleStructuralAdaptationAlgorithm<2,int> > structuralAdaptationAlgorithm(new SimpleStructuralAdaptationAlgorithm<2,int>());
+//        // override default calculations
+//        boost::shared_ptr<ConstantHaematocritCalculation<dimensionality,int> > haematocritcalculation(new ConstantHaematocritCalculation<dimensionality,int>());
+//        structuralAdaptationAlgorithm->SetHaematocritCalculation(haematocritcalculation);
+//
+//        p_vessel_network->accept(structuralAdaptationAlgorithm);
+//
+//        string testoutputdirectory = "VesselNetworkTests/";
+//        string testsubdirectory = "FormSproutOnNodeWhereThreeVesselsIntersect/";
+//        string directory;
+//        directory.append(testoutputdirectory);
+//        directory.append(testsubdirectory);
+//
+//        OutputFileHandler output_file_handler(directory, true);
+//
+//        string initialStateFilename;
+//        initialStateFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        initialStateFilename.append("VesselNetworkDataInitial.vtk");
+//
+//        string initialDataSummaryFilename;
+//        initialDataSummaryFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        initialDataSummaryFilename.append("InitialVesselNetworkDataSummary.txt");
+//
+//        string finalStateFilename;
+//        finalStateFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        finalStateFilename.append("VesselNetworkDataFinal.vtk");
+//
+//        string finalDataSummaryFilename;
+//        finalDataSummaryFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        finalDataSummaryFilename.append("FinalVesselNetworkDataSummary.txt");
+//
+//        // print out and save some data about the vessel network before forrmation of sprout
+//
+//        p_vessel_network->SaveVasculatureDataToFile(initialStateFilename);
+//
+//        PrintVascularNetworkDataToFile(vesselNetwork, initialDataSummaryFilename);
+//
+//        // form sprout
+//
+//        ChastePoint<2> sproutBaseLocation(4,5,0);
+//        ChastePoint<2> sproutTipLocation(5,5,0);
+//
+//        boost::shared_ptr<Vessel<2,int> > newSprout(new Vessel<2,int>());
+//
+//        newSprout = p_vessel_network->FormSprout(p_vessel_network->GetVessel(ChastePoint<2>(4,5,0),0), sproutBaseLocation, sproutTipLocation);
+//
+//        // perform structural adaptation algorithm on new vessel network
+//
+//        p_vessel_network->accept(structuralAdaptationAlgorithm);
+//
+//        // print out and save some data about the vessel network after formation of sprout
+//
+//        p_vessel_network->SaveVasculatureDataToFile(finalStateFilename);
+//
+//        PrintVascularNetworkDataToFile(vesselNetwork, finalDataSummaryFilename);
+//
+//        // test final state of vascular network
+//
+//        // check locations of nodes
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,0)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,5)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(5,5)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,9)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(0,5)) == 1);
+//
+//        // check number of vessels attached to each node
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,0))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,5))->GetNumberOfSegments() == 4);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(5,5))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,9))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(0,5))->GetNumberOfSegments() == 1);
+//
+//
+//        // check active tips
+//        for (int i = 0; i < p_vessel_network->GetNumberOfVessels(); i++)
+//        {
+//            if (newSprout == p_vessel_network->GetVessel(i))
+//            {
+//                TS_ASSERT(p_vessel_network->GetVessel(i)->ActiveTipCellLocatedAtNode1() == false);
+//                TS_ASSERT(p_vessel_network->GetVessel(i)->ActiveTipCellLocatedAtNode2() == true);
+//            }
+//            else
+//            {
+//                TS_ASSERT(p_vessel_network->GetVessel(i)->ActiveTipCellLocatedAtNode1() == false);
+//                TS_ASSERT(p_vessel_network->GetVessel(i)->ActiveTipCellLocatedAtNode2() == false);
+//            }
+//        }
+//
+//        // test number of vessels and nodes in network
+//
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfNodes(),5);
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfVessels(),4);
+//
+//        // test that vessels are in network
+//
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel1));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel2));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel3));
+//
+//        // test that nodes are in network
+//
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel3->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel3->GetEndNode()));
+//
+//        // check for consistency between node and vessel circular references
+//
+//        for (int i = 0; i < p_vessel_network->GetNumberOfVessels(); i++)
+//        {
+//            TS_ASSERT(p_vessel_network->GetVessel(i)->GetStartNode()->IsAttachedToVessel(p_vessel_network->GetVessel(i)));
+//            TS_ASSERT(p_vessel_network->GetVessel(i)->GetEndNode()->IsAttachedToVessel(p_vessel_network->GetVessel(i)));
+//            TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel_network->GetVessel(i)->GetStartNode()));
+//            TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel_network->GetVessel(i)->GetEndNode()));
+//        }
+//
+//        for (int i = 0; i < p_vessel_network->GetNumberOfNodes(); i++)
+//        {
+//            for (int j = 0; j < p_vessel_network->GetNode(i)->GetNumberOfSegments(); j++)
+//            {
+//                TS_ASSERT(p_vessel_network->GetNode(i)->GetAdjoiningVessel(j)->IsAttachedToNode(p_vessel_network->GetNode(i)));
+//                TS_ASSERT(p_vessel_network->VesselIsInNetwork(p_vessel_network->GetNode(i)->GetAdjoiningVessel(j)));
+//            }
+//        }
+//
+//        p_vessel_network->CheckForConsistency();
+//
+//        SimulationTime::Destroy();
+//
+//
+//    }
+//
+//    void testFormSproutOnNodeWhereThreeVesselsIntersect2()
+//    {
+//
+//        // set up spatial mesh
+//
+//        int DomainSize_X = 10;
+//        int DomainSize_Y = 10;
+//        int DomainSize_Z = 1;
+//        double dx = 20*pow(10.0,-6); // metres
+//        const int dimensionality = 2;
+//
+//        /*
+//         * Set up SimulationTime object.  This must be set up in order for structural adaptation algorithm
+//         * to run.
+//         */
+//        SimulationTime* p_simulation_time = SimulationTime::Instance();
+//        p_simulation_time->SetStartTime(0.0);
+//        p_simulation_time->SetEndTimeAndNumberOfTimeSteps(30, 1);
+//
+//        boost::shared_ptr<OnLatticeMesh<dimensionality,int> > spatialmesh(new OnLatticeMesh<dimensionality,int>(dx,DomainSize_X,DomainSize_Y,DomainSize_Z));
+//        spatialmesh->SetVolumeFractionOccupiedByVessel(0.25);
+//        // set up test vasular network
+//
+//        boost::shared_ptr<CaVascularNetwork<2> > vesselNetwork(new CaVascularNetwork<2>(spatialmesh));
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel1(new Vessel<2,int>());
+//        vessel1->SetNode1Location(ChastePoint<2>(4,0));
+//        vessel1->SetNode2Location(ChastePoint<2>(4,5));
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,0), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,1), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,2), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,3), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,4), spatialmesh->GetSpatialMeshSize());
+//        vessel1->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,5), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel2(new Vessel<2,int>());
+//        vessel2->SetNode1Location(ChastePoint<2>(4,5));
+//        vessel2->SetNode2Location(ChastePoint<2>(4,9));
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,5), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,6), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,7), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,8), spatialmesh->GetSpatialMeshSize());
+//        vessel2->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,9), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel3(new Vessel<2,int>());
+//        vessel3->SetNode1Location(ChastePoint<2>(4,5));
+//        vessel3->SetNode2Location(ChastePoint<2>(0,5));
+//        vessel3->SetNextVesselSegmentCoordinate(ChastePoint<2>(4,5), spatialmesh->GetSpatialMeshSize());
+//        vessel3->SetNextVesselSegmentCoordinate(ChastePoint<2>(3,5), spatialmesh->GetSpatialMeshSize());
+//        vessel3->SetNextVesselSegmentCoordinate(ChastePoint<2>(2,5), spatialmesh->GetSpatialMeshSize());
+//        vessel3->SetNextVesselSegmentCoordinate(ChastePoint<2>(1,5), spatialmesh->GetSpatialMeshSize());
+//        vessel3->SetNextVesselSegmentCoordinate(ChastePoint<2>(0,5), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel4(new Vessel<2,int>());
+//        vessel4->SetNode1Location(ChastePoint<2>(5,0));
+//        vessel4->SetNode2Location(ChastePoint<2>(5,5));
+//        vessel4->SetNextVesselSegmentCoordinate(ChastePoint<2>(5,0), spatialmesh->GetSpatialMeshSize());
+//        vessel4->SetNextVesselSegmentCoordinate(ChastePoint<2>(5,1), spatialmesh->GetSpatialMeshSize());
+//        vessel4->SetNextVesselSegmentCoordinate(ChastePoint<2>(5,2), spatialmesh->GetSpatialMeshSize());
+//        vessel4->SetNextVesselSegmentCoordinate(ChastePoint<2>(5,3), spatialmesh->GetSpatialMeshSize());
+//        vessel4->SetNextVesselSegmentCoordinate(ChastePoint<2>(5,4), spatialmesh->GetSpatialMeshSize());
+//        vessel4->SetNextVesselSegmentCoordinate(ChastePoint<2>(5,5), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel5(new Vessel<2,int>());
+//        vessel5->SetNode1Location(ChastePoint<2>(5,5));
+//        vessel5->SetNode2Location(ChastePoint<2>(5,9));
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(5,5), spatialmesh->GetSpatialMeshSize());
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(5,6), spatialmesh->GetSpatialMeshSize());
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(5,7), spatialmesh->GetSpatialMeshSize());
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(5,8), spatialmesh->GetSpatialMeshSize());
+//        vessel5->SetNextVesselSegmentCoordinate(ChastePoint<2>(5,9), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        boost::shared_ptr<Vessel<2,int> > vessel6(new Vessel<2,int>());
+//        vessel6->SetNode1Location(ChastePoint<2>(5,5));
+//        vessel6->SetNode2Location(ChastePoint<2>(9,5));
+//        vessel6->SetNextVesselSegmentCoordinate(ChastePoint<2>(5,5), spatialmesh->GetSpatialMeshSize());
+//        vessel6->SetNextVesselSegmentCoordinate(ChastePoint<2>(6,5), spatialmesh->GetSpatialMeshSize());
+//        vessel6->SetNextVesselSegmentCoordinate(ChastePoint<2>(7,5), spatialmesh->GetSpatialMeshSize());
+//        vessel6->SetNextVesselSegmentCoordinate(ChastePoint<2>(8,5), spatialmesh->GetSpatialMeshSize());
+//        vessel6->SetNextVesselSegmentCoordinate(ChastePoint<2>(9,5), spatialmesh->GetSpatialMeshSize());
+//
+//
+//        p_vessel_network->AddVessel(vessel1);
+//        p_vessel_network->AddVessel(vessel2);
+//        p_vessel_network->AddVessel(vessel3);
+//        p_vessel_network->AddVessel(vessel4);
+//        p_vessel_network->AddVessel(vessel5);
+//        p_vessel_network->AddVessel(vessel6);
+//
+//
+//        vessel1->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel1->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel2->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel2->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel3->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel3->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel4->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel4->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel5->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel5->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        vessel6->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("Oxygen",Concentration(20.0,"unitless"),3.0*pow(10.0,(-6)));
+//        vessel6->GetCollectionOfIntraVascularChemicals().AddIntraVascularChemical("VEGF",Concentration(50.0,"micromolar"),4.0*pow(10.0,(-6)));
+//
+//        p_vessel_network->SetOutputNode(ChastePoint<2>(4,9));
+//        p_vessel_network->SetInputNode(ChastePoint<2>(4,0));
+//        p_vessel_network->SetInputNode(ChastePoint<2>(0,5));
+//        p_vessel_network->SetInputNode(ChastePoint<2>(9,5));
+//
+//        // test initial state of vascular network
+//
+//        // check locations of nodes
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,0)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,5)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,9)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(0,5)) == 1);
+//
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(5,0)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(5,5)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(5,9)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(9,5)) == 1);
+//
+//        // check number of vessels attached to each node
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,0))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,5))->GetNumberOfSegments() == 3);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,9))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(0,5))->GetNumberOfSegments() == 1);
+//
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(5,0))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(5,5))->GetNumberOfSegments() == 3);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(5,9))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(9,5))->GetNumberOfSegments() == 1);
+//
+//        // check active tips
+//        TS_ASSERT(vessel1->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel1->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel2->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel2->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel3->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel3->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel4->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel4->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel5->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel5->ActiveTipCellLocatedAtNode2() == false);
+//        TS_ASSERT(vessel6->ActiveTipCellLocatedAtNode1() == false);
+//        TS_ASSERT(vessel6->ActiveTipCellLocatedAtNode2() == false);
+//
+//        // test number of vessels and nodes in network
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfNodes(),8);
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfVessels(),6);
+//
+//        // test that vessels are in network
+//
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel1));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel2));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel3));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel4));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel5));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel6));
+//
+//        // test that nodes are in network
+//
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel3->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel3->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel4->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel4->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel5->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel5->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel6->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel6->GetEndNode()));
+//
+//
+//        p_vessel_network->CheckForConsistency();
+//
+//        // perform structural adaptation algorithm on network
+//
+//        boost::shared_ptr<SimpleStructuralAdaptationAlgorithm<2,int> > structuralAdaptationAlgorithm(new SimpleStructuralAdaptationAlgorithm<2,int>());
+//        // override default calculations
+//        boost::shared_ptr<ConstantHaematocritCalculation<dimensionality,int> > haematocritcalculation(new ConstantHaematocritCalculation<dimensionality,int>());
+//        structuralAdaptationAlgorithm->SetHaematocritCalculation(haematocritcalculation);
+//
+//        p_vessel_network->accept(structuralAdaptationAlgorithm);
+//
+//        string testoutputdirectory = "VesselNetworkTests/";
+//        string testsubdirectory = "FormSproutOnNodeWhereThreeVesselsIntersect2/";
+//        string directory;
+//        directory.append(testoutputdirectory);
+//        directory.append(testsubdirectory);
+//
+//        OutputFileHandler output_file_handler(directory, true);
+//
+//        string initialStateFilename;
+//        initialStateFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        initialStateFilename.append("VesselNetworkDataInitial.vtk");
+//
+//        string initialDataSummaryFilename;
+//        initialDataSummaryFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        initialDataSummaryFilename.append("InitialVesselNetworkDataSummary.txt");
+//
+//        string finalStateFilename;
+//        finalStateFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        finalStateFilename.append("VesselNetworkDataFinal.vtk");
+//
+//        string finalDataSummaryFilename;
+//        finalDataSummaryFilename.append(output_file_handler.GetOutputDirectoryFullPath());
+//        finalDataSummaryFilename.append("FinalVesselNetworkDataSummary.txt");
+//
+//        // print out and save some data about the vessel network before forrmation of sprout
+//
+//        p_vessel_network->SaveVasculatureDataToFile(initialStateFilename);
+//
+//        PrintVascularNetworkDataToFile(vesselNetwork, initialDataSummaryFilename);
+//
+//        // form sprout
+//
+//        ChastePoint<2> sproutBaseLocation(4,5,0);
+//        ChastePoint<2> sproutTipLocation(5,5,0);
+//
+//        boost::shared_ptr<Vessel<2,int> > newSprout(new Vessel<2,int>());
+//
+//        newSprout = p_vessel_network->FormSprout(p_vessel_network->GetVessel(ChastePoint<2>(4,5,0),0), sproutBaseLocation, sproutTipLocation);
+//
+//        // perform structural adaptation algorithm on new vessel network
+//
+//        p_vessel_network->accept(structuralAdaptationAlgorithm);
+//
+//        // print out and save some data about the vessel network after formation of sprout
+//
+//        p_vessel_network->SaveVasculatureDataToFile(finalStateFilename);
+//
+//        PrintVascularNetworkDataToFile(vesselNetwork, finalDataSummaryFilename);
+//
+//        // test final state of vascular network
+//
+//        // check locations of nodes
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,0)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,5)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(5,5)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,9)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(0,5)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(5,0)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(5,9)) == 1);
+//        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(9,5)) == 1);
+//
+//        // check number of vessels attached to each node
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,0))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,5))->GetNumberOfSegments() == 4);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(5,5))->GetNumberOfSegments() == 4);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,9))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(0,5))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(9,5))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(5,0))->GetNumberOfSegments() == 1);
+//        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(5,9))->GetNumberOfSegments() == 1);
+//
+//
+//        // check active tips
+//        for (int i = 0; i < p_vessel_network->GetNumberOfVessels(); i++)
+//        {
+//            if (newSprout == p_vessel_network->GetVessel(i))
+//            {
+//                TS_ASSERT(p_vessel_network->GetVessel(i)->ActiveTipCellLocatedAtNode1() == false);
+//                TS_ASSERT(p_vessel_network->GetVessel(i)->ActiveTipCellLocatedAtNode2() == false);
+//            }
+//            else
+//            {
+//                TS_ASSERT(p_vessel_network->GetVessel(i)->ActiveTipCellLocatedAtNode1() == false);
+//                TS_ASSERT(p_vessel_network->GetVessel(i)->ActiveTipCellLocatedAtNode2() == false);
+//            }
+//        }
+//
+//        // test number of vessels and nodes in network
+//
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfNodes(),8);
+//        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfVessels(),7);
+//
+//        // test that vessels are in network
+//
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel1));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel2));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel3));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel4));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel5));
+//        TS_ASSERT(p_vessel_network->VesselIsInNetwork(vessel6));
+//
+//        // test that nodes are in network
+//
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel1->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel2->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel3->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel3->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel4->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel4->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel5->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel5->GetEndNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel6->GetStartNode()));
+//        TS_ASSERT(p_vessel_network->NodeIsInNetwork(vessel6->GetEndNode()));
+//
+//        // check for consistency between node and vessel circular references
+//
+//        for (int i = 0; i < p_vessel_network->GetNumberOfVessels(); i++)
+//        {
+//            TS_ASSERT(p_vessel_network->GetVessel(i)->GetStartNode()->IsAttachedToVessel(p_vessel_network->GetVessel(i)));
+//            TS_ASSERT(p_vessel_network->GetVessel(i)->GetEndNode()->IsAttachedToVessel(p_vessel_network->GetVessel(i)));
+//            TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel_network->GetVessel(i)->GetStartNode()));
+//            TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel_network->GetVessel(i)->GetEndNode()));
+//        }
+//
+//        for (int i = 0; i < p_vessel_network->GetNumberOfNodes(); i++)
+//        {
+//            for (int j = 0; j < p_vessel_network->GetNode(i)->GetNumberOfSegments(); j++)
+//            {
+//                TS_ASSERT(p_vessel_network->GetNode(i)->GetAdjoiningVessel(j)->IsAttachedToNode(p_vessel_network->GetNode(i)));
+//                TS_ASSERT(p_vessel_network->VesselIsInNetwork(p_vessel_network->GetNode(i)->GetAdjoiningVessel(j)));
+//            }
+//        }
+//
+//        p_vessel_network->CheckForConsistency();
+//
+//        SimulationTime::Destroy();
+//
+//
+//    }
+
+
 };
 
 #endif /*TESTVESSELNETWORK_HPP_*/

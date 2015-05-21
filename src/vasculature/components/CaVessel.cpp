@@ -477,7 +477,7 @@ bool CaVessel<DIM>::IsConnectedTo(boost::shared_ptr<CaVessel<DIM> > pOtherVessel
 }
 
 template<unsigned DIM>
-void CaVessel<DIM>::DivideSegment(ChastePoint<DIM> location)
+boost::shared_ptr<VascularNode<DIM> > CaVessel<DIM>::DivideSegment(ChastePoint<DIM> location)
 {
     // Identify segment
     boost::shared_ptr<CaVesselSegment<DIM> > pVesselSegment;
@@ -487,11 +487,15 @@ void CaVessel<DIM>::DivideSegment(ChastePoint<DIM> location)
         {
             pVesselSegment = mSegments[i];
 
-            if (pVesselSegment->GetNode(0)->IsCoincident(location)
-                    || pVesselSegment->GetNode(1)->IsCoincident(location))
+            if (pVesselSegment->GetNode(0)->IsCoincident(location))
             {
-                return;
+                return pVesselSegment->GetNode(0);
             }
+            if (pVesselSegment->GetNode(1)->IsCoincident(location))
+            {
+                return pVesselSegment->GetNode(1);
+            }
+
         }
     }
     if (!pVesselSegment)
@@ -586,6 +590,8 @@ void CaVessel<DIM>::DivideSegment(ChastePoint<DIM> location)
     }
 
     mNodesUpToDate = false;
+
+    return p_new_node;
 }
 
 template<unsigned DIM>

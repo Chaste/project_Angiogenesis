@@ -139,7 +139,7 @@ public:
     /**
      Get the node nearest to the specified location
      */
-    boost::shared_ptr<VascularNode<DIM> > GetNearestNode(ChastePoint<DIM>& rLocation);
+    boost::shared_ptr<VascularNode<DIM> > GetNearestNode(const ChastePoint<DIM>& rLocation);
 
     /**
      Get the node nearest to the specified location
@@ -165,6 +165,11 @@ public:
      Get the segment nearest to the specified location
      */
     boost::shared_ptr<CaVessel<DIM> > GetNearestVessel(c_vector<double, DIM> location);
+
+    /**
+     Get the number of nodes near to a specified point
+     */
+    unsigned NumberOfNodesNearLocation(const ChastePoint<DIM>& rLocation, double radius = 0.0);
 
     /**
      Return the extents of the vessel network in the form ((xmin, xmax), (ymin, ymax), (zmin, zmax))
@@ -319,7 +324,12 @@ public:
     /*
      * Divides a vessel into two at the specified location.
      */
-    void DivideVessel(boost::shared_ptr<CaVessel<DIM> > pVessel, ChastePoint<DIM> location);
+    boost::shared_ptr<VascularNode<DIM> > DivideVessel(boost::shared_ptr<CaVessel<DIM> > pVessel, ChastePoint<DIM> location);
+
+    /*
+     * Forms a sprout at the specified locations.
+     */
+    boost::shared_ptr<CaVessel<DIM> > FormSprout(ChastePoint<DIM> sproutBaseLocation, ChastePoint<DIM> sproutTipLocation);
 
     /*
      * Update the network node collection
