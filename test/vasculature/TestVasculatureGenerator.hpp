@@ -47,7 +47,7 @@ class TestVasculatureGenerator : public CxxTest::TestSuite
 {
 public:
 
-    void TestGenerateAndWriteHexagonalNetwork() throw (Exception)
+    void DontTestGenerateAndWriteHexagonalNetwork() throw (Exception)
     {
         // Specify the network dimensions
         double vessel_length = 5.0;
@@ -68,8 +68,55 @@ public:
         vascular_network->Write(output_filename);
     }
 
+    void DontTestGenerate3dHexagonalNetwork() throw (Exception)
+    {
+        // Specify the network dimensions
+        double vessel_length = 40.0;
+
+        // Generate the network
+        VasculatureGenerator<3> vascular_network_generator;
+        boost::shared_ptr<CaVascularNetwork<3> > vascular_network = vascular_network_generator.GenerateHexagonalUnit(vessel_length);
+
+        // Pattern the unit
+        std::vector<unsigned> num_units;
+        num_units.push_back(3);
+        num_units.push_back(3);
+        num_units.push_back(3);
+        vascular_network_generator.PatternUnitByTranslation(vascular_network, num_units);
+
+        // Write the network to file
+        OutputFileHandler output_file_handler("TestVasculatureGenerator", false);
+        std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("HexagonalVesselNetwork3d.vtp");
+        vascular_network->Write(output_filename);
+    }
+
+    void TestGenerateSimpleDivergeAndConvergeNetwork() throw (Exception)
+    {
+        // Specify the network dimensions
+        double segment_length = 20.0;
+        c_vector<double, 3> start_location;
+        c_vector<double, 3> end_location;
+
+        start_location[0] = 0.0;
+        start_location[1] = 0.0;
+        start_location[2] = 0.0;
+
+        end_location[0] = 1000.0;
+        end_location[1] = 0.0;
+        end_location[2] = 0.0;
+
+        // Generate the network
+        VasculatureGenerator<3> vascular_network_generator;
+        OutputFileHandler output_file_handler("TestVasculatureGenerator", false);
+        std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("DivergeAndConvergeNetwork");
+        boost::shared_ptr<CaVascularNetwork<3> > vascular_network = vascular_network_generator.GenerateSimpleDivergeAndConvergeNetwork(start_location,
+                                                                                                                                       end_location,
+                                                                                                                                       segment_length,
+                                                                                                                                       output_filename);
+    }
+
 #ifdef CHASTE_VTK
-    void TestGeneratorWithVtkInput() throw(Exception)
+    void DontTestGeneratorWithVtkInput() throw(Exception)
     {
         // Locate the input file
         FileFinder fileFinder("projects/Angiogenesis/test/data/tapmeier_network.vtp", RelativeTo::ChasteSourceRoot);

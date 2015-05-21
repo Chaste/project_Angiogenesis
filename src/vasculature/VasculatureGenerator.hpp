@@ -41,7 +41,7 @@
 #include "CaVessel.hpp"
 #include "CaVascularNetwork.hpp"
 #include "VascularNode.hpp"
-#include "UblasIncludes.hpp"
+#include "UblasVectorInclude.hpp"
 
 template<unsigned DIM>
 class VasculatureGenerator
@@ -68,23 +68,31 @@ public:
 
 
     boost::shared_ptr<CaVascularNetwork<DIM> > GenerateHexagonalNetwork(double width, double height,
-                                                                        double vessel_length);
+                                                                        double vesselLength);
     /*
      * Creates a hexagonal repeating unit
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateHexagonalUnit(double vessel_length = 100.0);
+    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateHexagonalUnit(double vesselLength = 100.0);
+
+    /*
+     * Creates a simple diverging and converging network
+     */
+    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateSimpleDivergeAndConvergeNetwork(c_vector<double, DIM> start_location,
+                                                                                       c_vector<double, DIM> end_location,
+                                                                                       double segmentLength = 20.0,
+                                                                                       const std::string& rFileName = "None");
 
     /*
      * Creates a bifurcation repeating unit
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateBifurcationUnit(c_vector<double, DIM> startPosition,
-                                                                       double vessel_length = 100.0);
+    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateBifurcationUnit(double vesselLength= 100.0,
+                                                                       c_vector<double, DIM> startPosition = zero_vector<double>(DIM));
 
     /*
      * Creates a single vessel
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateSingleVessel(c_vector<double, DIM> startPosition,
-                                                                    double vessel_length = 100.0);
+    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateSingleVessel(double vesselLength= 100.0,
+                                                                    c_vector<double, DIM> startPosition = zero_vector<double>(DIM));
 
 #ifdef CHASTE_VTK
     /*
@@ -93,7 +101,7 @@ public:
      * @param filename name of file in which vascular network is described.
      * @return a pointer to the generated vascular network.
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateNetworkFromVtkFile(const std::string& filename);
+    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateNetworkFromVtkFile(const std::string& rFilename);
 #endif // CHASTE_VTK
 
 };
