@@ -157,21 +157,48 @@ template<unsigned DIM>
 void CaVessel<DIM>::AddSegment(boost::shared_ptr<CaVesselSegment<DIM> > pSegment)
 {
 
-    if (pSegment->IsConnectedTo(mSegments.back()))
-    // Append to end of vessel
+    if(mSegments.size() == 1)
     {
         pSegment->AddVessel(Shared());
-        mSegments.push_back(pSegment);
-    }
-    else if (pSegment->IsConnectedTo(mSegments.front()))
-    // Insert at the start of the vessel
-    {
-        pSegment->AddVessel(Shared());
-        mSegments.insert(mSegments.begin(), pSegment);
+        if(pSegment->GetNode(0) == mSegments[0]->GetNode(0))
+        {
+            mSegments.insert(mSegments.begin(), pSegment);
+        }
+        else if(pSegment->GetNode(1) == mSegments[0]->GetNode(0))
+        {
+            mSegments.insert(mSegments.begin(), pSegment);
+        }
+        else if(pSegment->GetNode(0) == mSegments[0]->GetNode(1))
+        {
+            mSegments.push_back(pSegment);
+        }
+        else if(pSegment->GetNode(1) == mSegments[0]->GetNode(1))
+        {
+            mSegments.push_back(pSegment);
+        }
+        else
+        {
+            EXCEPTION("Input vessel segment does not coincide with any end of the vessel.");
+        }
     }
     else
     {
-        EXCEPTION("Input vessel segment does not coincide with any end of the vessel.");
+        if (pSegment->IsConnectedTo(mSegments.back()))
+        // Append to end of vessel
+        {
+            pSegment->AddVessel(Shared());
+            mSegments.push_back(pSegment);
+        }
+        else if (pSegment->IsConnectedTo(mSegments.front()))
+        // Insert at the start of the vessel
+        {
+            pSegment->AddVessel(Shared());
+            mSegments.insert(mSegments.begin(), pSegment);
+        }
+        else
+        {
+            EXCEPTION("Input vessel segment does not coincide with any end of the vessel.");
+        }
     }
 
     mNodesUpToDate = false;

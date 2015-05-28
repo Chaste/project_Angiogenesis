@@ -229,6 +229,28 @@ boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::GetNearestNode(c_v
 }
 
 template <unsigned DIM>
+std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> CaVascularNetwork<DIM>::GetNearestSegment(boost::shared_ptr<VascularNode<DIM> > pNode)
+{
+    boost::shared_ptr<CaVesselSegment<DIM> > nearest_segment;
+    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = GetVesselSegments();
+
+    double min_distance = 1.e12;
+    typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator segment_iter;
+    for(segment_iter = segments.begin(); segment_iter != segments.end(); segment_iter++)
+    {
+        double segment_distance = (*segment_iter)->GetDistance(pNode->GetLocationVector());
+        if (segment_distance < min_distance && (*segment_iter)->GetNode(0) != pNode && (*segment_iter)->GetNode(1) != pNode)
+        {
+            min_distance = segment_distance;
+            nearest_segment = (*segment_iter) ;
+        }
+    }
+    std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> return_pair =
+            std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double>(nearest_segment, min_distance);
+    return return_pair;
+}
+
+template <unsigned DIM>
 std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double>  CaVascularNetwork<DIM>::GetNearestSegment(const ChastePoint<DIM>& rLocation)
 {
     return GetNearestSegment(rLocation.rGetLocation());

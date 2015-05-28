@@ -226,6 +226,23 @@ boost::shared_ptr<VascularNode<DIM> > CaVesselSegment<DIM>::GetNode(unsigned ind
 }
 
 template<unsigned DIM>
+boost::shared_ptr<VascularNode<DIM> > CaVesselSegment<DIM>::GetOppositeNode(boost::shared_ptr<VascularNode<DIM> > pInputNode) const
+{
+    if(pInputNode == mNodes.first)
+    {
+        return mNodes.second;
+    }
+    else if(pInputNode == mNodes.second)
+    {
+        return mNodes.first;
+    }
+    else
+    {
+        EXCEPTION("Input node is not on the segment");
+    }
+}
+
+template<unsigned DIM>
 std::pair<boost::shared_ptr<VascularNode<DIM> >, boost::shared_ptr<VascularNode<DIM> > > CaVesselSegment<DIM>::GetNodes() const
 {
     return mNodes;

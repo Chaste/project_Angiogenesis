@@ -37,6 +37,7 @@
 #define ANGIOGENESISSOLVER_HPP_
 
 #include <vector>
+#include <string>
 #include "SmartPointers.hpp"
 #include "CaVascularNetwork.hpp"
 
@@ -48,6 +49,9 @@ class AngiogenesisSolver
     double mGrowthVelocity;
     double mTimeIncrement;
     double mEndTime;
+    unsigned mOutputFrequency;
+    std::string mOutputDirectory;
+    double mNodeAnastamosisRadius;
 
 public:
 
@@ -55,7 +59,7 @@ public:
      * Constructor.
      * @param pNetwork the network to perform angiogenesis on
      */
-    AngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
+    AngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork, const std::string& rOutputDirectory);
 
     /**
      * Destructor.

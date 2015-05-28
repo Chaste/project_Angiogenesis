@@ -252,6 +252,14 @@ public:
     boost::shared_ptr<VascularNode<DIM> > GetNode(unsigned index) const;
 
     /**
+     * Return a pointer to the node on the other side of the segment
+     *
+     * @param pInputNode the node to get the opposite one to
+     * @return a pointer to the node on the other side of the segment
+     */
+    boost::shared_ptr<VascularNode<DIM> > GetOppositeNode(boost::shared_ptr<VascularNode<DIM> > pInputNode) const;
+
+    /**
      * Return the segment nodes as a pair
      *
      * @return the segment nodes as a pair

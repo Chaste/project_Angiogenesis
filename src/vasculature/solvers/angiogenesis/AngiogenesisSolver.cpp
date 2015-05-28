@@ -33,16 +33,21 @@
 
  */
 
+#include <boost/lexical_cast.hpp>
 #include "UblasVectorInclude.hpp"
+#include "UblasIncludes.hpp"
 #include "VascularNode.hpp"
 #include "AngiogenesisSolver.hpp"
 
 template<unsigned DIM>
-AngiogenesisSolver<DIM>::AngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork) :
+AngiogenesisSolver<DIM>::AngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork, const std::string& rOutputDirectory) :
         mpNetwork(pNetwork),
-        mGrowthVelocity(1.0),
+        mGrowthVelocity(10.0),
         mTimeIncrement(1.0),
-        mEndTime(100.0)
+        mEndTime(10.0),
+        mOutputFrequency(1),
+        mOutputDirectory(rOutputDirectory),
+        mNodeAnastamosisRadius(0.0)
 {
 
 }
@@ -59,23 +64,84 @@ void AngiogenesisSolver<DIM>::Run()
     // Loop over the time (replace with simulation time)
     double current_time = 0.0;
 
+    unsigned counter = 0;
+    mpNetwork->MergeCoincidentNodes();
+    mpNetwork->Write(mOutputDirectory + "/VesselNetwork_inc_" + boost::lexical_cast<std::string>(counter)+".vtp");
+
     while(current_time < mEndTime)
     {
         current_time += mTimeIncrement;
 
         // Move any migrating nodes
+        mpNetwork->UpdateNodes();
         std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = mpNetwork->GetNodes();
+
         for(unsigned idx = 0; idx < nodes.size(); idx++)
         {
             if(nodes[idx]->IsMigrating() && nodes[idx]->GetNumberOfSegments()==1)
             {
                 // Get the segment direction vector
-                //c_vector<double,DIM> direction = nodes[idx]->GetLocationVector() -
+                c_vector<double,DIM> direction = nodes[idx]->GetLocationVector() -
+                        nodes[idx]->GetVesselSegment(0)->GetOppositeNode(nodes[idx])->GetLocationVector();
+                direction /= norm_2(direction);
+
+                // Create a new segment along the vector
+                boost::shared_ptr<VascularNode<DIM> >  p_new_node = VascularNode<DIM>::Create(nodes[idx]);
+                p_new_node->SetLocation(nodes[idx]->GetLocationVector() + mGrowthVelocity * direction);
+
+                if(nodes[idx]->GetVesselSegment(0)->GetVessel()->GetStartNode() == nodes[idx])
+                {
+                    nodes[idx]->GetVesselSegment(0)->GetVessel()->AddSegment(CaVesselSegment<DIM>::Create(p_new_node, nodes[idx]));
+                }
+                else
+                {
+                    nodes[idx]->GetVesselSegment(0)->GetVessel()->AddSegment(CaVesselSegment<DIM>::Create(nodes[idx], p_new_node));
+                }
+                nodes[idx]->SetIsMigrating(false);
+                p_new_node->SetIsMigrating(true);
             }
         }
 
-    }
+        // Do tip-tip anastamosis and tip-stalk anastamosis for nearby nodes
+        mpNetwork->UpdateNodes();
+        std::vector<boost::shared_ptr<VascularNode<DIM> > > moved_nodes = mpNetwork->GetNodes();
+        for(unsigned idx = 0; idx < moved_nodes.size(); idx++)
+        {
+            if(moved_nodes[idx]->IsMigrating() && moved_nodes[idx]->GetNumberOfSegments()==1)
+            {
+                std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> segment_pair = mpNetwork->GetNearestSegment(moved_nodes[idx]);
+                if(segment_pair.second <= mNodeAnastamosisRadius)
+                {
+                    // Divide the parent vessel if neccessary and set all involved nodes to non-migrating
+                    boost::shared_ptr<VascularNode<DIM> > p_merge_node =
+                            mpNetwork->DivideVessel(segment_pair.first->GetVessel(), moved_nodes[idx]->GetLocation());
+                    p_merge_node->SetIsMigrating(false);
+                    moved_nodes[idx]->SetIsMigrating(false);
+                }
+            }
+        }
 
+        // TODO Check for overlapping and crossing segments
+        mpNetwork->MergeCoincidentNodes();
+        mpNetwork->UpdateNodes();
+//        std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = mpNetwork->GetNodes();
+//        for(unsigned idx = 0; idx < nodes.size(); idx++)
+//        {
+//            if(nodes[idx]->IsMigrating() && nodes[idx]->GetNumberOfSegments()==1)
+//            {
+//
+//            }
+//        }
+
+        counter++;
+        if(mOutputFrequency > 0)
+        {
+            if(counter % mOutputFrequency == 0)
+            {
+                mpNetwork->Write(mOutputDirectory + "/VesselNetwork_inc_" + boost::lexical_cast<std::string>(counter)+".vtp");
+            }
+        }
+    }
 }
 
 // Explicit instantiation
