@@ -229,6 +229,111 @@ boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::GetNearestNode(c_v
 }
 
 template <unsigned DIM>
+std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> CaVascularNetwork<DIM>::GetNearestSegment(boost::shared_ptr<CaVesselSegment<DIM> > pSegment)
+{
+    boost::shared_ptr<CaVesselSegment<DIM> > nearest_segment;
+    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = GetVesselSegments();
+
+    double min_distance = 1.e12;
+    typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator segment_iter;
+    for(segment_iter = segments.begin(); segment_iter != segments.end(); segment_iter++)
+    {
+        if(!pSegment->IsConnectedTo((*segment_iter)))
+        {
+            // Get the segment to segment distance (http://geomalgorithms.com/a07-_distance.html#dist3D_Segment_to_Segment())
+            c_vector<double, DIM> u = (*segment_iter)->GetNode(1)->GetLocationVector() - (*segment_iter)->GetNode(0)->GetLocationVector();
+            c_vector<double, DIM> v = pSegment->GetNode(1)->GetLocationVector() - pSegment->GetNode(0)->GetLocationVector();
+            c_vector<double, DIM> w = (*segment_iter)->GetNode(0)->GetLocationVector() - pSegment->GetNode(0)->GetLocationVector();
+
+            double a = inner_prod(u,u);
+            double b = inner_prod(u,v);
+            double c = inner_prod(v,v);
+            double d = inner_prod(u,w);
+            double e = inner_prod(v,w);
+
+            double dv = a * c - b * b;
+            double sc, sn, sd = dv;
+            double tc, tn ,td = dv;
+
+            if(dv < 1.e-12) // almost parrallel segments
+            {
+                sn = 0.0;
+                sd = 1.0;
+                tn = e;
+                td = c;
+            }
+            else // get the closest point on the equivalent infinite lines
+            {
+                sn = (b*e - c*d);
+                tn = (a*e - b*d);
+                if ( sn < 0.0)
+                {
+                    sn = 0.0;
+                    tn = e;
+                    td = c;
+                }
+                else if(sn > sd)
+                {
+                    sn =sd;
+                    tn = e+ b;
+                    td = c;
+                }
+            }
+
+            if(tn < 0.0)
+            {
+                tn = 0.0;
+                if(-d < 0.0)
+                {
+                    sn = 0.0;
+                }
+                else if(-d > a)
+                {
+                    sn = sd;
+                }
+                else
+                {
+                    sn = -d;
+                    sd = a;
+                }
+            }
+            else if(tn > td)
+            {
+                tn = td;
+                if((-d + b) < 0.0)
+                {
+                    sn = 0.0;
+                }
+                else if((-d + b) > a)
+                {
+                    sn = sd;
+                }
+                else
+                {
+                    sn = (-d + b);
+                    sd = a;
+                }
+            }
+
+            sc = (std::abs(sn) < 1.e-12 ? 0.0 : sn/sd);
+            tc = (std::abs(tn) < 1.e-12 ? 0.0 : tn/td);
+            c_vector<double, DIM> dp = w + (sc * u) - (tc * v);
+
+            double segment_distance = norm_2(dp);
+            if (segment_distance < min_distance)
+            {
+                min_distance = segment_distance;
+                nearest_segment = (*segment_iter) ;
+            }
+        }
+
+    }
+    std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> return_pair =
+            std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double>(nearest_segment, min_distance);
+    return return_pair;
+}
+
+template <unsigned DIM>
 std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> CaVascularNetwork<DIM>::GetNearestSegment(boost::shared_ptr<VascularNode<DIM> > pNode)
 {
     boost::shared_ptr<CaVesselSegment<DIM> > nearest_segment;

@@ -66,6 +66,10 @@ public:
      */
     ~AngiogenesisSolver();
 
+    void UpdateNodalPositions();
+
+    void DoAnastamosis();
+
     /**
      * Run the solver.
      */
