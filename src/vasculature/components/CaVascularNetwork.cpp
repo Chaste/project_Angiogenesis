@@ -202,6 +202,28 @@ std::vector<std::pair<double, double> > CaVascularNetwork<DIM>::GetExtents()
 }
 
 template <unsigned DIM>
+double CaVascularNetwork<DIM>::GetDistanceToNearestNode(const ChastePoint<DIM>& rLocation)
+{
+    std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = GetNodes();
+    boost::shared_ptr<VascularNode<DIM> > nearest_node;
+    double min_distance = 1.e12;
+
+    typename std::vector<boost::shared_ptr<VascularNode<DIM> > >::iterator node_iter;
+    for(node_iter = nodes.begin(); node_iter != nodes.end(); node_iter++)
+    {
+
+        double node_distance = (*node_iter)->GetDistance(rLocation);
+        if (node_distance < min_distance)
+        {
+            min_distance = node_distance;
+            nearest_node = (*node_iter) ;
+        }
+    }
+
+    return min_distance;
+}
+
+template <unsigned DIM>
 boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::GetNearestNode(const ChastePoint<DIM>& rLocation)
 {
     return GetNearestNode(rLocation.rGetLocation());
@@ -225,6 +247,7 @@ boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::GetNearestNode(c_v
             nearest_node = (*node_iter) ;
         }
     }
+
     return nearest_node;
 }
 

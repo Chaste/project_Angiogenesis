@@ -137,6 +137,11 @@ public:
     void RemoveVessel(boost::shared_ptr<CaVessel<DIM> > pVessel);
 
     /**
+     Get distance to nearest node
+     */
+    double GetDistanceToNearestNode(const ChastePoint<DIM>& rLocation);
+
+    /**
      Get the node nearest to the specified location
      */
     boost::shared_ptr<VascularNode<DIM> > GetNearestNode(const ChastePoint<DIM>& rLocation);
