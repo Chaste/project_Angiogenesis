@@ -131,11 +131,6 @@ public:
         TS_ASSERT_DELTA(p_network->GetVessel(0)->GetEndNode()->GetLocationVector()[0], 150.0, 1.e-6);
         TS_ASSERT_DELTA(p_network->GetVessel(1)->GetStartNode()->GetLocationVector()[0], 150.0, 1.e-6);
     }
-
-    void TestOffLatticeAngiogenesisSimulation() throw(Exception)
-    {
-
-    }
 };
 
 #endif
