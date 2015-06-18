@@ -600,7 +600,7 @@ boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateNe
         for (int j = 1; j < num_segments; j++)
         {
             boost::shared_ptr<CaVesselSegment<DIM> > p_segment = CaVesselSegment<DIM>::Create(nodes[pSegmentList[j - 1]],nodes[pSegmentList[j]]);
-            if(radii.size()>= pSegmentList[j])
+            if(unsigned(radii.size())>= pSegmentList[j])
             {
                 p_segment->SetRadius(radii[pSegmentList[j]]);
             }

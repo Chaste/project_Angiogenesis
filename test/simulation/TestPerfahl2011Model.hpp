@@ -22,6 +22,7 @@
 #include "OnLatticeVascularTumourCellPopulationGenerator.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "CellLabelWriter.hpp"
+#include "CellMutationStatesWriter.hpp"
 
 #include "SimulationTime.hpp"
 #include "PottsMesh.hpp"
@@ -53,13 +54,13 @@ public:
         // initialise domain
         // _________________
 
-        unsigned numNodesAcross = 20;
+        unsigned numNodesAcross = 1;
         unsigned numElementsAcross = 0;
         unsigned elementWidth = 0;
-        unsigned numNodesUp = 20;
+        unsigned numNodesUp = 18;
         unsigned numElementsUp=0;
         unsigned elementHeight=0;
-        unsigned numNodesDeep = 20;
+        unsigned numNodesDeep = 18;
         unsigned numElementsDeep=0;
         unsigned elementDepth=0;
         bool startAtBottomLeft = false;
@@ -75,14 +76,14 @@ public:
                                                       numNodesUp, numElementsUp, elementHeight,
                                                       numNodesDeep, numElementsDeep, elementDepth,
                                                       startAtBottomLeft, isPeriodicInX, isPeriodicInY , isPeriodicInZ);
-        PottsMesh<dimensionality>* p_mesh = generator.GetMesh(); // need to create this
+        PottsMesh<dimensionality>* p_mesh = generator.GetMesh();
 
         // Create vascular network
         // _______________________
 
         // initially we will just consider a single vessel through the middle of the domain, extending in the z-direction
         c_vector<double, dimensionality> startPosition;
-        startPosition[0] = 10;
+        startPosition[0] = 0;
         startPosition[1] = 10;
         startPosition[2] = 0;
         VasculatureGenerator<dimensionality> vascular_network_generator;
@@ -108,9 +109,12 @@ public:
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(1.0, 1);
 
         cell_population->AddCellWriter<CellLabelWriter>();
+        cell_population->AddCellWriter<CellMutationStatesWriter>();
         cell_population->OpenWritersFiles(output_file_handler);
         cell_population->WriteResultsToFiles(output_directory);
         cell_population->CloseWritersFiles();
+
+        std::cout << p_mesh->GetNumNodes() << "\t" << cell_population->GetNumNodes() << "\t" << cell_population->GetNumRealCells() << "\t" << cell_population->GetNumAllCells() << std::endl;
 
         //        // initialize structural adaptation algorithm
         //        // __________________________________________

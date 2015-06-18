@@ -1034,7 +1034,7 @@ boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::DivideVessel(boost
     // new vessels will share a new common vessel network node
     std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > start_segments;
     std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > end_segments;
-    unsigned segment_index;
+    unsigned segment_index = pVessel->GetNumberOfSegments()+1;
     for (unsigned i = 0; i < pVessel->GetNumberOfSegments(); i++)
     {
         start_segments.push_back(pVessel->GetSegment(i));
@@ -1043,6 +1043,11 @@ boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::DivideVessel(boost
             segment_index = i;
             break;
         }
+    }
+
+    if (segment_index > pVessel->GetNumberOfSegments())
+    {
+        EXCEPTION("Vessel segment not found.");
     }
 
     for (unsigned i = segment_index; i < pVessel->GetNumberOfSegments(); i++)
