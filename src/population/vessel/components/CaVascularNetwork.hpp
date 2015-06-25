@@ -44,10 +44,10 @@
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
 #endif // CHASTE_VTK
-#include "../../vessel/components/CaVessel.hpp"
-#include "../../vessel/components/CaVesselSegment.hpp"
-#include "../../vessel/components/VascularNode.hpp"
-#include "../../vessel/VasculatureData.hpp"
+#include "CaVessel.hpp"
+#include "CaVesselSegment.hpp"
+#include "VascularNode.hpp"
+#include "VasculatureData.hpp"
 #include "UblasIncludes.hpp"
 
 /**

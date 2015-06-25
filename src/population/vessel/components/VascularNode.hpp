@@ -41,8 +41,8 @@
 #include <map>
 #include <boost/enable_shared_from_this.hpp>
 
-#include "../../vessel/properties/NodeFlowProperties.hpp"
-#include "../../vessel/VasculatureData.hpp"
+#include "NodeFlowProperties.hpp"
+#include "VasculatureData.hpp"
 #include "UblasVectorInclude.hpp"
 #include "ChastePoint.hpp"
 #include "Cell.hpp"

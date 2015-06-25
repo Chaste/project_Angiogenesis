@@ -40,9 +40,9 @@
 #include <map>
 #include <boost/enable_shared_from_this.hpp>
 
-#include "../../vessel/components/CaVesselSegment.hpp"
-#include "../../vessel/components/VascularNode.hpp"
-#include "../../vessel/VasculatureData.hpp"
+#include "CaVesselSegment.hpp"
+#include "VascularNode.hpp"
+#include "VasculatureData.hpp"
 #include "ChastePoint.hpp"
 
 /**

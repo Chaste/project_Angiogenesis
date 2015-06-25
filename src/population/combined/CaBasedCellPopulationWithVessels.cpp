@@ -33,8 +33,10 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#include "CaBasedCellPopulation.hpp"
+
 #include "Exception.hpp"
+
+#include "CaBasedCellPopulationWithVessels.hpp"
 
 template<unsigned DIM>
 CaBasedCellPopulationWithVessels<DIM>::CaBasedCellPopulationWithVessels(PottsMesh<DIM>& rMesh,
@@ -54,44 +56,47 @@ CaBasedCellPopulationWithVessels<DIM>::CaBasedCellPopulationWithVessels(PottsMes
 }
 
 template<unsigned DIM>
-CaBasedCellPopulationWithVessels<DIM>::CaBasedCellPopulationWithVessels(PottsMesh<DIM>& rMesh)
-    : AbstractOnLatticeCellPopulation<DIM>(rMesh)
+void CaBasedCellPopulationWithVessels<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
 {
+    mpNetwork = pNetwork;
 }
 
 template<unsigned DIM>
-void CaBasedCellPopulationWithVessels<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> >pNetwork,
+void CaBasedCellPopulationWithVessels<DIM>::AsscoiateVesselNetworkWithCells(
                       boost::shared_ptr<AbstractCellMutationState> pStalkCellMutatationState,
                       boost::shared_ptr<AbstractCellMutationState> pTipCellMutatationState)
 {
-    mpNetwork = pNetwork;
-
-    // TODO the vessel network should be fully snapped to the grid. For now create nodes on the vessel
-    // network wherever there are grid nodes.
-
-    // Create a vessel network node where where segments meet mesh nodes
-    for (unsigned index=0; index < rMesh.GetNumNodes(); index++)
+    if(!mpNetwork)
     {
-        c_vector<double, DIM> node_location = rMesh.GetNode(index)->rGetLocation();
-        std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> segment_distance_pair = mpNetwork->GetNearestSegment(node_location);
+        EXCEPTION("A vessel network has not been assigned to the population.");
+    }
 
+    // TODO the vessel network should be fully snapped to the potts mesh. This should be tested for here.
+    // For now create nodes on the vessel network wherever potts mesh nodes intersect segments.
+    for (unsigned index=0; index < this->rGetMesh().GetNumNodes(); index++)
+    {
+        c_vector<double, DIM> node_location = this->rGetMesh().GetNode(index)->rGetLocation();
+        std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> segment_distance_pair =
+                mpNetwork->GetNearestSegment(node_location);
+
+        // If the mesh node is on the segment, create a vessel node at the location (if there isn't one
+        // already there) and assign a cell to it.
         if (segment_distance_pair.second < 1e-6)
         {
             boost::shared_ptr<CaVessel<DIM> > pVessel = segment_distance_pair.first->GetVessel();
-            boost::shared_ptr<VascularNode<DIM> > pNode = pVessel->DivideSegment(rMesh.GetNode(index)->GetPoint());
+            boost::shared_ptr<VascularNode<DIM> > pNode = pVessel->DivideSegment(this->rGetMesh().GetNode(index)->GetPoint());
 
             // If there is a cell at this location assign it stalk or tip mutation states, if they have been defined.
-            if(IsCellAttachedToLocationIndex(index))
+            if(this->IsCellAttachedToLocationIndex(index))
             {
-                pNode->SetCellPopulation(this);
-                CellPtr pCell = GetCellUsingLocationIndex(index);
+                CellPtr pCell = this->GetCellUsingLocationIndex(index);
                 pNode->SetCell(pCell);
 
                 if(pNode->GetNumberOfSegments()==1 && pTipCellMutatationState)
                 {
                     pCell->SetMutationState(pTipCellMutatationState);
                 }
-                else if(pNode->GetNumberOfSegments()>1 && pStalkCellMutatationState)
+                else
                 {
                     pCell->SetMutationState(pStalkCellMutatationState);
                 }
@@ -111,7 +116,3 @@ void CaBasedCellPopulationWithVessels<DIM>::SetVesselNetwork(boost::shared_ptr<C
 // Explicit instantiation
 template class CaBasedCellPopulationWithVessels<2>;
 template class CaBasedCellPopulationWithVessels<3>;
-
-// Serialization for Boost >= 1.36
-#include "SerializationExportWrapperForCpp.hpp"
-EXPORT_TEMPLATE_CLASS_SAME_DIMS(CaBasedCellPopulationWithVessels)

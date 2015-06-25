@@ -231,27 +231,27 @@ const std::string& VascularNode<DIM>::rGetLabel() const
 template<unsigned DIM>
 ChastePoint<DIM> VascularNode<DIM>::GetLocation() const
 {
-    if (mpCell)
-    {
-        return mpCellPopulation->GetLocationOfCellCentre(mpCell);
-    }
-    else
-    {
+//    if (mpCell)
+//    {
+//        return mpCellPopulation->GetLocationOfCellCentre(mpCell);
+//    }
+//    else
+//    {
         return mLocation;
-    }
+//    }
 }
 
 template<unsigned DIM>
 c_vector<double, DIM> VascularNode<DIM>::GetLocationVector() const
 {
-    if (mpCell)
-    {
-        return mpCellPopulation->GetLocationOfCellCentre(mpCell);
-    }
-    else
-    {
+//    if (mpCell)
+//    {
+//        return mpCellPopulation->GetLocationOfCellCentre(mpCell);
+//    }
+//    else
+//    {
         return mLocation.rGetLocation();
-    }
+//    }
 }
 
 template<unsigned DIM>
@@ -362,17 +362,17 @@ void VascularNode<DIM>::RemoveSegment(boost::shared_ptr<CaVesselSegment<DIM> > p
 template<unsigned DIM>
 void VascularNode<DIM>::SetCell(CellPtr pCell)
 {
-    if (!mpCellPopulation)
-    {
-        EXCEPTION("Attempted to add a Cell without first adding a CellPopulation.");
-    }
-
-    std::list<CellPtr> cell_list = mpCellPopulation->rGetCells();
-    bool found = (std::find(cell_list.begin(), cell_list.end(), pCell) != cell_list.end());
-    if (!found)
-    {
-        EXCEPTION("Attempted to add a Cell that is not in the assigned CellPopulation.");
-    }
+//    if (!mpCellPopulation)
+//    {
+//        EXCEPTION("Attempted to add a Cell without first adding a CellPopulation.");
+//    }
+//
+//    std::list<CellPtr> cell_list = mpCellPopulation->rGetCells();
+//    bool found = (std::find(cell_list.begin(), cell_list.end(), pCell) != cell_list.end());
+//    if (!found)
+//    {
+//        EXCEPTION("Attempted to add a Cell that is not in the assigned CellPopulation.");
+//    }
 
     mpCell = pCell;
 }

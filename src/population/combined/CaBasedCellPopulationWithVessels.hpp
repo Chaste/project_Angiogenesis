@@ -36,15 +36,10 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef CABASEDCELLPOPULATIONWITHVESSELS_HPP_
 #define CABASEDCELLPOPULATIONWITHVESSELS_HPP_
 
-#include "AbstractOnLatticeCellPopulation.hpp"
 #include "CaBasedCellPopulation.hpp"
 #include "PottsMesh.hpp"
 #include "VertexMesh.hpp"
 #include "AbstractCaUpdateRule.hpp"
-
-#include "ChasteSerialization.hpp"
-#include <boost/serialization/base_object.hpp>
-#include <boost/serialization/vector.hpp>
 
 #include "CaVascularNetwork.hpp"
 
@@ -71,15 +66,7 @@ class CaBasedCellPopulationWithVessels : public CaBasedCellPopulation<DIM>
 
 private:
 
-    boost::shared_ptr<CaVascularNetwork<DIM> >mpNetwork;
-
-    template<class Archive>
-    void serialize(Archive & archive, const unsigned int version)
-    {
-#define COVERAGE_IGNORE
-        archive & boost::serialization::base_object<AbstractOnLatticeCellPopulation<DIM> >(*this);
-#undef COVERAGE_IGNORE
-    }
+    boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
 
 public:
 
@@ -105,63 +92,21 @@ public:
                                   bool validate=false);
 
     /**
-     * Constructor for use by the de-serializer.
-     *
-     * @param rMesh a vertex mesh.
-     */
-    CaBasedCellPopulationWithVessels(PottsMesh<DIM>& rMesh);
-
-    /**
-     * Associate with a vessel network
+     * Add a vessel network to the population
      *
      * @param pNetwork
-     * @param pStalkCellMutatationState
-     * @param pTipCellMutatationState
      */
-    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> >pNetwork,
-                          boost::shared_ptr<AbstractCellMutationState> pStalkCellMutatationState = boost::shared_ptr<AbstractCellMutationState>(),
-                          boost::shared_ptr<AbstractCellMutationState> pTipCellMutatationState = boost::shared_ptr<AbstractCellMutationState>());
+    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> >pNetwork);
+
+    /**
+     * Associate the vessel network with the underlying cell population.
+     *
+     * @param pStalkCellMutatationState the mutation state of any stalk cells
+     * @param pTipCellMutatationState the mutation state of any tip cells
+     */
+    void AsscoiateVesselNetworkWithCells(boost::shared_ptr<AbstractCellMutationState> pStalkCellMutatationState = boost::shared_ptr<AbstractCellMutationState>(),
+                                         boost::shared_ptr<AbstractCellMutationState> pTipCellMutatationState = boost::shared_ptr<AbstractCellMutationState>());
 
 };
-
-#include "SerializationExportWrapper.hpp"
-EXPORT_TEMPLATE_CLASS_SAME_DIMS(CaBasedCellPopulationWithVessels)
-
-// No archiving yet so untested
-#define COVERAGE_IGNORE
-namespace boost
-{
-namespace serialization
-{
-/**
- * Serialize information required to construct a CaBasedCellPopulationWithVessels.
- */
-template<class Archive, unsigned DIM>
-inline void save_construct_data(
-    Archive & ar, const CaBasedCellPopulationWithVessels<DIM> * t, const BOOST_PFTO unsigned int file_version)
-{
-    // Save data required to construct instance
-    const PottsMesh<DIM>* p_mesh = &(t->rGetMesh());
-    ar & p_mesh;
-}
-
-/**
- * De-serialize constructor parameters and initialise a CaBasedCellPopulationWithVessels.
- * Loads the mesh from separate files.
- */
-template<class Archive, unsigned DIM>
-inline void load_construct_data(
-    Archive & ar, CaBasedCellPopulationWithVessels<DIM> * t, const unsigned int file_version)
-{
-    // Retrieve data from archive required to construct new instance
-    PottsMesh<DIM>* p_mesh;
-    ar >> p_mesh;
-
-    // Invoke inplace constructor to initialise instance
-    ::new(t)CaBasedCellPopulationWithVessels<DIM>(*p_mesh);
-}
-}
-} // namespace ...
-#undef COVERAGE_IGNORE
 
 #endif /*CABASEDCELLPOPULATIONWITHVESSELS_HPP_*/

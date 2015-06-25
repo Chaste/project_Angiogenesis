@@ -163,7 +163,6 @@ double CaVesselSegment<DIM>::GetDistance(c_vector<double, DIM> location) const
     double projection_ratio = dp_segment_point / dp_segment_segment;
     c_vector<double, DIM> projected_point = start_location + projection_ratio * segment_vector;
     double distance = norm_2(projected_point - location);
-
     return distance;
 }
 
