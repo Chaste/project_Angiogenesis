@@ -73,6 +73,13 @@ CaVascularNetwork<DIM>::~CaVascularNetwork()
 }
 
 template <unsigned DIM>
+boost::shared_ptr<CaVascularNetwork<DIM> > CaVascularNetwork<DIM>::Create()
+{
+    MAKE_PTR(CaVascularNetwork<DIM>, pSelf);
+    return pSelf;
+}
+
+template <unsigned DIM>
 void CaVascularNetwork<DIM>::AddVessel(boost::shared_ptr<CaVessel<DIM> > pVessel)
 {
     mVessels.push_back(pVessel);
