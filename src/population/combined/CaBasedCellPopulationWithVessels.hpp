@@ -98,14 +98,14 @@ public:
      */
     void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> >pNetwork);
 
-    /**
-     * Associate the vessel network with the underlying cell population.
-     *
-     * @param pStalkCellMutatationState the mutation state of any stalk cells
-     * @param pTipCellMutatationState the mutation state of any tip cells
-     */
-    void AsscoiateVesselNetworkWithCells(boost::shared_ptr<AbstractCellMutationState> pStalkCellMutatationState = boost::shared_ptr<AbstractCellMutationState>(),
-                                         boost::shared_ptr<AbstractCellMutationState> pTipCellMutatationState = boost::shared_ptr<AbstractCellMutationState>());
+//    /**
+//     * Associate the vessel network with the underlying cell population.
+//     *
+//     * @param pStalkCellMutatationState the mutation state of any stalk cells
+//     * @param pTipCellMutatationState the mutation state of any tip cells
+//     */
+//    void AsscoiateVesselNetworkWithCells(boost::shared_ptr<AbstractCellMutationState> pStalkCellMutatationState = boost::shared_ptr<AbstractCellMutationState>(),
+//                                         boost::shared_ptr<AbstractCellMutationState> pTipCellMutatationState = boost::shared_ptr<AbstractCellMutationState>());
 
 };
 

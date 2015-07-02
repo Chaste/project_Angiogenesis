@@ -19,6 +19,7 @@
 #include "CaBasedCellPopulationWithVessels.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "DifferentiatedCellProliferativeType.hpp"
+#include "OnLatticeVascularTumourCellPopulationGenerator.hpp"
 #include "StochasticDurationCellCycleModel.hpp"
 #include "CellLabelWriter.hpp"
 #include "CellMutationStatesWriter.hpp"
@@ -59,31 +60,15 @@ public:
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("InitialVesselNetwork.vtp");
         p_network->Write(output_filename);
 
-        // Create some cells to fill the domain
-        std::vector<CellPtr> cells;
-        MAKE_PTR(DifferentiatedCellProliferativeType, p_transit_type);
-        CellsGenerator<StochasticDurationCellCycleModel, 3> cells_generator;
-        cells_generator.GenerateBasicRandom(cells, p_mesh->GetNumNodes(), p_transit_type);
+        // Create cell population
+        // ______________________
 
-        MAKE_PTR(CancerCellMutationState, p_cancer_cell_mutation_state);
-        std::vector<unsigned> location_indices;
-        for(unsigned idx = 0; idx< p_mesh->GetNumNodes(); idx++)
-        {
-            location_indices.push_back(idx);
-            cells[idx]->SetMutationState(p_cancer_cell_mutation_state);
-        }
-
-        // Create a combined cell and vessel population
-        MAKE_PTR_ARGS(CaBasedCellPopulationWithVessels<3>, p_combined_population, (*p_mesh, cells, location_indices));
-
-        // Define mutation states for tips and stalks
-        MAKE_PTR(StalkCellMutationState, p_stalk_cell_mutation_state);
-        MAKE_PTR(TipCellMutationState, p_tip_cell_mutation_state);
-
-        // Add the vessels
-        p_combined_population->SetVesselNetwork(p_network);
-        p_combined_population->AsscoiateVesselNetworkWithCells(p_stalk_cell_mutation_state,
-                                                               p_tip_cell_mutation_state);
+        // use OnLatticeVascularTumourCellPopulationGenerator to generate cells and associate cells
+        // with vessels
+        OnLatticeVascularTumourCellPopulationGenerator<3> cellPopulationGenerator;
+        cellPopulationGenerator.SetIncludeNormalCellPopulation(false);
+        boost::shared_ptr<CaBasedCellPopulationWithVessels<3> > cell_population =
+                cellPopulationGenerator.CreateCellPopulation(*p_mesh, p_network);
 
         // Test that the network is correctly associated with the cells
         // are 20 nodes in the network, 2 vessel nodes, and 1 vessel
@@ -105,12 +90,12 @@ public:
 
         // VTK writing needs a simulation time
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(1.0, 1);
-        p_combined_population->AddCellWriter<CellLabelWriter>();
-        p_combined_population->AddCellWriter<CellMutationStatesWriter>();
-        p_combined_population->AddPopulationWriter<NodeLocationWriter>();
-        p_combined_population->OpenWritersFiles(output_file_handler);
-        p_combined_population->WriteResultsToFiles(output_directory);
-        p_combined_population->CloseWritersFiles();
+        cell_population->AddCellWriter<CellLabelWriter>();
+        cell_population->AddCellWriter<CellMutationStatesWriter>();
+        cell_population->AddPopulationWriter<NodeLocationWriter>();
+        cell_population->OpenWritersFiles(output_file_handler);
+        cell_population->WriteResultsToFiles(output_directory);
+        cell_population->CloseWritersFiles();
     }
 };
 

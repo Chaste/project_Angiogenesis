@@ -61,57 +61,57 @@ void CaBasedCellPopulationWithVessels<DIM>::SetVesselNetwork(boost::shared_ptr<C
     mpNetwork = pNetwork;
 }
 
-template<unsigned DIM>
-void CaBasedCellPopulationWithVessels<DIM>::AsscoiateVesselNetworkWithCells(
-                      boost::shared_ptr<AbstractCellMutationState> pStalkCellMutatationState,
-                      boost::shared_ptr<AbstractCellMutationState> pTipCellMutatationState)
-{
-    if(!mpNetwork)
-    {
-        EXCEPTION("A vessel network has not been assigned to the population.");
-    }
-
-    // TODO the vessel network should be fully snapped to the potts mesh. This should be tested for here.
-    // For now create nodes on the vessel network wherever potts mesh nodes intersect segments.
-    for (unsigned index=0; index < this->rGetMesh().GetNumNodes(); index++)
-    {
-        c_vector<double, DIM> node_location = this->rGetMesh().GetNode(index)->rGetLocation();
-        std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> segment_distance_pair =
-                mpNetwork->GetNearestSegment(node_location);
-
-        // If the mesh node is on the segment, create a vessel node at the location (if there isn't one
-        // already there) and assign a cell to it.
-        if (segment_distance_pair.second < 1e-6)
-        {
-            boost::shared_ptr<CaVessel<DIM> > pVessel = segment_distance_pair.first->GetVessel();
-            boost::shared_ptr<VascularNode<DIM> > pNode = pVessel->DivideSegment(this->rGetMesh().GetNode(index)->GetPoint());
-
-            // If there is a cell at this location assign it stalk or tip mutation states, if they have been defined.
-            if(this->IsCellAttachedToLocationIndex(index))
-            {
-                CellPtr pCell = this->GetCellUsingLocationIndex(index);
-                pNode->SetCell(pCell);
-
-                if(pNode->GetNumberOfSegments()==1 && pTipCellMutatationState)
-                {
-                    pCell->SetMutationState(pTipCellMutatationState);
-                }
-                else
-                {
-                    pCell->SetMutationState(pStalkCellMutatationState);
-                }
-            }
-            else
-            {
-                // For now, throw an exception, in future add cells at vessel node locations
-                EXCEPTION("No cell defined at the location of a vessel node.");
-            }
-            mpNetwork->UpdateNodes();
-            mpNetwork->UpdateSegments();
-            mpNetwork->UpdateVesselNodes();
-        }
-    }
-}
+//template<unsigned DIM>
+//void CaBasedCellPopulationWithVessels<DIM>::AsscoiateVesselNetworkWithCells(
+//                      boost::shared_ptr<AbstractCellMutationState> pStalkCellMutatationState,
+//                      boost::shared_ptr<AbstractCellMutationState> pTipCellMutatationState)
+//{
+//    if(!mpNetwork)
+//    {
+//        EXCEPTION("A vessel network has not been assigned to the population.");
+//    }
+//
+//    // TODO the vessel network should be fully snapped to the potts mesh. This should be tested for here.
+//    // For now create nodes on the vessel network wherever potts mesh nodes intersect segments.
+//    for (unsigned index=0; index < this->rGetMesh().GetNumNodes(); index++)
+//    {
+//        c_vector<double, DIM> node_location = this->rGetMesh().GetNode(index)->rGetLocation();
+//        std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> segment_distance_pair =
+//                mpNetwork->GetNearestSegment(node_location);
+//
+//        // If the mesh node is on the segment, create a vessel node at the location (if there isn't one
+//        // already there) and assign a cell to it.
+//        if (segment_distance_pair.second < 1e-6)
+//        {
+//            boost::shared_ptr<CaVessel<DIM> > pVessel = segment_distance_pair.first->GetVessel();
+//            boost::shared_ptr<VascularNode<DIM> > pNode = pVessel->DivideSegment(this->rGetMesh().GetNode(index)->GetPoint());
+//
+//            // If there is a cell at this location assign it stalk or tip mutation states, if they have been defined.
+//            if(this->IsCellAttachedToLocationIndex(index))
+//            {
+//                CellPtr pCell = this->GetCellUsingLocationIndex(index);
+//                pNode->SetCell(pCell);
+//
+//                if(pNode->GetNumberOfSegments()==1 && pTipCellMutatationState)
+//                {
+//                    pCell->SetMutationState(pTipCellMutatationState);
+//                }
+//                else
+//                {
+//                    pCell->SetMutationState(pStalkCellMutatationState);
+//                }
+//            }
+//            else
+//            {
+//                // For now, throw an exception, in future add cells at vessel node locations
+//                EXCEPTION("No cell defined at the location of a vessel node.");
+//            }
+//            mpNetwork->UpdateNodes();
+//            mpNetwork->UpdateSegments();
+//            mpNetwork->UpdateVesselNodes();
+//        }
+//    }
+//}
 
 // Explicit instantiation
 template class CaBasedCellPopulationWithVessels<2>;
