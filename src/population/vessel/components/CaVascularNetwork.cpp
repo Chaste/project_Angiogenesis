@@ -839,14 +839,13 @@ bool CaVascularNetwork<DIM>::NodeIsInNetwork(boost::shared_ptr<VascularNode<DIM>
 }
 
 template <unsigned DIM>
-void CaVascularNetwork<DIM>::MergeCoincidentNodes()
+void CaVascularNetwork<DIM>::MergeCoincidentNodes(double tolerance)
 {
-    std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = GetNodes();
-    MergeCoincidentNodes(nodes);
+    MergeCoincidentNodes(GetNodes(), tolerance);
 }
 
 template <unsigned DIM>
-void CaVascularNetwork<DIM>::MergeCoincidentNodes(std::vector<boost::shared_ptr<CaVessel<DIM> > > pVessels)
+void CaVascularNetwork<DIM>::MergeCoincidentNodes(std::vector<boost::shared_ptr<CaVessel<DIM> > > pVessels, double tolerance)
 {
     std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes;
     for(unsigned idx = 0; idx <pVessels.size(); idx++)
@@ -854,11 +853,11 @@ void CaVascularNetwork<DIM>::MergeCoincidentNodes(std::vector<boost::shared_ptr<
         std::vector<boost::shared_ptr<VascularNode<DIM> > > vessel_nodes = pVessels[idx]->GetNodes();
         nodes.insert(nodes.end(), vessel_nodes.begin(), vessel_nodes.end());
     }
-    MergeCoincidentNodes(nodes);
+    MergeCoincidentNodes(nodes, tolerance);
 }
 
 template <unsigned DIM>
-void CaVascularNetwork<DIM>::MergeCoincidentNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes)
+void CaVascularNetwork<DIM>::MergeCoincidentNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes, double tolerance)
 {
     typename std::vector<boost::shared_ptr<VascularNode<DIM> > >::iterator it;
     typename std::vector<boost::shared_ptr<VascularNode<DIM> > >::iterator it2;
@@ -872,7 +871,17 @@ void CaVascularNetwork<DIM>::MergeCoincidentNodes(std::vector<boost::shared_ptr<
             if ((*it) != (*it2))
             {
                 // If the node locations are the same - according to the ChastePoint definition
-                if((*it)->IsCoincident((*it2)))
+                bool is_coincident = false;
+                if(tolerance >0.0)
+                {
+                    is_coincident = (*it)->GetDistance((*it2)) <= tolerance;
+                }
+                else
+                {
+                    is_coincident = (*it)->IsCoincident((*it2));
+                }
+
+                if(is_coincident)
                 {
                     // Replace the node corresponding to 'it2' with the one corresponding to 'it'
                     // in all segments.

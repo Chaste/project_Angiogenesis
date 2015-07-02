@@ -479,6 +479,7 @@ std::map<std::string, double> CaVessel<DIM>::GetVtkData() const
     vtk_data["Vessel Impedance"] = GetImpedance();
     vtk_data["Vessel Haematocrit"] = GetHaematocrit();
     vtk_data["Vessel Flow Rate"] = GetFlowRate();
+    vtk_data["Vessel Absolute Flow Rate"] = std::abs(GetFlowRate());
     vtk_data["Vessel Viscosity"] = GetViscosity();
     return vtk_data;
 }

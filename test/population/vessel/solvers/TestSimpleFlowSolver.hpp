@@ -81,7 +81,7 @@ public:
 
 		p_vascular_network->AddVessel(p_vessel);
 
-        double impedance = 1.e14;
+        double impedance = 1.e12;
 		p_segment->GetFlowProperties()->SetImpedance(impedance);
 		p_vascular_network->SetSegmentProperties(p_segment);
 

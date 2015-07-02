@@ -39,7 +39,7 @@
 #include <vector>
 #include <string>
 
-#include "../../../vessel/components/CaVascularNetwork.hpp"
+#include "CaVascularNetwork.hpp"
 #include "SmartPointers.hpp"
 
 template<unsigned DIM>

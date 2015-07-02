@@ -297,19 +297,19 @@ public:
      Merge nodes with the same spatial location. Useful for
      tidying up networks read from file.
      */
-    void MergeCoincidentNodes();
+    void MergeCoincidentNodes(double tolerance = 0.0);
 
     /**
      Merge nodes with the same spatial location. Useful for
      tidying up networks read from file.
      */
-    void MergeCoincidentNodes(std::vector<boost::shared_ptr<CaVessel<DIM> > > pVessels);
+    void MergeCoincidentNodes(std::vector<boost::shared_ptr<CaVessel<DIM> > > pVessels, double tolerance = 0.0);
 
     /**
      Merge nodes with the same spatial location. Useful for
      tidying up networks read from file.
      */
-    void MergeCoincidentNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes);
+    void MergeCoincidentNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes, double tolerance = 0.0);
 
     /**
      Apply the input data to all nodes in the network
