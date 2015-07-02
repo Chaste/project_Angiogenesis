@@ -31,7 +31,7 @@ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-*/
+ */
 
 #ifndef CABASEDCELLPOPULATIONWITHVESSELS_HPP_
 #define CABASEDCELLPOPULATIONWITHVESSELS_HPP_
@@ -40,6 +40,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "PottsMesh.hpp"
 #include "VertexMesh.hpp"
 #include "AbstractCaUpdateRule.hpp"
+#include "StalkCellMutationState.hpp"
+#include "TipCellMutationState.hpp"
 
 #include "CaVascularNetwork.hpp"
 
@@ -68,6 +70,12 @@ private:
 
     boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
 
+    std::vector<boost::shared_ptr<Cell> > mTipCells;
+
+    boost::shared_ptr<TipCellMutationState> mp_tip_mutation_state;
+
+    boost::shared_ptr<StalkCellMutationState> mp_stalk_mutation_state;
+
 public:
 
     /**
@@ -85,11 +93,11 @@ public:
      * @param validate whether to validate the cell population when it is created (defaults to false as not used in CA simulations)
      */
     CaBasedCellPopulationWithVessels(PottsMesh<DIM>& rMesh,
-                                  std::vector<CellPtr>& rCells,
-                                  const std::vector<unsigned> locationIndices,
-                                  unsigned latticeCarryingCapacity=1u,
-                                  bool deleteMesh=false,
-                                  bool validate=false);
+                                     std::vector<CellPtr>& rCells,
+                                     const std::vector<unsigned> locationIndices,
+                                     unsigned latticeCarryingCapacity=1u,
+                                     bool deleteMesh=false,
+                                     bool validate=false);
 
     /**
      * Add a vessel network to the population
@@ -98,14 +106,34 @@ public:
      */
     void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> >pNetwork);
 
-//    /**
-//     * Associate the vessel network with the underlying cell population.
-//     *
-//     * @param pStalkCellMutatationState the mutation state of any stalk cells
-//     * @param pTipCellMutatationState the mutation state of any tip cells
-//     */
-//    void AsscoiateVesselNetworkWithCells(boost::shared_ptr<AbstractCellMutationState> pStalkCellMutatationState = boost::shared_ptr<AbstractCellMutationState>(),
-//                                         boost::shared_ptr<AbstractCellMutationState> pTipCellMutatationState = boost::shared_ptr<AbstractCellMutationState>());
+    /**
+     * Select a cell to take on tip cell mutation
+     */
+    void SelectTipCell(boost::shared_ptr<Cell> pCell);
+
+    /**
+     * Select a cell to take on stalk cell mutation
+     */
+    void DeselectTipCell(boost::shared_ptr<Cell> pCell);
+
+    /**
+     * Return number of tip cells in population.
+     */
+    unsigned GetNumberOfTipCells();
+
+    /**
+     * Return vector of tip cells.
+     */
+    std::vector<boost::shared_ptr<Cell> > GetTipCells();
+
+    //    /**
+    //     * Associate the vessel network with the underlying cell population.
+    //     *
+    //     * @param pStalkCellMutatationState the mutation state of any stalk cells
+    //     * @param pTipCellMutatationState the mutation state of any tip cells
+    //     */
+    //    void AsscoiateVesselNetworkWithCells(boost::shared_ptr<AbstractCellMutationState> pStalkCellMutatationState = boost::shared_ptr<AbstractCellMutationState>(),
+    //                                         boost::shared_ptr<AbstractCellMutationState> pTipCellMutatationState = boost::shared_ptr<AbstractCellMutationState>());
 
 };
 

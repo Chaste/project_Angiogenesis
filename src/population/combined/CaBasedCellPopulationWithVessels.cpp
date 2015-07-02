@@ -31,7 +31,7 @@ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-*/
+ */
 
 
 #include "Exception.hpp"
@@ -40,25 +40,79 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 template<unsigned DIM>
 CaBasedCellPopulationWithVessels<DIM>::CaBasedCellPopulationWithVessels(PottsMesh<DIM>& rMesh,
-                                                        std::vector<CellPtr>& rCells,
-                                                        const std::vector<unsigned> locationIndices,
-                                                        unsigned latticeCarryingCapacity,
-                                                        bool deleteMesh,
-                                                        bool validate)
-    : CaBasedCellPopulation<DIM>(rMesh,
-                                 rCells,
-                                 locationIndices,
-                                 latticeCarryingCapacity,
-                                 deleteMesh,
-                                 validate),
-      mpNetwork()
-{
-}
+                                                                        std::vector<CellPtr>& rCells,
+                                                                        const std::vector<unsigned> locationIndices,
+                                                                        unsigned latticeCarryingCapacity,
+                                                                        bool deleteMesh,
+                                                                        bool validate)
+                                                                        : CaBasedCellPopulation<DIM>(rMesh,
+                                                                                                     rCells,
+                                                                                                     locationIndices,
+                                                                                                     latticeCarryingCapacity,
+                                                                                                     deleteMesh,
+                                                                                                     validate),
+                                                                                                     mpNetwork(),
+                                                                                                     mTipCells(),
+                                                                                                     mp_tip_mutation_state(new TipCellMutationState),
+                                                                                                     mp_stalk_mutation_state(new StalkCellMutationState)
+                                                                                                     {
+                                                                                                     }
 
 template<unsigned DIM>
 void CaBasedCellPopulationWithVessels<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
 {
     mpNetwork = pNetwork;
+}
+
+template<unsigned DIM>
+void CaBasedCellPopulationWithVessels<DIM>::SelectTipCell(boost::shared_ptr<Cell> pCell)
+{
+
+    if (pCell->GetMutationState()->IsSame(mp_stalk_mutation_state))
+    {
+        pCell->SetMutationState(mp_tip_mutation_state);
+        mTipCells.push_back(pCell);
+    }
+    else
+    {
+        EXCEPTION("Only stalk cells can be selected to be a tip cell.");
+    }
+
+}
+
+template<unsigned DIM>
+void CaBasedCellPopulationWithVessels<DIM>::DeselectTipCell(boost::shared_ptr<Cell> pCell)
+{
+    if (pCell->GetMutationState()->IsSame(mp_tip_mutation_state))
+    {
+        pCell->SetMutationState(mp_stalk_mutation_state);
+        typename std::vector<boost::shared_ptr<Cell> >::iterator it = std::find(mTipCells.begin(), mTipCells.end(), pCell);
+        if(it != mTipCells.end())
+        {
+            mTipCells.erase(it);
+        }
+        else
+        {
+            EXCEPTION("Tip cell is not contained inside tip cell container.");
+        }
+    }
+    else
+    {
+        EXCEPTION("Cell is not a tip cell.");
+    }
+
+}
+
+template<unsigned DIM>
+unsigned CaBasedCellPopulationWithVessels<DIM>::GetNumberOfTipCells()
+{
+    return mTipCells.size();
+}
+
+template<unsigned DIM>
+std::vector<boost::shared_ptr<Cell> > CaBasedCellPopulationWithVessels<DIM>::GetTipCells()
+{
+    return mTipCells;
 }
 
 //template<unsigned DIM>
