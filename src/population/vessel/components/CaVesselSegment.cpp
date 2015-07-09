@@ -139,30 +139,26 @@ std::vector<std::string> CaVesselSegment<DIM>::GetDataKeys(bool castableToDouble
 template<unsigned DIM>
 double CaVesselSegment<DIM>::GetDistance(c_vector<double, DIM> location) const
 {
-    c_vector<double, DIM> start_location = GetNode(0)->GetLocation().rGetLocation();
-    c_vector<double, DIM> end_location = GetNode(1)->GetLocation().rGetLocation();
+    c_vector<double, DIM> start_location = mNodes.first->GetLocationVector();
+    c_vector<double, DIM> segment_vector = mNodes.second->GetLocationVector() - start_location;
 
-    c_vector<double, DIM> segment_vector = end_location - start_location;
-    c_vector<double, DIM> point_vector = location - start_location;
-
-    double dp_segment_point = inner_prod(segment_vector, point_vector);
+    double dp_segment_point = inner_prod(segment_vector, location - start_location);
     // Point projection is outside segment, return node0 distance
     if (dp_segment_point <= 0.0)
     {
-        return GetNode(0)->GetDistance(location);
+        return mNodes.first->GetDistance(location);
     }
 
     double dp_segment_segment = inner_prod(segment_vector, segment_vector);
     // Point projection is outside segment, return node1 distance
     if (dp_segment_segment <= dp_segment_point)
     {
-        return GetNode(1)->GetDistance(location);
+        return mNodes.second->GetDistance(location);
     }
 
     // Point projection is inside segment, get distance to point projection
     double projection_ratio = dp_segment_point / dp_segment_segment;
-    c_vector<double, DIM> projected_point = start_location + projection_ratio * segment_vector;
-    double distance = norm_2(projected_point - location);
+    double distance = norm_2(start_location + projection_ratio * segment_vector - location);
     return distance;
 }
 
