@@ -1121,6 +1121,29 @@ boost::shared_ptr<CaVessel<DIM> > CaVascularNetwork<DIM>::FormSprout(ChastePoint
 
 }
 
+template <unsigned DIM>
+void CaVascularNetwork<DIM>::SetNodeRadii(double radius)
+{
+    std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = GetNodes();
+
+    for(unsigned idx=0; idx<nodes.size();idx++)
+    {
+        nodes[idx]->SetRadius(radius);
+    }
+
+}
+
+template <unsigned DIM>
+void CaVascularNetwork<DIM>::SetSegmentRadii(double radius)
+{
+    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = GetVesselSegments();
+
+    for(unsigned idx=0; idx<segments.size();idx++)
+    {
+        segments[idx]->SetRadius(radius);
+    }
+}
+
 #ifdef CHASTE_VTK
 template <unsigned DIM>
 vtkSmartPointer<vtkPolyData> CaVascularNetwork<DIM>::GetVtk()

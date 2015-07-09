@@ -111,6 +111,13 @@ CaVessel<DIM>::CaVessel(std::vector<boost::shared_ptr<VascularNode<DIM> > > node
 }
 
 template<unsigned DIM>
+CaVessel<DIM>::CaVessel(boost::shared_ptr<VascularNode<DIM> > pStartNode, boost::shared_ptr<VascularNode<DIM> > pEndNode)
+{
+    MAKE_VN_PTR_ARGS(CaVesselSegment<DIM>, pSegment, (pStartNode, pEndNode));
+    mSegments.push_back(pSegment);
+}
+
+template<unsigned DIM>
 CaVessel<DIM>::~CaVessel()
 {
 }
@@ -146,6 +153,21 @@ boost::shared_ptr<CaVessel<DIM> > CaVessel<DIM>::Create(std::vector<boost::share
     std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = pSelf->GetSegments();
 
     // Add the vessel to the new segments
+    for (unsigned i = 0; i < segments.size(); i++)
+    {
+        segments[i]->AddVessel(pSelf->shared_from_this());
+    }
+    return pSelf;
+}
+
+template<unsigned DIM>
+boost::shared_ptr<CaVessel<DIM> > CaVessel<DIM>::Create(boost::shared_ptr<VascularNode<DIM> > pStartNode, boost::shared_ptr<VascularNode<DIM> > pEndNode)
+{
+    boost::shared_ptr<CaVessel<DIM> > pSelf(new CaVessel<DIM>(pStartNode, pEndNode));
+
+    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = pSelf->GetSegments();
+
+    // Add the vessel to the new segment
     for (unsigned i = 0; i < segments.size(); i++)
     {
         segments[i]->AddVessel(pSelf->shared_from_this());

@@ -317,6 +317,11 @@ public:
     void SetNodeData(VasculatureData data);
 
     /**
+     Set the nodal radii to the same value
+     */
+    void SetNodeRadii(double radius);
+
+    /**
      Set the properties of the segments in the network based on those of the prototype
      */
     void SetSegmentProperties(boost::shared_ptr<CaVesselSegment<DIM> > prototype);
@@ -330,6 +335,11 @@ public:
      Apply the input data to all vessels in the network
      */
     void SetSegmentData(VasculatureData data);
+
+    /**
+     Set the segment radii to the same value
+     */
+    void SetSegmentRadii(double radius);
 
     /*
      * Translate the network along the provided vector

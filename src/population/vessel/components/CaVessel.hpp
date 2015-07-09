@@ -121,6 +121,13 @@ private:
      */
     CaVessel(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes);
 
+    /**
+     Alternate Constructor.
+
+     Initialize with two nodes.
+     */
+    CaVessel(boost::shared_ptr<VascularNode<DIM> > pStartNode, boost::shared_ptr<VascularNode<DIM> > pEndNode);
+
 public:
 
     /*
@@ -137,6 +144,11 @@ public:
      * Construct a new instance of the class and return a shared pointer to it.
      */
     static boost::shared_ptr<CaVessel<DIM> > Create(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes);
+
+    /*
+     * Construct a new instance of the class and return a shared pointer to it.
+     */
+    static boost::shared_ptr<CaVessel<DIM> > Create(boost::shared_ptr<VascularNode<DIM> > pStartNode, boost::shared_ptr<VascularNode<DIM> > pEndNode);
 
     /**
      Destructor.
