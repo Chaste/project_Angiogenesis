@@ -43,6 +43,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "StalkCellMutationState.hpp"
 #include "TipCellMutationState.hpp"
 
+template<unsigned DIM>
+class CellBasedPdeHandler; // circular definition
+
 #include "CaVascularNetwork.hpp"
 
 template<unsigned DIM>
@@ -75,6 +78,8 @@ private:
     boost::shared_ptr<TipCellMutationState> mp_tip_mutation_state;
 
     boost::shared_ptr<StalkCellMutationState> mp_stalk_mutation_state;
+
+    boost::shared_ptr<CellBasedPdeHandler<DIM> > mp_pde_handler;
 
 public:
 
@@ -125,6 +130,15 @@ public:
      * Return vector of tip cells.
      */
     std::vector<boost::shared_ptr<Cell> > GetTipCells();
+
+    void AddPdeHandler(boost::shared_ptr<CellBasedPdeHandler<DIM> > pde_handler);
+
+    /**
+     * Method to update endothelial cell population
+     * \\TODO break this up into smaller pieces and make sure those smaller pieces are in-fitting
+     * with methods in CaBasedCellPopulation
+     */
+    void UpdateVascularCellPopulation();
 
     //    /**
     //     * Associate the vessel network with the underlying cell population.

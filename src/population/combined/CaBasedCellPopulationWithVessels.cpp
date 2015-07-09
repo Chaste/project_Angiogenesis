@@ -35,8 +35,10 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #include "Exception.hpp"
-
+#include "CellBasedPdeHandler.hpp"
 #include "CaBasedCellPopulationWithVessels.hpp"
+#include "RandomNumberGenerator.hpp"
+#include "ReplicatableVector.hpp"
 
 template<unsigned DIM>
 CaBasedCellPopulationWithVessels<DIM>::CaBasedCellPopulationWithVessels(PottsMesh<DIM>& rMesh,
@@ -54,7 +56,8 @@ CaBasedCellPopulationWithVessels<DIM>::CaBasedCellPopulationWithVessels(PottsMes
                                                                                                      mpNetwork(),
                                                                                                      mTipCells(),
                                                                                                      mp_tip_mutation_state(new TipCellMutationState),
-                                                                                                     mp_stalk_mutation_state(new StalkCellMutationState)
+                                                                                                     mp_stalk_mutation_state(new StalkCellMutationState),
+                                                                                                     mp_pde_handler()
                                                                                                      {
                                                                                                      }
 
@@ -114,6 +117,98 @@ std::vector<boost::shared_ptr<Cell> > CaBasedCellPopulationWithVessels<DIM>::Get
 {
     return mTipCells;
 }
+
+template<unsigned DIM>
+void CaBasedCellPopulationWithVessels<DIM>::AddPdeHandler(boost::shared_ptr<CellBasedPdeHandler<DIM> > pde_handler)
+{
+    mp_pde_handler = pde_handler;
+}
+
+template<unsigned DIM>
+void CaBasedCellPopulationWithVessels<DIM>::UpdateVascularCellPopulation()
+{
+
+    double pMax = 0.1;
+    double halfMaxVEGF = 0.5;
+
+    // iterate through cells and select tip cells based on local concentration of VEGF
+    for (typename AbstractCellPopulation<DIM,DIM>::Iterator cell_iter = this->Begin();
+             cell_iter != this->End();
+             ++cell_iter)
+    {
+
+        if ((*cell_iter)->GetMutationState()->IsSame(mp_stalk_mutation_state))
+        {
+            double localVEGFConcentration = 0;
+
+            if (mp_pde_handler != NULL)
+            {
+//                localVEGFConcentration = mp_pde_handler->GetPdeSolutionAtPoint(GetLocationOfCellCentre(*cell_iter), "VEGF");
+                localVEGFConcentration = (*cell_iter)->GetCellData()->GetItem("VEGF");
+            }
+
+            double probabilityOfTipSelection = pMax*SimulationTime::Instance()->GetTimeStep()*localVEGFConcentration/(localVEGFConcentration + halfMaxVEGF);
+
+            if (RandomNumberGenerator::Instance()->ranf() < probabilityOfTipSelection)
+            {
+                SelectTipCell(*cell_iter);
+            }
+
+        }
+
+    }
+    RandomNumberGenerator::Instance()->Shuffle(mTipCells);
+
+    // decide whether each tip cell migrates
+    ReplicatableVector pde_solution_repl(mp_pde_handler->GetPdeSolution("VEGF"));
+    for (unsigned tip_index = 0; tip_index < GetNumberOfTipCells(); tip_index++)
+    {
+
+        // Get tip location
+        c_vector<double,DIM> tip_location = this->GetLocationOfCellCentre(mTipCells[tip_index]);
+        double tip_concentration =  mp_pde_handler->GetPdeSolutionAtPoint(tip_location, "VEGF");
+
+        // Get neighbouring Potts mesh node locations
+        std::set<unsigned> neighbour_location_indices = this->GetNeighbouringLocationIndices(mTipCells[tip_index]);
+        std::vector<unsigned> vec_neighbour_locations;
+        std::vector<c_vector<double,DIM> > neighbour_locations;
+        std::vector<bool> neighbour_occupancy;
+
+        for (std::set<unsigned>::iterator it=neighbour_location_indices.begin(); it!=neighbour_location_indices.end(); ++it)
+        {
+            neighbour_locations.push_back(this->rGetMesh().GetNode(*it)->rGetLocation());
+            neighbour_occupancy.push_back(this->IsSiteAvailable(*it, mTipCells[tip_index]));
+            vec_neighbour_locations.push_back(*it);
+        }
+
+        // Get the VEGF concentrations at the neighbouring mesh node locations
+        std::vector<double> neighbour_concentrations(2* DIM);
+        for(unsigned idx=0; idx<neighbour_locations.size(); idx++)
+        {
+            neighbour_concentrations[idx] = mp_pde_handler->GetPdeSolutionAtPoint(neighbour_locations[idx], "VEGF");
+        }
+
+        // Identify the direction with highest gradient that is also free
+        double max_gradient = 0.0; // what about negative grads
+        int max_grandient_index = -1;
+        for(unsigned idx=0; idx<neighbour_locations.size(); idx++)
+        {
+            double gradient = (neighbour_concentrations[idx] - tip_concentration) / norm_2(tip_location - neighbour_locations[idx]);
+            if(gradient > max_gradient && neighbour_occupancy[idx])
+            {
+                max_gradient = gradient;
+                max_grandient_index = vec_neighbour_locations[idx];
+            }
+        }
+
+        // Sprout into the neighbour
+        if(max_gradient > 1.0 && max_grandient_index>-1)
+        {
+            // Sprout...but we need a sprout functionality first
+        }
+    }
+}
+
 
 //template<unsigned DIM>
 //void CaBasedCellPopulationWithVessels<DIM>::AsscoiateVesselNetworkWithCells(
