@@ -68,7 +68,7 @@ public:
     void TestSquareWithPde()
     {
         boost::shared_ptr<Part> p_part = Part::Create();
-        p_part->AddCuboid(3000, 1500, 200);
+        p_part->AddCuboid(3000, 1500, 240);
         VoronoiGenerator generator;
         boost::shared_ptr<Part> p_tesselation = generator.Generate(p_part, std::vector<boost::shared_ptr<Vertex> >(), 1000);
         std::vector<boost::shared_ptr<Vertex> > vertices = p_tesselation->GetVertices();
@@ -90,7 +90,7 @@ public:
         // Set up and run the solver
         FiniteDifferenceSolver solver;
         solver.SetVesselNetwork(p_network);
-        solver.SetExtents(p_domain, 20.0);
+        solver.SetExtents(p_domain, 80.0);
         solver.SetPde(p_pde);
 
         OutputFileHandler output_file_handler("TestVoronoiNetwork/Pde", false);
