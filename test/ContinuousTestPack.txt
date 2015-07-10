@@ -12,3 +12,11 @@ population/vessel/solvers/TestAngiogenesisSolver.hpp
 population/vessel/TestVasculatureData.hpp
 population/vessel/TestVasculatureGenerator.hpp
 population/combined/TestCaBasedCellPopulationWithVessels.hpp
+geometry/TestVertex.hpp
+geometry/TestPolygon.hpp
+geometry/TestFacet.hpp
+geometry/TestPart.hpp
+geometry/TestVesselSurfaceGenerator.hpp
+solver/TestDistanceTransform.hpp
+solver/TestFiniteDifferenceSolver.hpp
+solver/TestGreensFunctionSolver.hpp
