@@ -45,6 +45,7 @@
 /* Generate voronoi tesselation in the bounding box of a given part
  */
 
+template<unsigned DIM>
 class VoronoiGenerator
 {
 

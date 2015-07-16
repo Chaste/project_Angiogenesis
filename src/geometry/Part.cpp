@@ -250,29 +250,6 @@ void Part::Extrude(boost::shared_ptr<Polygon> pPolygon, double depth)
     mFacets.push_back(Facet::Create(p_polygon));
 }
 
-boost::shared_ptr<CaVascularNetwork<3> > Part::GenerateVesselNetwork()
-{
-    boost::shared_ptr<CaVascularNetwork<3> > p_network = boost::shared_ptr<CaVascularNetwork<3> >(new CaVascularNetwork<3>());
-
-    // Get the polygons
-    std::vector<boost::shared_ptr<Polygon> > polygons = GetPolygons();
-    std::vector<boost::shared_ptr<CaVessel<3> > > vessels;
-    for (unsigned idx = 0; idx < polygons.size(); idx++)
-    {
-        std::vector<boost::shared_ptr<CaVesselSegment<3> > > segments;
-        std::vector<boost::shared_ptr<Vertex> > vertices = polygons[idx]->GetVertices();
-        for (unsigned jdx = 1; jdx < vertices.size(); jdx++)
-        {
-            segments.push_back(CaVesselSegment<3>::Create(VascularNode<3>::Create(vertices[jdx-1]->rGetLocation()),
-                                                                                                  VascularNode<3>::Create(vertices[jdx]->rGetLocation())));
-        }
-        vessels.push_back(CaVessel<3>::Create(segments));
-    }
-    p_network->AddVessels(vessels);
-    p_network->MergeCoincidentNodes();
-    return p_network;
-}
-
 std::vector<c_vector<double, 3> > Part::GetHoleMarkers()
 {
     return mHoleMarkers;

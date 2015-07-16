@@ -119,6 +119,14 @@ void CaVesselSegment<DIM>::CopyDataFromExistingSegment(const boost::shared_ptr<C
 }
 
 template<unsigned DIM>
+void CaVesselSegment<DIM>::Remove()
+{
+    mNodes.first->RemoveSegment(Shared());
+    mNodes.second->RemoveSegment(Shared());
+    RemoveVessel();
+}
+
+template<unsigned DIM>
 const VasculatureData& CaVesselSegment<DIM>::rGetDataContainer() const
 {
     return mDataContainer;

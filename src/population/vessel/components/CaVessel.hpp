@@ -170,6 +170,8 @@ public:
      */
     void CopyDataFromExistingVessel(boost::shared_ptr<CaVessel<DIM> > pTargetVessel);
 
+    void Remove();
+
     /**
      *  Return the vessel data for the input key. An attempt is made
      *  to cast to type T.

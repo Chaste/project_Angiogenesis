@@ -159,6 +159,8 @@ public:
      */
     void CopyDataFromExistingSegment(const boost::shared_ptr<CaVesselSegment<DIM> > pTargetSegment);
 
+    void Remove();
+
     /**
      * Return the segment data for the input key. An attempt is made
      * to cast to type T.

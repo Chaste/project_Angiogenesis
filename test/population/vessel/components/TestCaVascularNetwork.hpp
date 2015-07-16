@@ -47,6 +47,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "OutputFileHandler.hpp"
 #include "UblasIncludes.hpp"
 #include "FakePetscSetup.hpp"
+#include "VasculatureGenerator.hpp"
 
 class TestVesselNetwork : public AbstractCellBasedTestSuite
 {
@@ -238,6 +239,54 @@ public:
         OutputFileHandler output_file_handler("TestVesselNetwork",false);
         std::string output_filename4 = output_file_handler.GetOutputDirectoryFullPath().append("ConnectedTestVesselNetwork.gv");
         vessel_network.WriteConnectivity(output_filename4);
+    }
+
+    void TestRemoveVessel() throw(Exception)
+    {
+        // Make some nodes
+        std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
+        nodes.push_back(VascularNode<3>::Create(0.0, 0.0, 0.0));
+        nodes.push_back(VascularNode<3>::Create(20.0, 0.0, 0.0));
+        nodes.push_back(VascularNode<3>::Create(30.0, 0.0, 0.0));
+        nodes.push_back(VascularNode<3>::Create(50.0, 0.0, 0.0));
+
+        // Make some vessels
+        std::vector<boost::shared_ptr<CaVessel<3> > > vessels;
+        for(unsigned idx=0; idx < 3; idx++)
+        {
+            vessels.push_back(CaVessel<3>::Create(CaVesselSegment<3>::Create(nodes[idx], nodes[idx+1])));
+        }
+
+        CaVascularNetwork<3> vessel_network;
+        vessel_network.AddVessels(vessels);
+
+        vessel_network.RemoveShortVessels(15.0, false);
+        TS_ASSERT_EQUALS(vessel_network.GetNumberOfVessels(), 2u);
+    }
+
+    void TestMergeVessel() throw(Exception)
+    {
+        // Make some nodes
+        std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
+        nodes.push_back(VascularNode<3>::Create(0.0, 0.0, 0.0));
+        nodes.push_back(VascularNode<3>::Create(20.0, 0.0, 0.0));
+        nodes.push_back(VascularNode<3>::Create(30.0, 0.0, 0.0));
+        nodes.push_back(VascularNode<3>::Create(50.0, 0.0, 0.0));
+
+        // Make some vessels
+        std::vector<boost::shared_ptr<CaVessel<3> > > vessels;
+        for(unsigned idx=0; idx < 3; idx++)
+        {
+            vessels.push_back(CaVessel<3>::Create(CaVesselSegment<3>::Create(nodes[idx], nodes[idx+1])));
+        }
+
+        CaVascularNetwork<3> vessel_network;
+        vessel_network.AddVessels(vessels);
+
+        vessel_network.MergeShortVessels(15.0);
+        TS_ASSERT_EQUALS(vessel_network.GetNumberOfVessels(), 2u);
+        TS_ASSERT_DELTA(vessels[0]->GetEndNode()->GetLocationVector()[0], 20.0, 1.e-6);
+        TS_ASSERT_DELTA(vessels[2]->GetStartNode()->GetLocationVector()[0], 20.0, 1.e-6);
     }
 
     void TestDivideSingleVessel() throw(Exception)

@@ -44,27 +44,35 @@
 
 #define REAL double
 #define VOID void
-#include "tetgen.h"
+#include "tetgen15.h"
 #undef REAL
 #undef VOID
 
 struct triangulateio;
 
-VoronoiGenerator::VoronoiGenerator()
+template<unsigned DIM>
+VoronoiGenerator<DIM>::VoronoiGenerator()
 {
 }
 
-VoronoiGenerator::~VoronoiGenerator()
+template<unsigned DIM>
+VoronoiGenerator<DIM>::~VoronoiGenerator()
 {
 
 }
 
-boost::shared_ptr<Part> VoronoiGenerator::Generate(boost::shared_ptr<Part> pPart,
+template<unsigned DIM>
+boost::shared_ptr<Part> VoronoiGenerator<DIM>::Generate(boost::shared_ptr<Part> pPart,
         std::vector<boost::shared_ptr<Vertex> > seeds, unsigned numSeeds)
 {
+    if(DIM==2)
+    {
+        EXCEPTION("This generator works in 3D only");
+    }
+
     boost::shared_ptr<Part> p_tesselation = Part::Create();
 
-    c_vector<double, 6> extents = pPart->GetBoundingBox();
+    c_vector<double, 2*DIM> extents = pPart->GetBoundingBox();
 
     // If no seeds have been provided generate some random ones
     if(seeds.size() == 0)
@@ -74,8 +82,8 @@ boost::shared_ptr<Part> VoronoiGenerator::Generate(boost::shared_ptr<Part> pPart
         boost::variate_generator<boost::mt19937, boost::uniform_real<> > rand_uniform(rng, u_dist);
         for(unsigned idx = 0; idx< numSeeds; idx++)
         {
-            c_vector<double, 3> location;
-            for(unsigned jdx=0; jdx<3; jdx++)
+            c_vector<double, DIM> location;
+            for(unsigned jdx=0; jdx<DIM; jdx++)
             {
                 location[jdx] = extents[2*jdx] + (extents[2*jdx + 1] - extents[2*jdx])*rand_uniform();
             }
@@ -84,30 +92,30 @@ boost::shared_ptr<Part> VoronoiGenerator::Generate(boost::shared_ptr<Part> pPart
     }
 
     // Use tetgen to make the tessellation
-    class tetgen::tetgenio mesher_input, mesher_output;
+    class tetgen15::tetgenio mesher_input, mesher_output;
 
     mesher_input.initialize();
     mesher_output.initialize();
     mesher_input.numberofpoints = seeds.size();
-    mesher_input.pointlist = new double[mesher_input.numberofpoints * 3];
+    mesher_input.pointlist = new double[mesher_input.numberofpoints * DIM];
 
     for (unsigned idx=0; idx<seeds.size(); idx++)
     {
-        for (unsigned jdx=0; jdx < 3; jdx++)
+        for (unsigned jdx=0; jdx < DIM; jdx++)
         {
-            mesher_input.pointlist[3*idx + jdx] = seeds[idx]->rGetLocation()[jdx];
+            mesher_input.pointlist[DIM*idx + jdx] = seeds[idx]->rGetLocation()[jdx];
         }
     }
-    tetgen::tetrahedralize((char*)"veeQ", &mesher_input, &mesher_output);
+    tetgen15::tetrahedralize((char*)"veeQ", &mesher_input, &mesher_output);
 
     // Create 2-point polygons corresponding to each edge
     std::vector<boost::shared_ptr<Polygon> > polygons;
     for (int n=0; n<mesher_output.numberofvedges; ++n) {
-      tetgen::tetgenio::voroedge e =  mesher_output.vedgelist[n];
+      tetgen15::tetgenio::voroedge e =  mesher_output.vedgelist[n];
       int n0 = e.v1;
       int n1 = e.v2;
-      double* u = &mesher_output.vpointlist[3*n0];
-      double* v = n1 == -1 ? e.vnormal : &mesher_output.vpointlist[3*n1]; // -1 indicates ray
+      double* u = &mesher_output.vpointlist[DIM*n0];
+      double* v = n1 == -1 ? e.vnormal : &mesher_output.vpointlist[DIM*n1]; // -1 indicates ray
 
       boost::shared_ptr<Vertex> p_vertex1 = Vertex::Create(u[0], u[1], u[2]);
       boost::shared_ptr<Vertex> p_vertex2 = Vertex::Create(v[0], v[1], v[2]);
@@ -131,16 +139,17 @@ boost::shared_ptr<Part> VoronoiGenerator::Generate(boost::shared_ptr<Part> pPart
       {
           vert2_inside = false;
       }
-
-      if(p_vertex1->rGetLocation()[2] < extents[4] || p_vertex1->rGetLocation()[2] > extents[5])
+      if(DIM==3)
       {
-          vert1_inside = false;
+          if(p_vertex1->rGetLocation()[2] < extents[4] || p_vertex1->rGetLocation()[2] > extents[5])
+          {
+              vert1_inside = false;
+          }
+          if(p_vertex2->rGetLocation()[2] < extents[4] || p_vertex2->rGetLocation()[2] > extents[5])
+          {
+              vert2_inside = false;
+          }
       }
-      if(p_vertex2->rGetLocation()[2] < extents[4] || p_vertex2->rGetLocation()[2] > extents[5])
-      {
-          vert2_inside = false;
-      }
-
 
       if(vert1_inside && vert2_inside)
       {
@@ -162,14 +171,18 @@ boost::shared_ptr<Part> VoronoiGenerator::Generate(boost::shared_ptr<Part> pPart
               {
                   p_vertex1->SetCoordinate(1, extents[3]);
               }
-              if(p_vertex1->rGetLocation()[2] < extents[4])
+              if(DIM==3)
               {
-                  p_vertex1->SetCoordinate(2, extents[4]);
+                  if(p_vertex1->rGetLocation()[2] < extents[4])
+                  {
+                      p_vertex1->SetCoordinate(2, extents[4]);
+                  }
+                  if(p_vertex1->rGetLocation()[2] > extents[5])
+                  {
+                      p_vertex1->SetCoordinate(2, extents[5]);
+                  }
               }
-              if(p_vertex1->rGetLocation()[2] > extents[5])
-              {
-                  p_vertex1->SetCoordinate(2, extents[5]);
-              }
+
           }
           if(!vert2_inside)
           {
@@ -189,15 +202,18 @@ boost::shared_ptr<Part> VoronoiGenerator::Generate(boost::shared_ptr<Part> pPart
               {
                   p_vertex2->SetCoordinate(1, extents[3]);
               }
+              if(DIM==3)
+              {
+                  if(p_vertex2->rGetLocation()[2] < extents[4])
+                  {
+                      p_vertex2->SetCoordinate(2, extents[4]);
+                  }
+                  if(p_vertex2->rGetLocation()[2] > extents[5])
+                  {
+                      p_vertex2->SetCoordinate(2, extents[5]);
+                  }
+              }
 
-              if(p_vertex2->rGetLocation()[2] < extents[4])
-              {
-                  p_vertex2->SetCoordinate(2, extents[4]);
-              }
-              if(p_vertex2->rGetLocation()[2] > extents[5])
-              {
-                  p_vertex2->SetCoordinate(2, extents[5]);
-              }
           }
 
           boost::shared_ptr<Polygon> p_polygon = Polygon::Create(p_vertex1);
@@ -213,3 +229,7 @@ boost::shared_ptr<Part> VoronoiGenerator::Generate(boost::shared_ptr<Part> pPart
     }
     return p_tesselation;
 }
+
+//Explicit instantiation
+template class VoronoiGenerator<2> ;
+template class VoronoiGenerator<3> ;

@@ -149,11 +149,6 @@ public:
      */
     void Extrude(boost::shared_ptr<Polygon> pPolygon, double distance = 1.0);
 
-    /* Generate a vessel network corresponding to the polygons in the part. Useful for tesselation based generation.
-     * @return a pointer to the generate network
-     */
-    boost::shared_ptr<CaVascularNetwork<3> > GenerateVesselNetwork();
-
     /* Return the bounding box
      * @return the bounding box of the part (xmin, xmax, ymin, ymax, zmin, zmax)
      */

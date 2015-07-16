@@ -47,6 +47,8 @@
 #include <vtkSmartPointer.h>
 #endif // CHASTE_VTK
 #include "SmartPointers.hpp"
+#include "VoronoiGenerator.hpp"
+#include "Polygon.hpp"
 #include "Exception.hpp"
 
 #include "VasculatureGenerator.hpp"
@@ -138,10 +140,9 @@ void VasculatureGenerator<DIM>::PatternUnitByTranslation(boost::shared_ptr<CaVas
 }
 
 template<unsigned DIM>
-boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateSimpleDivergeAndConvergeNetwork(c_vector<double, DIM> start_location,
+boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateDivergeAndConvergeNetwork(c_vector<double, DIM> start_location,
                                                                                                               c_vector<double, DIM> end_location,
-                                                                                                              double segmentLength,
-                                                                                                              const std::string& rFileName)
+                                                                                                              double segmentLength)
 {
     boost::shared_ptr<CaVascularNetwork<DIM> > p_network(new CaVascularNetwork<DIM>());
 
@@ -237,13 +238,7 @@ boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateSi
                 p_end_segment->GetNode(1)->SetLabel("Stalk");
                 vessels[idx]->AddSegment(CaVesselSegment<DIM>::Create(p_end_segment->GetNode(1),p_new_node));
             }
-
-
-
         }
-        unsigned cast_index = outer_index;
-        std::string file_name = rFileName + "inc_" + boost::lexical_cast<std::string>(cast_index) + ".vtp";
-        p_network->Write(file_name);
     }
 
     return p_network;
@@ -353,6 +348,51 @@ std::string to_string(T const& value)
     std::stringstream sstr;
     sstr << value;
     return sstr.str();
+}
+
+
+template<unsigned DIM>
+boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateFromPart(boost::shared_ptr<Part> part)
+{
+    boost::shared_ptr<CaVascularNetwork<DIM> > p_network = CaVascularNetwork<DIM>::Create();
+
+    // Get the polygons
+    std::vector<boost::shared_ptr<Polygon> > polygons = part->GetPolygons();
+    std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels;
+    for (unsigned idx = 0; idx < polygons.size(); idx++)
+    {
+        std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments;
+        std::vector<boost::shared_ptr<Vertex> > vertices = polygons[idx]->GetVertices();
+        for (unsigned jdx = 1; jdx < vertices.size(); jdx++)
+        {
+            segments.push_back(CaVesselSegment<DIM>::Create(VascularNode<DIM>::Create(vertices[jdx-1]->rGetLocation()),
+                                                                                                  VascularNode<DIM>::Create(vertices[jdx]->rGetLocation())));
+        }
+        vessels.push_back(CaVessel<DIM>::Create(segments));
+    }
+    p_network->AddVessels(vessels);
+    p_network->MergeCoincidentNodes();
+    return p_network;
+}
+
+
+template<unsigned DIM>
+boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateVoronoiNetwork(double cubeX,
+                                                                                             double cubeY,
+                                                                                             double cubeZ,
+                                                                                             unsigned numPoints)
+{
+    if(cubeZ == 0.0 || DIM==2)
+    {
+        EXCEPTION("This generator only works in 3D");
+    }
+
+    boost::shared_ptr<Part> p_part = Part::Create();
+    p_part->AddCuboid(cubeX, cubeY, cubeZ);
+    VoronoiGenerator<DIM> generator;
+    boost::shared_ptr<Part> p_tesselation = generator.Generate(p_part, std::vector<boost::shared_ptr<Vertex> >(), numPoints);
+    boost::shared_ptr<CaVascularNetwork<DIM> > p_network =  GenerateFromPart(p_tesselation);
+    return p_network;
 }
 
 template<unsigned DIM>

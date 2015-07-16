@@ -139,7 +139,7 @@ public:
     /*
      * Removes a vessel from the network
      */
-    void RemoveVessel(boost::shared_ptr<CaVessel<DIM> > pVessel);
+    void RemoveVessel(boost::shared_ptr<CaVessel<DIM> > pVessel, bool deleteVessel = false);
 
     /**
      Get distance to nearest node
@@ -230,6 +230,22 @@ public:
      Return the number of branches on the most highly connected node
      */
     unsigned GetMaxBranchesOnNode();
+
+    double GetTotalLength();
+
+    double GetTotalVolume();
+
+    double GetTotalSurfaceArea();
+
+    double GetAverageInterSegmentDistance();
+
+    double GetAverageVesselLength();
+
+    std::vector<unsigned> GetVesselLengthDistribution(double binSpacing = 10.0, unsigned numberOfBins = 10);
+
+    void RemoveShortVessels(double cutoff = 10.0, bool endsOnly = true);
+
+    void MergeShortVessels(double cutoff = 10.0);
 
     /**
      Return the vessel with the specified index in the network

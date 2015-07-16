@@ -50,11 +50,11 @@ class TestVoronoiGenerator : public CxxTest::TestSuite
 {
 public:
 
-    void DontTestSquare()
+    void TestSquare()
     {
         boost::shared_ptr<Part> p_part = Part::Create();
         p_part->AddCuboid(3000, 1500, 200);
-        VoronoiGenerator generator;
+        VoronoiGenerator<3> generator;
         boost::shared_ptr<Part> p_tesselation = generator.Generate(p_part, std::vector<boost::shared_ptr<Vertex> >(), 1600);
         std::vector<boost::shared_ptr<Vertex> > vertices = p_tesselation->GetVertices();
         for(unsigned idx=0; idx < vertices.size(); idx++)
@@ -65,19 +65,19 @@ public:
         p_tesselation->Write(output_file_handler.GetOutputDirectoryFullPath() + "part.vtp");
     }
 
-    void TestSquareWithPde()
+    void DontTestSquareWithPde()
     {
         boost::shared_ptr<Part> p_part = Part::Create();
         p_part->AddCuboid(3000, 1500, 240);
-        VoronoiGenerator generator;
+        VoronoiGenerator<3> generator;
         boost::shared_ptr<Part> p_tesselation = generator.Generate(p_part, std::vector<boost::shared_ptr<Vertex> >(), 1000);
         std::vector<boost::shared_ptr<Vertex> > vertices = p_tesselation->GetVertices();
         for(unsigned idx=0; idx < vertices.size(); idx++)
         {
             vertices[idx]->SetCoordinate(1, 2.0 * vertices[idx]->rGetLocation()[1]);
         }
-        boost::shared_ptr<CaVascularNetwork<3> >p_network =  p_tesselation->GenerateVesselNetwork();
-
+        VasculatureGenerator<3> vn_generator;
+        boost::shared_ptr<CaVascularNetwork<3> >p_network = vn_generator->GenerateFromPart(p_tesselation);
         // Set up the PDE domain
         boost::shared_ptr<Part> p_domain = Part::Create();
         p_domain->AddCuboid(3000, 3000, 200);

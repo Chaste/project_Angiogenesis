@@ -39,9 +39,10 @@
 #include <vector>
 #include <string>
 
-#include "../vessel/components/CaVascularNetwork.hpp"
-#include "../vessel/components/CaVessel.hpp"
-#include "../vessel/components/VascularNode.hpp"
+#include "CaVascularNetwork.hpp"
+#include "CaVessel.hpp"
+#include "VascularNode.hpp"
+#include "Part.hpp"
 #include "UblasVectorInclude.hpp"
 
 template<unsigned DIM>
@@ -78,10 +79,9 @@ public:
     /*
      * Creates a simple diverging and converging network
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateSimpleDivergeAndConvergeNetwork(c_vector<double, DIM> start_location,
+    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateDivergeAndConvergeNetwork(c_vector<double, DIM> start_location,
                                                                                        c_vector<double, DIM> end_location,
-                                                                                       double segmentLength = 20.0,
-                                                                                       const std::string& rFileName = "None");
+                                                                                       double segmentLength = 20.0);
 
     /*
      * Creates a bifurcation repeating unit
@@ -94,6 +94,16 @@ public:
      */
     boost::shared_ptr<CaVascularNetwork<DIM> > GenerateSingleVessel(double vesselLength= 100.0,
                                                                     c_vector<double, DIM> startPosition = zero_vector<double>(DIM));
+
+    /*
+     * Generate a network on the edges of a PLC Part
+     */
+    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateFromPart(boost::shared_ptr<Part> part);
+
+    /*
+     * Creates a vessel network based on a voronoi tesselation in the provided cube.
+     */
+    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateVoronoiNetwork(double cubeX = 100.0, double cubeY = 100.0, double cubeZ = 100.0, unsigned numPoints = 400);
 
 #ifdef CHASTE_VTK
     /*

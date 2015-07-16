@@ -76,6 +76,11 @@ void DistanceTransform::Solve(bool writeSolution)
     unsigned grid_index;
     if (mpNetwork || mpCellPopulation)
     {
+        std::vector<boost::shared_ptr<CaVesselSegment<3> > > segments;
+        if(mpNetwork)
+        {
+            segments = mpNetwork->GetVesselSegments();
+        }
         for (unsigned i = 0; i < mExtents[2]; i++) // Z
         {
             for (unsigned j = 0; j < mExtents[1]; j++) // Y
@@ -91,9 +96,16 @@ void DistanceTransform::Solve(bool writeSolution)
                     location[2] = double(i) * mGridSize + mOrigin[2];
                     if(mpNetwork)
                     {
-                        ChastePoint<3> location_point(location);
-                        std::pair<boost::shared_ptr<CaVesselSegment<3> >, double> seg_pair = mpNetwork->GetNearestSegment(location);
-                        vessel_solution[grid_index] = seg_pair.second;
+                        double min_distance = 1.e6;
+                        for (unsigned idx = 0; idx <  segments.size(); idx++)
+                        {
+                            double seg_dist = segments[idx]->GetDistance(location);
+                            if(seg_dist < min_distance)
+                            {
+                                min_distance = seg_dist;
+                            }
+                        }
+                        vessel_solution[grid_index] = min_distance;
                     }
                     if(mpCellPopulation)
                     {

@@ -527,6 +527,18 @@ bool CaVessel<DIM>::IsConnectedTo(boost::shared_ptr<CaVessel<DIM> > pOtherVessel
 }
 
 template<unsigned DIM>
+void CaVessel<DIM>::Remove()
+{
+    // Detach all segments from their nodes
+    for (unsigned idx = 0; idx < mSegments.size(); idx++)
+    {
+        mSegments[idx]->Remove();
+    }
+    mSegments = std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >();
+    mNodes = std::vector<boost::shared_ptr<VascularNode<DIM> > >();
+}
+
+template<unsigned DIM>
 boost::shared_ptr<VascularNode<DIM> > CaVessel<DIM>::DivideSegment(ChastePoint<DIM> location)
 {
     // Identify segment
