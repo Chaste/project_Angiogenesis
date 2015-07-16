@@ -34,7 +34,6 @@
  */
 
 #include "SmartPointers.hpp"
-#include "SmartVasculaturePointers.hpp"
 #include "Exception.hpp"
 
 #include "CaVessel.hpp"
@@ -104,17 +103,21 @@ CaVessel<DIM>::CaVessel(std::vector<boost::shared_ptr<VascularNode<DIM> > > node
     {
         for (unsigned i = 1; i < nodes.size(); i++)
         {
-            MAKE_VN_PTR_ARGS(CaVesselSegment<DIM>, pSegment, (nodes[i-1], nodes[i]));
-            mSegments.push_back(pSegment);
+            mSegments.push_back(CaVesselSegment<DIM>::Create(nodes[i-1], nodes[i]));
         }
     }
 }
 
 template<unsigned DIM>
 CaVessel<DIM>::CaVessel(boost::shared_ptr<VascularNode<DIM> > pStartNode, boost::shared_ptr<VascularNode<DIM> > pEndNode)
+    :        mSegments(std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >()),
+             mNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > >()),
+             mNodesUpToDate(false),
+             mDataContainer(),
+             mId(0),
+             mLabel()
 {
-    MAKE_VN_PTR_ARGS(CaVesselSegment<DIM>, pSegment, (pStartNode, pEndNode));
-    mSegments.push_back(pSegment);
+    mSegments.push_back(CaVesselSegment<DIM>::Create(pStartNode, pEndNode));
 }
 
 template<unsigned DIM>
@@ -534,8 +537,8 @@ void CaVessel<DIM>::Remove()
     {
         mSegments[idx]->Remove();
     }
+    mNodesUpToDate = false;
     mSegments = std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >();
-    mNodes = std::vector<boost::shared_ptr<VascularNode<DIM> > >();
 }
 
 template<unsigned DIM>
@@ -742,7 +745,6 @@ boost::shared_ptr<CaVessel<DIM> > CaVessel<DIM>::Shared()
 template<unsigned DIM>
 void CaVessel<DIM>::UpdateNodes()
 {
-
     mNodes = std::vector<boost::shared_ptr<VascularNode<DIM> > >();
 
     if (mSegments.size() == 1)
@@ -779,7 +781,6 @@ void CaVessel<DIM>::UpdateNodes()
             }
         }
     }
-
     mNodesUpToDate = true;
 }
 

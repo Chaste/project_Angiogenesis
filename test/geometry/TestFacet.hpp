@@ -150,7 +150,6 @@ public:
         TS_ASSERT(p_facet->ContainsPoint(test_point1));
         TS_ASSERT(!p_facet->ContainsPoint(test_point2));
         TS_ASSERT(!p_facet->ContainsPoint(test_point3));
-        TS_ASSERT(p_facet->IsPlanar());
     }
 
     void TestTransforms()

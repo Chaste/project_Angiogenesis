@@ -13,7 +13,7 @@
  modification, are permitted provided that the following conditions are met:
  * Redistributions of source code must retain the above copyright notice,
  this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the abovea copyright notice,
+ * Redistributions in binary form must reproduce the above copyright notice,
  this list of conditions and the following disclaimer in the documentation
  and/or other materials provided with the distribution.
  * Neither the name of the University of Oxford nor the names of its
@@ -33,33 +33,39 @@
 
  */
 
-#ifndef TESTVORONOIGENERATOR_HPP_
-#define TESTVORONOIGENERATOR_HPP_
+#ifndef OFFLATTICEANGIOGENESISSOLVER_HPP_
+#define OFFLATTICEANGIOGENESISSOLVER_HPP_
 
-#include <cxxtest/TestSuite.h>
+#include <vector>
+#include <string>
+
+#include "CaVascularNetwork.hpp"
 #include "SmartPointers.hpp"
-#include "Part.hpp"
-#include "VoronoiGenerator.hpp"
-#include "OutputFileHandler.hpp"
+#include "AbstractAngiogenesisSolver.hpp"
 
-class TestVoronoiGenerator : public CxxTest::TestSuite
+template<unsigned DIM>
+class OffLatticeAngiogenesisSolver : public AbstractAngiogenesisSolver<DIM>
 {
+
 public:
 
-    void TestSquare()
-    {
-        boost::shared_ptr<Part> p_part = Part::Create();
-        p_part->AddCuboid(3000, 1500, 200);
-        VoronoiGenerator<3> generator;
-        boost::shared_ptr<Part> p_tesselation = generator.Generate(p_part, std::vector<boost::shared_ptr<Vertex> >(), 1600);
-        std::vector<boost::shared_ptr<Vertex> > vertices = p_tesselation->GetVertices();
-        for(unsigned idx=0; idx < vertices.size(); idx++)
-        {
-            vertices[idx]->SetCoordinate(1, 2.0 * vertices[idx]->rGetLocation()[1]);
-        }
-        OutputFileHandler output_file_handler("TestVoronoiNetwork", false);
-        p_tesselation->Write(output_file_handler.GetOutputDirectoryFullPath() + "part.vtp");
-    }
+    /**
+     * Constructor.
+     * @param pNetwork the network to perform angiogenesis on
+     */
+    OffLatticeAngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork, const std::string& rOutputDirectory);
+
+    /**
+     * Destructor.
+     */
+    ~OffLatticeAngiogenesisSolver();
+
+    c_vector<double, DIM> GetGrowthDirection(c_vector<double, DIM> currentDirection);
+
+private:
+
+    c_vector<double, DIM> RotateAboutAxis(c_vector<double, DIM> direction, c_vector<double, DIM> axis, double angle);
+
 };
 
-#endif /*TESTVORONOIGENERATOR_HPP_*/
+#endif /* OFFLATTICEANGIOGENESISSOLVER_HPP_ */

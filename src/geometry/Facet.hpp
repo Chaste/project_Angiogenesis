@@ -149,11 +149,6 @@ public:
      */
     std::pair<vtkSmartPointer<vtkPoints>, vtkSmartPointer<vtkIdTypeArray> > GetVtkVertices();
 
-    /* Return whether the facet is planar.
-     * @return true if the facets is planar
-     */
-    bool IsPlanar();
-
     /* Rotate about the specified axis by the specified angle
      * @param axis the rotation axis
      * @param angle the rotation angle

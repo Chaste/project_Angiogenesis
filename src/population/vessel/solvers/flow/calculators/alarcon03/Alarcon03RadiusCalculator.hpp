@@ -33,54 +33,41 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef _Alarcon03MechanicalStimulusCalculator_hpp
-#define _Alarcon03MechanicalStimulusCalculator_hpp
+#ifndef _Alarcon03RadiusCalculator_hpp
+#define _Alarcon03RadiusCalculator_hpp
 
 #include <boost/shared_ptr.hpp>
-
-#include "../../../../vessel/components/CaVascularNetwork.hpp"
+#include "CaVascularNetwork.hpp"
 
 template<unsigned DIM>
-class Alarcon03MechanicalStimulusCalculator
+class Alarcon03RadiusCalculator
 {
     
-private:
-    
-	/*
-	 * A small constant included to avoid singular behavior at low wall shear stress.
-	 */
-    double mTauRef;
+protected:
 
-    /*
-     * The level of wall shear stress expected from the actual intravascular pressure, according
-     * to a parametric description of experimental data obtained in the rat mesentry (exhibiting a
-     * sigmoidal increase of wall shear stress with increasing pressure.
-     */
-    double mTauP;
+    double mMinRadius;
+    double mMaxRadius;
+    double mTimeStep;
     
 public:
     
     // constructor
-    Alarcon03MechanicalStimulusCalculator();
+    Alarcon03RadiusCalculator();
     
     /**
      *  destructor.
      */
-    ~Alarcon03MechanicalStimulusCalculator();
+    ~Alarcon03RadiusCalculator();
     
-    double GetTauP();
+    void SetMinRadius(double minRadius);
     
-    double GetTauRef();
+    void SetMaxRadius(double maxRadius);
 
-    void SetTauRef(double TauRef);
+    void SetTimestep(double dt);
     
-    // method for performing the Calculation
-    /**
-        This Calculator has been changed from the original found in Pries1998 in order to better fit experimental data.
-        See original paper and relevant test for comparison.
-     */
+    // method for performing the calculation
     void Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
-
+    
 };
 
 #endif

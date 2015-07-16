@@ -6,8 +6,8 @@
 //  Copyright (c) 2012 Anthony Connor. All rights reserved.
 //
 
-#ifndef TestAngiogenesisSolver_hpp
-#define TestAngiogenesisSolver_hpp
+#ifndef TestAbstractAngiogenesisSolver_hpp
+#define TestAbstractAngiogenesisSolver_hpp
 
 #include <cxxtest/TestSuite.h>
 #include "FileFinder.hpp"
@@ -18,9 +18,9 @@
 #include "CaVesselSegment.hpp"
 #include "CaVessel.hpp"
 #include "CaVascularNetwork.hpp"
-#include "AngiogenesisSolver.hpp"
+#include "AbstractAngiogenesisSolver.hpp"
 
-class TestAngiogenesisSolver : public CxxTest::TestSuite
+class TestAbstractAngiogenesisSolver : public CxxTest::TestSuite
 {
 
 public:
@@ -38,11 +38,11 @@ public:
         // Set the one of the nodes to migrate
         p_network->GetVessel(0)->GetEndNode()->SetIsMigrating(true);
 
-        OutputFileHandler output_file_handler("TestAngiogenesisSolver/SingleVesselGrowth/", false);
+        OutputFileHandler output_file_handler("TestAbstractAngiogenesisSolver/SingleVesselGrowth/", false);
         std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
 
         // Grow the vessel
-        AngiogenesisSolver<3> angiogenesis_solver(p_network, output_directory);
+        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network, output_directory);
         angiogenesis_solver.Run();
 
         // Test that the vessel has grown
@@ -63,11 +63,11 @@ public:
         // Set the one of the nodes to migrate
         p_network->GetVessel(0)->GetStartNode()->SetIsMigrating(true);
 
-        OutputFileHandler output_file_handler("TestAngiogenesisSolver/SingleVesselGrowthFromStart/", false);
+        OutputFileHandler output_file_handler("TestAbstractAngiogenesisSolver/SingleVesselGrowthFromStart/", false);
         std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
 
         // Grow the vessel
-        AngiogenesisSolver<3> angiogenesis_solver(p_network, output_directory);
+        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network, output_directory);
         angiogenesis_solver.Run();
 
         // Test that the vessel has grown
@@ -92,11 +92,11 @@ public:
         p_network->AddVessel(p_vessel1);
         p_network->AddVessel(p_vessel2);
 
-        OutputFileHandler output_file_handler("TestAngiogenesisSolver/TipTipAnastamosisEvent/", false);
+        OutputFileHandler output_file_handler("TestAbstractAngiogenesisSolver/TipTipAnastamosisEvent/", false);
         std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
 
         // Grow the vessel
-        AngiogenesisSolver<3> angiogenesis_solver(p_network, output_directory);
+        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network, output_directory);
         angiogenesis_solver.Run();
 
         // Test that the vessel has grown
@@ -120,16 +120,75 @@ public:
         p_network->AddVessel(p_vessel1);
         p_network->AddVessel(p_vessel2);
 
-        OutputFileHandler output_file_handler("TestAngiogenesisSolver/TipSproutAnastamosisEvent/", false);
+        OutputFileHandler output_file_handler("TestAbstractAngiogenesisSolver/TipSproutAnastamosisEvent/", false);
         std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
 
         // Grow the vessel
-        AngiogenesisSolver<3> angiogenesis_solver(p_network, output_directory);
+        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network, output_directory);
         angiogenesis_solver.Run();
 
         // Test that the vessel has grown
         TS_ASSERT_DELTA(p_network->GetVessel(0)->GetEndNode()->GetLocationVector()[0], 150.0, 1.e-6);
         TS_ASSERT_DELTA(p_network->GetVessel(1)->GetStartNode()->GetLocationVector()[0], 150.0, 1.e-6);
+    }
+
+    void TestMultiVessel() throw(Exception)
+    {
+        // Make a network
+        std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
+        for(unsigned idx=0; idx<10; idx++)
+        {
+            bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 0.0, 0.0));
+        }
+
+        std::vector<boost::shared_ptr<VascularNode<3> > > top_nodes;
+        for(unsigned idx=0; idx<10; idx++)
+        {
+            top_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 100.0, 0.0));
+        }
+
+        boost::shared_ptr<CaVessel<3> > p_vessel1 = CaVessel<3>::Create(bottom_nodes);
+        boost::shared_ptr<CaVessel<3> > p_vessel2 = CaVessel<3>::Create(top_nodes);
+
+        boost::shared_ptr<CaVascularNetwork<3> > p_network = CaVascularNetwork<3>::Create();
+        p_network->AddVessel(p_vessel1);
+        p_network->AddVessel(p_vessel2);
+        p_network->FormSprout(ChastePoint<3>(20.0, 0.0, 0.0), ChastePoint<3>(20.0, 10.0, 0.0));
+        p_network->FormSprout(ChastePoint<3>(70.0, 100.0, 0.0), ChastePoint<3>(70.0, 90.0, 0.0));
+
+        OutputFileHandler output_file_handler("TestAbstractAngiogenesisSolver/Multisegment/", false);
+        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
+
+        // Grow the vessel
+        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network, output_directory);
+        angiogenesis_solver.Run();
+    }
+
+    void TestMultiSprout() throw(Exception)
+    {
+        // Make a network
+        std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
+        for(unsigned idx=0; idx<10; idx++)
+        {
+            bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 0.0, 0.0));
+        }
+
+        boost::shared_ptr<CaVessel<3> > p_vessel1 = CaVessel<3>::Create(bottom_nodes);
+        boost::shared_ptr<CaVascularNetwork<3> > p_network = CaVascularNetwork<3>::Create();
+        p_network->AddVessel(p_vessel1);
+
+        std::vector<boost::shared_ptr<VascularNode<3> > > top_nodes;
+        for(unsigned idx=1; idx<9; idx++)
+        {
+            p_network->FormSprout(ChastePoint<3>(double(idx)*10, 0.0, 0.0), ChastePoint<3>(double(idx)*10, 10.0, 0.0));
+        }
+
+        OutputFileHandler output_file_handler("TestAbstractAngiogenesisSolver/MultiSprout/", false);
+        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
+
+        // Grow the vessel
+        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network, output_directory);
+        angiogenesis_solver.Run();
     }
 };
 

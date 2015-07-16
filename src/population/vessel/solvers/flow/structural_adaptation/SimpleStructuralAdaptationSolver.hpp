@@ -37,16 +37,16 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _SimpleStructuralAdaptationSolver_hpp
 
 #include "boost/shared_ptr.hpp"
-#include "../../../vessel/components/CaVascularNetwork.hpp"
-#include "../../../vessel/solvers/calculators/alarcon03/Alarcon03MechanicalStimulusCalculator.hpp"
-#include "../../../vessel/solvers/calculators/alarcon03/Alarcon03MetabolicStimulusCalculator.hpp"
-#include "../../../vessel/solvers/calculators/alarcon03/Alarcon03RadiusCalculator.hpp"
-#include "../../../vessel/solvers/calculators/alarcon03/Alarcon03ViscosityCalculator.hpp"
-#include "../../../vessel/solvers/calculators/alarcon03/Alarcon03WallShearStressCalculator.hpp"
-#include "../../../vessel/solvers/calculators/PoiseuilleImpedanceCalculator.hpp"
-#include "../../../vessel/solvers/flow/SimpleFlowSolver.hpp"
-#include "../../../vessel/solvers/haematocrit/AbstractHaematocritSolver.hpp"
-#include "../../../vessel/solvers/structural_adaptation/StructuralAdaptationSolver.hpp"
+#include "CaVascularNetwork.hpp"
+#include "Alarcon03MechanicalStimulusCalculator.hpp"
+#include "Alarcon03MetabolicStimulusCalculator.hpp"
+#include "Alarcon03RadiusCalculator.hpp"
+#include "Alarcon03ViscosityCalculator.hpp"
+#include "Alarcon03WallShearStressCalculator.hpp"
+#include "PoiseuilleImpedanceCalculator.hpp"
+#include "SimpleFlowSolver.hpp"
+#include "AbstractHaematocritSolver.hpp"
+#include "StructuralAdaptationSolver.hpp"
 
 template<unsigned DIM>
 class SimpleStructuralAdaptationSolver : public StructuralAdaptationSolver<DIM>

@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2014, University of Oxford.
+Copyright (c) 2005-2015, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -31,41 +31,55 @@ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-*/
-
-#ifndef SMARTVASCULATUREPOINTERS_HPP_
-#define SMARTVASCULATUREPOINTERS_HPP_
-
-/**
- * @file
- * Includes the Boost shared_ptr smart pointer, and defines some useful macros to save
- * typing when using it.
  */
+
+#ifndef _Alarcon03MechanicalStimulusCalculator_hpp
+#define _Alarcon03MechanicalStimulusCalculator_hpp
 
 #include <boost/shared_ptr.hpp>
+#include "CaVascularNetwork.hpp"
 
-/**
- * Create a new instance of a class and assign it to a smart pointer.
- * @param ABS_TYPE  the type of the base of the class hierarchy
- * @param TYPE  the type of the concrete instance to create
- * @param NAME  the name of the pointer variable
- * @param ARGS  constructor arguments for the instance
- */
-#define MAKE_VN_PTR_ABS(ABS_TYPE, TYPE, NAME, ARGS) boost::shared_ptr<TYPE> NAME = TYPE::Create ARGS
+template<unsigned DIM>
+class Alarcon03MechanicalStimulusCalculator
+{
+    
+private:
+    
+	/*
+	 * A small constant included to avoid singular behavior at low wall shear stress.
+	 */
+    double mTauRef;
 
-/**
- * Create a new instance of a class and assign it to a smart pointer.
- * @param TYPE  the type of the concrete instance to create
- * @param NAME  the name of the pointer variable
- * @param ARGS  constructor arguments for the instance
- */
-#define MAKE_VN_PTR_ARGS(TYPE, NAME, ARGS) MAKE_VN_PTR_ABS(TYPE, TYPE, NAME, ARGS)
+    /*
+     * The level of wall shear stress expected from the actual intravascular pressure, according
+     * to a parametric description of experimental data obtained in the rat mesentry (exhibiting a
+     * sigmoidal increase of wall shear stress with increasing pressure.
+     */
+    double mTauP;
+    
+public:
+    
+    // constructor
+    Alarcon03MechanicalStimulusCalculator();
+    
+    /**
+     *  destructor.
+     */
+    ~Alarcon03MechanicalStimulusCalculator();
+    
+    double GetTauP();
+    
+    double GetTauRef();
 
-/**
- * Create a new instance of a class and assign it to a smart pointer.
- * @param TYPE  the type of the concrete instance to create
- * @param NAME  the name of the pointer variable
- */
-#define MAKE_VN_PTR(TYPE, NAME) MAKE_VN_PTR_ABS(TYPE, TYPE, NAME, )
+    void SetTauRef(double TauRef);
+    
+    // method for performing the Calculation
+    /**
+        This Calculator has been changed from the original found in Pries1998 in order to better fit experimental data.
+        See original paper and relevant test for comparison.
+     */
+    void Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
 
-#endif // SMARTVASCULATUREPOINTERS_HPP_
+};
+
+#endif

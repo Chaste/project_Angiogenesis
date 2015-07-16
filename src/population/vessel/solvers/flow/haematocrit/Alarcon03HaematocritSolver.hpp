@@ -37,8 +37,8 @@
 #define _Alarcon03HaematocritSolver_hpp
 
 #include <boost/shared_ptr.hpp>
-#include "../../../vessel/components/CaVascularNetwork.hpp"
-#include "../../../vessel/solvers/haematocrit/AbstractHaematocritSolver.hpp"
+#include "CaVascularNetwork.hpp"
+#include "AbstractHaematocritSolver.hpp"
 
 
 template<unsigned DIM>

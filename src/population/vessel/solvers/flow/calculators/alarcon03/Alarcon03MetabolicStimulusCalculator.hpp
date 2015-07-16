@@ -33,28 +33,45 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef _Alarcon03WallShearStressCalculator_hpp
-#define _Alarcon03WallShearStressCalculator_hpp
+#ifndef _Alarcon03MetabolicStimulusCalculator_hpp
+#define _Alarcon03MetabolicStimulusCalculator_hpp
 
-#include "boost/shared_ptr.hpp"
-
-#include "../../../../vessel/components/CaVascularNetwork.hpp"
+#include <boost/shared_ptr.hpp>
+#include "CaVascularNetwork.hpp"
 
 template<unsigned DIM>
-class Alarcon03WallShearStressCalculator
+class Alarcon03MetabolicStimulusCalculator
 {
-    
+
+private:
+
+    double mQRef;
+    double mKm;
+    double mMaxStimulus;
+
 public:
-    
+
     // constructor
-    Alarcon03WallShearStressCalculator();
-    
+    Alarcon03MetabolicStimulusCalculator();
+
     /**
      *  destructor.
      */
-    ~Alarcon03WallShearStressCalculator();
-    
-    // method for performing the Calculator
+    ~Alarcon03MetabolicStimulusCalculator();
+
+    double GetQRef();
+
+    double GetKm();
+
+    double GetMaxStimulus();
+
+    void SetQRef(double qRef);
+
+    void SetKm(double km);
+
+    void SetMaxStimulus(double maxStimulus);
+
+    // method for performing the calculation
     void Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
 
 };

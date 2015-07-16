@@ -21,32 +21,23 @@
 #include "FakePetscSetup.hpp"
 #include "Alarcon03HaematocritSolver.hpp"
 
-#include "Debug.hpp"
-
 class TestSimpleStructuralAdaptationSolver : public CxxTest::TestSuite
 {
-
-    typedef boost::shared_ptr<VascularNode<2> > NodePtr2;
-    typedef boost::shared_ptr<VascularNode<3> > NodePtr3;
-    typedef boost::shared_ptr<CaVesselSegment<2> > SegmentPtr2;
-    typedef boost::shared_ptr<CaVesselSegment<3> > SegmentPtr3;
-    typedef boost::shared_ptr<CaVessel<2> > VesselPtr2;
-    typedef boost::shared_ptr<CaVessel<3> > VesselPtr3;
 
 public:
 
     void TestTwoVesselNetwork() throw(Exception)
     {
-        NodePtr2 p_node1 = VascularNode<2>::Create(0.0, 0.0);
-        NodePtr2 p_node2 = VascularNode<2>::Create(80.0e-6, 0.0);
-        NodePtr2 p_node3 = VascularNode<2>::Create(160.0e-6, 0.0);
+        boost::shared_ptr<VascularNode<2> > p_node1 = VascularNode<2>::Create(0.0, 0.0);
+        boost::shared_ptr<VascularNode<2> > p_node2 = VascularNode<2>::Create(80.0e-6, 0.0);
+        boost::shared_ptr<VascularNode<2> > p_node3 = VascularNode<2>::Create(160.0e-6, 0.0);
         p_node1->GetFlowProperties()->SetIsInputNode(true);
 
-        SegmentPtr2 p_segment1(CaVesselSegment<2>::Create(p_node1, p_node2));
-        SegmentPtr2 p_segment2(CaVesselSegment<2>::Create(p_node2, p_node3));
+        boost::shared_ptr<CaVesselSegment<2> > p_segment1(CaVesselSegment<2>::Create(p_node1, p_node2));
+        boost::shared_ptr<CaVesselSegment<2> > p_segment2(CaVesselSegment<2>::Create(p_node2, p_node3));
 
-        VesselPtr2 p_vessel1(CaVessel<2>::Create(p_segment1));
-        VesselPtr2 p_vessel2(CaVessel<2>::Create(p_segment2));
+        boost::shared_ptr<CaVessel<2> > p_vessel1(CaVessel<2>::Create(p_segment1));
+        boost::shared_ptr<CaVessel<2> > p_vessel2(CaVessel<2>::Create(p_segment2));
         p_vessel1->SetFlowRate(1.0);
         p_vessel2->SetFlowRate(2.0);
 
@@ -63,20 +54,20 @@ public:
 
     void TestBifurcationInflowNetwork() throw(Exception)
     {
-        NodePtr2 p_node1 = VascularNode<2>::Create(0.0, 0.0);
-        NodePtr2 p_node2 = VascularNode<2>::Create(80.0e-6, 0.0);
-        NodePtr2 p_node3 = VascularNode<2>::Create(160.0e-6, 0.0);
-        NodePtr2 p_node4 = VascularNode<2>::Create(200.0e-6, 0.0);
+        boost::shared_ptr<VascularNode<2> > p_node1 = VascularNode<2>::Create(0.0, 0.0);
+        boost::shared_ptr<VascularNode<2> > p_node2 = VascularNode<2>::Create(80.0e-6, 0.0);
+        boost::shared_ptr<VascularNode<2> > p_node3 = VascularNode<2>::Create(160.0e-6, 0.0);
+        boost::shared_ptr<VascularNode<2> > p_node4 = VascularNode<2>::Create(200.0e-6, 0.0);
         p_node1->GetFlowProperties()->SetIsInputNode(true);
         p_node2->GetFlowProperties()->SetIsInputNode(true);
 
-        SegmentPtr2 p_segment1(CaVesselSegment<2>::Create(p_node1, p_node3));
-        SegmentPtr2 p_segment2(CaVesselSegment<2>::Create(p_node2, p_node3));
-        SegmentPtr2 p_segment3(CaVesselSegment<2>::Create(p_node3, p_node4));
+        boost::shared_ptr<CaVesselSegment<2> > p_segment1(CaVesselSegment<2>::Create(p_node1, p_node3));
+        boost::shared_ptr<CaVesselSegment<2> > p_segment2(CaVesselSegment<2>::Create(p_node2, p_node3));
+        boost::shared_ptr<CaVesselSegment<2> > p_segment3(CaVesselSegment<2>::Create(p_node3, p_node4));
 
-        VesselPtr2 p_vessel1(CaVessel<2>::Create(p_segment1));
-        VesselPtr2 p_vessel2(CaVessel<2>::Create(p_segment2));
-        VesselPtr2 p_vessel3(CaVessel<2>::Create(p_segment3));
+        boost::shared_ptr<CaVessel<2> > p_vessel1(CaVessel<2>::Create(p_segment1));
+        boost::shared_ptr<CaVessel<2> > p_vessel2(CaVessel<2>::Create(p_segment2));
+        boost::shared_ptr<CaVessel<2> > p_vessel3(CaVessel<2>::Create(p_segment3));
         p_vessel1->SetFlowRate(1.0);
         p_vessel2->SetFlowRate(1.0);
         p_vessel3->SetFlowRate(1.0);
@@ -96,19 +87,19 @@ public:
 
     void TestBifurcationOutflowNetwork() throw(Exception)
     {
-        NodePtr2 p_node1 = VascularNode<2>::Create(0.0, 0.0);
-        NodePtr2 p_node2 = VascularNode<2>::Create(80.0e-6, 0.0);
-        NodePtr2 p_node3 = VascularNode<2>::Create(160.0e-6, 0.0);
-        NodePtr2 p_node4 = VascularNode<2>::Create(200.0e-6, 0.0);
+        boost::shared_ptr<VascularNode<2> > p_node1 = VascularNode<2>::Create(0.0, 0.0);
+        boost::shared_ptr<VascularNode<2> > p_node2 = VascularNode<2>::Create(80.0e-6, 0.0);
+        boost::shared_ptr<VascularNode<2> > p_node3 = VascularNode<2>::Create(160.0e-6, 0.0);
+        boost::shared_ptr<VascularNode<2> > p_node4 = VascularNode<2>::Create(200.0e-6, 0.0);
         p_node4->GetFlowProperties()->SetIsInputNode(true);
 
-        SegmentPtr2 p_segment1(CaVesselSegment<2>::Create(p_node1, p_node3));
-        SegmentPtr2 p_segment2(CaVesselSegment<2>::Create(p_node2, p_node3));
-        SegmentPtr2 p_segment3(CaVesselSegment<2>::Create(p_node3, p_node4));
+        boost::shared_ptr<CaVesselSegment<2> > p_segment1(CaVesselSegment<2>::Create(p_node1, p_node3));
+        boost::shared_ptr<CaVesselSegment<2> > p_segment2(CaVesselSegment<2>::Create(p_node2, p_node3));
+        boost::shared_ptr<CaVesselSegment<2> > p_segment3(CaVesselSegment<2>::Create(p_node3, p_node4));
 
-        VesselPtr2 p_vessel1(CaVessel<2>::Create(p_segment1));
-        VesselPtr2 p_vessel2(CaVessel<2>::Create(p_segment2));
-        VesselPtr2 p_vessel3(CaVessel<2>::Create(p_segment3));
+        boost::shared_ptr<CaVessel<2> > p_vessel1(CaVessel<2>::Create(p_segment1));
+        boost::shared_ptr<CaVessel<2> > p_vessel2(CaVessel<2>::Create(p_segment2));
+        boost::shared_ptr<CaVessel<2> > p_vessel3(CaVessel<2>::Create(p_segment3));
         p_vessel1->SetFlowRate(-1.0);
         p_vessel2->SetFlowRate(-1.0);
         p_vessel3->SetFlowRate(-1.0);
@@ -128,19 +119,19 @@ public:
 
     void TestBifurcationOutflowNetworkBiasedFlow() throw(Exception)
     {
-        NodePtr2 p_node1 = VascularNode<2>::Create(0.0, 0.0);
-        NodePtr2 p_node2 = VascularNode<2>::Create(80.0e-6, 0.0);
-        NodePtr2 p_node3 = VascularNode<2>::Create(160.0e-6, 0.0);
-        NodePtr2 p_node4 = VascularNode<2>::Create(200.0e-6, 0.0);
+        boost::shared_ptr<VascularNode<2> > p_node1 = VascularNode<2>::Create(0.0, 0.0);
+        boost::shared_ptr<VascularNode<2> > p_node2 = VascularNode<2>::Create(80.0e-6, 0.0);
+        boost::shared_ptr<VascularNode<2> > p_node3 = VascularNode<2>::Create(160.0e-6, 0.0);
+        boost::shared_ptr<VascularNode<2> > p_node4 = VascularNode<2>::Create(200.0e-6, 0.0);
         p_node4->GetFlowProperties()->SetIsInputNode(true);
 
-        SegmentPtr2 p_segment1(CaVesselSegment<2>::Create(p_node1, p_node3));
-        SegmentPtr2 p_segment2(CaVesselSegment<2>::Create(p_node2, p_node3));
-        SegmentPtr2 p_segment3(CaVesselSegment<2>::Create(p_node3, p_node4));
+        boost::shared_ptr<CaVesselSegment<2> > p_segment1(CaVesselSegment<2>::Create(p_node1, p_node3));
+        boost::shared_ptr<CaVesselSegment<2> > p_segment2(CaVesselSegment<2>::Create(p_node2, p_node3));
+        boost::shared_ptr<CaVesselSegment<2> > p_segment3(CaVesselSegment<2>::Create(p_node3, p_node4));
 
-        VesselPtr2 p_vessel1(CaVessel<2>::Create(p_segment1));
-        VesselPtr2 p_vessel2(CaVessel<2>::Create(p_segment2));
-        VesselPtr2 p_vessel3(CaVessel<2>::Create(p_segment3));
+        boost::shared_ptr<CaVessel<2> > p_vessel1(CaVessel<2>::Create(p_segment1));
+        boost::shared_ptr<CaVessel<2> > p_vessel2(CaVessel<2>::Create(p_segment2));
+        boost::shared_ptr<CaVessel<2> > p_vessel3(CaVessel<2>::Create(p_segment3));
         p_vessel1->SetFlowRate(-1.0);
         p_vessel2->SetFlowRate(-3.0);
         p_vessel3->SetFlowRate(-1.0);
@@ -157,7 +148,7 @@ public:
         TS_ASSERT_DELTA(p_vessel2->GetHaematocrit(),0.45, 1e-6);
         TS_ASSERT_DELTA(p_vessel3->GetHaematocrit(),0.45, 1e-6);
     }
-    void TestStructuralAdaptationOfHexagonalNetworkAlarcon03Haematocrit() throw(Exception)
+    void DontTestStructuralAdaptationOfHexagonalNetworkAlarcon03Haematocrit() throw(Exception)
     {
         // Specify the network dimensions
         double vessel_length = 80.0e-6;
@@ -172,13 +163,13 @@ public:
         points.push_back(ChastePoint<2>(0, 0));
         points.push_back(ChastePoint<2>(5, 0));
 
-        std::vector<NodePtr2> nodes;
+        std::vector<boost::shared_ptr<VascularNode<2> > > nodes;
         for(unsigned i=0; i < points.size(); i++)
         {
-            nodes.push_back(NodePtr2 (VascularNode<2>::Create(points[i])));
+            nodes.push_back(boost::shared_ptr<VascularNode<2> > (VascularNode<2>::Create(points[i])));
         }
 
-        SegmentPtr2 p_segment(CaVesselSegment<2>::Create(nodes[0], nodes[1]));
+        boost::shared_ptr<CaVesselSegment<2> > p_segment(CaVesselSegment<2>::Create(nodes[0], nodes[1]));
 
         double radius = 10.0e-6;
         p_segment->SetRadius(radius);

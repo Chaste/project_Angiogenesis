@@ -94,7 +94,7 @@ public:
 
         VasculatureGenerator<3> vascular_network_generator;
 
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = vascular_network_generator.GenerateSimpleDivergeAndConvergeNetwork(start_location,
+        boost::shared_ptr<CaVascularNetwork<3> > p_network = vascular_network_generator.GenerateDivergeAndConvergeNetwork(start_location,
                                                                                                                                        end_location,
                                                                                                                                        segment_length);
         OutputFileHandler output_file_handler("TestVasculatureGenerator", false);

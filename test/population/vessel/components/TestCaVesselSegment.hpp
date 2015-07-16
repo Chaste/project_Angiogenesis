@@ -36,63 +36,58 @@
 #ifndef TESTVASCULARSEGMENT_HPP_
 #define TESTVASCULARSEGMENT_HPP_
 
+#include <cxxtest/TestSuite.h>
 #include <math.h>
-#include "AbstractCellBasedTestSuite.hpp"
 #include "VascularNode.hpp"
 #include "SmartPointers.hpp"
-#include "SmartVasculaturePointers.hpp"
 #include "VasculatureData.hpp"
 #include "ChastePoint.hpp"
 #include "CaVesselSegment.hpp"
 #include "CaVessel.hpp"
-#include "FakePetscSetup.hpp"
 
-class TestVesselSegment : public AbstractCellBasedTestSuite
+class TestVesselSegment : public CxxTest::TestSuite
 {
 public:
 
     void TestConstructor() throw (Exception)
     {
         // Make some nodes
-        ChastePoint<2> point1(1.0, 2.0);
-        ChastePoint<2> point2(3.0, 4.0);
-        MAKE_VN_PTR_ARGS(VascularNode<2>, p_node_1, (point1));
-        MAKE_VN_PTR_ARGS(VascularNode<2>, p_node_2, (point2));
+        std::vector<boost::shared_ptr<VascularNode<2> > > nodes;
+        nodes.push_back(VascularNode<2>::Create(1.0, 2.0));
+        nodes.push_back(VascularNode<2>::Create(3.0, 4.0));
 
         // Check for an exception if the segment is defined with the same nodes
-        TS_ASSERT_THROWS_THIS(MAKE_VN_PTR_ARGS(CaVesselSegment<2>, pSegment, (p_node_1, p_node_1)),
+        TS_ASSERT_THROWS_THIS(CaVesselSegment<2>::Create(nodes[0], nodes[0]),
                               "Attempted to assign the same node to both ends of a vessel segment.");
 
         // Make a segment
-        MAKE_VN_PTR_ARGS(CaVesselSegment<2>, p_segment, (p_node_1, p_node_2));
+        boost::shared_ptr<CaVesselSegment<2> > p_segment = CaVesselSegment<2>::Create(nodes[0], nodes[1]);
 
         // Check the locations
-        TS_ASSERT(p_segment->GetNodes().first->IsCoincident(point1));
-        TS_ASSERT(p_segment->GetNode(0)->IsCoincident(point1));
-        TS_ASSERT(p_segment->GetNodes().second->IsCoincident(point2));
-        TS_ASSERT(p_segment->GetNode(1)->IsCoincident(point2));
+        TS_ASSERT(p_segment->GetNodes().first->IsCoincident(nodes[0]));
+        TS_ASSERT(p_segment->GetNode(0)->IsCoincident(nodes[0]));
+        TS_ASSERT(p_segment->GetNodes().second->IsCoincident(nodes[1]));
+        TS_ASSERT(p_segment->GetNode(1)->IsCoincident(nodes[1]));
         TS_ASSERT_THROWS_THIS(p_segment->GetNode(2),
                               "A node index other than 0 or 1 has been requested for a Vessel Segment.");
 
         // Test replacing a node
-        ChastePoint<2> point3(6.0, 7.0);
-        ChastePoint<2> point4(8.0, 9.0);
-        MAKE_VN_PTR_ARGS(VascularNode<2>, p_node_3, (point3));
-        MAKE_VN_PTR_ARGS(VascularNode<2>, p_node_4, (point4));
+        std::vector<boost::shared_ptr<VascularNode<2> > > nodes2;
+        nodes2.push_back(VascularNode<2>::Create(6.0, 7.0));
+        nodes2.push_back(VascularNode<2>::Create(8.0, 9.0));
 
-        p_segment->ReplaceNode(0, p_node_3);
-        p_segment->ReplaceNode(1, p_node_4);
-        TS_ASSERT(p_segment->GetNode(0)->IsCoincident(point3));
-        TS_ASSERT(p_segment->GetNode(1)->IsCoincident(point4));
-        TS_ASSERT_THROWS_THIS(p_segment->ReplaceNode(2, p_node_3),
+        p_segment->ReplaceNode(0, nodes2[0]);
+        p_segment->ReplaceNode(1, nodes2[1]);
+        TS_ASSERT(p_segment->GetNode(0)->IsCoincident(nodes2[0]));
+        TS_ASSERT(p_segment->GetNode(1)->IsCoincident(nodes2[1]));
+        TS_ASSERT_THROWS_THIS(p_segment->ReplaceNode(2, nodes2[0]),
                               "A node index other than 0 or 1 has been requested for a Vessel Segment.");
     }
 
     void TestSimpleGetAndSetMethods() throw (Exception)
     {
-        MAKE_VN_PTR_ARGS(VascularNode<2>, p_node1, (0.0));
-        MAKE_VN_PTR_ARGS(VascularNode<2>, p_node2, (0.0));
-        MAKE_VN_PTR_ARGS(CaVesselSegment<2>, pSegment, (p_node1, p_node2));
+        boost::shared_ptr<CaVesselSegment<3> > pSegment = CaVesselSegment<3>::Create(VascularNode<3>::Create(),
+                                                                                      VascularNode<3>::Create(1.0));
 
         // Test simple Getters and Setters
         pSegment->SetId(5u);
@@ -112,9 +107,8 @@ public:
 
     void TestAccessingData() throw (Exception)
     {
-        MAKE_VN_PTR_ARGS(VascularNode<2>, p_node1, (0.0));
-        MAKE_VN_PTR_ARGS(VascularNode<2>, p_node2, (0.0));
-        MAKE_VN_PTR_ARGS(CaVesselSegment<2>, p_segment, (p_node1, p_node2));
+        boost::shared_ptr<CaVesselSegment<3> > p_segment = CaVesselSegment<3>::Create(VascularNode<3>::Create(),
+                                                                                      VascularNode<3>::Create(1.0));
 
         // Set some data
         double radius = 5.5;
@@ -143,13 +137,16 @@ public:
     void TestGeometricFeatures() throw (Exception)
     {
         //Check the returned length
-        MAKE_VN_PTR_ARGS(VascularNode<2>, p_node1, (6.0, 7.0));
-        MAKE_VN_PTR_ARGS(VascularNode<2>, p_node2, (8.0, 9.0));
-        MAKE_VN_PTR_ARGS(VascularNode<3>, p_node3, (3.0, 4.0, 5.0));
-        MAKE_VN_PTR_ARGS(VascularNode<3>, p_node4, (6.0, 7.0, 8.0));
+        std::vector<boost::shared_ptr<VascularNode<2> > > nodes;
+        nodes.push_back(VascularNode<2>::Create(6.0, 7.0));
+        nodes.push_back(VascularNode<2>::Create(8.0, 9.0));
 
-        MAKE_VN_PTR_ARGS(CaVesselSegment<2>, p_segment1, (p_node1, p_node2));
-        MAKE_VN_PTR_ARGS(CaVesselSegment<3>, p_segment2, (p_node3, p_node4));
+        std::vector<boost::shared_ptr<VascularNode<3> > > nodes_3d;
+        nodes_3d.push_back(VascularNode<3>::Create(3.0, 4.0, 5.0));
+        nodes_3d.push_back(VascularNode<3>::Create(6.0, 7.0, 8.0));
+
+        boost::shared_ptr<CaVesselSegment<2> > p_segment1 = CaVesselSegment<2>::Create(nodes[0], nodes[1]);
+        boost::shared_ptr<CaVesselSegment<3> > p_segment2 = CaVesselSegment<3>::Create(nodes_3d[0], nodes_3d[1]);
 
         TS_ASSERT_DELTA(p_segment1->GetLength(), std::sqrt(8.0), 1.e-6);
         TS_ASSERT_DELTA(p_segment2->GetLength(), std::sqrt(27.0), 1.e-6);
@@ -159,8 +156,7 @@ public:
         double distance2 = 2.2360;
         ChastePoint<2> point5(7.0, 7.0); // projection is inside segment
         TS_ASSERT_DELTA(p_segment1->GetDistance(point5), distance1, 1.e-3);
-
-        TS_ASSERT_DELTA(p_segment1->GetDistance(p_node1->GetLocation()), 0, 1.e-6);
+        TS_ASSERT_DELTA(p_segment1->GetDistance(nodes[0]->GetLocation()), 0, 1.e-6);
 
         ChastePoint<2> point8(7.0, 7.0); // projection is inside segment
         TS_ASSERT_DELTA(p_segment1->GetDistance(ChastePoint<2>(7.0, 8.0)), 0, 1.e-6);
@@ -185,32 +181,45 @@ public:
     void TestAddingAndRemovingVessels() throw (Exception)
     {
         // Make some nodes
-        MAKE_VN_PTR_ARGS(VascularNode<2>, pNode1, (4.0, 3.0));
-        MAKE_VN_PTR_ARGS(VascularNode<2>, pNode2, (4.0, 5.0));
-        MAKE_VN_PTR_ARGS(VascularNode<2>, pNode3, (5.0, 6.0));
+        std::vector<boost::shared_ptr<VascularNode<2> > > nodes;
+        nodes.push_back(VascularNode<2>::Create(4.0, 3.0));
+        nodes.push_back(VascularNode<2>::Create(4.0, 5.0));
+        nodes.push_back(VascularNode<2>::Create(5.0, 6.0));
 
         // Make some vessel segments
-        MAKE_VN_PTR_ARGS(CaVesselSegment<2>, pSegment, (pNode1, pNode2));
-        MAKE_VN_PTR_ARGS(CaVesselSegment<2>, pSegment2, (pNode2, pNode3));
+        boost::shared_ptr<CaVesselSegment<2> > pSegment = CaVesselSegment<2>::Create(nodes[0], nodes[1]);
+        boost::shared_ptr<CaVesselSegment<2> > pSegment2 = CaVesselSegment<2>::Create(nodes[1], nodes[2]);
 
         TS_ASSERT_THROWS_THIS(boost::shared_ptr<CaVessel<2> > vessel = pSegment->GetVessel(),
                               "A vessel has been requested but this segment doesn't have one.");
 
         // Make a vessel and check that it has been suitably added to the segment
-        MAKE_VN_PTR_ARGS(CaVessel<2>, pVessel, (pSegment));
+        boost::shared_ptr<CaVessel<2> > pVessel = CaVessel<2>::Create(pSegment);
         TS_ASSERT(pSegment->GetNode(0)->IsCoincident(pSegment->GetVessel()->GetSegment(0)->GetNode(0)));
 
         // Add a different vessel
-        MAKE_VN_PTR_ARGS(CaVessel<2>, pVessel2, (pSegment));
+        boost::shared_ptr<CaVessel<2> > pVessel2 = CaVessel<2>::Create(pSegment);
         TS_ASSERT(pSegment->GetNode(0)->IsCoincident(pSegment->GetVessel()->GetSegment(0)->GetNode(0)));
 
         // Try removing a segment from the vessel
         pVessel->AddSegment(pSegment2);
         pVessel->RemoveSegments(SegmentLocation::Start);
         TS_ASSERT_THROWS_THIS(pVessel->RemoveSegments(SegmentLocation::End), "Vessel must have at least one segment.");
-
         TS_ASSERT_THROWS_THIS(boost::shared_ptr<CaVessel<2> > vessel = pSegment->GetVessel(),
                               "A vessel has been requested but this segment doesn't have one.");
+    }
+
+    void TestRemoveMethod() throw (Exception)
+    {
+        // Make a segment
+        boost::shared_ptr<VascularNode<3> > p_node1 = VascularNode<3>::Create(0.0);
+        boost::shared_ptr<VascularNode<3> > p_node2 = VascularNode<3>::Create(1.0);
+        boost::shared_ptr<CaVesselSegment<3> > pSegment1 = CaVesselSegment<3>::Create(p_node1, p_node2);
+
+        // Delete the segment
+        pSegment1->Remove();
+        TS_ASSERT_EQUALS(p_node1->GetNumberOfSegments(), 0);
+        TS_ASSERT_EQUALS(p_node2->GetNumberOfSegments(), 0);
     }
 };
 

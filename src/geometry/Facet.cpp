@@ -47,11 +47,7 @@ Facet::Facet(std::vector<boost::shared_ptr<Polygon> > polygons) :
         mVertices(),
         mVerticesUpToDate(false)
 {
-    // Ensure the polygons are planar
-//    if(!IsPlanar())
-//    {
-//        EXCEPTION("Input polygons must be planar");
-//    }
+
 }
 
 Facet::Facet(boost::shared_ptr<Polygon> pPolygon) :
@@ -60,12 +56,6 @@ Facet::Facet(boost::shared_ptr<Polygon> pPolygon) :
         mVerticesUpToDate(false)
 {
     mPolygons.push_back(pPolygon);
-
-    // Ensure the polygons are planar
-//    if(!IsPlanar())
-//    {
-//        EXCEPTION("Input polygons must be planar");
-//    }
 }
 
 boost::shared_ptr<Facet> Facet::Create(std::vector<boost::shared_ptr<Polygon> > polygons)
@@ -87,22 +77,12 @@ Facet::~Facet()
 void Facet::AddPolygons(std::vector<boost::shared_ptr<Polygon> > polygons)
 {
     mPolygons.insert(mPolygons.end(), polygons.begin(), polygons.end());
-//    if(!IsPlanar())
-//    {
-//        EXCEPTION("Input polygons must be planar");
-//    }
-
     mVerticesUpToDate = false;
 }
 
 void Facet::AddPolygon(boost::shared_ptr<Polygon> pPolygon)
 {
     mPolygons.push_back(pPolygon);
-//    if(!IsPlanar())
-//    {
-//        EXCEPTION("Input polygons must be planar");
-//    }
-
     mVerticesUpToDate = false;
 }
 bool Facet::ContainsPoint(c_vector<double, 3> location)
@@ -228,26 +208,6 @@ std::pair<vtkSmartPointer<vtkPoints>, vtkSmartPointer<vtkIdTypeArray> > Facet::G
         p_vertexIds->InsertNextValue(idx);
     }
     return std::pair<vtkSmartPointer<vtkPoints>, vtkSmartPointer<vtkIdTypeArray> >(p_vertices, p_vertexIds);
-}
-
-bool Facet::IsPlanar()
-{
-    bool is_planar = true;
-    std::vector<boost::shared_ptr<Vertex> > vertices = GetVertices();
-    if(vertices.size() > 3)
-    {
-        // If the distance to the plane of any vertex is
-        // greater than the tolerance then it is not planar.
-        for(unsigned idx=0; idx<vertices.size(); idx++)
-        {
-            if(GetDistance(vertices[idx]->rGetLocation()) > 1.e-6)
-            {
-                is_planar = false;
-                break;
-            }
-        }
-    }
-    return is_planar;
 }
 
 void Facet::RotateAboutAxis(c_vector<double, 3> axis, double angle)

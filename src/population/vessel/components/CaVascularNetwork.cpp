@@ -135,10 +135,10 @@ void CaVascularNetwork<DIM>::RemoveVessel(boost::shared_ptr<CaVessel<DIM> > pVes
     typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator it = std::find(mVessels.begin(), mVessels.end(), pVessel);
     if(it != mVessels.end())
     {
-        mVessels.erase(it);
         if(deleteVessel)
         {
             (*it)->Remove();
+            mVessels.erase(it);
         }
     }
     else
@@ -1049,7 +1049,6 @@ void CaVascularNetwork<DIM>::MergeCoincidentNodes(std::vector<boost::shared_ptr<
             }
         }
     }
-
     mNodesUpToDate = false;
     mVesselNodesUpToDate = false;
 }
@@ -1135,88 +1134,70 @@ void CaVascularNetwork<DIM>::Translate(const c_vector<double, DIM>& rTranslation
 template <unsigned DIM>
 boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::DivideVessel(boost::shared_ptr<CaVessel<DIM> > pVessel, ChastePoint<DIM> location)
 {
+    boost::shared_ptr<CaVesselSegment<DIM> > p_segment;
 
-    // assert that location must not soley be on the end of a vessel
-    // it may, however, be on the end of a vessel and lie in the middle of the vessel too
-
-    boost::shared_ptr<CaVesselSegment<DIM> > pVesselSegment;
-
-    if (pVessel->GetStartNode()->IsCoincident(location) || pVessel->GetEndNode()->IsCoincident(location) )
+    // If the divide location coincides with one of the end nodes don't divide and return that node
+    if (pVessel->GetStartNode()->IsCoincident(location) || pVessel->GetEndNode()->IsCoincident(location))
     {
-        unsigned locatedInsideVessel = 0;
-
-        for (unsigned i = 0; i < pVessel->GetNumberOfSegments(); i++)
-        {
-            if (pVessel->GetSegment(i)->GetDistance(location) <= 1e-6)
-            {
-                locatedInsideVessel++;
-                if (i != 0 && i != pVessel->GetNumberOfSegments() - 1)
-                {
-
-                    pVesselSegment = pVessel->GetSegment(i);
-                }
-            }
-        }
-
-        // vessel may only ever be allowed to exist twice in the same location
-        // this is also only applicable when a vessel is looping around on itself
-        if(locatedInsideVessel != 2)
-        {
-            EXCEPTION("If the location of a divide coincides with the end of a vessel then there must be at least one other segment in the centre of that vessel at which the vessel can be divided. A vessel cannot be divided at its end.");
-        }
         // both vessel nodes cannot be present at the same location in this case
         if(pVessel->GetStartNode()->IsCoincident(pVessel->GetEndNode()))
         {
-            EXCEPTION("If the location of a divide is on the end of a vessel the two ends of a vessel cannot coincide.");
+            EXCEPTION("Cannot divide a vessel with coincident start and end nodes.");
+        }
+
+        if (pVessel->GetStartNode()->IsCoincident(location))
+        {
+            return pVessel->GetStartNode();
+        }
+        else
+        {
+            return pVessel->GetEndNode();
         }
     }
     else
     {
         bool locatedInsideVessel = false;
-
-        for (unsigned i = 0; i < pVessel->GetNumberOfSegments(); i++)
+        std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = pVessel->GetSegments();
+        for (unsigned idx = 0; idx < segments.size(); idx++)
         {
-            if (pVessel->GetSegment(i)->GetDistance(location) <= 1e-6)
+            if (segments[idx]->GetDistance(location) <= 1e-6)
             {
                 locatedInsideVessel = true;
-                pVesselSegment = pVessel->GetSegment(i);
+                p_segment = segments[idx];
                 break;
             }
         }
 
         if(!locatedInsideVessel)
         {
-            EXCEPTION("The division cannot take place at the location specified since the vessel does not exist at that location.");
+            EXCEPTION("There is no segment at the requested division location.");
         }
     }
 
-    assert(pVesselSegment);
-
     boost::shared_ptr<VascularNode<DIM> > p_new_node = pVessel->DivideSegment(location);
 
-    // create two new vessels and give them the properties of the vessel to be divided and appropriately divide the vessel segments of the divided vessel between the two new vessels
-    // new vessels will share a new common vessel network node
+    // create two new vessels and assign them the old vessel's properties
     std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > start_segments;
     std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > end_segments;
-    unsigned segment_index = pVessel->GetNumberOfSegments()+1;
-    for (unsigned i = 0; i < pVessel->GetNumberOfSegments(); i++)
+    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = pVessel->GetSegments();
+    unsigned segment_index = segments.size()+1;
+    for (unsigned idx = 0; idx < segments.size(); idx++)
     {
-        start_segments.push_back(pVessel->GetSegment(i));
-        if (pVessel->GetSegment(i)->GetNode(0)->IsCoincident(location) )
+        start_segments.push_back(segments[idx]);
+        if (segments[idx]->GetNode(0)->IsCoincident(location))
         {
-            segment_index = i;
+            segment_index = idx;
             break;
         }
     }
 
-    if (segment_index > pVessel->GetNumberOfSegments())
+    if (segment_index > segments.size())
     {
         EXCEPTION("Vessel segment not found.");
     }
-
-    for (unsigned i = segment_index; i < pVessel->GetNumberOfSegments(); i++)
+    for (unsigned idx = segment_index; idx < segments.size(); idx++)
     {
-        end_segments.push_back(pVessel->GetSegment(i));
+        end_segments.push_back(segments[idx]);
     }
     boost::shared_ptr<CaVessel<DIM> > p_new_vessel1 = CaVessel<DIM>::Create(start_segments);
     boost::shared_ptr<CaVessel<DIM> > p_new_vessel2 = CaVessel<DIM>::Create(end_segments);
@@ -1230,7 +1211,6 @@ boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::DivideVessel(boost
     mSegmentsUpToDate = false;
     mNodesUpToDate = false;
     mVesselNodesUpToDate = false;
-
     return p_new_node;
 }
 
@@ -1584,6 +1564,7 @@ void CaVascularNetwork<DIM>::UpdateNodes()
     mNodes = std::vector<boost::shared_ptr<VascularNode<DIM> > >();
     std::set<boost::shared_ptr<VascularNode<DIM> > >  nodes;
     typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator it;
+
     for(it = mVessels.begin(); it != mVessels.end(); it++)
     {
         std::vector<boost::shared_ptr<VascularNode<DIM> > > vessel_nodes = (*it)->GetNodes();

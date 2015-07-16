@@ -40,8 +40,8 @@
 #include <string>
 #include <boost/enable_shared_from_this.hpp>
 
-#include "../../vessel/properties/SegmentFlowProperties.hpp"
-#include "../../vessel/VasculatureData.hpp"
+#include "SegmentFlowProperties.hpp"
+#include "VasculatureData.hpp"
 #include "UblasVectorInclude.hpp"
 #include "ChastePoint.hpp"
 

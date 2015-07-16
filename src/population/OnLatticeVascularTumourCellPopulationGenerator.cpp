@@ -72,9 +72,7 @@ boost::shared_ptr<CaBasedCellPopulationWithVessels<DIM> > OnLatticeVascularTumou
             // cell is a stalk cell
             cell_population->GetCellUsingLocationIndex(index)->SetMutationState(p_EC_state);
             // associate stalk cell with node
-            pVascularNetwork->GetNearestNode(rMesh.GetNode(index)->rGetLocation())->SetCellPopulation(cell_population);
             pVascularNetwork->GetNearestNode(rMesh.GetNode(index)->rGetLocation())->SetCell(cell_population->GetCellUsingLocationIndex(index));
-
         }
         else
         {

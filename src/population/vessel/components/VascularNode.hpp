@@ -46,7 +46,6 @@
 #include "UblasVectorInclude.hpp"
 #include "ChastePoint.hpp"
 #include "Cell.hpp"
-#include "AbstractCellPopulation.hpp"
 
 /**
  *  Forward declaration to allow segments to manage adding and removing themselves from nodes.
@@ -72,7 +71,7 @@ class VascularNode : public boost::enable_shared_from_this<VascularNode<DIM> >
 private:
 
     /**
-     * Location of a node. Used if a CellPtr has not been assigned.
+     * Location of a node.
      */
     ChastePoint<DIM> mLocation;
 
@@ -80,11 +79,6 @@ private:
      * Pointer to an associated Cell.
      */
     CellPtr mpCell;
-
-    /**
-     * Pointer to an associated Cell Population.
-     */
-    boost::shared_ptr<AbstractCellPopulation<DIM> > mpCellPopulation;
 
     /**
      * Container for generic node data.
@@ -399,20 +393,11 @@ public:
     void RemoveCell();
 
     /**
-     * Assign a Cell to the node. Throw an Exception if the Cell is not a member of the
-     * Cell Population or if a Cell Population has not been set. Overwrite any existing Cell.
+     * Assign a Cell to the node. Overwrite any existing Cell.
      *
      * @param pCell the cell to assign to the node
      */
     void SetCell(CellPtr pCell);
-
-    /**
-     * Assign a Cell Population to the node. If an existing Cell is not a member of the population
-     * remove it.
-     *
-     * @param pCellPopulation the cell population to assign to the node
-     */
-    void SetCellPopulation(boost::shared_ptr<AbstractCellPopulation<DIM> > pCellPopulation);
 
     /**
      * Add data of any type to the node using the identifying key

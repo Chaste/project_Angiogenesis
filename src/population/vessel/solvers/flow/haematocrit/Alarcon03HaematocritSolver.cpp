@@ -266,8 +266,8 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<CaVascularNetw
 
      // Does an initial guess do anything with a direct solver?
     linearSystem.AssembleFinalLinearSystem();
-    linearSystem.DisplayMatrix();
-    linearSystem.DisplayRhs();
+    //linearSystem.DisplayMatrix();
+    //linearSystem.DisplayRhs();
     solution = linearSystem.Solve(initialGuess);
     solution = linearSystem.Solve();
 

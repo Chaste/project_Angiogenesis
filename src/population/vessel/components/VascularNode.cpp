@@ -45,7 +45,6 @@ template<unsigned DIM>
 VascularNode<DIM>::VascularNode(const ChastePoint<DIM>& rLocation) :
         mLocation(rLocation),
         mpCell(CellPtr()),
-        mpCellPopulation(boost::shared_ptr<AbstractCellPopulation<DIM> >()),
         mDataContainer(),
         mId(0),
         mLabel(),
@@ -60,7 +59,6 @@ template<unsigned DIM>
 VascularNode<DIM>::VascularNode(double v1, double v2, double v3) :
         mLocation(ChastePoint<DIM>(v1, v2, v3)),
         mpCell(CellPtr()),
-        mpCellPopulation(boost::shared_ptr<AbstractCellPopulation<DIM> >()),
         mDataContainer(),
         mId(0),
         mLabel(),
@@ -75,7 +73,6 @@ template<unsigned DIM>
 VascularNode<DIM>::VascularNode(c_vector<double, DIM> location) :
         mLocation(ChastePoint<DIM>(location)),
         mpCell(CellPtr()),
-        mpCellPopulation(boost::shared_ptr<AbstractCellPopulation<DIM> >()),
         mDataContainer(),
         mId(0),
         mLabel(),
@@ -91,7 +88,6 @@ VascularNode<DIM>::VascularNode(const VascularNode<DIM>& rExistingNode) :
         boost::enable_shared_from_this<VascularNode<DIM> >(),
         mLocation(rExistingNode.GetLocation()),
         mpCell(CellPtr()),
-        mpCellPopulation(boost::shared_ptr<AbstractCellPopulation<DIM> >()),
         mDataContainer(),
         mId(0),
         mLabel(),
@@ -231,27 +227,13 @@ const std::string& VascularNode<DIM>::rGetLabel() const
 template<unsigned DIM>
 ChastePoint<DIM> VascularNode<DIM>::GetLocation() const
 {
-//    if (mpCell)
-//    {
-//        return mpCellPopulation->GetLocationOfCellCentre(mpCell);
-//    }
-//    else
-//    {
         return mLocation;
-//    }
 }
 
 template<unsigned DIM>
 c_vector<double, DIM> VascularNode<DIM>::GetLocationVector() const
 {
-//    if (mpCell)
-//    {
-//        return mpCellPopulation->GetLocationOfCellCentre(mpCell);
-//    }
-//    else
-//    {
         return mLocation.rGetLocation();
-//    }
 }
 
 template<unsigned DIM>
@@ -362,35 +344,7 @@ void VascularNode<DIM>::RemoveSegment(boost::shared_ptr<CaVesselSegment<DIM> > p
 template<unsigned DIM>
 void VascularNode<DIM>::SetCell(CellPtr pCell)
 {
-//    if (!mpCellPopulation)
-//    {
-//        EXCEPTION("Attempted to add a Cell without first adding a CellPopulation.");
-//    }
-//
-//    std::list<CellPtr> cell_list = mpCellPopulation->rGetCells();
-//    bool found = (std::find(cell_list.begin(), cell_list.end(), pCell) != cell_list.end());
-//    if (!found)
-//    {
-//        EXCEPTION("Attempted to add a Cell that is not in the assigned CellPopulation.");
-//    }
-
     mpCell = pCell;
-}
-
-template<unsigned DIM>
-void VascularNode<DIM>::SetCellPopulation(boost::shared_ptr<AbstractCellPopulation<DIM> > pCellPopulation)
-{
-    // If there is an existing cell not in the cell population then remove it.
-    if (mpCell)
-    {
-        std::list<CellPtr> cell_list = pCellPopulation->rGetCells();
-        bool found = (std::find(cell_list.begin(), cell_list.end(), mpCell) != cell_list.end());
-        if (!found)
-        {
-            mpCell = CellPtr();
-        }
-    }
-    mpCellPopulation = pCellPopulation;
 }
 
 template<unsigned DIM>
@@ -439,20 +393,12 @@ void VascularNode<DIM>::SetLabel(const std::string& rLabel)
 template<unsigned DIM>
 void VascularNode<DIM>::SetLocation(const ChastePoint<DIM>& rLocation)
 {
-    if (mpCell)
-    {
-        mpCell = CellPtr();
-    }
     mLocation = rLocation;
 }
 
 template<unsigned DIM>
 void VascularNode<DIM>::SetLocation(c_vector<double, DIM> location)
 {
-    if (mpCell)
-    {
-        mpCell = CellPtr();
-    }
     mLocation = ChastePoint<DIM>(location);
 }
 

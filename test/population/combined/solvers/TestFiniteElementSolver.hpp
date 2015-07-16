@@ -80,7 +80,7 @@ public:
         solver.SetVesselNetwork(p_network);
         solver.SetDomain(p_domain);
         solver.SetPde(p_pde);
-        solver.SetMaxElementArea(50.0);
+        solver.SetMaxElementArea(500.0);
 
         solver.SetWorkingDirectory("TestFiniteElementSolver/KroghCylinder3d");
         solver.Solve(true);
@@ -110,7 +110,7 @@ public:
         solver.SetVesselNetwork(p_network);
         solver.SetDomain(p_domain);
         solver.SetPde(p_pde);
-        solver.SetMaxElementArea(50.0);
+        solver.SetMaxElementArea(500.0);
 
         solver.SetWorkingDirectory("TestFiniteElementSolver/KroghCylinder3d_Surface");
         solver.Solve(true, true);
@@ -136,7 +136,7 @@ public:
         solver.SetVesselNetwork(p_network);
         solver.SetDomain(p_domain);
         solver.SetPde(p_pde);
-        solver.SetMaxElementArea(50.0);
+        solver.SetMaxElementArea(500.0);
 
         solver.SetWorkingDirectory("TestFiniteElementSolver/KroghCylinder3dCircle");
         solver.Solve(true);
@@ -162,7 +162,7 @@ public:
         solver.SetVesselNetwork(p_network);
         solver.SetDomain(p_domain);
         solver.SetPde(p_pde);
-        solver.SetMaxElementArea(50.0);
+        solver.SetMaxElementArea(500.0);
 
         solver.SetWorkingDirectory("TestFiniteElementSolver/KroghCylinder3dCircle_Surface");
         solver.Solve(true, true);

@@ -33,8 +33,8 @@
 
  */
 
-#ifndef ANGIOGENESISSOLVER_HPP_
-#define ANGIOGENESISSOLVER_HPP_
+#ifndef ABSTRACTANGIOGENESISSOLVER_HPP_
+#define ABSTRACTANGIOGENESISSOLVER_HPP_
 
 #include <vector>
 #include <string>
@@ -43,7 +43,7 @@
 #include "SmartPointers.hpp"
 
 template<unsigned DIM>
-class AngiogenesisSolver
+class AbstractAngiogenesisSolver
 {
 
     boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
@@ -60,12 +60,14 @@ public:
      * Constructor.
      * @param pNetwork the network to perform angiogenesis on
      */
-    AngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork, const std::string& rOutputDirectory);
+    AbstractAngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork, const std::string& rOutputDirectory);
 
     /**
      * Destructor.
      */
-    ~AngiogenesisSolver();
+    ~AbstractAngiogenesisSolver();
+
+    c_vector<double, DIM> GetGrowthDirection(c_vector<double, DIM> currentDirection);
 
     void UpdateNodalPositions();
 
@@ -75,7 +77,6 @@ public:
      * Run the solver.
      */
     void Run();
-
 };
 
-#endif /* ANGIOGENESISSOLVER_HPP_ */
+#endif /* ABSTRACTANGIOGENESISSOLVER_HPP_ */

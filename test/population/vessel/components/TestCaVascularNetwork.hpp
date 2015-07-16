@@ -36,8 +36,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef TESTVESSELNETWORK_HPP_
 #define TESTVESSELNETWORK_HPP_
 
-#include <math.h>
-#include "AbstractCellBasedTestSuite.hpp"
 #include "VascularNode.hpp"
 #include "SmartPointers.hpp"
 #include "VasculatureData.hpp"
@@ -46,14 +44,13 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CaVascularNetwork.hpp"
 #include "OutputFileHandler.hpp"
 #include "UblasIncludes.hpp"
-#include "FakePetscSetup.hpp"
 #include "VasculatureGenerator.hpp"
 
-class TestVesselNetwork : public AbstractCellBasedTestSuite
+class TestVesselNetwork : public CxxTest::TestSuite
 {
 public:
 
-    void TestAddingVessels() throw(Exception)
+    void DontTestAddingVessels() throw(Exception)
     {
         // Make some nodes
         std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
@@ -74,11 +71,10 @@ public:
         CaVascularNetwork<3> vessel_network;
         vessel_network.AddVessels(vessels);
         vessel_network.AddVessel(p_end_vessel);
-
         TS_ASSERT_EQUALS(vessel_network.GetNodes().size(), 4u);
     }
 
-    void TestSettingNetworkData() throw(Exception)
+    void DontTestSettingNetworkData() throw(Exception)
     {
         // Make some nodes
         std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
@@ -112,7 +108,7 @@ public:
         vessel_network.SetSegmentRadii(12.0);
     }
 
-    void TestCopyingAndMovingNetwork() throw(Exception)
+    void DontTestCopyingAndMovingNetwork() throw(Exception)
     {
         // Make some nodes
         std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
@@ -157,7 +153,7 @@ public:
         TS_ASSERT_DELTA(vessel_network.GetVessel(3)->GetSegment(0)->GetNode(1)->GetLocation()[2], 3.0, 1.e-6);
     }
 
-    void TestConnnectedMethods() throw(Exception)
+    void DontTestConnnectedMethods() throw(Exception)
     {
         // Make some nodes
         std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
@@ -241,7 +237,7 @@ public:
         vessel_network.WriteConnectivity(output_filename4);
     }
 
-    void TestRemoveVessel() throw(Exception)
+    void DontTestRemoveVessel() throw(Exception)
     {
         // Make some nodes
         std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
@@ -264,32 +260,7 @@ public:
         TS_ASSERT_EQUALS(vessel_network.GetNumberOfVessels(), 2u);
     }
 
-    void TestMergeVessel() throw(Exception)
-    {
-        // Make some nodes
-        std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
-        nodes.push_back(VascularNode<3>::Create(0.0, 0.0, 0.0));
-        nodes.push_back(VascularNode<3>::Create(20.0, 0.0, 0.0));
-        nodes.push_back(VascularNode<3>::Create(30.0, 0.0, 0.0));
-        nodes.push_back(VascularNode<3>::Create(50.0, 0.0, 0.0));
-
-        // Make some vessels
-        std::vector<boost::shared_ptr<CaVessel<3> > > vessels;
-        for(unsigned idx=0; idx < 3; idx++)
-        {
-            vessels.push_back(CaVessel<3>::Create(CaVesselSegment<3>::Create(nodes[idx], nodes[idx+1])));
-        }
-
-        CaVascularNetwork<3> vessel_network;
-        vessel_network.AddVessels(vessels);
-
-        vessel_network.MergeShortVessels(15.0);
-        TS_ASSERT_EQUALS(vessel_network.GetNumberOfVessels(), 2u);
-        TS_ASSERT_DELTA(vessels[0]->GetEndNode()->GetLocationVector()[0], 20.0, 1.e-6);
-        TS_ASSERT_DELTA(vessels[2]->GetStartNode()->GetLocationVector()[0], 20.0, 1.e-6);
-    }
-
-    void TestDivideSingleVessel() throw(Exception)
+    void DontTestDivideVessel() throw(Exception)
     {
          // Make some nodes
          std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
@@ -315,9 +286,8 @@ public:
          TS_ASSERT_DELTA(vessel_network.GetVessel(1)->GetSegment(0)->GetNode(1)->GetLocation()[0], 2.0, 1.e-6);
     }
 
-    void TestDividingSingleVesselWithMultipleSegments() throw(Exception)
+    void DontTestDivideMultiSegmentVessel() throw(Exception)
     {
-
         // Make some nodes
         std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
         for(unsigned idx=1; idx < 6; idx++)
@@ -362,119 +332,80 @@ public:
         TS_ASSERT_DELTA(p_vascular_network.GetVessel(2)->GetSegment(0)->GetNode(1)->GetLocation()[0], 5.0, 1.e-6);
     }
 
-    void TestFormSproutWhichFormsAnastomosisWithExistingNodeImmediately()
+    void DontTestSprouting()
     {
-
-        boost::shared_ptr<CaVascularNetwork<2> > p_vessel_network(new CaVascularNetwork<2>());
+        boost::shared_ptr<CaVascularNetwork<2> > p_vessel_network = CaVascularNetwork<2>::Create();
         std::vector<boost::shared_ptr<VascularNode<2> > > nodes1;
-        nodes1.push_back(VascularNode<2>::Create(4,0));
-        nodes1.push_back(VascularNode<2>::Create(4,1));
-        nodes1.push_back(VascularNode<2>::Create(4,2));
+        nodes1.push_back(VascularNode<2>::Create(0));
+        nodes1.push_back(VascularNode<2>::Create(1));
+        nodes1.push_back(VascularNode<2>::Create(2));
         boost::shared_ptr<CaVessel<2> > p_vessel1 = CaVessel<2>::Create(nodes1);
 
-        std::vector<boost::shared_ptr<VascularNode<2> > > nodes2;
-        nodes2.push_back(VascularNode<2>::Create(4,2));
-        nodes2.push_back(VascularNode<2>::Create(5,3));
-        nodes2.push_back(VascularNode<2>::Create(6,4));
-        nodes2.push_back(VascularNode<2>::Create(7,5));
-        nodes2.push_back(VascularNode<2>::Create(8,6));
-        boost::shared_ptr<CaVessel<2> > p_vessel2 = CaVessel<2>::Create(nodes2);
-
-        std::vector<boost::shared_ptr<VascularNode<2> > > nodes3;
-        nodes3.push_back(VascularNode<2>::Create(8,6));
-        nodes3.push_back(VascularNode<2>::Create(7,6));
-        boost::shared_ptr<CaVessel<2> > p_vessel3 = CaVessel<2>::Create(nodes3);
-
-        std::vector<boost::shared_ptr<VascularNode<2> > > nodes4;
-        nodes4.push_back(VascularNode<2>::Create(7,6));
-        nodes4.push_back(VascularNode<2>::Create(7,7));
-        nodes4.push_back(VascularNode<2>::Create(7,8));
-        nodes4.push_back(VascularNode<2>::Create(7,9));
-        boost::shared_ptr<CaVessel<2> > p_vessel4 = CaVessel<2>::Create(nodes4);
-
-        std::vector<boost::shared_ptr<VascularNode<2> > > nodes5;
-        nodes5.push_back(VascularNode<2>::Create(7,6));
-        nodes5.push_back(VascularNode<2>::Create(6,6));
-        nodes5.push_back(VascularNode<2>::Create(5,6));
-        nodes5.push_back(VascularNode<2>::Create(4,6));
-        nodes5.push_back(VascularNode<2>::Create(3,6));
-        nodes5.push_back(VascularNode<2>::Create(2,6));
-        nodes5.push_back(VascularNode<2>::Create(1,6));
-        nodes5.push_back(VascularNode<2>::Create(0,6));
-        boost::shared_ptr<CaVessel<2> > p_vessel5 = CaVessel<2>::Create(nodes5);
-
-        std::vector<boost::shared_ptr<VascularNode<2> > > nodes6;
-        nodes6.push_back(VascularNode<2>::Create(0,6));
-        nodes6.push_back(VascularNode<2>::Create(1,5));
-        nodes6.push_back(VascularNode<2>::Create(2,4));
-        nodes6.push_back(VascularNode<2>::Create(3,3));
-        nodes6.push_back(VascularNode<2>::Create(4,2));
-        boost::shared_ptr<CaVessel<2> > p_vessel6 = CaVessel<2>::Create(nodes6);
-
         p_vessel_network->AddVessel(p_vessel1);
-        p_vessel_network->AddVessel(p_vessel2);
-        p_vessel_network->AddVessel(p_vessel3);
-        p_vessel_network->AddVessel(p_vessel4);
-        p_vessel_network->AddVessel(p_vessel5);
-        p_vessel_network->AddVessel(p_vessel6);
-
-        p_vessel_network->MergeCoincidentNodes();
 
         // form sprout
-        ChastePoint<2> sproutBaseLocation(7,7);
-        ChastePoint<2> sproutTipLocation(8,6);
+        ChastePoint<2> sproutBaseLocation(1);
+        ChastePoint<2> sproutTipLocation(1,1);
         boost::shared_ptr<CaVessel<2> > newSprout = p_vessel_network->FormSprout(sproutBaseLocation, sproutTipLocation);
-
-        // check locations of nodes
-        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,0)) == 1);
-        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(4,2)) == 1);
-        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(8,6)) == 2);
-        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(7,6)) == 1);
-        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(7,7)) == 1);
-        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(7,9)) == 1);
-        TS_ASSERT(p_vessel_network->NumberOfNodesNearLocation(ChastePoint<2>(0,6)) == 1);
-
-        // check number of vessels attached to each node
-        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,0))->GetNumberOfSegments() == 1)
-        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(4,2))->GetNumberOfSegments() == 3);
-        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(7,6))->GetNumberOfSegments() == 3);
-        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(7,7))->GetNumberOfSegments() == 3);
-        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(7,9))->GetNumberOfSegments() == 1)
-        TS_ASSERT(p_vessel_network->GetNearestNode(ChastePoint<2>(0,6))->GetNumberOfSegments() == 2);
 
         // check active tips
         TS_ASSERT(newSprout->GetSegment(0)->GetNode(1)->IsMigrating());
 
         // test number of vessels and nodes in network
-        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfNodes(),22u);
-        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfVessels(),8u);
-
-        // test that vessels are in network
-        TS_ASSERT_THROWS_NOTHING(p_vessel_network->GetVesselIndex(p_vessel1));
-        TS_ASSERT_THROWS_NOTHING(p_vessel_network->GetVesselIndex(p_vessel2));
-        TS_ASSERT_THROWS_NOTHING(p_vessel_network->GetVesselIndex(p_vessel3));
-        TS_ASSERT_THROWS_ANYTHING(p_vessel_network->GetVesselIndex(p_vessel4));
-        TS_ASSERT_THROWS_NOTHING(p_vessel_network->GetVesselIndex(p_vessel5));
-        TS_ASSERT_THROWS_NOTHING(p_vessel_network->GetVesselIndex(p_vessel6));
-        TS_ASSERT_THROWS_NOTHING(p_vessel_network->GetVesselIndex(newSprout));
-
-        // test that nodes are in network
-        TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel1->GetStartNode()));
-        TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel1->GetEndNode()));
-        TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel2->GetStartNode()));
-        TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel2->GetEndNode()));
-        TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel3->GetStartNode()));
-        TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel3->GetEndNode()));
-        TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel4->GetStartNode()));
-        TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel4->GetEndNode()));
-        TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel5->GetStartNode()));
-        TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel5->GetEndNode()));
-        TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel6->GetStartNode()));
-        TS_ASSERT(p_vessel_network->NodeIsInNetwork(p_vessel6->GetEndNode()));
-        TS_ASSERT(p_vessel_network->NodeIsInNetwork(newSprout->GetStartNode()));
-        TS_ASSERT(p_vessel_network->NodeIsInNetwork(newSprout->GetEndNode()));
+        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfNodes(),4u);
+        TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfVessels(),3u);
     }
 
+    void DontTestRemoveAndDeleteVessel() throw(Exception)
+    {
+        // Make some nodes
+        std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
+        nodes.push_back(VascularNode<3>::Create(0.0));
+        nodes.push_back(VascularNode<3>::Create(20.0));
+        nodes.push_back(VascularNode<3>::Create(30.0));
+        nodes.push_back(VascularNode<3>::Create(50.0));
+
+        // Make some vessels
+        std::vector<boost::shared_ptr<CaVessel<3> > > vessels;
+        for(unsigned idx=0; idx < 3; idx++)
+        {
+            vessels.push_back(CaVessel<3>::Create(CaVesselSegment<3>::Create(nodes[idx], nodes[idx+1])));
+        }
+
+        CaVascularNetwork<3> vessel_network;
+        vessel_network.AddVessels(vessels);
+
+        vessel_network.RemoveVessel(vessels[0]);
+        TS_ASSERT_EQUALS(vessel_network.GetNumberOfVessels(), 2);
+
+        vessel_network.UpdateNodes();
+        TS_ASSERT_EQUALS(vessel_network.GetNumberOfNodes(), 3);
+    }
+
+    void TestMergeVessel() throw(Exception)
+    {
+        // Make some nodes
+        std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
+        nodes.push_back(VascularNode<3>::Create(0.0));
+        nodes.push_back(VascularNode<3>::Create(20.0));
+        nodes.push_back(VascularNode<3>::Create(30.0));
+        nodes.push_back(VascularNode<3>::Create(50.0));
+
+        // Make some vessels
+        std::vector<boost::shared_ptr<CaVessel<3> > > vessels;
+        for(unsigned idx=0; idx < 3; idx++)
+        {
+            vessels.push_back(CaVessel<3>::Create(CaVesselSegment<3>::Create(nodes[idx], nodes[idx+1])));
+        }
+
+        CaVascularNetwork<3> vessel_network;
+        vessel_network.AddVessels(vessels);
+
+        vessel_network.MergeShortVessels(15.0);
+        TS_ASSERT_EQUALS(vessel_network.GetNumberOfVessels(), 2u);
+        TS_ASSERT_DELTA(vessels[0]->GetEndNode()->GetLocationVector()[0], 20.0, 1.e-6);
+        TS_ASSERT_DELTA(vessels[2]->GetStartNode()->GetLocationVector()[0], 20.0, 1.e-6);
+    }
 };
 
 #endif /*TESTVESSELNETWORK_HPP_*/

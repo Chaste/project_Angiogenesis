@@ -33,38 +33,25 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef _Alarcon03RadiusCalculator_hpp
-#define _Alarcon03RadiusCalculator_hpp
+#ifndef _Alarcon03ViscosityCalculator_hpp
+#define _Alarcon03ViscosityCalculator_hpp
 
 #include <boost/shared_ptr.hpp>
-
-#include "../../../../vessel/components/CaVascularNetwork.hpp"
+#include "CaVascularNetwork.hpp"
 
 template<unsigned DIM>
-class Alarcon03RadiusCalculator
+class Alarcon03ViscosityCalculator
 {
-    
-protected:
-
-    double mMinRadius;
-    double mMaxRadius;
-    double mTimeStep;
     
 public:
     
     // constructor
-    Alarcon03RadiusCalculator();
-    
+    Alarcon03ViscosityCalculator();
+
     /**
      *  destructor.
      */
-    ~Alarcon03RadiusCalculator();
-    
-    void SetMinRadius(double minRadius);
-    
-    void SetMaxRadius(double maxRadius);
-
-    void SetTimestep(double dt);
+    ~Alarcon03ViscosityCalculator();
     
     // method for performing the calculation
     void Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);

@@ -141,12 +141,6 @@ public:
      */
     std::pair<vtkSmartPointer<vtkPoints>, vtkSmartPointer<vtkIdTypeArray> > GetVtkVertices();
 
-    /* Return whether the polygon is planar. If there are three of fewer vertices this
-     * is always true.
-     * @return whether the polygon is planar
-     */
-    bool IsPlanar();
-
     /* Rotate about the specified axis by the specified angle
      * @param axis the rotation axis
      * @param angle the rotation angle

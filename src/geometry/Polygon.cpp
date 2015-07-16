@@ -44,11 +44,7 @@
 Polygon::Polygon(std::vector<boost::shared_ptr<Vertex> > vertices) :
         mVertices(vertices)
 {
-    // check that the vertices are planar
-//    if(!IsPlanar())
-//    {
-//        EXCEPTION("Input vertices are not planar");
-//    }
+
 }
 
 Polygon::Polygon(boost::shared_ptr<Vertex> pVertex) :
@@ -77,22 +73,11 @@ void Polygon::AddVertices(std::vector<boost::shared_ptr<Vertex> > vertices)
 {
     // Add the new vertices
     mVertices.insert(mVertices.end(), vertices.begin(), vertices.end());
-
-    // check that the vertices are planar
-//    if(!IsPlanar())
-//    {
-//        EXCEPTION("Input vertices are not planar");
-//    }
 }
 
 void Polygon::AddVertex(boost::shared_ptr<Vertex> pVertex)
 {
     mVertices.push_back(pVertex);
-    // check that the vertices are planar
-//    if(!IsPlanar())
-//    {
-//        EXCEPTION("Input vertices are not planar");
-//    }
 }
 
 std::vector<boost::shared_ptr<Vertex> > Polygon::GetVertices()
@@ -209,25 +194,6 @@ bool Polygon::ContainsPoint(c_vector<double, 3> location)
         }
     }
     return contains_point;
-}
-
-bool Polygon::IsPlanar()
-{
-    bool is_planar = true;
-    if(mVertices.size() > 3)
-    {
-        // If the distance to the plane of any vertex is
-        // greater than the tolerance then it is not planar.
-        for(unsigned idx=0; idx<mVertices.size(); idx++)
-        {
-            if(GetDistance(mVertices[idx]->rGetLocation()) > 1.e-6)
-            {
-                is_planar = false;
-                break;
-            }
-        }
-    }
-    return is_planar;
 }
 
 void Polygon::RotateAboutAxis(c_vector<double, 3> axis, double angle)

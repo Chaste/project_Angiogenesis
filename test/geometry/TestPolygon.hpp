@@ -77,9 +77,6 @@ public:
 
         TS_ASSERT_EQUALS(p_polygon1->GetVertices().size(), 3);
         TS_ASSERT_EQUALS(p_polygon2->GetVertices().size(), 1);
-
-        vertices.push_back(Vertex::Create(0.0, 1.0, -3));
-        TS_ASSERT_THROWS_THIS(Polygon::Create(vertices), "Input vertices are not planar");
     }
 
     void TestAddingVertices()
@@ -100,13 +97,6 @@ public:
         boost::shared_ptr<Polygon> p_polygon2 = Polygon::Create(vertices);
         p_polygon2->AddVertex(new_vertices[0]);
         TS_ASSERT_EQUALS(p_polygon2->GetVertices().size(), 4);
-
-        std::vector<boost::shared_ptr<Vertex> > bad_vertices;
-        bad_vertices.push_back(Vertex::Create(1.0, 1.0, -3.0));
-        bad_vertices.push_back(Vertex::Create(1.0, 2.0, -3.0));
-
-        TS_ASSERT_THROWS_THIS(p_polygon->AddVertices(bad_vertices), "Input vertices are not planar");
-        TS_ASSERT_THROWS_THIS(p_polygon2->AddVertex(bad_vertices[0]), "Input vertices are not planar");
     }
 
     void TestVtkMethods()
