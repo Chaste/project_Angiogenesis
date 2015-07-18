@@ -92,7 +92,7 @@ public:
 
     void TestMeshComposite2DPart()
     {
-        boost::shared_ptr<Part> p_part = Part::Create();
+        boost::shared_ptr<Part<2> > p_part = Part<2>::Create();
         p_part->AddRectangle();
         p_part->AddCircle();
 
@@ -105,7 +105,7 @@ public:
 
     void TestMeshCylinder()
     {
-        boost::shared_ptr<Part> p_part = Part::Create();
+        boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
         boost::shared_ptr<Polygon> p_circle = p_part->AddCircle();
         p_part->Extrude(p_circle);
 
@@ -124,7 +124,7 @@ public:
         p_network->GetVessels()[0]->GetStartNode()->SetRadius(5.0);
         p_network->GetVessels()[0]->GetEndNode()->SetRadius(5.0);
 
-        boost::shared_ptr<Part> p_part = Part::Create();
+        boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
         boost::shared_ptr<Polygon> p_circle = p_part->AddCircle(100.0);
         p_part->Extrude(p_circle, 100.0);
         p_part->AddVesselNetwork(p_network);
@@ -144,7 +144,7 @@ public:
         p_network->GetVessels()[0]->GetStartNode()->SetRadius(5.0);
         p_network->GetVessels()[0]->GetEndNode()->SetRadius(5.0);
 
-        boost::shared_ptr<Part> p_part = Part::Create();
+        boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
         boost::shared_ptr<Polygon> p_circle = p_part->AddCircle(100.0);
         p_part->Extrude(p_circle, 100.0);
         p_part->AddVesselNetwork(p_network, true);
@@ -167,7 +167,7 @@ public:
         p_network->GetVessels()[0]->GetStartNode()->SetRadius(5.0);
         p_network->GetVessels()[0]->GetEndNode()->SetRadius(5.0);
 
-        boost::shared_ptr<Part> p_part = Part::Create();
+        boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
         p_part->AddCuboid(vessel_length, vessel_length, vessel_length);
         p_part->AddVesselNetwork(p_network);
 
@@ -188,7 +188,7 @@ public:
         p_network->GetVessels()[0]->GetStartNode()->SetRadius(10.0);
         p_network->GetVessels()[0]->GetEndNode()->SetRadius(10.0);
 
-        boost::shared_ptr<Part> p_part = Part::Create();
+        boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
         p_part->AddCuboid(2.0 * vessel_length, 2.0 * vessel_length, vessel_length);
         p_part->AddVesselNetwork(p_network, true);
 
@@ -207,7 +207,7 @@ public:
 
         double domain_width = num_vessels_per_row * (spacing + 2.0* radius);
         double domain_height = num_vessels_per_row * (spacing + 2.0* radius);
-        boost::shared_ptr<Part> p_part = Part::Create();
+        boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
         p_part->AddCuboid(domain_width, domain_height, vessel_length);
         p_part->AddVesselNetwork(SetUpNetwork(), true);
 

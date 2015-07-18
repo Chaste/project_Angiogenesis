@@ -49,7 +49,8 @@
 
 struct triangulateio;
 
-Part::Part() :
+template<unsigned DIM>
+Part<DIM>::Part() :
         mFacets(),
         mVtkPart(vtkSmartPointer<vtkPolyData>()),
         mHoleMarkers(),
@@ -57,18 +58,21 @@ Part::Part() :
 {
 }
 
-boost::shared_ptr<Part> Part::Create()
+template<unsigned DIM>
+boost::shared_ptr<Part<DIM> > Part<DIM>::Create()
 {
-    MAKE_PTR(Part, pSelf);
+    MAKE_PTR(Part<DIM>, pSelf);
     return pSelf;
 }
 
-Part::~Part()
+template<unsigned DIM>
+Part<DIM>::~Part()
 {
 
 }
 
-boost::shared_ptr<Polygon> Part::AddCircle(double radius, c_vector<double, 3> centre, unsigned numSegments)
+template<unsigned DIM>
+boost::shared_ptr<Polygon> Part<DIM>::AddCircle(double radius, c_vector<double, DIM> centre, unsigned numSegments)
 {
     std::vector<boost::shared_ptr<Vertex> > vertices;
     double seg_angle = 2.0 * M_PI / double(numSegments);
@@ -77,23 +81,33 @@ boost::shared_ptr<Polygon> Part::AddCircle(double radius, c_vector<double, 3> ce
         double angle = seg_angle * double(idx);
         double x = radius * std::cos(angle) + centre[0];
         double y = radius * std::sin(angle) + centre[1];
-        vertices.push_back(Vertex::Create(x, y, centre[2]));
+        if(DIM==3)
+        {
+            vertices.push_back(Vertex::Create(x, y, centre[2]));
+        }
+        else
+        {
+            vertices.push_back(Vertex::Create(x, y, 0.0));
+        }
     }
     return AddPolygon(vertices);
 }
 
-void Part::AddCuboid(double sizeX, double sizeY, double sizeZ, c_vector<double, 3> origin)
+template<unsigned DIM>
+void Part<DIM>::AddCuboid(double sizeX, double sizeY, double sizeZ, c_vector<double, DIM> origin)
 {
     boost::shared_ptr<Polygon> p_rectangle = AddRectangle(sizeX, sizeY, origin);
     Extrude(p_rectangle, sizeZ);
 }
 
-void Part::AddHoleMarker(c_vector<double, 3> hole)
+template<unsigned DIM>
+void Part<DIM>::AddHoleMarker(c_vector<double, DIM> hole)
 {
     mHoleMarkers.push_back(hole);
 }
 
-boost::shared_ptr<Polygon> Part::AddPolygon(std::vector<boost::shared_ptr<Vertex> > vertices, bool newFacet,
+template<unsigned DIM>
+boost::shared_ptr<Polygon> Part<DIM>::AddPolygon(std::vector<boost::shared_ptr<Vertex> > vertices, bool newFacet,
                                                                                    boost::shared_ptr<Facet> pFacet)
 {
     boost::shared_ptr<Polygon> p_polygon = Polygon::Create(vertices);
@@ -101,7 +115,8 @@ boost::shared_ptr<Polygon> Part::AddPolygon(std::vector<boost::shared_ptr<Vertex
     return p_polygon;
 }
 
-boost::shared_ptr<Polygon> Part::AddPolygon(boost::shared_ptr<Polygon> pPolygon, bool newFacet, boost::shared_ptr<Facet> pFacet)
+template<unsigned DIM>
+boost::shared_ptr<Polygon> Part<DIM>::AddPolygon(boost::shared_ptr<Polygon> pPolygon, bool newFacet, boost::shared_ptr<Facet> pFacet)
 {
     if (!pFacet)
     {
@@ -122,22 +137,34 @@ boost::shared_ptr<Polygon> Part::AddPolygon(boost::shared_ptr<Polygon> pPolygon,
     return pPolygon;
 }
 
-boost::shared_ptr<Polygon> Part::AddRectangle(double sizeX, double sizeY, c_vector<double, 3> origin)
+template<unsigned DIM>
+boost::shared_ptr<Polygon> Part<DIM>::AddRectangle(double sizeX, double sizeY, c_vector<double, DIM> origin)
 {
     std::vector<boost::shared_ptr<Vertex> > vertices;
-    vertices.push_back(Vertex::Create(origin[0], origin[1], origin[2]));
-    vertices.push_back(Vertex::Create(origin[0] + sizeX, origin[1], origin[2]));
-    vertices.push_back(Vertex::Create(origin[0] + sizeX, origin[1] + sizeY, origin[2]));
-    vertices.push_back(Vertex::Create(origin[0], origin[1] + sizeY, origin[2]));
+    if(DIM==3)
+    {
+        vertices.push_back(Vertex::Create(origin[0], origin[1], origin[2]));
+        vertices.push_back(Vertex::Create(origin[0] + sizeX, origin[1], origin[2]));
+        vertices.push_back(Vertex::Create(origin[0] + sizeX, origin[1] + sizeY, origin[2]));
+        vertices.push_back(Vertex::Create(origin[0], origin[1] + sizeY, origin[2]));
+    }
+    else
+    {
+        vertices.push_back(Vertex::Create(origin[0], origin[1], 0.0));
+        vertices.push_back(Vertex::Create(origin[0] + sizeX, origin[1], 0.0));
+        vertices.push_back(Vertex::Create(origin[0] + sizeX, origin[1] + sizeY, 0.0));
+        vertices.push_back(Vertex::Create(origin[0], origin[1] + sizeY, 0.0));
+    }
     return AddPolygon(vertices);
 }
 
-void Part::AddVesselNetwork(boost::shared_ptr<CaVascularNetwork<3> > pVesselNetwork, bool surface)
+template<unsigned DIM>
+void Part<DIM>::AddVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pVesselNetwork, bool surface)
 {
     if (!surface)
     {
         std::vector<boost::shared_ptr<Vertex> > vertices;
-        std::vector<boost::shared_ptr<VascularNode<3> > > nodes = pVesselNetwork->GetNodes();
+        std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = pVesselNetwork->GetNodes();
         for (unsigned idx = 0; idx < nodes.size(); idx++)
         {
             vertices.push_back(Vertex::Create(nodes[idx]->GetLocation().rGetLocation()));
@@ -156,10 +183,10 @@ void Part::AddVesselNetwork(boost::shared_ptr<CaVascularNetwork<3> > pVesselNetw
         }
 
         // Create polygons and facets for each vessel
-        std::vector<boost::shared_ptr<CaVessel<3> > > vessels = pVesselNetwork->GetVessels();
+        std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels = pVesselNetwork->GetVessels();
         for (unsigned idx = 0; idx < vessels.size(); idx++)
         {
-            std::vector<boost::shared_ptr<CaVesselSegment<3> > > segments = vessels[idx]->GetSegments();
+            std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = vessels[idx]->GetSegments();
             std::vector<boost::shared_ptr<Vertex> > segment_vertices;
             for (unsigned jdx = 0; jdx < segments.size(); jdx++)
             {
@@ -178,14 +205,14 @@ void Part::AddVesselNetwork(boost::shared_ptr<CaVascularNetwork<3> > pVesselNetw
     else
     {
         // Add any polygons on existing facets to the facet
-        VesselSurfaceGenerator generator(pVesselNetwork);
+        VesselSurfaceGenerator<DIM> generator(pVesselNetwork);
         std::vector<boost::shared_ptr<Polygon> > polygons = generator.GetSurfacePolygons();
         std::vector<bool> polygon_on_facet;
 
         for (unsigned idx = 0; idx < polygons.size(); idx++)
         {
             bool on_facet = false;
-            c_vector<double, 3> poly_centroid = polygons[idx]->GetCentroid();
+            c_vector<double, DIM> poly_centroid = polygons[idx]->GetCentroid();
             for (unsigned jdx = 0; jdx < mFacets.size(); jdx++)
             {
                 if (mFacets[jdx]->ContainsPoint(poly_centroid))
@@ -206,7 +233,7 @@ void Part::AddVesselNetwork(boost::shared_ptr<CaVascularNetwork<3> > pVesselNetw
             }
         }
 
-        std::vector<c_vector<double, 3> > hole_locations = generator.GetHoles();
+        std::vector<c_vector<double, DIM> > hole_locations = generator.GetHoles();
         for(unsigned idx=0; idx<hole_locations.size(); idx++)
         {
             AddHoleMarker(hole_locations[idx]);
@@ -215,14 +242,19 @@ void Part::AddVesselNetwork(boost::shared_ptr<CaVascularNetwork<3> > pVesselNetw
 
 }
 
-void Part::Extrude(boost::shared_ptr<Polygon> pPolygon, double depth)
+template<unsigned DIM>
+void Part<DIM>::Extrude(boost::shared_ptr<Polygon> pPolygon, double depth)
 {
+    if(DIM==2)
+    {
+        EXCEPTION("Only parts in 3D space can be extruded.");
+    }
     // Loop through the vertices and create new ones at the offset depth
     std::vector<boost::shared_ptr<Vertex> > original_vertices = pPolygon->GetVertices();
     std::vector<boost::shared_ptr<Vertex> > new_vertices;
     for (unsigned idx = 0; idx < original_vertices.size(); idx++)
     {
-        c_vector<double, 3> location = original_vertices[idx]->rGetLocation();
+        c_vector<double, DIM> location = original_vertices[idx]->rGetLocation();
         new_vertices.push_back(Vertex::Create(location[0], location[1], location[2] + depth));
     }
 
@@ -250,12 +282,14 @@ void Part::Extrude(boost::shared_ptr<Polygon> pPolygon, double depth)
     mFacets.push_back(Facet::Create(p_polygon));
 }
 
-std::vector<c_vector<double, 3> > Part::GetHoleMarkers()
+template<unsigned DIM>
+std::vector<c_vector<double, DIM> > Part<DIM>::GetHoleMarkers()
 {
     return mHoleMarkers;
 }
 
-std::vector<boost::shared_ptr<Vertex> > Part::GetVertices()
+template<unsigned DIM>
+std::vector<boost::shared_ptr<Vertex> > Part<DIM>::GetVertices()
 {
     std::vector<boost::shared_ptr<Polygon> > polygons = GetPolygons();
     std::set<boost::shared_ptr<Vertex> > unique_vertices;
@@ -276,20 +310,27 @@ std::vector<boost::shared_ptr<Vertex> > Part::GetVertices()
     return vertices;
 }
 
-std::vector<c_vector<double, 3> > Part::GetVertexLocations()
+template<unsigned DIM>
+std::vector<c_vector<double, DIM> > Part<DIM>::GetVertexLocations()
 {
     std::vector<boost::shared_ptr<Vertex> > vertices = GetVertices();
-    std::vector<c_vector<double, 3> > locations;
+    std::vector<c_vector<double, DIM> > locations;
 
     typename std::vector<boost::shared_ptr<Vertex> >::iterator iter;
     for (iter = vertices.begin(); iter != vertices.end(); iter++)
     {
-        locations.push_back((*iter)->rGetLocation());
+        c_vector<double, DIM> this_location;
+        for(unsigned jdx=0; jdx<DIM;jdx++)
+        {
+            this_location[jdx] = (*iter)->rGetLocation()[jdx];
+        }
+        locations.push_back(this_location);
     }
     return locations;
 }
 
-std::vector<boost::shared_ptr<Polygon> > Part::GetPolygons()
+template<unsigned DIM>
+std::vector<boost::shared_ptr<Polygon> > Part<DIM>::GetPolygons()
 {
     std::vector<boost::shared_ptr<Polygon> > polygons;
     for (unsigned idx = 0; idx < mFacets.size(); idx++)
@@ -300,14 +341,15 @@ std::vector<boost::shared_ptr<Polygon> > Part::GetPolygons()
     return polygons;
 }
 
-c_vector<double, 6> Part::GetBoundingBox()
+template<unsigned DIM>
+c_vector<double, 2*DIM> Part<DIM>::GetBoundingBox()
 {
     std::vector<boost::shared_ptr<Vertex> > vertices = GetVertices();
-    c_vector<double, 6> box;
+    c_vector<double, 2*DIM> box;
 
     for (unsigned idx = 0; idx < vertices.size(); idx++)
     {
-        for (unsigned jdx = 0; jdx < 3; jdx++)
+        for (unsigned jdx = 0; jdx < DIM; jdx++)
         {
             if (idx == 0)
             {
@@ -330,12 +372,14 @@ c_vector<double, 6> Part::GetBoundingBox()
     return box;
 }
 
-std::vector<boost::shared_ptr<Facet> > Part::GetFacets()
+template<unsigned DIM>
+std::vector<boost::shared_ptr<Facet> > Part<DIM>::GetFacets()
 {
     return mFacets;
 }
 
-std::vector<std::pair<unsigned, unsigned> > Part::GetSegmentIndices()
+template<unsigned DIM>
+std::vector<std::pair<unsigned, unsigned> > Part<DIM>::GetSegmentIndices()
 {
     // Make sure the vertex indexes are up-to-date.
     GetVertices();
@@ -364,7 +408,8 @@ std::vector<std::pair<unsigned, unsigned> > Part::GetSegmentIndices()
     return indexes;
 }
 
-vtkSmartPointer<vtkPolyData> Part::GetVtk(bool update)
+template<unsigned DIM>
+vtkSmartPointer<vtkPolyData> Part<DIM>::GetVtk(bool update)
 {
     vtkSmartPointer<vtkPolyData> p_part_data = vtkSmartPointer<vtkPolyData>::New();
     vtkSmartPointer<vtkPoints> p_vertices = vtkSmartPointer<vtkPoints>::New();
@@ -380,8 +425,16 @@ vtkSmartPointer<vtkPolyData> Part::GetVtk(bool update)
         p_polygon->GetPointIds()->SetNumberOfIds(vertices.size());
         for (vtkIdType jdx = 0; jdx < vtkIdType(vertices.size()); jdx++)
         {
-            c_vector<double, 3> location = vertices[jdx]->rGetLocation();
-            p_vertices->InsertNextPoint(location[0], location[1], location[2]);
+            c_vector<double, DIM> location = vertices[jdx]->rGetLocation();
+            if(DIM==3)
+            {
+                p_vertices->InsertNextPoint(location[0], location[1], location[2]);
+            }
+            else
+            {
+                p_vertices->InsertNextPoint(location[0], location[1], 0.0);
+            }
+
             p_polygon->GetPointIds()->SetId(jdx, vert_counter);
             vert_counter++;
         }
@@ -394,11 +447,21 @@ vtkSmartPointer<vtkPolyData> Part::GetVtk(bool update)
     return mVtkPart;
 }
 
-bool Part::IsPointInPart(c_vector<double, 3> location, bool update)
+template<unsigned DIM>
+bool Part<DIM>::IsPointInPart(c_vector<double, DIM> location, bool update)
 {
     vtkSmartPointer<vtkPolyData> p_part = GetVtk(update);
     vtkSmartPointer<vtkPoints> p_points = vtkSmartPointer<vtkPoints>::New();
-    p_points->InsertNextPoint(location[0], location[1], location[2]);
+
+    if(DIM==3)
+    {
+        p_points->InsertNextPoint(location[0], location[1], location[2]);
+    }
+    else
+    {
+        p_points->InsertNextPoint(location[0], location[1], 0.0);
+    }
+
     vtkSmartPointer<vtkPolyData> p_point_data = vtkSmartPointer<vtkPolyData>::New();
     p_point_data->SetPoints(p_points);
 
@@ -419,7 +482,8 @@ bool Part::IsPointInPart(c_vector<double, 3> location, bool update)
     return selectEnclosedPoints->IsInside(0);
 }
 
-void Part::Write(const std::string& fileName)
+template<unsigned DIM>
+void Part<DIM>::Write(const std::string& fileName)
 {
     GetVtk();
     vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
@@ -427,3 +491,7 @@ void Part::Write(const std::string& fileName)
     writer->SetInput(mVtkPart);
     writer->Write();
 }
+
+// Explicit instantiation
+template class Part<2> ;
+template class Part<3> ;

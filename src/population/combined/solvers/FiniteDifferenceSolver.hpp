@@ -36,13 +36,16 @@
 #ifndef FINITEDIFFERENCESOLVER_HPP_
 #define FINITEDIFFERENCESOLVER_HPP_
 
+#include "SmartPointers.hpp"
 #include "AbstractRegularGridHybridSolver.hpp"
 
 /*
  * Finite difference solver for linear elliptic PDEs which can include
  * discrete representations of cells and vessels.
  */
-class FiniteDifferenceSolver : public AbstractRegularGridHybridSolver
+
+template<unsigned DIM>
+class FiniteDifferenceSolver : public AbstractRegularGridHybridSolver<DIM>
 {
 
 public:
@@ -54,7 +57,7 @@ public:
     /* Factory constructor method
      * @return a shared pointer to a new solver
      */
-    static boost::shared_ptr<FiniteDifferenceSolver> Create();
+    static boost::shared_ptr<FiniteDifferenceSolver<DIM> > Create();
 
     /* Destructor
      */

@@ -39,7 +39,8 @@
 #include "SmartPointers.hpp"
 #include "AbstractRegularGridHybridSolver.hpp"
 
-class DensityMap : public AbstractRegularGridHybridSolver
+template<unsigned DIM>
+class DensityMap : public AbstractRegularGridHybridSolver<DIM>
 {
 
 public:
@@ -49,7 +50,7 @@ public:
     /* Factory constructor method
      * @return a shared pointer to a new solver
      */
-    static boost::shared_ptr<DensityMap> Create();
+    static boost::shared_ptr<DensityMap<DIM> > Create();
 
     ~DensityMap();
 
@@ -57,9 +58,9 @@ public:
 
 private:
 
-    double LengthOfLineInBox(c_vector<double, 3> start_point, c_vector<double, 3> end_point, c_vector<double, 3> location, double spacing);
+    double LengthOfLineInBox(c_vector<double, DIM> start_point, c_vector<double, DIM> end_point, c_vector<double, DIM> location, double spacing);
 
-    bool IsPointInBox(c_vector<double, 3> point, c_vector<double, 3> location, double spacing);
+    bool IsPointInBox(c_vector<double, DIM> point, c_vector<double, DIM> location, double spacing);
 
 };
 

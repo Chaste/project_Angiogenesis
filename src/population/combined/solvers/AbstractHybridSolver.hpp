@@ -47,6 +47,8 @@
  * An abstract solver class for linear elliptic PDEs which can include
  * discrete representations of cells and vessels.
  */
+
+template<unsigned DIM>
 class AbstractHybridSolver
 {
 
@@ -54,27 +56,31 @@ protected:
 
     /* The vessel network
     */
-    boost::shared_ptr<CaVascularNetwork<3> > mpNetwork;
+    boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
 
     /* The cell population
     */
-    boost::shared_ptr<SimpleCellPopulation> mpCellPopulation;
+    boost::shared_ptr<SimpleCellPopulation<DIM> > mpCellPopulation;
 
     /* The pde
     */
-    boost::shared_ptr<HybridLinearEllipticPde<3, 3> > mpPde;
+    boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > mpPde;
 
     /* The domain boundary condition
     */
-    boost::shared_ptr<AbstractBoundaryCondition<3> > mpBoundaryCondition;
+    boost::shared_ptr<AbstractBoundaryCondition<DIM> > mpBoundaryCondition;
 
     /* The vessel interface boundary condition
     */
-    boost::shared_ptr<AbstractBoundaryCondition<3> > mpInterfaceCondition;
+    boost::shared_ptr<AbstractBoundaryCondition<DIM> > mpInterfaceCondition;
 
     /* The working directory for output
     */
     std::string mWorkingDirectory;
+
+    /* The filename for output
+    */
+    std::string mFilename;
 
 public:
 
@@ -84,42 +90,47 @@ public:
 
     /* Destructor
      */
-    ~AbstractHybridSolver();
+    virtual ~AbstractHybridSolver();
 
     /* Set a cell population
      * @param pCellPopulation a Chaste cell population
      */
-    void SetCellPopulation(boost::shared_ptr<SimpleCellPopulation> pCellPopulation);
+    void SetCellPopulation(boost::shared_ptr<SimpleCellPopulation<DIM> > pCellPopulation);
 
     /* Set a boundary condition for the domain
      * @param pBoundaryCondition the boundary condition
      */
-    void SetDomainBoundaryCondition(boost::shared_ptr<AbstractBoundaryCondition<3> > pBoundaryCondition);
+    void SetDomainBoundaryCondition(boost::shared_ptr<AbstractBoundaryCondition<DIM> > pBoundaryCondition);
 
     /* Set the pde to be solved
      * @param pPde the pde to be solved
      */
-    void SetPde(boost::shared_ptr<HybridLinearEllipticPde<3, 3> > pPde);
+    void SetPde(boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > pPde);
 
     /* Set the vessel network
      * @param pNetwork the vessel network
      */
-    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<3> > pNetwork);
+    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
 
     /* Set the boundary condition on the vessel tissue interface
      * @param pBoundaryCondition the boundary condition on the vessel tissue interface
      */
-    void SetInterfaceBoundaryCondition(boost::shared_ptr<AbstractBoundaryCondition<3> > pBoundaryCondition);
+    void SetInterfaceBoundaryCondition(boost::shared_ptr<AbstractBoundaryCondition<DIM> > pBoundaryCondition);
 
     /* Solve the pde
      * @param writeSolution whether to write the solution to file
      */
-    void Solve(bool writeSolution = false);
+    virtual void Solve(bool writeSolution = false);
 
     /* Set the working directory
      * @param directory the working directory
      */
     void SetWorkingDirectory(const std::string& directory);
+
+    /* Set the file name for output
+     * @param filename the file name
+     */
+    void SetFileName(const std::string& filename);
 
 protected:
 

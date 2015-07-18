@@ -40,6 +40,7 @@
 #include <string>
 
 #include "CaVascularNetwork.hpp"
+#include "AbstractHybridSolver.hpp"
 #include "SmartPointers.hpp"
 
 template<unsigned DIM>
@@ -53,6 +54,8 @@ class AbstractAngiogenesisSolver
     unsigned mOutputFrequency;
     std::string mOutputDirectory;
     double mNodeAnastamosisRadius;
+    boost::shared_ptr<AbstractHybridSolver<DIM> > mpPdeSolver;
+
 
 public:
 
@@ -68,6 +71,8 @@ public:
     ~AbstractAngiogenesisSolver();
 
     c_vector<double, DIM> GetGrowthDirection(c_vector<double, DIM> currentDirection);
+
+    void SetPdeSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pPdeSolver);
 
     void UpdateNodalPositions();
 

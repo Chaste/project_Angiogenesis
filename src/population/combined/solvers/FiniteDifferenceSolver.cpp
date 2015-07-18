@@ -33,7 +33,6 @@
 
  */
 
-#include "SmartPointers.hpp"
 #include "LinearSystem.hpp"
 #include "ReplicatableVector.hpp"
 #include "CaVesselSegment.hpp"
@@ -42,38 +41,42 @@
 
 #include "FiniteDifferenceSolver.hpp"
 
-FiniteDifferenceSolver::FiniteDifferenceSolver()
-    :   AbstractRegularGridHybridSolver()
+template<unsigned DIM>
+FiniteDifferenceSolver<DIM>::FiniteDifferenceSolver()
+    :   AbstractRegularGridHybridSolver<DIM>()
 {
 
 }
 
-boost::shared_ptr<FiniteDifferenceSolver> FiniteDifferenceSolver::Create()
+template<unsigned DIM>
+boost::shared_ptr<FiniteDifferenceSolver<DIM> > FiniteDifferenceSolver<DIM>::Create()
 {
-    MAKE_PTR(FiniteDifferenceSolver, pSelf);
+    MAKE_PTR(FiniteDifferenceSolver<DIM>, pSelf);
     return pSelf;
 }
 
-FiniteDifferenceSolver::~FiniteDifferenceSolver()
+template<unsigned DIM>
+FiniteDifferenceSolver<DIM>::~FiniteDifferenceSolver()
 {
 
 }
 
-void FiniteDifferenceSolver::Solve(bool writeSolution)
+template<unsigned DIM>
+void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
 {
     // Set up the system
-    unsigned number_of_points = mExtents[0] * mExtents[1] * mExtents[2];
+    unsigned number_of_points = this->mExtents[0] * this->mExtents[1] * this->mExtents[2];
     LinearSystem linear_system(number_of_points, 7);
-    for (unsigned i = 0; i < mExtents[2]; i++) // Z
+    for (unsigned i = 0; i < this->mExtents[2]; i++) // Z
     {
-        for (unsigned j = 0; j < mExtents[1]; j++) // Y
+        for (unsigned j = 0; j < this->mExtents[1]; j++) // Y
         {
-            for (unsigned k = 0; k < mExtents[0]; k++) // X
+            for (unsigned k = 0; k < this->mExtents[0]; k++) // X
             {
-                unsigned grid_index = GetGridIndex(k, j, i);
-                c_vector<double, 3> location = GetLocation(k ,j, i);
-                double diffusion_term =  mpPde->GetDiffusionConstant() / (mGridSize * mGridSize);
-                linear_system.AddToMatrixElement(grid_index, grid_index, mpPde->GetLinearInUTerm(location, mGridSize) - 6.0 * diffusion_term);
+                unsigned grid_index = this->GetGridIndex(k, j, i);
+                c_vector<double, DIM> location = this->GetLocation(k ,j, i);
+                double diffusion_term =  this->mpPde->GetDiffusionConstant() / (this->mGridSize * this->mGridSize);
+                linear_system.AddToMatrixElement(grid_index, grid_index, this->mpPde->GetLinearInUTerm(location, this->mGridSize) - 6.0 * diffusion_term);
 
                 // Assume no flux on domain boundaries by default
                 // No flux at x bottom
@@ -87,7 +90,7 @@ void FiniteDifferenceSolver::Solve(bool writeSolution)
                 }
 
                 // No flux at x top
-                if (k < mExtents[0] - 1)
+                if (k < this->mExtents[0] - 1)
                 {
                     linear_system.AddToMatrixElement(grid_index, grid_index + 1, diffusion_term);
                 }
@@ -99,7 +102,7 @@ void FiniteDifferenceSolver::Solve(bool writeSolution)
                 // No flux at y bottom
                 if (j > 0)
                 {
-                    linear_system.AddToMatrixElement(grid_index, grid_index - mExtents[0], diffusion_term);
+                    linear_system.AddToMatrixElement(grid_index, grid_index - this->mExtents[0], diffusion_term);
                 }
                 else
                 {
@@ -107,9 +110,9 @@ void FiniteDifferenceSolver::Solve(bool writeSolution)
                 }
 
                 // No flux at y top
-                if (j < mExtents[1] - 1)
+                if (j < this->mExtents[1] - 1)
                 {
-                    linear_system.AddToMatrixElement(grid_index, grid_index + mExtents[0], diffusion_term);
+                    linear_system.AddToMatrixElement(grid_index, grid_index + this->mExtents[0], diffusion_term);
                 }
                 else
                 {
@@ -119,7 +122,7 @@ void FiniteDifferenceSolver::Solve(bool writeSolution)
                 // No flux at z bottom
                 if (i > 0)
                 {
-                    linear_system.AddToMatrixElement(grid_index, grid_index - mExtents[0] * mExtents[1], diffusion_term);
+                    linear_system.AddToMatrixElement(grid_index, grid_index - this->mExtents[0] * this->mExtents[1], diffusion_term);
                 }
                 else
                 {
@@ -127,36 +130,36 @@ void FiniteDifferenceSolver::Solve(bool writeSolution)
                 }
 
                 // No flux at z top
-                if (i < mExtents[2] - 1)
+                if (i < this->mExtents[2] - 1)
                 {
-                    linear_system.AddToMatrixElement(grid_index, grid_index + mExtents[0] * mExtents[1], diffusion_term);
+                    linear_system.AddToMatrixElement(grid_index, grid_index + this->mExtents[0] * this->mExtents[1], diffusion_term);
                 }
                 else
                 {
                     linear_system.AddToMatrixElement(grid_index, grid_index, diffusion_term);
                 }
-                linear_system.SetRhsVectorElement(grid_index, -mpPde->GetConstantInUTerm(location));
+                linear_system.SetRhsVectorElement(grid_index, -this->mpPde->GetConstantInUTerm(location));
             }
         }
     }
 
-    if (mpNetwork)
+    if (this->mpNetwork)
     {
         // Dirichlet for regions crossed by vessels
-        std::vector<boost::shared_ptr<CaVesselSegment<3> > > segments = mpNetwork->GetVesselSegments();
-        double grid_tolerance = mGridSize * (std::sqrt(2.0) / 2.0);
+        std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
+        double grid_tolerance = this->mGridSize * (std::sqrt(2.0) / 2.0);
         std::vector<unsigned> bc_indices;
 
-        for (unsigned i = 0; i < mExtents[2]; i++) // Z
+        for (unsigned i = 0; i < this->mExtents[2]; i++) // Z
         {
-            for (unsigned j = 0; j < mExtents[1]; j++) // Y
+            for (unsigned j = 0; j < this->mExtents[1]; j++) // Y
             {
-                for (unsigned k = 0; k < mExtents[0]; k++) // X
+                for (unsigned k = 0; k < this->mExtents[0]; k++) // X
                 {
-                    unsigned grid_index = GetGridIndex(k, j, i);
+                    unsigned grid_index = this->GetGridIndex(k, j, i);
                     for (unsigned idx = 0; idx <  segments.size(); idx++)
                     {
-                        if (segments[idx]->GetDistance(GetLocation(k ,j, i)) <= grid_tolerance)
+                        if (segments[idx]->GetDistance(this->GetLocation(k ,j, i)) <= grid_tolerance)
                         {
                             bc_indices.push_back(grid_index);
                             linear_system.SetRhsVectorElement(grid_index, 40.0);
@@ -181,11 +184,15 @@ void FiniteDifferenceSolver::Solve(bool writeSolution)
     }
 
     std::map<std::string, std::vector<double> > data;
-    data[mpPde->GetVariableName()] = solution;
-    UpdateSolution(data);
+    data[this->mpPde->GetVariableName()] = solution;
+    this->UpdateSolution(data);
 
     if (writeSolution)
     {
-        Write();
+        this->Write();
     }
 }
+
+// Explicit instantiation
+template class FiniteDifferenceSolver<2>;
+template class FiniteDifferenceSolver<3>;

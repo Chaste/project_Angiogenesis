@@ -65,7 +65,7 @@ public:
      * @param numSeeds the number of seed points, if initial seeds are not given.
      * @return a new part corresponding to the voronoi tessellation
      */
-    boost::shared_ptr<Part> Generate(boost::shared_ptr<Part> pPart, std::vector<boost::shared_ptr<Vertex> > seeds =
+    boost::shared_ptr<Part<DIM> > Generate(boost::shared_ptr<Part<DIM> > pPart, std::vector<boost::shared_ptr<Vertex> > seeds =
             std::vector<boost::shared_ptr<Vertex> >(), unsigned numSeeds = 100);
 };
 

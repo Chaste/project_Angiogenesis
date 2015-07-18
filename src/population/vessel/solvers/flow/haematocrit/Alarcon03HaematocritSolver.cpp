@@ -140,11 +140,11 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<CaVascularNetw
     }
 
     LinearSystem linearSystem(lhsVectorSize, pre_allocation_value);
-    if(lhsVectorSize > 6)
-    {
-        linearSystem.SetPcType("lu");
-        linearSystem.SetKspType("preonly");
-    }
+//    if(lhsVectorSize > 6)
+//    {
+//        linearSystem.SetPcType("lu");
+//        linearSystem.SetKspType("preonly");
+//    }
 
     // Set the haematocrit of input vessels to the arterial level
     unsigned number_of_vessel_nodes = nodes.size();

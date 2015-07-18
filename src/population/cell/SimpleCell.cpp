@@ -35,43 +35,53 @@
 
 #include "SimpleCell.hpp"
 
-SimpleCell::SimpleCell(double v1, double v2, double v3) :
-        ChastePoint<3>(v1, v2, v3),
+template<unsigned DIM>
+SimpleCell<DIM>::SimpleCell(double v1, double v2, double v3) :
+        ChastePoint<DIM>(v1, v2, v3),
         mIndex(0)
 {
 
 }
 
-SimpleCell::SimpleCell(c_vector<double, 3> location) :
-        ChastePoint<3>(location),
+template<unsigned DIM>
+SimpleCell<DIM>::SimpleCell(c_vector<double, DIM> location) :
+        ChastePoint<DIM>(location),
         mIndex(0)
 {
 
 }
 
-boost::shared_ptr<SimpleCell> SimpleCell::Create(c_vector<double, 3> location)
+template<unsigned DIM>
+boost::shared_ptr<SimpleCell<DIM> > SimpleCell<DIM>::Create(c_vector<double, DIM> location)
 {
-    MAKE_PTR_ARGS(SimpleCell, pSelf,(location));
+    MAKE_PTR_ARGS(SimpleCell<DIM>, pSelf,(location));
     return pSelf;
 }
 
-boost::shared_ptr<SimpleCell> SimpleCell::Create(double v1, double v2, double v3)
+template<unsigned DIM>
+boost::shared_ptr<SimpleCell<DIM> > SimpleCell<DIM>::Create(double v1, double v2, double v3)
 {
-    MAKE_PTR_ARGS(SimpleCell, pSelf,(v1, v2, v3));
+    MAKE_PTR_ARGS(SimpleCell<DIM>, pSelf,(v1, v2, v3));
     return pSelf;
 }
 
-SimpleCell::~SimpleCell()
+template<unsigned DIM>
+SimpleCell<DIM>::~SimpleCell()
 {
 
 }
 
-unsigned SimpleCell::GetIndex()
+template<unsigned DIM>
+unsigned SimpleCell<DIM>::GetIndex()
 {
     return mIndex;
 }
 
-void SimpleCell::SetIndex(unsigned index)
+template<unsigned DIM>
+void SimpleCell<DIM>::SetIndex(unsigned index)
 {
     mIndex = index;
 }
+
+template class SimpleCell<2> ;
+template class SimpleCell<3> ;

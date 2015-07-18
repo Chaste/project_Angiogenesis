@@ -39,34 +39,38 @@
 
 #include "DistanceTransform.hpp"
 
-DistanceTransform::DistanceTransform()
+template<unsigned DIM>
+DistanceTransform<DIM>::DistanceTransform()
 
-    :   AbstractRegularGridHybridSolver()
+    :   AbstractRegularGridHybridSolver<DIM>()
 {
 
 }
 
-boost::shared_ptr<DistanceTransform> DistanceTransform::Create()
+template<unsigned DIM>
+boost::shared_ptr<DistanceTransform<DIM> > DistanceTransform<DIM>::Create()
 {
     MAKE_PTR(DistanceTransform, pSelf);
     return pSelf;
 }
 
-DistanceTransform::~DistanceTransform()
+template<unsigned DIM>
+DistanceTransform<DIM>::~DistanceTransform()
 {
 
 }
 
-void DistanceTransform::Solve(bool writeSolution)
+template<unsigned DIM>
+void DistanceTransform<DIM>::Solve(bool writeSolution)
 {
-    unsigned number_of_points = mExtents[0] * mExtents[1] * mExtents[2];
+    unsigned number_of_points = this->mExtents[0] * this->mExtents[1] * this->mExtents[2];
     std::vector<double> vessel_solution(number_of_points, 0.0);
     std::vector<double> cell_solution(number_of_points, 0.0);
 
-    std::vector<c_vector<double, 3> > cell_locations;
-    if(mpCellPopulation)
+    std::vector<c_vector<double, DIM> > cell_locations;
+    if(this->mpCellPopulation)
     {
-        std::vector<boost::shared_ptr<SimpleCell> > cells = mpCellPopulation->GetCells();
+        std::vector<boost::shared_ptr<SimpleCell<DIM> > > cells = this->mpCellPopulation->GetCells();
         for(unsigned idx = 0; idx < cells.size(); idx++)
         {
             cell_locations.push_back(cells[idx]->rGetLocation());
@@ -74,27 +78,30 @@ void DistanceTransform::Solve(bool writeSolution)
     }
 
     unsigned grid_index;
-    if (mpNetwork || mpCellPopulation)
+    if (this->mpNetwork || this->mpCellPopulation)
     {
-        std::vector<boost::shared_ptr<CaVesselSegment<3> > > segments;
-        if(mpNetwork)
+        std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments;
+        if(this->mpNetwork)
         {
-            segments = mpNetwork->GetVesselSegments();
+            segments = this->mpNetwork->GetVesselSegments();
         }
-        for (unsigned i = 0; i < mExtents[2]; i++) // Z
+        for (unsigned i = 0; i < this->mExtents[2]; i++) // Z
         {
-            for (unsigned j = 0; j < mExtents[1]; j++) // Y
+            for (unsigned j = 0; j < this->mExtents[1]; j++) // Y
             {
-                for (unsigned k = 0; k < mExtents[0]; k++) // X
+                for (unsigned k = 0; k < this->mExtents[0]; k++) // X
                 {
-                    grid_index = k + mExtents[0] * j + mExtents[0] * mExtents[1] * i;
+                    grid_index = k + this->mExtents[0] * j + this->mExtents[0] * this->mExtents[1] * i;
 
                     // If the grid point is crossed by a vessel segment add the segment's contribution
-                    c_vector<double, 3> location;
-                    location[0] = double(k) * mGridSize + mOrigin[0];
-                    location[1] = double(j) * mGridSize + mOrigin[1];
-                    location[2] = double(i) * mGridSize + mOrigin[2];
-                    if(mpNetwork)
+                    c_vector<double, DIM> location;
+                    location[0] = double(k) * this->mGridSize + this->mOrigin[0];
+                    location[1] = double(j) * this->mGridSize + this->mOrigin[1];
+                    if(DIM==3)
+                    {
+                        location[2] = double(i) * this->mGridSize + this->mOrigin[2];
+                    }
+                    if(this->mpNetwork)
                     {
                         double min_distance = 1.e6;
                         for (unsigned idx = 0; idx <  segments.size(); idx++)
@@ -107,7 +114,7 @@ void DistanceTransform::Solve(bool writeSolution)
                         }
                         vessel_solution[grid_index] = min_distance;
                     }
-                    if(mpCellPopulation)
+                    if(this->mpCellPopulation)
                     {
                         double min_dist = 1.e6;
                         for (unsigned index=0; index<cell_locations.size(); index++)
@@ -128,10 +135,14 @@ void DistanceTransform::Solve(bool writeSolution)
     std::map<std::string, std::vector<double> > data;
     data["CellDistance"] = cell_solution;
     data["VesselDistance"] = vessel_solution;
-    UpdateSolution(data);
+    this->UpdateSolution(data);
 
     if (writeSolution)
     {
-        Write();
+        this->Write();
     }
 }
+
+// Explicit instantiation
+template class DistanceTransform<2> ;
+template class DistanceTransform<3> ;

@@ -40,6 +40,9 @@
 #include "CaVascularNetwork.hpp"
 #include "AbstractHaematocritSolver.hpp"
 
+/*// TODO This solver is incomplete. PETSc has issues with the ordering in the
+ * linear system due to zeros on diagonals. Suggest not using it for now.
+ */
 
 template<unsigned DIM>
 class Alarcon03HaematocritSolver : public AbstractHaematocritSolver<DIM>

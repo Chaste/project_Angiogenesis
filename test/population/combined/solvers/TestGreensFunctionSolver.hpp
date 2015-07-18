@@ -60,7 +60,7 @@ public:
         p_network->GetVessels()[0]->GetSegment(0)->SetRadius(10.0);
 
         // Set up the PDE domain
-        boost::shared_ptr<Part> p_domain = Part::Create();
+        boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
         p_domain->AddCuboid(2.0*vessel_length, 2.0*vessel_length, vessel_length);
 
         // Choose the PDE
@@ -68,7 +68,7 @@ public:
         p_pde->SetDiffusionConstant(0.0033);
         p_pde->SetConstantInUTerm(-2.e-5);
 
-        GreensFunctionSolver solver;
+        GreensFunctionSolver<3> solver;
         solver.SetVesselNetwork(p_network);
         solver.SetExtents(p_domain, 10.0);
         solver.SetPde(p_pde);

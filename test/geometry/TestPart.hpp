@@ -91,7 +91,7 @@ public:
 
     void TestAddRectangle()
     {
-        Part part = Part();
+        Part<3> part = Part<3>();
         part.AddRectangle();
 
         TS_ASSERT_DELTA(part.GetPolygons()[0]->GetVertices()[0]->rGetLocation()[0], 0.0, 1.e-6);
@@ -106,13 +106,13 @@ public:
 
     void TestAddCuboid()
     {
-        Part part = Part();
+        Part<3> part = Part<3>();
         part.AddCuboid();
     }
 
     void TestComposite2DPart()
     {
-        boost::shared_ptr<Part> p_part = Part::Create();
+        boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
         p_part->AddRectangle();
         c_vector<double,3> centre = zero_vector<double>(3);
         centre[0] = 0.5;
@@ -125,7 +125,7 @@ public:
 
     void TestExtrudePart()
     {
-        boost::shared_ptr<Part> p_part = Part::Create();
+        boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
         boost::shared_ptr<Polygon> p_circle = p_part->AddCircle();
         p_part->Extrude(p_circle);
         OutputFileHandler output_file_handler("TestPart", false);
@@ -143,7 +143,7 @@ public:
 
         double domain_width = num_vessels_per_row * (spacing + 2.0* radius);
         double domain_height = num_vessels_per_row * (spacing + 2.0* radius);
-        boost::shared_ptr<Part> p_domain = Part::Create();
+        boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
         p_domain->AddCuboid(domain_width, domain_height, vessel_length);
         p_domain->AddVesselNetwork(p_network);
 
@@ -162,7 +162,7 @@ public:
 
         double domain_width = num_vessels_per_row * (spacing + 2.0* radius);
         double domain_height = num_vessels_per_row * (spacing + 2.0* radius);
-        boost::shared_ptr<Part > p_domain = Part::Create();
+        boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
         p_domain->AddCuboid(domain_width, domain_height, vessel_length);
         p_domain->AddVesselNetwork(p_network, true);
 
@@ -178,7 +178,7 @@ public:
         p_network->GetVessels()[0]->GetStartNode()->SetRadius(5.0);
         p_network->GetVessels()[0]->GetEndNode()->SetRadius(5.0);
 
-        Part part = Part();
+        Part<3> part = Part<3>();
         boost::shared_ptr<Polygon> p_circle = part.AddCircle(vessel_length);
         part.Extrude(p_circle, vessel_length);
         part.AddVesselNetwork(p_network, true);

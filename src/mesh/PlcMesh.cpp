@@ -64,11 +64,11 @@ PlcMesh<ELEMENT_DIM, SPACE_DIM>::~PlcMesh()
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void PlcMesh<ELEMENT_DIM, SPACE_DIM>::Mesh2d(boost::shared_ptr<Part> pPart, double maxElementArea)
+void PlcMesh<ELEMENT_DIM, SPACE_DIM>::Mesh2d(boost::shared_ptr<Part<SPACE_DIM> > pPart, double maxElementArea)
 {
-    std::vector<c_vector<double, 3> > vertex_locations = pPart->GetVertexLocations();
-    unsigned num_vertices = vertex_locations.size();
 
+    std::vector<c_vector<double, SPACE_DIM> > vertex_locations = pPart->GetVertexLocations();
+    unsigned num_vertices = vertex_locations.size();
     struct triangulateio mesher_input, mesher_output;
     this->InitialiseTriangulateIo(mesher_input);
     this->InitialiseTriangulateIo(mesher_output);
@@ -82,7 +82,6 @@ void PlcMesh<ELEMENT_DIM, SPACE_DIM>::Mesh2d(boost::shared_ptr<Part> pPart, doub
             mesher_input.pointlist[2 * idx + jdx] = vertex_locations[idx][jdx];
         }
     }
-
     std::vector<std::pair<unsigned, unsigned> > segments = pPart->GetSegmentIndices();
     unsigned num_segments = segments.size();
     mesher_input.segmentlist = (int *) malloc(num_segments * 2 * sizeof(int));
@@ -109,10 +108,10 @@ void PlcMesh<ELEMENT_DIM, SPACE_DIM>::Mesh2d(boost::shared_ptr<Part> pPart, doub
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void PlcMesh<ELEMENT_DIM, SPACE_DIM>::Mesh3d(boost::shared_ptr<Part> pPart, double maxElementArea)
+void PlcMesh<ELEMENT_DIM, SPACE_DIM>::Mesh3d(boost::shared_ptr<Part<SPACE_DIM> > pPart, double maxElementArea)
 {
-    std::vector<c_vector<double, 3> > vertex_locations = pPart->GetVertexLocations();
-    std::vector<c_vector<double, 3> > hole_locations = pPart->GetHoleMarkers();
+    std::vector<c_vector<double, SPACE_DIM> > vertex_locations = pPart->GetVertexLocations();
+    std::vector<c_vector<double, SPACE_DIM> > hole_locations = pPart->GetHoleMarkers();
     unsigned num_vertices = vertex_locations.size();
     unsigned num_holes = hole_locations.size();
     std::vector<boost::shared_ptr<Facet> > facets = pPart->GetFacets();
@@ -308,14 +307,18 @@ void PlcMesh<ELEMENT_DIM, SPACE_DIM>::ImportFromTetgen(tetgen15::tetgenio& meshe
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void PlcMesh<ELEMENT_DIM, SPACE_DIM>::GenerateFromPart(boost::shared_ptr<Part> pPart,
+void PlcMesh<ELEMENT_DIM, SPACE_DIM>::GenerateFromPart(boost::shared_ptr<Part<SPACE_DIM>  > pPart,
                                                     double maxElementArea, bool useTetgen1_5)
 {
     // For 2D parts use triangle
     if (ELEMENT_DIM == 2)
     {
-        c_vector<double, 6> bounding_box = pPart->GetBoundingBox();
-        if(std::abs(bounding_box[4]) <1.e-6 && std::abs(bounding_box[5])<1.e-6)
+        c_vector<double, 2*ELEMENT_DIM> bounding_box = pPart->GetBoundingBox();
+        if(SPACE_DIM==2)
+        {
+            Mesh2d(pPart, maxElementArea);
+        }
+        else if(std::abs(bounding_box[4]) <1.e-6 && std::abs(bounding_box[5])<1.e-6)
         {
             Mesh2d(pPart, maxElementArea);
         }
@@ -327,7 +330,7 @@ void PlcMesh<ELEMENT_DIM, SPACE_DIM>::GenerateFromPart(boost::shared_ptr<Part> p
     // Try to use tetgen
     else
     {
-        c_vector<double, 6> bounding_box = pPart->GetBoundingBox();
+        c_vector<double, 2*ELEMENT_DIM> bounding_box = pPart->GetBoundingBox();
         if(std::abs(bounding_box[4]) <1.e-6 && std::abs(bounding_box[5])<1.e-6)
         {
             EXCEPTION("The part is two-dimensional, use the 2D meshing functionality.");

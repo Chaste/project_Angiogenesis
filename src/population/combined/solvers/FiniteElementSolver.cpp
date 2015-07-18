@@ -43,7 +43,7 @@
 
 template<unsigned DIM>
 FiniteElementSolver<DIM>::FiniteElementSolver()
-    : AbstractHybridSolver(),
+    : AbstractHybridSolver<DIM>(),
       mpDomain(),
       mGridSize(100.0),
       mpPde()
@@ -58,7 +58,7 @@ FiniteElementSolver<DIM>::~FiniteElementSolver()
 }
 
 template<unsigned DIM>
-void FiniteElementSolver<DIM>::SetDomain(boost::shared_ptr<Part> pDomain)
+void FiniteElementSolver<DIM>::SetDomain(boost::shared_ptr<Part<DIM> > pDomain)
 {
     mpDomain = pDomain;
 }
@@ -79,9 +79,9 @@ template<unsigned DIM>
 void FiniteElementSolver<DIM>::Solve(bool writeSolution, bool vesselSurface)
 {
     // If there is a vessel network add it to the domain
-    if (mpNetwork)
+    if (this->mpNetwork)
     {
-        mpDomain->AddVesselNetwork(mpNetwork, vesselSurface);
+        mpDomain->AddVesselNetwork(this->mpNetwork, vesselSurface);
     }
 
     // Mesh the domain
@@ -103,7 +103,7 @@ void FiniteElementSolver<DIM>::Solve(bool writeSolution, bool vesselSurface)
             {
                 location[idx] = (*iter).GetPoint()[idx];
             }
-            double distance_to_segment = mpNetwork->GetNearestSegment(location).second;
+            double distance_to_segment = this->mpNetwork->GetNearestSegment(location).second;
             if (distance_to_segment < node_distance_tolerance)
             {
                 bcc.AddDirichletBoundaryCondition(&(*iter), p_fixed_boundary_condition, 0, false);
@@ -116,7 +116,7 @@ void FiniteElementSolver<DIM>::Solve(bool writeSolution, bool vesselSurface)
         ConstBoundaryCondition<DIM>* p_fixed_boundary_condition = new ConstBoundaryCondition<DIM>(40.0);
         typename PlcMesh<DIM, DIM>::BoundaryNodeIterator iter = p_mesh->GetBoundaryNodeIteratorBegin();
 
-        VesselSurfaceGenerator generator(mpNetwork);
+        VesselSurfaceGenerator<DIM> generator(this->mpNetwork);
         std::vector<boost::shared_ptr<Polygon> > polygons = generator.GetSurfacePolygons();
 
         while (iter < p_mesh->GetBoundaryNodeIteratorEnd())
@@ -145,7 +145,7 @@ void FiniteElementSolver<DIM>::Solve(bool writeSolution, bool vesselSurface)
 
     if(writeSolution)
     {
-        Write(output, p_mesh);
+        this->Write(output, p_mesh);
     }
 
 }
@@ -154,10 +154,20 @@ template<unsigned DIM>
 void FiniteElementSolver<DIM>::Write(std::vector<double> output, boost::shared_ptr<PlcMesh<DIM, DIM> > p_mesh)
 {
     // Write the output
-    VtkMeshWriter <DIM, DIM> mesh_writer(mWorkingDirectory, "PdeSolution", false);
+    std::string fname;
+    if(!this->mFilename.empty())
+    {
+        fname = this->mFilename;
+    }
+    else
+    {
+        fname = "solution";
+    }
+
+    VtkMeshWriter <DIM, DIM> mesh_writer(this->mWorkingDirectory, fname, false);
     if(output.size() > 0)
     {
-        mesh_writer.AddPointData("PO2", output);
+        mesh_writer.AddPointData(mpPde->GetVariableName(), output);
     }
     mesh_writer.WriteFilesUsingMesh(*p_mesh);
 }

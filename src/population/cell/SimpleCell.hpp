@@ -43,7 +43,8 @@
 /* A minimal cell class. Can be used to create Chaste cells of different types.
  */
 
-class SimpleCell : public ChastePoint<3>
+template<unsigned DIM>
+class SimpleCell : public ChastePoint<DIM>
 {
     unsigned mIndex;
 
@@ -55,17 +56,17 @@ public:
 
     /* Constructor
      */
-    SimpleCell(c_vector<double, 3> location);
+    SimpleCell(c_vector<double, DIM> location);
 
     /* Factory constructor method
      * @return a shared pointer to a new cell
      */
-    static boost::shared_ptr<SimpleCell> Create(double v1 = 0, double v2 = 0, double v3 = 0);
+    static boost::shared_ptr<SimpleCell<DIM> > Create(double v1 = 0, double v2 = 0, double v3 = 0);
 
     /* Factory constructor method
      * @return a shared pointer to a new cell
      */
-    static boost::shared_ptr<SimpleCell> Create(c_vector<double, 3> location);
+    static boost::shared_ptr<SimpleCell<DIM> > Create(c_vector<double, DIM> location);
 
     /* Desctructor
      */

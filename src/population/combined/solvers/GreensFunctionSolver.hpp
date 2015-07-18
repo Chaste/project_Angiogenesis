@@ -46,18 +46,19 @@
 #include "Part.hpp"
 #include "AbstractRegularGridHybridSolver.hpp"
 
-class GreensFunctionSolver : public AbstractRegularGridHybridSolver
+template<unsigned DIM>
+class GreensFunctionSolver : public AbstractRegularGridHybridSolver<DIM>
 {
-    boost::shared_ptr<Part> mpDomain;
-    std::vector<ChastePoint<3> > mSinkCoordinates;
+    boost::shared_ptr<Part<DIM> > mpDomain;
+    std::vector<ChastePoint<DIM> > mSinkCoordinates;
     std::vector<unsigned> mSinkPointMap;
-    std::vector<ChastePoint<3> > mSubSegmentCoordinates;
+    std::vector<ChastePoint<DIM> > mSubSegmentCoordinates;
     std::vector<double> mSubSegmentLengths;
     std::vector<double> mSinkRates;
     std::vector<double> mSourceRates;
     std::vector<double> mSegmentConcentration;
     std::vector<double> mTissueConcentration;
-    std::map<unsigned, boost::shared_ptr<CaVesselSegment<3> > > mSegmentPointMap;
+    std::map<unsigned, boost::shared_ptr<CaVesselSegment<DIM> > > mSegmentPointMap;
     boost::shared_ptr<boost::multi_array<double, 2> > mGtt;
     boost::shared_ptr<boost::multi_array<double, 2> > mGvv;
     boost::shared_ptr<boost::multi_array<double, 2> > mGvt;

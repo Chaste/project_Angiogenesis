@@ -41,32 +41,42 @@
 
 #include "DensityMap.hpp"
 
-DensityMap::DensityMap()
-
-    :   AbstractRegularGridHybridSolver()
+template<unsigned DIM>
+DensityMap<DIM>::DensityMap()
+    :   AbstractRegularGridHybridSolver<DIM>()
 {
 
 }
 
-boost::shared_ptr<DensityMap> DensityMap::Create()
+template<unsigned DIM>
+boost::shared_ptr<DensityMap<DIM> > DensityMap<DIM>::Create()
 {
-    MAKE_PTR(DensityMap, pSelf);
+    MAKE_PTR(DensityMap<DIM>, pSelf);
     return pSelf;
 }
 
-DensityMap::~DensityMap()
+template<unsigned DIM>
+DensityMap<DIM>::~DensityMap()
 {
 
 }
 
-bool DensityMap::IsPointInBox(c_vector<double, 3> point, c_vector<double, 3> location, double spacing)
+template<unsigned DIM>
+bool DensityMap<DIM>::IsPointInBox(c_vector<double, DIM> point, c_vector<double, DIM> location, double spacing)
 {
     bool point_in_box = false;
     if(point[0] >= location[0] -spacing/2.0 && point[0] <= location [0] + spacing/2.0)
     {
         if(point[1] >= location[1] -spacing/2.0 && point[1] <= location [1] + spacing/2.0)
         {
-            if(point[2] >= location[2] -spacing/2.0 && point[2] <= location [2] + spacing/2.0)
+            if(DIM == 3)
+            {
+                if(point[2] >= location[2] -spacing/2.0 && point[2] <= location [2] + spacing/2.0)
+                {
+                    return true;
+                }
+            }
+            else
             {
                 return true;
             }
@@ -75,8 +85,14 @@ bool DensityMap::IsPointInBox(c_vector<double, 3> point, c_vector<double, 3> loc
     return point_in_box;
 }
 
-double DensityMap::LengthOfLineInBox(c_vector<double, 3> start_point, c_vector<double, 3> end_point, c_vector<double, 3> location, double spacing)
+template<unsigned DIM>
+double DensityMap<DIM>::LengthOfLineInBox(c_vector<double, DIM> start_point, c_vector<double, DIM> end_point, c_vector<double, DIM> location, double spacing)
 {
+    if(DIM==2)
+    {
+        EXCEPTION("Line in box method is currently 3D only");
+    }
+
     // If the line is fully in the box return its length
     bool point1_in_box = IsPointInBox(start_point, location, spacing);
     bool point2_in_box = IsPointInBox(end_point, location, spacing);
@@ -86,20 +102,23 @@ double DensityMap::LengthOfLineInBox(c_vector<double, 3> start_point, c_vector<d
     }
     else
     {
-        c_vector<double,6> bounds;
+        c_vector<double,2*DIM> bounds;
         bounds[0] = location[0] - spacing/2.0;
         bounds[1] = location[0] + spacing/2.0;
         bounds[2] = location[1] - spacing/2.0;
         bounds[3] = location[1] + spacing/2.0;
-        bounds[4] = location[2] - spacing/2.0;
-        bounds[5] = location[2] + spacing/2.0;
+        if(DIM==3)
+        {
+            bounds[4] = location[2] - spacing/2.0;
+            bounds[5] = location[2] + spacing/2.0;
+        }
 
         double t1;
         double t2;
         int plane1;
         int plane2;
-        c_vector<double,3> intercept_1;
-        c_vector<double,3> intercept_2;
+        c_vector<double,DIM> intercept_1;
+        c_vector<double,DIM> intercept_2;
 
         int in_box = vtkBox::IntersectWithLine(&bounds[0], &start_point[0], &end_point[0], t1, t2, &intercept_1[0], &intercept_2[0], plane1, plane2);
 
@@ -124,59 +143,62 @@ double DensityMap::LengthOfLineInBox(c_vector<double, 3> start_point, c_vector<d
     }
 }
 
-void DensityMap::Solve(bool writeSolution)
+template<unsigned DIM>
+void DensityMap<DIM>::Solve(bool writeSolution)
 {
-    unsigned number_of_points = mExtents[0] * mExtents[1] * mExtents[2];
+    unsigned number_of_points = this->mExtents[0] * this->mExtents[1] * this->mExtents[2];
     std::vector<double> vessel_solution(number_of_points, 0.0);
     std::vector<double> cell_solution(number_of_points, 0.0);
 
-    std::vector<c_vector<double, 3> > cell_locations;
-    if(mpCellPopulation)
+    std::vector<c_vector<double, DIM> > cell_locations;
+    if(this->mpCellPopulation)
     {
-        std::vector<boost::shared_ptr<SimpleCell> > cells = mpCellPopulation->GetCells();
+        std::vector<boost::shared_ptr<SimpleCell<DIM> > > cells = this->mpCellPopulation->GetCells();
         for(unsigned idx = 0; idx < cells.size(); idx++)
         {
             cell_locations.push_back(cells[idx]->rGetLocation());
         }
     }
-
-    std::vector<boost::shared_ptr<CaVesselSegment<3> > > segments;
+    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments;
 
     unsigned grid_index;
-    if (mpNetwork || mpCellPopulation)
+    if (this->mpNetwork || this->mpCellPopulation)
     {
-        if(mpNetwork)
+        if(this->mpNetwork)
         {
-            segments = mpNetwork->GetVesselSegments();
+            segments = this->mpNetwork->GetVesselSegments();
         }
-        for (unsigned i = 0; i < mExtents[2]; i++) // Z
+        for (unsigned i = 0; i < this->mExtents[2]; i++) // Z
         {
-            for (unsigned j = 0; j < mExtents[1]; j++) // Y
+            for (unsigned j = 0; j < this->mExtents[1]; j++) // Y
             {
-                for (unsigned k = 0; k < mExtents[0]; k++) // X
+                for (unsigned k = 0; k < this->mExtents[0]; k++) // X
                 {
-                    grid_index = k + mExtents[0] * j + mExtents[0] * mExtents[1] * i;
-
+                    grid_index = k + this->mExtents[0] * j + this->mExtents[0] * this->mExtents[1] * i;
                     // If the vessel is in the box add it's length
-                    c_vector<double, 3> location;
-                    location[0] = double(k) * mGridSize + mOrigin[0];
-                    location[1] = double(j) * mGridSize + mOrigin[1];
-                    location[2] = double(i) * mGridSize + mOrigin[2];
-                    if(mpNetwork)
+                    c_vector<double, DIM> location;
+                    location[0] = double(k) * this->mGridSize + this->mOrigin[0];
+                    location[1] = double(j) * this->mGridSize + this->mOrigin[1];
+                    if(DIM==3)
+                    {
+                        location[2] = double(i) * this->mGridSize + this->mOrigin[2];
+                    }
+
+                    if(this->mpNetwork)
                     {
                         for (unsigned idx = 0; idx <  segments.size(); idx++)
                         {
                             vessel_solution[grid_index] += LengthOfLineInBox(segments[idx]->GetNode(0)->GetLocationVector(),
                                                                              segments[idx]->GetNode(1)->GetLocationVector(),
                                                                              location,
-                                                                             mGridSize);
+                                                                             this->mGridSize);
                         }
                     }
-                    if(mpCellPopulation)
+                    if(this->mpCellPopulation)
                     {
                         for (unsigned idx=0; idx<cell_locations.size(); idx++)
                         {
-                            if(IsPointInBox(cell_locations[idx], location, mGridSize))
+                            if(IsPointInBox(cell_locations[idx], location, this->mGridSize))
                             {
                                 cell_solution[grid_index] += 1.0;
                             }
@@ -186,14 +208,17 @@ void DensityMap::Solve(bool writeSolution)
             }
         }
     }
-
     std::map<std::string, std::vector<double> > data;
     data["CellDensity"] = cell_solution;
     data["VesselDensity"] = vessel_solution;
-    UpdateSolution(data);
+    this->UpdateSolution(data);
 
     if (writeSolution)
     {
-        Write();
+        this->Write();
     }
 }
+
+// Explicit instantiation
+template class DensityMap<2> ;
+template class DensityMap<3> ;

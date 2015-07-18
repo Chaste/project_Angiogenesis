@@ -352,7 +352,7 @@ std::string to_string(T const& value)
 
 
 template<unsigned DIM>
-boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateFromPart(boost::shared_ptr<Part> part)
+boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateFromPart(boost::shared_ptr<Part<DIM> > part)
 {
     boost::shared_ptr<CaVascularNetwork<DIM> > p_network = CaVascularNetwork<DIM>::Create();
 
@@ -387,10 +387,10 @@ boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateVo
         EXCEPTION("This generator only works in 3D");
     }
 
-    boost::shared_ptr<Part> p_part = Part::Create();
+    boost::shared_ptr<Part<DIM> > p_part = Part<DIM>::Create();
     p_part->AddCuboid(cubeX, cubeY, cubeZ);
     VoronoiGenerator<DIM> generator;
-    boost::shared_ptr<Part> p_tesselation = generator.Generate(p_part, std::vector<boost::shared_ptr<Vertex> >(), numPoints);
+    boost::shared_ptr<Part<DIM> > p_tesselation = generator.Generate(p_part, std::vector<boost::shared_ptr<Vertex> >(), numPoints);
     boost::shared_ptr<CaVascularNetwork<DIM> > p_network =  GenerateFromPart(p_tesselation);
     return p_network;
 }

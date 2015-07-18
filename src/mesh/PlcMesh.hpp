@@ -74,7 +74,7 @@ public:
      */
     static boost::shared_ptr<PlcMesh<ELEMENT_DIM, SPACE_DIM> > Create();
 
-    void GenerateFromPart(boost::shared_ptr<Part> pPart, double maxElementArea = 0.0, bool useTetgen1_5 = true);
+    void GenerateFromPart(boost::shared_ptr<Part<SPACE_DIM> > pPart, double maxElementArea = 0.0, bool useTetgen1_5 = true);
 
     std::vector<std::vector<unsigned> > GetConnectivity();
 
@@ -84,9 +84,9 @@ public:
 
 private:
 
-    void Mesh2d(boost::shared_ptr<Part> pPart, double maxElementArea = 0.0);
+    void Mesh2d(boost::shared_ptr<Part<SPACE_DIM> > pPart, double maxElementArea = 0.0);
 
-    void Mesh3d(boost::shared_ptr<Part> pPart, double maxElementArea = 0.0);
+    void Mesh3d(boost::shared_ptr<Part<SPACE_DIM> > pPart, double maxElementArea = 0.0);
 
     // This is the same as the TetrahedralMesh implementation of ImportFromMesher but avoids a lot of templating hassle.
     void ImportFromTetgen(tetgen15::tetgenio& mesherOutput, unsigned numberOfElements, int *elementList,

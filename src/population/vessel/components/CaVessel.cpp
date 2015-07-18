@@ -309,6 +309,31 @@ const VasculatureData& CaVessel<DIM>::rGetDataContainer() const
 }
 
 template<unsigned DIM>
+std::vector<boost::shared_ptr<CaVessel<DIM> > > CaVessel<DIM>::GetConnectedVessels()
+{
+    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > start_segments = GetStartNode()->GetVesselSegments();
+    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > end_segments = GetStartNode()->GetVesselSegments();
+
+    std::vector<boost::shared_ptr<CaVessel<DIM> > > connected;
+
+    for(unsigned idx=0; idx<start_segments.size();idx++)
+    {
+        if(start_segments[idx]->GetVessel() != Shared())
+        {
+            connected.push_back(start_segments[idx]->GetVessel());
+        }
+    }
+    for(unsigned idx=0; idx<end_segments.size();idx++)
+    {
+        if(end_segments[idx]->GetVessel() != Shared())
+        {
+            connected.push_back(end_segments[idx]->GetVessel());
+        }
+    }
+    return connected;
+}
+
+template<unsigned DIM>
 std::vector<std::string> CaVessel<DIM>::GetDataKeys(bool castable_to_double) const
 {
     return mDataContainer.GetKeys(castable_to_double);

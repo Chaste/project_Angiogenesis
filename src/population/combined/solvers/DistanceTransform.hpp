@@ -39,7 +39,8 @@
 #include "SmartPointers.hpp"
 #include "AbstractRegularGridHybridSolver.hpp"
 
-class DistanceTransform : public AbstractRegularGridHybridSolver
+template<unsigned DIM>
+class DistanceTransform : public AbstractRegularGridHybridSolver<DIM>
 {
 
 public:
@@ -49,7 +50,7 @@ public:
     /* Factory constructor method
      * @return a shared pointer to a new solver
      */
-    static boost::shared_ptr<DistanceTransform> Create();
+    static boost::shared_ptr<DistanceTransform<DIM> > Create();
 
     ~DistanceTransform();
 

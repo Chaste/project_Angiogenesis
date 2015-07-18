@@ -43,9 +43,10 @@
 #include "HybridLinearEllipticPde.hpp"
 
 template<unsigned DIM>
-class FiniteElementSolver : public AbstractHybridSolver
+class FiniteElementSolver : public AbstractHybridSolver<DIM>
 {
-    boost::shared_ptr<Part> mpDomain;
+    using AbstractHybridSolver<DIM>::Solve;
+    boost::shared_ptr<Part<DIM> > mpDomain;
     double mGridSize;
     boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > mpPde;
 
@@ -55,7 +56,7 @@ public:
 
     ~FiniteElementSolver();
 
-    void SetDomain(boost::shared_ptr<Part> pDomain);
+    void SetDomain(boost::shared_ptr<Part<DIM> > pDomain);
 
     void SetPde(boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > pPde);
 

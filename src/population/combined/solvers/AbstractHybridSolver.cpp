@@ -35,53 +35,69 @@
 
 #include "AbstractHybridSolver.hpp"
 
-AbstractHybridSolver::AbstractHybridSolver()
+template<unsigned DIM>
+AbstractHybridSolver<DIM>::AbstractHybridSolver()
     :   mpNetwork(),
         mpCellPopulation(),
         mpPde(),
         mpBoundaryCondition(),
         mpInterfaceCondition(),
-        mWorkingDirectory()
+        mWorkingDirectory(),
+        mFilename()
 {
 
 }
 
-AbstractHybridSolver::~AbstractHybridSolver()
+template<unsigned DIM>
+AbstractHybridSolver<DIM>::~AbstractHybridSolver()
 {
 
 }
 
-void AbstractHybridSolver::SetWorkingDirectory(const std::string& rDirectory)
+template<unsigned DIM>
+void AbstractHybridSolver<DIM>::SetFileName(const std::string& filename)
+{
+    mFilename = filename;
+}
+
+template<unsigned DIM>
+void AbstractHybridSolver<DIM>::SetWorkingDirectory(const std::string& rDirectory)
 {
     mWorkingDirectory = rDirectory;
 }
 
-void AbstractHybridSolver::SetCellPopulation(boost::shared_ptr<SimpleCellPopulation> pCellPopulation)
+template<unsigned DIM>
+void AbstractHybridSolver<DIM>::SetCellPopulation(boost::shared_ptr<SimpleCellPopulation<DIM> > pCellPopulation)
 {
     mpCellPopulation = pCellPopulation;
 }
 
-void AbstractHybridSolver::SetDomainBoundaryCondition(boost::shared_ptr<AbstractBoundaryCondition<3> > pBoundaryCondition)
+template<unsigned DIM>
+void AbstractHybridSolver<DIM>::SetDomainBoundaryCondition(boost::shared_ptr<AbstractBoundaryCondition<DIM> > pBoundaryCondition)
 {
     mpBoundaryCondition = pBoundaryCondition;
 }
 
-void AbstractHybridSolver::SetInterfaceBoundaryCondition(boost::shared_ptr<AbstractBoundaryCondition<3> > pBoundaryCondition)
+template<unsigned DIM>
+void AbstractHybridSolver<DIM>::SetInterfaceBoundaryCondition(boost::shared_ptr<AbstractBoundaryCondition<DIM> > pBoundaryCondition)
 {
     mpInterfaceCondition = pBoundaryCondition;
 }
 
-void AbstractHybridSolver::SetPde(boost::shared_ptr<HybridLinearEllipticPde<3, 3> > pPde)
+template<unsigned DIM>
+void AbstractHybridSolver<DIM>::SetPde(boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > pPde)
 {
     mpPde = pPde;
 }
 
-void AbstractHybridSolver::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<3> > pNetwork)
+template<unsigned DIM>
+void AbstractHybridSolver<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
 {
     mpNetwork = pNetwork;
 }
 
-void AbstractHybridSolver::Solve(bool writeSolution)
+template<unsigned DIM>
+void AbstractHybridSolver<DIM>::Solve(bool writeSolution)
 {
     if (writeSolution)
     {
@@ -89,12 +105,18 @@ void AbstractHybridSolver::Solve(bool writeSolution)
     }
 }
 
-void AbstractHybridSolver::UpdateSolution(std::map<std::string, std::vector<double> >& data)
+template<unsigned DIM>
+void AbstractHybridSolver<DIM>::UpdateSolution(std::map<std::string, std::vector<double> >& data)
 {
 
 }
 
-void AbstractHybridSolver::Write()
+template<unsigned DIM>
+void AbstractHybridSolver<DIM>::Write()
 {
 
 }
+
+// Explicit instantiation
+template class AbstractHybridSolver<2> ;
+template class AbstractHybridSolver<3> ;

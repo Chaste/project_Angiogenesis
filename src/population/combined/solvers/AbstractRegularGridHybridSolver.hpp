@@ -48,7 +48,8 @@
  * An abstract solver class for linear elliptic PDEs on regular grids which can include
  * discrete representations of cells and vessels.
  */
-class AbstractRegularGridHybridSolver : public AbstractHybridSolver
+template<unsigned DIM>
+class AbstractRegularGridHybridSolver : public AbstractHybridSolver<DIM>
 {
 
 protected:
@@ -63,7 +64,7 @@ protected:
 
     /* The origin of the domain
     */
-    c_vector<double, 6> mOrigin;
+    c_vector<double, 2*DIM> mOrigin;
 
     /* The number of grid points in each direction
     */
@@ -85,7 +86,7 @@ public:
 
     /* Return the spatial location of the point corresponding to the input grid indices
      */
-    c_vector<double, 3> GetLocation(unsigned x_index, unsigned y_index, unsigned z_index);
+    c_vector<double, DIM> GetLocation(unsigned x_index, unsigned y_index, unsigned z_index);
 
     /* Get the solution as vtk image data
      * @return the solution as vtk image data
@@ -106,7 +107,7 @@ public:
      * a part.
      * @param pPart the part from which to get the dimension
      */
-    void SetExtents(boost::shared_ptr<Part> pPart, double gridSize);
+    void SetExtents(boost::shared_ptr<Part<DIM> > pPart, double gridSize);
 
     /* Set the spacing between lattice points. It is assumed the same in all directions.
      * @param gridSize the spacing between lattice points
@@ -116,7 +117,7 @@ public:
     /* Set the origin of the finite difference grid
      * @param origin the origin of the finite difference grid
      */
-    void SetOrigin(c_vector<double, 3> origin);
+    void SetOrigin(c_vector<double, DIM> origin);
 
 protected:
 

@@ -67,7 +67,7 @@ public:
         boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre);
 
         // Set up the PDE domain
-        boost::shared_ptr<Part> p_domain = Part::Create();
+        boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
         p_domain->AddCuboid(vessel_length, vessel_length, vessel_length);
 
         // Choose the PDE
@@ -97,7 +97,7 @@ public:
         boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre);
 
         // Set up the PDE domain
-        boost::shared_ptr<Part> p_domain = Part::Create();
+        boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
         p_domain->AddCuboid(vessel_length, vessel_length, vessel_length);
 
         // Choose the PDE
@@ -123,7 +123,7 @@ public:
         VasculatureGenerator<3> generator;
         boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length);
 
-        boost::shared_ptr<Part> p_domain = Part::Create();
+        boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
         boost::shared_ptr<Polygon> p_circle = p_domain->AddCircle(100.0);
         p_domain->Extrude(p_circle, 100.0);
 
@@ -149,7 +149,7 @@ public:
         VasculatureGenerator<3> generator;
         boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length);
 
-        boost::shared_ptr<Part> p_domain = Part::Create();
+        boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
         boost::shared_ptr<Polygon> p_circle = p_domain->AddCircle(100.0);
         p_domain->Extrude(p_circle, 100.0);
 

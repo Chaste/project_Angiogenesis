@@ -48,9 +48,10 @@
 /* A minimal cell population class.
  */
 
+template<unsigned DIM>
 class SimpleCellPopulation
 {
-    std::vector<boost::shared_ptr<SimpleCell> > mCells;
+    std::vector<boost::shared_ptr<SimpleCell<DIM> > > mCells;
 
 public:
 
@@ -62,24 +63,24 @@ public:
     /* Factory constructor method
      * @return a shared pointer to a new population
      */
-    static boost::shared_ptr<SimpleCellPopulation> Create();
+    static boost::shared_ptr<SimpleCellPopulation<DIM> > Create();
 
     /* Desctructor
      */
     ~SimpleCellPopulation();
 
-    std::vector<boost::shared_ptr<SimpleCell> > GetCells();
+    std::vector<boost::shared_ptr<SimpleCell<DIM> > > GetCells();
 
-    void AddCell(boost::shared_ptr<SimpleCell> pCell);
+    void AddCell(boost::shared_ptr<SimpleCell<DIM> > pCell);
 
-    void AddCells(std::vector<boost::shared_ptr<SimpleCell> > cells);
+    void AddCells(std::vector<boost::shared_ptr<SimpleCell<DIM> > > cells);
 
-    void BooleanWithVesselNetwork(boost::shared_ptr<CaVascularNetwork<3> > pNetwork);
+    void BooleanWithVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
 
     void GenerateCellsOnGrid(unsigned xDim = 10, unsigned yDim = 10, unsigned zDim = 10,
-                             double spacing =1.0, c_vector<double, 3> origin = zero_vector<double>(3));
+                             double spacing =1.0, c_vector<double, DIM> origin = zero_vector<double>(DIM));
 
-    void GenerateCellsOnGrid(boost::shared_ptr<Part> pPart, double spacing =1.0);
+    void GenerateCellsOnGrid(boost::shared_ptr<Part<DIM> > pPart, double spacing =1.0);
 
     vtkSmartPointer<vtkPoints> GetVtk();
 

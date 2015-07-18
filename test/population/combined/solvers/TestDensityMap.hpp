@@ -61,11 +61,11 @@ public:
         boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateBifurcationUnit(vessel_length, start_position);
 
         // Set up the sampling domain
-        boost::shared_ptr<Part> p_domain = Part::Create();
+        boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
         p_domain->AddCuboid(4.0 * vessel_length, 2.0 * vessel_length, 2.0 * vessel_length);
 
         // Get the map
-        DensityMap solver;
+        DensityMap<3> solver;
         solver.SetVesselNetwork(p_network);
         solver.SetExtents(p_domain, 20.0);
 

@@ -49,7 +49,7 @@ public:
     void TestGridBasedCellGenerator()
     {
         // Create a helper population
-        SimpleCellPopulation population;
+        SimpleCellPopulation<3> population;
         population.GenerateCellsOnGrid(10, 10, 10, 10.0);
 
         // Write the population to file
@@ -60,12 +60,12 @@ public:
     void TestGridBasedCellGeneratorWithPart()
     {
         // Create the part to be filled with cells
-        boost::shared_ptr<Part> p_part = Part::Create();
+        boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
         boost::shared_ptr<Polygon >p_circle = p_part->AddCircle(50.0, zero_vector<double>(3), 6);
         p_part->Extrude(p_circle, 100.0);
 
         // Create a helper population
-        SimpleCellPopulation population;
+        SimpleCellPopulation<3> population;
         population.GenerateCellsOnGrid(p_part, 10.0);
 
         // Write the population to file

@@ -48,7 +48,8 @@ AbstractAngiogenesisSolver<DIM>::AbstractAngiogenesisSolver(boost::shared_ptr<Ca
         mEndTime(10.0),
         mOutputFrequency(1),
         mOutputDirectory(rOutputDirectory),
-        mNodeAnastamosisRadius(0.0)
+        mNodeAnastamosisRadius(0.0),
+        mpPdeSolver()
 {
 
 }
@@ -71,33 +72,33 @@ template<unsigned DIM>
 void AbstractAngiogenesisSolver<DIM>::UpdateNodalPositions()
 {
     mpNetwork->UpdateNodes();
-     std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = mpNetwork->GetNodes();
+    std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = mpNetwork->GetNodes();
 
-     for(unsigned idx = 0; idx < nodes.size(); idx++)
+    for(unsigned idx = 0; idx < nodes.size(); idx++)
+    {
+     if(nodes[idx]->IsMigrating() && nodes[idx]->GetNumberOfSegments()==1)
      {
-         if(nodes[idx]->IsMigrating() && nodes[idx]->GetNumberOfSegments()==1)
+         // Get the segment direction vector
+         c_vector<double,DIM> direction = nodes[idx]->GetLocationVector() -
+                 nodes[idx]->GetVesselSegment(0)->GetOppositeNode(nodes[idx])->GetLocationVector();
+         direction /= norm_2(direction);
+
+         // Create a new segment along the growth vector
+         boost::shared_ptr<VascularNode<DIM> >  p_new_node = VascularNode<DIM>::Create(nodes[idx]);
+         p_new_node->SetLocation(nodes[idx]->GetLocationVector() + mGrowthVelocity * GetGrowthDirection(direction));
+
+         if(nodes[idx]->GetVesselSegment(0)->GetVessel()->GetStartNode() == nodes[idx])
          {
-             // Get the segment direction vector
-             c_vector<double,DIM> direction = nodes[idx]->GetLocationVector() -
-                     nodes[idx]->GetVesselSegment(0)->GetOppositeNode(nodes[idx])->GetLocationVector();
-             direction /= norm_2(direction);
-
-             // Create a new segment along the growth vector
-             boost::shared_ptr<VascularNode<DIM> >  p_new_node = VascularNode<DIM>::Create(nodes[idx]);
-             p_new_node->SetLocation(nodes[idx]->GetLocationVector() + mGrowthVelocity * GetGrowthDirection(direction));
-
-             if(nodes[idx]->GetVesselSegment(0)->GetVessel()->GetStartNode() == nodes[idx])
-             {
-                 nodes[idx]->GetVesselSegment(0)->GetVessel()->AddSegment(CaVesselSegment<DIM>::Create(p_new_node, nodes[idx]));
-             }
-             else
-             {
-                 nodes[idx]->GetVesselSegment(0)->GetVessel()->AddSegment(CaVesselSegment<DIM>::Create(nodes[idx], p_new_node));
-             }
-             nodes[idx]->SetIsMigrating(false);
-             p_new_node->SetIsMigrating(true);
+             nodes[idx]->GetVesselSegment(0)->GetVessel()->AddSegment(CaVesselSegment<DIM>::Create(p_new_node, nodes[idx]));
          }
+         else
+         {
+             nodes[idx]->GetVesselSegment(0)->GetVessel()->AddSegment(CaVesselSegment<DIM>::Create(nodes[idx], p_new_node));
+         }
+         nodes[idx]->SetIsMigrating(false);
+         p_new_node->SetIsMigrating(true);
      }
+    }
 }
 
 template<unsigned DIM>
@@ -147,7 +148,6 @@ void AbstractAngiogenesisSolver<DIM>::DoAnastamosis()
 template<unsigned DIM>
 void AbstractAngiogenesisSolver<DIM>::Run()
 {
-    ///\TODO
     // Loop over the time (replace with simulation time)
     double current_time = 0.0;
 
@@ -157,6 +157,15 @@ void AbstractAngiogenesisSolver<DIM>::Run()
     unsigned counter = 0;
     mpNetwork->MergeCoincidentNodes();
     mpNetwork->Write(mOutputDirectory + "/VesselNetwork_inc_" + boost::lexical_cast<std::string>(counter)+".vtp");
+
+    // If there is a PDE solve it
+    if(mpPdeSolver)
+    {
+        mpPdeSolver->SetVesselNetwork(mpNetwork);
+        mpPdeSolver->SetWorkingDirectory(mOutputDirectory);
+        mpPdeSolver->SetFileName("/solution_" + boost::lexical_cast<std::string>(counter)+".vti");
+        mpPdeSolver->Solve(true);
+    }
 
     while(current_time < mEndTime)
     {
@@ -170,17 +179,34 @@ void AbstractAngiogenesisSolver<DIM>::Run()
 
         mpNetwork->MergeCoincidentNodes();
         counter++;
-        if(mOutputFrequency > 0)
+        if(mOutputFrequency > 0 && counter % mOutputFrequency == 0)
         {
-            if(counter % mOutputFrequency == 0)
+            mpNetwork->Write(mOutputDirectory + "/VesselNetwork_inc_" + boost::lexical_cast<std::string>(counter)+".vtp");
+            if(mpPdeSolver)
             {
-                mpNetwork->Write(mOutputDirectory + "/VesselNetwork_inc_" + boost::lexical_cast<std::string>(counter)+".vtp");
+                mpPdeSolver->SetVesselNetwork(mpNetwork);
+                mpPdeSolver->SetFileName("/solution_" + boost::lexical_cast<std::string>(counter)+".vti");
+                mpPdeSolver->Solve(true);
+            }
+        }
+        else
+        {
+            if(mpPdeSolver)
+            {
+                mpPdeSolver->Solve(false);
             }
         }
     }
 
     // destroy the rng
     RandomNumberGenerator::Destroy();
+}
+
+template<unsigned DIM>
+void AbstractAngiogenesisSolver<DIM>::SetPdeSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pPdeSolver)
+{
+    mpPdeSolver = pPdeSolver;
+
 }
 
 // Explicit instantiation

@@ -98,7 +98,7 @@ public:
     /*
      * Generate a network on the edges of a PLC Part
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateFromPart(boost::shared_ptr<Part> part);
+    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateFromPart(boost::shared_ptr<Part<DIM> > part);
 
     /*
      * Creates a vessel network based on a voronoi tesselation in the provided cube.

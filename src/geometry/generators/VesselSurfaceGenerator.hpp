@@ -49,12 +49,13 @@
  * Class for generating surface representations of vessel networks. The generated surface is suitable for
  * finite element meshing and can be returned in PLC or VTK formats.
  */
+template<unsigned DIM>
 class VesselSurfaceGenerator
 {
     /**
      * The vessel network for which the surface will be generated.
      */
-    boost::shared_ptr<CaVascularNetwork<3> > mpVesselNetwork;
+    boost::shared_ptr<CaVascularNetwork<DIM> > mpVesselNetwork;
 
     /**
      * A VTK representation of the surface.
@@ -67,7 +68,7 @@ public:
      * Constructor
      * @param pVesselNetwork the vessel network to generate the surface on
      */
-    VesselSurfaceGenerator(boost::shared_ptr<CaVascularNetwork<3> > pVesselNetwork);
+    VesselSurfaceGenerator(boost::shared_ptr<CaVascularNetwork<DIM> > pVesselNetwork);
 
     /**
      * Destructor
@@ -92,7 +93,7 @@ public:
      * 'inside' of vessel segments. They are useful for meshing.
      * @ return the locations of PLC holes in the network
      */
-    std::vector<c_vector<double, 3> > GetHoles();
+    std::vector<c_vector<double, DIM> > GetHoles();
 
     /**
      * Return the surface in the form of VTK polydata
@@ -111,23 +112,23 @@ private:
     /**
      * Return a vector of locations on a circle centred at x=0, y=0 with specified radius.
      */
-    std::vector<c_vector<double, 3> > MakeCircle(double radius, unsigned numberOfSegments = 24);
+    std::vector<c_vector<double, DIM> > MakeCircle(double radius, unsigned numberOfSegments = 24);
 
     /**
      * Project the input points onto the specified plane
      */
-    void ProjectOnPlane(std::vector<c_vector<double, 3> >& rPoints, c_vector<double, 3> directionVector, double length,
+    void ProjectOnPlane(std::vector<c_vector<double, DIM> >& rPoints, c_vector<double, DIM> directionVector, double length,
                         vtkSmartPointer<vtkPlane> plane);
 
     /**
      * Rotate the input points about the specified axis by the specified angle
      */
-    void RotateAboutAxis(std::vector<c_vector<double, 3> >& rPoints, c_vector<double, 3> axis, double angle);
+    void RotateAboutAxis(std::vector<c_vector<double, DIM> >& rPoints, c_vector<double, DIM> axis, double angle);
 
     /**
      * Translate the input points along the specified vector
      */
-    void Translate(std::vector<c_vector<double, 3> >& rPoints, c_vector<double, 3> translationVector);
+    void Translate(std::vector<c_vector<double, DIM> >& rPoints, c_vector<double, DIM> translationVector);
 };
 
 #endif /* VESSELSURFACEGENERATOR_HPP_*/

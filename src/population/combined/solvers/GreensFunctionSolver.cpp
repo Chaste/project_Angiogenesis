@@ -52,8 +52,9 @@
 
 #include "GreensFunctionSolver.hpp"
 
-GreensFunctionSolver::GreensFunctionSolver()
-    : AbstractRegularGridHybridSolver(),
+template<unsigned DIM>
+GreensFunctionSolver<DIM>::GreensFunctionSolver()
+    : AbstractRegularGridHybridSolver<DIM>(),
       mpDomain(),
       mSinkCoordinates(),
       mSinkPointMap(),
@@ -72,12 +73,14 @@ GreensFunctionSolver::GreensFunctionSolver()
 
 }
 
-GreensFunctionSolver::~GreensFunctionSolver()
+template<unsigned DIM>
+GreensFunctionSolver<DIM>::~GreensFunctionSolver()
 {
 
 }
 
-void GreensFunctionSolver::Solve(bool writeSolution)
+template<unsigned DIM>
+void GreensFunctionSolver<DIM>::Solve(bool writeSolution)
 {
     // Set up the sub-segment and tissue point co-ordinates
     GenerateSubSegments();
@@ -88,14 +91,14 @@ void GreensFunctionSolver::Solve(bool writeSolution)
 
     // Get the sink rates
     unsigned number_of_sinks = mSinkCoordinates.size();
-    double sink_rate_per_volume = mpPde->GetConstantInUTerm();
-    double sink_volume = pow(mGridSize, 3);
+    double sink_rate_per_volume = this->mpPde->GetConstantInUTerm();
+    double sink_volume = pow(this->mGridSize, 3);
     mSinkRates = std::vector<double>(number_of_sinks, sink_rate_per_volume * sink_volume);
     double total_sink_rate = std::accumulate(mSinkRates.begin(), mSinkRates.end(), 0.0);
 
     // Get the sink substance demand on each vessel subsegment
     unsigned number_of_subsegments = mSubSegmentCoordinates.size();
-    double diffusivity = mpPde->GetDiffusionConstant();
+    double diffusivity = this->mpPde->GetDiffusionConstant();
     std::vector<double> sink_demand_per_subsegment(number_of_subsegments, 0.0);
     for (unsigned idx = 0; idx < number_of_subsegments; idx++)
     {
@@ -197,32 +200,33 @@ void GreensFunctionSolver::Solve(bool writeSolution)
 
     std::map<std::string, std::vector<double> > segmentPointData;
     std::map<std::string, std::vector<double> > tissuePointData;
-    tissuePointData[mpPde->GetVariableName()] = mTissueConcentration;
-    segmentPointData[mpPde->GetVariableName()] = mSegmentConcentration;
+    tissuePointData[this->mpPde->GetVariableName()] = mTissueConcentration;
+    segmentPointData[this->mpPde->GetVariableName()] = mSegmentConcentration;
     tissuePointData["Sink Rate"] = mSinkRates;
     segmentPointData["Source Rate"] = mSourceRates;
-    UpdateSolution(tissuePointData);
+    this->UpdateSolution(tissuePointData);
     if(writeSolution)
     {
-        WriteSolution(segmentPointData);
+        this->WriteSolution(segmentPointData);
     }
 }
 
-void GreensFunctionSolver::GenerateSubSegments()
+template<unsigned DIM>
+void GreensFunctionSolver<DIM>::GenerateSubSegments()
 {
     // Set up the sub-segment points and map to original segments
     double max_subsegment_length = 20.0;
 
-    std::vector<boost::shared_ptr<CaVessel<3> > > vessels = mpNetwork->GetVessels();
-    typename std::vector<boost::shared_ptr<CaVessel<3> > >::iterator vessel_iter;
-    typename std::vector<boost::shared_ptr<CaVesselSegment<3> > >::iterator segment_iter;
+    std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels = this->mpNetwork->GetVessels();
+    typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator vessel_iter;
+    typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator segment_iter;
 
     // Iterate over all segments and store midpoints and lengths of subsegment regions for
     // the greens functions calculation. Create a map of subsegment index to the parent segment
     // for later use.
     for (vessel_iter = vessels.begin(); vessel_iter != vessels.end(); vessel_iter++)
     {
-        std::vector<boost::shared_ptr<CaVesselSegment<3> > > segments = (*vessel_iter)->GetSegments();
+        std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = (*vessel_iter)->GetSegments();
         for (segment_iter = segments.begin(); segment_iter != segments.end(); segment_iter++)
         {
             double segment_length = (*segment_iter)->GetLength();
@@ -237,18 +241,18 @@ void GreensFunctionSolver::GenerateSubSegments()
             // Otherwise generate subsegment points along its length
             else
             {
-                c_vector<double, 3> start_point = (*segment_iter)->GetNode(0)->GetLocationVector();
-                c_vector<double, 3> end_point = (*segment_iter)->GetNode(1)->GetLocationVector();
+                c_vector<double, DIM> start_point = (*segment_iter)->GetNode(0)->GetLocationVector();
+                c_vector<double, DIM> end_point = (*segment_iter)->GetNode(1)->GetLocationVector();
 
                 double subsegment_length = segment_length / max_subsegment_length;
                 unsigned num_subsegments = std::floor(subsegment_length) + 1;
                 subsegment_length = segment_length / double(num_subsegments);
-                c_vector<double, 3> increment = (end_point - start_point) / segment_length;
+                c_vector<double, DIM> increment = (end_point - start_point) / segment_length;
 
                 for (unsigned i = 0; i < num_subsegments; i++)
                 {
-                    c_vector<double, 3> location = start_point + (double(i) + 0.5) * increment * subsegment_length;
-                    mSubSegmentCoordinates.push_back(ChastePoint<3>(location));
+                    c_vector<double, DIM> location = start_point + (double(i) + 0.5) * increment * subsegment_length;
+                    mSubSegmentCoordinates.push_back(ChastePoint<DIM>(location));
                     mSubSegmentLengths.push_back(subsegment_length);
                     mSegmentPointMap[mSubSegmentCoordinates.size() - 1] = (*segment_iter);
                 }
@@ -257,21 +261,22 @@ void GreensFunctionSolver::GenerateSubSegments()
     }
 }
 
-void GreensFunctionSolver::GenerateTissuePoints()
+template<unsigned DIM>
+void GreensFunctionSolver<DIM>::GenerateTissuePoints()
 {
-    unsigned num_points = mExtents[0] * mExtents[1] *mExtents[2];
-    mSinkCoordinates = std::vector<ChastePoint<3> >(num_points);
+    unsigned num_points = this->mExtents[0] * this->mExtents[1] *this->mExtents[2];
+    mSinkCoordinates = std::vector<ChastePoint<DIM> >(num_points);
     mSinkPointMap = std::vector<unsigned>(num_points);
-    for (unsigned i = 0; i < mExtents[2]; i++) //Z
+    for (unsigned i = 0; i < this->mExtents[2]; i++) //Z
     {
-        for (unsigned j = 0; j < mExtents[1]; j++) //Y
+        for (unsigned j = 0; j < this->mExtents[1]; j++) //Y
         {
-            for (unsigned k = 0; k < mExtents[0]; k++) //X
+            for (unsigned k = 0; k < this->mExtents[0]; k++) //X
             {
-                unsigned index = k + mExtents[0] * j + mExtents[0] * mExtents[1] * i;
-                mSinkCoordinates[index] = ChastePoint<3>(double(k) * mGridSize + mOrigin[0],
-                                         double(j) * mGridSize + mOrigin[1],
-                                         double(i) * mGridSize + mOrigin[2]);
+                unsigned index = k + this->mExtents[0] * j + this->mExtents[0] * this->mExtents[1] * i;
+                mSinkCoordinates[index] = ChastePoint<DIM>(double(k) * this->mGridSize + this->mOrigin[0],
+                                         double(j) * this->mGridSize + this->mOrigin[1],
+                                         double(i) * this->mGridSize + this->mOrigin[2]);
             }
         }
     }
@@ -282,7 +287,8 @@ void GreensFunctionSolver::GenerateTissuePoints()
     }
 }
 
-void GreensFunctionSolver::UpdateGreensFunctionMatrices(bool updateGtt, bool updateGvv, bool updateGtv,
+template<unsigned DIM>
+void GreensFunctionSolver<DIM>::UpdateGreensFunctionMatrices(bool updateGtt, bool updateGvv, bool updateGtv,
                                                                  bool updateGvt)
 {
     // Get the Greens Function coefficient matrices
@@ -304,7 +310,8 @@ void GreensFunctionSolver::UpdateGreensFunctionMatrices(bool updateGtt, bool upd
     }
 }
 
-boost::shared_ptr<boost::multi_array<double, 2> > GreensFunctionSolver::GetVesselVesselInteractionMatrix()
+template<unsigned DIM>
+boost::shared_ptr<boost::multi_array<double, 2> > GreensFunctionSolver<DIM>::GetVesselVesselInteractionMatrix()
 {
     typedef boost::multi_array<double, 2>::index index;
     unsigned num_sub_segments = mSubSegmentCoordinates.size();
@@ -346,12 +353,13 @@ boost::shared_ptr<boost::multi_array<double, 2> > GreensFunctionSolver::GetVesse
     return p_interaction_matrix;
 }
 
-boost::shared_ptr<boost::multi_array<double, 2> > GreensFunctionSolver::GetTissueTissueInteractionMatrix()
+template<unsigned DIM>
+boost::shared_ptr<boost::multi_array<double, 2> > GreensFunctionSolver<DIM>::GetTissueTissueInteractionMatrix()
 {
     typedef boost::multi_array<double, 2>::index index;
     unsigned num_points = mSinkCoordinates.size();
     double coefficient = 1.0 / (4.0 * M_PI);
-    double tissue_point_volume = pow(mGridSize, 3);
+    double tissue_point_volume = pow(this->mGridSize, 3);
     double equivalent_tissue_point_radius = pow(tissue_point_volume * 0.75 / M_PI, 0.333333);
 
     boost::shared_ptr<boost::multi_array<double, 2> > p_interaction_matrix(new boost::multi_array<double, 2>(boost::extents[num_points][num_points]));
@@ -374,13 +382,14 @@ boost::shared_ptr<boost::multi_array<double, 2> > GreensFunctionSolver::GetTissu
     return p_interaction_matrix;
 }
 
-boost::shared_ptr<boost::multi_array<double, 2> > GreensFunctionSolver::GetTissueVesselInteractionMatrix()
+template<unsigned DIM>
+boost::shared_ptr<boost::multi_array<double, 2> > GreensFunctionSolver<DIM>::GetTissueVesselInteractionMatrix()
 {
     typedef boost::multi_array<double, 2>::index index;
     unsigned num_sinks = mSinkCoordinates.size();
     unsigned num_subsegments = mSubSegmentCoordinates.size();
 
-    double tissue_point_volume = pow(mGridSize, 3);
+    double tissue_point_volume = pow(this->mGridSize, 3);
     double equivalent_tissue_point_radius = pow(tissue_point_volume * 0.75 / M_PI, 0.333333);
     double coefficient = 1.0 / (4.0 * M_PI);
 
@@ -405,14 +414,15 @@ boost::shared_ptr<boost::multi_array<double, 2> > GreensFunctionSolver::GetTissu
     return p_interaction_matrix;
 }
 
-boost::shared_ptr<boost::multi_array<double, 2> > GreensFunctionSolver::GetVesselTissueInteractionMatrix()
+template<unsigned DIM>
+boost::shared_ptr<boost::multi_array<double, 2> > GreensFunctionSolver<DIM>::GetVesselTissueInteractionMatrix()
 {
     typedef boost::multi_array<double, 2>::index index;
     unsigned num_subsegments = mSubSegmentCoordinates.size();
     unsigned num_sinks = mSinkCoordinates.size();
     double coefficient = 1.0 / (4.0 * M_PI);
 
-    double tissue_point_volume = pow(mGridSize, 3);
+    double tissue_point_volume = pow(this->mGridSize, 3);
     double equivalent_tissue_point_radius = pow(tissue_point_volume * 0.75 / M_PI, 0.333333);
 
     boost::shared_ptr<boost::multi_array<double, 2> > p_interaction_matrix(new boost::multi_array<double, 2>(boost::extents[num_subsegments][num_sinks]));
@@ -436,15 +446,16 @@ boost::shared_ptr<boost::multi_array<double, 2> > GreensFunctionSolver::GetVesse
     return p_interaction_matrix;
 }
 
-void GreensFunctionSolver::WriteSolution(std::map<std::string, std::vector<double> >& segmentPointData)
+template<unsigned DIM>
+void GreensFunctionSolver<DIM>::WriteSolution(std::map<std::string, std::vector<double> >& segmentPointData)
 {
     // Write the vessel network data
-    mpNetwork->Write((mWorkingDirectory + "/vessels.vtp").c_str());
+    this->mpNetwork->Write((this->mWorkingDirectory + "/vessels.vtp").c_str());
 
     // Write the tissue point data
     vtkSmartPointer<vtkXMLImageDataWriter> pImageDataWriter = vtkSmartPointer<vtkXMLImageDataWriter>::New();
-    pImageDataWriter->SetFileName((mWorkingDirectory + "/pde_solution.vti").c_str());
-    pImageDataWriter->SetInput(mpSolution);
+    pImageDataWriter->SetFileName((this->mWorkingDirectory + "/pde_solution.vti").c_str());
+    pImageDataWriter->SetInput(this->mpSolution);
     pImageDataWriter->Update();
     pImageDataWriter->Write();
 
@@ -453,7 +464,7 @@ void GreensFunctionSolver::WriteSolution(std::map<std::string, std::vector<doubl
     vtkSmartPointer<vtkPoints> pPoints = vtkSmartPointer<vtkPoints>::New();
     for (unsigned i = 0; i < mSubSegmentCoordinates.size(); i++)
     {
-        ChastePoint<3> location = mSubSegmentCoordinates[i];
+        ChastePoint<DIM> location = mSubSegmentCoordinates[i];
         pPoints->InsertNextPoint(location[0], location[1], location[2]);
     }
     pPolyData->SetPoints(pPoints);
@@ -475,7 +486,11 @@ void GreensFunctionSolver::WriteSolution(std::map<std::string, std::vector<doubl
     }
 
     vtkSmartPointer<vtkXMLPolyDataWriter> p_poldata_writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-    p_poldata_writer->SetFileName((mWorkingDirectory + "/segments.vtp").c_str());
+    p_poldata_writer->SetFileName((this->mWorkingDirectory + "/segments.vtp").c_str());
     p_poldata_writer->SetInput(pPolyData);
     p_poldata_writer->Write();
 }
+
+// Explicit instantiation
+template class GreensFunctionSolver<2>;
+template class GreensFunctionSolver<3>;

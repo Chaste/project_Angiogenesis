@@ -48,10 +48,10 @@ public:
 
     void TestSquare()
     {
-        boost::shared_ptr<Part> p_part = Part::Create();
+        boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
         p_part->AddCuboid(3000, 1500, 200);
         VoronoiGenerator<3> generator;
-        boost::shared_ptr<Part> p_tesselation = generator.Generate(p_part, std::vector<boost::shared_ptr<Vertex> >(), 1600);
+        boost::shared_ptr<Part<3> > p_tesselation = generator.Generate(p_part, std::vector<boost::shared_ptr<Vertex> >(), 1600);
         std::vector<boost::shared_ptr<Vertex> > vertices = p_tesselation->GetVertices();
         for(unsigned idx=0; idx < vertices.size(); idx++)
         {

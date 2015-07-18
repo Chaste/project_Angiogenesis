@@ -64,7 +64,7 @@ public:
         p_network->GetVessels()[0]->GetEndNode()->SetRadius(10.0);
 
         // Set up the surface generator
-        VesselSurfaceGenerator surface_generator(p_network);
+        VesselSurfaceGenerator<3> surface_generator(p_network);
         surface_generator.GetVtkSurface();
         OutputFileHandler output_file_handler("TestVesselSurfaceGenerator", false);
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("SingleSegmentVessel.vtp");
@@ -95,7 +95,7 @@ public:
         boost::shared_ptr<CaVascularNetwork<3> > p_network = CaVascularNetwork<3>::Create();
         p_network->AddVessel(p_vessel1);
 
-        VesselSurfaceGenerator surface_generator(p_network);
+        VesselSurfaceGenerator<3> surface_generator(p_network);
         surface_generator.GetVtkSurface();
         OutputFileHandler output_file_handler("TestVesselSurfaceGenerator", false);
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("MultiSegmentVessel.vtp");
@@ -125,7 +125,7 @@ public:
         boost::shared_ptr<CaVascularNetwork<3> > p_network = boost::shared_ptr<CaVascularNetwork<3> >(new CaVascularNetwork<3>());
         p_network->AddVessel(p_vessel1);
 
-        VesselSurfaceGenerator surface_generator(p_network);
+        VesselSurfaceGenerator<3> surface_generator(p_network);
         surface_generator.GetVtkSurface();
         OutputFileHandler output_file_handler("TestVesselSurfaceGenerator", false);
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("SinusoidalVessel.vtp");
@@ -174,7 +174,7 @@ public:
         p_network->AddVessel(p_vessel6);
 
         //Set up the surface generator
-        VesselSurfaceGenerator surface_generator(p_network);
+        VesselSurfaceGenerator<3> surface_generator(p_network);
         surface_generator.GetVtkSurface();
         OutputFileHandler output_file_handler("TestVesselSurfaceGenerator", false);
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("MultiVessel.vtp");

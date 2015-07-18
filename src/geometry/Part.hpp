@@ -53,6 +53,7 @@
  * These descriptions allow parts to be meshed using triangle or tetgen.
  */
 
+template<unsigned DIM>
 class Part
 {
     /* Planar collections of polygons
@@ -65,11 +66,11 @@ class Part
 
     /* The locations of hole markers (see PLC definition)
      */
-    std::vector<c_vector<double, 3> > mHoleMarkers;
+    std::vector<c_vector<double, DIM> > mHoleMarkers;
 
     /* The locations of region markers (see PLC definition)
      */
-    std::vector<c_vector<double, 3> > mRegionMarkers;
+    std::vector<c_vector<double, DIM> > mRegionMarkers;
 
 public:
 
@@ -93,7 +94,7 @@ public:
      * @return the polygon corresponding to the circle, useful for further operations, such as extrusion.
      */
     boost::shared_ptr<Polygon> AddCircle(double radius = 0.25,
-                                         c_vector<double, 3> centre = zero_vector<double>(3),
+                                         c_vector<double, DIM> centre = zero_vector<double>(DIM),
                                          unsigned numSegments = 24);
 
     /* Add a cuboid to the part.
@@ -104,12 +105,12 @@ public:
      *
      */
     void AddCuboid(double sizeX = 1.0, double sizeY = 1.0, double sizeZ = 1.0,
-                   c_vector<double, 3> origin = zero_vector<double>(3));
+                   c_vector<double, DIM> origin = zero_vector<double>(DIM));
 
     /* Add a hole marker to the part
      * @param location the location of the hole
      */
-    void AddHoleMarker(c_vector<double, 3> location);
+    void AddHoleMarker(c_vector<double, DIM> location);
 
     /* Add a polygon described by a vector or vertices. The vertices should be planar. This is not
      * checked.
@@ -135,13 +136,13 @@ public:
      * @return the new polygon, useful for further operations, such as extrusion.
      */
     boost::shared_ptr<Polygon> AddRectangle(double sizeX = 1.0, double sizeY = 1.0,
-                                                           c_vector<double, 3> origin = zero_vector<double>(3));
+                                                           c_vector<double, DIM> origin = zero_vector<double>(DIM));
 
     /* Add a vessel network to the part.
      * @param pVesselNetwork the vessel network to be added
      * @param surface true if a surface representation of the network is required
      */
-    void AddVesselNetwork(boost::shared_ptr<CaVascularNetwork<3> > pVesselNetwork, bool surface = false);
+    void AddVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pVesselNetwork, bool surface = false);
 
     /* Extrude the part along the z-axis, inserting planar faces in place of edges.
      * @param pPolygon the polygon to extrude
@@ -152,7 +153,7 @@ public:
     /* Return the bounding box
      * @return the bounding box of the part (xmin, xmax, ymin, ymax, zmin, zmax)
      */
-    c_vector<double, 6> GetBoundingBox();
+    c_vector<double, 2*DIM> GetBoundingBox();
 
     /* Return the dimension of the part
      * @return the dimension of the part, either 2 if is planar or 3 otherwise
@@ -162,7 +163,7 @@ public:
     /* Return the hole marker locations
      * @return the hole marker locations
      */
-    std::vector<c_vector<double, 3> > GetHoleMarkers();
+    std::vector<c_vector<double, DIM> > GetHoleMarkers();
 
     /* Return the facets
      * @return the facets
@@ -187,14 +188,14 @@ public:
     /* Return the vertex locations
      * @return the vertex locations
      */
-    std::vector<c_vector<double, 3> > GetVertexLocations();
+    std::vector<c_vector<double, DIM> > GetVertexLocations();
 
     /* Return the a vtk polydata representation of the part
      * @return a vtk representation of the part
      */
     vtkSmartPointer<vtkPolyData> GetVtk(bool update=true);
 
-    bool IsPointInPart(c_vector<double, 3> location, bool update=true);
+    bool IsPointInPart(c_vector<double, DIM> location, bool update=true);
 
     /* Write the part to file in vtk format
      * @param rFilename the path to the file to be written, should include the file extension.

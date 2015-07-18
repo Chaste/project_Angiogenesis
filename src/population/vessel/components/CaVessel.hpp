@@ -195,6 +195,11 @@ public:
     std::vector<std::string> GetDataKeys(bool castable_to_double = false) const;
 
     /**
+     @return vector of vessels connected to this one
+     */
+    std::vector<boost::shared_ptr<CaVessel<DIM> > > GetConnectedVessels();
+
+    /**
      @return shared pointer to the second node of the last segment
      */
     boost::shared_ptr<VascularNode<DIM> > GetEndNode();

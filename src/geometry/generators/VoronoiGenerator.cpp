@@ -62,7 +62,7 @@ VoronoiGenerator<DIM>::~VoronoiGenerator()
 }
 
 template<unsigned DIM>
-boost::shared_ptr<Part> VoronoiGenerator<DIM>::Generate(boost::shared_ptr<Part> pPart,
+boost::shared_ptr<Part<DIM> > VoronoiGenerator<DIM>::Generate(boost::shared_ptr<Part<DIM> > pPart,
         std::vector<boost::shared_ptr<Vertex> > seeds, unsigned numSeeds)
 {
     if(DIM==2)
@@ -70,7 +70,7 @@ boost::shared_ptr<Part> VoronoiGenerator<DIM>::Generate(boost::shared_ptr<Part> 
         EXCEPTION("This generator works in 3D only");
     }
 
-    boost::shared_ptr<Part> p_tesselation = Part::Create();
+    boost::shared_ptr<Part<DIM> > p_tesselation = Part<DIM>::Create();
 
     c_vector<double, 2*DIM> extents = pPart->GetBoundingBox();
 

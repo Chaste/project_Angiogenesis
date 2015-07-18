@@ -68,7 +68,7 @@ public:
         boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length);
 
         // Set up the PDE domain
-        boost::shared_ptr<Part> p_domain = Part::Create();
+        boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
         p_domain->AddCuboid(vessel_length, vessel_length, vessel_length);
 
         // Choose the PDE
@@ -77,7 +77,7 @@ public:
         p_pde->SetLinearInUTerm(-2.e-7);
 
         // Set up and run the solver
-        FiniteDifferenceSolver solver;
+        FiniteDifferenceSolver<3> solver;
         solver.SetVesselNetwork(p_network);
         solver.SetExtents(p_domain, 10.0);
         solver.SetPde(p_pde);
@@ -95,11 +95,11 @@ public:
         boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length);
 
         // Set up the PDE domain
-        boost::shared_ptr<Part> p_domain = Part::Create();
+        boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
         p_domain->AddCuboid(vessel_length, vessel_length, vessel_length);
 
         // Set up the cells
-        boost::shared_ptr<SimpleCellPopulation> p_population = SimpleCellPopulation::Create();
+        boost::shared_ptr<SimpleCellPopulation<3> > p_population = SimpleCellPopulation<3>::Create();
         double spacing = 10;
         unsigned num_x = unsigned(vessel_length/spacing) + 1;
         p_population->GenerateCellsOnGrid(num_x, num_x, num_x, spacing);
@@ -111,7 +111,7 @@ public:
         p_pde->SetLinearInUTerm(-2.e-7);
 
         // Set up and run the solver
-        FiniteDifferenceSolver solver;
+        FiniteDifferenceSolver<3> solver;
         solver.SetVesselNetwork(p_network);
         solver.SetCellPopulation(p_population);
         solver.SetExtents(p_domain, 10.0);
@@ -130,7 +130,7 @@ public:
         boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateBifurcationUnit(vessel_length);
 
         // Set up the tissue domain
-        boost::shared_ptr<Part> p_domain = Part::Create();
+        boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
         p_domain->AddRectangle(4.0 * vessel_length, 2.0 * vessel_length);
 
         // Define the PDE
@@ -139,7 +139,7 @@ public:
         p_pde->SetLinearInUTerm(-2.e-7);
 
         // Set up and run the simulation
-        FiniteDifferenceSolver solver;
+        FiniteDifferenceSolver<3> solver;
         solver.SetVesselNetwork(p_network);
         solver.SetExtents(p_domain, 10.0);
         solver.SetPde(p_pde);
@@ -157,7 +157,7 @@ public:
         boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateBifurcationUnit(vessel_length);
 
         // Set up the tissue domain
-        boost::shared_ptr<Part> p_domain = Part::Create();
+        boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
         p_domain->AddCuboid(4.0 * vessel_length, 2.0 * vessel_length, 2.0 * vessel_length);
 
         // Define the PDE
@@ -166,7 +166,7 @@ public:
         p_pde->SetLinearInUTerm(-2.e-7);
 
         // Set up and run the simulation
-        FiniteDifferenceSolver solver;
+        FiniteDifferenceSolver<3> solver;
         solver.SetVesselNetwork(p_network);
         solver.SetExtents(p_domain, 10.0);
         solver.SetPde(p_pde);

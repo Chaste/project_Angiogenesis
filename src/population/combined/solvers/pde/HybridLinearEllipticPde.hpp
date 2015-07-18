@@ -64,8 +64,8 @@ class HybridLinearEllipticPde : public AbstractLinearEllipticPde<ELEMENT_DIM, SP
     double mConstantInUTerm;
     double mLinearInUTerm;
     std::string mVariableName;
-    boost::shared_ptr<SimpleCellPopulation> mpPopulation;
-    boost::shared_ptr<CaVascularNetwork<3> > mpNetwork;
+    boost::shared_ptr<SimpleCellPopulation<SPACE_DIM> > mpPopulation;
+    boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > mpNetwork;
 
 public:
 
@@ -102,12 +102,12 @@ public:
         return mDiffusionTensor;
     }
 
-    void SetCellPopulation(boost::shared_ptr<SimpleCellPopulation> pPopulation)
+    void SetCellPopulation(boost::shared_ptr<SimpleCellPopulation<SPACE_DIM> > pPopulation)
     {
         mpPopulation = pPopulation;
     }
 
-    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<3> > pNetwork)
+    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > pNetwork)
     {
         mpNetwork = pNetwork;
     }
@@ -128,7 +128,7 @@ public:
         mDiffusionTensor = identity_matrix<double>(SPACE_DIM)* mDiffusivity;
     }
 
-    double GetConstantInUTerm(c_vector<double, 3> location = zero_vector<double>(3), double spacing = 0.0)
+    double GetConstantInUTerm(c_vector<double, SPACE_DIM> location = zero_vector<double>(SPACE_DIM), double spacing = 0.0)
     {
         return mConstantInUTerm;
     }
@@ -143,7 +143,7 @@ public:
         return mVariableName;
     }
 
-    double GetLinearInUTerm(c_vector<double, 3> location  = zero_vector<double>(3), double spacing = 0.0)
+    double GetLinearInUTerm(c_vector<double, SPACE_DIM> location  = zero_vector<double>(SPACE_DIM), double spacing = 0.0)
     {
         double cell_consumption_term = 0.0;
         if(mpPopulation)
@@ -151,7 +151,7 @@ public:
             unsigned num_points = 0;
             for (unsigned mdx = 0; mdx < mpPopulation->GetCells().size(); mdx++)
             {
-                c_vector<double, 3> cell_location = mpPopulation->GetCells()[mdx]->rGetLocation();
+                c_vector<double, SPACE_DIM> cell_location = mpPopulation->GetCells()[mdx]->rGetLocation();
                 if (IsPointInBox(cell_location, location, spacing))
                 {
                     num_points++;
@@ -167,14 +167,21 @@ public:
         return mDiffusivity;
     }
 
-    bool IsPointInBox(c_vector<double, 3> point, c_vector<double, 3> location, double spacing)
+    bool IsPointInBox(c_vector<double, SPACE_DIM> point, c_vector<double, SPACE_DIM> location, double spacing)
     {
         bool point_in_box = false;
         if(point[0] >= location[0] -spacing/2.0 && point[0] <= location [0] + spacing/2.0)
         {
             if(point[1] >= location[1] -spacing/2.0 && point[1] <= location [1] + spacing/2.0)
             {
-                if(point[2] >= location[2] -spacing/2.0 && point[2] <= location [2] + spacing/2.0)
+                if(SPACE_DIM==3)
+                {
+                    if(point[2] >= location[2] -spacing/2.0 && point[2] <= location [2] + spacing/2.0)
+                    {
+                        return true;
+                    }
+                }
+                else
                 {
                     return true;
                 }
@@ -183,13 +190,24 @@ public:
         return point_in_box;
     }
 
-    bool IsPointInTetra(c_vector<double, 3> start_point, std::vector<c_vector<double, 3> > locations)
+    bool IsPointInTetra(c_vector<double, SPACE_DIM> start_point, std::vector<c_vector<double, SPACE_DIM> > locations)
     {
         vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints> :: New();
-        points->InsertNextPoint(locations[0][0], locations[0][1], locations[0][2]);
-        points->InsertNextPoint(locations[1][0], locations[1][1], locations[1][2]);
-        points->InsertNextPoint(locations[2][0], locations[2][1], locations[2][2]);
-        points->InsertNextPoint(locations[3][0], locations[3][1], locations[3][2]);
+        if(SPACE_DIM==3)
+        {
+            points->InsertNextPoint(locations[0][0], locations[0][1], locations[0][2]);
+            points->InsertNextPoint(locations[1][0], locations[1][1], locations[1][2]);
+            points->InsertNextPoint(locations[2][0], locations[2][1], locations[2][2]);
+            points->InsertNextPoint(locations[3][0], locations[3][1], locations[3][2]);
+        }
+        else
+        {
+            points->InsertNextPoint(locations[0][0], locations[0][1], 0.0);
+            points->InsertNextPoint(locations[1][0], locations[1][1], 0.0);
+            points->InsertNextPoint(locations[2][0], locations[2][1], 0.0);
+            points->InsertNextPoint(locations[3][0], locations[3][1], 0.0);
+        }
+
 
         vtkSmartPointer<vtkUnstructuredGrid> p_grid = vtkSmartPointer<vtkUnstructuredGrid>::New();
         p_grid->SetPoints(points);
@@ -212,7 +230,9 @@ public:
         }
     }
 
-    double LengthOfLineInBox(c_vector<double, 3> start_point, c_vector<double, 3> end_point, c_vector<double, 3> location, double spacing)
+    double LengthOfLineInBox(c_vector<double, SPACE_DIM> start_point,
+                             c_vector<double, SPACE_DIM> end_point,
+                             c_vector<double, SPACE_DIM> location, double spacing)
     {
         // If the line is fully in the box return its length
         bool point1_in_box = IsPointInBox(start_point, location, spacing);
@@ -228,15 +248,23 @@ public:
             bounds[1] = location[0] + spacing/2.0;
             bounds[2] = location[1] - spacing/2.0;
             bounds[3] = location[1] + spacing/2.0;
-            bounds[4] = location[2] - spacing/2.0;
-            bounds[5] = location[2] + spacing/2.0;
+            if(SPACE_DIM==3)
+            {
+                bounds[4] = location[2] - spacing/2.0;
+                bounds[5] = location[2] + spacing/2.0;
+            }
+            else
+            {
+                bounds[4] = 0.0;
+                bounds[5] = 0.0;
+            }
 
             double t1;
             double t2;
             int plane1;
             int plane2;
-            c_vector<double,3> intercept_1;
-            c_vector<double,3> intercept_2;
+            c_vector<double,SPACE_DIM> intercept_1;
+            c_vector<double,SPACE_DIM> intercept_2;
 
             int in_box = vtkBox::IntersectWithLine(&bounds[0], &start_point[0], &end_point[0], t1, t2, &intercept_1[0], &intercept_2[0], plane1, plane2);
 
@@ -261,7 +289,9 @@ public:
         }
     }
 
-    double LengthOfLineInTetra(c_vector<double, 3> start_point, c_vector<double, 3> end_point, std::vector<c_vector<double, 3> > locations)
+    double LengthOfLineInTetra(c_vector<double, SPACE_DIM> start_point,
+                               c_vector<double, SPACE_DIM> end_point,
+                               std::vector<c_vector<double, SPACE_DIM> > locations)
     {
         bool point1_in_tetra = IsPointInTetra(start_point, locations);
         bool point2_in_tetra = IsPointInTetra(end_point, locations);
@@ -288,8 +318,8 @@ public:
             p_grid->Update();
 
             double t;
-            c_vector<double,3> intersection;
-            c_vector<double,3> parametric_intersection;
+            c_vector<double,SPACE_DIM> intersection;
+            c_vector<double,SPACE_DIM> parametric_intersection;
             int subId;
 
             if(point1_in_tetra)
@@ -307,7 +337,7 @@ public:
             line_crosses = p_grid->GetCell(0)->IntersectWithLine(&start_point[0], &end_point[0], 1.e-6, t, &intersection[0], &parametric_intersection[0], subId);
             if(line_crosses)
             {
-                c_vector<double,3> intersection2;
+                c_vector<double,SPACE_DIM> intersection2;
                 p_grid->GetCell(0)->IntersectWithLine(&end_point[0], &start_point[0], 1.e-6, t, &intersection2[0], &parametric_intersection[0], subId);
                 return norm_2(intersection - intersection2);
             }
