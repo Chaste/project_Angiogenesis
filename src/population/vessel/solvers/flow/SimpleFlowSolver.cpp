@@ -82,7 +82,6 @@ void SimpleFlowSolver<DIM>::SetUp(boost::shared_ptr<CaVascularNetwork<DIM> > pVa
 
     // Set up the system
     mpLinearSystem = boost::shared_ptr<LinearSystem>(new LinearSystem(num_nodes, max_branches + 1));
-
     // If the network is small the preconditioner is turned off in LinearSystem,
     // so an iterative solver is used instead.
     if (num_nodes >= 6 && mUseDirectSolver)
@@ -117,9 +116,7 @@ void SimpleFlowSolver<DIM>::SetUp(boost::shared_ptr<CaVascularNetwork<DIM> > pVa
             mUnconnectedNodeIndices.push_back(node_index);
         }
     }
-
     UpdateImpedances();
-
     mIsSetUp = true;
 }
 

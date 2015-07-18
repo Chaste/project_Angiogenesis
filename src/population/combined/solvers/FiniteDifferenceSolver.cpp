@@ -178,8 +178,10 @@ void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
 
     // Populate the solution vector
     std::vector<double> solution(number_of_points, 0.0);
+    double sum = 0.0;
     for (unsigned row = 0; row < number_of_points; row++)
     {
+        sum += soln_repl[row];
         solution[row] = soln_repl[row];
     }
 

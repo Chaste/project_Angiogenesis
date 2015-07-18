@@ -39,6 +39,9 @@
 #include "RandomNumberGenerator.hpp"
 #include "VascularNode.hpp"
 #include "AbstractAngiogenesisSolver.hpp"
+#include "SimpleFlowSolver.hpp"
+#include "CaVesselSegment.hpp"
+#include "PoiseuilleImpedanceCalculator.hpp"
 
 template<unsigned DIM>
 AbstractAngiogenesisSolver<DIM>::AbstractAngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork, const std::string& rOutputDirectory) :
@@ -49,7 +52,8 @@ AbstractAngiogenesisSolver<DIM>::AbstractAngiogenesisSolver(boost::shared_ptr<Ca
         mOutputFrequency(1),
         mOutputDirectory(rOutputDirectory),
         mNodeAnastamosisRadius(0.0),
-        mpPdeSolver()
+        mpPdeSolver(),
+        mSolveFlow(false)
 {
 
 }
@@ -69,6 +73,12 @@ c_vector<double, DIM> AbstractAngiogenesisSolver<DIM>::GetGrowthDirection(c_vect
 }
 
 template<unsigned DIM>
+void AbstractAngiogenesisSolver<DIM>::SetSolveFlow(bool solveFlow)
+{
+    mSolveFlow = solveFlow;
+}
+
+template<unsigned DIM>
 void AbstractAngiogenesisSolver<DIM>::UpdateNodalPositions()
 {
     mpNetwork->UpdateNodes();
@@ -76,29 +86,37 @@ void AbstractAngiogenesisSolver<DIM>::UpdateNodalPositions()
 
     for(unsigned idx = 0; idx < nodes.size(); idx++)
     {
-     if(nodes[idx]->IsMigrating() && nodes[idx]->GetNumberOfSegments()==1)
-     {
-         // Get the segment direction vector
-         c_vector<double,DIM> direction = nodes[idx]->GetLocationVector() -
+        if(nodes[idx]->IsMigrating() && nodes[idx]->GetNumberOfSegments()==1)
+        {
+            // Get the segment direction vector
+            c_vector<double,DIM> direction = nodes[idx]->GetLocationVector() -
                  nodes[idx]->GetVesselSegment(0)->GetOppositeNode(nodes[idx])->GetLocationVector();
-         direction /= norm_2(direction);
+            direction /= norm_2(direction);
 
-         // Create a new segment along the growth vector
-         boost::shared_ptr<VascularNode<DIM> >  p_new_node = VascularNode<DIM>::Create(nodes[idx]);
-         p_new_node->SetLocation(nodes[idx]->GetLocationVector() + mGrowthVelocity * GetGrowthDirection(direction));
+            // Create a new segment along the growth vector
+            boost::shared_ptr<VascularNode<DIM> >  p_new_node = VascularNode<DIM>::Create(nodes[idx]);
+            p_new_node->SetLocation(nodes[idx]->GetLocationVector() + mGrowthVelocity * GetGrowthDirection(direction));
 
-         if(nodes[idx]->GetVesselSegment(0)->GetVessel()->GetStartNode() == nodes[idx])
-         {
-             nodes[idx]->GetVesselSegment(0)->GetVessel()->AddSegment(CaVesselSegment<DIM>::Create(p_new_node, nodes[idx]));
-         }
-         else
-         {
-             nodes[idx]->GetVesselSegment(0)->GetVessel()->AddSegment(CaVesselSegment<DIM>::Create(nodes[idx], p_new_node));
-         }
-         nodes[idx]->SetIsMigrating(false);
-         p_new_node->SetIsMigrating(true);
-     }
+            if(nodes[idx]->GetVesselSegment(0)->GetVessel()->GetStartNode() == nodes[idx])
+            {
+                boost::shared_ptr<CaVesselSegment<DIM> > p_segment = CaVesselSegment<DIM>::Create(p_new_node, nodes[idx]);
+                p_segment->SetFlowProperties(*nodes[idx]->GetVesselSegment(0)->GetFlowProperties());
+                p_segment->SetRadius(nodes[idx]->GetVesselSegment(0)->GetRadius());
+                nodes[idx]->GetVesselSegment(0)->GetVessel()->AddSegment(p_segment);
+            }
+            else
+            {
+                boost::shared_ptr<CaVesselSegment<DIM> > p_segment = CaVesselSegment<DIM>::Create(nodes[idx], p_new_node);
+                p_segment->SetFlowProperties(*nodes[idx]->GetVesselSegment(0)->GetFlowProperties());
+                p_segment->SetRadius(nodes[idx]->GetVesselSegment(0)->GetRadius());
+                nodes[idx]->GetVesselSegment(0)->GetVessel()->AddSegment(p_segment);
+            }
+            nodes[idx]->SetIsMigrating(false);
+            p_new_node->SetIsMigrating(true);
+        }
     }
+    mpNetwork->UpdateSegments();
+    mpNetwork->UpdateNodes();
 }
 
 template<unsigned DIM>
@@ -158,6 +176,16 @@ void AbstractAngiogenesisSolver<DIM>::Run()
     mpNetwork->MergeCoincidentNodes();
     mpNetwork->Write(mOutputDirectory + "/VesselNetwork_inc_" + boost::lexical_cast<std::string>(counter)+".vtp");
 
+    // If there is a flow problem solve it
+    SimpleFlowSolver<DIM> flow_solver;
+    PoiseuilleImpedanceCalculator<DIM> impedance_calculator;
+    if(mSolveFlow)
+    {
+        impedance_calculator.Calculate(mpNetwork);
+        flow_solver.SetUp(mpNetwork);
+        flow_solver.Implement(mpNetwork);
+    }
+
     // If there is a PDE solve it
     if(mpPdeSolver)
     {
@@ -178,6 +206,11 @@ void AbstractAngiogenesisSolver<DIM>::Run()
         DoAnastamosis();
 
         mpNetwork->MergeCoincidentNodes();
+        if(mSolveFlow)
+        {
+            impedance_calculator.Calculate(mpNetwork);
+            flow_solver.Implement(mpNetwork);
+        }
         counter++;
         if(mOutputFrequency > 0 && counter % mOutputFrequency == 0)
         {

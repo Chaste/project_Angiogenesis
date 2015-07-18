@@ -55,7 +55,7 @@ class AbstractAngiogenesisSolver
     std::string mOutputDirectory;
     double mNodeAnastamosisRadius;
     boost::shared_ptr<AbstractHybridSolver<DIM> > mpPdeSolver;
-
+    bool mSolveFlow;
 
 public:
 
@@ -68,11 +68,13 @@ public:
     /**
      * Destructor.
      */
-    ~AbstractAngiogenesisSolver();
+    virtual ~AbstractAngiogenesisSolver();
 
-    c_vector<double, DIM> GetGrowthDirection(c_vector<double, DIM> currentDirection);
+    virtual c_vector<double, DIM> GetGrowthDirection(c_vector<double, DIM> currentDirection);
 
     void SetPdeSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pPdeSolver);
+
+    void SetSolveFlow(bool solveFlow=true);
 
     void UpdateNodalPositions();
 

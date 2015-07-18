@@ -138,8 +138,8 @@ void CaVascularNetwork<DIM>::RemoveVessel(boost::shared_ptr<CaVessel<DIM> > pVes
         if(deleteVessel)
         {
             (*it)->Remove();
-            mVessels.erase(it);
         }
+        mVessels.erase(it);
     }
     else
     {
@@ -718,7 +718,6 @@ std::vector<std::vector<unsigned> > CaVascularNetwork<DIM>::GetNodeVesselConnect
     std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels = GetVessels();
     unsigned num_nodes = nodes.size();
     std::vector<std::vector<unsigned> > connectivity;
-
     for (unsigned node_index = 0; node_index < num_nodes; node_index++)
     {
         boost::shared_ptr<VascularNode<DIM> > p_node = nodes[node_index];
@@ -1184,21 +1183,22 @@ boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::DivideVessel(boost
     for (unsigned idx = 0; idx < segments.size(); idx++)
     {
         start_segments.push_back(segments[idx]);
-        if (segments[idx]->GetNode(0)->IsCoincident(location))
+        if (segments[idx]->GetNode(1)->IsCoincident(location))
         {
             segment_index = idx;
             break;
         }
     }
 
-    if (segment_index > segments.size())
+    if (segment_index == segments.size()-1)
     {
         EXCEPTION("Vessel segment not found.");
     }
-    for (unsigned idx = segment_index; idx < segments.size(); idx++)
+    for (unsigned idx = segment_index+1; idx < segments.size(); idx++)
     {
         end_segments.push_back(segments[idx]);
     }
+
     boost::shared_ptr<CaVessel<DIM> > p_new_vessel1 = CaVessel<DIM>::Create(start_segments);
     boost::shared_ptr<CaVessel<DIM> > p_new_vessel2 = CaVessel<DIM>::Create(end_segments);
     p_new_vessel1->CopyDataFromExistingVessel(pVessel);
@@ -1217,9 +1217,7 @@ boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::DivideVessel(boost
 template <unsigned DIM>
 boost::shared_ptr<CaVessel<DIM> > CaVascularNetwork<DIM>::FormSprout(ChastePoint<DIM> sproutBaseLocation, ChastePoint<DIM> sproutTipLocation)
 {
-
     // locate vessel at which the location of the sprout base exists
-
     std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> nearest_segment = GetNearestSegment(sproutBaseLocation);
     if (nearest_segment.second > 1e-6)
     {
@@ -1227,16 +1225,9 @@ boost::shared_ptr<CaVessel<DIM> > CaVascularNetwork<DIM>::FormSprout(ChastePoint
     }
 
     // divide vessel at location of sprout base
-
     boost::shared_ptr<VascularNode<DIM> > p_new_node = DivideVessel(nearest_segment.first->GetVessel(), sproutBaseLocation);
 
-    if(p_new_node->IsMigrating())
-    {
-        EXCEPTION("Cannot form sprout at a location which is migrating (we assume migrating nodes are occupied by a tip cell).");
-    }
-
     // create new vessel
-
     boost::shared_ptr<VascularNode<DIM> > p_new_node_at_tip = VascularNode<DIM>::Create(p_new_node);
     p_new_node_at_tip->SetLocation(sproutTipLocation);
     p_new_node_at_tip->SetIsMigrating(true);
@@ -1244,9 +1235,7 @@ boost::shared_ptr<CaVessel<DIM> > CaVascularNetwork<DIM>::FormSprout(ChastePoint
     p_new_segment->CopyDataFromExistingSegment(nearest_segment.first);
     boost::shared_ptr<CaVessel<DIM> > p_new_vessel = CaVessel<DIM>::Create(p_new_segment);
     AddVessel(p_new_vessel);
-
     return p_new_vessel;
-
 }
 
 template <unsigned DIM>

@@ -22,6 +22,7 @@
 #include "FiniteDifferenceSolver.hpp"
 #include "AbstractAngiogenesisSolver.hpp"
 #include "PetscSetupAndFinalize.hpp"
+#include "CaVesselSegment.hpp"
 
 class TestAbstractAngiogenesisSolver : public CxxTest::TestSuite
 {
@@ -198,17 +199,24 @@ public:
     {
         // Make a network
         std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
-        for(unsigned idx=0; idx<10; idx++)
+        for(unsigned idx=0; idx<11; idx++)
         {
             bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 10.0, 0.0));
         }
 
+        std::vector<boost::shared_ptr<VascularNode<3> > > top_nodes;
+        for(unsigned idx=0; idx<11; idx++)
+        {
+            top_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 90.0, 0.0));
+        }
+
         boost::shared_ptr<CaVessel<3> > p_vessel1 = CaVessel<3>::Create(bottom_nodes);
+        boost::shared_ptr<CaVessel<3> > p_vessel2 = CaVessel<3>::Create(top_nodes);
         boost::shared_ptr<CaVascularNetwork<3> > p_network = CaVascularNetwork<3>::Create();
         p_network->AddVessel(p_vessel1);
+        p_network->AddVessel(p_vessel2);
 
-        std::vector<boost::shared_ptr<VascularNode<3> > > top_nodes;
-        for(unsigned idx=1; idx<9; idx++)
+        for(unsigned idx=1; idx<10; idx++)
         {
             p_network->FormSprout(ChastePoint<3>(double(idx)*10, 10.0, 0.0), ChastePoint<3>(double(idx)*10, 20.0, 0.0));
         }
@@ -233,6 +241,57 @@ public:
         // Grow the vessel
         AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network, output_directory);
         angiogenesis_solver.SetPdeSolver(p_solver);
+        angiogenesis_solver.Run();
+    }
+
+    void TestMultiSproutWithFlow() throw(Exception)
+    {
+        // Make a network
+        std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
+        for(unsigned idx=0; idx<11; idx++)
+        {
+            bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 10.0, 0.0));
+        }
+        bottom_nodes[0]->GetFlowProperties()->SetIsInputNode(true);
+        bottom_nodes[0]->GetFlowProperties()->SetPressure(3000);
+        bottom_nodes[10]->GetFlowProperties()->SetIsOutputNode(true);
+        bottom_nodes[10]->GetFlowProperties()->SetPressure(1000);
+
+        std::vector<boost::shared_ptr<VascularNode<3> > > top_nodes;
+        for(unsigned idx=0; idx<11; idx++)
+        {
+            top_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 90.0, 0.0));
+        }
+        top_nodes[10]->GetFlowProperties()->SetIsInputNode(true);
+        top_nodes[10]->GetFlowProperties()->SetPressure(3000);
+        top_nodes[0]->GetFlowProperties()->SetIsOutputNode(true);
+        top_nodes[0]->GetFlowProperties()->SetPressure(1000);
+
+        boost::shared_ptr<CaVessel<3> > p_vessel1 = CaVessel<3>::Create(bottom_nodes);
+        boost::shared_ptr<CaVessel<3> > p_vessel2 = CaVessel<3>::Create(top_nodes);
+        boost::shared_ptr<CaVascularNetwork<3> > p_network = CaVascularNetwork<3>::Create();
+        p_network->AddVessel(p_vessel1);
+        p_network->AddVessel(p_vessel2);
+        p_network->SetSegmentRadii(10.0);
+
+        for(unsigned idx=1; idx<10; idx++)
+        {
+            p_network->FormSprout(ChastePoint<3>(double(idx)*10, 10.0, 0.0), ChastePoint<3>(double(idx)*10, 20.0, 0.0));
+        }
+
+        p_network->UpdateSegments();
+        std::vector<boost::shared_ptr<CaVesselSegment<3> > > segments = p_network->GetVesselSegments();
+        for(unsigned idx=0; idx<segments.size(); idx++)
+        {
+            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);
+        }
+
+        OutputFileHandler output_file_handler("TestAbstractAngiogenesisSolver/MultiSproutFlow/", false);
+        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
+
+        // Grow the vessel
+        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network, output_directory);
+        angiogenesis_solver.SetSolveFlow();
         angiogenesis_solver.Run();
     }
 };

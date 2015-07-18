@@ -50,7 +50,7 @@ class TestVesselNetwork : public CxxTest::TestSuite
 {
 public:
 
-    void DontTestAddingVessels() throw(Exception)
+    void TestAddingVessels() throw(Exception)
     {
         // Make some nodes
         std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
@@ -74,7 +74,7 @@ public:
         TS_ASSERT_EQUALS(vessel_network.GetNodes().size(), 4u);
     }
 
-    void DontTestSettingNetworkData() throw(Exception)
+    void TestSettingNetworkData() throw(Exception)
     {
         // Make some nodes
         std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
@@ -108,7 +108,7 @@ public:
         vessel_network.SetSegmentRadii(12.0);
     }
 
-    void DontTestCopyingAndMovingNetwork() throw(Exception)
+    void TestCopyingAndMovingNetwork() throw(Exception)
     {
         // Make some nodes
         std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
@@ -153,7 +153,7 @@ public:
         TS_ASSERT_DELTA(vessel_network.GetVessel(3)->GetSegment(0)->GetNode(1)->GetLocation()[2], 3.0, 1.e-6);
     }
 
-    void DontTestConnnectedMethods() throw(Exception)
+    void TestConnnectedMethods() throw(Exception)
     {
         // Make some nodes
         std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
@@ -237,7 +237,7 @@ public:
         vessel_network.WriteConnectivity(output_filename4);
     }
 
-    void DontTestRemoveVessel() throw(Exception)
+    void TestRemoveVessel() throw(Exception)
     {
         // Make some nodes
         std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
@@ -260,7 +260,7 @@ public:
         TS_ASSERT_EQUALS(vessel_network.GetNumberOfVessels(), 2u);
     }
 
-    void DontTestDivideVessel() throw(Exception)
+    void TestDivideVessel() throw(Exception)
     {
          // Make some nodes
          std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
@@ -286,7 +286,7 @@ public:
          TS_ASSERT_DELTA(vessel_network.GetVessel(1)->GetSegment(0)->GetNode(1)->GetLocation()[0], 2.0, 1.e-6);
     }
 
-    void DontTestDivideMultiSegmentVessel() throw(Exception)
+    void TestDivideMultiSegmentVessel() throw(Exception)
     {
         // Make some nodes
         std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
@@ -332,7 +332,7 @@ public:
         TS_ASSERT_DELTA(p_vascular_network.GetVessel(2)->GetSegment(0)->GetNode(1)->GetLocation()[0], 5.0, 1.e-6);
     }
 
-    void DontTestSprouting()
+    void TestSprouting()
     {
         boost::shared_ptr<CaVascularNetwork<2> > p_vessel_network = CaVascularNetwork<2>::Create();
         std::vector<boost::shared_ptr<VascularNode<2> > > nodes1;
@@ -356,7 +356,7 @@ public:
         TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfVessels(),3u);
     }
 
-    void DontTestRemoveAndDeleteVessel() throw(Exception)
+    void TestRemoveAndDeleteVessel() throw(Exception)
     {
         // Make some nodes
         std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
@@ -405,6 +405,37 @@ public:
         TS_ASSERT_EQUALS(vessel_network.GetNumberOfVessels(), 2u);
         TS_ASSERT_DELTA(vessels[0]->GetEndNode()->GetLocationVector()[0], 20.0, 1.e-6);
         TS_ASSERT_DELTA(vessels[2]->GetStartNode()->GetLocationVector()[0], 20.0, 1.e-6);
+    }
+
+    void TestMultipleSprouts() throw(Exception)
+    {
+
+        // Make a network
+        std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
+        for(unsigned idx=0; idx<3; idx++)
+        {
+            bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 0.0, 0.0));
+        }
+
+        boost::shared_ptr<CaVessel<3> > p_vessel1 = CaVessel<3>::Create(bottom_nodes);
+        boost::shared_ptr<CaVascularNetwork<3> > p_network = CaVascularNetwork<3>::Create();
+        p_network->AddVessel(p_vessel1);
+
+        // Add some sprouts
+        for(unsigned idx=1; idx<2; idx++)
+        {
+            p_network->FormSprout(ChastePoint<3>(double(idx)*10, 0, 0.0), ChastePoint<3>(double(idx)*10, 10.0, 0.0));
+        }
+
+        // make sure vessels are correctly divided
+        std::vector<boost::shared_ptr<CaVessel<3> > > vessels = p_network->GetVessels();
+        TS_ASSERT_EQUALS(vessels.size(), 3u);
+        for(unsigned idx=0; idx<vessels.size(); idx++)
+        {
+            TS_ASSERT_DELTA(vessels[idx]->GetLength(), 10.0, 1.e-6);
+        }
+        OutputFileHandler output_file_handler("TestVesselNetwork",false);
+        p_network->Write(output_file_handler.GetOutputDirectoryFullPath() + "/multisprout.vtp");
     }
 };
 
