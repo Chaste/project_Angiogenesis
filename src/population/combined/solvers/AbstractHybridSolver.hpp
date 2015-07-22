@@ -98,7 +98,7 @@ public:
     /* Get the solution as vtk image data
      * @return the solution as vtk image data
      */
-    vtkSmartPointer<vtkImageData> GetSolution();
+    virtual vtkSmartPointer<vtkImageData> GetSolution();
 
     /* Set a cell population
      * @param pCellPopulation a Chaste cell population
