@@ -303,6 +303,22 @@ template<typename T> T CaVessel<DIM>::GetData(const std::string& variableName)
 }
 
 template<unsigned DIM>
+double CaVessel<DIM>::GetDistance(c_vector<double, DIM> location) const
+{
+    // Get the distance to the nearest segment in the vessel
+    double nearest_distance = DBL_MAX;
+    for(unsigned idx=0; idx<mSegments.size(); idx++)
+    {
+        double seg_distance = mSegments[idx]->GetDistance(location);
+        if(seg_distance < nearest_distance)
+        {
+            nearest_distance = seg_distance;
+        }
+    }
+    return nearest_distance;
+}
+
+template<unsigned DIM>
 const VasculatureData& CaVessel<DIM>::rGetDataContainer() const
 {
     return mDataContainer;

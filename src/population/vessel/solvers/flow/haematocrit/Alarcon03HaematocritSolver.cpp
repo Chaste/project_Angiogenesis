@@ -140,11 +140,12 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<CaVascularNetw
     }
 
     LinearSystem linearSystem(lhsVectorSize, pre_allocation_value);
-//    if(lhsVectorSize > 6)
-//    {
-//        linearSystem.SetPcType("lu");
-//        linearSystem.SetKspType("preonly");
-//    }
+    if(lhsVectorSize > 6)
+    {
+        PetscOptionsSetValue("-pc_factor_mat_solver_package", "umfpack");
+        linearSystem.SetPcType("lu");
+        linearSystem.SetKspType("preonly");
+    }
 
     // Set the haematocrit of input vessels to the arterial level
     unsigned number_of_vessel_nodes = nodes.size();
@@ -251,24 +252,10 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<CaVascularNetw
     }
 
     Vec solution = PetscTools::CreateVec(number_of_vessels);
-    Vec initialGuess = PetscTools::CreateVec(number_of_vessels);
-    for (unsigned i = 0; i < number_of_vessels; i++)
-    {
-        if (vascularNetwork->GetVessel(i)->GetFlowRate() == 0)
-        {
-            PetscVecTools::SetElement(initialGuess, i, 0);
-        }
-        else
-        {
-            PetscVecTools::SetElement(initialGuess, i, vascularNetwork->GetVessel(i)->GetHaematocrit());
-        }
-    }
-
      // Does an initial guess do anything with a direct solver?
     linearSystem.AssembleFinalLinearSystem();
     //linearSystem.DisplayMatrix();
     //linearSystem.DisplayRhs();
-    solution = linearSystem.Solve(initialGuess);
     solution = linearSystem.Solve();
 
     // deal with minor rounding errors in calculation
@@ -291,7 +278,6 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<CaVascularNetw
     }
 
     PetscTools::Destroy(solution);
-    PetscTools::Destroy(initialGuess);
 }
 // Explicit instantiation
 template class Alarcon03HaematocritSolver<2>;

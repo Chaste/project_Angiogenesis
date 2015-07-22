@@ -42,6 +42,11 @@
 #include "SimpleFlowSolver.hpp"
 #include "CaVesselSegment.hpp"
 #include "PoiseuilleImpedanceCalculator.hpp"
+#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning for now (gcc4.3)
+#include <vtkProbeFilter.h>
+#include <vtkPointData.h>
+#include <vtkPolyData.h>
+#include <vtkPoints.h>
 
 template<unsigned DIM>
 AbstractAngiogenesisSolver<DIM>::AbstractAngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork, const std::string& rOutputDirectory) :
@@ -53,7 +58,8 @@ AbstractAngiogenesisSolver<DIM>::AbstractAngiogenesisSolver(boost::shared_ptr<Ca
         mOutputDirectory(rOutputDirectory),
         mNodeAnastamosisRadius(0.0),
         mpPdeSolver(),
-        mSolveFlow(false)
+        mSolveFlow(false),
+        mSproutingProbability(0.0)
 {
 
 }
@@ -73,9 +79,67 @@ c_vector<double, DIM> AbstractAngiogenesisSolver<DIM>::GetGrowthDirection(c_vect
 }
 
 template<unsigned DIM>
+void AbstractAngiogenesisSolver<DIM>::SetSproutingProbability(double sproutingProbability)
+{
+    mSproutingProbability = sproutingProbability;
+}
+
+template<unsigned DIM>
 void AbstractAngiogenesisSolver<DIM>::SetSolveFlow(bool solveFlow)
 {
     mSolveFlow = solveFlow;
+}
+
+template<unsigned DIM>
+void AbstractAngiogenesisSolver<DIM>::DoSprouting()
+{
+    // Randomly sprout if sufficiently far from an existing vessel end node
+    mpNetwork->UpdateNodes();
+    std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = mpNetwork->GetNodes();
+
+    for(unsigned idx = 0; idx < nodes.size(); idx++)
+    {
+        double prob = RandomNumberGenerator::Instance()->ranf();
+        if(nodes[idx]->GetNumberOfSegments()==2 && prob < mSproutingProbability)
+        {
+            // Do the sprouting. Random normal direction to the existing segment average normals.
+            // Get the cross product of the segment tangents
+//            c_vector<double, DIM> cross_product = VectorProduct(nodes[idx]->GetVesselSegments()[0]->GetUnitTangent(),
+//                                                                nodes[idx]->GetVesselSegments()[1]->GetUnitTangent());
+//            double sum = 0.0;
+//            for(unsigned jdx=0; jdx<DIM; jdx++)
+//            {
+//                sum += cross_product[jdx];
+//            }
+//            if (sum==0.0)
+//            {
+//                // parallel segments, chose
+//            }
+            // The sprout will be in the +- x direction, but not along existing vessel directions
+            c_vector<double, DIM> sprout_direction;
+            if(RandomNumberGenerator::Instance()->ranf()>=0.5)
+            {
+                sprout_direction = unit_vector<double>(3,0);
+            }
+            else
+            {
+                sprout_direction = -unit_vector<double>(3,0);
+            }
+
+            // Ensure it is not along the segment vectors
+            bool is_along_segment_1 = std::abs(inner_prod(sprout_direction,nodes[idx]->GetVesselSegments()[0]->GetUnitTangent())/
+                    (norm_2(sprout_direction)*norm_2(nodes[idx]->GetVesselSegments()[0]->GetUnitTangent()))) > 1 - 1.e-6;
+            bool is_along_segment_2 = std::abs(inner_prod(sprout_direction,nodes[idx]->GetVesselSegments()[1]->GetUnitTangent())/
+                    (norm_2(sprout_direction)*norm_2(nodes[idx]->GetVesselSegments()[1]->GetUnitTangent()))) > 1 - 1.e-6;
+
+            if(!is_along_segment_1 && !is_along_segment_2)
+            {
+                mpNetwork->FormSprout(nodes[idx]->GetLocation(), ChastePoint<DIM>(nodes[idx]->GetLocationVector() + mGrowthVelocity*sprout_direction));
+            }
+        }
+    }
+    mpNetwork->UpdateSegments();
+    mpNetwork->UpdateNodes();
 }
 
 template<unsigned DIM>
@@ -92,6 +156,55 @@ void AbstractAngiogenesisSolver<DIM>::UpdateNodalPositions()
             c_vector<double,DIM> direction = nodes[idx]->GetLocationVector() -
                  nodes[idx]->GetVesselSegment(0)->GetOppositeNode(nodes[idx])->GetLocationVector();
             direction /= norm_2(direction);
+
+
+            // If there is a PDE get the direction of highest solution gradient
+            if(mpPdeSolver)
+            {
+                // Make points
+                std::vector<c_vector<double, DIM> > locations;
+                locations.push_back(nodes[idx]->GetLocationVector());
+                locations.push_back(locations[0] + mGrowthVelocity * unit_vector<double>(DIM,0));
+                locations.push_back(locations[0] - mGrowthVelocity * unit_vector<double>(DIM,0));
+                locations.push_back(locations[0] + mGrowthVelocity * unit_vector<double>(DIM,1));
+                locations.push_back(locations[0] - mGrowthVelocity * unit_vector<double>(DIM,1));
+                if(DIM==3)
+                {
+                    locations.push_back(locations[0] + mGrowthVelocity * unit_vector<double>(DIM,2));
+                    locations.push_back(locations[0] - mGrowthVelocity * unit_vector<double>(DIM,2));
+                }
+
+                vtkSmartPointer<vtkPolyData> p_polydata = vtkSmartPointer<vtkPolyData>::New();
+                vtkSmartPointer<vtkPoints> p_points = vtkSmartPointer<vtkPoints>::New();
+                p_points->SetNumberOfPoints(locations.size());
+                for(unsigned idx=0; idx< locations.size(); idx++)
+                {
+                    if(DIM==3)
+                    {
+                        p_points->SetPoint(idx, locations[idx][0], locations[idx][1], locations[idx][2]);
+                    }
+                    else
+                    {
+                        p_points->SetPoint(idx, locations[idx][0], locations[idx][1], 0.0);
+                    }
+                }
+                p_polydata->SetPoints(p_points);
+
+                vtkSmartPointer<vtkProbeFilter> p_probe_filter = vtkSmartPointer<vtkProbeFilter>::New();
+                p_probe_filter->SetInput(p_polydata);
+                p_probe_filter->SetSource(mpPdeSolver->GetSolution());
+                p_probe_filter->Update();
+                vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetOutput()->GetPointData();
+
+                //std::cout << mpPdeSolver->GetSolution()->GetPointData()<< std::endl;
+                std::cout << "n:" << p_point_data->GetArray(0)->GetNumberOfTuples()<< std::endl;
+                std::cout << "name:" << p_point_data->GetArrayName(0)<< std::endl;
+                for(unsigned idx=0; idx< p_point_data->GetNumberOfTuples(); idx++)
+                {
+                    std::cout << "data: " << p_point_data->GetArray(0)->GetTuple1(idx) << std::endl;
+                }
+                std::cout << "********************" << std::endl;
+            }
 
             // Create a new segment along the growth vector
             boost::shared_ptr<VascularNode<DIM> >  p_new_node = VascularNode<DIM>::Create(nodes[idx]);
@@ -174,6 +287,7 @@ void AbstractAngiogenesisSolver<DIM>::Run()
 
     unsigned counter = 0;
     mpNetwork->MergeCoincidentNodes();
+    mpNetwork->UpdateVesselIds();
     mpNetwork->Write(mOutputDirectory + "/VesselNetwork_inc_" + boost::lexical_cast<std::string>(counter)+".vtp");
 
     // If there is a flow problem solve it
@@ -181,6 +295,7 @@ void AbstractAngiogenesisSolver<DIM>::Run()
     PoiseuilleImpedanceCalculator<DIM> impedance_calculator;
     if(mSolveFlow)
     {
+        mpNetwork->UpdateVesselNodes();
         impedance_calculator.Calculate(mpNetwork);
         flow_solver.SetUp(mpNetwork);
         flow_solver.Implement(mpNetwork);
@@ -202,18 +317,28 @@ void AbstractAngiogenesisSolver<DIM>::Run()
         // Move any migrating nodes
         UpdateNodalPositions();
 
+        DoAnastamosis();
+
+        if(mSproutingProbability > 0.0)
+        {
+            DoSprouting();
+        }
+
         // Do anastamosis
         DoAnastamosis();
 
         mpNetwork->MergeCoincidentNodes();
         if(mSolveFlow)
         {
+            mpNetwork->UpdateVesselNodes();
             impedance_calculator.Calculate(mpNetwork);
+            flow_solver.SetUp(mpNetwork);
             flow_solver.Implement(mpNetwork);
         }
         counter++;
         if(mOutputFrequency > 0 && counter % mOutputFrequency == 0)
         {
+            mpNetwork->UpdateVesselIds();
             mpNetwork->Write(mOutputDirectory + "/VesselNetwork_inc_" + boost::lexical_cast<std::string>(counter)+".vtp");
             if(mpPdeSolver)
             {

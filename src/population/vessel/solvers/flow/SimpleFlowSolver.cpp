@@ -128,6 +128,8 @@ void SimpleFlowSolver<DIM>::UpdateImpedances()
 
     // Get the impedances, scale them by the maximum impedance to remove small values from the system matrix
     std::vector<double> scaled_impedances;
+    double max_impedance = 0.0;
+    double min_impedance = DBL_MAX;
     for (unsigned vessel_index = 0; vessel_index < mVessels.size(); vessel_index++)
     {
         double impedance = mVessels[vessel_index]->GetImpedance();
@@ -135,8 +137,17 @@ void SimpleFlowSolver<DIM>::UpdateImpedances()
         {
             EXCEPTION("Impedance should be a positive number.");
         }
+        if(impedance > max_impedance)
+        {
+            max_impedance = impedance;
+        }
+        if(impedance < min_impedance)
+        {
+            min_impedance = impedance;
+        }
         scaled_impedances.push_back(impedance);
     }
+    mMultiplier = (max_impedance + min_impedance) / 2.0;
 
     // Set up the system matrix
     for (unsigned node_index = 0; node_index < mNodes.size(); node_index++)
@@ -189,7 +200,7 @@ void SimpleFlowSolver<DIM>::Implement(boost::shared_ptr<CaVascularNetwork<DIM> >
 
     // Assemble and solve the final system
     mpLinearSystem->AssembleFinalLinearSystem();
-    //mpLinearSystem->DisplayMatrix(); useful for debugging
+    //mpLinearSystem->DisplayMatrix(); //useful for debugging
     //mpLinearSystem->DisplayRhs();
     Vec solution = PetscTools::CreateVec(mNodes.size());
     solution = mpLinearSystem->Solve();

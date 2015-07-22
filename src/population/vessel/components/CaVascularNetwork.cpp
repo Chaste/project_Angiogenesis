@@ -1231,7 +1231,7 @@ boost::shared_ptr<CaVessel<DIM> > CaVascularNetwork<DIM>::FormSprout(ChastePoint
     boost::shared_ptr<VascularNode<DIM> > p_new_node_at_tip = VascularNode<DIM>::Create(p_new_node);
     p_new_node_at_tip->SetLocation(sproutTipLocation);
     p_new_node_at_tip->SetIsMigrating(true);
-    boost::shared_ptr<CaVesselSegment<DIM> > p_new_segment = CaVesselSegment<DIM>::Create(p_new_node,p_new_node_at_tip);
+    boost::shared_ptr<CaVesselSegment<DIM> > p_new_segment = CaVesselSegment<DIM>::Create(p_new_node, p_new_node_at_tip);
     p_new_segment->CopyDataFromExistingSegment(nearest_segment.first);
     boost::shared_ptr<CaVessel<DIM> > p_new_vessel = CaVessel<DIM>::Create(p_new_segment);
     AddVessel(p_new_vessel);
@@ -1592,6 +1592,15 @@ void CaVascularNetwork<DIM>::UpdateVesselNodes()
     }
     std::copy(nodes.begin(), nodes.end(), std::back_inserter(mVesselNodes));
     mVesselNodesUpToDate = true;
+}
+
+template<unsigned DIM>
+void CaVascularNetwork<DIM>::UpdateVesselIds()
+{
+    for(unsigned idx=0;idx<mVessels.size();idx++)
+    {
+        mVessels[idx]->SetId(idx);
+    }
 }
 
 // Explicit instantiation

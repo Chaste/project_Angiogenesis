@@ -67,6 +67,12 @@ void AbstractHybridSolver<DIM>::SetWorkingDirectory(const std::string& rDirector
 }
 
 template<unsigned DIM>
+vtkSmartPointer<vtkImageData> AbstractHybridSolver<DIM>::GetSolution()
+{
+    return vtkSmartPointer<vtkImageData>::New();
+}
+
+template<unsigned DIM>
 void AbstractHybridSolver<DIM>::SetCellPopulation(boost::shared_ptr<SimpleCellPopulation<DIM> > pCellPopulation)
 {
     mpCellPopulation = pCellPopulation;

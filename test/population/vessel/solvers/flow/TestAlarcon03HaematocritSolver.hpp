@@ -20,6 +20,7 @@
 #include "SimulationTime.hpp"
 #include "FakePetscSetup.hpp"
 #include "Alarcon03HaematocritSolver.hpp"
+#include "PoiseuilleImpedanceCalculator.hpp"
 
 class TestSimpleStructuralAdaptationSolver : public CxxTest::TestSuite
 {
@@ -29,8 +30,8 @@ public:
     void TestTwoVesselNetwork() throw(Exception)
     {
         boost::shared_ptr<VascularNode<2> > p_node1 = VascularNode<2>::Create(0.0, 0.0);
-        boost::shared_ptr<VascularNode<2> > p_node2 = VascularNode<2>::Create(80.0e-6, 0.0);
-        boost::shared_ptr<VascularNode<2> > p_node3 = VascularNode<2>::Create(160.0e-6, 0.0);
+        boost::shared_ptr<VascularNode<2> > p_node2 = VascularNode<2>::Create(80, 0.0);
+        boost::shared_ptr<VascularNode<2> > p_node3 = VascularNode<2>::Create(160, 0.0);
         p_node1->GetFlowProperties()->SetIsInputNode(true);
 
         boost::shared_ptr<CaVesselSegment<2> > p_segment1(CaVesselSegment<2>::Create(p_node1, p_node2));
@@ -55,19 +56,15 @@ public:
     void TestBifurcationInflowNetwork() throw(Exception)
     {
         boost::shared_ptr<VascularNode<2> > p_node1 = VascularNode<2>::Create(0.0, 0.0);
-        boost::shared_ptr<VascularNode<2> > p_node2 = VascularNode<2>::Create(80.0e-6, 0.0);
-        boost::shared_ptr<VascularNode<2> > p_node3 = VascularNode<2>::Create(160.0e-6, 0.0);
-        boost::shared_ptr<VascularNode<2> > p_node4 = VascularNode<2>::Create(200.0e-6, 0.0);
+        boost::shared_ptr<VascularNode<2> > p_node2 = VascularNode<2>::Create(80, 0.0);
+        boost::shared_ptr<VascularNode<2> > p_node3 = VascularNode<2>::Create(160, 0.0);
+        boost::shared_ptr<VascularNode<2> > p_node4 = VascularNode<2>::Create(200, 0.0);
         p_node1->GetFlowProperties()->SetIsInputNode(true);
         p_node2->GetFlowProperties()->SetIsInputNode(true);
 
-        boost::shared_ptr<CaVesselSegment<2> > p_segment1(CaVesselSegment<2>::Create(p_node1, p_node3));
-        boost::shared_ptr<CaVesselSegment<2> > p_segment2(CaVesselSegment<2>::Create(p_node2, p_node3));
-        boost::shared_ptr<CaVesselSegment<2> > p_segment3(CaVesselSegment<2>::Create(p_node3, p_node4));
-
-        boost::shared_ptr<CaVessel<2> > p_vessel1(CaVessel<2>::Create(p_segment1));
-        boost::shared_ptr<CaVessel<2> > p_vessel2(CaVessel<2>::Create(p_segment2));
-        boost::shared_ptr<CaVessel<2> > p_vessel3(CaVessel<2>::Create(p_segment3));
+        boost::shared_ptr<CaVessel<2> > p_vessel1(CaVessel<2>::Create(p_node1, p_node3));
+        boost::shared_ptr<CaVessel<2> > p_vessel2(CaVessel<2>::Create(p_node2, p_node3));
+        boost::shared_ptr<CaVessel<2> > p_vessel3(CaVessel<2>::Create(p_node3, p_node4));
         p_vessel1->SetFlowRate(1.0);
         p_vessel2->SetFlowRate(1.0);
         p_vessel3->SetFlowRate(1.0);
@@ -148,7 +145,7 @@ public:
         TS_ASSERT_DELTA(p_vessel2->GetHaematocrit(),0.45, 1e-6);
         TS_ASSERT_DELTA(p_vessel3->GetHaematocrit(),0.45, 1e-6);
     }
-    void DontTestHexagonalNetworkAlarcon03Haematocrit() throw(Exception)
+    void TestHexagonalNetworkAlarcon03Haematocrit() throw(Exception)
     {
         // Specify the network dimensions
         double vessel_length = 80.0;
@@ -232,8 +229,29 @@ public:
             }
         }
 
+        std::vector<boost::shared_ptr<CaVesselSegment<2> > > segments = vascular_network->GetVesselSegments();
+        for(unsigned idx=0; idx<segments.size(); idx++)
+        {
+            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);
+        }
+
+
+        PoiseuilleImpedanceCalculator<2> impedance_calculator;
+        impedance_calculator.Calculate(vascular_network);
+        SimpleFlowSolver<2> solver;
+        solver.SetImpedanceScaleFactor(1.e6);
+        solver.SetUp(vascular_network);
+        solver.Implement();
+
+        OutputFileHandler output_file_handler("TestHaematocritSolver", false);
+        std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("HexNet.vtp");
+        vascular_network->Write(output_filename);
+
         boost::shared_ptr<Alarcon03HaematocritSolver<2> > p_haematocrit_calculator(new Alarcon03HaematocritSolver<2>());
         p_haematocrit_calculator->Calculate(vascular_network);
+
+        std::string output_filename2 = output_file_handler.GetOutputDirectoryFullPath().append("HexNetHemo.vtp");
+        vascular_network->Write(output_filename2);
     }
 };
 

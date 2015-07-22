@@ -194,6 +194,8 @@ public:
      */
     std::vector<std::string> GetDataKeys(bool castable_to_double = false) const;
 
+    double GetDistance(c_vector<double, DIM> location) const;
+
     /**
      @return vector of vessels connected to this one
      */

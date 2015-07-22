@@ -190,9 +190,9 @@ void DensityMap<DIM>::Solve(bool writeSolution)
                         {
                             vessel_solution[grid_index] += LengthOfLineInBox(segments[idx]->GetNode(0)->GetLocationVector(),
                                                                              segments[idx]->GetNode(1)->GetLocationVector(),
-                                                                             location,
-                                                                             this->mGridSize);
+                                                                             location, this->mGridSize);
                         }
+                        vessel_solution[grid_index] /= (std::pow(this->mGridSize,3));
                     }
                     if(this->mpCellPopulation)
                     {
@@ -203,6 +203,7 @@ void DensityMap<DIM>::Solve(bool writeSolution)
                                 cell_solution[grid_index] += 1.0;
                             }
                         }
+                        cell_solution[grid_index] /= (std::pow(this->mGridSize,3));
                     }
                 }
             }

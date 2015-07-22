@@ -392,6 +392,11 @@ public:
      */
     void UpdateVesselNodes();
 
+    /*
+     * Update the vessel id tags
+     */
+    void UpdateVesselIds();
+
     /**
      Write the VesselNetwork data to a file.
      */

@@ -38,6 +38,9 @@
 
 #include <vector>
 #include <string>
+#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning for now (gcc4.3)
+#include <vtkImageData.h>
+#include <vtkSmartPointer.h>
 #include "CaVascularNetwork.hpp"
 #include "HybridLinearEllipticPde.hpp"
 #include "SimpleCellPopulation.hpp"
@@ -91,6 +94,11 @@ public:
     /* Destructor
      */
     virtual ~AbstractHybridSolver();
+
+    /* Get the solution as vtk image data
+     * @return the solution as vtk image data
+     */
+    vtkSmartPointer<vtkImageData> GetSolution();
 
     /* Set a cell population
      * @param pCellPopulation a Chaste cell population

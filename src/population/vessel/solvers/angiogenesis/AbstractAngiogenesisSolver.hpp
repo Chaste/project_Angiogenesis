@@ -56,6 +56,7 @@ class AbstractAngiogenesisSolver
     double mNodeAnastamosisRadius;
     boost::shared_ptr<AbstractHybridSolver<DIM> > mpPdeSolver;
     bool mSolveFlow;
+    double mSproutingProbability;
 
 public:
 
@@ -76,7 +77,11 @@ public:
 
     void SetSolveFlow(bool solveFlow=true);
 
+    void SetSproutingProbability(double sproutingProbability);
+
     void UpdateNodalPositions();
+
+    void DoSprouting();
 
     void DoAnastamosis();
 
