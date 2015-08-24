@@ -29,7 +29,7 @@ class TestMigrationWithPde : public CxxTest::TestSuite
 
 public:
 
-    void TestSingleVesselGrowth() throw(Exception)
+    void DontTestSingleVesselGrowth() throw(Exception)
     {
         // Make a network
         boost::shared_ptr<VascularNode<3> > p_node1 = VascularNode<3>::Create(0.0, 20.0, 4.0);

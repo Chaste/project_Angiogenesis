@@ -83,7 +83,7 @@ public:
         solver.SetMaxElementArea(500.0);
 
         solver.SetWorkingDirectory("TestFiniteElementSolver/KroghCylinder3d");
-        solver.Solve(true);
+        solver.Solve(true, false);
     }
 
     void Test3dKroghCylinderNetworkSurface()
@@ -139,7 +139,7 @@ public:
         solver.SetMaxElementArea(500.0);
 
         solver.SetWorkingDirectory("TestFiniteElementSolver/KroghCylinder3dCircle");
-        solver.Solve(true);
+        solver.Solve(true, false);
     }
 
     void Test3dKroghCylinderNetworkCircleSurface()
