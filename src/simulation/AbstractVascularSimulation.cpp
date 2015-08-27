@@ -33,40 +33,37 @@
 //
 //*/
 //
-//#ifndef ONLATTICESIMULATIONWITHVESSELS_HPP_
-//#define ONLATTICESIMULATIONWITHVESSELS_HPP_
+//#include "AbstractVascularSimulation.hpp"
 //
-//#include "ChasteSerialization.hpp"
-//#include <boost/serialization/base_object.hpp>
-//#include "SmartPointers.hpp"
-//#include "OnLatticeSimulation.hpp"
-//#include "CaBasedCellPopulationWithVessels.hpp"
-//#include "AbstractCellBasedSimulation.hpp"
-//#include "CaVascularNetwork.hpp"
-//
-//template<unsigned DIM>
-//class OnLatticeSimulationWithVessels : public OnLatticeSimulation<DIM>
+//template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+//AbstractVascularSimulation<ELEMENT_DIM, SPACE_DIM>::AbstractVascularSimulation()
+//    : mpCellBasedPopulation(),
+//      mpSimpleCellPopulation()
 //{
-//    /** Needed for serialization. */
-//    friend class boost::serialization::access;
-//    /**
-//     * Serialize the object and any member variables.
-//     *
-//     * @param archive the archive
-//     * @param version the current version of this class
-//     */
-//    template<class Archive>
-//    void serialize(Archive & archive, const unsigned int version)
-//    {
-//        archive & boost::serialization::base_object<AbstractCellBasedSimulation<DIM> >(*this);
-//    }
+//}
 //
-//public:
+//template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+//AbstractVascularSimulation<ELEMENT_DIM, SPACE_DIM>::~AbstractVascularSimulation()
+//{
+//}
 //
-//    OnLatticeSimulationWithVessels(CaBasedCellPopulationWithVessels<DIM>& rCellPopulation);
+//template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+//void AbstractVascularSimulation<ELEMENT_DIM, SPACE_DIM>::SetCellBasedPopulation(boost::shared_ptr<AbstractCellPopulation<ELEMENT_DIM, SPACE_DIM> > pCellPopulation)
+//{
+//    mpCellBasedPopulation = pCellPopulation;
+//    mpSimpleCellPopulation = boost::shared_ptr<SimpleCellPopulation<SPACE_DIM> >();
+//}
 //
-//    virtual ~OnLatticeSimulationWithVessels();
+//template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+//void AbstractVascularSimulation<ELEMENT_DIM, SPACE_DIM>::SetSimpleCellPopulation(boost::shared_ptr<SimpleCellPopulation<SPACE_DIM> > pCellPopulation)
+//{
+//    mpSimpleCellPopulation = pCellPopulation;
+//    mpCellBasedPopulation = boost::shared_ptr<AbstractCellPopulation<ELEMENT_DIM, SPACE_DIM> >();
+//}
 //
-//};
+///////////////////////////////////////////////////////////////////////////////
+//// Explicit instantiation
+///////////////////////////////////////////////////////////////////////////////
+//template class AbstractVascularSimulation<2,2>;
+//template class AbstractVascularSimulation<3,3>;
 //
-//#endif /*ONLATTICESIMULATIONWITHVESSELS_HPP_ */

@@ -46,7 +46,7 @@ class TestCaBasedCellPopulationWithVessels : public AbstractCellBasedWithTimings
 
 public:
 
-    void dontTestSetUpSingleVessel() throw (Exception)
+    void TestSetUpSingleVessel() throw (Exception)
     {
         // Create the mesh
         PottsMeshGenerator<3> generator(20, 0, 0, 20, 0, 0, 21, 0, 0);
@@ -79,6 +79,10 @@ public:
 
         // Test that the network is correctly associated with the cells
         // are 20 nodes in the network, 2 vessel nodes, and 1 vessel
+
+
+        // todo Node to segment connectivity is not being correctly updated here....check!
+        // This is likely to be in the DivideSegment method in the Vessel class
         TS_ASSERT_EQUALS(p_network->GetNumberOfNodes(), 21u);
         TS_ASSERT_EQUALS(p_network->GetNumberOfVessels(), 1u);
         TS_ASSERT_EQUALS(p_network->GetNumberOfVesselNodes(), 2u);
@@ -90,6 +94,7 @@ public:
                 std::cout << p_network->GetNode(idx)->GetLocationVector() << idx << std::endl;
             }
             TS_ASSERT(p_network->GetNode(idx)->HasCell());
+            TS_ASSERT(p_network->GetNode(idx)->GetNumberOfSegments() > 0);
         }
 
         std::string output_filename2 = output_file_handler.GetOutputDirectoryFullPath().append(

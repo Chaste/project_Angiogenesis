@@ -11,6 +11,7 @@
 #include "DefaultCellProliferativeType.hpp"
 #include "StalkCellMutationState.hpp"
 #include "WildTypeCellMutationState.hpp"
+#include "DummyCellCycleModel.hpp"
 
 #include "Debug.hpp"
 
@@ -45,7 +46,7 @@ boost::shared_ptr<CaBasedCellPopulationWithVessels<DIM> > OnLatticeVascularTumou
     MAKE_PTR(DefaultCellProliferativeType, p_diff_type);
     MAKE_PTR(StalkCellMutationState, p_EC_state);
     MAKE_PTR(WildTypeCellMutationState, p_normal_state);
-    CellsGenerator<FixedDurationGenerationBasedCellCycleModel, DIM> cells_generator;
+    CellsGenerator<DummyCellCycleModel, DIM> cells_generator;
     cells_generator.GenerateBasicRandom(cells, rMesh.GetNumNodes(), p_diff_type);
 
     boost::shared_ptr<CaBasedCellPopulationWithVessels<DIM> > cell_population(new CaBasedCellPopulationWithVessels<DIM>(rMesh, cells, location_indices));
@@ -63,6 +64,7 @@ boost::shared_ptr<CaBasedCellPopulationWithVessels<DIM> > OnLatticeVascularTumou
             {
                 boost::shared_ptr<CaVessel<DIM> > pVessel = segment_distance_pair.first->GetVessel();
                 pVessel->DivideSegment(rMesh.GetNode(index)->GetPoint());
+                pVessel->UpdateNodes();
             }
 
             pVascularNetwork->UpdateNodes();

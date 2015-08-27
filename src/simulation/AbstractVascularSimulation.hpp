@@ -33,26 +33,40 @@
 //
 //*/
 //
-//#include "OnLatticeSimulationWithVessels.hpp"
+//#ifndef ABSTRACTVASCULARSIMULATION_HPP_
+//#define ABSTRACTVASCULARSIMULATION_HPP_
 //
-//template<unsigned DIM>
-//OnLatticeSimulationWithVessels<DIM>::OnLatticeSimulationWithVessels(CaBasedCellPopulationWithVessels<DIM>& rCellPopulation)
-//    : OnLatticeSimulation<DIM>(rCellPopulation, false, true)
+//#include "AbstractCellPopulation.hpp"
+//#include "SimpleCellPopulation.hpp"
+//#include "SmartPointers.hpp"
+//
+///*
+// * Class for simulations involving vessels. More generic than the Cell Based
+// * simulation classes, as Cell Based Chaste functionality is not always used
+// * for vessel based simulations.
+// */
+//
+//template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+//class AbstractVascularSimulation
 //{
-//}
 //
-//template<unsigned DIM>
-//OnLatticeSimulationWithVessels<DIM>::~OnLatticeSimulationWithVessels()
-//{
-//}
+//    boost::shared_ptr<AbstractCellPopulation<ELEMENT_DIM, SPACE_DIM> > mpCellBasedPopulation;
+//    boost::shared_ptr<SimpleCellPopulation<SPACE_DIM> > mpSimpleCellPopulation;
 //
-///////////////////////////////////////////////////////////////////////////////
-//// Explicit instantiation
-///////////////////////////////////////////////////////////////////////////////
-//template class OnLatticeSimulationWithVessels<2>;
-//template class OnLatticeSimulationWithVessels<3>;
+//public:
 //
-//// Serialization for Boost >= 1.36
-//#include "SerializationExportWrapperForCpp.hpp"
-//EXPORT_TEMPLATE_CLASS_SAME_DIMS(OnLatticeSimulationWithVessels)
+//    AbstractVascularSimulation();
 //
+//    virtual ~AbstractVascularSimulation();
+//
+//    void SetCellBasedPopulation(boost::shared_ptr<AbstractCellPopulation<ELEMENT_DIM, SPACE_DIM> > pCellPopulation);
+//
+//    void SetSimpleCellPopulation(boost::shared_ptr<SimpleCellPopulation<SPACE_DIM> > pCellPopulation);
+//
+//    void SetCellBasedPdeHandler()
+//
+//
+//
+//};
+//
+//#endif /*ABSTRACTVASCULARSIMULATION_HPP_ */

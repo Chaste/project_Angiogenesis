@@ -135,17 +135,17 @@ void CaBasedCellPopulationWithVessels<DIM>::UpdateVascularCellPopulation()
 
     // iterate through cells and select tip cells based on local concentration of VEGF
     for (typename AbstractCellPopulation<DIM,DIM>::Iterator cell_iter = this->Begin();
-             cell_iter != this->End();
-             ++cell_iter)
+            cell_iter != this->End();
+            ++cell_iter)
     {
 
-        if ((*cell_iter)->GetMutationState()->IsSame(mp_stalk_mutation_state))
+        if ((*cell_iter)->GetMutationState()->IsSame(mp_stalk_mutation_state) )
         {
             double localVEGFConcentration = 0;
 
             if (mp_pde_handler != NULL)
             {
-//                localVEGFConcentration = mp_pde_handler->GetPdeSolutionAtPoint(GetLocationOfCellCentre(*cell_iter), "VEGF");
+                //                localVEGFConcentration = mp_pde_handler->GetPdeSolutionAtPoint(GetLocationOfCellCentre(*cell_iter), "VEGF");
                 localVEGFConcentration = (*cell_iter)->GetCellData()->GetItem("VEGF");
             }
 
@@ -166,67 +166,74 @@ void CaBasedCellPopulationWithVessels<DIM>::UpdateVascularCellPopulation()
     for (unsigned tip_index = 0; tip_index < GetNumberOfTipCells(); tip_index++)
     {
 
-        // Get tip location
         c_vector<double,DIM> tip_location = this->GetLocationOfCellCentre(mTipCells[tip_index]);
-        double tip_concentration =  mp_pde_handler->GetPdeSolutionAtPoint(tip_location, "VEGF");
-
-        // Get neighbouring Potts mesh node locations
-        unsigned index = this->GetLocationIndexUsingCell(mTipCells[tip_index]);
-        std::set<unsigned> neighbour_location_indices = static_cast<PottsMesh<DIM>& >((this->mrMesh)).GetMooreNeighbouringNodeIndices(index);
-        std::vector<unsigned> vec_neighbour_locations;
-        std::vector<c_vector<double,DIM> > neighbour_locations;
-        std::vector<bool> neighbour_occupancy;
-
-        //todo this only checks that the potts neighbour location is free
-        // want to check if candidate location is the next or previous one on the same vessel
-
-        // Get corresponding node and neighbouring nodes on same vessel
-
-        for (std::set<unsigned>::iterator it=neighbour_location_indices.begin(); it!=neighbour_location_indices.end(); ++it)
+        std::cout << mpNetwork->GetNearestNode(tip_location)->GetNumberOfSegments() << std::endl;
+        if (mpNetwork->GetNearestNode(tip_location)->GetNumberOfSegments() > 1)
         {
-            neighbour_locations.push_back(this->rGetMesh().GetNode(*it)->rGetLocation());
-            neighbour_occupancy.push_back(this->IsSiteAvailable(*it, mTipCells[tip_index]));
-            vec_neighbour_locations.push_back(*it);
-        }
 
-        // Get the VEGF concentrations at the neighbouring mesh node locations
-        std::vector<double> neighbour_concentrations;
-        for(unsigned idx=0; idx<neighbour_locations.size(); idx++)
-        {
-            neighbour_concentrations.push_back(mp_pde_handler->GetPdeSolutionAtPoint(neighbour_locations[idx], "VEGF"));
-        }
+            // Get tip location
 
-        // Identify the direction with highest gradient that is also free
-        double max_gradient = 0.0; // what about negative grads
-        int max_grandient_index = -1;
-        for(unsigned idx=0; idx<neighbour_locations.size(); idx++)
-        {
-            double gradient = (neighbour_concentrations[idx] - tip_concentration) / norm_2(tip_location - neighbour_locations[idx]);
-            std::cout << gradient << "\t" << neighbour_occupancy[idx] << "\t" << neighbour_locations[idx] << std::endl;
-            if(gradient > max_gradient && neighbour_occupancy[idx])
+            double tip_concentration =  mp_pde_handler->GetPdeSolutionAtPoint(tip_location, "VEGF");
+
+            // Get neighbouring Potts mesh node locations
+            unsigned index = this->GetLocationIndexUsingCell(mTipCells[tip_index]);
+            std::set<unsigned> neighbour_location_indices = static_cast<PottsMesh<DIM>& >((this->mrMesh)).GetMooreNeighbouringNodeIndices(index);
+            std::vector<unsigned> vec_neighbour_locations;
+            std::vector<c_vector<double,DIM> > neighbour_locations;
+            std::vector<bool> neighbour_occupancy;
+
+            //todo this only checks that the potts neighbour location is free
+            // want to check if candidate location is the next or previous one on the same vessel
+
+            // Get corresponding node and neighbouring nodes on same vessel
+
+            for (std::set<unsigned>::iterator it=neighbour_location_indices.begin(); it!=neighbour_location_indices.end(); ++it)
             {
-                max_gradient = gradient;
-                max_grandient_index = vec_neighbour_locations[idx];
+                neighbour_locations.push_back(this->rGetMesh().GetNode(*it)->rGetLocation());
+                neighbour_occupancy.push_back(this->IsSiteAvailable(*it, mTipCells[tip_index]));
+                vec_neighbour_locations.push_back(*it);
+            }
+
+            // Get the VEGF concentrations at the neighbouring mesh node locations
+            std::vector<double> neighbour_concentrations;
+            for(unsigned idx=0; idx<neighbour_locations.size(); idx++)
+            {
+                neighbour_concentrations.push_back(mp_pde_handler->GetPdeSolutionAtPoint(neighbour_locations[idx], "VEGF"));
+            }
+
+            // Identify the direction with highest gradient that is also free
+            double max_gradient = 0.0; // what about negative grads
+            int max_grandient_index = -1;
+            for(unsigned idx=0; idx<neighbour_locations.size(); idx++)
+            {
+                double gradient = (neighbour_concentrations[idx] - tip_concentration) / norm_2(tip_location - neighbour_locations[idx]);
+                std::cout << gradient << "\t" << neighbour_occupancy[idx] << "\t" << neighbour_locations[idx] << std::endl;
+                if(gradient > max_gradient && neighbour_occupancy[idx])
+                {
+                    max_gradient = gradient;
+                    max_grandient_index = vec_neighbour_locations[idx];
+                }
+            }
+
+
+            // Sprout into the neighbour
+            if(max_grandient_index>-1)
+            {
+                mpNetwork->FormSprout(tip_location,
+                                      this->rGetMesh().GetNode(max_grandient_index)->rGetLocation());
+                // Create a new cell - N/B: tip cells do not really divide but this is the most convenient way
+                // to implement a discrete snail-trail-type model
+                mTipCells[tip_index]->ReadyToDivide();
+                CellPtr p_new_cell = mTipCells[tip_index]->Divide();
+
+                // Add new cell to the cell population
+                this->AddCellUsingLocationIndex(max_grandient_index, p_new_cell);
+
+
+                mTipCells[tip_index]->SetMutationState(mp_stalk_mutation_state);
+                mTipCells[tip_index] = p_new_cell;
             }
         }
-
-
-        // Sprout into the neighbour
-        if(max_grandient_index>-1)
-        {
-            mpNetwork->FormSprout(tip_location,
-                                  this->rGetMesh().GetNode(max_grandient_index)->rGetLocation());
-            // Create a new cell - N/B: tip cells do not really divide but this is the most convenient way
-            // to implement a discrete snail-trail-type model
-            mTipCells[tip_index]->
-            CellPtr p_new_cell = mTipCells[tip_index]->Divide();
-
-            // Add new cell to the cell population
-            this->AddCell(p_new_cell, this->rGetMesh().GetNode(max_grandient_index)->rGetLocation(), mTipCells[tip_index]);
-            mTipCells[tip_index]->SetMutationState(mp_stalk_mutation_state);
-            mTipCells[tip_index] = p_new_cell;
-        }
-
     }
 }
 
