@@ -40,6 +40,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "RandomNumberGenerator.hpp"
 #include "ReplicatableVector.hpp"
 
+#include "Debug.hpp"
+
 template<unsigned DIM>
 CaBasedCellPopulationWithVessels<DIM>::CaBasedCellPopulationWithVessels(PottsMesh<DIM>& rMesh,
                                                                         std::vector<CellPtr>& rCells,
@@ -169,10 +171,16 @@ void CaBasedCellPopulationWithVessels<DIM>::UpdateVascularCellPopulation()
         double tip_concentration =  mp_pde_handler->GetPdeSolutionAtPoint(tip_location, "VEGF");
 
         // Get neighbouring Potts mesh node locations
-        std::set<unsigned> neighbour_location_indices = this->GetNeighbouringLocationIndices(mTipCells[tip_index]);
+        unsigned index = this->GetLocationIndexUsingCell(mTipCells[tip_index]);
+        std::set<unsigned> neighbour_location_indices = static_cast<PottsMesh<DIM>& >((this->mrMesh)).GetMooreNeighbouringNodeIndices(index);
         std::vector<unsigned> vec_neighbour_locations;
         std::vector<c_vector<double,DIM> > neighbour_locations;
         std::vector<bool> neighbour_occupancy;
+
+        //todo this only checks that the potts neighbour location is free
+        // want to check if candidate location is the next or previous one on the same vessel
+
+        // Get corresponding node and neighbouring nodes on same vessel
 
         for (std::set<unsigned>::iterator it=neighbour_location_indices.begin(); it!=neighbour_location_indices.end(); ++it)
         {
@@ -182,10 +190,10 @@ void CaBasedCellPopulationWithVessels<DIM>::UpdateVascularCellPopulation()
         }
 
         // Get the VEGF concentrations at the neighbouring mesh node locations
-        std::vector<double> neighbour_concentrations(2* DIM);
+        std::vector<double> neighbour_concentrations;
         for(unsigned idx=0; idx<neighbour_locations.size(); idx++)
         {
-            neighbour_concentrations[idx] = mp_pde_handler->GetPdeSolutionAtPoint(neighbour_locations[idx], "VEGF");
+            neighbour_concentrations.push_back(mp_pde_handler->GetPdeSolutionAtPoint(neighbour_locations[idx], "VEGF"));
         }
 
         // Identify the direction with highest gradient that is also free
@@ -194,6 +202,7 @@ void CaBasedCellPopulationWithVessels<DIM>::UpdateVascularCellPopulation()
         for(unsigned idx=0; idx<neighbour_locations.size(); idx++)
         {
             double gradient = (neighbour_concentrations[idx] - tip_concentration) / norm_2(tip_location - neighbour_locations[idx]);
+            std::cout << gradient << "\t" << neighbour_occupancy[idx] << "\t" << neighbour_locations[idx] << std::endl;
             if(gradient > max_gradient && neighbour_occupancy[idx])
             {
                 max_gradient = gradient;
@@ -201,66 +210,25 @@ void CaBasedCellPopulationWithVessels<DIM>::UpdateVascularCellPopulation()
             }
         }
 
+
         // Sprout into the neighbour
-        if(max_gradient > 1.0 && max_grandient_index>-1)
+        if(max_grandient_index>-1)
         {
-            // Sprout...but we need a sprout functionality first
+            mpNetwork->FormSprout(tip_location,
+                                  this->rGetMesh().GetNode(max_grandient_index)->rGetLocation());
+            // Create a new cell - N/B: tip cells do not really divide but this is the most convenient way
+            // to implement a discrete snail-trail-type model
+            mTipCells[tip_index]->
+            CellPtr p_new_cell = mTipCells[tip_index]->Divide();
+
+            // Add new cell to the cell population
+            this->AddCell(p_new_cell, this->rGetMesh().GetNode(max_grandient_index)->rGetLocation(), mTipCells[tip_index]);
+            mTipCells[tip_index]->SetMutationState(mp_stalk_mutation_state);
+            mTipCells[tip_index] = p_new_cell;
         }
+
     }
 }
-
-
-//template<unsigned DIM>
-//void CaBasedCellPopulationWithVessels<DIM>::AsscoiateVesselNetworkWithCells(
-//                      boost::shared_ptr<AbstractCellMutationState> pStalkCellMutatationState,
-//                      boost::shared_ptr<AbstractCellMutationState> pTipCellMutatationState)
-//{
-//    if(!mpNetwork)
-//    {
-//        EXCEPTION("A vessel network has not been assigned to the population.");
-//    }
-//
-//    // TODO the vessel network should be fully snapped to the potts mesh. This should be tested for here.
-//    // For now create nodes on the vessel network wherever potts mesh nodes intersect segments.
-//    for (unsigned index=0; index < this->rGetMesh().GetNumNodes(); index++)
-//    {
-//        c_vector<double, DIM> node_location = this->rGetMesh().GetNode(index)->rGetLocation();
-//        std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> segment_distance_pair =
-//                mpNetwork->GetNearestSegment(node_location);
-//
-//        // If the mesh node is on the segment, create a vessel node at the location (if there isn't one
-//        // already there) and assign a cell to it.
-//        if (segment_distance_pair.second < 1e-6)
-//        {
-//            boost::shared_ptr<CaVessel<DIM> > pVessel = segment_distance_pair.first->GetVessel();
-//            boost::shared_ptr<VascularNode<DIM> > pNode = pVessel->DivideSegment(this->rGetMesh().GetNode(index)->GetPoint());
-//
-//            // If there is a cell at this location assign it stalk or tip mutation states, if they have been defined.
-//            if(this->IsCellAttachedToLocationIndex(index))
-//            {
-//                CellPtr pCell = this->GetCellUsingLocationIndex(index);
-//                pNode->SetCell(pCell);
-//
-//                if(pNode->GetNumberOfSegments()==1 && pTipCellMutatationState)
-//                {
-//                    pCell->SetMutationState(pTipCellMutatationState);
-//                }
-//                else
-//                {
-//                    pCell->SetMutationState(pStalkCellMutatationState);
-//                }
-//            }
-//            else
-//            {
-//                // For now, throw an exception, in future add cells at vessel node locations
-//                EXCEPTION("No cell defined at the location of a vessel node.");
-//            }
-//            mpNetwork->UpdateNodes();
-//            mpNetwork->UpdateSegments();
-//            mpNetwork->UpdateVesselNodes();
-//        }
-//    }
-//}
 
 // Explicit instantiation
 template class CaBasedCellPopulationWithVessels<2>;

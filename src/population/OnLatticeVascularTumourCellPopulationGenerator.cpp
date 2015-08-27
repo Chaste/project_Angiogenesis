@@ -15,7 +15,8 @@
 #include "Debug.hpp"
 
 template<unsigned DIM>
-OnLatticeVascularTumourCellPopulationGenerator<DIM>::OnLatticeVascularTumourCellPopulationGenerator() : m_include_normal_population(false)
+OnLatticeVascularTumourCellPopulationGenerator<DIM>::OnLatticeVascularTumourCellPopulationGenerator() :
+    m_include_normal_population(false)
 {
 
 }
@@ -27,8 +28,8 @@ OnLatticeVascularTumourCellPopulationGenerator<DIM>::~OnLatticeVascularTumourCel
 }
 
 template<unsigned DIM>
-boost::shared_ptr<CaBasedCellPopulationWithVessels<DIM> > OnLatticeVascularTumourCellPopulationGenerator<DIM>::CreateCellPopulation(PottsMesh<DIM>& rMesh,
-                                                                                                                                    boost::shared_ptr<CaVascularNetwork<DIM> > pVascularNetwork)
+boost::shared_ptr<CaBasedCellPopulationWithVessels<DIM> > OnLatticeVascularTumourCellPopulationGenerator<DIM>::
+    CreateCellPopulation(PottsMesh<DIM>& rMesh, boost::shared_ptr<CaVascularNetwork<DIM> > pVascularNetwork)
 {
 
     // create endothelial cell population
@@ -53,7 +54,6 @@ boost::shared_ptr<CaBasedCellPopulationWithVessels<DIM> > OnLatticeVascularTumou
     // create normal cell population
     for (unsigned index=0; index < rMesh.GetNumNodes(); index++)
     {
-
         std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> segment_distance_pair =
                 pVascularNetwork->GetNearestSegment(rMesh.GetNode(index)->rGetLocation());
 

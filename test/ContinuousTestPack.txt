@@ -13,11 +13,13 @@ population/vessel/solvers/flow/TestPoiseuilleImpedanceCalculator.hpp
 population/vessel/solvers/flow/TestSimpleFlowSolver.hpp
 population/vessel/solvers/flow/structural_adaptation/TestSimpleStructuralAdaptationSolver.hpp
 population/vessel/solvers/flow/TestAlarcon03HaematocritSolver.hpp
+population/vessel/solvers/flow/TestBetteridgeHaematocritSolver.hpp
 population/vessel/solvers/flow/TestAlarcon03MechanicalStimulusCalculator.hpp
 population/vessel/solvers/flow/TestAlarcon03MetabolicStimulusCalculator.hpp
 population/vessel/solvers/angiogenesis/TestAbstractAngiogenesisSolver.hpp
 population/vessel/solvers/angiogenesis/TestLatticeBasedAngiogenesisSolver.hpp
 population/vessel/solvers/angiogenesis/TestOffLatticeAngiogenesisSolver.hpp
+population/vessel/solvers/angiogenesis/TestMigrationWithPde.hpp
 population/vessel/TestVasculatureData.hpp
 population/vessel/TestVasculatureGenerator.hpp
 population/cell/TestSimpleCellPopulation.hpp

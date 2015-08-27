@@ -195,15 +195,6 @@ void AbstractAngiogenesisSolver<DIM>::UpdateNodalPositions()
                 p_probe_filter->SetSource(mpPdeSolver->GetSolution());
                 p_probe_filter->Update();
                 vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetOutput()->GetPointData();
-
-                //std::cout << mpPdeSolver->GetSolution()->GetPointData()<< std::endl;
-                std::cout << "n:" << p_point_data->GetArray(0)->GetNumberOfTuples()<< std::endl;
-                std::cout << "name:" << p_point_data->GetArrayName(0)<< std::endl;
-                for(unsigned idx=0; idx< p_point_data->GetNumberOfTuples(); idx++)
-                {
-                    std::cout << "data: " << p_point_data->GetArray(0)->GetTuple1(idx) << std::endl;
-                }
-                std::cout << "********************" << std::endl;
             }
 
             // Create a new segment along the growth vector
@@ -269,6 +260,7 @@ void AbstractAngiogenesisSolver<DIM>::DoAnastamosis()
                 boost::shared_ptr<VascularNode<DIM> > p_merge_node =
                         mpNetwork->DivideVessel(segment_pair.first->GetVessel(), divide_location);
                 p_merge_node->SetIsMigrating(false);
+                // todo need to remove the overlapping segment here, otherwise will have zero length.
                 remaining_nodes[idx]->SetLocation(divide_location);
                 remaining_nodes[idx]->SetIsMigrating(false);
             }

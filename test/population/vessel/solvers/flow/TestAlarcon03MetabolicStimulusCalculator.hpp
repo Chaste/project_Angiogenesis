@@ -20,7 +20,7 @@ class TestAlarcon03MetabolicStimulusCalculator : public CxxTest::TestSuite
 
 public:
 
-    void testAlarcon03MetabolicStimulusCalculator()
+    void TestCalculator()
     {
         std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
         nodes.push_back(VascularNode<3>::Create(0));

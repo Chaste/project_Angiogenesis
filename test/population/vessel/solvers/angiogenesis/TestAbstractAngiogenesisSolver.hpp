@@ -29,7 +29,7 @@ class TestAbstractAngiogenesisSolver : public CxxTest::TestSuite
 
 public:
 
-    void DontTestSingleVesselGrowth() throw(Exception)
+    void TestSingleVesselGrowth() throw(Exception)
     {
         // Make a network
         boost::shared_ptr<VascularNode<3> > p_node1 = VascularNode<3>::Create(0.0, 0.0, 0.0);
@@ -54,7 +54,7 @@ public:
         TS_ASSERT_DELTA(p_network->GetVessel(0)->GetEndNode()->GetLocationVector()[0], 200.0, 1.e-6);
     }
 
-    void DontTestSingleVesselGrowthFromStart() throw(Exception)
+    void TestSingleVesselGrowthFromStart() throw(Exception)
     {
         // Make a network
         boost::shared_ptr<VascularNode<3> > p_node1 = VascularNode<3>::Create(0.0, 0.0, 0.0);
@@ -79,7 +79,7 @@ public:
         TS_ASSERT_DELTA(p_network->GetVessel(0)->GetStartNode()->GetLocationVector()[0], -100.0, 1.e-6);
     }
 
-    void DontTestTipTipAnastamosisEvent() throw(Exception)
+    void TestTipTipAnastamosisEvent() throw(Exception)
     {
         // Make a network: two vessels on a collision course
         boost::shared_ptr<VascularNode<3> > p_node1 = VascularNode<3>::Create(0.0, 0.0, 0.0);
@@ -108,7 +108,7 @@ public:
         TS_ASSERT_DELTA(p_network->GetVessel(1)->GetStartNode()->GetLocationVector()[0], 150.0, 1.e-6);
     }
 
-    void DontTestTipSproutAnastamosisEvent() throw(Exception)
+    void TestTipSproutAnastamosisEvent() throw(Exception)
     {
         // Make a network: two vessels on a collision course
         boost::shared_ptr<VascularNode<3> > p_node1 = VascularNode<3>::Create(0.0, 0.0, 0.0);
@@ -136,7 +136,7 @@ public:
         TS_ASSERT_DELTA(p_network->GetVessel(1)->GetStartNode()->GetLocationVector()[0], 150.0, 1.e-6);
     }
 
-    void DontTestMultiVessel() throw(Exception)
+    void TestMultiVessel() throw(Exception)
     {
         // Make a network
         std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
@@ -168,7 +168,7 @@ public:
         angiogenesis_solver.Run();
     }
 
-    void DontTestMultiSprout() throw(Exception)
+    void TestMultiSprout() throw(Exception)
     {
         // Make a network
         std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
@@ -195,7 +195,7 @@ public:
         angiogenesis_solver.Run();
     }
 
-    void DontTestMultiSproutWithPde() throw(Exception)
+    void TestMultiSproutWithPde() throw(Exception)
     {
         // Make a network
         std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
@@ -244,7 +244,7 @@ public:
         angiogenesis_solver.Run();
     }
 
-    void DontTestMultiSproutWithFlow() throw(Exception)
+    void TestMultiSproutWithFlow() throw(Exception)
     {
         // Make a network
         std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
@@ -333,7 +333,6 @@ public:
         angiogenesis_solver.SetSolveFlow();
         angiogenesis_solver.SetSproutingProbability(0.5);
         angiogenesis_solver.Run();
-
     }
 };
 

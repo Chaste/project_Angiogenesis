@@ -51,19 +51,6 @@ class CellBasedPdeHandler; // circular definition
 template<unsigned DIM>
 class AbstractCaUpdateRule; // Circular definition
 
-/**
- * A facade class encapsulating a cell population under the Cellular
- * Automaton (CA) framework.
- *
- * Contains a group of cells and maintains the associations
- * between CellPtrs and nodes in a specialised PottsMesh class.
- *
- * When used here the PottsMesh has no elements as Cells are associated with nodes.
- * The PottsMesh is used to define node connectivity.
- *
- * Multiple cells can be associated at a single node.
- *
- */
 template<unsigned DIM>
 class CaBasedCellPopulationWithVessels : public CaBasedCellPopulation<DIM>
 {
@@ -139,16 +126,6 @@ public:
      * with methods in CaBasedCellPopulation
      */
     void UpdateVascularCellPopulation();
-
-    //    /**
-    //     * Associate the vessel network with the underlying cell population.
-    //     *
-    //     * @param pStalkCellMutatationState the mutation state of any stalk cells
-    //     * @param pTipCellMutatationState the mutation state of any tip cells
-    //     */
-    //    void AsscoiateVesselNetworkWithCells(boost::shared_ptr<AbstractCellMutationState> pStalkCellMutatationState = boost::shared_ptr<AbstractCellMutationState>(),
-    //                                         boost::shared_ptr<AbstractCellMutationState> pTipCellMutatationState = boost::shared_ptr<AbstractCellMutationState>());
-
 };
 
 #endif /*CABASEDCELLPOPULATIONWITHVESSELS_HPP_*/

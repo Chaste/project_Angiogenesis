@@ -1265,6 +1265,7 @@ void CaVascularNetwork<DIM>::SetSegmentRadii(double radius)
 template <unsigned DIM>
 vtkSmartPointer<vtkPolyData> CaVascularNetwork<DIM>::GetVtk()
 {
+    UpdateVesselIds();
     // Set up the vessel and node data arrays.
     std::vector<vtkSmartPointer<vtkDoubleArray> > pVesselInfoVector;
     std::map<std::string, boost::any >::iterator map_iterator;

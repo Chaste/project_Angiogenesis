@@ -27,7 +27,7 @@ class TestOffLatticeAngiogenesisSolver : public CxxTest::TestSuite
 
 public:
 
-    void DontTestSingleVesselGrowth() throw(Exception)
+    void TestSingleVesselGrowth() throw(Exception)
     {
         // Make a network
         boost::shared_ptr<VascularNode<3> > p_node1 = VascularNode<3>::Create(0.0, 0.0, 0.0);
@@ -46,7 +46,7 @@ public:
         angiogenesis_solver.Run();
     }
 
-    void DontTestMultiVessel() throw(Exception)
+    void TestMultiVessel() throw(Exception)
     {
         // Make a network
         std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
@@ -78,7 +78,7 @@ public:
         angiogenesis_solver.Run();
     }
 
-    void DontTestMultiSprout() throw(Exception)
+    void TestMultiSprout() throw(Exception)
     {
         // Make a network
         std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;

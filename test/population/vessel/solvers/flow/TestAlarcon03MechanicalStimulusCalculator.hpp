@@ -46,7 +46,7 @@ public:
         TS_ASSERT_DELTA(p_vessel->GetSegments()[0]->GetFlowProperties()->GetMechanicalStimulus(), expected_mechanical_stimulus, 1e-6);
     }
 
-    void testAlarcon03MechanicalStimulusVsPressure()
+    void TestAlarcon03MechanicalStimulusVsPressure()
     {
         // Make a network
         std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
