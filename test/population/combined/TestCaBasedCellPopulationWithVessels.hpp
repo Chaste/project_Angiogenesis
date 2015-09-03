@@ -199,7 +199,7 @@ public:
 
         // Write the initial network to file
         std::string output_directory = "TestCaBasedCellPopulationWithVesselsAngiogenesis";
-        OutputFileHandler output_file_handler(output_directory, false);
+        OutputFileHandler output_file_handler(output_directory, true);
 
         // Create cell population
         // ______________________
@@ -235,7 +235,7 @@ public:
         pde_handler->SetImposeBcsOnCoarseBoundary(true);
 
         cell_population->AddPdeHandler(pde_handler);
-        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(50, 50);
 
         while (!(SimulationTime::Instance()->IsFinished()))
         {

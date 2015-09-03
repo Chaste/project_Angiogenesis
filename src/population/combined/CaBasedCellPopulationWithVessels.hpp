@@ -114,6 +114,16 @@ public:
     unsigned GetNumberOfTipCells();
 
     /**
+     * Find if a given node has space available.
+     *
+     * @param index  The global index of a specified node.
+     * @param pCell  The cell wanting to divide into the lattice site.
+     *
+     * @return whether the node is an empty site
+     */
+    virtual bool IsSiteAvailable(unsigned index, CellPtr pCell);
+
+    /**
      * Return vector of tip cells.
      */
     std::vector<boost::shared_ptr<Cell> > GetTipCells();

@@ -71,6 +71,40 @@ void CaBasedCellPopulationWithVessels<DIM>::SetVesselNetwork(boost::shared_ptr<C
 }
 
 template<unsigned DIM>
+bool CaBasedCellPopulationWithVessels<DIM>::IsSiteAvailable(unsigned index, CellPtr pCell)
+{
+    std::vector<unsigned> available_spaces = this->rGetAvailableSpaces();
+    if (pCell->GetMutationState()->IsSame(mp_tip_mutation_state))
+    {
+        if (available_spaces[index] != 0)
+        {
+            return true;
+        }
+        else
+        {
+            // if any cell at location index is a stalk or tip cell then the
+            // tip cell can move in to that location
+            std::set<CellPtr> cells = this->GetCellsUsingLocationIndex(index);
+            std::set<CellPtr>::iterator it;
+
+            for (it = cells.begin(); it != cells.end(); ++it)
+            {
+                if((*it)->GetMutationState()->IsSame(mp_tip_mutation_state) ||
+                        (*it)->GetMutationState()->IsSame(mp_stalk_mutation_state))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+    else
+    {
+        return (available_spaces[index] != 0);
+    }
+}
+
+template<unsigned DIM>
 void CaBasedCellPopulationWithVessels<DIM>::SelectTipCell(boost::shared_ptr<Cell> pCell)
 {
     if (pCell->GetMutationState()->IsSame(mp_stalk_mutation_state))
@@ -128,53 +162,41 @@ void CaBasedCellPopulationWithVessels<DIM>::AddPdeHandler(boost::shared_ptr<Cell
 template<unsigned DIM>
 void CaBasedCellPopulationWithVessels<DIM>::UpdateVascularCellPopulation()
 {
-    // If there is a VEGF field use it to select new tip cells
-    double prob_max = 0.1;
-    double half_max_vegf = 0.5;
-    if(mp_pde_handler)
-    {
-        for (typename AbstractCellPopulation<DIM,DIM>::Iterator cell_iter = this->Begin(); cell_iter != this->End(); ++cell_iter)
-        {
-            if ((*cell_iter)->GetMutationState()->IsSame(mp_stalk_mutation_state) )
-            {
-                double vegf_conc = (*cell_iter)->GetCellData()->GetItem("VEGF");
-                double prob_tip_selection = prob_max*SimulationTime::Instance()->GetTimeStep()*vegf_conc/(vegf_conc + half_max_vegf);
-                if (RandomNumberGenerator::Instance()->ranf() < prob_tip_selection)
-                {
-                    SelectTipCell(*cell_iter);
-                }
-            }
-        }
-    }
+
+    // move already existing tip cells
 
     // Shuffle the tip cell collection
     RandomNumberGenerator::Instance()->Shuffle(mTipCells);
+    std::vector<boost::shared_ptr<Cell> > candidate_tips = mTipCells;
 
-    // Do sprouting and migration - needs a VEGF field
-    if(mp_pde_handler)
+    for (unsigned tip_index = 0; tip_index < candidate_tips.size(); tip_index++)
     {
-        ReplicatableVector pde_solution_repl(mp_pde_handler->GetPdeSolution("VEGF"));
-        for (unsigned tip_index = 0; tip_index < GetNumberOfTipCells(); tip_index++)
+        // Get the vessel network node at the tip
+
+        c_vector<double,DIM> tip_location = this->GetLocationOfCellCentre(candidate_tips[tip_index]);
+        boost::shared_ptr<VascularNode<DIM> > p_node = mpNetwork->GetNearestNode(tip_location);
+
+        // If the type has been reset to stalk then skip it
+        // also if the tip cell is still in the middle of a vessel then skip it
+        // (tip cells can be selected without forming a sprout immediately)
+        if(candidate_tips[tip_index]->GetMutationState()->IsSame(mp_tip_mutation_state) &&
+                p_node->GetNumberOfSegments() == 1)
         {
             // Get VEGF concentration at the tip
-            c_vector<double,DIM> tip_location = this->GetLocationOfCellCentre(mTipCells[tip_index]);
-            double tip_concentration =  mTipCells[tip_index]->GetCellData()->GetItem("VEGF");
+            double tip_concentration =  candidate_tips[tip_index]->GetCellData()->GetItem("VEGF");
 
             // Get the location of neighbour points on the potts mesh
-            unsigned potts_index = this->GetLocationIndexUsingCell(mTipCells[tip_index]);
+            unsigned potts_index = this->GetLocationIndexUsingCell(candidate_tips[tip_index]);
             std::set<unsigned> neighbour_potts_indices = static_cast<PottsMesh<DIM>& >((this->mrMesh)).GetMooreNeighbouringNodeIndices(potts_index);
             std::vector<unsigned> vec_neighbour_potts_indices;
             std::vector<c_vector<double,DIM> > neighbour_locations;
             std::vector<bool> neighbour_occupancy;
 
-            // Get the vessel network node at the tip
-            boost::shared_ptr<VascularNode<DIM> > p_node = mpNetwork->GetNearestNode(tip_location);
-
             // Get the spatial locations and occupancy of the potts neighbours
             for (std::set<unsigned>::iterator it=neighbour_potts_indices.begin(); it!=neighbour_potts_indices.end(); ++it)
             {
                 neighbour_locations.push_back(this->rGetMesh().GetNode(*it)->rGetLocation());
-                neighbour_occupancy.push_back(this->IsSiteAvailable(*it, mTipCells[tip_index])); //true if site is free
+                neighbour_occupancy.push_back(IsSiteAvailable(*it, candidate_tips[tip_index])); //true if site is free
                 vec_neighbour_potts_indices.push_back(*it);
             }
 
@@ -190,54 +212,264 @@ void CaBasedCellPopulationWithVessels<DIM>::UpdateVascularCellPopulation()
             int max_grandient_index = -1;
             for(unsigned idx=0; idx<neighbour_locations.size(); idx++)
             {
+                // make sure that tip cell does not go back on itself
+                bool candidateLocationCoincidentWithAttachedVessel = false;
+                assert(p_node->GetNumberOfSegments() == 1);
+                if(p_node->GetVesselSegment(0)->GetOppositeNode(p_node)->IsCoincident(ChastePoint<DIM>(neighbour_locations[idx])))
+                {
+                    candidateLocationCoincidentWithAttachedVessel = true;
+                }
+
                 double gradient = (neighbour_concentrations[idx] - tip_concentration) / norm_2(tip_location - neighbour_locations[idx]);
-                if(gradient > max_gradient && neighbour_occupancy[idx])
+                if(gradient > max_gradient && neighbour_occupancy[idx] && !candidateLocationCoincidentWithAttachedVessel)
                 {
                     max_gradient = gradient;
                     max_grandient_index = vec_neighbour_potts_indices[idx];
                 }
             }
 
-            // Can form a sprout
-            if (p_node->GetNumberOfSegments() > 1)
-            {
                 if(max_grandient_index>-1)
                 {
                     c_vector<double, DIM> candidate_location = this->rGetMesh().GetNode(max_grandient_index)->rGetLocation();
 
-                    // Check that the candidate location is not the next or previous node on the vessel
-                    if(!p_node->GetVesselSegments()[0]->GetOppositeNode(p_node)->IsCoincident(ChastePoint<DIM>(candidate_location)) &&
-                            !p_node->GetVesselSegments()[1]->GetOppositeNode(p_node)->IsCoincident(ChastePoint<DIM>(candidate_location)))
+                    boost::shared_ptr<CaVessel<DIM> > p_vessel = p_node->GetVesselSegment(0)->GetVessel();
+                    // create new node at candidate location
+                    boost::shared_ptr<VascularNode<DIM> > p_new_node(new VascularNode<DIM>(candidate_location));
+                    // create new segment and add it to the vessel
+                    boost::shared_ptr<CaVesselSegment<DIM> > p_new_segment =
+                              CaVesselSegment<DIM>::Create(p_node, p_new_node);
+                    p_node->SetIsMigrating(false);
+                    p_new_node->SetIsMigrating(true);
+                    p_vessel->AddSegment(p_new_segment);
+
+                    // if there is a tip or sprout already here do anastamosis
+                    std::set<CellPtr> cells = this->GetCellsUsingLocationIndex(max_grandient_index);
+                    std::set<CellPtr>::iterator it;
+
+                    for (it = cells.begin(); it != cells.end(); ++it)
                     {
-                        mpNetwork->FormSprout(tip_location, candidate_location);
+                        if((*it)->GetMutationState()->IsSame(mp_tip_mutation_state))
+                        {
+                            // deselect self
+                            DeselectTipCell(candidate_tips[tip_index]);
+
+                            // todo although not important for this particular cell-based type of model we should set the is migrating flag for
+                            // nodes to false when they form anastomoses
+
+                            // deselect at neighbour location
+                            DeselectTipCell((*it));
+
+                            // update vessel network
+                            boost::shared_ptr<VascularNode<DIM> > p_other_node = mpNetwork->DivideVessel(mpNetwork->GetNearestVessel(candidate_location), candidate_location);
+                            std::vector<boost::shared_ptr<VascularNode<DIM> > > merge_nodes;
+                            merge_nodes.push_back(p_other_node);
+                            merge_nodes.push_back(p_new_node);
+                            mpNetwork->MergeCoincidentNodes(merge_nodes);
+
+                            // todo need to merge vessels at nodes with connectivity 2 - can do this at the end of the whole method
+
+                            break;
+
+                        }
+                        else if((*it)->GetMutationState()->IsSame(mp_stalk_mutation_state))
+                        {
+                            // deselect self
+                            DeselectTipCell(candidate_tips[tip_index]);
+
+                            // update vessel network
+                            boost::shared_ptr<VascularNode<DIM> > p_other_node = mpNetwork->DivideVessel(mpNetwork->GetNearestVessel(candidate_location), candidate_location);
+                            std::vector<boost::shared_ptr<VascularNode<DIM> > > merge_nodes;
+                            merge_nodes.push_back(p_other_node);
+                            merge_nodes.push_back(p_new_node);
+                            mpNetwork->MergeCoincidentNodes(merge_nodes);
+                            break;
+                        }
+                    }
+
+                    if(candidate_tips[tip_index]->GetMutationState()->IsSame(mp_tip_mutation_state))
+                    {
                         // Create a new cell - N/B: tip cells do not really divide but this is the most convenient way
                         // to implement a discrete snail-trail-type model
-                        mTipCells[tip_index]->ReadyToDivide();
-                        CellPtr p_new_cell = mTipCells[tip_index]->Divide();
+                        candidate_tips[tip_index]->ReadyToDivide();
+                        CellPtr p_new_cell = candidate_tips[tip_index]->Divide();
 
                         // Add new cell to the cell population
                         this->AddCellUsingLocationIndex(max_grandient_index, p_new_cell); // this doesn't actually add a cell?!
                         this->mCells.push_back(p_new_cell); // do it manually
 
-                        mTipCells[tip_index]->SetMutationState(mp_stalk_mutation_state);
-                        mTipCells[tip_index] = p_new_cell;
+                        DeselectTipCell(candidate_tips[tip_index]);
+                        mTipCells.push_back(p_new_cell);
                     }
-                }
+
             }
-            // Can migrate
-            else if(mpNetwork->GetNearestNode(tip_location)->GetNumberOfSegments() == 1)
+        }
+
+    }
+
+    // implement vessel sprouting
+
+    // If there is a VEGF field use it to select new tip cells
+    double prob_max = 0.1;
+    double half_max_vegf = 0.5;
+    if(mp_pde_handler)
+    {
+        for (typename AbstractCellPopulation<DIM,DIM>::Iterator cell_iter = this->Begin(); cell_iter != this->End(); ++cell_iter)
+        {
+            if ((*cell_iter)->GetMutationState()->IsSame(mp_stalk_mutation_state) )
             {
-                if(max_grandient_index>-1)
+                double vegf_conc = (*cell_iter)->GetCellData()->GetItem("VEGF");
+                double prob_tip_selection = prob_max*SimulationTime::Instance()->GetTimeStep()*vegf_conc/(vegf_conc + half_max_vegf);
+                if (RandomNumberGenerator::Instance()->ranf() < prob_tip_selection
+                        && mpNetwork->GetNearestNode(this->GetLocationOfCellCentre((*cell_iter)))->GetNumberOfSegments() > 1)
                 {
-                    // Move the tip to the max grad location
-
-                    // Update the vessel network
-
-                    // Add a trailing sprout cell
+                    SelectTipCell(*cell_iter);
                 }
             }
         }
     }
+
+    // Shuffle the tip cell collection
+    RandomNumberGenerator::Instance()->Shuffle(mTipCells);
+    candidate_tips = mTipCells;
+
+    // Do sprouting and migration - needs a VEGF field
+    if(mp_pde_handler)
+    {
+        ReplicatableVector pde_solution_repl(mp_pde_handler->GetPdeSolution("VEGF"));
+        for (unsigned tip_index = 0; tip_index < candidate_tips.size(); tip_index++)
+        {
+            // If the type has been reset to stalk then skip it
+            if(candidate_tips[tip_index]->GetMutationState()->IsSame(mp_tip_mutation_state))
+            {
+                // Get VEGF concentration at the tip
+                c_vector<double,DIM> tip_location = this->GetLocationOfCellCentre(candidate_tips[tip_index]);
+                double tip_concentration =  candidate_tips[tip_index]->GetCellData()->GetItem("VEGF");
+
+                // Get the location of neighbour points on the potts mesh
+                unsigned potts_index = this->GetLocationIndexUsingCell(candidate_tips[tip_index]);
+                std::set<unsigned> neighbour_potts_indices = static_cast<PottsMesh<DIM>& >((this->mrMesh)).GetMooreNeighbouringNodeIndices(potts_index);
+                std::vector<unsigned> vec_neighbour_potts_indices;
+                std::vector<c_vector<double,DIM> > neighbour_locations;
+                std::vector<bool> neighbour_occupancy;
+
+                // Get the vessel network node at the tip
+                boost::shared_ptr<VascularNode<DIM> > p_node = mpNetwork->GetNearestNode(tip_location);
+
+                // Get the spatial locations and occupancy of the potts neighbours
+                for (std::set<unsigned>::iterator it=neighbour_potts_indices.begin(); it!=neighbour_potts_indices.end(); ++it)
+                {
+                    neighbour_locations.push_back(this->rGetMesh().GetNode(*it)->rGetLocation());
+                    neighbour_occupancy.push_back(IsSiteAvailable(*it, candidate_tips[tip_index])); //true if site is free
+                    vec_neighbour_potts_indices.push_back(*it);
+                }
+
+                // Get the VEGF concentrations at the neighbours
+                std::vector<double> neighbour_concentrations;
+                for(unsigned idx=0; idx<neighbour_locations.size(); idx++)
+                {
+                    neighbour_concentrations.push_back(mp_pde_handler->GetPdeSolutionAtPoint(neighbour_locations[idx], "VEGF"));
+                }
+
+                // Identify the potts mesh location index corresponding to the direction of highest gradient
+                double max_gradient = 0.0; // Assume only migration due to positive gradients
+                int max_grandient_index = -1;
+                for(unsigned idx=0; idx<neighbour_locations.size(); idx++)
+                {
+                    bool candidateLocationCoincidentWithAttachedVessel = false;
+                    for (unsigned seg_index = 0; seg_index < p_node->GetNumberOfSegments(); seg_index++)
+                    {
+                        if(p_node->GetVesselSegment(seg_index)->GetOppositeNode(p_node)->IsCoincident(ChastePoint<DIM>(neighbour_locations[idx])))
+                        {
+                            candidateLocationCoincidentWithAttachedVessel = true;
+                            break;
+                        }
+                    }
+                    double gradient = (neighbour_concentrations[idx] - tip_concentration) / norm_2(tip_location - neighbour_locations[idx]);
+                    if(gradient > max_gradient && neighbour_occupancy[idx] && !candidateLocationCoincidentWithAttachedVessel)
+                    {
+                        max_gradient = gradient;
+                        max_grandient_index = vec_neighbour_potts_indices[idx];
+                    }
+                }
+
+                // Can form a sprout
+                if (p_node->GetNumberOfSegments() > 1)
+                {
+                    if(max_grandient_index>-1)
+                    {
+                        c_vector<double, DIM> candidate_location = this->rGetMesh().GetNode(max_grandient_index)->rGetLocation();
+
+                        boost::shared_ptr<CaVessel<DIM> > p_vessel = mpNetwork->FormSprout(tip_location, candidate_location);
+                        boost::shared_ptr<VascularNode<DIM> > p_sprout_node = p_vessel->GetNodeAtOppositeEnd(p_node);
+
+                        // if there is a tip or sprout already here do anastamosis
+                        std::set<CellPtr> cells = this->GetCellsUsingLocationIndex(max_grandient_index);
+                        std::set<CellPtr>::iterator it;
+
+                        for (it = cells.begin(); it != cells.end(); ++it)
+                        {
+                            if((*it)->GetMutationState()->IsSame(mp_tip_mutation_state))
+                            {
+                                // deselect self
+                                DeselectTipCell(candidate_tips[tip_index]);
+
+                                // todo although not important for this particular cell-based type of model we should set the is migrating flag for
+                                // nodes to false when they form anastomoses
+
+                                // deselect at neighbour location
+                                DeselectTipCell((*it));
+
+                                // update vessel network
+                                boost::shared_ptr<VascularNode<DIM> > p_other_node = mpNetwork->DivideVessel(mpNetwork->GetNearestVessel(candidate_location), candidate_location);
+                                std::vector<boost::shared_ptr<VascularNode<DIM> > > merge_nodes;
+                                merge_nodes.push_back(p_other_node);
+                                merge_nodes.push_back(p_sprout_node);
+                                mpNetwork->MergeCoincidentNodes(merge_nodes);
+
+                                // todo need to merge vessels at nodes with connectivity 2 - can do this at the end of the whole method
+
+                                break;
+
+                            }
+                            else if((*it)->GetMutationState()->IsSame(mp_stalk_mutation_state))
+                            {
+                                // deselect self
+                                DeselectTipCell(candidate_tips[tip_index]);
+
+                                // update vessel network
+                                boost::shared_ptr<VascularNode<DIM> > p_other_node = mpNetwork->DivideVessel(mpNetwork->GetNearestVessel(candidate_location), candidate_location);
+                                std::vector<boost::shared_ptr<VascularNode<DIM> > > merge_nodes;
+                                merge_nodes.push_back(p_other_node);
+                                merge_nodes.push_back(p_sprout_node);
+                                mpNetwork->MergeCoincidentNodes(merge_nodes);
+                                break;
+                            }
+                        }
+
+                        if(candidate_tips[tip_index]->GetMutationState()->IsSame(mp_tip_mutation_state))
+                        {
+                            // Create a new cell - N/B: tip cells do not really divide but this is the most convenient way
+                            // to implement a discrete snail-trail-type model
+                            candidate_tips[tip_index]->ReadyToDivide();
+                            CellPtr p_new_cell = candidate_tips[tip_index]->Divide();
+
+                            // Add new cell to the cell population
+                            this->AddCellUsingLocationIndex(max_grandient_index, p_new_cell); // this doesn't actually add a cell?!
+                            this->mCells.push_back(p_new_cell); // do it manually
+
+                            DeselectTipCell(candidate_tips[tip_index]);
+                            mTipCells.push_back(p_new_cell);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
+
 }
 
 // Explicit instantiation

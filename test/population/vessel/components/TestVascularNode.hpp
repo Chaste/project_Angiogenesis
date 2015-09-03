@@ -98,7 +98,6 @@ public:
         p_node->SetRadius(10.0);
         p_node->GetFlowProperties()->SetIsInputNode(true);
         p_node->GetFlowProperties()->SetIsOutputNode(true);
-        p_node->SetIsMigrating(true);
 
         TS_ASSERT_EQUALS(p_node->GetId(), 5u);
         TS_ASSERT_EQUALS(p_node->rGetLabel().c_str(), label.c_str());
@@ -106,7 +105,6 @@ public:
         TS_ASSERT_DELTA(p_node->GetRadius(), 10.0, 1.e-6);
         TS_ASSERT(p_node->GetFlowProperties()->IsInputNode());
         TS_ASSERT(p_node->GetFlowProperties()->IsOutputNode());
-        TS_ASSERT(p_node->IsMigrating());
 
         // Test setting node flow properties
         NodeFlowProperties node_flow_properties;

@@ -628,7 +628,6 @@ boost::shared_ptr<VascularNode<DIM> > CaVessel<DIM>::DivideSegment(ChastePoint<D
     boost::shared_ptr<VascularNode<DIM> > p_new_node = boost::shared_ptr<VascularNode<DIM> >(
             new VascularNode<DIM>(*pVesselSegment->GetNode(closest_index)));
     p_new_node->SetLocation(location);
-    p_new_node->SetIsMigrating(false);
 
     // Make two new segments
     boost::shared_ptr<CaVesselSegment<DIM> > p_new_segment0 =
@@ -668,7 +667,7 @@ boost::shared_ptr<VascularNode<DIM> > CaVessel<DIM>::DivideSegment(ChastePoint<D
     if (it != mSegments.end())
     {
         mSegments.erase(it);
-        pVesselSegment->RemoveVessel();
+        pVesselSegment->Remove();
     }
     else
     {

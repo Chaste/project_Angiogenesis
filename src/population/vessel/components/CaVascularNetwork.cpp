@@ -551,6 +551,8 @@ void CaVascularNetwork<DIM>::RemoveShortVessels(double cutoff, bool endsOnly)
 template <unsigned DIM>
 void CaVascularNetwork<DIM>::MergeShortVessels(double cutoff)
 {
+    // todo need to think about how to avoid creating vessels which contain bifurcations ... (?)
+
     std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels_to_merge;
     for(unsigned idx=0; idx<mVessels.size(); idx++)
     {
