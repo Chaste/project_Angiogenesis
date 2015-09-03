@@ -126,6 +126,7 @@ public:
      * with methods in CaBasedCellPopulation
      */
     void UpdateVascularCellPopulation();
+
 };
 
 #endif /*CABASEDCELLPOPULATIONWITHVESSELS_HPP_*/

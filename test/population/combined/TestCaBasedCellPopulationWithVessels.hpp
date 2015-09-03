@@ -46,7 +46,7 @@ class TestCaBasedCellPopulationWithVessels : public AbstractCellBasedWithTimings
 
 public:
 
-    void TestSetUpSingleVessel() throw (Exception)
+    void DontTestSetUpSingleVessel() throw (Exception)
     {
         // Create the mesh
         PottsMeshGenerator<3> generator(20, 0, 0, 20, 0, 0, 21, 0, 0);
@@ -235,13 +235,10 @@ public:
         pde_handler->SetImposeBcsOnCoarseBoundary(true);
 
         cell_population->AddPdeHandler(pde_handler);
-
-        // set up simulation time
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
 
         while (!(SimulationTime::Instance()->IsFinished()))
         {
-
             pde_handler->OpenResultsFiles(output_directory);
             pde_handler->SolvePdeAndWriteResultsToFile(1);
             pde_handler->CloseResultsFiles();
@@ -256,11 +253,8 @@ public:
             cell_population->CloseWritersFiles();
 
             SimulationTime::Instance()->IncrementTimeOneStep();
-
         }
-
     }
-
 };
 
 #endif /*TESTCABASEDCELLPOPULATIONWITHVESSELS_HPP*/
