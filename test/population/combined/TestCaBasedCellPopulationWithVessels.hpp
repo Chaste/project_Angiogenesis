@@ -46,7 +46,7 @@ class TestCaBasedCellPopulationWithVessels : public AbstractCellBasedWithTimings
 
 public:
 
-    void DontTestSetUpSingleVessel() throw (Exception)
+    void TestSetUpSingleVessel() throw (Exception)
     {
         // Create the mesh
         PottsMeshGenerator<3> generator(20, 0, 0, 20, 0, 0, 21, 0, 0);
@@ -76,10 +76,6 @@ public:
         cellPopulationGenerator.SetIncludeNormalCellPopulation(false);
         boost::shared_ptr<CaBasedCellPopulationWithVessels<3> > cell_population =
                 cellPopulationGenerator.CreateCellPopulation(*p_mesh, p_network);
-
-        // Test that the network is correctly associated with the cells
-        // are 20 nodes in the network, 2 vessel nodes, and 1 vessel
-
 
         // todo Node to segment connectivity is not being correctly updated here....check!
         // This is likely to be in the DivideSegment method in the Vessel class
@@ -111,7 +107,7 @@ public:
         cell_population->CloseWritersFiles();
     }
 
-    void dontTestSelectTipCell() throw (Exception)
+    void TestSelectTipCell() throw (Exception)
     {
         // Create the mesh
         PottsMeshGenerator<3> generator(20, 0, 0, 20, 0, 0, 21, 0, 0);
@@ -184,14 +180,13 @@ public:
 
     void TestAngiogenesis() throw (Exception)
     {
-
         // Create the mesh
-        PottsMeshGenerator<3> generator(20, 0, 0, 20, 0, 0, 20, 0, 0);
+        PottsMeshGenerator<3> generator(10, 0, 0, 50, 0, 0, 50, 0, 0);
         PottsMesh<3>* p_mesh = generator.GetMesh();
 
         // Create the vessel network: single vessel in middle of domain
         c_vector<double, 3> start_position;
-        start_position[0] = 10;
+        start_position[0] = 5;
         start_position[1] = 10;
         start_position[2] = 0;
         VasculatureGenerator<3> network_generator;
@@ -201,11 +196,6 @@ public:
         std::string output_directory = "TestCaBasedCellPopulationWithVesselsAngiogenesis";
         OutputFileHandler output_file_handler(output_directory, true);
 
-        // Create cell population
-        // ______________________
-
-        // use OnLatticeVascularTumourCellPopulationGenerator to generate cells and associate cells
-        // with vessels
         OnLatticeVascularTumourCellPopulationGenerator<3> cellPopulationGenerator;
         cellPopulationGenerator.SetIncludeNormalCellPopulation(false);
         boost::shared_ptr<CaBasedCellPopulationWithVessels<3> > cell_population =
@@ -217,25 +207,21 @@ public:
         cell_population->AddPopulationWriter<NodeLocationWriter>();
 
         // set up PDE
-        AveragedSourcePde<3> pde(*(cell_population.get()), -0.10);
-
+        AveragedSourcePde<3> pde(*(cell_population.get()), -0.30);
         ConstBoundaryCondition<3> p_zero_boundary_condition(1.0);
-
         PdeAndBoundaryConditions<3> pde_and_bc(&pde, &p_zero_boundary_condition, false);
         pde_and_bc.SetDependentVariableName("VEGF");
 
-        // \\TODO would be nice if this was a singleton - is that feasible??
         boost::shared_ptr<CellBasedPdeHandler<3> > pde_handler(new CellBasedPdeHandler<3>(cell_population.get()));
         pde_handler->AddPdeAndBc(&pde_and_bc);
-
         ChastePoint<3> lower(0.0, 0.0, 0.0);
-        ChastePoint<3> upper(20.0, 6.0, 20.0);
+        ChastePoint<3> upper(10.0, 50.0, 50.0);
         ChasteCuboid<3> cuboid(lower, upper);
         pde_handler->UseCoarsePdeMesh(2.0, cuboid, true);
         pde_handler->SetImposeBcsOnCoarseBoundary(true);
 
         cell_population->AddPdeHandler(pde_handler);
-        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(50, 50);
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(20, 20);
 
         while (!(SimulationTime::Instance()->IsFinished()))
         {

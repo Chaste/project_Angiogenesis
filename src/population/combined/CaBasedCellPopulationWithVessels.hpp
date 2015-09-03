@@ -43,6 +43,17 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "StalkCellMutationState.hpp"
 #include "TipCellMutationState.hpp"
 
+/**
+ *  Struct to choose tip movement type
+ */
+struct MovementType
+{
+    enum Value
+    {
+        SPROUT, MIGRATE
+    };
+};
+
 template<unsigned DIM>
 class CellBasedPdeHandler; // circular definition
 
@@ -67,6 +78,8 @@ private:
     boost::shared_ptr<StalkCellMutationState> mp_stalk_mutation_state;
 
     boost::shared_ptr<CellBasedPdeHandler<DIM> > mp_pde_handler;
+
+    std::map<boost::shared_ptr<Cell> , boost::shared_ptr<VascularNode<DIM> > > mCellNodeMap;
 
 public:
 
@@ -132,10 +145,13 @@ public:
 
     /**
      * Method to update endothelial cell population
-     * \\TODO break this up into smaller pieces and make sure those smaller pieces are in-fitting
-     * with methods in CaBasedCellPopulation
      */
     void UpdateVascularCellPopulation();
+
+    void MoveTips(std::vector<boost::shared_ptr<Cell> > activeTips, MovementType::Value moveType);
+
+    std::map<std::string, std::vector<double> > GetNeighbourData(unsigned meshIndex, CellPtr pCell);
+
 
 };
 
