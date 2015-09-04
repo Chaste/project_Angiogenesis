@@ -176,6 +176,8 @@ public:
      */
     std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> GetNearestSegment(c_vector<double, DIM> location);
 
+    std::vector<double> GetInterCapillaryDistances();
+
     /**
      Get the segment nearest to the specified location
      */

@@ -235,6 +235,29 @@ double CaVascularNetwork<DIM>::GetDistanceToNearestNode(const ChastePoint<DIM>& 
 }
 
 template <unsigned DIM>
+std::vector<double> CaVascularNetwork<DIM>::GetInterCapillaryDistances()
+{
+    std::vector<double> distances;
+    for(unsigned idx=0; idx<mVessels.size(); idx++)
+    {
+        double min_distance = 1.e6;
+        for(unsigned jdx=0; jdx<mVessels.size(); jdx++)
+        {
+            if(mVessels[idx]!=mVessels[jdx])
+            {
+                double distance = mVessels[idx]->GetStartNode()->GetDistance(mVessels[jdx]->GetStartNode());
+                if(distance < min_distance)
+                {
+                    min_distance = distance;
+                }
+            }
+        }
+        distances.push_back(min_distance);
+    }
+    return distances;
+}
+
+template <unsigned DIM>
 boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::GetNearestNode(const ChastePoint<DIM>& rLocation)
 {
     return GetNearestNode(rLocation.rGetLocation());
