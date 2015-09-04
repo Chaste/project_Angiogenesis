@@ -45,6 +45,23 @@
 #include "Part.hpp"
 #include "UblasVectorInclude.hpp"
 
+/**
+ *  Struct to define random vessel distribution properties
+ *
+ *  Regular: Vessels are distributed in regular patterns
+ *  Uniform: Vessels are distributed from seeds of a uniform random distribution
+ *  Two Layer: Vessels are distributed from seeds of a two-layer uniform-normal random distribution
+ *  Custom: Manually provide seeds for the vessel distribution
+ */
+struct VesselDistribution
+{
+    enum Value
+    {
+        REGULAR, UNIFORM, TWO_LAYER, CUSTOM
+    };
+};
+
+
 template<unsigned DIM>
 class VasculatureGenerator
 {
@@ -53,8 +70,6 @@ public:
 
     /**
      * Constructor
-     *
-     * @param prototype prototype vessel using which other vessel objects will be instantiated.
      */
     VasculatureGenerator();
 
@@ -64,11 +79,25 @@ public:
     ~VasculatureGenerator();
 
     /*
-     * Pattern Unit. Coincident nodes are automatically merged in this method.
+     * Create a vessel network with all vessels parallel. Vessels are aligned in the 'Z' direction in 3D
+     * @param domain A part representing the extents of the spatial domain
+     * @param targetDensity The desired number of vessel length per unit volume, this will be only satisfied approximately
+     * @param distrbutionType The way to disperse initial seeds for the vessel distribution
+     * @param useBbox Whether to use the domain bounding box or the exact shape, the former is faster
+     * @param seeds User provided seed locations for the vessel locations, used with CUSTOM distribution type
      */
-    void PatternUnitByTranslation(boost::shared_ptr<CaVascularNetwork<DIM> > pInputUnit, std::vector<unsigned> numberOfUnits);
+    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateParrallelNetwork(boost::shared_ptr<Part<DIM> > domain,
+                                                                        double targetDensity,
+                                                                        VesselDistribution::Value distrbutionType,
+                                                                        double exclusionDistance = 0.0,
+                                                                        bool useBbox = false,
+                                                                        std::vector<boost::shared_ptr<Vertex> > seeds =
+                                                                                std::vector<boost::shared_ptr<Vertex> >());
 
 
+    /*
+     * Creates a hexagonal network corresponding to that of Alarcon et al. (2006)
+     */
     boost::shared_ptr<CaVascularNetwork<DIM> > GenerateHexagonalNetwork(double width, double height,
                                                                         double vesselLength);
     /*
@@ -96,14 +125,9 @@ public:
                                                                     c_vector<double, DIM> startPosition = zero_vector<double>(DIM));
 
     /*
-     * Generate a network on the edges of a PLC Part
+     * Generate a network on the edges of a Part
      */
     boost::shared_ptr<CaVascularNetwork<DIM> > GenerateFromPart(boost::shared_ptr<Part<DIM> > part);
-
-    /*
-     * Creates a vessel network based on a voronoi tesselation in the provided cube.
-     */
-    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateVoronoiNetwork(double cubeX = 100.0, double cubeY = 100.0, double cubeZ = 100.0, unsigned numPoints = 400);
 
 #ifdef CHASTE_VTK
     /*
@@ -114,6 +138,16 @@ public:
      */
     boost::shared_ptr<CaVascularNetwork<DIM> > GenerateNetworkFromVtkFile(const std::string& rFilename);
 #endif // CHASTE_VTK
+
+    /*
+     * Creates a vessel network based on a voronoi tesselation in the provided cube.
+     */
+    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateVoronoiNetwork(double cubeX = 100.0, double cubeY = 100.0, double cubeZ = 100.0, unsigned numPoints = 400);
+
+    /*
+     * Pattern Unit. Coincident nodes are automatically merged in this method.
+     */
+    void PatternUnitByTranslation(boost::shared_ptr<CaVascularNetwork<DIM> > pInputUnit, std::vector<unsigned> numberOfUnits);
 
 };
 
