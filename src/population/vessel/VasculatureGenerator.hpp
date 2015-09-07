@@ -94,6 +94,21 @@ public:
                                                                         std::vector<boost::shared_ptr<Vertex> > seeds =
                                                                                 std::vector<boost::shared_ptr<Vertex> >());
 
+    /*
+     * Create a 3d vessel network
+     * @param domain A part representing the extents of the spatial domain
+     * @param targetDensity The desired number of vessel length per unit volume, this will be only satisfied approximately
+     * @param distrbutionType The way to disperse initial seeds for the vessel distribution
+     * @param useBbox Whether to use the domain bounding box or the exact shape, the former is faster
+     * @param seeds User provided seed locations for the vessel locations, used with CUSTOM distribution type
+     */
+//    boost::shared_ptr<CaVascularNetwork<DIM> > Generate3dNetwork(boost::shared_ptr<Part<DIM> > domain,
+//                                                                        std::vector<double> targetDensity,
+//                                                                        VesselDistribution::Value distrbutionType,
+//                                                                        double exclusionDistance = 0.0,
+//                                                                        bool useBbox = false,
+//                                                                        std::vector<boost::shared_ptr<Vertex> > seeds =
+//                                                                                std::vector<boost::shared_ptr<Vertex> >());
 
     /*
      * Creates a hexagonal network corresponding to that of Alarcon et al. (2006)
