@@ -159,39 +159,47 @@ public:
     void Test3dNetworks() throw (Exception)
     {
         boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
-        p_part->AddCuboid(1000.0, 1000.0, 50.0);
+        p_part->AddCuboid(1000.0, 1000.0, 1000.0);
+        std::vector<double> density;
+        density.push_back(8.e-5);
+        density.push_back(8.e-5);
+        density.push_back(1.e-5);
         VasculatureGenerator<3> network_generator;
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = network_generator.GenerateParrallelNetwork(p_part,
-                                                                                                        1.e-4,
+        boost::shared_ptr<CaVascularNetwork<3> > p_network = network_generator.Generate3dNetwork(p_part,
+                                                                                                        density,
                                                                                                         VesselDistribution::REGULAR);
-        OutputFileHandler output_file_handler("TestVasculatureGenerator/Parallel", false);
+        OutputFileHandler output_file_handler("TestVasculatureGenerator/3d", false);
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("RegularNetwork.vtp");
         p_network->Write(output_filename);
 
-        boost::shared_ptr<CaVascularNetwork<3> > p_network2 = network_generator.GenerateParrallelNetwork(p_part,
-                                                                                                        1.e-4,
+        std::vector<double> density2;
+        density2.push_back(4.e-5);
+        density2.push_back(4.e-5);
+        density2.push_back(4.e-5);
+        boost::shared_ptr<CaVascularNetwork<3> > p_network2 = network_generator.Generate3dNetwork(p_part,
+                                                                                                  density2,
                                                                                                         VesselDistribution::UNIFORM);
 
         std::string output_filename2 = output_file_handler.GetOutputDirectoryFullPath().append("UniformNetwork.vtp");
         p_network2->Write(output_filename2);
 
-        boost::shared_ptr<CaVascularNetwork<3> > p_network3 = network_generator.GenerateParrallelNetwork(p_part,
-                                                                                                        1.e-4,
+        boost::shared_ptr<CaVascularNetwork<3> > p_network3 = network_generator.Generate3dNetwork(p_part,
+                                                                                                         density2,
                                                                                                         VesselDistribution::UNIFORM,
                                                                                                         20.0);
 
         std::string output_filename3 = output_file_handler.GetOutputDirectoryFullPath().append("UniformExclusionNetwork.vtp");
         p_network3->Write(output_filename3);
 
-        boost::shared_ptr<CaVascularNetwork<3> > p_network4 = network_generator.GenerateParrallelNetwork(p_part,
-                                                                                                        1.e-4,
+        boost::shared_ptr<CaVascularNetwork<3> > p_network4 = network_generator.Generate3dNetwork(p_part,
+                                                                                                         density2,
                                                                                                         VesselDistribution::TWO_LAYER);
 
         std::string output_filename4 = output_file_handler.GetOutputDirectoryFullPath().append("TwoLayerNetwork.vtp");
         p_network3->Write(output_filename4);
 
-        boost::shared_ptr<CaVascularNetwork<3> > p_network5 = network_generator.GenerateParrallelNetwork(p_part,
-                                                                                                        1.e-4,
+        boost::shared_ptr<CaVascularNetwork<3> > p_network5 = network_generator.Generate3dNetwork(p_part,
+                                                                                                         density2,
                                                                                                         VesselDistribution::TWO_LAYER,
                                                                                                         20.0);
 

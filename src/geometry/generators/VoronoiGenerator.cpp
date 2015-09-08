@@ -36,6 +36,11 @@
 #include <math.h>
 #include <boost/random.hpp>
 #include <boost/generator_iterator.hpp>
+#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning for now (gcc4.3)
+#include <vtkBox.h>
+#include <vtkTetra.h>
+#include <vtkPoints.h>
+#include <vtkSmartPointer.h>
 #include "Polygon.hpp"
 
 #include "VoronoiGenerator.hpp"
@@ -110,115 +115,113 @@ boost::shared_ptr<Part<DIM> > VoronoiGenerator<DIM>::Generate(boost::shared_ptr<
 
     // Create 2-point polygons corresponding to each edge
     std::vector<boost::shared_ptr<Polygon> > polygons;
-    for (int n=0; n<mesher_output.numberofvedges; ++n) {
+    for (int n=0; n<mesher_output.numberofvedges; ++n)
+    {
       tetgen15::tetgenio::voroedge e =  mesher_output.vedgelist[n];
       int n0 = e.v1;
       int n1 = e.v2;
       double* u = &mesher_output.vpointlist[DIM*n0];
       double* v = n1 == -1 ? e.vnormal : &mesher_output.vpointlist[DIM*n1]; // -1 indicates ray
-
       boost::shared_ptr<Vertex> p_vertex1 = Vertex::Create(u[0], u[1], u[2]);
       boost::shared_ptr<Vertex> p_vertex2 = Vertex::Create(v[0], v[1], v[2]);
 
-      // Only include edges that are inside the domain.
-      bool vert1_inside = true;
-      bool vert2_inside = true;
-      if(p_vertex1->rGetLocation()[0] < extents[0] || p_vertex1->rGetLocation()[0] > extents[1])
-      {
-          vert1_inside = false;
-      }
-      if(p_vertex1->rGetLocation()[1] < extents[2] || p_vertex1->rGetLocation()[1] > extents[3])
-      {
-          vert1_inside = false;
-      }
-      if(p_vertex2->rGetLocation()[0] < extents[0] || p_vertex2->rGetLocation()[0] > extents[1])
-      {
-          vert2_inside = false;
-      }
-      if(p_vertex2->rGetLocation()[1] < extents[2] || p_vertex2->rGetLocation()[1] > extents[3])
-      {
-          vert2_inside = false;
-      }
-      if(DIM==3)
-      {
-          if(p_vertex1->rGetLocation()[2] < extents[4] || p_vertex1->rGetLocation()[2] > extents[5])
-          {
-              vert1_inside = false;
-          }
-          if(p_vertex2->rGetLocation()[2] < extents[4] || p_vertex2->rGetLocation()[2] > extents[5])
-          {
-              vert2_inside = false;
-          }
-      }
+      // Only include edges that are inside the domain - use the bounding box.
+      double zero_location_tol = 1.0;
+      double t1;
+      double t2;
+      int plane1;
+      int plane2;
+      c_vector<double,DIM> intercept_1;
+      c_vector<double,DIM> intercept_2;
+      int in_box = vtkBox::IntersectWithLine(&extents[0], &p_vertex1->rGetLocation()[0],
+                                             &p_vertex2->rGetLocation()[0], t1, t2, &intercept_1[0], &intercept_2[0], plane1, plane2);
 
-      if(vert1_inside && vert2_inside)
+      // If the line is not outside the box
+      if(in_box!=0)
       {
-          if(!vert1_inside)
+          // if the line does not intersect the box it must be fully inside
+          if(in_box==-1)
           {
-              if(p_vertex1->rGetLocation()[0] < extents[0])
+              // Check that we haven't hit the zero location and remove very short edges
+              if((norm_2(p_vertex1->rGetLocation()) > zero_location_tol) && (norm_2(p_vertex2->rGetLocation()) > zero_location_tol))
               {
-                  p_vertex1->SetCoordinate(0, extents[0]);
+                  if(norm_2(p_vertex1->rGetLocation() - p_vertex2->rGetLocation()) > 2.0 * zero_location_tol)
+                  {
+                      boost::shared_ptr<Polygon> p_polygon = Polygon::Create(p_vertex1);
+                                p_polygon->AddVertex(p_vertex2);
+                                polygons.push_back(p_polygon);
+                  }
               }
-              if(p_vertex1->rGetLocation()[0] > extents[1])
+          }
+          else
+          {
+              // Find where the points are
+              bool vert1_inside = true;
+              bool vert2_inside = true;
+              if(p_vertex1->rGetLocation()[0] < extents[0] || p_vertex1->rGetLocation()[0] > extents[1])
               {
-                  p_vertex1->SetCoordinate(0, extents[1]);
+                  vert1_inside = false;
               }
-              if(p_vertex1->rGetLocation()[1] < extents[2])
+              if(p_vertex1->rGetLocation()[1] < extents[2] || p_vertex1->rGetLocation()[1] > extents[3])
               {
-                  p_vertex1->SetCoordinate(1, extents[2]);
+                  vert1_inside = false;
               }
-              if(p_vertex1->rGetLocation()[1] > extents[3])
+              if(p_vertex2->rGetLocation()[0] < extents[0] || p_vertex2->rGetLocation()[0] > extents[1])
               {
-                  p_vertex1->SetCoordinate(1, extents[3]);
+                  vert2_inside = false;
+              }
+              if(p_vertex2->rGetLocation()[1] < extents[2] || p_vertex2->rGetLocation()[1] > extents[3])
+              {
+                  vert2_inside = false;
               }
               if(DIM==3)
               {
-                  if(p_vertex1->rGetLocation()[2] < extents[4])
+                  if(p_vertex1->rGetLocation()[2] < extents[4] || p_vertex1->rGetLocation()[2] > extents[5])
                   {
-                      p_vertex1->SetCoordinate(2, extents[4]);
+                      vert1_inside = false;
                   }
-                  if(p_vertex1->rGetLocation()[2] > extents[5])
+                  if(p_vertex2->rGetLocation()[2] < extents[4] || p_vertex2->rGetLocation()[2] > extents[5])
                   {
-                      p_vertex1->SetCoordinate(2, extents[5]);
+                      vert2_inside = false;
                   }
               }
 
+              if(vert1_inside && !vert2_inside)
+              {
+                  // move vert 2 to intsersection point
+                  p_vertex2->Translate(intercept_1-p_vertex2->rGetLocation());
+              }
+              else if(vert2_inside && !vert1_inside)
+              {
+                  // move vert 1 to intersection point
+                  p_vertex1->Translate(intercept_1-p_vertex1->rGetLocation());
+              }
+              else
+              {
+                  // Otherwise both points are either on or outside
+                  c_vector<double,DIM> tv1 = intercept_1-p_vertex1->rGetLocation();
+                  c_vector<double,DIM> tv2 = intercept_2-p_vertex2->rGetLocation();
+                  if(norm_2(tv1) > zero_location_tol)
+                  {
+                      p_vertex1->Translate(tv1);
+                  }
+                  if(norm_2(tv2) > zero_location_tol)
+                  {
+                      p_vertex2->Translate(tv2);
+                  }
+              }
+
+              // Check that we haven't hit the zero location and remove very short edges
+              if((norm_2(p_vertex1->rGetLocation()) > zero_location_tol) && (norm_2(p_vertex2->rGetLocation()) > zero_location_tol))
+              {
+                  if(norm_2(p_vertex1->rGetLocation() - p_vertex2->rGetLocation()) > 2.0 * zero_location_tol)
+                  {
+                      boost::shared_ptr<Polygon> p_polygon = Polygon::Create(p_vertex1);
+                                p_polygon->AddVertex(p_vertex2);
+                                polygons.push_back(p_polygon);
+                  }
+              }
           }
-          if(!vert2_inside)
-          {
-              if(p_vertex2->rGetLocation()[0] < extents[0])
-              {
-                  p_vertex2->SetCoordinate(0, extents[0]);
-              }
-              if(p_vertex2->rGetLocation()[0] > extents[1])
-              {
-                  p_vertex2->SetCoordinate(0, extents[1]);
-              }
-              if(p_vertex2->rGetLocation()[1] < extents[2])
-              {
-                  p_vertex2->SetCoordinate(1, extents[2]);
-              }
-              if(p_vertex2->rGetLocation()[1] > extents[3])
-              {
-                  p_vertex2->SetCoordinate(1, extents[3]);
-              }
-              if(DIM==3)
-              {
-                  if(p_vertex2->rGetLocation()[2] < extents[4])
-                  {
-                      p_vertex2->SetCoordinate(2, extents[4]);
-                  }
-                  if(p_vertex2->rGetLocation()[2] > extents[5])
-                  {
-                      p_vertex2->SetCoordinate(2, extents[5]);
-                  }
-              }
-
-          }
-
-          boost::shared_ptr<Polygon> p_polygon = Polygon::Create(p_vertex1);
-          p_polygon->AddVertex(p_vertex2);
-          polygons.push_back(p_polygon);
       }
     }
 
@@ -227,6 +230,7 @@ boost::shared_ptr<Part<DIM> > VoronoiGenerator<DIM>::Generate(boost::shared_ptr<
     {
         p_tesselation->AddPolygon(polygons[idx]);
     }
+
     return p_tesselation;
 }
 
