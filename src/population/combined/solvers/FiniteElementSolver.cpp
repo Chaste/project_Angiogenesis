@@ -40,6 +40,8 @@
 #include "FiniteElementSolver.hpp"
 #include "VesselSurfaceGenerator.hpp"
 #include "PlcMesh.hpp"
+#include "CaVesselSegment.hpp"
+#include "CaVascularNetwork.hpp"
 
 template<unsigned DIM>
 FiniteElementSolver<DIM>::FiniteElementSolver()
@@ -76,12 +78,12 @@ void FiniteElementSolver<DIM>::SetPde(boost::shared_ptr<HybridLinearEllipticPde<
 }
 
 template<unsigned DIM>
-void FiniteElementSolver<DIM>::Solve(bool writeSolution, bool vesselSurface)
+void FiniteElementSolver<DIM>::Solve(bool writeSolution)
 {
     // If there is a vessel network add it to the domain
     if (this->mpNetwork)
     {
-        mpDomain->AddVesselNetwork(this->mpNetwork, vesselSurface);
+        mpDomain->AddVesselNetwork(this->mpNetwork, this->mBoundaryConditionType == BoundaryConditionType::SURFACE);
     }
 
     // Mesh the domain
@@ -92,9 +94,9 @@ void FiniteElementSolver<DIM>::Solve(bool writeSolution, bool vesselSurface)
     double node_distance_tolerance = 1.e-3;
     BoundaryConditionsContainer<DIM, DIM, 1> bcc;
 
-    if(!vesselSurface)
+    if(!this->mBoundaryConditionType == BoundaryConditionType::SURFACE)
     {
-        ConstBoundaryCondition<DIM>* p_fixed_boundary_condition = new ConstBoundaryCondition<DIM>(40.0);
+        ConstBoundaryCondition<DIM>* p_fixed_boundary_condition = new ConstBoundaryCondition<DIM>(this->mBoundaryConditionValue);
         typename PlcMesh<DIM, DIM>::NodeIterator iter = p_mesh->GetNodeIteratorBegin();
         while (iter != p_mesh->GetNodeIteratorEnd())
         {
@@ -103,7 +105,8 @@ void FiniteElementSolver<DIM>::Solve(bool writeSolution, bool vesselSurface)
             {
                 location[idx] = (*iter).GetPoint()[idx];
             }
-            double distance_to_segment = this->mpNetwork->GetNearestSegment(location).second;
+            std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> seg_pair = this->mpNetwork->GetNearestSegment(location);
+            double distance_to_segment = seg_pair.second;
             if (distance_to_segment < node_distance_tolerance)
             {
                 bcc.AddDirichletBoundaryCondition(&(*iter), p_fixed_boundary_condition, 0, false);
@@ -113,22 +116,15 @@ void FiniteElementSolver<DIM>::Solve(bool writeSolution, bool vesselSurface)
     }
     else
     {
-        ConstBoundaryCondition<DIM>* p_fixed_boundary_condition = new ConstBoundaryCondition<DIM>(40.0);
+        ConstBoundaryCondition<DIM>* p_fixed_boundary_condition = new ConstBoundaryCondition<DIM>(this->mBoundaryConditionValue);
         typename PlcMesh<DIM, DIM>::BoundaryNodeIterator iter = p_mesh->GetBoundaryNodeIteratorBegin();
-
-        VesselSurfaceGenerator<DIM> generator(this->mpNetwork);
-        std::vector<boost::shared_ptr<Polygon> > polygons = generator.GetSurfacePolygons();
-
         while (iter < p_mesh->GetBoundaryNodeIteratorEnd())
         {
             ChastePoint<DIM> location = (*iter)->GetPoint();
-            for (unsigned idx = 0; idx < polygons.size(); idx++)
+            std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> seg_pair = this->mpNetwork->GetNearestSegment(location);
+            if(seg_pair.second <= (seg_pair.first->GetRadius()+1.e-2))
             {
-                if (polygons[idx]->ContainsPoint(location.rGetLocation()))
-                {
-                    bcc.AddDirichletBoundaryCondition(*iter, p_fixed_boundary_condition);
-                    break;
-                }
+                bcc.AddDirichletBoundaryCondition(*iter, p_fixed_boundary_condition);
             }
             ++iter;
         }

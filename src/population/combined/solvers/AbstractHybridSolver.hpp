@@ -46,6 +46,22 @@
 #include "SimpleCellPopulation.hpp"
 #include "AbstractBoundaryCondition.hpp"
 
+struct BoundaryConditionType
+{
+    enum Value
+    {
+        SURFACE, LINE
+    };
+};
+
+struct BoundaryConditionSource
+{
+    enum Value
+    {
+        SEGMENT, USER
+    };
+};
+
 /*
  * An abstract solver class for linear elliptic PDEs which can include
  * discrete representations of cells and vessels.
@@ -68,6 +84,18 @@ protected:
     /* The pde
     */
     boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > mpPde;
+
+    /* The boundary condition type
+    */
+    BoundaryConditionType::Value mBoundaryConditionType;
+
+    double mBoundaryConditionValue;
+
+    /* The boundary condition source
+    */
+    BoundaryConditionSource::Value mBoundaryConditionSource;
+
+    std::string mBoundaryConditionName;
 
     /* The domain boundary condition
     */
@@ -109,6 +137,14 @@ public:
      * @param pBoundaryCondition the boundary condition
      */
     void SetDomainBoundaryCondition(boost::shared_ptr<AbstractBoundaryCondition<DIM> > pBoundaryCondition);
+
+    void SetBoundaryConditionType(BoundaryConditionType::Value boundaryType);
+
+    void SetBoundaryConditionSource(BoundaryConditionSource::Value boundarySource);
+
+    void SetBoundaryConditionValue(double boundaryConditionValue);
+
+    void SetBoundaryConditionName(const std::string& rBoundaryConditionName);
 
     /* Set the pde to be solved
      * @param pPde the pde to be solved

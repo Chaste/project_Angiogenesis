@@ -40,6 +40,10 @@ AbstractHybridSolver<DIM>::AbstractHybridSolver()
     :   mpNetwork(),
         mpCellPopulation(),
         mpPde(),
+        mBoundaryConditionType(BoundaryConditionType::LINE),
+        mBoundaryConditionValue(0.0),
+        mBoundaryConditionSource(BoundaryConditionSource::USER),
+        mBoundaryConditionName(""),
         mpBoundaryCondition(),
         mpInterfaceCondition(),
         mWorkingDirectory(),
@@ -52,6 +56,30 @@ template<unsigned DIM>
 AbstractHybridSolver<DIM>::~AbstractHybridSolver()
 {
 
+}
+
+template<unsigned DIM>
+void AbstractHybridSolver<DIM>::SetBoundaryConditionType(BoundaryConditionType::Value boundaryType)
+{
+    mBoundaryConditionType = boundaryType;
+}
+
+template<unsigned DIM>
+void AbstractHybridSolver<DIM>::SetBoundaryConditionSource(BoundaryConditionSource::Value boundarySource)
+{
+    mBoundaryConditionSource = boundarySource;
+}
+
+template<unsigned DIM>
+void AbstractHybridSolver<DIM>::SetBoundaryConditionValue(double boundaryConditionValue)
+{
+    mBoundaryConditionValue = boundaryConditionValue;
+}
+
+template<unsigned DIM>
+void AbstractHybridSolver<DIM>::SetBoundaryConditionName(const std::string& rBoundaryConditionName)
+{
+    mBoundaryConditionName = rBoundaryConditionName;
 }
 
 template<unsigned DIM>

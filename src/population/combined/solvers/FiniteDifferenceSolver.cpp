@@ -159,11 +159,32 @@ void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
                     unsigned grid_index = this->GetGridIndex(k, j, i);
                     for (unsigned idx = 0; idx <  segments.size(); idx++)
                     {
-                        if (segments[idx]->GetDistance(this->GetLocation(k ,j, i)) <= grid_tolerance)
+                        double bc_value = this->mBoundaryConditionValue;
+                        if(this->mBoundaryConditionType == BoundaryConditionType::SURFACE)
                         {
-                            bc_indices.push_back(grid_index);
-                            linear_system.SetRhsVectorElement(grid_index, 40.0);
-                            break;
+                            if (segments[idx]->GetDistance(this->GetLocation(k ,j, i)) <= segments[idx]->GetRadius() + grid_tolerance)
+                            {
+                                if(this->mBoundaryConditionSource == BoundaryConditionSource::SEGMENT)
+                                {
+                                    bc_value = segments[idx]->template GetData<double>(this->mBoundaryConditionName);
+                                }
+                                bc_indices.push_back(grid_index);
+                                linear_system.SetRhsVectorElement(grid_index, bc_value);
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            if (segments[idx]->GetDistance(this->GetLocation(k ,j, i)) <= grid_tolerance)
+                            {
+                                if(this->mBoundaryConditionSource == BoundaryConditionSource::SEGMENT)
+                                {
+                                    bc_value = segments[idx]->template GetData<double>(this->mBoundaryConditionName);
+                                }
+                                bc_indices.push_back(grid_index);
+                                linear_system.SetRhsVectorElement(grid_index, bc_value);
+                                break;
+                            }
                         }
                     }
                 }

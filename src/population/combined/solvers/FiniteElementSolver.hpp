@@ -62,7 +62,7 @@ public:
 
     void SetMaxElementArea(double maxElementArea);
 
-    void Solve(bool writeSolution = false, bool vesselSurface = false);
+    void Solve(bool writeSolution = false);
 
 private:
 
