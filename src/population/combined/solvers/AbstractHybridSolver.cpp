@@ -59,6 +59,19 @@ AbstractHybridSolver<DIM>::~AbstractHybridSolver()
 }
 
 template<unsigned DIM>
+std::vector<double> AbstractHybridSolver<DIM>::GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints)
+{
+    std::vector<double> solution(samplePoints.size(), 0.0);
+    return solution;
+}
+
+template<unsigned DIM>
+boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > AbstractHybridSolver<DIM>::GetPde()
+{
+    return mpPde;
+}
+
+template<unsigned DIM>
 void AbstractHybridSolver<DIM>::SetBoundaryConditionType(BoundaryConditionType::Value boundaryType)
 {
     mBoundaryConditionType = boundaryType;
@@ -152,5 +165,6 @@ void AbstractHybridSolver<DIM>::Write()
 }
 
 // Explicit instantiation
+template class AbstractHybridSolver<1> ;
 template class AbstractHybridSolver<2> ;
 template class AbstractHybridSolver<3> ;

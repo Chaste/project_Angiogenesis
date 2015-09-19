@@ -126,7 +126,7 @@ boost::shared_ptr<Part<DIM> > VoronoiGenerator<DIM>::Generate(boost::shared_ptr<
       boost::shared_ptr<Vertex> p_vertex2 = Vertex::Create(v[0], v[1], v[2]);
 
       // Only include edges that are inside the domain - use the bounding box.
-      double zero_location_tol = 1.0;
+      double zero_location_tol = 20.0;
       double t1;
       double t2;
       int plane1;

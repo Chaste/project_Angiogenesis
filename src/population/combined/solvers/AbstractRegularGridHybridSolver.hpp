@@ -88,6 +88,8 @@ public:
      */
     c_vector<double, DIM> GetLocation(unsigned x_index, unsigned y_index, unsigned z_index);
 
+    std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints);
+
     /* Get the solution as vtk image data
      * @return the solution as vtk image data
      */

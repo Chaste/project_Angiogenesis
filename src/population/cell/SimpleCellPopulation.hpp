@@ -82,6 +82,8 @@ public:
 
     void GenerateCellsOnGrid(boost::shared_ptr<Part<DIM> > pPart, double spacing =1.0);
 
+    void GenerateCellsAtPoints(std::vector<c_vector<double, DIM> > points);
+
     vtkSmartPointer<vtkPoints> GetVtk();
 
     void Write(const std::string& rFileName);

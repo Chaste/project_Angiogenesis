@@ -37,6 +37,7 @@
 #include <vtkXMLImageDataWriter.h>
 #include <vtkDoubleArray.h>
 #include <vtkPointData.h>
+#include <vtkProbeFilter.h>
 #include "SmartPointers.hpp"
 #include "UblasVectorInclude.hpp"
 
@@ -57,6 +58,41 @@ template<unsigned DIM>
 AbstractRegularGridHybridSolver<DIM>::~AbstractRegularGridHybridSolver()
 {
 
+}
+
+template<unsigned DIM>
+std::vector<double> AbstractRegularGridHybridSolver<DIM>::GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints)
+{
+    std::vector<double> sampled_solution(samplePoints.size(), 0.0);
+
+    // Sample the field at these locations
+    vtkSmartPointer<vtkPolyData> p_polydata = vtkSmartPointer<vtkPolyData>::New();
+    vtkSmartPointer<vtkPoints> p_points = vtkSmartPointer<vtkPoints>::New();
+    p_points->SetNumberOfPoints(samplePoints.size());
+    for(unsigned idx=0; idx< samplePoints.size(); idx++)
+    {
+        if(DIM==3)
+        {
+            p_points->SetPoint(idx, samplePoints[idx][0], samplePoints[idx][1], samplePoints[idx][2]);
+        }
+        else
+        {
+            p_points->SetPoint(idx, samplePoints[idx][0], samplePoints[idx][1], 0.0);
+        }
+    }
+    p_polydata->SetPoints(p_points);
+
+    vtkSmartPointer<vtkProbeFilter> p_probe_filter = vtkSmartPointer<vtkProbeFilter>::New();
+    p_probe_filter->SetInput(p_polydata);
+    p_probe_filter->SetSource(GetSolution());
+    p_probe_filter->Update();
+    vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetOutput()->GetPointData();
+    unsigned num_points = p_point_data->GetArray("Default")->GetNumberOfTuples();
+    for(unsigned idx=0; idx<num_points; idx++)
+    {
+        sampled_solution[idx] = p_point_data->GetArray("Default")->GetTuple1(idx);
+    }
+    return sampled_solution;
 }
 
 template<unsigned DIM>

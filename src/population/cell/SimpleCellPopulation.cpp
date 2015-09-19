@@ -96,6 +96,17 @@ void SimpleCellPopulation<DIM>::BooleanWithVesselNetwork(boost::shared_ptr<CaVas
 }
 
 template<unsigned DIM>
+void SimpleCellPopulation<DIM>::GenerateCellsAtPoints(std::vector<c_vector<double, DIM> > points)
+{
+    std::vector<boost::shared_ptr<SimpleCell<DIM> > > cells;
+    for(unsigned idx = 0; idx < points.size();idx++)
+    {
+        cells.push_back(SimpleCell<DIM>::Create(points[idx]));
+    }
+    AddCells(cells);
+}
+
+template<unsigned DIM>
 void SimpleCellPopulation<DIM>::GenerateCellsOnGrid(unsigned xDim, unsigned yDim, unsigned zDim, double spacing, c_vector<double, DIM> origin)
 {
     std::vector<boost::shared_ptr<SimpleCell<DIM> > > cells;
@@ -207,5 +218,6 @@ void SimpleCellPopulation<DIM>::Write(const std::string& rFileName)
     writer->Write();
 }
 
+//template class SimpleCellPopulation<1> ;
 template class SimpleCellPopulation<2> ;
 template class SimpleCellPopulation<3> ;

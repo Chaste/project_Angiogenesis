@@ -128,6 +128,10 @@ public:
      */
     virtual vtkSmartPointer<vtkImageData> GetSolution();
 
+    boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > GetPde();
+
+    virtual std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints);
+
     /* Set a cell population
      * @param pCellPopulation a Chaste cell population
      */

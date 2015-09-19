@@ -64,6 +64,7 @@ class HybridLinearEllipticPde : public AbstractLinearEllipticPde<ELEMENT_DIM, SP
     double mConstantInUTerm;
     double mLinearInUTerm;
     std::string mVariableName;
+    std::vector<c_vector<double, SPACE_DIM> > mLinearInUPoints;
     boost::shared_ptr<SimpleCellPopulation<SPACE_DIM> > mpPopulation;
     boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > mpNetwork;
 
@@ -75,6 +76,7 @@ public:
             mConstantInUTerm(0.0),
             mLinearInUTerm(0.0),
             mVariableName("Default"),
+            mLinearInUPoints(),
             mpPopulation(),
             mpNetwork()
     {
@@ -122,6 +124,11 @@ public:
         mLinearInUTerm = linearInUTerm;
     }
 
+    void SetLinearInUPoints(std::vector<c_vector<double, SPACE_DIM> > locations)
+    {
+        mLinearInUPoints = locations;
+    }
+
     void SetDiffusionConstant(double diffusivity)
     {
         mDiffusivity = diffusivity;
@@ -145,21 +152,17 @@ public:
 
     double GetLinearInUTerm(c_vector<double, SPACE_DIM> location  = zero_vector<double>(SPACE_DIM), double spacing = 0.0)
     {
-        double cell_consumption_term = 0.0;
-        if(mpPopulation)
+        double consumption_term = 0.0;
+        unsigned num_points = 0;
+        for (unsigned mdx = 0; mdx < mLinearInUPoints.size(); mdx++)
         {
-            unsigned num_points = 0;
-            for (unsigned mdx = 0; mdx < mpPopulation->GetCells().size(); mdx++)
+            if (IsPointInBox(mLinearInUPoints[mdx], location, spacing))
             {
-                c_vector<double, SPACE_DIM> cell_location = mpPopulation->GetCells()[mdx]->rGetLocation();
-                if (IsPointInBox(cell_location, location, spacing))
-                {
-                    num_points++;
-                }
+                num_points++;
             }
-            cell_consumption_term = 1.e-5 * double(num_points);
         }
-        return mLinearInUTerm - cell_consumption_term;
+        consumption_term = 1.e-7 * double(num_points);
+        return mLinearInUTerm - consumption_term;
     }
 
     double GetDiffusionConstant()
