@@ -83,7 +83,7 @@ public:
         solver.SetMaxElementArea(500.0);
 
         solver.SetWorkingDirectory("TestFiniteElementSolver/KroghCylinder3d");
-        solver.Solve(true, false);
+        solver.Solve(true);
     }
 
     void Test3dKroghCylinderNetworkSurface()
@@ -113,7 +113,7 @@ public:
         solver.SetMaxElementArea(500.0);
 
         solver.SetWorkingDirectory("TestFiniteElementSolver/KroghCylinder3d_Surface");
-        solver.Solve(true, true);
+        solver.Solve(true);
     }
 
     void Test3dKroghCylinderNetworkCircle()
@@ -139,7 +139,7 @@ public:
         solver.SetMaxElementArea(500.0);
 
         solver.SetWorkingDirectory("TestFiniteElementSolver/KroghCylinder3dCircle");
-        solver.Solve(true, false);
+        solver.Solve(true);
     }
 
     void Test3dKroghCylinderNetworkCircleSurface()
@@ -165,7 +165,7 @@ public:
         solver.SetMaxElementArea(500.0);
 
         solver.SetWorkingDirectory("TestFiniteElementSolver/KroghCylinder3dCircle_Surface");
-        solver.Solve(true, true);
+        solver.Solve(true);
     }
 };
 
