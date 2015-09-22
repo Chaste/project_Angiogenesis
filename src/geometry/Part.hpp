@@ -197,6 +197,8 @@ public:
 
     bool IsPointInPart(c_vector<double, DIM> location, bool update=true);
 
+    void Translate(c_vector<double, DIM> vector);
+
     /* Write the part to file in vtk format
      * @param rFilename the path to the file to be written, should include the file extension.
      */

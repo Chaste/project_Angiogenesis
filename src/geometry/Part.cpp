@@ -483,6 +483,18 @@ bool Part<DIM>::IsPointInPart(c_vector<double, DIM> location, bool update)
 }
 
 template<unsigned DIM>
+void Part<DIM>::Translate(c_vector<double, DIM> vector)
+{
+    std::vector<boost::shared_ptr<Vertex> > vertices = GetVertices();
+    {
+        for (unsigned idx = 0; idx < vertices.size(); idx++)
+        {
+            vertices[idx]->Translate(vector);
+        }
+    }
+}
+
+template<unsigned DIM>
 void Part<DIM>::Write(const std::string& fileName)
 {
     GetVtk();

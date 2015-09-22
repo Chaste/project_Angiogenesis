@@ -64,7 +64,7 @@ protected:
 
     /* The origin of the domain
     */
-    c_vector<double, 2*DIM> mOrigin;
+    c_vector<double, DIM> mOrigin;
 
     /* The number of grid points in each direction
     */

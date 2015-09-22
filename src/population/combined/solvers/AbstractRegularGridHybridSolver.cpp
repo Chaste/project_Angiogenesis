@@ -165,6 +165,12 @@ void AbstractRegularGridHybridSolver<DIM>::SetExtents(boost::shared_ptr<Part<DIM
     {
         mExtents[2] = unsigned((spatial_extents[5] - spatial_extents[4]) / mGridSize) + 1u;
     }
+    mOrigin[0] = spatial_extents[0];
+    mOrigin[1] = spatial_extents[2];
+    if(DIM==3)
+    {
+        mOrigin[2] = spatial_extents[4];
+    }
 }
 
 template<unsigned DIM>
