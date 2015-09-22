@@ -88,12 +88,27 @@ public:
      */
     c_vector<double, DIM> GetLocation(unsigned x_index, unsigned y_index, unsigned z_index);
 
-    std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints);
+    std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints,
+                                            const std::string& rSpeciesLabel = "Default");
+
+    std::vector<double> GetSolutionOnLine(double sampleSpacing,
+                                          c_vector<double, DIM> start_point,
+                                          c_vector<double, DIM> end_point,
+                                          const std::string& rSpeciesLabel = "Default");
+
+    vtkSmartPointer<vtkImageData> GetSolutionOnVolume(double sampleSpacing = 1.0,
+                                            std::vector<unsigned> dimensions = std::vector<unsigned>(DIM,10),
+                                            const std::string& rSpeciesLabel = "Default",
+                                            c_vector<double, DIM> origin = zero_vector<double>(DIM));
 
     /* Get the solution as vtk image data
      * @return the solution as vtk image data
      */
     vtkSmartPointer<vtkImageData> GetSolution();
+
+    double GetVolumeAverageSolution(const std::string& arrayName);
+
+    void WriteHistograms(const std::string& arrayName, const std::string& fileName, double binSize, unsigned numberOfBins);
 
     /* Return true if the specified indexes correspond to a lattice point on the
      * domain boundary.

@@ -130,7 +130,7 @@ public:
 
     boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > GetPde();
 
-    virtual std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints);
+    virtual std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints, const std::string& rSpeciesLabel = "Default");
 
     /* Set a cell population
      * @param pCellPopulation a Chaste cell population

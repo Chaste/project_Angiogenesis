@@ -38,6 +38,7 @@
 #include <vtkDoubleArray.h>
 #include <vtkPointData.h>
 #include <vtkProbeFilter.h>
+#include <vtkLineSource.h>
 #include "SmartPointers.hpp"
 #include "UblasVectorInclude.hpp"
 
@@ -61,7 +62,8 @@ AbstractRegularGridHybridSolver<DIM>::~AbstractRegularGridHybridSolver()
 }
 
 template<unsigned DIM>
-std::vector<double> AbstractRegularGridHybridSolver<DIM>::GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints)
+std::vector<double> AbstractRegularGridHybridSolver<DIM>::GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints,
+                                                                              const std::string& rSpeciesLabel)
 {
     std::vector<double> sampled_solution(samplePoints.size(), 0.0);
 
@@ -87,12 +89,95 @@ std::vector<double> AbstractRegularGridHybridSolver<DIM>::GetSolutionAtPoints(st
     p_probe_filter->SetSource(GetSolution());
     p_probe_filter->Update();
     vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetOutput()->GetPointData();
-    unsigned num_points = p_point_data->GetArray("Default")->GetNumberOfTuples();
+    unsigned num_points = p_point_data->GetArray(rSpeciesLabel.c_str())->GetNumberOfTuples();
     for(unsigned idx=0; idx<num_points; idx++)
     {
-        sampled_solution[idx] = p_point_data->GetArray("Default")->GetTuple1(idx);
+        sampled_solution[idx] = p_point_data->GetArray(rSpeciesLabel.c_str())->GetTuple1(idx);
     }
     return sampled_solution;
+}
+
+template<unsigned DIM>
+double AbstractRegularGridHybridSolver<DIM>::GetVolumeAverageSolution(const std::string& arrayName)
+{
+    unsigned num_points = mpSolution->GetPointData()->GetArray(0)->GetNumberOfTuples();
+    double sum = 0.0;
+    for(unsigned idx=0; idx<num_points; idx++)
+    {
+        sum+= mpSolution->GetPointData()->GetArray(arrayName.c_str())->GetTuple1(idx);
+    }
+    return sum / double(num_points);
+}
+
+template<unsigned DIM>
+std::vector<double> AbstractRegularGridHybridSolver<DIM>::GetSolutionOnLine(double sampleSpacing,
+                                                                            c_vector<double, DIM> start_point,
+                                                                            c_vector<double, DIM> end_point,
+                                                                            const std::string& rSpeciesLabel)
+{
+    vtkSmartPointer<vtkLineSource> p_line = vtkSmartPointer<vtkLineSource>::New();
+    p_line->SetPoint1(&start_point[0]);
+    p_line->SetPoint2(&end_point[0]);
+    p_line->SetResolution(sampleSpacing);
+    vtkSmartPointer<vtkProbeFilter> p_probe_filter = vtkSmartPointer<vtkProbeFilter>::New();
+    p_probe_filter->SetInputConnection(p_line->GetOutputPort());
+    p_probe_filter->SetSource(mpSolution);
+    p_probe_filter->Update();
+
+    vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetOutput()->GetPointData();
+    std::vector<double>line_data(p_point_data->GetNumberOfTuples());
+    for(unsigned idx=0;idx<p_point_data->GetNumberOfTuples();idx++)
+    {
+        line_data[idx] = p_point_data->GetArray(rSpeciesLabel.c_str())->GetTuple1(idx);
+    }
+    return line_data;
+}
+
+template<unsigned DIM>
+vtkSmartPointer<vtkImageData> AbstractRegularGridHybridSolver<DIM>::GetSolutionOnVolume(double sampleSpacing,
+                                                          std::vector<unsigned> dimensions,
+                                                          const std::string& rSpeciesLabel,
+                                                          c_vector<double, DIM> origin)
+{
+    vtkSmartPointer<vtkImageData> p_sampling_grid = vtkSmartPointer<vtkImageData>::New();
+    p_sampling_grid->SetSpacing(sampleSpacing, sampleSpacing, sampleSpacing);
+    p_sampling_grid->SetOrigin(origin[0], origin[1], origin[2]);
+    p_sampling_grid->SetDimensions(dimensions[0], dimensions[1], dimensions[2]);
+
+    vtkSmartPointer<vtkProbeFilter> p_probe_filter = vtkSmartPointer<vtkProbeFilter>::New();
+    p_probe_filter->SetInput(p_sampling_grid);
+    p_probe_filter->SetSource(mpSolution);
+    p_probe_filter->Update();
+    return p_probe_filter->GetImageDataOutput();
+}
+
+template<unsigned DIM>
+void AbstractRegularGridHybridSolver<DIM>::WriteHistograms(const std::string& arrayName, const std::string& fileName, double binSize, unsigned numberOfBins)
+{
+    std::vector<unsigned> bins(numberOfBins, 0);
+
+    // populate the bins
+    unsigned num_points = mpSolution->GetPointData()->GetArray(arrayName.c_str())->GetNumberOfTuples();
+    for(unsigned idx=0; idx<num_points; idx++)
+    {
+        unsigned bin_label = std::floor(mpSolution->GetPointData()->GetArray(arrayName.c_str())->GetTuple1(idx)/ binSize);
+        if(bin_label > numberOfBins)
+        {
+            bin_label = numberOfBins;
+        }
+        bins[bin_label]++;
+    }
+
+    std::ofstream output_file(fileName.c_str());
+    output_file << "Bin , Value \n";
+    if (output_file.is_open())
+    {
+        for(unsigned idx=0; idx< numberOfBins;idx++)
+        {
+            output_file << double(idx) * binSize << " , "<< bins[idx] << "\n";
+        }
+        output_file.close();
+    }
 }
 
 template<unsigned DIM>

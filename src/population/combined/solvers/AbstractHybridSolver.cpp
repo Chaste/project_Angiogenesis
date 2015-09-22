@@ -59,7 +59,8 @@ AbstractHybridSolver<DIM>::~AbstractHybridSolver()
 }
 
 template<unsigned DIM>
-std::vector<double> AbstractHybridSolver<DIM>::GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints)
+std::vector<double> AbstractHybridSolver<DIM>::GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints,
+                                                                   const std::string& rSpeciesLabel)
 {
     std::vector<double> solution(samplePoints.size(), 0.0);
     return solution;
