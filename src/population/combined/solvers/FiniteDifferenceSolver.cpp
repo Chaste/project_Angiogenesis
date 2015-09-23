@@ -66,6 +66,7 @@ void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
 {
     // Set up the system
     unsigned number_of_points = this->mExtents[0] * this->mExtents[1] * this->mExtents[2];
+
     LinearSystem linear_system(number_of_points, 7);
     for (unsigned i = 0; i < this->mExtents[2]; i++) // Z
     {

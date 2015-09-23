@@ -45,6 +45,7 @@
 #include "HybridLinearEllipticPde.hpp"
 #include "SimpleCellPopulation.hpp"
 #include "DirichletBoundaryCondition.hpp"
+#include "DiscreteSource.hpp"
 
 /*
  * An abstract solver class for linear elliptic PDEs which can include

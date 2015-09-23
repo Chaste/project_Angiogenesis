@@ -37,13 +37,6 @@
 #define HYBRIDLINEARELLIPTICPDE_HPP_
 
 #include <string>
-#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning for now (gcc4.3)
-#include <vtkBox.h>
-#include <vtkTetra.h>
-#include <vtkPoints.h>
-#include <vtkSmartPointer.h>
-#include <vtkUnstructuredGrid.h>
-#include <vtkCellLocator.h>
 #include "ChastePoint.hpp"
 #include "UblasIncludes.hpp"
 #include "SmartPointers.hpp"
@@ -51,6 +44,8 @@
 #include "AbstractLinearEllipticPde.hpp"
 #include "SimpleCellPopulation.hpp"
 #include "CaVascularNetwork.hpp"
+#include "DiscreteSource.hpp"
+#include "GeometryTools.hpp"
 
 /*
  * Linear Elliptic PDE with discrete or averaged cell and
@@ -68,6 +63,10 @@ class HybridLinearEllipticPde : public AbstractLinearEllipticPde<ELEMENT_DIM, SP
     boost::shared_ptr<SimpleCellPopulation<SPACE_DIM> > mpPopulation;
     boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > mpNetwork;
 
+    /* The discrete sources
+    */
+    std::vector<boost::shared_ptr<DiscreteSource<SPACE_DIM> > > mDiscreteSources;
+
 public:
 
     HybridLinearEllipticPde() :
@@ -78,7 +77,8 @@ public:
             mVariableName("Default"),
             mLinearInUPoints(),
             mpPopulation(),
-            mpNetwork()
+            mpNetwork(),
+            mDiscreteSources()
     {
         mDiffusionTensor *= mDiffusivity;
     }
@@ -135,6 +135,11 @@ public:
         mDiffusionTensor = identity_matrix<double>(SPACE_DIM)* mDiffusivity;
     }
 
+    void AddDiscreteSource(boost::shared_ptr<DiscreteSource<SPACE_DIM> > pDiscreteSource)
+    {
+        mDiscreteSources.push_back(pDiscreteSource);
+    }
+
     double GetConstantInUTerm(c_vector<double, SPACE_DIM> location = zero_vector<double>(SPACE_DIM), double spacing = 0.0)
     {
         return mConstantInUTerm;
@@ -156,7 +161,7 @@ public:
         unsigned num_points = 0;
         for (unsigned mdx = 0; mdx < mLinearInUPoints.size(); mdx++)
         {
-            if (IsPointInBox(mLinearInUPoints[mdx], location, spacing))
+            if (IsPointInBox<SPACE_DIM>(mLinearInUPoints[mdx], location, spacing))
             {
                 num_points++;
             }
@@ -170,186 +175,6 @@ public:
         return mDiffusivity;
     }
 
-    bool IsPointInBox(c_vector<double, SPACE_DIM> point, c_vector<double, SPACE_DIM> location, double spacing)
-    {
-        bool point_in_box = false;
-        if(point[0] >= location[0] -spacing/2.0 && point[0] <= location [0] + spacing/2.0)
-        {
-            if(point[1] >= location[1] -spacing/2.0 && point[1] <= location [1] + spacing/2.0)
-            {
-                if(SPACE_DIM==3)
-                {
-                    if(point[2] >= location[2] -spacing/2.0 && point[2] <= location [2] + spacing/2.0)
-                    {
-                        return true;
-                    }
-                }
-                else
-                {
-                    return true;
-                }
-            }
-        }
-        return point_in_box;
-    }
-
-    bool IsPointInTetra(c_vector<double, SPACE_DIM> start_point, std::vector<c_vector<double, SPACE_DIM> > locations)
-    {
-        vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints> :: New();
-        if(SPACE_DIM==3)
-        {
-            points->InsertNextPoint(locations[0][0], locations[0][1], locations[0][2]);
-            points->InsertNextPoint(locations[1][0], locations[1][1], locations[1][2]);
-            points->InsertNextPoint(locations[2][0], locations[2][1], locations[2][2]);
-            points->InsertNextPoint(locations[3][0], locations[3][1], locations[3][2]);
-        }
-        else
-        {
-            points->InsertNextPoint(locations[0][0], locations[0][1], 0.0);
-            points->InsertNextPoint(locations[1][0], locations[1][1], 0.0);
-            points->InsertNextPoint(locations[2][0], locations[2][1], 0.0);
-            points->InsertNextPoint(locations[3][0], locations[3][1], 0.0);
-        }
-
-
-        vtkSmartPointer<vtkUnstructuredGrid> p_grid = vtkSmartPointer<vtkUnstructuredGrid>::New();
-        p_grid->SetPoints(points);
-
-        vtkIdType ptIds[] = {0, 1, 2, 3};
-        p_grid->InsertNextCell(VTK_TETRA, 4, ptIds);
-        p_grid->Update();
-
-        vtkSmartPointer<vtkCellLocator> p_locator = vtkSmartPointer<vtkCellLocator>::New();
-        p_locator->SetDataSet(p_grid);
-        p_locator->Update();
-        int in_tetra = p_locator->FindCell(&start_point[0]);
-        if(in_tetra == -1)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-    }
-
-    double LengthOfLineInBox(c_vector<double, SPACE_DIM> start_point,
-                             c_vector<double, SPACE_DIM> end_point,
-                             c_vector<double, SPACE_DIM> location, double spacing)
-    {
-        // If the line is fully in the box return its length
-        bool point1_in_box = IsPointInBox(start_point, location, spacing);
-        bool point2_in_box = IsPointInBox(end_point, location, spacing);
-        if(point1_in_box && point2_in_box)
-        {
-            return norm_2(end_point - start_point);
-        }
-        else
-        {
-            c_vector<double,6> bounds;
-            bounds[0] = location[0] - spacing/2.0;
-            bounds[1] = location[0] + spacing/2.0;
-            bounds[2] = location[1] - spacing/2.0;
-            bounds[3] = location[1] + spacing/2.0;
-            if(SPACE_DIM==3)
-            {
-                bounds[4] = location[2] - spacing/2.0;
-                bounds[5] = location[2] + spacing/2.0;
-            }
-            else
-            {
-                bounds[4] = 0.0;
-                bounds[5] = 0.0;
-            }
-
-            double t1;
-            double t2;
-            int plane1;
-            int plane2;
-            c_vector<double,SPACE_DIM> intercept_1;
-            c_vector<double,SPACE_DIM> intercept_2;
-
-            int in_box = vtkBox::IntersectWithLine(&bounds[0], &start_point[0], &end_point[0], t1, t2, &intercept_1[0], &intercept_2[0], plane1, plane2);
-
-            if(point1_in_box)
-            {
-                return norm_2(intercept_2 - start_point);
-            }
-
-            if(point2_in_box)
-            {
-                return norm_2(intercept_1 - end_point);
-            }
-
-            if(in_box)
-            {
-                return norm_2(intercept_2 - intercept_1);
-            }
-            else
-            {
-                return 0.0;
-            }
-        }
-    }
-
-    double LengthOfLineInTetra(c_vector<double, SPACE_DIM> start_point,
-                               c_vector<double, SPACE_DIM> end_point,
-                               std::vector<c_vector<double, SPACE_DIM> > locations)
-    {
-        bool point1_in_tetra = IsPointInTetra(start_point, locations);
-        bool point2_in_tetra = IsPointInTetra(end_point, locations);
-
-        if(point1_in_tetra && point2_in_tetra)
-        {
-            return norm_2(end_point - start_point);
-        }
-        else
-        {
-            int line_crosses;
-
-            vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints> :: New();
-            points->InsertNextPoint(locations[0][0], locations[0][1], locations[0][2]);
-            points->InsertNextPoint(locations[1][0], locations[1][1], locations[1][2]);
-            points->InsertNextPoint(locations[2][0], locations[2][1], locations[2][2]);
-            points->InsertNextPoint(locations[3][0], locations[3][1], locations[3][2]);
-
-            vtkSmartPointer<vtkUnstructuredGrid> p_grid = vtkSmartPointer<vtkUnstructuredGrid>::New();
-            p_grid->SetPoints(points);
-
-            vtkIdType ptIds[] = {0, 1, 2, 3};
-            p_grid->InsertNextCell(VTK_TETRA, 4, ptIds);
-            p_grid->Update();
-
-            double t;
-            c_vector<double,SPACE_DIM> intersection;
-            c_vector<double,SPACE_DIM> parametric_intersection;
-            int subId;
-
-            if(point1_in_tetra)
-            {
-                p_grid->GetCell(0)->IntersectWithLine(&start_point[0], &end_point[0], 1.e-6, t, &intersection[0], &parametric_intersection[0], subId);
-                return norm_2(intersection - start_point);
-            }
-
-            if(point2_in_tetra)
-            {
-                p_grid->GetCell(0)->IntersectWithLine(&end_point[0], &start_point[0], 1.e-6, t, &intersection[0], &parametric_intersection[0], subId);
-                return norm_2(intersection - end_point);
-            }
-
-            line_crosses = p_grid->GetCell(0)->IntersectWithLine(&start_point[0], &end_point[0], 1.e-6, t, &intersection[0], &parametric_intersection[0], subId);
-            if(line_crosses)
-            {
-                c_vector<double,SPACE_DIM> intersection2;
-                p_grid->GetCell(0)->IntersectWithLine(&end_point[0], &start_point[0], 1.e-6, t, &intersection2[0], &parametric_intersection[0], subId);
-                return norm_2(intersection - intersection2);
-            }
-            else
-            {
-                return 0.0;
-            }
-        }
-    }
 };
 
 #endif /*HYBRIDLINEARELLIPTICPDE_HPP_*/
