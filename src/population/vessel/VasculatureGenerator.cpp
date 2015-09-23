@@ -67,6 +67,95 @@ VasculatureGenerator<DIM>::~VasculatureGenerator()
 }
 
 template<unsigned DIM>
+boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateOvalNetwork(double scale_factor,
+                                                                 unsigned num_increments,
+                                                                 double a_param,
+                                                                 double b_param)
+{
+    // It is 'melon' shaped with one input and output vessel
+    double increment_size = (2.0 * M_PI) / double(num_increments);
+    double z_position = scale_factor;
+
+    std::vector<boost::shared_ptr<VascularNode<DIM> > > v1_nodes;
+    v1_nodes.push_back(VascularNode<DIM>::Create(0.0, 0.0, z_position));
+    v1_nodes.push_back(VascularNode<DIM>::Create(increment_size * scale_factor, 0.0, z_position));
+    boost::shared_ptr<CaVessel<DIM> > p_vessel_1 = CaVessel<DIM>::Create(v1_nodes);
+    p_vessel_1->SetId(1);
+
+    double x_offset = increment_size + std::sqrt(b_param*b_param + a_param*a_param);
+    c_vector<double, 2*DIM> bounds = zero_vector<double>(2*DIM);
+    bounds[0] = 0.0;
+    bounds[4] = 0.0;
+    bounds[5] = 2.0 * z_position;
+
+    std::vector<boost::shared_ptr<VascularNode<DIM> > > v2_nodes;
+    double y_max = 0.0;
+    for(unsigned idx=0; idx<= num_increments/2; idx++)
+    {
+        double t = double(idx) * increment_size;
+        double c_value = a_param*a_param*std::cos(2.0 * t) +
+                std::sqrt(pow(b_param,4) -  a_param*a_param*pow(std::sin(2.0 * t),2));
+        double x = std::cos(t) * std::sqrt(c_value) + x_offset;
+        double y = std::sin(t) * std::sqrt(c_value);
+        if(y>y_max)
+        {
+            y_max=y;
+        }
+        double z = z_position;
+        v2_nodes.push_back(VascularNode<DIM>::Create(x * scale_factor, y * scale_factor, z));
+    }
+
+    std::vector<boost::shared_ptr<VascularNode<DIM> > > v3_nodes;
+    for(unsigned idx=num_increments/2; idx<= num_increments; idx++)
+    {
+        double t = double(idx) * increment_size;
+        double c_value = a_param*a_param*std::cos(2.0 * t) +
+                std::sqrt(pow(b_param,4) -  a_param*a_param*pow(std::sin(2.0 * t),2));
+        double x = std::cos(t) * std::sqrt(c_value) + x_offset;
+        double y = std::sin(t) * std::sqrt(c_value);
+        if(y>y_max)
+        {
+            y_max=y;
+        }
+        double z = z_position;
+        v3_nodes.push_back(VascularNode<DIM>::Create(x * scale_factor, y * scale_factor, z));
+    }
+
+    boost::shared_ptr<CaVessel<DIM> > p_vessel_2 = CaVessel<DIM>::Create(v2_nodes);
+    boost::shared_ptr<CaVessel<DIM> > p_vessel_3 = CaVessel<DIM>::Create(v3_nodes);
+    boost::shared_ptr<CaVascularNetwork<DIM> > p_network = CaVascularNetwork<DIM>::Create();
+    p_vessel_2->SetId(2);
+    p_vessel_3->SetId(3);
+
+    std::vector<boost::shared_ptr<VascularNode<DIM> > > v4_nodes;
+    v4_nodes.push_back(VascularNode<DIM>::Create((std::sqrt(a_param*a_param + b_param*b_param) + x_offset) * scale_factor, 0.0, z_position));
+    v4_nodes.push_back(VascularNode<DIM>::Create((std::sqrt(a_param*a_param + b_param*b_param) + increment_size + x_offset) * scale_factor, 0.0, z_position));
+    bounds[1] = (std::sqrt(a_param*a_param + b_param*b_param) + increment_size + x_offset) * scale_factor;
+    bounds[2] = -y_max * scale_factor;
+    bounds[3] = y_max * scale_factor;
+
+    boost::shared_ptr<CaVessel<DIM> > p_vessel_4 = CaVessel<DIM>::Create(v4_nodes);
+    p_vessel_4->SetId(4);
+
+    p_network->AddVessel(p_vessel_1);
+    p_network->AddVessel(p_vessel_2);
+    p_network->AddVessel(p_vessel_3);
+    p_network->AddVessel(p_vessel_4);
+    p_network->MergeCoincidentNodes(1.e-6);
+
+    double impedance = 1.e18;
+    p_vessel_1->GetSegments()[0]->GetFlowProperties()->SetImpedance(impedance);
+    p_network->SetSegmentProperties(p_vessel_1->GetSegments()[0]);
+
+    p_vessel_1->GetStartNode()->GetFlowProperties()->SetIsInputNode(true);
+    p_vessel_1->GetStartNode()->GetFlowProperties()->SetPressure(3393);
+
+    p_vessel_4->GetEndNode()->GetFlowProperties()->SetIsOutputNode(true);
+    p_vessel_4->GetEndNode()->GetFlowProperties()->SetPressure(1000.5);
+    return p_network;
+}
+
+template<unsigned DIM>
 boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateParrallelNetwork(boost::shared_ptr<Part<DIM> > domain,
                                                                     double targetDensity,
                                                                     VesselDistribution::Value distributionType,

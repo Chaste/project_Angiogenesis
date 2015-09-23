@@ -140,6 +140,13 @@ public:
                                                                     c_vector<double, DIM> startPosition = zero_vector<double>(DIM));
 
     /*
+     * Creates an oval shaped network with one inlet and one outlet
+     */
+    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateOvalNetwork(double scale_factor = 200.0,
+                                                                     unsigned num_increments =40,
+                                                                     double a_param = 0.5,
+                                                                     double b_param = 1.0);
+    /*
      * Generate a network on the edges of a Part
      */
     boost::shared_ptr<CaVascularNetwork<DIM> > GenerateFromPart(boost::shared_ptr<Part<DIM> > part);

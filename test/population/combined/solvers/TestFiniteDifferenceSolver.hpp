@@ -55,7 +55,7 @@
 #include "SimpleCell.hpp"
 #include "SimpleCellPopulation.hpp"
 
-class TestFineGridFiniteDifferenceSimulation : public CxxTest::TestSuite
+class TestFiniteDifferenceSolver : public CxxTest::TestSuite
 {
 
 public:

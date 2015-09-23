@@ -42,6 +42,15 @@
 #include "Part.hpp"
 #include "HybridLinearEllipticPde.hpp"
 
+struct VesselRepresentation
+{
+    enum Value
+    {
+        LINE, SURFACE
+    };
+};
+
+
 template<unsigned DIM>
 class FiniteElementSolver : public AbstractHybridSolver<DIM>
 {
@@ -49,6 +58,7 @@ class FiniteElementSolver : public AbstractHybridSolver<DIM>
     boost::shared_ptr<Part<DIM> > mpDomain;
     double mGridSize;
     boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > mpPde;
+    VesselRepresentation::Value mVesselRepresentation;
 
 public:
 
@@ -59,6 +69,8 @@ public:
     void SetDomain(boost::shared_ptr<Part<DIM> > pDomain);
 
     void SetPde(boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > pPde);
+
+    void SetVesselRepresentation(VesselRepresentation::Value vesselRepresentation);
 
     void SetMaxElementArea(double maxElementArea);
 

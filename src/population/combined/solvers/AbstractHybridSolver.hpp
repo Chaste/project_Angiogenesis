@@ -44,23 +44,7 @@
 #include "CaVascularNetwork.hpp"
 #include "HybridLinearEllipticPde.hpp"
 #include "SimpleCellPopulation.hpp"
-#include "AbstractBoundaryCondition.hpp"
-
-struct BoundaryConditionType
-{
-    enum Value
-    {
-        SURFACE, LINE
-    };
-};
-
-struct BoundaryConditionSource
-{
-    enum Value
-    {
-        SEGMENT, USER
-    };
-};
+#include "DirichletBoundaryCondition.hpp"
 
 /*
  * An abstract solver class for linear elliptic PDEs which can include
@@ -81,29 +65,13 @@ protected:
     */
     boost::shared_ptr<SimpleCellPopulation<DIM> > mpCellPopulation;
 
-    /* The pde
+    /* The pde to be solved
     */
     boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > mpPde;
 
-    /* The boundary condition type
+    /* The dirichlet boundary conditions
     */
-    BoundaryConditionType::Value mBoundaryConditionType;
-
-    double mBoundaryConditionValue;
-
-    /* The boundary condition source
-    */
-    BoundaryConditionSource::Value mBoundaryConditionSource;
-
-    std::string mBoundaryConditionName;
-
-    /* The domain boundary condition
-    */
-    boost::shared_ptr<AbstractBoundaryCondition<DIM> > mpBoundaryCondition;
-
-    /* The vessel interface boundary condition
-    */
-    boost::shared_ptr<AbstractBoundaryCondition<DIM> > mpInterfaceCondition;
+    std::vector<boost::shared_ptr<DirichletBoundaryCondition<DIM> > > mDirichletBoundaryConditions;
 
     /* The working directory for output
     */
@@ -123,7 +91,7 @@ public:
      */
     virtual ~AbstractHybridSolver();
 
-    /* Get the solution as vtk image data
+    /* Get the solution as vtk image data. If the solution is on an unstructured grid it must be first resampled.
      * @return the solution as vtk image data
      */
     virtual vtkSmartPointer<vtkImageData> GetSolution();
@@ -140,15 +108,7 @@ public:
     /* Set a boundary condition for the domain
      * @param pBoundaryCondition the boundary condition
      */
-    void SetDomainBoundaryCondition(boost::shared_ptr<AbstractBoundaryCondition<DIM> > pBoundaryCondition);
-
-    void SetBoundaryConditionType(BoundaryConditionType::Value boundaryType);
-
-    void SetBoundaryConditionSource(BoundaryConditionSource::Value boundarySource);
-
-    void SetBoundaryConditionValue(double boundaryConditionValue);
-
-    void SetBoundaryConditionName(const std::string& rBoundaryConditionName);
+    void AddDirichletBoundaryCondition(boost::shared_ptr<DirichletBoundaryCondition<DIM> > pBoundaryCondition);
 
     /* Set the pde to be solved
      * @param pPde the pde to be solved
@@ -159,11 +119,6 @@ public:
      * @param pNetwork the vessel network
      */
     void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
-
-    /* Set the boundary condition on the vessel tissue interface
-     * @param pBoundaryCondition the boundary condition on the vessel tissue interface
-     */
-    void SetInterfaceBoundaryCondition(boost::shared_ptr<AbstractBoundaryCondition<DIM> > pBoundaryCondition);
 
     /* Solve the pde
      * @param writeSolution whether to write the solution to file

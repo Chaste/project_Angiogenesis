@@ -37,6 +37,7 @@
 #define FACET_HPP_
 
 #include <vector>
+#include <map>
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning
 #include <vtkSmartPointer.h>
 #include <vtkPoints.h>
@@ -64,6 +65,8 @@ class Facet
      * polygons are added.
      */
     bool mVerticesUpToDate;
+
+    std::map<std::string, double> mData;
 
 public:
 
@@ -163,6 +166,10 @@ public:
     /* Update the mVertices member
      */
     void UpdateVertices();
+
+    void SetData(const std::string& label, double value);
+
+    double GetData(const std::string& label);
 };
 
 #endif /*FACET_HPP_*/

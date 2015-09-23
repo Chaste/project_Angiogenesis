@@ -54,7 +54,7 @@ class AbstractAngiogenesisSolver
     unsigned mOutputFrequency;
     std::string mOutputDirectory;
     double mNodeAnastamosisRadius;
-    boost::shared_ptr<AbstractHybridSolver<DIM> > mpPdeSolver;
+    std::vector<boost::shared_ptr<AbstractHybridSolver<DIM> > > mPdeSolvers;
     bool mSolveFlow;
     double mSproutingProbability;
 
@@ -73,13 +73,13 @@ public:
 
     virtual c_vector<double, DIM> GetGrowthDirection(c_vector<double, DIM> currentDirection);
 
-    void SetPdeSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pPdeSolver);
+    void AddPdeSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pPdeSolver);
 
     void SetSolveFlow(bool solveFlow=true);
 
     void SetSproutingProbability(double sproutingProbability);
 
-    void UpdateNodalPositions();
+    void UpdateNodalPositions(const std::string& speciesLabel = "Default");
 
     void DoSprouting();
 

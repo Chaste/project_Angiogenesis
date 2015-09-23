@@ -45,7 +45,8 @@
 Facet::Facet(std::vector<boost::shared_ptr<Polygon> > polygons) :
         mPolygons(polygons),
         mVertices(),
-        mVerticesUpToDate(false)
+        mVerticesUpToDate(false),
+        mData()
 {
 
 }
@@ -53,7 +54,8 @@ Facet::Facet(std::vector<boost::shared_ptr<Polygon> > polygons) :
 Facet::Facet(boost::shared_ptr<Polygon> pPolygon) :
         mPolygons(),
         mVertices(),
-        mVerticesUpToDate(false)
+        mVerticesUpToDate(false),
+        mData()
 {
     mPolygons.push_back(pPolygon);
 }
@@ -72,6 +74,16 @@ boost::shared_ptr<Facet> Facet::Create(boost::shared_ptr<Polygon> pPolygon)
 
 Facet::~Facet()
 {
+}
+
+void Facet::SetData(const std::string& label, double value)
+{
+    mData[label] = value;
+}
+
+double Facet::GetData(const std::string& label)
+{
+    return mData[label];
 }
 
 void Facet::AddPolygons(std::vector<boost::shared_ptr<Polygon> > polygons)

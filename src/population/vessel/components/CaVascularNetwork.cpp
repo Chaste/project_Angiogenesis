@@ -51,6 +51,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif // CHASTE_VTK
 #include "SmartPointers.hpp"
 #include "OutputFileHandler.hpp"
+#include "SegmentFlowProperties.hpp"
 
 #include "CaVascularNetwork.hpp"
 
@@ -95,6 +96,18 @@ void CaVascularNetwork<DIM>::AddVessels(std::vector<boost::shared_ptr<CaVessel<D
     mSegmentsUpToDate = false;
     mNodesUpToDate = false;
     mVesselNodesUpToDate = false;
+}
+
+template <unsigned DIM>
+void CaVascularNetwork<DIM>::CopySegmentFlowProperties(unsigned index)
+{
+    boost::shared_ptr<SegmentFlowProperties> properties = GetVesselSegments()[index]->GetFlowProperties();
+    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = GetVesselSegments();
+    typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator it;
+    for(it = segments.begin(); it != segments.end(); it++)
+    {
+        (*it)->SetFlowProperties(*properties);
+    }
 }
 
 template <unsigned DIM>

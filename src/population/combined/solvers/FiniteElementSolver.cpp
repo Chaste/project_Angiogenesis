@@ -48,7 +48,8 @@ FiniteElementSolver<DIM>::FiniteElementSolver()
     : AbstractHybridSolver<DIM>(),
       mpDomain(),
       mGridSize(100.0),
-      mpPde()
+      mpPde(),
+      mVesselRepresentation(VesselRepresentation::LINE)
 {
 
 }
@@ -57,6 +58,12 @@ template<unsigned DIM>
 FiniteElementSolver<DIM>::~FiniteElementSolver()
 {
 
+}
+
+template<unsigned DIM>
+void FiniteElementSolver<DIM>::SetVesselRepresentation(VesselRepresentation::Value vesselRepresentation)
+{
+    mVesselRepresentation = vesselRepresentation;
 }
 
 template<unsigned DIM>
@@ -83,50 +90,61 @@ void FiniteElementSolver<DIM>::Solve(bool writeSolution)
     // If there is a vessel network add it to the domain
     if (this->mpNetwork)
     {
-        mpDomain->AddVesselNetwork(this->mpNetwork, this->mBoundaryConditionType == BoundaryConditionType::SURFACE);
+        mpDomain->AddVesselNetwork(this->mpNetwork, this->mVesselRepresentation == VesselRepresentation::SURFACE);
     }
 
     // Mesh the domain
     boost::shared_ptr<PlcMesh<DIM, DIM> > p_mesh = PlcMesh<DIM, DIM>::Create();
     p_mesh->GenerateFromPart(mpDomain, mGridSize);
 
-    // Apply the boundary conditions
+    // Apply the dirichlet boundary conditions
     double node_distance_tolerance = 1.e-3;
     BoundaryConditionsContainer<DIM, DIM, 1> bcc;
 
-    if(!this->mBoundaryConditionType == BoundaryConditionType::SURFACE)
+    for(unsigned idx=0; idx<this->mDirichletBoundaryConditions.size(); idx++)
     {
-        ConstBoundaryCondition<DIM>* p_fixed_boundary_condition = new ConstBoundaryCondition<DIM>(this->mBoundaryConditionValue);
-        typename PlcMesh<DIM, DIM>::NodeIterator iter = p_mesh->GetNodeIteratorBegin();
-        while (iter != p_mesh->GetNodeIteratorEnd())
+        bool use_boundry_nodes = false;
+        if(this->mDirichletBoundaryConditions[idx]->GetType() == BoundaryConditionType::OUTER ||
+                this->mDirichletBoundaryConditions[idx]->GetType() == BoundaryConditionType::FACET)
         {
-            c_vector<double, 3> location = zero_vector<double>(3);
-            for(unsigned idx=0; idx<DIM; idx++)
-            {
-                location[idx] = (*iter).GetPoint()[idx];
-            }
-            std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> seg_pair = this->mpNetwork->GetNearestSegment(location);
-            double distance_to_segment = seg_pair.second;
-            if (distance_to_segment < node_distance_tolerance)
-            {
-                bcc.AddDirichletBoundaryCondition(&(*iter), p_fixed_boundary_condition, 0, false);
-            }
-            ++iter;
+            use_boundry_nodes = true;
         }
-    }
-    else
-    {
-        ConstBoundaryCondition<DIM>* p_fixed_boundary_condition = new ConstBoundaryCondition<DIM>(this->mBoundaryConditionValue);
-        typename PlcMesh<DIM, DIM>::BoundaryNodeIterator iter = p_mesh->GetBoundaryNodeIteratorBegin();
-        while (iter < p_mesh->GetBoundaryNodeIteratorEnd())
+        else if(this->mVesselRepresentation == VesselRepresentation::SURFACE)
         {
-            ChastePoint<DIM> location = (*iter)->GetPoint();
-            std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> seg_pair = this->mpNetwork->GetNearestSegment(location);
-            if(seg_pair.second <= (seg_pair.first->GetRadius()+1.e-2))
+            if(this->mDirichletBoundaryConditions[idx]->GetType() == BoundaryConditionType::VESSEL_LINE
+                    || this->mDirichletBoundaryConditions[idx]->GetType() == BoundaryConditionType::VESSEL_VOLUME)
             {
-                bcc.AddDirichletBoundaryCondition(*iter, p_fixed_boundary_condition);
+                use_boundry_nodes = true;
             }
-            ++iter;
+        }
+
+        if(use_boundry_nodes)
+        {
+            typename PlcMesh<DIM, DIM>::NodeIterator iter = p_mesh->GetNodeIteratorBegin();
+            while (iter != p_mesh->GetNodeIteratorEnd())
+            {
+                std::pair<bool,double> result = this->mDirichletBoundaryConditions[idx]->GetValue((*iter).GetPoint().rGetLocation(), node_distance_tolerance);
+                if(result.first)
+                {
+                    ConstBoundaryCondition<DIM>* p_fixed_boundary_condition = new ConstBoundaryCondition<DIM>(result.second);
+                    bcc.AddDirichletBoundaryCondition(&(*iter), p_fixed_boundary_condition, 0, false);
+                }
+                ++iter;
+            }
+        }
+        else
+        {
+            typename PlcMesh<DIM, DIM>::BoundaryNodeIterator iter = p_mesh->GetBoundaryNodeIteratorBegin();
+            while (iter < p_mesh->GetBoundaryNodeIteratorEnd())
+            {
+                std::pair<bool,double> result = this->mDirichletBoundaryConditions[idx]->GetValue((*iter)->GetPoint().rGetLocation(), node_distance_tolerance);
+                if(result.first)
+                {
+                    ConstBoundaryCondition<DIM>* p_fixed_boundary_condition = new ConstBoundaryCondition<DIM>(result.second);
+                    bcc.AddDirichletBoundaryCondition(*iter, p_fixed_boundary_condition);
+                }
+                ++iter;
+            }
         }
     }
 
@@ -143,7 +161,6 @@ void FiniteElementSolver<DIM>::Solve(bool writeSolution)
     {
         this->Write(output, p_mesh);
     }
-
 }
 
 template<unsigned DIM>

@@ -47,6 +47,7 @@
 #include <vtkPointData.h>
 #include <vtkPolyData.h>
 #include <vtkPoints.h>
+#include "Debug.hpp"
 
 template<unsigned DIM>
 AbstractAngiogenesisSolver<DIM>::AbstractAngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork, const std::string& rOutputDirectory) :
@@ -57,7 +58,7 @@ AbstractAngiogenesisSolver<DIM>::AbstractAngiogenesisSolver(boost::shared_ptr<Ca
         mOutputFrequency(1),
         mOutputDirectory(rOutputDirectory),
         mNodeAnastamosisRadius(0.0),
-        mpPdeSolver(),
+        mPdeSolvers(),
         mSolveFlow(false),
         mSproutingProbability(0.0)
 {
@@ -143,7 +144,7 @@ void AbstractAngiogenesisSolver<DIM>::DoSprouting()
 }
 
 template<unsigned DIM>
-void AbstractAngiogenesisSolver<DIM>::UpdateNodalPositions()
+void AbstractAngiogenesisSolver<DIM>::UpdateNodalPositions(const std::string& speciesLabel)
 {
     mpNetwork->UpdateNodes();
     std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = mpNetwork->GetNodes();
@@ -157,44 +158,56 @@ void AbstractAngiogenesisSolver<DIM>::UpdateNodalPositions()
                  nodes[idx]->GetVesselSegment(0)->GetOppositeNode(nodes[idx])->GetLocationVector();
             direction /= norm_2(direction);
 
-
-            // If there is a PDE get the direction of highest solution gradient
-            if(mpPdeSolver)
+            // If there is a PDE get the direction of highest solution gradient for the specified species
+            if(mPdeSolvers.size()>0)
             {
-                // Make points
-                std::vector<c_vector<double, DIM> > locations;
-                locations.push_back(nodes[idx]->GetLocationVector());
-                locations.push_back(locations[0] + mGrowthVelocity * unit_vector<double>(DIM,0));
-                locations.push_back(locations[0] - mGrowthVelocity * unit_vector<double>(DIM,0));
-                locations.push_back(locations[0] + mGrowthVelocity * unit_vector<double>(DIM,1));
-                locations.push_back(locations[0] - mGrowthVelocity * unit_vector<double>(DIM,1));
-                if(DIM==3)
+                int species_index = -1;
+                for(unsigned jdx=0; jdx<mPdeSolvers.size(); jdx++)
                 {
-                    locations.push_back(locations[0] + mGrowthVelocity * unit_vector<double>(DIM,2));
-                    locations.push_back(locations[0] - mGrowthVelocity * unit_vector<double>(DIM,2));
+                    std::string species_name = mPdeSolvers[jdx]->GetPde()->GetVariableName();
+                    if(species_name == speciesLabel)
+                    {
+                        species_index = jdx;
+                    }
                 }
 
-                vtkSmartPointer<vtkPolyData> p_polydata = vtkSmartPointer<vtkPolyData>::New();
-                vtkSmartPointer<vtkPoints> p_points = vtkSmartPointer<vtkPoints>::New();
-                p_points->SetNumberOfPoints(locations.size());
-                for(unsigned idx=0; idx< locations.size(); idx++)
+                if(species_index>=0)
                 {
+                    // Make points
+                    std::vector<c_vector<double, DIM> > locations;
+                    locations.push_back(nodes[idx]->GetLocationVector());
+                    locations.push_back(locations[0] + mGrowthVelocity * unit_vector<double>(DIM,0));
+                    locations.push_back(locations[0] - mGrowthVelocity * unit_vector<double>(DIM,0));
+                    locations.push_back(locations[0] + mGrowthVelocity * unit_vector<double>(DIM,1));
+                    locations.push_back(locations[0] - mGrowthVelocity * unit_vector<double>(DIM,1));
                     if(DIM==3)
                     {
-                        p_points->SetPoint(idx, locations[idx][0], locations[idx][1], locations[idx][2]);
+                        locations.push_back(locations[0] + mGrowthVelocity * unit_vector<double>(DIM,2));
+                        locations.push_back(locations[0] - mGrowthVelocity * unit_vector<double>(DIM,2));
                     }
-                    else
-                    {
-                        p_points->SetPoint(idx, locations[idx][0], locations[idx][1], 0.0);
-                    }
-                }
-                p_polydata->SetPoints(p_points);
 
-                vtkSmartPointer<vtkProbeFilter> p_probe_filter = vtkSmartPointer<vtkProbeFilter>::New();
-                p_probe_filter->SetInput(p_polydata);
-                p_probe_filter->SetSource(mpPdeSolver->GetSolution());
-                p_probe_filter->Update();
-                vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetOutput()->GetPointData();
+                    vtkSmartPointer<vtkPolyData> p_polydata = vtkSmartPointer<vtkPolyData>::New();
+                    vtkSmartPointer<vtkPoints> p_points = vtkSmartPointer<vtkPoints>::New();
+                    p_points->SetNumberOfPoints(locations.size());
+                    for(unsigned idx=0; idx< locations.size(); idx++)
+                    {
+                        if(DIM==3)
+                        {
+                            p_points->SetPoint(idx, locations[idx][0], locations[idx][1], locations[idx][2]);
+                        }
+                        else
+                        {
+                            p_points->SetPoint(idx, locations[idx][0], locations[idx][1], 0.0);
+                        }
+                    }
+                    p_polydata->SetPoints(p_points);
+
+                    vtkSmartPointer<vtkProbeFilter> p_probe_filter = vtkSmartPointer<vtkProbeFilter>::New();
+                    p_probe_filter->SetInput(p_polydata);
+                    p_probe_filter->SetSource(mPdeSolvers[species_index]->GetSolution());
+                    p_probe_filter->Update();
+                    vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetOutput()->GetPointData();
+                }
             }
 
             // Create a new segment along the growth vector
@@ -281,7 +294,6 @@ void AbstractAngiogenesisSolver<DIM>::Run()
     mpNetwork->MergeCoincidentNodes();
     mpNetwork->UpdateVesselIds();
     mpNetwork->Write(mOutputDirectory + "/VesselNetwork_inc_" + boost::lexical_cast<std::string>(counter)+".vtp");
-
     // If there is a flow problem solve it
     SimpleFlowSolver<DIM> flow_solver;
     PoiseuilleImpedanceCalculator<DIM> impedance_calculator;
@@ -292,16 +304,18 @@ void AbstractAngiogenesisSolver<DIM>::Run()
         flow_solver.SetUp(mpNetwork);
         flow_solver.Implement(mpNetwork);
     }
-
-    // If there is a PDE solve it
-    if(mpPdeSolver)
+    // If there is a PDE solve them
+    if(mPdeSolvers.size()>0)
     {
-        mpPdeSolver->SetVesselNetwork(mpNetwork);
-        mpPdeSolver->SetWorkingDirectory(mOutputDirectory);
-        mpPdeSolver->SetFileName("/solution_" + boost::lexical_cast<std::string>(counter)+".vti");
-        mpPdeSolver->Solve(true);
+        for(unsigned idx=0; idx<mPdeSolvers.size(); idx++)
+        {
+            mPdeSolvers[idx]->SetVesselNetwork(mpNetwork);
+            mPdeSolvers[idx]->SetWorkingDirectory(mOutputDirectory);
+            std::string species_name = mPdeSolvers[idx]->GetPde()->GetVariableName();
+            mPdeSolvers[idx]->SetFileName("/" + species_name +"_solution_" + boost::lexical_cast<std::string>(counter)+".vti");
+            mPdeSolvers[idx]->Solve(true);
+        }
     }
-
     while(current_time < mEndTime)
     {
         current_time += mTimeIncrement;
@@ -318,7 +332,6 @@ void AbstractAngiogenesisSolver<DIM>::Run()
 
         // Do anastamosis
         DoAnastamosis();
-
         mpNetwork->MergeCoincidentNodes();
         if(mSolveFlow)
         {
@@ -327,23 +340,31 @@ void AbstractAngiogenesisSolver<DIM>::Run()
             flow_solver.SetUp(mpNetwork);
             flow_solver.Implement(mpNetwork);
         }
+
         counter++;
         if(mOutputFrequency > 0 && counter % mOutputFrequency == 0)
         {
             mpNetwork->UpdateVesselIds();
             mpNetwork->Write(mOutputDirectory + "/VesselNetwork_inc_" + boost::lexical_cast<std::string>(counter)+".vtp");
-            if(mpPdeSolver)
+            if(mPdeSolvers.size()>0)
             {
-                mpPdeSolver->SetVesselNetwork(mpNetwork);
-                mpPdeSolver->SetFileName("/solution_" + boost::lexical_cast<std::string>(counter)+".vti");
-                mpPdeSolver->Solve(true);
+                for(unsigned idx=0; idx<mPdeSolvers.size(); idx++)
+                {
+                    mPdeSolvers[idx]->SetVesselNetwork(mpNetwork);
+                    std::string species_name = mPdeSolvers[idx]->GetPde()->GetVariableName();
+                    mPdeSolvers[idx]->SetFileName("/" + species_name +"_solution_" + boost::lexical_cast<std::string>(counter)+".vti");
+                    mPdeSolvers[idx]->Solve(true);
+                }
             }
         }
         else
         {
-            if(mpPdeSolver)
+            if(mPdeSolvers.size()>0)
             {
-                mpPdeSolver->Solve(false);
+                for(unsigned idx=0; idx<mPdeSolvers.size(); idx++)
+                {
+                    mPdeSolvers[idx]->Solve(false);
+                }
             }
         }
     }
@@ -353,10 +374,9 @@ void AbstractAngiogenesisSolver<DIM>::Run()
 }
 
 template<unsigned DIM>
-void AbstractAngiogenesisSolver<DIM>::SetPdeSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pPdeSolver)
+void AbstractAngiogenesisSolver<DIM>::AddPdeSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pPdeSolver)
 {
-    mpPdeSolver = pPdeSolver;
-
+    mPdeSolvers.push_back(pPdeSolver);
 }
 
 // Explicit instantiation

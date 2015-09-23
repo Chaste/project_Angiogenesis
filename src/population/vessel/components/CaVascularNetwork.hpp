@@ -131,6 +131,9 @@ public:
      */
     std::vector<boost::shared_ptr<CaVessel<DIM> > > CopyVessels();
 
+
+    void CopySegmentFlowProperties(unsigned index=0);
+
     /**
      Make a copy of the selected vessels, but with new nodes and segments in each copy. Return the new vessels.
      */

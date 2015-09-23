@@ -40,6 +40,7 @@
 #include "Exception.hpp"
 #include "ReplicatableVector.hpp"
 #include "MathsCustomFunctions.hpp"
+#include "Debug.hpp"
 
 template<unsigned DIM>
 PoiseuilleImpedanceCalculator<DIM>::PoiseuilleImpedanceCalculator()
@@ -57,13 +58,11 @@ template<unsigned DIM>
 void PoiseuilleImpedanceCalculator<DIM>::Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork)
 {
     std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
-
     for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
     {
         double length = segments[segment_index]->GetLength();
         double radius = segments[segment_index]->GetRadius();
         double viscosity = segments[segment_index]->GetFlowProperties()->GetViscosity();
-
         if (radius <= 0.0)
         {
             EXCEPTION("Radius should be a positive number.");
@@ -72,7 +71,6 @@ void PoiseuilleImpedanceCalculator<DIM>::Calculate(boost::shared_ptr<CaVascularN
         {
             EXCEPTION("Viscosity should be a positive number.");
         }
-
         double impedance = 8.0 * viscosity * length / (M_PI * SmallPow(radius, 4u));
         segments[segment_index]->GetFlowProperties()->SetImpedance(impedance);
     }

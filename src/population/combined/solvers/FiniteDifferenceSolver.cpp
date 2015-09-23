@@ -143,13 +143,11 @@ void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
         }
     }
 
+    // Apply dirichlet boundary conditions
     if (this->mpNetwork)
     {
-        // Dirichlet for regions crossed by vessels
-        std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
         double grid_tolerance = this->mGridSize * (std::sqrt(2.0) / 2.0);
         std::vector<unsigned> bc_indices;
-
         for (unsigned i = 0; i < this->mExtents[2]; i++) // Z
         {
             for (unsigned j = 0; j < this->mExtents[1]; j++) // Y
@@ -157,34 +155,14 @@ void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
                 for (unsigned k = 0; k < this->mExtents[0]; k++) // X
                 {
                     unsigned grid_index = this->GetGridIndex(k, j, i);
-                    for (unsigned idx = 0; idx <  segments.size(); idx++)
+                    for(unsigned bound_index=0; bound_index<this->mDirichletBoundaryConditions.size(); bound_index++)
                     {
-                        double bc_value = this->mBoundaryConditionValue;
-                        if(this->mBoundaryConditionType == BoundaryConditionType::SURFACE)
+                        std::pair<bool, double> is_boundary = this->mDirichletBoundaryConditions[bound_index]->GetValue(this->GetLocation(k ,j, i), grid_tolerance);
+                        if(is_boundary.first)
                         {
-                            if (segments[idx]->GetDistance(this->GetLocation(k ,j, i)) <= segments[idx]->GetRadius() + grid_tolerance)
-                            {
-                                if(this->mBoundaryConditionSource == BoundaryConditionSource::SEGMENT)
-                                {
-                                    bc_value = segments[idx]->template GetData<double>(this->mBoundaryConditionName);
-                                }
-                                bc_indices.push_back(grid_index);
-                                linear_system.SetRhsVectorElement(grid_index, bc_value);
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            if (segments[idx]->GetDistance(this->GetLocation(k ,j, i)) <= grid_tolerance)
-                            {
-                                if(this->mBoundaryConditionSource == BoundaryConditionSource::SEGMENT)
-                                {
-                                    bc_value = segments[idx]->template GetData<double>(this->mBoundaryConditionName);
-                                }
-                                bc_indices.push_back(grid_index);
-                                linear_system.SetRhsVectorElement(grid_index, bc_value);
-                                break;
-                            }
+                            bc_indices.push_back(grid_index);
+                            linear_system.SetRhsVectorElement(grid_index, is_boundary.second);
+                            break;
                         }
                     }
                 }

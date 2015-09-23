@@ -40,12 +40,7 @@ AbstractHybridSolver<DIM>::AbstractHybridSolver()
     :   mpNetwork(),
         mpCellPopulation(),
         mpPde(),
-        mBoundaryConditionType(BoundaryConditionType::LINE),
-        mBoundaryConditionValue(0.0),
-        mBoundaryConditionSource(BoundaryConditionSource::USER),
-        mBoundaryConditionName(""),
-        mpBoundaryCondition(),
-        mpInterfaceCondition(),
+        mDirichletBoundaryConditions(),
         mWorkingDirectory(),
         mFilename()
 {
@@ -73,27 +68,9 @@ boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > AbstractHybridSolver<DIM>:
 }
 
 template<unsigned DIM>
-void AbstractHybridSolver<DIM>::SetBoundaryConditionType(BoundaryConditionType::Value boundaryType)
+void AbstractHybridSolver<DIM>::AddDirichletBoundaryCondition(boost::shared_ptr<DirichletBoundaryCondition<DIM> > pBoundaryCondition)
 {
-    mBoundaryConditionType = boundaryType;
-}
-
-template<unsigned DIM>
-void AbstractHybridSolver<DIM>::SetBoundaryConditionSource(BoundaryConditionSource::Value boundarySource)
-{
-    mBoundaryConditionSource = boundarySource;
-}
-
-template<unsigned DIM>
-void AbstractHybridSolver<DIM>::SetBoundaryConditionValue(double boundaryConditionValue)
-{
-    mBoundaryConditionValue = boundaryConditionValue;
-}
-
-template<unsigned DIM>
-void AbstractHybridSolver<DIM>::SetBoundaryConditionName(const std::string& rBoundaryConditionName)
-{
-    mBoundaryConditionName = rBoundaryConditionName;
+    mDirichletBoundaryConditions.push_back(pBoundaryCondition);
 }
 
 template<unsigned DIM>
@@ -118,18 +95,6 @@ template<unsigned DIM>
 void AbstractHybridSolver<DIM>::SetCellPopulation(boost::shared_ptr<SimpleCellPopulation<DIM> > pCellPopulation)
 {
     mpCellPopulation = pCellPopulation;
-}
-
-template<unsigned DIM>
-void AbstractHybridSolver<DIM>::SetDomainBoundaryCondition(boost::shared_ptr<AbstractBoundaryCondition<DIM> > pBoundaryCondition)
-{
-    mpBoundaryCondition = pBoundaryCondition;
-}
-
-template<unsigned DIM>
-void AbstractHybridSolver<DIM>::SetInterfaceBoundaryCondition(boost::shared_ptr<AbstractBoundaryCondition<DIM> > pBoundaryCondition)
-{
-    mpInterfaceCondition = pBoundaryCondition;
 }
 
 template<unsigned DIM>
