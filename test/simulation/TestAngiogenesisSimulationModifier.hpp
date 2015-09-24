@@ -73,7 +73,7 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
 {
 public:
 
-    void TestCaBasedSpheroid() throw (Exception)
+    void dontTestCaBasedSpheroid() throw (Exception)
     {
         // Create the domain
         double domain_x = 800.0;
@@ -218,7 +218,7 @@ public:
         simulator.Solve();
     }
 
-    void DontTestNodeBasedSpheroid() throw (Exception)
+    void TestNodeBasedSpheroid() throw (Exception)
     {
         // Create the domain
         double domain_x = 800.0;

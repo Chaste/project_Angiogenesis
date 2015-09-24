@@ -1176,11 +1176,11 @@ boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::DivideVessel(boost
     // If the divide location coincides with one of the end nodes don't divide and return that node
     if (pVessel->GetStartNode()->IsCoincident(location) || pVessel->GetEndNode()->IsCoincident(location))
     {
-        // both vessel nodes cannot be present at the same location in this case
-        if(pVessel->GetStartNode()->IsCoincident(pVessel->GetEndNode()))
-        {
-            EXCEPTION("Cannot divide a vessel with coincident start and end nodes.");
-        }
+//        // both vessel nodes cannot be present at the same location in this case
+//        if(pVessel->GetStartNode()->IsCoincident(pVessel->GetEndNode()))
+//        {
+//            EXCEPTION("Cannot divide a vessel with coincident start and end nodes.");
+//        }
 
         if (pVessel->GetStartNode()->IsCoincident(location))
         {
@@ -1207,6 +1207,8 @@ boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::DivideVessel(boost
 
         if(!locatedInsideVessel)
         {
+            std::cout<< location.rGetLocation() << std::endl;
+
             EXCEPTION("There is no segment at the requested division location.");
         }
     }

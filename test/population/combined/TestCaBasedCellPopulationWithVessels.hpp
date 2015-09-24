@@ -213,7 +213,7 @@ public:
         pde_handler->SetImposeBcsOnCoarseBoundary(true);
 
         cell_population->AddPdeHandler(pde_handler);
-        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(20, 20);
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(8, 8);
 
         while (!(SimulationTime::Instance()->IsFinished()))
         {

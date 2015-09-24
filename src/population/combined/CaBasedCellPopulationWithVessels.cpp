@@ -251,6 +251,10 @@ void CaBasedCellPopulationWithVessels<DIM>::MoveTips(std::vector<boost::shared_p
                 boost::shared_ptr<VascularNode<DIM> > p_new_node;
                 if(moveType == MovementType::SPROUT)
                 {
+                    /*
+                     * Note: the 'tip_location' here is a tip cell already located on the vessel, as decided by
+                     * a sprouting rule. This actually creates the sprout, which moves to the candidate_location.
+                     */
                     boost::shared_ptr<CaVessel<DIM> > p_vessel = mpNetwork->FormSprout(tip_location, candidate_location);
                     p_new_node = p_vessel->GetNodeAtOppositeEnd(p_node);
                 }
@@ -261,6 +265,8 @@ void CaBasedCellPopulationWithVessels<DIM>::MoveTips(std::vector<boost::shared_p
                     p_node->SetIsMigrating(false);
                     p_new_node->SetIsMigrating(true);
                     p_vessel->AddSegment(CaVesselSegment<DIM>::Create(p_node, p_new_node));
+                    mpNetwork->UpdateNodes();
+                    mpNetwork->UpdateVesselNodes();
                 }
 
                 // Check for anastamosis
@@ -304,6 +310,7 @@ void CaBasedCellPopulationWithVessels<DIM>::MoveTips(std::vector<boost::shared_p
                     this->AddCellUsingLocationIndex(max_grandient_index, p_new_cell); // this doesn't actually add a cell!
                     this->mCells.push_back(p_new_cell); // do it manually here
                     mCellNodeMap[p_new_cell] = mpNetwork->GetNearestNode(this->GetLocationOfCellCentre(p_new_cell));
+                    assert(norm_2(this->GetLocationOfCellCentre(p_new_cell) - mCellNodeMap[p_new_cell]->GetLocationVector())<1.e-4);
 
                     DeselectTipCell(activeTips[tip_index]);
                     mTipCells.push_back(p_new_cell);
