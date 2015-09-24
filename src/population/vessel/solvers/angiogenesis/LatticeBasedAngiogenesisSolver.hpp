@@ -53,7 +53,7 @@ public:
      * Constructor.
      * @param pNetwork the network to perform angiogenesis on
      */
-    LatticeBasedAngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork, const std::string& rOutputDirectory);
+    LatticeBasedAngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
 
     /**
      * Destructor.

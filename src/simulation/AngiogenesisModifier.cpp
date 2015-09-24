@@ -61,21 +61,29 @@ void AngiogenesisModifier<DIM>::SetAngiogenesisSolver(boost::shared_ptr<Abstract
 template<unsigned DIM>
 void AngiogenesisModifier<DIM>::UpdateAtEndOfTimeStep(AbstractCellPopulation<DIM,DIM>& rCellPopulation)
 {
-    // Solve any field problems involving the cells
+    // If there is an angiogenesis solver solve for the upcoming step
     if(mpSolver)
     {
+        // Set the cell locations in PDEs requiring them
         std::vector<c_vector<double, DIM> > locations;
         for (typename AbstractCellPopulation<DIM>::Iterator cell_iter = rCellPopulation.Begin();
              cell_iter != rCellPopulation.End(); ++cell_iter)
         {
             locations.push_back(rCellPopulation.GetLocationOfCellCentre(*cell_iter));
         }
-        mpSolver->GetPde()->SetLinearInUPoints(locations);
-        OutputFileHandler output_file_handler(mOutputDirectory, false);
-        mpSolver->SetWorkingDirectory(output_file_handler.GetOutputDirectoryFullPath());
-        SimulationTime* p_time = SimulationTime::Instance();
-        mpSolver->SetFileName("field_" + boost::lexical_cast<std::string>(p_time->GetTime())+ ".vti");
-        mpSolver->Solve(true);
+        for(unsigned idx=0; idx<mpSolver->GetPdeSolvers().size(); idx++)
+        {
+            for(unsigned jdx=0; jdx<mpSolver->GetPdeSolvers()[idx]->GetPde()->GetDiscreteSources().size(); jdx++)
+            {
+                if(mpSolver->GetPdeSolvers()[idx]->GetPde()->GetDiscreteSources()[jdx]->GetType() == SourceType::MULTI_POINT)
+                {
+                    mpSolver->GetPdeSolvers()[idx]->GetPde()->GetDiscreteSources()[jdx]->SetPoints(locations);
+                }
+            }
+        }
+
+        // Increment the solver
+        mpSolver->Increment();
     }
 
     // Update the cell data
@@ -90,8 +98,6 @@ void AngiogenesisModifier<DIM>::SetupSolve(AbstractCellPopulation<DIM,DIM>& rCel
     // If there is an angiogenesis solver solve for the upcoming step
     if(mpSolver)
     {
-        mpSolver->SetTimeStep(SimulationTime::Instance()->GetTimeStep());
-
         // Set the cell locations in PDEs requiring them
         std::vector<c_vector<double, DIM> > locations;
         for (typename AbstractCellPopulation<DIM>::Iterator cell_iter = rCellPopulation.Begin();
@@ -99,7 +105,6 @@ void AngiogenesisModifier<DIM>::SetupSolve(AbstractCellPopulation<DIM,DIM>& rCel
         {
             locations.push_back(rCellPopulation.GetLocationOfCellCentre(*cell_iter));
         }
-
         for(unsigned idx=0; idx<mpSolver->GetPdeSolvers().size(); idx++)
         {
             for(unsigned jdx=0; jdx<mpSolver->GetPdeSolvers()[idx]->GetPde()->GetDiscreteSources().size(); jdx++)
@@ -110,6 +115,8 @@ void AngiogenesisModifier<DIM>::SetupSolve(AbstractCellPopulation<DIM,DIM>& rCel
                 }
             }
         }
+
+        // Set the output directory
         OutputFileHandler output_file_handler(mOutputDirectory, false);
         mpSolver->SetOutputDirectory(output_file_handler.GetOutputDirectoryFullPath());
         mpSolver->Increment();
@@ -136,10 +143,27 @@ void AngiogenesisModifier<DIM>::UpdateCellData(AbstractCellPopulation<DIM,DIM>& 
             locations.push_back(rCellPopulation.GetLocationOfCellCentre(*cell_iter));
             cell_vector.push_back(*cell_iter);
         }
-        std::vector<double> sampled_solution = mpSolver->GetSolutionAtPoints(locations, "oxygen");
-        for(unsigned idx=0;idx<cell_vector.size();idx++)
+
+        // Get the pde solutions at each cell location
+        for(unsigned idx=0; idx<mpSolver->GetPdeSolvers().size(); idx++)
         {
-            cell_vector[idx]->GetCellData()->SetItem("oxygen", sampled_solution[idx]/20.0);
+            std::string label = mpSolver->GetPdeSolvers()[idx]->GetPde()->GetVariableName();
+            std::vector<double> sampled_solution = mpSolver->GetPdeSolvers()[idx]->GetSolutionAtPoints(locations, label);
+
+            if(label == "oxygen")
+            {
+                for(unsigned jdx=0;jdx<cell_vector.size();jdx++)
+                {
+                    cell_vector[jdx]->GetCellData()->SetItem("oxygen", sampled_solution[jdx]/20.0);
+                }
+            }
+            else
+            {
+                for(unsigned jdx=0;jdx<cell_vector.size();jdx++)
+                {
+                    cell_vector[jdx]->GetCellData()->SetItem(label, sampled_solution[jdx]);
+                }
+            }
         }
     }
     else
@@ -161,11 +185,11 @@ void AngiogenesisModifier<DIM>::OutputSimulationModifierParameters(out_stream& r
 }
 
 // Explicit instantiation
-template class AngiogenesisModifier<1>;
+//template class AngiogenesisModifier<1>;
 template class AngiogenesisModifier<2>;
 template class AngiogenesisModifier<3>;
 
 // Serialization for Boost >= 1.36
 #include "SerializationExportWrapperForCpp.hpp"
-EXPORT_TEMPLATE_CLASS_SAME_DIMS(AngiogenesisModifier)
-
+EXPORT_TEMPLATE_CLASS1(AngiogenesisModifier, 2)
+EXPORT_TEMPLATE_CLASS1(AngiogenesisModifier, 3)

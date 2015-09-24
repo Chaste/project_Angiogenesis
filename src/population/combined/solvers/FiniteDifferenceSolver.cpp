@@ -139,7 +139,7 @@ void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
                 {
                     linear_system.AddToMatrixElement(grid_index, grid_index, diffusion_term);
                 }
-                linear_system.SetRhsVectorElement(grid_index, -this->mpPde->GetConstantInUTerm(location));
+                linear_system.SetRhsVectorElement(grid_index, -this->mpPde->GetConstantInUTerm(location, this->mGridSize));
             }
         }
     }

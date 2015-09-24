@@ -53,7 +53,7 @@ public:
      * Constructor.
      * @param pNetwork the network to perform angiogenesis on
      */
-    OffLatticeAngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork, const std::string& rOutputDirectory);
+    OffLatticeAngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
 
     /**
      * Destructor.
@@ -61,10 +61,6 @@ public:
     ~OffLatticeAngiogenesisSolver();
 
     c_vector<double, DIM> GetGrowthDirection(c_vector<double, DIM> currentDirection);
-
-private:
-
-    c_vector<double, DIM> RotateAboutAxis(c_vector<double, DIM> direction, c_vector<double, DIM> axis, double angle);
 
 };
 

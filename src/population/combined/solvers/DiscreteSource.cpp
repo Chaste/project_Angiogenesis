@@ -130,6 +130,12 @@ void DiscreteSource<DIM>::SetValue(double value)
 }
 
 template<unsigned DIM>
+bool DiscreteSource<DIM>::IsLinearInSolution()
+{
+    return mIsLinearInSolution;
+}
+
+template<unsigned DIM>
 void DiscreteSource<DIM>::SetIsLinearInSolution(bool isLinear)
 {
     mIsLinearInSolution = isLinear;
@@ -167,7 +173,7 @@ std::pair<bool, double> DiscreteSource<DIM>::GetValue(c_vector<double, DIM> loca
         {
             for(unsigned idx=0; idx<mPoints.size(); idx++)
             {
-                if(norm_2(location-mPoints[0]) < tolerance)
+                if(norm_2(location-mPoints[idx]) < tolerance)
                 {
                     return std::pair<bool, double>(true, mValue);
                 }

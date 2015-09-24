@@ -60,7 +60,6 @@ class HybridLinearEllipticPde : public AbstractLinearEllipticPde<ELEMENT_DIM, SP
     double mConstantInUTerm;
     double mLinearInUTerm;
     std::string mVariableName;
-    std::vector<c_vector<double, SPACE_DIM> > mLinearInUPoints;
     boost::shared_ptr<SimpleCellPopulation<SPACE_DIM> > mpPopulation;
     boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > mpNetwork;
 
@@ -76,7 +75,6 @@ public:
             mConstantInUTerm(0.0),
             mLinearInUTerm(0.0),
             mVariableName("Default"),
-            mLinearInUPoints(),
             mpPopulation(),
             mpNetwork(),
             mDiscreteSources()
@@ -90,14 +88,14 @@ public:
         return pSelf;
     }
 
+    void AddDiscreteSource(boost::shared_ptr<DiscreteSource<SPACE_DIM> > pDiscreteSource)
+    {
+        mDiscreteSources.push_back(pDiscreteSource);
+    }
+
     double ComputeConstantInUSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement)
     {
         return mConstantInUTerm;
-    }
-
-    std::vector<boost::shared_ptr<DiscreteSource<SPACE_DIM> > > GetDiscreteSources()
-    {
-        return mDiscreteSources;
     }
 
     double ComputeLinearInUCoeffInSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement)
@@ -108,6 +106,66 @@ public:
     c_matrix<double, SPACE_DIM, SPACE_DIM> ComputeDiffusionTerm(const ChastePoint<SPACE_DIM>&)
     {
         return mDiffusionTensor;
+    }
+
+    double GetDiffusionConstant()
+    {
+        return mDiffusivity;
+    }
+
+    double GetConstantInUTerm(c_vector<double, SPACE_DIM> location = zero_vector<double>(SPACE_DIM), double spacing = 0.0)
+    {
+        double consumption_term = 0.0;
+        for(unsigned idx=0; idx<mDiscreteSources.size(); idx++)
+        {
+            if(mDiscreteSources[idx]->GetType()==SourceType::SOLUTION && !mDiscreteSources[idx]->IsLinearInSolution())
+            {
+                consumption_term =  -1.e-5 * mDiscreteSources[idx]->GetValue(location).second;
+            }
+
+            if(mDiscreteSources[idx]->GetType()==SourceType::MULTI_POINT && !mDiscreteSources[idx]->IsLinearInSolution())
+            {
+                std::pair<bool, double> result = mDiscreteSources[idx]->GetValue(location, spacing/2.0);
+                if(result.first)
+                {
+                    consumption_term = result.second;
+                }
+            }
+        }
+        return mConstantInUTerm - consumption_term;
+    }
+
+    std::vector<boost::shared_ptr<DiscreteSource<SPACE_DIM> > > GetDiscreteSources()
+    {
+        return mDiscreteSources;
+    }
+
+    double GetLinearInUTerm(c_vector<double, SPACE_DIM> location  = zero_vector<double>(SPACE_DIM), double spacing = 0.0)
+    {
+        double consumption_term = 0.0;
+        for(unsigned idx=0; idx<mDiscreteSources.size(); idx++)
+        {
+            if(mDiscreteSources[idx]->GetType()==SourceType::SOLUTION && mDiscreteSources[idx]->IsLinearInSolution())
+            {
+                consumption_term =  -1.e-5 * mDiscreteSources[idx]->GetValue(location).second;
+            }
+
+            if(mDiscreteSources[idx]->GetType()==SourceType::MULTI_POINT && mDiscreteSources[idx]->IsLinearInSolution())
+            {
+                std::pair<bool, double> result = mDiscreteSources[idx]->GetValue(location, spacing/2.0);
+                if(result.first)
+                {
+                    consumption_term = result.second;
+                }
+            }
+        }
+
+        return mLinearInUTerm - consumption_term;
+    }
+
+    const std::string& GetVariableName()
+    {
+        return mVariableName;
     }
 
     void SetCellPopulation(boost::shared_ptr<SimpleCellPopulation<SPACE_DIM> > pPopulation)
@@ -130,64 +188,15 @@ public:
         mLinearInUTerm = linearInUTerm;
     }
 
-    void SetLinearInUPoints(std::vector<c_vector<double, SPACE_DIM> > locations)
-    {
-        mLinearInUPoints = locations;
-    }
-
     void SetDiffusionConstant(double diffusivity)
     {
         mDiffusivity = diffusivity;
         mDiffusionTensor = identity_matrix<double>(SPACE_DIM)* mDiffusivity;
     }
 
-    void AddDiscreteSource(boost::shared_ptr<DiscreteSource<SPACE_DIM> > pDiscreteSource)
-    {
-        mDiscreteSources.push_back(pDiscreteSource);
-    }
-
-    double GetConstantInUTerm(c_vector<double, SPACE_DIM> location = zero_vector<double>(SPACE_DIM), double spacing = 0.0)
-    {
-        double consumption_term = 0.0;
-        for(unsigned idx=0; idx<mDiscreteSources.size(); idx++)
-        {
-            if(mDiscreteSources[idx]->GetType()==SourceType::SOLUTION)
-            {
-                consumption_term =  -1.e-5 * mDiscreteSources[idx]->GetValue(location).second;
-            }
-        }
-        return mConstantInUTerm - consumption_term;
-    }
-
     void SetVariableName(const std::string& rVariableName)
     {
         mVariableName = rVariableName;
-    }
-
-    const std::string& GetVariableName()
-    {
-        return mVariableName;
-    }
-
-    double GetLinearInUTerm(c_vector<double, SPACE_DIM> location  = zero_vector<double>(SPACE_DIM), double spacing = 0.0)
-    {
-        double consumption_term = 0.0;
-        unsigned num_points = 0;
-        for (unsigned mdx = 0; mdx < mLinearInUPoints.size(); mdx++)
-        {
-            if (IsPointInBox<SPACE_DIM>(mLinearInUPoints[mdx], location, spacing))
-            {
-                num_points++;
-            }
-        }
-        consumption_term = 1.e-7 * double(num_points);
-
-        return mLinearInUTerm - consumption_term;
-    }
-
-    double GetDiffusionConstant()
-    {
-        return mDiffusivity;
     }
 
 };

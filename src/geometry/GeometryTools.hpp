@@ -233,4 +233,31 @@ double LengthOfLineInTetra(c_vector<double, DIM> start_point,
     }
 }
 
+template<unsigned DIM>
+c_vector<double, DIM> RotateAboutAxis(c_vector<double, DIM> direction, c_vector<double, DIM> axis, double angle)
+{
+    double sin_a = std::sin(angle);
+    double cos_a = std::cos(angle);
+    c_vector<double, DIM> unit_axis = axis / norm_2(axis);
+
+    double dot_product = inner_prod(direction, unit_axis);
+    c_vector<double, DIM> new_direction;
+
+    if(DIM==3)
+    {
+        new_direction[0] = (unit_axis[0] * dot_product * (1.0 - cos_a) + direction[0] * cos_a
+                    + (-unit_axis[2] * direction[1] + unit_axis[1] * direction[2]) * sin_a);
+        new_direction[1] = (unit_axis[1] * dot_product * (1.0 - cos_a) + direction[1] * cos_a
+                    + (unit_axis[2] * direction[0] - unit_axis[0] * direction[2]) * sin_a);
+        new_direction[2] = (unit_axis[2] * dot_product * (1.0 - cos_a) + direction[2] * cos_a
+                    + (-unit_axis[1] * direction[0] + unit_axis[0] * direction[1]) * sin_a);
+    }
+    else
+    {
+        new_direction[0] = unit_axis[0] * dot_product * (1.0 - cos_a) + direction[0] * cos_a;
+        new_direction[1] = unit_axis[1] * dot_product * (1.0 - cos_a) + direction[1] * cos_a;
+    }
+    return new_direction;
+}
+
 #endif /*GEOMETRYTOOLS_HPP_*/

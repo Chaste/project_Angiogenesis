@@ -39,10 +39,11 @@
 #include "RandomNumberGenerator.hpp"
 #include "VascularNode.hpp"
 #include "OffLatticeAngiogenesisSolver.hpp"
+#include "GeometryTools.hpp"
 
 template<unsigned DIM>
-OffLatticeAngiogenesisSolver<DIM>::OffLatticeAngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork, const std::string& rOutputDirectory)
-    : AbstractAngiogenesisSolver<DIM>(pNetwork, rOutputDirectory)
+OffLatticeAngiogenesisSolver<DIM>::OffLatticeAngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
+    : AbstractAngiogenesisSolver<DIM>(pNetwork)
 
 {
 
@@ -52,33 +53,6 @@ template<unsigned DIM>
 OffLatticeAngiogenesisSolver<DIM>::~OffLatticeAngiogenesisSolver()
 {
 
-}
-
-template<unsigned DIM>
-c_vector<double, DIM> OffLatticeAngiogenesisSolver<DIM>::RotateAboutAxis(c_vector<double, DIM> direction, c_vector<double, DIM> axis, double angle)
-{
-    double sin_a = std::sin(angle);
-    double cos_a = std::cos(angle);
-    c_vector<double, DIM> unit_axis = axis / norm_2(axis);
-
-    double dot_product = inner_prod(direction, unit_axis);
-    c_vector<double, DIM> new_direction;
-
-    if(DIM==3)
-    {
-        new_direction[0] = (unit_axis[0] * dot_product * (1.0 - cos_a) + direction[0] * cos_a
-                    + (-unit_axis[2] * direction[1] + unit_axis[1] * direction[2]) * sin_a);
-        new_direction[1] = (unit_axis[1] * dot_product * (1.0 - cos_a) + direction[1] * cos_a
-                    + (unit_axis[2] * direction[0] - unit_axis[0] * direction[2]) * sin_a);
-        new_direction[2] = (unit_axis[2] * dot_product * (1.0 - cos_a) + direction[2] * cos_a
-                    + (-unit_axis[1] * direction[0] + unit_axis[0] * direction[1]) * sin_a);
-    }
-    else
-    {
-        new_direction[0] = unit_axis[0] * dot_product * (1.0 - cos_a) + direction[0] * cos_a;
-        new_direction[1] = unit_axis[1] * dot_product * (1.0 - cos_a) + direction[1] * cos_a;
-    }
-    return new_direction;
 }
 
 template<unsigned DIM>
@@ -95,9 +69,9 @@ c_vector<double, DIM> OffLatticeAngiogenesisSolver<DIM>::GetGrowthDirection(c_ve
 
     // Rotate about global axes through random angles
     double angle = M_PI/18.0;
-    c_vector<double, DIM> new_directionz = RotateAboutAxis(currentDirection, z_axis, RandomNumberGenerator::Instance()->NormalRandomDeviate(0.0, angle));
-    c_vector<double, DIM> new_directiony = RotateAboutAxis(new_directionz, y_axis, RandomNumberGenerator::Instance()->NormalRandomDeviate(0.0, angle));
-    new_direction = RotateAboutAxis(new_directiony, x_axis, RandomNumberGenerator::Instance()->NormalRandomDeviate(0.0, angle));
+    c_vector<double, DIM> new_directionz = RotateAboutAxis<DIM>(currentDirection, z_axis, RandomNumberGenerator::Instance()->NormalRandomDeviate(0.0, angle));
+    c_vector<double, DIM> new_directiony = RotateAboutAxis<DIM>(new_directionz, y_axis, RandomNumberGenerator::Instance()->NormalRandomDeviate(0.0, angle));
+    new_direction = RotateAboutAxis<DIM>(new_directiony, x_axis, RandomNumberGenerator::Instance()->NormalRandomDeviate(0.0, angle));
 
     return new_direction;
 }

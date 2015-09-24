@@ -23,8 +23,9 @@
 #include "AbstractAngiogenesisSolver.hpp"
 #include "PetscSetupAndFinalize.hpp"
 #include "CaVesselSegment.hpp"
+#include "AbstractCellBasedTestSuite.hpp"
 
-class TestAbstractAngiogenesisSolver : public CxxTest::TestSuite
+class TestAbstractAngiogenesisSolver : public AbstractCellBasedTestSuite
 {
 
 public:
@@ -46,7 +47,9 @@ public:
         std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
 
         // Grow the vessel
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network, output_directory);
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
+        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
+        angiogenesis_solver.SetOutputDirectory(output_directory);
         angiogenesis_solver.Run();
 
         // Test that the vessel has grown
@@ -71,7 +74,9 @@ public:
         std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
 
         // Grow the vessel
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network, output_directory);
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
+        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
+        angiogenesis_solver.SetOutputDirectory(output_directory);
         angiogenesis_solver.Run();
 
         // Test that the vessel has grown
@@ -100,7 +105,9 @@ public:
         std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
 
         // Grow the vessel
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network, output_directory);
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
+        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
+        angiogenesis_solver.SetOutputDirectory(output_directory);
         angiogenesis_solver.Run();
 
         // Test that the vessel has grown
@@ -128,7 +135,9 @@ public:
         std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
 
         // Grow the vessel
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network, output_directory);
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
+        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
+        angiogenesis_solver.SetOutputDirectory(output_directory);
         angiogenesis_solver.Run();
 
         // Test that the vessel has grown
@@ -164,7 +173,9 @@ public:
         std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
 
         // Grow the vessel
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network, output_directory);
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
+        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
+        angiogenesis_solver.SetOutputDirectory(output_directory);
         angiogenesis_solver.Run();
     }
 
@@ -191,7 +202,9 @@ public:
         std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
 
         // Grow the vessel
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network, output_directory);
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
+        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
+        angiogenesis_solver.SetOutputDirectory(output_directory);
         angiogenesis_solver.Run();
     }
 
@@ -239,7 +252,9 @@ public:
         std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
 
         // Grow the vessel
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network, output_directory);
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
+        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
+        angiogenesis_solver.SetOutputDirectory(output_directory);
         angiogenesis_solver.AddPdeSolver(p_solver);
         angiogenesis_solver.Run();
     }
@@ -290,7 +305,9 @@ public:
         std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
 
         // Grow the vessel
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network, output_directory);
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
+        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
+        angiogenesis_solver.SetOutputDirectory(output_directory);
         angiogenesis_solver.SetSolveFlow();
         angiogenesis_solver.Run();
     }
@@ -329,7 +346,9 @@ public:
         std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
 
         // Grow the vessel
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network, output_directory);
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
+        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
+        angiogenesis_solver.SetOutputDirectory(output_directory);
         angiogenesis_solver.SetSolveFlow();
         angiogenesis_solver.SetSproutingProbability(0.5);
         angiogenesis_solver.Run();

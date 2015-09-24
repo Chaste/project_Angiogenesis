@@ -55,13 +55,12 @@ AbstractAngiogenesisSolver<DIM>::AbstractAngiogenesisSolver(boost::shared_ptr<Ca
         mGrowthVelocity(10.0),
         mTimeIncrement(1.0),
         mEndTime(10.0),
-        mOutputFrequency(),
+        mOutputFrequency(1),
         mOutputDirectory(),
         mNodeAnastamosisRadius(0.0),
         mPdeSolvers(),
         mSolveFlow(false),
-        mSproutingProbability(0.0),
-        mTimeStep(1.0)
+        mSproutingProbability(0.0)
 {
 
 }
@@ -73,9 +72,9 @@ AbstractAngiogenesisSolver<DIM>::~AbstractAngiogenesisSolver()
 }
 
 template<unsigned DIM>
-void AbstractAngiogenesisSolver<DIM>::SetTimeStep(double timeStep)
+void AbstractAngiogenesisSolver<DIM>::AddPdeSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pPdeSolver)
 {
-    mTimeStep = timeStep;
+    mPdeSolvers.push_back(pPdeSolver);
 }
 
 template<unsigned DIM>
@@ -87,9 +86,7 @@ std::vector<boost::shared_ptr<AbstractHybridSolver<DIM> > > AbstractAngiogenesis
 template<unsigned DIM>
 c_vector<double, DIM> AbstractAngiogenesisSolver<DIM>::GetGrowthDirection(c_vector<double, DIM> currentDirection)
 {
-    c_vector<double, DIM> new_direction = currentDirection;
-
-    return new_direction;
+    return currentDirection;
 }
 
 template<unsigned DIM>
@@ -303,33 +300,23 @@ void AbstractAngiogenesisSolver<DIM>::DoAnastamosis()
 template<unsigned DIM>
 void AbstractAngiogenesisSolver<DIM>::Increment()
 {
+    unsigned num_steps = SimulationTime::Instance()->GetTimeStepsElapsed();
 
-}
-
-template<unsigned DIM>
-void AbstractAngiogenesisSolver<DIM>::Run()
-{
-    // Loop over the time (replace with simulation time)
-    double current_time = 0.0;
-
-    // make a new rng
-    RandomNumberGenerator::Instance();
-
-    unsigned counter = 0;
     mpNetwork->MergeCoincidentNodes();
     mpNetwork->UpdateVesselIds();
-    mpNetwork->Write(mOutputDirectory + "/VesselNetwork_inc_" + boost::lexical_cast<std::string>(counter)+".vtp");
+    mpNetwork->UpdateVesselNodes();
+
     // If there is a flow problem solve it
-    SimpleFlowSolver<DIM> flow_solver;
-    PoiseuilleImpedanceCalculator<DIM> impedance_calculator;
     if(mSolveFlow)
     {
-        mpNetwork->UpdateVesselNodes();
+        SimpleFlowSolver<DIM> flow_solver;
+        PoiseuilleImpedanceCalculator<DIM> impedance_calculator;
         impedance_calculator.Calculate(mpNetwork);
         flow_solver.SetUp(mpNetwork);
         flow_solver.Implement(mpNetwork);
     }
-    // If there is a PDE solve them
+
+    // If there are PDEs solve them
     if(mPdeSolvers.size()>0)
     {
         for(unsigned idx=0; idx<mPdeSolvers.size(); idx++)
@@ -337,7 +324,8 @@ void AbstractAngiogenesisSolver<DIM>::Run()
             mPdeSolvers[idx]->SetVesselNetwork(mpNetwork);
             mPdeSolvers[idx]->SetWorkingDirectory(mOutputDirectory);
             std::string species_name = mPdeSolvers[idx]->GetPde()->GetVariableName();
-            mPdeSolvers[idx]->SetFileName("/" + species_name +"_solution_" + boost::lexical_cast<std::string>(counter)+".vti");
+
+            mPdeSolvers[idx]->SetFileName("/" + species_name +"_solution_" + boost::lexical_cast<std::string>(num_steps)+".vti");
 
             // Take the previous pde solution if needed
             if(idx>0)
@@ -350,95 +338,51 @@ void AbstractAngiogenesisSolver<DIM>::Run()
                     }
                 }
             }
-            mPdeSolvers[idx]->Solve(true);
+
+            if(mOutputFrequency > 0 && num_steps % mOutputFrequency == 0)
+            {
+                mPdeSolvers[idx]->Solve(true);
+            }
+            else
+            {
+                mPdeSolvers[idx]->Solve(false);
+            }
         }
     }
-    while(current_time < mEndTime)
+
+    // Move any migrating nodes
+    UpdateNodalPositions();
+    DoAnastamosis();
+
+    if(mSproutingProbability > 0.0)
     {
-        current_time += mTimeIncrement;
-
-        // Move any migrating nodes
-        UpdateNodalPositions();
-
-        DoAnastamosis();
-
-        if(mSproutingProbability > 0.0)
-        {
-            DoSprouting();
-        }
-
-        // Do anastamosis
-        DoAnastamosis();
-        mpNetwork->MergeCoincidentNodes();
-        if(mSolveFlow)
-        {
-            mpNetwork->UpdateVesselNodes();
-            impedance_calculator.Calculate(mpNetwork);
-            flow_solver.SetUp(mpNetwork);
-            flow_solver.Implement(mpNetwork);
-        }
-
-        counter++;
-        if(mOutputFrequency > 0 && counter % mOutputFrequency == 0)
-        {
-            mpNetwork->UpdateVesselIds();
-            mpNetwork->Write(mOutputDirectory + "/VesselNetwork_inc_" + boost::lexical_cast<std::string>(counter)+".vtp");
-            if(mPdeSolvers.size()>0)
-            {
-                for(unsigned idx=0; idx<mPdeSolvers.size(); idx++)
-                {
-                    mPdeSolvers[idx]->SetVesselNetwork(mpNetwork);
-                    std::string species_name = mPdeSolvers[idx]->GetPde()->GetVariableName();
-                    mPdeSolvers[idx]->SetFileName("/" + species_name +"_solution_" + boost::lexical_cast<std::string>(counter)+".vti");
-
-                    // Take the previous pde solution if needed
-                    if(idx>0)
-                    {
-                        for(unsigned jdx=0; jdx<mPdeSolvers[idx]->GetPde()->GetDiscreteSources().size(); jdx++)
-                        {
-                            if(mPdeSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->GetType()==SourceType::SOLUTION)
-                            {
-                                mPdeSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->SetSolution(mPdeSolvers[idx-1]->GetSolution());
-                            }
-                        }
-                    }
-                    mPdeSolvers[idx]->Solve(true);
-                }
-            }
-        }
-        else
-        {
-            if(mPdeSolvers.size()>0)
-            {
-                for(unsigned idx=0; idx<mPdeSolvers.size(); idx++)
-                {
-
-                    // Take the previous pde solution if needed
-                    if(idx>0)
-                    {
-                        for(unsigned jdx=0; jdx<mPdeSolvers[idx]->GetPde()->GetDiscreteSources().size(); jdx++)
-                        {
-                            if(mPdeSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->GetType()==SourceType::SOLUTION)
-                            {
-                                mPdeSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->SetSolution(mPdeSolvers[idx-1]->GetSolution());
-                            }
-                        }
-                    }
-
-                    mPdeSolvers[idx]->Solve(false);
-                }
-            }
-        }
+        DoSprouting();
     }
 
-    // destroy the rng
-    RandomNumberGenerator::Destroy();
+    // Do anastamosis
+    DoAnastamosis();
+    mpNetwork->MergeCoincidentNodes();
+
+    if(mOutputFrequency > 0 && num_steps % mOutputFrequency == 0)
+    {
+        mpNetwork->UpdateVesselIds();
+        mpNetwork->Write(mOutputDirectory + "/VesselNetwork_inc_" + boost::lexical_cast<std::string>(num_steps)+".vtp");
+    }
 }
 
 template<unsigned DIM>
-void AbstractAngiogenesisSolver<DIM>::AddPdeSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pPdeSolver)
+void AbstractAngiogenesisSolver<DIM>::Run()
 {
-    mPdeSolvers.push_back(pPdeSolver);
+    mpNetwork->MergeCoincidentNodes();
+    mpNetwork->UpdateVesselIds();
+    mpNetwork->UpdateVesselNodes();
+    mpNetwork->Write(mOutputDirectory + "/InputVesselNetwork.vtp");
+
+    while(SimulationTime::Instance()->GetTime() < mEndTime)
+    {
+        Increment();
+        SimulationTime::Instance()->IncrementTimeOneStep();
+    }
 }
 
 // Explicit instantiation

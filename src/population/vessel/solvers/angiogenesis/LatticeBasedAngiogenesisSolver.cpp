@@ -41,10 +41,8 @@
 #include "LatticeBasedAngiogenesisSolver.hpp"
 
 template<unsigned DIM>
-LatticeBasedAngiogenesisSolver<DIM>::LatticeBasedAngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork,
-                                                                    const std::string& rOutputDirectory)
-                                                                    : AbstractAngiogenesisSolver<DIM>(pNetwork,
-                                                                                                      rOutputDirectory)
+LatticeBasedAngiogenesisSolver<DIM>::LatticeBasedAngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
+                                                                    : AbstractAngiogenesisSolver<DIM>(pNetwork)
 
 {
 

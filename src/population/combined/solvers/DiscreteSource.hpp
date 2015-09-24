@@ -134,6 +134,8 @@ public:
 
     void SetLabelName(const std::string& label);
 
+    bool IsLinearInSolution();
+
     void SetIsLinearInSolution(bool isLinear);
 
     void SetValue(double value);

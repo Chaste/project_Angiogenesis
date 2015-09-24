@@ -57,7 +57,6 @@ class AbstractAngiogenesisSolver
     std::vector<boost::shared_ptr<AbstractHybridSolver<DIM> > > mPdeSolvers;
     bool mSolveFlow;
     double mSproutingProbability;
-    double mTimeStep;
 
 public:
 
@@ -81,8 +80,6 @@ public:
     void SetSproutingProbability(double sproutingProbability);
 
     void SetOutputDirectory(const std::string& rDirectory);
-
-    void SetTimeStep(double timeStep);
 
     std::vector<boost::shared_ptr<AbstractHybridSolver<DIM> > > GetPdeSolvers();
 
