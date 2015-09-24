@@ -150,7 +150,7 @@ public:
 
         // Grow the vessel
         OffLatticeAngiogenesisSolver<3> angiogenesis_solver(p_network, output_directory);
-        angiogenesis_solver.SetPdeSolver(p_solver);
+        angiogenesis_solver.AddPdeSolver(p_solver);
         angiogenesis_solver.Run();
     }
 

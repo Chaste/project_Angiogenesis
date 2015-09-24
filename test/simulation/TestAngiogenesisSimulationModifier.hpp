@@ -64,6 +64,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "HybridLinearEllipticPde.hpp"
 #include "VasculatureGenerator.hpp"
 #include "SimpleOxygenBasedCellCycleModel.hpp"
+#include "DirichletBoundaryCondition.hpp"
+#include "DiscreteSource.hpp"
 #include "CellLabelWriter.hpp"
 
 class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
@@ -131,29 +133,59 @@ public:
         CaBasedCellPopulation<3> cell_population(*p_mesh, cells, location_indices);
         cell_population.SetCellAncestorsToLocationIndices();
 
-        // Create a pde and solver
-        boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
-        p_pde->SetDiffusionConstant(0.002);
-        double consumptionRate = 0.0;
-        p_pde->SetLinearInUTerm(consumptionRate);
+        // Oxygen PDE, Boundary Conditions and Solver
+        boost::shared_ptr<HybridLinearEllipticPde<3> > p_oxygen_pde = HybridLinearEllipticPde<3>::Create();
+        p_oxygen_pde->SetDiffusionConstant(0.0033);
+        p_oxygen_pde->SetVariableName("oxygen");
 
-        boost::shared_ptr<FiniteDifferenceSolver<3> > p_solver = boost::shared_ptr<FiniteDifferenceSolver<3> >(new FiniteDifferenceSolver<3>());
-        p_solver->SetExtents(p_domain, 40.0);
-        p_solver->SetPde(p_pde);
-        p_solver->SetVesselNetwork(p_network);
-        p_solver->SetBoundaryConditionType(BoundaryConditionType::LINE);
-        p_solver->SetBoundaryConditionSource(BoundaryConditionSource::USER);
-        p_solver->SetBoundaryConditionValue(40.0);
-        p_solver->SetBoundaryConditionName("Oxygen");
+        boost::shared_ptr<DiscreteSource<3> > p_cell_oxygen_sink = boost::shared_ptr<DiscreteSource<3> >(new DiscreteSource<3>());
+        p_cell_oxygen_sink->SetType(SourceType::MULTI_POINT);
+        p_cell_oxygen_sink->SetSource(SourceStrength::PRESCRIBED);
+        p_cell_oxygen_sink->SetValue(1.e-7);
+        p_oxygen_pde->AddDiscreteSource(p_cell_oxygen_sink);
 
-        boost::shared_ptr<AngiogenesisModifier<3> > p_modifier = boost::shared_ptr<AngiogenesisModifier<3> >(new AngiogenesisModifier<3>);
-        p_modifier->SetSolver(p_solver);
+        boost::shared_ptr<DirichletBoundaryCondition<3> > p_vessel_ox_boundary_condition =
+                boost::shared_ptr<DirichletBoundaryCondition<3> >(new DirichletBoundaryCondition<3>());
+        p_vessel_ox_boundary_condition->SetValue(40.0);
+        p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_LINE);
+        p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
+
+        boost::shared_ptr<FiniteDifferenceSolver<3> > p_oxygen_solver = boost::shared_ptr<FiniteDifferenceSolver<3> >(new FiniteDifferenceSolver<3>());
+        p_oxygen_solver->SetExtents(p_domain, 40.0);
+        p_oxygen_solver->SetPde(p_oxygen_pde);
+        p_oxygen_solver->SetVesselNetwork(p_network);
+        p_oxygen_solver->AddDirichletBoundaryCondition(p_vessel_ox_boundary_condition);
+
+        // VEGF PDE, Boundary Conditions and Solver
+        boost::shared_ptr<HybridLinearEllipticPde<3> > p_vegf_pde = HybridLinearEllipticPde<3>::Create();
+        p_vegf_pde->SetDiffusionConstant(0.0033);
+        p_vegf_pde->SetVariableName("vegf");
+        p_vegf_pde->SetLinearInUTerm(-5.e-6);
+
+        boost::shared_ptr<DiscreteSource<3> > p_cell_vegf_source = boost::shared_ptr<DiscreteSource<3> >(new DiscreteSource<3>());
+        p_cell_vegf_source->SetType(SourceType::MULTI_POINT);
+        p_cell_vegf_source->SetSource(SourceStrength::PRESCRIBED);
+        p_cell_vegf_source->SetValue(1.e-6);
+        p_vegf_pde->AddDiscreteSource(p_cell_vegf_source);
+
+        boost::shared_ptr<FiniteDifferenceSolver<3> > p_vegf_solver = boost::shared_ptr<FiniteDifferenceSolver<3> >(new FiniteDifferenceSolver<3>());
+        p_vegf_solver->SetExtents(p_domain, 40.0);
+        p_vegf_solver->SetPde(p_vegf_pde);
+        p_vegf_solver->SetVesselNetwork(p_network);
+
+        boost::shared_ptr<OffLatticeAngiogenesisSolver<3> > p_angiogenesis_solver =
+                boost::shared_ptr<OffLatticeAngiogenesisSolver<3> >(new OffLatticeAngiogenesisSolver<3>((p_network)));
+        p_angiogenesis_solver->AddPdeSolver(p_oxygen_solver);
+        p_angiogenesis_solver->AddPdeSolver(p_vegf_solver);
+
+        boost::shared_ptr<AngiogenesisModifier<3> > p_simulation_modifier = boost::shared_ptr<AngiogenesisModifier<3> >(new AngiogenesisModifier<3>);
+        p_simulation_modifier->SetAngiogenesisSolver(p_angiogenesis_solver);
 
         OnLatticeSimulation<3> simulator(cell_population);
-        simulator.SetOutputDirectory("TestSpheroidAngiogenesis/CaBased");
+        simulator.SetOutputDirectory("TestAngiogenesisSimulationModifier/CaBased");
         simulator.SetDt(1.0);
         simulator.SetEndTime(10.0);
-        simulator.AddSimulationModifier(p_modifier);
+        simulator.AddSimulationModifier(p_simulation_modifier);
         simulator.Solve();
     }
 
@@ -220,28 +252,37 @@ public:
         cell_population.AddCellWriter<CellLabelWriter>();
 
         // Create a pde and solver
-        boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
-        p_pde->SetDiffusionConstant(0.002);
+        boost::shared_ptr<HybridLinearEllipticPde<3> > p_oxygen_pde = HybridLinearEllipticPde<3>::Create();
+        p_oxygen_pde->SetDiffusionConstant(0.002);
         double consumptionRate = 0.0;
-        p_pde->SetLinearInUTerm(consumptionRate);
+        p_oxygen_pde->SetLinearInUTerm(consumptionRate);
+        p_oxygen_pde->SetVariableName("oxygen");
 
-        boost::shared_ptr<FiniteDifferenceSolver<3> > p_solver = boost::shared_ptr<FiniteDifferenceSolver<3> >(new FiniteDifferenceSolver<3>());
-        p_solver->SetExtents(p_domain, pde_spacing);
-        p_solver->SetPde(p_pde);
-        p_solver->SetVesselNetwork(p_network);
-        p_solver->SetBoundaryConditionType(BoundaryConditionType::LINE);
-        p_solver->SetBoundaryConditionSource(BoundaryConditionSource::USER);
-        p_solver->SetBoundaryConditionValue(40.0);
-        p_solver->SetBoundaryConditionName("Oxygen");
+        // Oxygen: Boundary Conditions
+        boost::shared_ptr<DirichletBoundaryCondition<3> > p_vessel_ox_boundary_condition =
+                boost::shared_ptr<DirichletBoundaryCondition<3> >(new DirichletBoundaryCondition<3>());
+        p_vessel_ox_boundary_condition->SetValue(40.0);
+        p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_LINE);
+        p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
+
+        boost::shared_ptr<FiniteDifferenceSolver<3> > p_oxygen_solver = boost::shared_ptr<FiniteDifferenceSolver<3> >(new FiniteDifferenceSolver<3>());
+        p_oxygen_solver->SetExtents(p_domain, 40.0);
+        p_oxygen_solver->SetPde(p_oxygen_pde);
+        p_oxygen_solver->SetVesselNetwork(p_network);
+        p_oxygen_solver->AddDirichletBoundaryCondition(p_vessel_ox_boundary_condition);
+
+        boost::shared_ptr<OffLatticeAngiogenesisSolver<3> > p_angiogenesis_solver =
+                boost::shared_ptr<OffLatticeAngiogenesisSolver<3> >(new OffLatticeAngiogenesisSolver<3>((p_network)));
+        p_angiogenesis_solver->AddPdeSolver(p_oxygen_solver);
+
+        boost::shared_ptr<AngiogenesisModifier<3> > p_simulation_modifier = boost::shared_ptr<AngiogenesisModifier<3> >(new AngiogenesisModifier<3>);
+        p_simulation_modifier->SetAngiogenesisSolver(p_angiogenesis_solver);
 
         OffLatticeSimulation<3> simulator(cell_population);
-        simulator.SetOutputDirectory("TestSpheroidAngiogenesis/NodeBased");
+        simulator.SetOutputDirectory("TestAngiogenesisSimulationModifier/NodeBased");
         simulator.SetDt(1.0);
         simulator.SetEndTime(100.0);
-
-        boost::shared_ptr<AngiogenesisModifier<3> > p_modifier = boost::shared_ptr<AngiogenesisModifier<3> >(new AngiogenesisModifier<3>);
-        p_modifier->SetSolver(p_solver);
-        simulator.AddSimulationModifier(p_modifier);
+        simulator.AddSimulationModifier(p_simulation_modifier);
 
         MAKE_PTR(GeneralisedLinearSpringForce<3>, p_force);
         simulator.AddForce(p_force);

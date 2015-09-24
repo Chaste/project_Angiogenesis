@@ -38,6 +38,9 @@
 
 #include <vector>
 #include <string>
+#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning for now (gcc4.3)
+#include <vtkImageData.h>
+#include <vtkSmartPointer.h>
 #include "UblasIncludes.hpp"
 #include "SimpleCellPopulation.hpp"
 #include "CaVascularNetwork.hpp"
@@ -51,7 +54,7 @@ struct SourceType
 {
     enum Value
     {
-        POINT, MULTI_POINT, VESSEL_LINE, CELL_POINT
+        POINT, MULTI_POINT, VESSEL_LINE, CELL_POINT, SOLUTION
     };
 };
 
@@ -87,6 +90,8 @@ private:
 
     boost::shared_ptr<Part<DIM> > mpDomain;
 
+    vtkSmartPointer<vtkImageData>  mpSolution;
+
     std::vector<c_vector<double, DIM> > mPoints;
 
     SourceType::Value mType;
@@ -118,6 +123,8 @@ public:
     void SetPoint(c_vector<double, DIM> point);
 
     void SetPoints(std::vector<c_vector<double, DIM> > points);
+
+    void SetSolution(vtkSmartPointer<vtkImageData>  pSolution);
 
     void SetType(SourceType::Value boundaryType);
 

@@ -145,18 +145,47 @@ void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
     }
 
     // Apply dirichlet boundary conditions
-    if (this->mpNetwork)
+    for(unsigned bound_index=0; bound_index<this->mDirichletBoundaryConditions.size(); bound_index++)
     {
-        double grid_tolerance = this->mGridSize * (std::sqrt(2.0) / 2.0);
-        std::vector<unsigned> bc_indices;
-        for (unsigned i = 0; i < this->mExtents[2]; i++) // Z
+        if(this->mpNetwork)
         {
-            for (unsigned j = 0; j < this->mExtents[1]; j++) // Y
+            this->mDirichletBoundaryConditions[bound_index]->SetVesselNetwork(this->mpNetwork);
+        }
+    }
+
+
+    double grid_tolerance = this->mGridSize * (std::sqrt(2.0) / 2.0);
+    std::vector<unsigned> bc_indices;
+    for (unsigned i = 0; i < this->mExtents[2]; i++) // Z
+    {
+        for (unsigned j = 0; j < this->mExtents[1]; j++) // Y
+        {
+            for (unsigned k = 0; k < this->mExtents[0]; k++) // X
             {
-                for (unsigned k = 0; k < this->mExtents[0]; k++) // X
+                unsigned grid_index = this->GetGridIndex(k, j, i);
+                for(unsigned bound_index=0; bound_index<this->mDirichletBoundaryConditions.size(); bound_index++)
                 {
-                    unsigned grid_index = this->GetGridIndex(k, j, i);
-                    for(unsigned bound_index=0; bound_index<this->mDirichletBoundaryConditions.size(); bound_index++)
+                    if(this->mDirichletBoundaryConditions[bound_index]->GetType()== BoundaryConditionType::OUTER)
+                    {
+                        if(i==0 || i==this->mExtents[2]-1 || j==0 || j==this->mExtents[1]-1 || k==0 || k == this->mExtents[0]-1)
+                        {
+                            std::pair<bool, double> is_boundary = this->mDirichletBoundaryConditions[bound_index]->GetValue(this->GetLocation(k ,j, i), grid_tolerance);
+                            bc_indices.push_back(grid_index);
+                            linear_system.SetRhsVectorElement(grid_index, is_boundary.second);
+                            break;
+                        }
+                    }
+                    else if(this->mDirichletBoundaryConditions[bound_index]->GetType()== BoundaryConditionType::OUTER_2D)
+                    {
+                        if(j==0 || j==this->mExtents[1]-1 || k==0 || k == this->mExtents[0]-1)
+                        {
+                            std::pair<bool, double> is_boundary = this->mDirichletBoundaryConditions[bound_index]->GetValue(this->GetLocation(k ,j, i), grid_tolerance);
+                            bc_indices.push_back(grid_index);
+                            linear_system.SetRhsVectorElement(grid_index, is_boundary.second);
+                            break;
+                        }
+                    }
+                    else
                     {
                         std::pair<bool, double> is_boundary = this->mDirichletBoundaryConditions[bound_index]->GetValue(this->GetLocation(k ,j, i), grid_tolerance);
                         if(is_boundary.first)
@@ -169,8 +198,8 @@ void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
                 }
             }
         }
-        linear_system.ZeroMatrixRowsWithValueOnDiagonal(bc_indices, 1.0);
     }
+    linear_system.ZeroMatrixRowsWithValueOnDiagonal(bc_indices, 1.0);
 
     // Solve the linear system
     linear_system.AssembleFinalLinearSystem();

@@ -51,6 +51,7 @@
  * Linear Elliptic PDE with discrete or averaged cell and
  * vessel source terms.
  */
+
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM = ELEMENT_DIM>
 class HybridLinearEllipticPde : public AbstractLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>
 {
@@ -92,6 +93,11 @@ public:
     double ComputeConstantInUSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement)
     {
         return mConstantInUTerm;
+    }
+
+    std::vector<boost::shared_ptr<DiscreteSource<SPACE_DIM> > > GetDiscreteSources()
+    {
+        return mDiscreteSources;
     }
 
     double ComputeLinearInUCoeffInSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement)
@@ -142,7 +148,15 @@ public:
 
     double GetConstantInUTerm(c_vector<double, SPACE_DIM> location = zero_vector<double>(SPACE_DIM), double spacing = 0.0)
     {
-        return mConstantInUTerm;
+        double consumption_term = 0.0;
+        for(unsigned idx=0; idx<mDiscreteSources.size(); idx++)
+        {
+            if(mDiscreteSources[idx]->GetType()==SourceType::SOLUTION)
+            {
+                consumption_term =  -1.e-5 * mDiscreteSources[idx]->GetValue(location).second;
+            }
+        }
+        return mConstantInUTerm - consumption_term;
     }
 
     void SetVariableName(const std::string& rVariableName)
@@ -167,6 +181,7 @@ public:
             }
         }
         consumption_term = 1.e-7 * double(num_points);
+
         return mLinearInUTerm - consumption_term;
     }
 

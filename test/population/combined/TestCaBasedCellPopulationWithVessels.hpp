@@ -68,8 +68,6 @@ public:
         p_network->Write(output_filename);
 
         // Create cell population
-        // ______________________
-
         // use OnLatticeVascularTumourCellPopulationGenerator to generate cells and associate cells
         // with vessels
         OnLatticeVascularTumourCellPopulationGenerator<3> cellPopulationGenerator;
@@ -77,8 +75,6 @@ public:
         boost::shared_ptr<CaBasedCellPopulationWithVessels<3> > cell_population =
                 cellPopulationGenerator.CreateCellPopulation(*p_mesh, p_network);
 
-        // todo Node to segment connectivity is not being correctly updated here....check!
-        // This is likely to be in the DivideSegment method in the Vessel class
         TS_ASSERT_EQUALS(p_network->GetNumberOfNodes(), 21u);
         TS_ASSERT_EQUALS(p_network->GetNumberOfVessels(), 1u);
         TS_ASSERT_EQUALS(p_network->GetNumberOfVesselNodes(), 2u);
@@ -129,10 +125,6 @@ public:
         p_network->Write(output_filename);
 
         // Create cell population
-        // ______________________
-
-        // use OnLatticeVascularTumourCellPopulationGenerator to generate cells and associate cells
-        // with vessels
         OnLatticeVascularTumourCellPopulationGenerator<3> cellPopulationGenerator;
         cellPopulationGenerator.SetIncludeNormalCellPopulation(false);
         boost::shared_ptr<CaBasedCellPopulationWithVessels<3> > cell_population =

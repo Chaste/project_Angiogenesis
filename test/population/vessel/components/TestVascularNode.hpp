@@ -118,7 +118,6 @@ public:
         TS_ASSERT_DELTA(vtk_data["Node Pressure"], 12.0, 1.e-6);
         TS_ASSERT_DELTA(vtk_data["Node Is Input"], 0.0, 1.e-6);
         TS_ASSERT_DELTA(vtk_data["Node Is Output"], 0.0, 1.e-6);
-        TS_ASSERT_DELTA(vtk_data["Node Is Migrating"], 1.0, 1.e-6);
     }
 
     void TestDistanceAndConincidentMethods() throw (Exception)

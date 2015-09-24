@@ -119,8 +119,8 @@ double LengthOfLineInBox(c_vector<double, DIM> start_point,
                          c_vector<double, DIM> location, double spacing)
 {
     // If the line is fully in the box return its length
-    bool point1_in_box = IsPointInBox(start_point, location, spacing);
-    bool point2_in_box = IsPointInBox(end_point, location, spacing);
+    bool point1_in_box = IsPointInBox<DIM>(start_point, location, spacing);
+    bool point2_in_box = IsPointInBox<DIM>(end_point, location, spacing);
     if(point1_in_box && point2_in_box)
     {
         return norm_2(end_point - start_point);
@@ -178,8 +178,8 @@ double LengthOfLineInTetra(c_vector<double, DIM> start_point,
                            c_vector<double, DIM> end_point,
                            std::vector<c_vector<double, DIM> > locations)
 {
-    bool point1_in_tetra = IsPointInTetra(start_point, locations);
-    bool point2_in_tetra = IsPointInTetra(end_point, locations);
+    bool point1_in_tetra = IsPointInTetra<DIM>(start_point, locations);
+    bool point2_in_tetra = IsPointInTetra<DIM>(end_point, locations);
 
     if(point1_in_tetra && point2_in_tetra)
     {

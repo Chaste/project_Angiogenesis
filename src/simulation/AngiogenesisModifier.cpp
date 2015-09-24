@@ -37,6 +37,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MeshBasedCellPopulation.hpp"
 #include "SimpleCellPopulation.hpp"
 #include "boost/lexical_cast.hpp"
+#include "Debug.hpp"
 
 template<unsigned DIM>
 AngiogenesisModifier<DIM>::AngiogenesisModifier()
@@ -52,7 +53,7 @@ AngiogenesisModifier<DIM>::~AngiogenesisModifier()
 }
 
 template<unsigned DIM>
-void AngiogenesisModifier<DIM>::SetSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pSolver)
+void AngiogenesisModifier<DIM>::SetAngiogenesisSolver(boost::shared_ptr<AbstractAngiogenesisSolver<DIM> > pSolver)
 {
     mpSolver = pSolver;
 }
@@ -70,7 +71,6 @@ void AngiogenesisModifier<DIM>::UpdateAtEndOfTimeStep(AbstractCellPopulation<DIM
             locations.push_back(rCellPopulation.GetLocationOfCellCentre(*cell_iter));
         }
         mpSolver->GetPde()->SetLinearInUPoints(locations);
-
         OutputFileHandler output_file_handler(mOutputDirectory, false);
         mpSolver->SetWorkingDirectory(output_file_handler.GetOutputDirectoryFullPath());
         SimulationTime* p_time = SimulationTime::Instance();
@@ -87,21 +87,32 @@ void AngiogenesisModifier<DIM>::SetupSolve(AbstractCellPopulation<DIM,DIM>& rCel
 {
     mOutputDirectory = outputDirectory;
 
-    // Solve any field problems involving the cells
+    // If there is an angiogenesis solver solve for the upcoming step
     if(mpSolver)
     {
+        mpSolver->SetTimeStep(SimulationTime::Instance()->GetTimeStep());
+
+        // Set the cell locations in PDEs requiring them
         std::vector<c_vector<double, DIM> > locations;
         for (typename AbstractCellPopulation<DIM>::Iterator cell_iter = rCellPopulation.Begin();
              cell_iter != rCellPopulation.End(); ++cell_iter)
         {
             locations.push_back(rCellPopulation.GetLocationOfCellCentre(*cell_iter));
         }
-        mpSolver->GetPde()->SetLinearInUPoints(locations);
 
+        for(unsigned idx=0; idx<mpSolver->GetPdeSolvers().size(); idx++)
+        {
+            for(unsigned jdx=0; jdx<mpSolver->GetPdeSolvers()[idx]->GetPde()->GetDiscreteSources().size(); jdx++)
+            {
+                if(mpSolver->GetPdeSolvers()[idx]->GetPde()->GetDiscreteSources()[jdx]->GetType() == SourceType::MULTI_POINT)
+                {
+                    mpSolver->GetPdeSolvers()[idx]->GetPde()->GetDiscreteSources()[jdx]->SetPoints(locations);
+                }
+            }
+        }
         OutputFileHandler output_file_handler(mOutputDirectory, false);
-        mpSolver->SetWorkingDirectory(output_file_handler.GetOutputDirectoryFullPath());
-        mpSolver->SetFileName("field_0.vti");
-        mpSolver->Solve(true);
+        mpSolver->SetOutputDirectory(output_file_handler.GetOutputDirectoryFullPath());
+        mpSolver->Increment();
     }
 
     // Update the cell data
@@ -125,10 +136,9 @@ void AngiogenesisModifier<DIM>::UpdateCellData(AbstractCellPopulation<DIM,DIM>& 
             locations.push_back(rCellPopulation.GetLocationOfCellCentre(*cell_iter));
             cell_vector.push_back(*cell_iter);
         }
-        std::vector<double> sampled_solution = mpSolver->GetSolutionAtPoints(locations);
+        std::vector<double> sampled_solution = mpSolver->GetSolutionAtPoints(locations, "oxygen");
         for(unsigned idx=0;idx<cell_vector.size();idx++)
         {
-            cell_vector[idx]->GetCellData()->SetItem("Default", sampled_solution[idx]);
             cell_vector[idx]->GetCellData()->SetItem("oxygen", sampled_solution[idx]/20.0);
         }
     }

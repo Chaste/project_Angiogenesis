@@ -33,22 +33,20 @@
 
  */
 
-#ifndef TESTHYBRIDLINEARELLIPTICPDE_HPP_
-#define TESTHYBRIDLINEARELLIPTICPDE_HPP_
+#ifndef TESTGEOMETRYTOOLS_HPP_
+#define TESTGEOMETRYTOOLS_HPP_
 
 #include <cxxtest/TestSuite.h>
 #include "SmartPointers.hpp"
-#include "HybridLinearEllipticPde.hpp"
+#include "GeometryTools.hpp"
 
-class TestHybridLinearEllipticPde : public CxxTest::TestSuite
+class TestGeometryTools : public CxxTest::TestSuite
 {
 
 public:
 
     void TestLineInBoxBothOutside()
     {
-        boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
-
         double spacing = 1.0;
         c_vector<double,3> centre;
         centre[0] = 0.5;
@@ -65,14 +63,12 @@ public:
         point2[1] = 0.5;
         point2[2] = 0.5;
 
-        double length = p_pde->LengthOfLineInBox(point1, point2, centre, spacing);
+        double length = LengthOfLineInBox<3>(point1, point2, centre, spacing);
         TS_ASSERT_DELTA(length, 1.0, 1.e-6);
     }
 
     void TestLineInBoxBothOutsideNotCrossing()
     {
-        boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
-
         double spacing = 1.0;
         c_vector<double,3> centre;
         centre[0] = 0.5;
@@ -89,14 +85,12 @@ public:
         point2[1] = 1.5;
         point2[2] = 0.5;
 
-        double length = p_pde->LengthOfLineInBox(point1, point2, centre, spacing);
+        double length = LengthOfLineInBox<3>(point1, point2, centre, spacing);
         TS_ASSERT_DELTA(length, 0.0, 1.e-6);
     }
 
     void TestLineInBoxInside()
     {
-        boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
-
         double spacing = 1.0;
         c_vector<double,3> centre;
         centre[0] = 0.5;
@@ -113,14 +107,12 @@ public:
         point2[1] = 0.5;
         point2[2] = 0.5;
 
-        double length = p_pde->LengthOfLineInBox(point1, point2, centre, spacing);
+        double length = LengthOfLineInBox<3>(point1, point2, centre, spacing);
         TS_ASSERT_DELTA(length, 0.5, 1.e-6);
     }
 
     void TestLineInBoxStartInside()
     {
-        boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
-
         double spacing = 1.0;
         c_vector<double,3> centre;
         centre[0] = 0.5;
@@ -137,14 +129,12 @@ public:
         point2[1] = 0.5;
         point2[2] = 0.5;
 
-        double length = p_pde->LengthOfLineInBox(point1, point2, centre, spacing);
+        double length = LengthOfLineInBox<3>(point1, point2, centre, spacing);
         TS_ASSERT_DELTA(length, 0.75, 1.e-6);
     }
 
     void TestLineInBoxEndInside()
     {
-        boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
-
         double spacing = 1.0;
         c_vector<double,3> centre;
         centre[0] = 0.5;
@@ -161,14 +151,12 @@ public:
         point2[1] = 0.5;
         point2[2] = 0.5;
 
-        double length = p_pde->LengthOfLineInBox(point1, point2, centre, spacing);
+        double length = LengthOfLineInBox<3>(point1, point2, centre, spacing);
         TS_ASSERT_DELTA(length, 0.75, 1.e-6);
     }
 
     void TestLineInTetra()
     {
-        boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
-
         std::vector<c_vector<double,3> > tetra_points;
         c_vector<double,3> tetra1;
         tetra1[0] = 0.0;
@@ -204,9 +192,9 @@ public:
         point2[1] = 0.5;
         point2[2] = 0.5;
 
-        double length = p_pde->LengthOfLineInTetra(point1, point2, tetra_points);
+        double length = LengthOfLineInTetra<3>(point1, point2, tetra_points);
         TS_ASSERT_DELTA(length, 0.25, 1.e-6);
     }
 };
 
-#endif /*TESTHYBRIDLINEARELLIPTICPDE_HPP_*/
+#endif /*TESTGEOMETRYTOOLS_HPP_*/

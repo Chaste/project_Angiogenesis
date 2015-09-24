@@ -50,17 +50,18 @@
 #include "Debug.hpp"
 
 template<unsigned DIM>
-AbstractAngiogenesisSolver<DIM>::AbstractAngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork, const std::string& rOutputDirectory) :
+AbstractAngiogenesisSolver<DIM>::AbstractAngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork) :
         mpNetwork(pNetwork),
         mGrowthVelocity(10.0),
         mTimeIncrement(1.0),
         mEndTime(10.0),
-        mOutputFrequency(1),
-        mOutputDirectory(rOutputDirectory),
+        mOutputFrequency(),
+        mOutputDirectory(),
         mNodeAnastamosisRadius(0.0),
         mPdeSolvers(),
         mSolveFlow(false),
-        mSproutingProbability(0.0)
+        mSproutingProbability(0.0),
+        mTimeStep(1.0)
 {
 
 }
@@ -69,6 +70,18 @@ template<unsigned DIM>
 AbstractAngiogenesisSolver<DIM>::~AbstractAngiogenesisSolver()
 {
 
+}
+
+template<unsigned DIM>
+void AbstractAngiogenesisSolver<DIM>::SetTimeStep(double timeStep)
+{
+    mTimeStep = timeStep;
+}
+
+template<unsigned DIM>
+std::vector<boost::shared_ptr<AbstractHybridSolver<DIM> > > AbstractAngiogenesisSolver<DIM>::GetPdeSolvers()
+{
+    return mPdeSolvers;
 }
 
 template<unsigned DIM>
@@ -89,6 +102,12 @@ template<unsigned DIM>
 void AbstractAngiogenesisSolver<DIM>::SetSolveFlow(bool solveFlow)
 {
     mSolveFlow = solveFlow;
+}
+
+template<unsigned DIM>
+void AbstractAngiogenesisSolver<DIM>::SetOutputDirectory(const std::string& rDirectory)
+{
+    mOutputDirectory = rDirectory;
 }
 
 template<unsigned DIM>
@@ -282,6 +301,12 @@ void AbstractAngiogenesisSolver<DIM>::DoAnastamosis()
 }
 
 template<unsigned DIM>
+void AbstractAngiogenesisSolver<DIM>::Increment()
+{
+
+}
+
+template<unsigned DIM>
 void AbstractAngiogenesisSolver<DIM>::Run()
 {
     // Loop over the time (replace with simulation time)
@@ -313,6 +338,18 @@ void AbstractAngiogenesisSolver<DIM>::Run()
             mPdeSolvers[idx]->SetWorkingDirectory(mOutputDirectory);
             std::string species_name = mPdeSolvers[idx]->GetPde()->GetVariableName();
             mPdeSolvers[idx]->SetFileName("/" + species_name +"_solution_" + boost::lexical_cast<std::string>(counter)+".vti");
+
+            // Take the previous pde solution if needed
+            if(idx>0)
+            {
+                for(unsigned jdx=0; jdx<mPdeSolvers[idx]->GetPde()->GetDiscreteSources().size(); jdx++)
+                {
+                    if(mPdeSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->GetType()==SourceType::SOLUTION)
+                    {
+                        mPdeSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->SetSolution(mPdeSolvers[idx-1]->GetSolution());
+                    }
+                }
+            }
             mPdeSolvers[idx]->Solve(true);
         }
     }
@@ -353,6 +390,18 @@ void AbstractAngiogenesisSolver<DIM>::Run()
                     mPdeSolvers[idx]->SetVesselNetwork(mpNetwork);
                     std::string species_name = mPdeSolvers[idx]->GetPde()->GetVariableName();
                     mPdeSolvers[idx]->SetFileName("/" + species_name +"_solution_" + boost::lexical_cast<std::string>(counter)+".vti");
+
+                    // Take the previous pde solution if needed
+                    if(idx>0)
+                    {
+                        for(unsigned jdx=0; jdx<mPdeSolvers[idx]->GetPde()->GetDiscreteSources().size(); jdx++)
+                        {
+                            if(mPdeSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->GetType()==SourceType::SOLUTION)
+                            {
+                                mPdeSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->SetSolution(mPdeSolvers[idx-1]->GetSolution());
+                            }
+                        }
+                    }
                     mPdeSolvers[idx]->Solve(true);
                 }
             }
@@ -363,6 +412,19 @@ void AbstractAngiogenesisSolver<DIM>::Run()
             {
                 for(unsigned idx=0; idx<mPdeSolvers.size(); idx++)
                 {
+
+                    // Take the previous pde solution if needed
+                    if(idx>0)
+                    {
+                        for(unsigned jdx=0; jdx<mPdeSolvers[idx]->GetPde()->GetDiscreteSources().size(); jdx++)
+                        {
+                            if(mPdeSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->GetType()==SourceType::SOLUTION)
+                            {
+                                mPdeSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->SetSolution(mPdeSolvers[idx-1]->GetSolution());
+                            }
+                        }
+                    }
+
                     mPdeSolvers[idx]->Solve(false);
                 }
             }

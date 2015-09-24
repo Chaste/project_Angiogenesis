@@ -38,7 +38,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ChasteSerialization.hpp"
 #include <boost/serialization/base_object.hpp>
-#include "AbstractHybridSolver.hpp"
+#include "AbstractAngiogenesisSolver.hpp"
 
 #include "AbstractCellBasedSimulationModifier.hpp"
 
@@ -67,7 +67,7 @@ class AngiogenesisModifier : public AbstractCellBasedSimulationModifier<DIM,DIM>
 
 private:
 
-    boost::shared_ptr<AbstractHybridSolver<DIM> > mpSolver;
+    boost::shared_ptr<AbstractAngiogenesisSolver<DIM> > mpSolver;
     std::string mOutputDirectory;
 
 public:
@@ -101,7 +101,7 @@ public:
      */
     virtual void SetupSolve(AbstractCellPopulation<DIM,DIM>& rCellPopulation, std::string outputDirectory);
 
-    void SetSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pSolver);
+    void SetAngiogenesisSolver(boost::shared_ptr<AbstractAngiogenesisSolver<DIM> > pSolver);
 
     /**
      * Helper method to compute the volume of each cell in the population and store these in the CellData.

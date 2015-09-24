@@ -51,7 +51,7 @@ struct BoundaryConditionType
 {
     enum Value
     {
-        POINT, MULTI_POINT, OUTER, FACET, VESSEL_LINE, VESSEL_VOLUME, CELL_POINT
+        POINT, MULTI_POINT, OUTER, OUTER_2D, FACET, VESSEL_LINE, VESSEL_VOLUME, CELL_POINT
     };
 };
 

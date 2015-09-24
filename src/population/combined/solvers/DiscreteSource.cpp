@@ -36,12 +36,17 @@
 #include "Facet.hpp"
 #include "DiscreteSource.hpp"
 #include "SimpleCell.hpp"
+#include <vtkDoubleArray.h>
+#include <vtkPointData.h>
+#include <vtkProbeFilter.h>
+#include <vtkLineSource.h>
 
 template<unsigned DIM>
 DiscreteSource<DIM>::DiscreteSource()
     :   mpNetwork(),
         mpCellPopulation(),
         mpDomain(),
+        mpSolution(),
         mPoints(),
         mType(SourceType::POINT),
         mSourceStrength(SourceStrength::PRESCRIBED),
@@ -71,6 +76,12 @@ void DiscreteSource<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<D
 }
 
 template<unsigned DIM>
+void DiscreteSource<DIM>::SetSolution(vtkSmartPointer<vtkImageData>  pSolution)
+{
+    mpSolution = pSolution;
+}
+
+template<unsigned DIM>
 void DiscreteSource<DIM>::SetCellPopulation(boost::shared_ptr<SimpleCellPopulation<DIM> > pCellPopulation)
 {
     mpCellPopulation = pCellPopulation;
@@ -91,7 +102,7 @@ void DiscreteSource<DIM>::SetPoint(c_vector<double, DIM> point)
 template<unsigned DIM>
 void DiscreteSource<DIM>::SetPoints(std::vector<c_vector<double, DIM> > points)
 {
-    mPoints.insert(mPoints.end(), points.begin(), points.end());
+    mPoints = points;
 }
 
 template<unsigned DIM>
@@ -208,6 +219,45 @@ std::pair<bool, double> DiscreteSource<DIM>::GetValue(c_vector<double, DIM> loca
             }
         }
         return std::pair<bool, double>(false, mValue);
+    }
+
+    else if(mType == SourceType::SOLUTION)
+    {
+        if(!mpSolution)
+        {
+            EXCEPTION("A previous solution is required for this type of source");
+        }
+        std::vector<c_vector<double, DIM> > samplePoints(1, location);
+        std::vector<double> sampled_solution(samplePoints.size(), 0.0);
+
+        // Sample the field at these locations
+        vtkSmartPointer<vtkPolyData> p_polydata = vtkSmartPointer<vtkPolyData>::New();
+        vtkSmartPointer<vtkPoints> p_points = vtkSmartPointer<vtkPoints>::New();
+        p_points->SetNumberOfPoints(samplePoints.size());
+        for(unsigned idx=0; idx< samplePoints.size(); idx++)
+        {
+            if(DIM==3)
+            {
+                p_points->SetPoint(idx, samplePoints[idx][0], samplePoints[idx][1], samplePoints[idx][2]);
+            }
+            else
+            {
+                p_points->SetPoint(idx, samplePoints[idx][0], samplePoints[idx][1], 0.0);
+            }
+        }
+        p_polydata->SetPoints(p_points);
+
+        vtkSmartPointer<vtkProbeFilter> p_probe_filter = vtkSmartPointer<vtkProbeFilter>::New();
+        p_probe_filter->SetInput(p_polydata);
+        p_probe_filter->SetSource(mpSolution);
+        p_probe_filter->Update();
+        vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetOutput()->GetPointData();
+        unsigned num_points = p_point_data->GetArray(mLabel.c_str())->GetNumberOfTuples();
+        for(unsigned idx=0; idx<num_points; idx++)
+        {
+            sampled_solution[idx] = p_point_data->GetArray(mLabel.c_str())->GetTuple1(idx);
+        }
+        return std::pair<bool, double>(true, sampled_solution[0]);
     }
     return std::pair<bool, double>(false, mValue);
 }

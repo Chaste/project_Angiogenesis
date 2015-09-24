@@ -57,6 +57,7 @@ class AbstractAngiogenesisSolver
     std::vector<boost::shared_ptr<AbstractHybridSolver<DIM> > > mPdeSolvers;
     bool mSolveFlow;
     double mSproutingProbability;
+    double mTimeStep;
 
 public:
 
@@ -64,7 +65,7 @@ public:
      * Constructor.
      * @param pNetwork the network to perform angiogenesis on
      */
-    AbstractAngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork, const std::string& rOutputDirectory);
+    AbstractAngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
 
     /**
      * Destructor.
@@ -79,11 +80,19 @@ public:
 
     void SetSproutingProbability(double sproutingProbability);
 
+    void SetOutputDirectory(const std::string& rDirectory);
+
+    void SetTimeStep(double timeStep);
+
+    std::vector<boost::shared_ptr<AbstractHybridSolver<DIM> > > GetPdeSolvers();
+
     void UpdateNodalPositions(const std::string& speciesLabel = "Default");
 
     void DoSprouting();
 
     void DoAnastamosis();
+
+    void Increment();
 
     /**
      * Run the solver.
