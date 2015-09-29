@@ -33,40 +33,45 @@
 
  */
 
-#ifndef OnLatticeRwGrowthDirectionModifier_HPP_
-#define OnLatticeRwGrowthDirectionModifier_HPP_
+#ifndef ABSTRACTSOLUTIONDEPENDENTSPROUTINGRULE_HPP_
+#define ABSTRACTSOLUTIONDEPENDENTSPROUTINGRULE_HPP_
 
 #include <vector>
 #include <string>
 
 #include "VascularNode.hpp"
 #include "SmartPointers.hpp"
-#include "AbstractGrowthDirectionModifier.hpp"
+#include "AbstractSproutingRule.hpp"
+#include "AbstractHybridSolver.hpp"
 
 template<unsigned DIM>
-class OnLatticeRwGrowthDirectionModifier : public AbstractGrowthDirectionModifier<DIM>
+class AbstractSolutionDependentSproutingRule : public AbstractSproutingRule<DIM>
 {
 
-    c_vector<double, DIM> mGlobalX;
+protected:
 
-    c_vector<double, DIM> mGlobalY;
+    boost::shared_ptr<AbstractHybridSolver<DIM> > mpSolver;
 
-    c_vector<double, DIM> mGlobalZ;
+    double mSolutionThreshold;
+
 
 public:
 
     /**
      * Constructor.
      */
-    OnLatticeRwGrowthDirectionModifier();
+    AbstractSolutionDependentSproutingRule();
 
     /**
      * Destructor.
      */
-    virtual ~OnLatticeRwGrowthDirectionModifier();
+    virtual ~AbstractSolutionDependentSproutingRule();
 
-    c_vector<double, DIM> GetGrowthDirection(c_vector<double, DIM> currentDirection, boost::shared_ptr<VascularNode<DIM> > pNode);
+    void SetSolutionThreshold(double threshold);
 
+    void SetSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pSolver);
+
+    std::vector<bool> WillSprout();
 };
 
-#endif /* OnLatticeRwGrowthDirectionModifier_HPP_ */
+#endif /* ABSTRACTSOLUTIONDEPENDENTSPROUTINGRULE_HPP_ */

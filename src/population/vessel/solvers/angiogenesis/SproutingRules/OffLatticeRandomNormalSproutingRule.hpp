@@ -33,40 +33,34 @@
 
  */
 
-#ifndef OnLatticeRwGrowthDirectionModifier_HPP_
-#define OnLatticeRwGrowthDirectionModifier_HPP_
+#ifndef OFFLATTICERANDOMNORMALSPROUTINGRULE_HPP_
+#define OFFLATTICERANDOMNORMALSPROUTINGRULE_HPP_
 
 #include <vector>
 #include <string>
 
 #include "VascularNode.hpp"
 #include "SmartPointers.hpp"
-#include "AbstractGrowthDirectionModifier.hpp"
+#include "AbstractSolutionDependentSproutingRule.hpp"
 
 template<unsigned DIM>
-class OnLatticeRwGrowthDirectionModifier : public AbstractGrowthDirectionModifier<DIM>
+class OffLatticeRandomNormalSproutingRule : public AbstractSolutionDependentSproutingRule<DIM>
 {
-
-    c_vector<double, DIM> mGlobalX;
-
-    c_vector<double, DIM> mGlobalY;
-
-    c_vector<double, DIM> mGlobalZ;
 
 public:
 
     /**
      * Constructor.
      */
-    OnLatticeRwGrowthDirectionModifier();
+    OffLatticeRandomNormalSproutingRule();
 
     /**
      * Destructor.
      */
-    virtual ~OnLatticeRwGrowthDirectionModifier();
+    virtual ~OffLatticeRandomNormalSproutingRule();
 
-    c_vector<double, DIM> GetGrowthDirection(c_vector<double, DIM> currentDirection, boost::shared_ptr<VascularNode<DIM> > pNode);
+    std::vector<c_vector<double, DIM> > GetSproutDirection(std::vector<bool> sprout_indices = std::vector<bool>());
 
 };
 
-#endif /* OnLatticeRwGrowthDirectionModifier_HPP_ */
+#endif /* OFFLATTICERANDOMNORMALSPROUTINGRULE_HPP_ */

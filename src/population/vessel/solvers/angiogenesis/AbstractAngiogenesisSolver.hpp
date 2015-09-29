@@ -38,21 +38,20 @@
 
 #include <vector>
 #include <string>
-
+#include "SmartPointers.hpp"
 #include "CaVascularNetwork.hpp"
 #include "AbstractHybridSolver.hpp"
-#include "SmartPointers.hpp"
 #include "AbstractGrowthDirectionModifier.hpp"
+#include "AbstractSproutingRule.hpp"
+#include "SimpleFlowSolver.hpp"
+#include "SimpleStructuralAdaptationSolver.hpp"
 
 template<unsigned DIM>
 class AbstractAngiogenesisSolver
 {
-
     boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
 
     double mGrowthVelocity;
-
-    double mTimeIncrement;
 
     double mEndTime;
 
@@ -64,11 +63,13 @@ class AbstractAngiogenesisSolver
 
     std::vector<boost::shared_ptr<AbstractHybridSolver<DIM> > > mPdeSolvers;
 
-    bool mSolveFlow;
-
-    double mSproutingProbability;
-
     std::vector<boost::shared_ptr<AbstractGrowthDirectionModifier<DIM> > > mGrowthDirectionModifiers;
+
+    boost::shared_ptr<AbstractSproutingRule<DIM> > mpSproutingRule;
+
+    boost::shared_ptr<SimpleFlowSolver<DIM> > mpFlowSolver;
+
+    boost::shared_ptr<SimpleStructuralAdaptationSolver<DIM> > mpStructuralAdaptationSolver;
 
 public:
 
@@ -83,32 +84,88 @@ public:
      */
     virtual ~AbstractAngiogenesisSolver();
 
-    virtual c_vector<double, DIM> GetGrowthDirection(c_vector<double, DIM> currentDirection, boost::shared_ptr<VascularNode<DIM> > pNode);
-
-    void AddPdeSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pPdeSolver);
-
+    /**
+     * Add a growth direction modifier to the collection
+     */
     void AddGrowthDirectionModifier(boost::shared_ptr<AbstractGrowthDirectionModifier<DIM> > pModifier);
 
-    void SetSolveFlow(bool solveFlow=true);
+    /**
+     * Add a PDE solver to the collection
+     */
+    void AddPdeSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pPdeSolver);
 
-    void SetSproutingProbability(double sproutingProbability);
-
-    void SetOutputDirectory(const std::string& rDirectory);
-
+    /**
+     * Return the current PDE solvers
+     */
     std::vector<boost::shared_ptr<AbstractHybridSolver<DIM> > > GetPdeSolvers();
 
-    void UpdateNodalPositions(const std::string& speciesLabel = "Default");
+    /**
+     * Set the simulation end time
+     */
+    void SetEndTime(double time);
 
-    void DoSprouting();
+    /**
+     * Set the flow solver for the network
+     */
+    void SetFlowSolver(boost::shared_ptr<SimpleFlowSolver<DIM> > pFlowSolver);
 
-    void DoAnastamosis();
+    /**
+     * Set the base growth velocity for migrating tips
+     */
+    void SetGrowthVelocity(double velocity);
 
+    /**
+     * Set the outputdirectory for results
+     */
+    void SetOutputDirectory(const std::string& rDirectory);
+
+    /**
+     * Set the results output frequency
+     */
+    void SetOutputFrequency(unsigned frequency);
+
+    /**
+     * Set the rule for managing sprouting
+     */
+    void SetSproutingRule(boost::shared_ptr<AbstractSproutingRule<DIM> > pSproutingRule);
+
+    /**
+     * Set the structural adaptation solver for the network
+     */
+    void SetStructuralAdaptationSolver(boost::shared_ptr<SimpleStructuralAdaptationSolver<DIM> > pStructuralAdaptationSolver);
+
+    /**
+     * Increment one step in time
+     */
     void Increment();
 
     /**
-     * Run the solver.
+     * Run until the specified end time
      */
     void Run();
+
+
+protected:
+
+    /**
+     * Identify and grow sprouts
+     */
+    void DoSprouting();
+
+    /**
+     * Do the anastamosis step
+     */
+    void DoAnastamosis();
+
+    /**
+     * Get the growth direction for moving tips
+     */
+    virtual c_vector<double, DIM> GetGrowthDirection(c_vector<double, DIM> currentDirection, boost::shared_ptr<VascularNode<DIM> > pNode);
+
+    /**
+     * Update the position of all nodes
+     */
+    void UpdateNodalPositions(const std::string& speciesLabel = "Default");
 };
 
 #endif /* ABSTRACTANGIOGENESISSOLVER_HPP_ */

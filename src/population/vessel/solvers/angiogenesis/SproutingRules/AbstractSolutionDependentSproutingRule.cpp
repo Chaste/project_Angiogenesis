@@ -33,40 +33,59 @@
 
  */
 
-#ifndef OnLatticeRwGrowthDirectionModifier_HPP_
-#define OnLatticeRwGrowthDirectionModifier_HPP_
-
-#include <vector>
-#include <string>
-
-#include "VascularNode.hpp"
-#include "SmartPointers.hpp"
-#include "AbstractGrowthDirectionModifier.hpp"
+#include "RandomNumberGenerator.hpp"
+#include "AbstractSolutionDependentSproutingRule.hpp"
 
 template<unsigned DIM>
-class OnLatticeRwGrowthDirectionModifier : public AbstractGrowthDirectionModifier<DIM>
+AbstractSolutionDependentSproutingRule<DIM>::AbstractSolutionDependentSproutingRule()
+    : AbstractSproutingRule<DIM>(),
+      mpSolver(),
+      mSolutionThreshold(10.0)
 {
 
-    c_vector<double, DIM> mGlobalX;
+}
 
-    c_vector<double, DIM> mGlobalY;
+template<unsigned DIM>
+AbstractSolutionDependentSproutingRule<DIM>::~AbstractSolutionDependentSproutingRule()
+{
 
-    c_vector<double, DIM> mGlobalZ;
+}
 
-public:
+template<unsigned DIM>
+void AbstractSolutionDependentSproutingRule<DIM>::SetSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pSolver)
+{
+    mpSolver = pSolver;
+}
 
-    /**
-     * Constructor.
-     */
-    OnLatticeRwGrowthDirectionModifier();
+template<unsigned DIM>
+void AbstractSolutionDependentSproutingRule<DIM>::SetSolutionThreshold(double threshold)
+{
+    mSolutionThreshold = threshold;
+}
 
-    /**
-     * Destructor.
-     */
-    virtual ~OnLatticeRwGrowthDirectionModifier();
+template<unsigned DIM>
+std::vector<bool> AbstractSolutionDependentSproutingRule<DIM>::WillSprout()
+{
+    std::vector<bool> sprout_flags;
+    for(unsigned idx = 0; idx < this->mNodes.size(); idx++)
+    {
+        double prob = RandomNumberGenerator::Instance()->ranf();
+        bool will_sprout = false;
+        // Only non-tip nodes can sprout
+        if(this->mNodes[idx]->GetNumberOfSegments()==2)
+        {
+            c_vector<double, DIM> location = this->mNodes[idx]->GetLocationVector();
+            std::vector<double> solution_values = mpSolver->GetSolutionAtPoints(std::vector<c_vector<double, DIM> >(1, location));
+            if(solution_values[0] >= mSolutionThreshold && prob < this->mSproutingProbability)
+            {
+                will_sprout = true;
+            }
+        }
+        sprout_flags.push_back(will_sprout);
+    }
+    return sprout_flags;
+}
 
-    c_vector<double, DIM> GetGrowthDirection(c_vector<double, DIM> currentDirection, boost::shared_ptr<VascularNode<DIM> > pNode);
-
-};
-
-#endif /* OnLatticeRwGrowthDirectionModifier_HPP_ */
+// Explicit instantiation
+template class AbstractSolutionDependentSproutingRule<2> ;
+template class AbstractSolutionDependentSproutingRule<3> ;

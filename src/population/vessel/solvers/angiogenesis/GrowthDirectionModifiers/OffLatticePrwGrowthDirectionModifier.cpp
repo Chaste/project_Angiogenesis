@@ -59,7 +59,8 @@ OffLatticePrwGrowthDirectionModifier<DIM>::~OffLatticePrwGrowthDirectionModifier
 }
 
 template<unsigned DIM>
-void OffLatticePrwGrowthDirectionModifier<DIM>::UpdateGrowthDirection()
+c_vector<double, DIM> OffLatticePrwGrowthDirectionModifier<DIM>::GetGrowthDirection(c_vector<double, DIM> currentDirection,
+                                                                                    boost::shared_ptr<VascularNode<DIM> > pNode)
 {
     double angle_x = RandomNumberGenerator::Instance()->NormalRandomDeviate(mMeanAngles[0], mSdvAngles[0]);
     double angle_y = RandomNumberGenerator::Instance()->NormalRandomDeviate(mMeanAngles[1], mSdvAngles[1]);
@@ -69,9 +70,9 @@ void OffLatticePrwGrowthDirectionModifier<DIM>::UpdateGrowthDirection()
         angle_z = RandomNumberGenerator::Instance()->NormalRandomDeviate(mMeanAngles[2], mSdvAngles[2]);
     }
 
-    c_vector<double, DIM> new_direction_z = RotateAboutAxis<DIM>(this->mCurrentDirection, mGlobalZ, angle_z);
+    c_vector<double, DIM> new_direction_z = RotateAboutAxis<DIM>(currentDirection, mGlobalZ, angle_z);
     c_vector<double, DIM> new_direction_y = RotateAboutAxis<DIM>(new_direction_z, mGlobalY, angle_y);
-    this->mCurrentDirection = RotateAboutAxis<DIM>(new_direction_y, mGlobalX, angle_x);
+    return RotateAboutAxis<DIM>(new_direction_y, mGlobalX, angle_x);
 }
 
 // Explicit instantiation

@@ -33,40 +33,45 @@
 
  */
 
-#ifndef OnLatticeRwGrowthDirectionModifier_HPP_
-#define OnLatticeRwGrowthDirectionModifier_HPP_
+#ifndef ABSTRACTSPROUTINGRULE_HPP_
+#define ABSTRACTSPROUTINGRULE_HPP_
 
 #include <vector>
 #include <string>
 
 #include "VascularNode.hpp"
 #include "SmartPointers.hpp"
-#include "AbstractGrowthDirectionModifier.hpp"
 
 template<unsigned DIM>
-class OnLatticeRwGrowthDirectionModifier : public AbstractGrowthDirectionModifier<DIM>
+class AbstractSproutingRule
 {
 
-    c_vector<double, DIM> mGlobalX;
+protected:
 
-    c_vector<double, DIM> mGlobalY;
+    double mSproutingProbability;
 
-    c_vector<double, DIM> mGlobalZ;
+    std::vector<boost::shared_ptr<VascularNode<DIM> > > mNodes;
 
 public:
 
     /**
      * Constructor.
      */
-    OnLatticeRwGrowthDirectionModifier();
+    AbstractSproutingRule();
 
     /**
      * Destructor.
      */
-    virtual ~OnLatticeRwGrowthDirectionModifier();
+    virtual ~AbstractSproutingRule();
 
-    c_vector<double, DIM> GetGrowthDirection(c_vector<double, DIM> currentDirection, boost::shared_ptr<VascularNode<DIM> > pNode);
+    void SetNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes);
+
+    void SetSproutingProbability(double probability);
+
+    std::vector<bool> WillSprout();
+
+    virtual std::vector<c_vector<double, DIM> > GetSproutDirection(std::vector<bool> sprout_indices = std::vector<bool>());
 
 };
 
-#endif /* OnLatticeRwGrowthDirectionModifier_HPP_ */
+#endif /* ABSTRACTSPROUTINGRULE_HPP_ */

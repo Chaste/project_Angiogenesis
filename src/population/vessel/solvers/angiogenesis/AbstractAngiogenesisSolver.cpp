@@ -38,31 +38,25 @@
 #include "UblasIncludes.hpp"
 #include "RandomNumberGenerator.hpp"
 #include "VascularNode.hpp"
-#include "AbstractAngiogenesisSolver.hpp"
 #include "SimpleFlowSolver.hpp"
 #include "CaVesselSegment.hpp"
 #include "VascularNode.hpp"
 #include "PoiseuilleImpedanceCalculator.hpp"
-#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning for now (gcc4.3)
-#include <vtkProbeFilter.h>
-#include <vtkPointData.h>
-#include <vtkPolyData.h>
-#include <vtkPoints.h>
-#include "Debug.hpp"
+#include "AbstractAngiogenesisSolver.hpp"
 
 template<unsigned DIM>
 AbstractAngiogenesisSolver<DIM>::AbstractAngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork) :
         mpNetwork(pNetwork),
         mGrowthVelocity(10.0),
-        mTimeIncrement(1.0),
         mEndTime(10.0),
         mOutputFrequency(1),
         mOutputDirectory(),
         mNodeAnastamosisRadius(0.0),
         mPdeSolvers(),
-        mSolveFlow(false),
-        mSproutingProbability(0.0),
-        mGrowthDirectionModifiers()
+        mGrowthDirectionModifiers(),
+        mpSproutingRule(),
+        mpFlowSolver(),
+        mpStructuralAdaptationSolver()
 {
 
 }
@@ -92,18 +86,15 @@ std::vector<boost::shared_ptr<AbstractHybridSolver<DIM> > > AbstractAngiogenesis
 }
 
 template<unsigned DIM>
-c_vector<double, DIM> AbstractAngiogenesisSolver<DIM>::GetGrowthDirection(c_vector<double, DIM> currentDirection, boost::shared_ptr<VascularNode<DIM> > pNode)
+c_vector<double, DIM> AbstractAngiogenesisSolver<DIM>::GetGrowthDirection(c_vector<double, DIM> currentDirection,
+                                                                          boost::shared_ptr<VascularNode<DIM> > pNode)
 {
     c_vector<double,DIM> new_direction = currentDirection;
 
     // Loop through the growth direction modifiers and add up the contributions
     for(unsigned idx=0; idx<mGrowthDirectionModifiers.size(); idx++)
     {
-        c_vector<double,DIM> component_direction = currentDirection;
-
-        mGrowthDirectionModifiers[idx]->SetCurrentDirection(currentDirection);
-        mGrowthDirectionModifiers[idx]->UpdateGrowthDirection();
-        new_direction += mGrowthDirectionModifiers[idx]->GetStrength() * mGrowthDirectionModifiers[idx]->GetGrowthDirection();
+        new_direction += mGrowthDirectionModifiers[idx]->GetStrength() * mGrowthDirectionModifiers[idx]->GetGrowthDirection(currentDirection, pNode);
         new_direction /= norm_2(new_direction);
     }
 
@@ -111,15 +102,21 @@ c_vector<double, DIM> AbstractAngiogenesisSolver<DIM>::GetGrowthDirection(c_vect
 }
 
 template<unsigned DIM>
-void AbstractAngiogenesisSolver<DIM>::SetSproutingProbability(double sproutingProbability)
+void AbstractAngiogenesisSolver<DIM>::SetEndTime(double time)
 {
-    mSproutingProbability = sproutingProbability;
+    mEndTime = time;
 }
 
 template<unsigned DIM>
-void AbstractAngiogenesisSolver<DIM>::SetSolveFlow(bool solveFlow)
+void AbstractAngiogenesisSolver<DIM>::SetFlowSolver(boost::shared_ptr<SimpleFlowSolver<DIM> > pFlowSolver)
 {
-    mSolveFlow = solveFlow;
+    mpFlowSolver = pFlowSolver;
+}
+
+template<unsigned DIM>
+void AbstractAngiogenesisSolver<DIM>::SetGrowthVelocity(double velocity)
+{
+    mGrowthVelocity = velocity;
 }
 
 template<unsigned DIM>
@@ -129,50 +126,51 @@ void AbstractAngiogenesisSolver<DIM>::SetOutputDirectory(const std::string& rDir
 }
 
 template<unsigned DIM>
+void AbstractAngiogenesisSolver<DIM>::SetOutputFrequency(unsigned frequency)
+{
+    mOutputFrequency = frequency;
+}
+
+template<unsigned DIM>
+void AbstractAngiogenesisSolver<DIM>::SetSproutingRule(boost::shared_ptr<AbstractSproutingRule<DIM> > pSproutingRule)
+{
+    mpSproutingRule = pSproutingRule;
+}
+
+template<unsigned DIM>
+void AbstractAngiogenesisSolver<DIM>::SetStructuralAdaptationSolver(boost::shared_ptr<SimpleStructuralAdaptationSolver<DIM> > pStructuralAdaptationSolver)
+{
+    mpStructuralAdaptationSolver = pStructuralAdaptationSolver;
+}
+
+template<unsigned DIM>
 void AbstractAngiogenesisSolver<DIM>::DoSprouting()
 {
-    // Randomly sprout if sufficiently far from an existing vessel end node
     mpNetwork->UpdateNodes();
+
+    // Get the candidate nodes
     std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = mpNetwork->GetNodes();
 
+    // Get the sprout indices and directions
+    mpSproutingRule->SetNodes(nodes);
+    std::vector<bool> sprout_indices = mpSproutingRule->WillSprout();
+    std::vector<c_vector<double, DIM> > sprout_directions = mpSproutingRule->GetSproutDirection();
+
+    // Do the sprouting
     for(unsigned idx = 0; idx < nodes.size(); idx++)
     {
-        double prob = RandomNumberGenerator::Instance()->ranf();
-        if(nodes[idx]->GetNumberOfSegments()==2 && prob < mSproutingProbability)
+        if(sprout_indices[idx])
         {
-            // Do the sprouting. Random normal direction to the existing segment average normals.
-            // Get the cross product of the segment tangents
-//            c_vector<double, DIM> cross_product = VectorProduct(nodes[idx]->GetVesselSegments()[0]->GetUnitTangent(),
-//                                                                nodes[idx]->GetVesselSegments()[1]->GetUnitTangent());
-//            double sum = 0.0;
-//            for(unsigned jdx=0; jdx<DIM; jdx++)
-//            {
-//                sum += cross_product[jdx];
-//            }
-//            if (sum==0.0)
-//            {
-//                // parallel segments, chose
-//            }
-            // The sprout will be in the +- x direction, but not along existing vessel directions
-            c_vector<double, DIM> sprout_direction;
-            if(RandomNumberGenerator::Instance()->ranf()>=0.5)
-            {
-                sprout_direction = unit_vector<double>(3,0);
-            }
-            else
-            {
-                sprout_direction = -unit_vector<double>(3,0);
-            }
-
             // Ensure it is not along the segment vectors
-            bool is_along_segment_1 = std::abs(inner_prod(sprout_direction,nodes[idx]->GetVesselSegments()[0]->GetUnitTangent())/
-                    (norm_2(sprout_direction)*norm_2(nodes[idx]->GetVesselSegments()[0]->GetUnitTangent()))) > 1 - 1.e-6;
-            bool is_along_segment_2 = std::abs(inner_prod(sprout_direction,nodes[idx]->GetVesselSegments()[1]->GetUnitTangent())/
-                    (norm_2(sprout_direction)*norm_2(nodes[idx]->GetVesselSegments()[1]->GetUnitTangent()))) > 1 - 1.e-6;
+            bool is_along_segment_1 = std::abs(inner_prod(sprout_directions[idx],nodes[idx]->GetVesselSegments()[0]->GetUnitTangent())/
+                    (norm_2(sprout_directions[idx])*norm_2(nodes[idx]->GetVesselSegments()[0]->GetUnitTangent()))) > 1 - 1.e-6;
+            bool is_along_segment_2 = std::abs(inner_prod(sprout_directions[idx],nodes[idx]->GetVesselSegments()[1]->GetUnitTangent())/
+                    (norm_2(sprout_directions[idx])*norm_2(nodes[idx]->GetVesselSegments()[1]->GetUnitTangent()))) > 1 - 1.e-6;
 
             if(!is_along_segment_1 && !is_along_segment_2)
             {
-                mpNetwork->FormSprout(nodes[idx]->GetLocation(), ChastePoint<DIM>(nodes[idx]->GetLocationVector() + mGrowthVelocity*sprout_direction));
+                mpNetwork->FormSprout(nodes[idx]->GetLocation(), ChastePoint<DIM>(nodes[idx]->GetLocationVector() +
+                                                                                  mGrowthVelocity*sprout_directions[idx]));
             }
         }
     }
@@ -195,60 +193,8 @@ void AbstractAngiogenesisSolver<DIM>::UpdateNodalPositions(const std::string& sp
                  nodes[idx]->GetVesselSegment(0)->GetOppositeNode(nodes[idx])->GetLocationVector();
             direction /= norm_2(direction);
 
-            // If there is a PDE get the direction of highest solution gradient for the specified species
-            if(mPdeSolvers.size()>0)
-            {
-                int species_index = -1;
-                for(unsigned jdx=0; jdx<mPdeSolvers.size(); jdx++)
-                {
-                    std::string species_name = mPdeSolvers[jdx]->GetPde()->GetVariableName();
-                    if(species_name == speciesLabel)
-                    {
-                        species_index = jdx;
-                    }
-                }
-
-                if(species_index>=0)
-                {
-                    // Make points
-                    std::vector<c_vector<double, DIM> > locations;
-                    locations.push_back(nodes[idx]->GetLocationVector());
-                    locations.push_back(locations[0] + mGrowthVelocity * unit_vector<double>(DIM,0));
-                    locations.push_back(locations[0] - mGrowthVelocity * unit_vector<double>(DIM,0));
-                    locations.push_back(locations[0] + mGrowthVelocity * unit_vector<double>(DIM,1));
-                    locations.push_back(locations[0] - mGrowthVelocity * unit_vector<double>(DIM,1));
-                    if(DIM==3)
-                    {
-                        locations.push_back(locations[0] + mGrowthVelocity * unit_vector<double>(DIM,2));
-                        locations.push_back(locations[0] - mGrowthVelocity * unit_vector<double>(DIM,2));
-                    }
-
-                    vtkSmartPointer<vtkPolyData> p_polydata = vtkSmartPointer<vtkPolyData>::New();
-                    vtkSmartPointer<vtkPoints> p_points = vtkSmartPointer<vtkPoints>::New();
-                    p_points->SetNumberOfPoints(locations.size());
-                    for(unsigned idx=0; idx< locations.size(); idx++)
-                    {
-                        if(DIM==3)
-                        {
-                            p_points->SetPoint(idx, locations[idx][0], locations[idx][1], locations[idx][2]);
-                        }
-                        else
-                        {
-                            p_points->SetPoint(idx, locations[idx][0], locations[idx][1], 0.0);
-                        }
-                    }
-                    p_polydata->SetPoints(p_points);
-
-                    vtkSmartPointer<vtkProbeFilter> p_probe_filter = vtkSmartPointer<vtkProbeFilter>::New();
-                    p_probe_filter->SetInput(p_polydata);
-                    p_probe_filter->SetSource(mPdeSolvers[species_index]->GetSolution());
-                    p_probe_filter->Update();
-                    vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetOutput()->GetPointData();
-                }
-            }
-
             // Create a new segment along the growth vector
-            boost::shared_ptr<VascularNode<DIM> >  p_new_node = VascularNode<DIM>::Create(nodes[idx]);
+            boost::shared_ptr<VascularNode<DIM> > p_new_node = VascularNode<DIM>::Create(nodes[idx]);
             p_new_node->SetLocation(nodes[idx]->GetLocationVector() + mGrowthVelocity * GetGrowthDirection(direction, nodes[idx]));
 
             if(nodes[idx]->GetVesselSegment(0)->GetVessel()->GetStartNode() == nodes[idx])
@@ -276,7 +222,6 @@ void AbstractAngiogenesisSolver<DIM>::UpdateNodalPositions(const std::string& sp
 template<unsigned DIM>
 void AbstractAngiogenesisSolver<DIM>::DoAnastamosis()
 {
-
     // Do tip-tip anastamosis and tip-stalk anastamosis for nearby nodes
     mpNetwork->UpdateNodes();
     std::vector<boost::shared_ptr<VascularNode<DIM> > > moved_nodes = mpNetwork->GetNodes();
@@ -327,14 +272,17 @@ void AbstractAngiogenesisSolver<DIM>::Increment()
     mpNetwork->UpdateVesselIds();
     mpNetwork->UpdateVesselNodes();
 
-    // If there is a flow problem solve it
-    if(mSolveFlow)
+    // If there is a structural adaptation or flow problem solve it
+    if(mpStructuralAdaptationSolver)
     {
-        SimpleFlowSolver<DIM> flow_solver;
+            EXCEPTION("Structural Adapation is not implemented in this solver yet.");
+    }
+    else if(mpFlowSolver)
+    {
         PoiseuilleImpedanceCalculator<DIM> impedance_calculator;
         impedance_calculator.Calculate(mpNetwork);
-        flow_solver.SetUp(mpNetwork);
-        flow_solver.Implement(mpNetwork);
+        mpFlowSolver->SetUp(mpNetwork);
+        mpFlowSolver->Implement(mpNetwork);
     }
 
     // If there are PDEs solve them
@@ -375,7 +323,7 @@ void AbstractAngiogenesisSolver<DIM>::Increment()
     UpdateNodalPositions();
     DoAnastamosis();
 
-    if(mSproutingProbability > 0.0)
+    if(mpSproutingRule)
     {
         DoSprouting();
     }

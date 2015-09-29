@@ -58,33 +58,34 @@ OnLatticeRwGrowthDirectionModifier<DIM>::~OnLatticeRwGrowthDirectionModifier()
 }
 
 template<unsigned DIM>
-void OnLatticeRwGrowthDirectionModifier<DIM>::UpdateGrowthDirection()
+c_vector<double, DIM> OnLatticeRwGrowthDirectionModifier<DIM>::GetGrowthDirection(c_vector<double, DIM> currentDirection,
+                                                                                          boost::shared_ptr<VascularNode<DIM> > pNode)
 {
     // Assign an index to each of the possible direction
     unsigned direction_index = 0;
-    if(-this->mCurrentDirection[0] > 0 && -this->mCurrentDirection[0] > 1.0 -1.e-6)
+    if(-currentDirection[0] > 0 && -currentDirection[0] > 1.0 -1.e-6)
     {
         direction_index = 1;
     }
-    else if(-this->mCurrentDirection[0] < 0 &&  -this->mCurrentDirection[0] < -1.0 +1.e-6)
+    else if(-currentDirection[0] < 0 &&  -currentDirection[0] < -1.0 +1.e-6)
     {
         direction_index = 2;
     }
-    else if(-this->mCurrentDirection[1] > 0 && -this->mCurrentDirection[1] > 1.0 -1.e-6)
+    else if(-currentDirection[1] > 0 && -currentDirection[1] > 1.0 -1.e-6)
     {
         direction_index = 3;
     }
-    else if(-this->mCurrentDirection[1] < 0 &&  -this->mCurrentDirection[1] < -1.0 +1.e-6)
+    else if(-currentDirection[1] < 0 &&  -currentDirection[1] < -1.0 +1.e-6)
     {
         direction_index = 4;
     }
     if(DIM ==3)
     {
-        if(-this->mCurrentDirection[2] > 0 && -this->mCurrentDirection[2] > 1.0 -1.e-6)
+        if(-currentDirection[2] > 0 && -currentDirection[2] > 1.0 -1.e-6)
         {
             direction_index = 5;
         }
-        if(-this->mCurrentDirection[2] < 0 &&  -this->mCurrentDirection[2] < -1.0 +1.e-6)
+        if(-currentDirection[2] < 0 &&  -currentDirection[2] < -1.0 +1.e-6)
         {
             direction_index = 6;
         }
@@ -138,7 +139,7 @@ void OnLatticeRwGrowthDirectionModifier<DIM>::UpdateGrowthDirection()
             new_direction = -unit_vector<double>(DIM,2);
         }
     }
-    this->mCurrentDirection = new_direction;
+    return new_direction;
 }
 
 // Explicit instantiation

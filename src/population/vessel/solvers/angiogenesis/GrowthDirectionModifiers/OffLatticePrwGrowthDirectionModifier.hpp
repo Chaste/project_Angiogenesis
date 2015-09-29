@@ -69,7 +69,8 @@ public:
      */
     virtual ~OffLatticePrwGrowthDirectionModifier();
 
-    void UpdateGrowthDirection();
+    c_vector<double, DIM> GetGrowthDirection(c_vector<double, DIM> currentDirection,
+                                             boost::shared_ptr<VascularNode<DIM> > pNode);
 
 };
 

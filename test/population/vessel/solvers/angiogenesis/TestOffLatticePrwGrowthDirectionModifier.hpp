@@ -24,6 +24,7 @@
 #include "PetscSetupAndFinalize.hpp"
 #include "CaVesselSegment.hpp"
 #include "AbstractCellBasedTestSuite.hpp"
+#include "SimpleFlowSolver.hpp"
 #include "OffLatticePrwGrowthDirectionModifier.hpp"
 
 class TestOffLatticePrwGrowthDirectionModifier : public AbstractCellBasedTestSuite
@@ -236,7 +237,11 @@ public:
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
         AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
         angiogenesis_solver.SetOutputDirectory(output_directory);
-        angiogenesis_solver.SetSolveFlow();
+
+        boost::shared_ptr<SimpleFlowSolver<3> > p_simple_flow_solver =
+                boost::shared_ptr<SimpleFlowSolver<3> >(new SimpleFlowSolver<3>());
+
+        angiogenesis_solver.SetFlowSolver(p_simple_flow_solver);
         angiogenesis_solver.Run();
     }
 
@@ -280,8 +285,10 @@ public:
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
         AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
         angiogenesis_solver.SetOutputDirectory(output_directory);
-        angiogenesis_solver.SetSolveFlow();
-        angiogenesis_solver.SetSproutingProbability(0.5);
+        boost::shared_ptr<SimpleFlowSolver<3> > p_simple_flow_solver =
+                boost::shared_ptr<SimpleFlowSolver<3> >(new SimpleFlowSolver<3>());
+
+        angiogenesis_solver.SetFlowSolver(p_simple_flow_solver);
         angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
         angiogenesis_solver.Run();
     }

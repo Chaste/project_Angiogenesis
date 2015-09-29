@@ -37,8 +37,7 @@
 
 template<unsigned DIM>
 AbstractGrowthDirectionModifier<DIM>::AbstractGrowthDirectionModifier()
-    : mStrength(1.0),
-      mCurrentDirection(zero_vector<double>(DIM))
+    : mStrength(1.0)
 {
 
 }
@@ -62,21 +61,10 @@ void AbstractGrowthDirectionModifier<DIM>::SetStrength(double strength)
 }
 
 template<unsigned DIM>
-void AbstractGrowthDirectionModifier<DIM>::SetCurrentDirection(c_vector<double, DIM> direction)
+c_vector<double, DIM> AbstractGrowthDirectionModifier<DIM>::GetGrowthDirection(c_vector<double, DIM> currentDirection,
+                                                                               boost::shared_ptr<VascularNode<DIM> > pNode)
 {
-    mCurrentDirection = direction;
-}
-
-template<unsigned DIM>
-c_vector<double, DIM> AbstractGrowthDirectionModifier<DIM>::GetGrowthDirection()
-{
-    return mCurrentDirection;
-}
-
-template<unsigned DIM>
-void AbstractGrowthDirectionModifier<DIM>::UpdateGrowthDirection()
-{
-
+    return currentDirection;
 }
 
 // Explicit instantiation

@@ -50,8 +50,6 @@ protected:
 
     double mStrength;
 
-    c_vector<double, DIM> mCurrentDirection;
-
 public:
 
     /**
@@ -68,11 +66,7 @@ public:
 
     void SetStrength(double strength);
 
-    void SetCurrentDirection(c_vector<double, DIM> direction);
-
-    virtual void UpdateGrowthDirection();
-
-    c_vector<double, DIM> GetGrowthDirection();
+    virtual c_vector<double, DIM> GetGrowthDirection(c_vector<double, DIM> currentDirection, boost::shared_ptr<VascularNode<DIM> > pNode);
 
 };
 
