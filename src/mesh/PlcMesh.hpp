@@ -59,20 +59,26 @@ struct triangulateio;
  * A concrete TetrahedralMesh which can be constructed through
  * the input of PLC (piecewise linear complex) info.
  */
-
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM = ELEMENT_DIM>
 class PlcMesh : public TetrahedralMesh<ELEMENT_DIM, SPACE_DIM>
 {
 public:
 
+    /*
+     * Constructor
+     */
     PlcMesh();
 
+    /*
+     * Destructor
+     */
     ~PlcMesh();
 
     /* Factory constructor method
      * @return a shared pointer to a new mesh
      */
     static boost::shared_ptr<PlcMesh<ELEMENT_DIM, SPACE_DIM> > Create();
+
 
     void GenerateFromPart(boost::shared_ptr<Part<SPACE_DIM> > pPart, double maxElementArea = 0.0, bool useTetgen1_5 = true);
 

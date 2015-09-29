@@ -33,35 +33,52 @@
 
  */
 
-#ifndef LATTICEBASEDANGIOGENESISSOLVER_HPP_
-#define LATTICEBASEDANGIOGENESISSOLVER_HPP_
-
-#include <vector>
-#include <string>
-
-#include "CaVascularNetwork.hpp"
-#include "SmartPointers.hpp"
-#include "AbstractAngiogenesisSolver.hpp"
+#include "AbstractGrowthDirectionModifier.hpp"
 
 template<unsigned DIM>
-class LatticeBasedAngiogenesisSolver : public AbstractAngiogenesisSolver<DIM>
+AbstractGrowthDirectionModifier<DIM>::AbstractGrowthDirectionModifier()
+    : mStrength(1.0),
+      mCurrentDirection(zero_vector<double>(DIM))
 {
 
-public:
+}
 
-    /**
-     * Constructor.
-     * @param pNetwork the network to perform angiogenesis on
-     */
-    LatticeBasedAngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
+template<unsigned DIM>
+AbstractGrowthDirectionModifier<DIM>::~AbstractGrowthDirectionModifier()
+{
 
-    /**
-     * Destructor.
-     */
-    ~LatticeBasedAngiogenesisSolver();
+}
 
-    c_vector<double, DIM> GetGrowthDirection(c_vector<double, DIM> currentDirection);
+template<unsigned DIM>
+double AbstractGrowthDirectionModifier<DIM>::GetStrength()
+{
+    return mStrength;
+}
 
-};
+template<unsigned DIM>
+void AbstractGrowthDirectionModifier<DIM>::SetStrength(double strength)
+{
+    mStrength = strength;
+}
 
-#endif /* LATTICEBASEDANGIOGENESISSOLVER_HPP_ */
+template<unsigned DIM>
+void AbstractGrowthDirectionModifier<DIM>::SetCurrentDirection(c_vector<double, DIM> direction)
+{
+    mCurrentDirection = direction;
+}
+
+template<unsigned DIM>
+c_vector<double, DIM> AbstractGrowthDirectionModifier<DIM>::GetGrowthDirection()
+{
+    return mCurrentDirection;
+}
+
+template<unsigned DIM>
+void AbstractGrowthDirectionModifier<DIM>::UpdateGrowthDirection()
+{
+
+}
+
+// Explicit instantiation
+template class AbstractGrowthDirectionModifier<2> ;
+template class AbstractGrowthDirectionModifier<3> ;

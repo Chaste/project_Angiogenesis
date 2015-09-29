@@ -34,13 +34,12 @@
  */
 
 #include <math.h>
-#include <boost/random.hpp>
-#include <boost/generator_iterator.hpp>
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning for now (gcc4.3)
 #include <vtkBox.h>
 #include <vtkTetra.h>
 #include <vtkPoints.h>
 #include <vtkSmartPointer.h>
+#include "RandomNumberGenerator.hpp"
 #include "Polygon.hpp"
 
 #include "VoronoiGenerator.hpp"
@@ -68,7 +67,8 @@ VoronoiGenerator<DIM>::~VoronoiGenerator()
 
 template<unsigned DIM>
 boost::shared_ptr<Part<DIM> > VoronoiGenerator<DIM>::Generate(boost::shared_ptr<Part<DIM> > pPart,
-        std::vector<boost::shared_ptr<Vertex> > seeds, unsigned numSeeds)
+                                                              std::vector<boost::shared_ptr<Vertex> > seeds,
+                                                              unsigned numSeeds)
 {
     if(DIM==2)
     {
@@ -76,21 +76,17 @@ boost::shared_ptr<Part<DIM> > VoronoiGenerator<DIM>::Generate(boost::shared_ptr<
     }
 
     boost::shared_ptr<Part<DIM> > p_tesselation = Part<DIM>::Create();
-
     c_vector<double, 2*DIM> extents = pPart->GetBoundingBox();
 
     // If no seeds have been provided generate some random ones
     if(seeds.size() == 0)
     {
-        boost::mt19937 rng;
-        boost::uniform_real<> u_dist(0.0, 1.0);
-        boost::variate_generator<boost::mt19937, boost::uniform_real<> > rand_uniform(rng, u_dist);
         for(unsigned idx = 0; idx< numSeeds; idx++)
         {
             c_vector<double, DIM> location;
             for(unsigned jdx=0; jdx<DIM; jdx++)
             {
-                location[jdx] = extents[2*jdx] + (extents[2*jdx + 1] - extents[2*jdx])*rand_uniform();
+                location[jdx] = extents[2*jdx] + (extents[2*jdx + 1] - extents[2*jdx])*RandomNumberGenerator::Instance()->ranf();
             }
             seeds.push_back(Vertex::Create(location));
         }

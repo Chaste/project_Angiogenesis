@@ -33,35 +33,40 @@
 
  */
 
-#ifndef OFFLATTICEANGIOGENESISSOLVER_HPP_
-#define OFFLATTICEANGIOGENESISSOLVER_HPP_
+#ifndef OnLatticeRwGrowthDirectionModifier_HPP_
+#define OnLatticeRwGrowthDirectionModifier_HPP_
 
 #include <vector>
 #include <string>
 
-#include "CaVascularNetwork.hpp"
+#include "VascularNode.hpp"
 #include "SmartPointers.hpp"
-#include "AbstractAngiogenesisSolver.hpp"
+#include "AbstractGrowthDirectionModifier.hpp"
 
 template<unsigned DIM>
-class OffLatticeAngiogenesisSolver : public AbstractAngiogenesisSolver<DIM>
+class OnLatticeRwGrowthDirectionModifier : public AbstractGrowthDirectionModifier<DIM>
 {
+
+    c_vector<double, DIM> mGlobalX;
+
+    c_vector<double, DIM> mGlobalY;
+
+    c_vector<double, DIM> mGlobalZ;
 
 public:
 
     /**
      * Constructor.
-     * @param pNetwork the network to perform angiogenesis on
      */
-    OffLatticeAngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
+    OnLatticeRwGrowthDirectionModifier();
 
     /**
      * Destructor.
      */
-    ~OffLatticeAngiogenesisSolver();
+    virtual ~OnLatticeRwGrowthDirectionModifier();
 
-    c_vector<double, DIM> GetGrowthDirection(c_vector<double, DIM> currentDirection);
+    void UpdateGrowthDirection();
 
 };
 
-#endif /* OFFLATTICEANGIOGENESISSOLVER_HPP_ */
+#endif /* OnLatticeRwGrowthDirectionModifier_HPP_ */

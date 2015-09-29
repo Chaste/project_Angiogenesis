@@ -42,21 +42,33 @@
 #include "CaVascularNetwork.hpp"
 #include "AbstractHybridSolver.hpp"
 #include "SmartPointers.hpp"
+#include "AbstractGrowthDirectionModifier.hpp"
 
 template<unsigned DIM>
 class AbstractAngiogenesisSolver
 {
 
     boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
+
     double mGrowthVelocity;
+
     double mTimeIncrement;
+
     double mEndTime;
+
     unsigned mOutputFrequency;
+
     std::string mOutputDirectory;
+
     double mNodeAnastamosisRadius;
+
     std::vector<boost::shared_ptr<AbstractHybridSolver<DIM> > > mPdeSolvers;
+
     bool mSolveFlow;
+
     double mSproutingProbability;
+
+    std::vector<boost::shared_ptr<AbstractGrowthDirectionModifier<DIM> > > mGrowthDirectionModifiers;
 
 public:
 
@@ -71,9 +83,11 @@ public:
      */
     virtual ~AbstractAngiogenesisSolver();
 
-    virtual c_vector<double, DIM> GetGrowthDirection(c_vector<double, DIM> currentDirection);
+    virtual c_vector<double, DIM> GetGrowthDirection(c_vector<double, DIM> currentDirection, boost::shared_ptr<VascularNode<DIM> > pNode);
 
     void AddPdeSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pPdeSolver);
+
+    void AddGrowthDirectionModifier(boost::shared_ptr<AbstractGrowthDirectionModifier<DIM> > pModifier);
 
     void SetSolveFlow(bool solveFlow=true);
 

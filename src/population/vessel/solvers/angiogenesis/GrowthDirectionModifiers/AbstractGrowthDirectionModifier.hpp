@@ -33,42 +33,47 @@
 
  */
 
-#ifndef VORONOIGENERATOR_HPP_
-#define VORONOIGENERATOR_HPP_
+#ifndef ABSTRACTGROWTHDIRECTIONMODIFIER_HPP_
+#define ABSTRACTGROWTHDIRECTIONMODIFIER_HPP_
 
 #include <vector>
-#include "SmartPointers.hpp"
-#include "UblasVectorInclude.hpp"
-#include "Vertex.hpp"
-#include "Part.hpp"
+#include <string>
 
-/*
- * Generate a voronoi tesselation in the bounding box of a given part using tetgen. 3D only.
- */
+#include "VascularNode.hpp"
+#include "SmartPointers.hpp"
 
 template<unsigned DIM>
-class VoronoiGenerator
+class AbstractGrowthDirectionModifier
 {
+
+protected:
+
+    double mStrength;
+
+    c_vector<double, DIM> mCurrentDirection;
 
 public:
 
-    /* Constructor
+    /**
+     * Constructor.
      */
-    VoronoiGenerator();
+    AbstractGrowthDirectionModifier();
 
-    /* Destructor
+    /**
+     * Destructor.
      */
-    ~VoronoiGenerator();
+    virtual ~AbstractGrowthDirectionModifier();
 
-    /* Generate a voronoi tesselation in the bounding box of the part
-     * @param pPart the part to generate in
-     * @param seeds an optional collection of initial point seeds
-     * @param numSeeds the number of seed points, if initial seeds are not given.
-     * @return a new part corresponding to the voronoi tessellation
-     */
-    boost::shared_ptr<Part<DIM> > Generate(boost::shared_ptr<Part<DIM> > pPart,
-                                           std::vector<boost::shared_ptr<Vertex> > seeds = std::vector<boost::shared_ptr<Vertex> >(),
-                                           unsigned numSeeds = 100);
+    double GetStrength();
+
+    void SetStrength(double strength);
+
+    void SetCurrentDirection(c_vector<double, DIM> direction);
+
+    virtual void UpdateGrowthDirection();
+
+    c_vector<double, DIM> GetGrowthDirection();
+
 };
 
-#endif /*VORONOIGENERATOR_HPP_*/
+#endif /* ABSTRACTGROWTHDIRECTIONMODIFIER_HPP_ */

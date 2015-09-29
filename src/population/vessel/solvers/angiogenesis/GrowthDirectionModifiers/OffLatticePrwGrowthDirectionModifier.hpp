@@ -33,49 +33,44 @@
 
  */
 
-#include <boost/lexical_cast.hpp>
-#include "UblasVectorInclude.hpp"
-#include "UblasIncludes.hpp"
-#include "RandomNumberGenerator.hpp"
+#ifndef OFFLATTICEPRWGROWTHDIRECTIONMODIFIER_HPP_
+#define OFFLATTICEPRWGROWTHDIRECTIONMODIFIER_HPP_
+
+#include <vector>
+#include <string>
+
 #include "VascularNode.hpp"
-#include "OffLatticeAngiogenesisSolver.hpp"
-#include "GeometryTools.hpp"
+#include "SmartPointers.hpp"
+#include "AbstractGrowthDirectionModifier.hpp"
 
 template<unsigned DIM>
-OffLatticeAngiogenesisSolver<DIM>::OffLatticeAngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
-    : AbstractAngiogenesisSolver<DIM>(pNetwork)
-
+class OffLatticePrwGrowthDirectionModifier : public AbstractGrowthDirectionModifier<DIM>
 {
 
-}
+    c_vector<double, DIM> mGlobalX;
 
-template<unsigned DIM>
-OffLatticeAngiogenesisSolver<DIM>::~OffLatticeAngiogenesisSolver()
-{
+    c_vector<double, DIM> mGlobalY;
 
-}
+    c_vector<double, DIM> mGlobalZ;
 
-template<unsigned DIM>
-c_vector<double, DIM> OffLatticeAngiogenesisSolver<DIM>::GetGrowthDirection(c_vector<double, DIM> currentDirection)
-{
-    c_vector<double, DIM> new_direction;
-    c_vector<double, DIM> x_axis = unit_vector<double>(DIM,0);
-    c_vector<double, DIM> y_axis = unit_vector<double>(DIM,1);
-    c_vector<double, DIM> z_axis;
-    if(DIM==3)
-    {
-        z_axis = unit_vector<double>(DIM,2);
-    }
+    std::vector<double> mMeanAngles;
 
-    // Rotate about global axes through random angles
-    double angle = M_PI/18.0;
-    c_vector<double, DIM> new_directionz = RotateAboutAxis<DIM>(currentDirection, z_axis, RandomNumberGenerator::Instance()->NormalRandomDeviate(0.0, angle));
-    c_vector<double, DIM> new_directiony = RotateAboutAxis<DIM>(new_directionz, y_axis, RandomNumberGenerator::Instance()->NormalRandomDeviate(0.0, angle));
-    new_direction = RotateAboutAxis<DIM>(new_directiony, x_axis, RandomNumberGenerator::Instance()->NormalRandomDeviate(0.0, angle));
+    std::vector<double> mSdvAngles;
 
-    return new_direction;
-}
+public:
 
-// Explicit instantiation
-template class OffLatticeAngiogenesisSolver<2> ;
-template class OffLatticeAngiogenesisSolver<3> ;
+    /**
+     * Constructor.
+     */
+    OffLatticePrwGrowthDirectionModifier();
+
+    /**
+     * Destructor.
+     */
+    virtual ~OffLatticePrwGrowthDirectionModifier();
+
+    void UpdateGrowthDirection();
+
+};
+
+#endif /* OFFLATTICEPRWGROWTHDIRECTIONMODIFIER_HPP_ */

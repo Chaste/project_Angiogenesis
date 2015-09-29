@@ -76,16 +76,6 @@ Facet::~Facet()
 {
 }
 
-void Facet::SetData(const std::string& label, double value)
-{
-    mData[label] = value;
-}
-
-double Facet::GetData(const std::string& label)
-{
-    return mData[label];
-}
-
 void Facet::AddPolygons(std::vector<boost::shared_ptr<Polygon> > polygons)
 {
     mPolygons.insert(mPolygons.end(), polygons.begin(), polygons.end());
@@ -153,6 +143,12 @@ c_vector<double, 3> Facet::GetCentroid()
     }
     return return_centroid;
 }
+
+double Facet::GetData(const std::string& label)
+{
+    return mData[label];
+}
+
 
 double Facet::GetDistance(c_vector<double, 3> location)
 {
@@ -231,6 +227,10 @@ void Facet::RotateAboutAxis(c_vector<double, 3> axis, double angle)
     }
 }
 
+void Facet::SetData(const std::string& label, double value)
+{
+    mData[label] = value;
+}
 
 void Facet::Translate(c_vector<double, 3> translationVector)
 {

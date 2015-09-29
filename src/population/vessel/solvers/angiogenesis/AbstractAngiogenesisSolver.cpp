@@ -41,6 +41,7 @@
 #include "AbstractAngiogenesisSolver.hpp"
 #include "SimpleFlowSolver.hpp"
 #include "CaVesselSegment.hpp"
+#include "VascularNode.hpp"
 #include "PoiseuilleImpedanceCalculator.hpp"
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning for now (gcc4.3)
 #include <vtkProbeFilter.h>
@@ -60,7 +61,8 @@ AbstractAngiogenesisSolver<DIM>::AbstractAngiogenesisSolver(boost::shared_ptr<Ca
         mNodeAnastamosisRadius(0.0),
         mPdeSolvers(),
         mSolveFlow(false),
-        mSproutingProbability(0.0)
+        mSproutingProbability(0.0),
+        mGrowthDirectionModifiers()
 {
 
 }
@@ -69,6 +71,12 @@ template<unsigned DIM>
 AbstractAngiogenesisSolver<DIM>::~AbstractAngiogenesisSolver()
 {
 
+}
+
+template<unsigned DIM>
+void AbstractAngiogenesisSolver<DIM>::AddGrowthDirectionModifier(boost::shared_ptr<AbstractGrowthDirectionModifier<DIM> > pModifier)
+{
+    mGrowthDirectionModifiers.push_back(pModifier);
 }
 
 template<unsigned DIM>
@@ -84,9 +92,22 @@ std::vector<boost::shared_ptr<AbstractHybridSolver<DIM> > > AbstractAngiogenesis
 }
 
 template<unsigned DIM>
-c_vector<double, DIM> AbstractAngiogenesisSolver<DIM>::GetGrowthDirection(c_vector<double, DIM> currentDirection)
+c_vector<double, DIM> AbstractAngiogenesisSolver<DIM>::GetGrowthDirection(c_vector<double, DIM> currentDirection, boost::shared_ptr<VascularNode<DIM> > pNode)
 {
-    return currentDirection;
+    c_vector<double,DIM> new_direction = currentDirection;
+
+    // Loop through the growth direction modifiers and add up the contributions
+    for(unsigned idx=0; idx<mGrowthDirectionModifiers.size(); idx++)
+    {
+        c_vector<double,DIM> component_direction = currentDirection;
+
+        mGrowthDirectionModifiers[idx]->SetCurrentDirection(currentDirection);
+        mGrowthDirectionModifiers[idx]->UpdateGrowthDirection();
+        new_direction += mGrowthDirectionModifiers[idx]->GetStrength() * mGrowthDirectionModifiers[idx]->GetGrowthDirection();
+        new_direction /= norm_2(new_direction);
+    }
+
+    return new_direction;
 }
 
 template<unsigned DIM>
@@ -228,7 +249,7 @@ void AbstractAngiogenesisSolver<DIM>::UpdateNodalPositions(const std::string& sp
 
             // Create a new segment along the growth vector
             boost::shared_ptr<VascularNode<DIM> >  p_new_node = VascularNode<DIM>::Create(nodes[idx]);
-            p_new_node->SetLocation(nodes[idx]->GetLocationVector() + mGrowthVelocity * GetGrowthDirection(direction));
+            p_new_node->SetLocation(nodes[idx]->GetLocationVector() + mGrowthVelocity * GetGrowthDirection(direction, nodes[idx]));
 
             if(nodes[idx]->GetVesselSegment(0)->GetVessel()->GetStartNode() == nodes[idx])
             {

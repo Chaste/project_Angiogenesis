@@ -73,7 +73,7 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
 {
 public:
 
-    void dontTestCaBasedSpheroid() throw (Exception)
+    void TestCaBasedSpheroid() throw (Exception)
     {
         // Create the domain
         double domain_x = 800.0;
@@ -156,7 +156,6 @@ public:
 
         // Create cell population
         CaBasedCellPopulation<3> cell_population(*p_mesh, cells, location_indices);
-        cell_population.SetCellAncestorsToLocationIndices();
 
         // Oxygen PDE, Boundary Conditions and Solver
         boost::shared_ptr<HybridLinearEllipticPde<3> > p_oxygen_pde = HybridLinearEllipticPde<3>::Create();
@@ -214,11 +213,11 @@ public:
         simulator.SetOutputDirectory("TestAngiogenesisSimulationModifier/CaBased");
         simulator.SetDt(1.0);
         simulator.SetEndTime(10.0);
-        simulator.AddSimulationModifier(p_simulation_modifier);
+        //simulator.AddSimulationModifier(p_simulation_modifier);
         simulator.Solve();
     }
 
-    void TestNodeBasedSpheroid() throw (Exception)
+    void DOntTestNodeBasedSpheroid() throw (Exception)
     {
         // Create the domain
         double domain_x = 800.0;

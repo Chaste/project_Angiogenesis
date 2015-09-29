@@ -35,7 +35,6 @@
 
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning for now (gcc4.3)
 #include <vtkXMLPolyDataWriter.h>
-#include <vtkPolyData.h>
 #include <vtkPolygon.h>
 #include <stdlib.h>
 #include "Exception.hpp"
@@ -58,6 +57,18 @@ VesselSurfaceGenerator<DIM>::VesselSurfaceGenerator(boost::shared_ptr<CaVascular
 template<unsigned DIM>
 VesselSurfaceGenerator<DIM>::~VesselSurfaceGenerator()
 {
+}
+
+template<unsigned DIM>
+std::vector<c_vector<double, DIM> > VesselSurfaceGenerator<DIM>::GetHoles()
+{
+    std::vector<c_vector<double, DIM> > hole_locations;
+    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = mpVesselNetwork->GetVesselSegments();
+    for (unsigned idx = 0; idx < segments.size(); idx++)
+    {
+        hole_locations.push_back(segments[idx]->GetMidPoint());
+    }
+    return hole_locations;
 }
 
 template<unsigned DIM>
@@ -278,18 +289,6 @@ std::vector<boost::shared_ptr<Polygon> > VesselSurfaceGenerator<DIM>::GetSurface
         }
     }
     return polygons;
-}
-
-template<unsigned DIM>
-std::vector<c_vector<double, DIM> > VesselSurfaceGenerator<DIM>::GetHoles()
-{
-    std::vector<c_vector<double, DIM> > hole_locations;
-    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = mpVesselNetwork->GetVesselSegments();
-    for (unsigned idx = 0; idx < segments.size(); idx++)
-    {
-        hole_locations.push_back(segments[idx]->GetMidPoint());
-    }
-    return hole_locations;
 }
 
 template<unsigned DIM>

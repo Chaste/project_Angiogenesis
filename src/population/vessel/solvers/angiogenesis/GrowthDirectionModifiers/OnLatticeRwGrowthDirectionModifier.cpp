@@ -33,64 +33,58 @@
 
  */
 
-#include <boost/lexical_cast.hpp>
-#include "UblasVectorInclude.hpp"
-#include "UblasIncludes.hpp"
+#include "GeometryTools.hpp"
+#include "OnLatticeRwGrowthDirectionModifier.hpp"
 #include "RandomNumberGenerator.hpp"
-#include "VascularNode.hpp"
-#include "LatticeBasedAngiogenesisSolver.hpp"
 
 template<unsigned DIM>
-LatticeBasedAngiogenesisSolver<DIM>::LatticeBasedAngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
-                                                                    : AbstractAngiogenesisSolver<DIM>(pNetwork)
+OnLatticeRwGrowthDirectionModifier<DIM>::OnLatticeRwGrowthDirectionModifier()
+    : AbstractGrowthDirectionModifier<DIM>(),
+      mGlobalX(unit_vector<double>(DIM,0)),
+      mGlobalY(unit_vector<double>(DIM,0)),
+      mGlobalZ(zero_vector<double>(DIM))
 
 {
-
-}
-
-template<unsigned DIM>
-LatticeBasedAngiogenesisSolver<DIM>::~LatticeBasedAngiogenesisSolver()
-{
-
-}
-
-template<unsigned DIM>
-c_vector<double, DIM> LatticeBasedAngiogenesisSolver<DIM>::GetGrowthDirection(c_vector<double, DIM> currentDirection)
-{
-    c_vector<double, DIM> new_direction;
-    c_vector<double, DIM> x_axis = unit_vector<double>(DIM,0);
-    c_vector<double, DIM> y_axis = unit_vector<double>(DIM,1);
-    c_vector<double, DIM> z_axis;
     if(DIM==3)
     {
-        z_axis = unit_vector<double>(DIM,2);
+        mGlobalZ = unit_vector<double>(DIM,2);
     }
+}
 
-    // Direction is one of the grid directions
+template<unsigned DIM>
+OnLatticeRwGrowthDirectionModifier<DIM>::~OnLatticeRwGrowthDirectionModifier()
+{
+
+}
+
+template<unsigned DIM>
+void OnLatticeRwGrowthDirectionModifier<DIM>::UpdateGrowthDirection()
+{
+    // Assign an index to each of the possible direction
     unsigned direction_index = 0;
-    if(-currentDirection[0] > 0 && -currentDirection[0] > 1.0 -1.e-6)
+    if(-this->mCurrentDirection[0] > 0 && -this->mCurrentDirection[0] > 1.0 -1.e-6)
     {
         direction_index = 1;
     }
-    else if(-currentDirection[0] < 0 &&  -currentDirection[0] < -1.0 +1.e-6)
+    else if(-this->mCurrentDirection[0] < 0 &&  -this->mCurrentDirection[0] < -1.0 +1.e-6)
     {
         direction_index = 2;
     }
-    else if(-currentDirection[1] > 0 && -currentDirection[1] > 1.0 -1.e-6)
+    else if(-this->mCurrentDirection[1] > 0 && -this->mCurrentDirection[1] > 1.0 -1.e-6)
     {
         direction_index = 3;
     }
-    else if(-currentDirection[1] < 0 &&  -currentDirection[1] < -1.0 +1.e-6)
+    else if(-this->mCurrentDirection[1] < 0 &&  -this->mCurrentDirection[1] < -1.0 +1.e-6)
     {
         direction_index = 4;
     }
     if(DIM ==3)
     {
-        if(-currentDirection[2] > 0 && -currentDirection[2] > 1.0 -1.e-6)
+        if(-this->mCurrentDirection[2] > 0 && -this->mCurrentDirection[2] > 1.0 -1.e-6)
         {
             direction_index = 5;
         }
-        if(-currentDirection[2] < 0 &&  -currentDirection[2] < -1.0 +1.e-6)
+        if(-this->mCurrentDirection[2] < 0 &&  -this->mCurrentDirection[2] < -1.0 +1.e-6)
         {
             direction_index = 6;
         }
@@ -100,7 +94,7 @@ c_vector<double, DIM> LatticeBasedAngiogenesisSolver<DIM>::GetGrowthDirection(c_
         EXCEPTION("Initial network should be aligned with the grid.");
     }
 
-    // Get a new direction
+    // Get a new direction that does not go back on itself
     bool found = false;
     unsigned new_direction_index;
     while(!found)
@@ -114,7 +108,8 @@ c_vector<double, DIM> LatticeBasedAngiogenesisSolver<DIM>::GetGrowthDirection(c_
         }
     }
 
-    // Get the direction vector
+    // Get the direction from the index
+    c_vector<double, DIM> new_direction;
     if(new_direction_index == 1)
     {
         new_direction = unit_vector<double>(DIM,0);
@@ -143,10 +138,9 @@ c_vector<double, DIM> LatticeBasedAngiogenesisSolver<DIM>::GetGrowthDirection(c_
             new_direction = -unit_vector<double>(DIM,2);
         }
     }
-    return new_direction;
+    this->mCurrentDirection = new_direction;
 }
 
-
 // Explicit instantiation
-template class LatticeBasedAngiogenesisSolver<2> ;
-template class LatticeBasedAngiogenesisSolver<3> ;
+template class OnLatticeRwGrowthDirectionModifier<2> ;
+template class OnLatticeRwGrowthDirectionModifier<3> ;

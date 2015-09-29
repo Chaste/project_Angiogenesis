@@ -33,42 +33,47 @@
 
  */
 
-#ifndef VORONOIGENERATOR_HPP_
-#define VORONOIGENERATOR_HPP_
-
-#include <vector>
-#include "SmartPointers.hpp"
-#include "UblasVectorInclude.hpp"
-#include "Vertex.hpp"
-#include "Part.hpp"
-
-/*
- * Generate a voronoi tesselation in the bounding box of a given part using tetgen. 3D only.
- */
+#include "GeometryTools.hpp"
+#include "OffLatticePrwGrowthDirectionModifier.hpp"
+#include "RandomNumberGenerator.hpp"
 
 template<unsigned DIM>
-class VoronoiGenerator
+OffLatticePrwGrowthDirectionModifier<DIM>::OffLatticePrwGrowthDirectionModifier()
+    : AbstractGrowthDirectionModifier<DIM>(),
+      mGlobalX(unit_vector<double>(DIM,0)),
+      mGlobalY(unit_vector<double>(DIM,0)),
+      mGlobalZ(zero_vector<double>(DIM)),
+      mMeanAngles(std::vector<double>(DIM, 0.0)),
+      mSdvAngles(std::vector<double>(DIM, M_PI/18.0))
+{
+    if(DIM==3)
+    {
+        mGlobalZ = unit_vector<double>(DIM,2);
+    }
+}
+
+template<unsigned DIM>
+OffLatticePrwGrowthDirectionModifier<DIM>::~OffLatticePrwGrowthDirectionModifier()
 {
 
-public:
+}
 
-    /* Constructor
-     */
-    VoronoiGenerator();
+template<unsigned DIM>
+void OffLatticePrwGrowthDirectionModifier<DIM>::UpdateGrowthDirection()
+{
+    double angle_x = RandomNumberGenerator::Instance()->NormalRandomDeviate(mMeanAngles[0], mSdvAngles[0]);
+    double angle_y = RandomNumberGenerator::Instance()->NormalRandomDeviate(mMeanAngles[1], mSdvAngles[1]);
+    double angle_z = 0.0;
+    if(DIM==3)
+    {
+        angle_z = RandomNumberGenerator::Instance()->NormalRandomDeviate(mMeanAngles[2], mSdvAngles[2]);
+    }
 
-    /* Destructor
-     */
-    ~VoronoiGenerator();
+    c_vector<double, DIM> new_direction_z = RotateAboutAxis<DIM>(this->mCurrentDirection, mGlobalZ, angle_z);
+    c_vector<double, DIM> new_direction_y = RotateAboutAxis<DIM>(new_direction_z, mGlobalY, angle_y);
+    this->mCurrentDirection = RotateAboutAxis<DIM>(new_direction_y, mGlobalX, angle_x);
+}
 
-    /* Generate a voronoi tesselation in the bounding box of the part
-     * @param pPart the part to generate in
-     * @param seeds an optional collection of initial point seeds
-     * @param numSeeds the number of seed points, if initial seeds are not given.
-     * @return a new part corresponding to the voronoi tessellation
-     */
-    boost::shared_ptr<Part<DIM> > Generate(boost::shared_ptr<Part<DIM> > pPart,
-                                           std::vector<boost::shared_ptr<Vertex> > seeds = std::vector<boost::shared_ptr<Vertex> >(),
-                                           unsigned numSeeds = 100);
-};
-
-#endif /*VORONOIGENERATOR_HPP_*/
+// Explicit instantiation
+template class OffLatticePrwGrowthDirectionModifier<2> ;
+template class OffLatticePrwGrowthDirectionModifier<3> ;

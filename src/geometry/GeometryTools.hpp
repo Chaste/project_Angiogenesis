@@ -48,6 +48,13 @@
 #include "SmartPointers.hpp"
 #include "UblasVectorInclude.hpp"
 
+/*
+ * A collection of useful geometry functions
+ */
+
+/*
+ * Is the point inside the cube box defined by a centre location and box side length
+ */
 template<unsigned DIM>
 bool IsPointInBox(c_vector<double, DIM> point, c_vector<double, DIM> location, double spacing)
 {
@@ -72,6 +79,9 @@ bool IsPointInBox(c_vector<double, DIM> point, c_vector<double, DIM> location, d
     return point_in_box;
 }
 
+/*
+ * Is the point inside the tetrahedron given by the vector of vertex locations
+ */
 template<unsigned DIM>
 bool IsPointInTetra(c_vector<double, DIM> start_point, std::vector<c_vector<double, DIM> > locations)
 {
@@ -113,6 +123,9 @@ bool IsPointInTetra(c_vector<double, DIM> start_point, std::vector<c_vector<doub
     }
 }
 
+/*
+ * Return the length of the line given by a start point and end point in the box given by a centre location and side length
+ */
 template<unsigned DIM>
 double LengthOfLineInBox(c_vector<double, DIM> start_point,
                          c_vector<double, DIM> end_point,
@@ -173,6 +186,9 @@ double LengthOfLineInBox(c_vector<double, DIM> start_point,
     }
 }
 
+/*
+ * Return the length of the line given by a start point and end point in the tetrahedron given by vertex locations
+ */
 template<unsigned DIM>
 double LengthOfLineInTetra(c_vector<double, DIM> start_point,
                            c_vector<double, DIM> end_point,
@@ -233,6 +249,9 @@ double LengthOfLineInTetra(c_vector<double, DIM> start_point,
     }
 }
 
+/*
+ * Rotate the supplied vector about the axis by the specified angle.
+ */
 template<unsigned DIM>
 c_vector<double, DIM> RotateAboutAxis(c_vector<double, DIM> direction, c_vector<double, DIM> axis, double angle)
 {

@@ -66,6 +66,8 @@ class Facet
      */
     bool mVerticesUpToDate;
 
+    /* Arbitary data container, useful for specifying boundary conditions on facets
+     */
     std::map<std::string, double> mData;
 
 public:
@@ -122,6 +124,12 @@ public:
      */
     c_vector<double, 3> GetCentroid();
 
+    /* Return the data for the specified label
+     * @param label the data label
+     * @return the data for the specified label
+     */
+    double GetData(const std::string& label);
+
     /* Return the distance to the facet
      * @return the distance to the facet
      */
@@ -158,6 +166,12 @@ public:
      */
     void RotateAboutAxis(c_vector<double, 3> axis, double angle);
 
+    /* Set the data for the specified label
+     * @param label the data label
+     * @param value the value of the data
+     */
+    void SetData(const std::string& label, double value);
+
     /* Move the facet along the translation vector
      * @param translationVector the new location is the original + the translationVector
      */
@@ -167,9 +181,6 @@ public:
      */
     void UpdateVertices();
 
-    void SetData(const std::string& label, double value);
-
-    double GetData(const std::string& label);
 };
 
 #endif /*FACET_HPP_*/

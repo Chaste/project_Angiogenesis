@@ -18,8 +18,6 @@ population/vessel/solvers/flow/haematocrit/TestBetteridgeHaematocritSolver.hpp
 population/vessel/solvers/flow/TestAlarcon03MechanicalStimulusCalculator.hpp
 population/vessel/solvers/flow/TestAlarcon03MetabolicStimulusCalculator.hpp
 population/vessel/solvers/angiogenesis/TestAbstractAngiogenesisSolver.hpp
-population/vessel/solvers/angiogenesis/TestLatticeBasedAngiogenesisSolver.hpp
-population/vessel/solvers/angiogenesis/TestOffLatticeAngiogenesisSolver.hpp
 population/vessel/solvers/field/TestKroghCylinderSolver.hpp
 population/vessel/TestVasculatureData.hpp
 population/vessel/TestVasculatureGenerator.hpp

@@ -195,8 +195,15 @@ public:
      */
     vtkSmartPointer<vtkPolyData> GetVtk(bool update=true);
 
+    /* Is the point inside the part
+     * @param location the location of the point
+     * @return bool true if the point is inside the part
+     */
     bool IsPointInPart(c_vector<double, DIM> location, bool update=true);
 
+    /* Move the part along the translation vector
+     * @param vector the vector to move the part along
+     */
     void Translate(c_vector<double, DIM> vector);
 
     /* Write the part to file in vtk format
