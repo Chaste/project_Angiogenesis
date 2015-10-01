@@ -217,20 +217,24 @@ void CaBasedCellPopulationWithVessels<DIM>::MoveTips(std::vector<boost::shared_p
                 bool back_on_self = false;
                 if(moveType == MovementType::MIGRATE)
                 {
+                    MARK;
                     if(p_node->GetVesselSegment(0)->GetOppositeNode(p_node)->IsCoincident(ChastePoint<DIM>(neighbour_location)))
                     {
                         back_on_self = true;
                     }
+                    MARK;
                 }
                 else
                 {
                     for (unsigned seg_index = 0; seg_index < p_node->GetNumberOfSegments(); seg_index++)
                     {
+                        MARK;
                         if(p_node->GetVesselSegment(seg_index)->GetOppositeNode(p_node)->IsCoincident(ChastePoint<DIM>(neighbour_location)))
                         {
                             back_on_self = true;
                             break;
                         }
+                        MARK;
                     }
                 }
 
@@ -281,8 +285,11 @@ void CaBasedCellPopulationWithVessels<DIM>::MoveTips(std::vector<boost::shared_p
                         DeselectTipCell(activeTips[tip_index]);
 
                         // Update vessel network
+                        mpNetwork->UpdateNodes();
+                        mpNetwork->UpdateVesselNodes();
                         boost::shared_ptr<VascularNode<DIM> > p_other_node = mpNetwork->DivideVessel(mCellNodeMap[(*it)]->GetVesselSegment(0)->GetVessel(),
                                                                                                      candidate_location);
+
                         std::vector<boost::shared_ptr<VascularNode<DIM> > > merge_nodes;
                         merge_nodes.push_back(p_other_node);
                         merge_nodes.push_back(p_new_node);

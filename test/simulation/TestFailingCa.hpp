@@ -63,7 +63,9 @@ public:
         PottsMesh<3>* p_mesh = generator.GetMesh();
 
         double spacing = 40.0; // Fails for this spacing
-        //double spacing = 14.0; // Ok for this spacing
+        //double spacing = 10.0; // Ok for this spacing
+        //double spacing = 40.e-6; // Fails for this spacing
+
         p_mesh->Scale(spacing, spacing, spacing);
 
         // Create cells in a cylinder
@@ -86,7 +88,7 @@ public:
                     location[2] = 0.0;
 
                     double z_location = (double(kdx) * spacing);
-                    if(norm_2(location - centre) <= radius && z_location >= 5.0*spacing && z_location <= 25.0 * spacing)
+                    if(norm_2(location - centre) <= radius && z_location >= 5.0*spacing && z_location <= 10.0 * spacing)
                     {
                         location_indices.push_back(location_index);
                     }

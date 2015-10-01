@@ -1246,7 +1246,7 @@ boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::DivideVessel(boost
 
     AddVessel(p_new_vessel1);
     AddVessel(p_new_vessel2);
-    RemoveVessel(pVessel);
+    RemoveVessel(pVessel, false);
 
     mSegmentsUpToDate = false;
     mNodesUpToDate = false;
