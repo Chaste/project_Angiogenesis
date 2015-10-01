@@ -114,11 +114,12 @@ void FiniteElementSolver<DIM>::Solve(bool writeSolution)
             if(this->mDirichletBoundaryConditions[idx]->GetType() == BoundaryConditionType::VESSEL_LINE
                     || this->mDirichletBoundaryConditions[idx]->GetType() == BoundaryConditionType::VESSEL_VOLUME)
             {
+
                 use_boundry_nodes = true;
             }
         }
 
-        if(use_boundry_nodes)
+        if(!use_boundry_nodes)
         {
             typename PlcMesh<DIM, DIM>::NodeIterator iter = p_mesh->GetNodeIteratorBegin();
             while (iter != p_mesh->GetNodeIteratorEnd())
