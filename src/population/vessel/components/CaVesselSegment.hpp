@@ -276,7 +276,7 @@ public:
      * @param rPoint a ChastePoint at the location to be projected
      * @return the location of the projected point
      */
-    c_vector<double, DIM> GetPointProjection(const ChastePoint<DIM>& rPoint) const;
+    c_vector<double, DIM> GetPointProjection(const ChastePoint<DIM>& rPoint, bool projectToEnds = false) const;
 
     /**
      * Return the projection of a point onto the segment. If the projection is outside the segment an
@@ -285,7 +285,7 @@ public:
      * @param location the location to be projected
      * @return the location of the projected point
      */
-    c_vector<double, DIM> GetPointProjection(c_vector<double, DIM> location) const;
+    c_vector<double, DIM> GetPointProjection(c_vector<double, DIM> location, bool projectToEnds = false) const;
 
     /**
      * Return a unit vector pointing along the segment. The orientation along the segment is from node0 to node 1.

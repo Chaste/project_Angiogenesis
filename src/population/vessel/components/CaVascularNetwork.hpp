@@ -140,6 +140,15 @@ public:
     std::vector<boost::shared_ptr<CaVessel<DIM> > > CopyVessels(std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels);
 
     /*
+     * Add a new node to the end of the vessel
+     * @param pEndNode the node that the new segment will start on, should already be on the end of the vessel
+     * @param pNewNode the new node to be added to the end of the vessel
+     */
+    void ExtendVessel(boost::shared_ptr<CaVessel<DIM> > pVessel,
+                      boost::shared_ptr<VascularNode<DIM> > pEndNode,
+                      boost::shared_ptr<VascularNode<DIM> > pNewNode);
+
+    /*
      * Removes a vessel from the network
      */
     void RemoveVessel(boost::shared_ptr<CaVessel<DIM> > pVessel, bool deleteVessel = false);

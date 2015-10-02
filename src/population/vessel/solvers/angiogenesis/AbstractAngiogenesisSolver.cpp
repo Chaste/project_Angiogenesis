@@ -228,21 +228,7 @@ void AbstractAngiogenesisSolver<DIM>::UpdateNodalPositions(const std::string& sp
             {
                 boost::shared_ptr<VascularNode<DIM> > p_new_node = VascularNode<DIM>::Create(nodes[idx]);
                 p_new_node->SetLocation(new_location);
-
-                if(nodes[idx]->GetVesselSegment(0)->GetVessel()->GetStartNode() == nodes[idx])
-                {
-                    boost::shared_ptr<CaVesselSegment<DIM> > p_segment = CaVesselSegment<DIM>::Create(p_new_node, nodes[idx]);
-                    p_segment->SetFlowProperties(*nodes[idx]->GetVesselSegment(0)->GetFlowProperties());
-                    p_segment->SetRadius(nodes[idx]->GetVesselSegment(0)->GetRadius());
-                    nodes[idx]->GetVesselSegment(0)->GetVessel()->AddSegment(p_segment);
-                }
-                else
-                {
-                    boost::shared_ptr<CaVesselSegment<DIM> > p_segment = CaVesselSegment<DIM>::Create(nodes[idx], p_new_node);
-                    p_segment->SetFlowProperties(*nodes[idx]->GetVesselSegment(0)->GetFlowProperties());
-                    p_segment->SetRadius(nodes[idx]->GetVesselSegment(0)->GetRadius());
-                    nodes[idx]->GetVesselSegment(0)->GetVessel()->AddSegment(p_segment);
-                }
+                mpNetwork->ExtendVessel(nodes[idx]->GetVesselSegment(0)->GetVessel(), nodes[idx], p_new_node);
                 nodes[idx]->SetIsMigrating(false);
                 p_new_node->SetIsMigrating(true);
             }
@@ -265,8 +251,17 @@ void AbstractAngiogenesisSolver<DIM>::DoAnastamosis()
             std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> segment_pair = mpNetwork->GetNearestSegment(moved_nodes[idx]);
             if(segment_pair.second <= mNodeAnastamosisRadius)
             {
-                // Divide the parent vessel if neccessary and set all involved nodes to non-migrating
-                boost::shared_ptr<VascularNode<DIM> > p_merge_node = mpNetwork->DivideVessel(segment_pair.first->GetVessel(), moved_nodes[idx]->GetLocation());
+                // Move the tip to one of the nodes on the segment
+                // If there is a non-zero tolerance try to project onto the segment. If that doesn't work attach
+                // to the closest node on the segment.
+                if(mNodeAnastamosisRadius > 0.0)
+                {
+                    c_vector<double, DIM> divide_location = moved_nodes[idx]->GetLocationVector();
+                    divide_location = segment_pair.first->GetPointProjection(divide_location, true);
+                    moved_nodes[idx]->SetLocation(divide_location);
+                }
+                boost::shared_ptr<VascularNode<DIM> > p_merge_node = mpNetwork->DivideVessel(segment_pair.first->GetVessel(),
+                                                                                                 moved_nodes[idx]->GetLocation());
                 p_merge_node->SetIsMigrating(false);
                 moved_nodes[idx]->SetIsMigrating(false);
             }
@@ -284,11 +279,14 @@ void AbstractAngiogenesisSolver<DIM>::DoAnastamosis()
             std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> segment_pair = mpNetwork->GetNearestSegment(remaining_nodes[idx]->GetVesselSegment(0));
             if(segment_pair.second <= mNodeAnastamosisRadius)
             {
-                c_vector<double, DIM> divide_location = segment_pair.first->GetPointProjection(remaining_nodes[idx]->GetLocation());
+                c_vector<double, DIM> divide_location = segment_pair.first->GetPointProjection(remaining_nodes[idx]->GetLocation(), true);
+
+
                 boost::shared_ptr<VascularNode<DIM> > p_merge_node =
                         mpNetwork->DivideVessel(segment_pair.first->GetVessel(), divide_location);
+
+
                 p_merge_node->SetIsMigrating(false);
-                // todo need to remove the overlapping segment here, otherwise will have zero length.
                 remaining_nodes[idx]->SetLocation(divide_location);
                 remaining_nodes[idx]->SetIsMigrating(false);
             }

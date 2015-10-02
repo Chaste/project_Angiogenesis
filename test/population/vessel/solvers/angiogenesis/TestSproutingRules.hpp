@@ -29,6 +29,7 @@
 #include "AbstractSproutingRule.hpp"
 #include "OffLatticeRandomNormalSproutingRule.hpp"
 #include "OffLatticeTipAttractionGrowthDirectionModifier.hpp"
+#include "RandomNumberGenerator.hpp"
 
 class TestSproutingRules : public AbstractCellBasedTestSuite
 {
@@ -109,6 +110,8 @@ public:
 
     void TestOffLatticeSproutingWithAttraction() throw(Exception)
     {
+        RandomNumberGenerator::Instance()->Reseed(15565);
+
         // Make a network
         std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
         for(unsigned idx=0; idx<9; idx++)

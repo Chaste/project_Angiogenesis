@@ -252,7 +252,7 @@ std::pair<boost::shared_ptr<VascularNode<DIM> >, boost::shared_ptr<VascularNode<
 }
 
 template<unsigned DIM>
-c_vector<double, DIM> CaVesselSegment<DIM>::GetPointProjection(c_vector<double, DIM> location) const
+c_vector<double, DIM> CaVesselSegment<DIM>::GetPointProjection(c_vector<double, DIM> location, bool projectToEnds) const
 {
     c_vector<double, DIM> start_location = GetNode(0)->GetLocation().rGetLocation();
     c_vector<double, DIM> end_location = GetNode(1)->GetLocation().rGetLocation();
@@ -263,9 +263,26 @@ c_vector<double, DIM> CaVesselSegment<DIM>::GetPointProjection(c_vector<double, 
     double dp_segment_point = inner_prod(segment_vector, point_vector);
     double dp_segment_segment = inner_prod(segment_vector, segment_vector);
 
-    if (dp_segment_point <= 0.0 || dp_segment_segment <= dp_segment_point)
+    if ((dp_segment_point <= 0.0 || dp_segment_segment <= dp_segment_point) && !projectToEnds)
     {
-        EXCEPTION("Projection of point is outside segment.");
+        if(!projectToEnds)
+        {
+            EXCEPTION("Projection of point is outside segment.");
+        }
+        else
+        {
+            double dist1 = norm_2(start_location - location);
+            double dist2 = norm_2(end_location - location);
+            if(dist1 <= dist2)
+            {
+                return start_location;
+            }
+            else
+            {
+                return end_location;
+            }
+        }
+
     }
 
     // Point projection is inside segment, get distance to point projection
@@ -275,9 +292,9 @@ c_vector<double, DIM> CaVesselSegment<DIM>::GetPointProjection(c_vector<double, 
 }
 
 template<unsigned DIM>
-c_vector<double, DIM> CaVesselSegment<DIM>::GetPointProjection(const ChastePoint<DIM>& rPoint) const
+c_vector<double, DIM> CaVesselSegment<DIM>::GetPointProjection(const ChastePoint<DIM>& rPoint, bool projectToEnds) const
 {
-    return GetPointProjection(rPoint.rGetLocation());
+    return GetPointProjection(rPoint.rGetLocation(), projectToEnds);
 }
 
 template<unsigned DIM>
