@@ -45,6 +45,7 @@
 #include "AbstractSproutingRule.hpp"
 #include "SimpleFlowSolver.hpp"
 #include "SimpleStructuralAdaptationSolver.hpp"
+#include "Part.hpp"
 
 template<unsigned DIM>
 class AbstractAngiogenesisSolver
@@ -71,6 +72,8 @@ class AbstractAngiogenesisSolver
 
     boost::shared_ptr<SimpleStructuralAdaptationSolver<DIM> > mpStructuralAdaptationSolver;
 
+    boost::shared_ptr<Part<DIM> > mpBoundingDomain;
+
 public:
 
     /**
@@ -84,6 +87,11 @@ public:
      */
     virtual ~AbstractAngiogenesisSolver();
 
+    /* Factory constructor method
+     * @return a shared pointer to a new solver
+     */
+    static boost::shared_ptr<AbstractAngiogenesisSolver> Create(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
+
     /**
      * Add a growth direction modifier to the collection
      */
@@ -93,6 +101,10 @@ public:
      * Add a PDE solver to the collection
      */
     void AddPdeSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pPdeSolver);
+
+    void SetAnastamosisRadius(double radius);
+
+    void SetBoundingDomain(boost::shared_ptr<Part<DIM> > pDomain);
 
     /**
      * Return the current PDE solvers

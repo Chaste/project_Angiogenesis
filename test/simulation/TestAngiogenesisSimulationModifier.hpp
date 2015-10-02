@@ -54,6 +54,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CellMutationStatesWriter.hpp"
 #include "OnLatticeSimulation.hpp"
 #include "Node.hpp"
+#include "Polygon.hpp"
 #include "NodesOnlyMesh.hpp"
 #include "OffLatticeSimulation.hpp"
 #include "NodeBasedCellPopulation.hpp"
@@ -67,44 +68,57 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "DirichletBoundaryCondition.hpp"
 #include "DiscreteSource.hpp"
 #include "CellLabelWriter.hpp"
-#include "OffLatticeAngiogenesisSolver.hpp"
+#include "CaVessel.hpp"
+#include "VascularNode.hpp"
+#include "GeometryTools.hpp"
+#include "OffLatticePrwGrowthDirectionModifier.hpp"
+#include "OffLatticeTipAttractionGrowthDirectionModifier.hpp"
+#include "OffLatticeRandomNormalSproutingRule.hpp"
+#include "Debug.hpp"
 
 class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
 {
-public:
 
-    void TestCaBasedSpheroid() throw (Exception)
+    boost::shared_ptr<Part<3> > GetSimulationDomain()
     {
-        // Create the domain
         double domain_x = 800.0;
         double domain_y = 800.0;
-        double domain_z = 400.0;
+        double domain_z = 200.0;
         boost::shared_ptr<Part<3> > p_domain = Part<3> ::Create();
         p_domain->AddCuboid(domain_x, domain_y, domain_z);
+        return p_domain;
+    }
 
-        // Create the vessels
-        VasculatureGenerator<3> vessel_generator;
-        c_vector<double, 3> vessel_start_point;
-        vessel_start_point[0] = 400.0;
-        vessel_start_point[1] = 400.0;
-        vessel_start_point[2] = 0.0;
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = vessel_generator.GenerateSingleVessel(400.0, vessel_start_point);
+    boost::shared_ptr<CaVascularNetwork<3> > GetVesselNetwork()
+    {
+        boost::shared_ptr<CaVascularNetwork<3> > p_network = CaVascularNetwork<3>::Create();
 
-        // Set the flow properties
+        std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
+        for(unsigned idx=0; idx<9; idx++)
+        {
+            bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*100, 50.0, 100.0));
+        }
+        boost::shared_ptr<CaVessel<3> > p_vessel_1 = CaVessel<3>::Create(bottom_nodes);
+
+        std::vector<boost::shared_ptr<VascularNode<3> > > top_nodes;
+        for(unsigned idx=0; idx<9; idx++)
+        {
+            top_nodes.push_back(VascularNode<3>::Create(double(idx)*100, 750.0, 100.0));
+        }
+        boost::shared_ptr<CaVessel<3> > p_vessel_2 = CaVessel<3>::Create(top_nodes);
+
+        // Set up flow properties
+        p_network->AddVessel(p_vessel_1);
+        p_network->AddVessel(p_vessel_2);
         p_network->GetVessel(0)->GetStartNode()->GetFlowProperties()->SetIsInputNode(true);
         p_network->GetVessel(0)->GetStartNode()->GetFlowProperties()->SetPressure(3000.0);
         p_network->GetVessel(0)->GetEndNode()->GetFlowProperties()->SetIsOutputNode(true);
         p_network->GetVessel(0)->GetEndNode()->GetFlowProperties()->SetPressure(1000.0);
 
-        c_vector<double, 3> sprout_start;
-        sprout_start[0] = 400.0;
-        sprout_start[1] = 400.0;
-        sprout_start[2] = 200.0;
-        c_vector<double, 3> sprout_end;
-        sprout_end[0] = 400.0;
-        sprout_end[1] = 410.0;
-        sprout_end[2] = 200.0;
-        p_network->FormSprout(sprout_start, sprout_end);
+        p_network->GetVessel(1)->GetStartNode()->GetFlowProperties()->SetIsInputNode(true);
+        p_network->GetVessel(1)->GetStartNode()->GetFlowProperties()->SetPressure(3000.0);
+        p_network->GetVessel(1)->GetEndNode()->GetFlowProperties()->SetIsOutputNode(true);
+        p_network->GetVessel(1)->GetEndNode()->GetFlowProperties()->SetPressure(1000.0);
 
         p_network->UpdateSegments();
         p_network->SetSegmentRadii(10.0);
@@ -113,242 +127,192 @@ public:
         {
             segments[idx]->GetFlowProperties()->SetViscosity(1.e-9);
         }
+        return p_network;
+    }
 
-        // Create a Potts mesh
-        double spacing = 40.0;
-        unsigned num_x = unsigned(domain_x/spacing) + 1;
-        unsigned num_y = unsigned(domain_y/spacing) + 1;
-        unsigned num_z = unsigned(domain_z/spacing) + 1;
-        PottsMeshGenerator<3> generator(num_x, 0, 0, num_y, 0, 0, num_z, 0, 0);
-        PottsMesh<3>* p_mesh = generator.GetMesh();
-        p_mesh->Scale(spacing, spacing, spacing);
+    boost::shared_ptr<Part<3> > GetInitialTumourCellRegion()
+    {
+        double radius = 100.0;
+        double depth = 200.0;
+        c_vector<double, 3> origin;
+        origin[0] = 400.0;
+        origin[1] = 400.0;
+        origin[2] = 0.0;
 
-        // Create cells in a cylinder
-        c_vector<double,3> centre;
-        centre[0] = domain_x/2.0;
-        centre[1] = domain_y/2.0;
-        centre[2] = 0.0;
-        double radius = 60.0;
-        std::vector<unsigned> location_indices;
-        for(unsigned kdx=0; kdx<num_z; kdx++)
-        {
-            for(unsigned jdx=0; jdx<num_y; jdx++)
-            {
-                for(unsigned idx=0; idx<num_x; idx++)
-                {
-                    unsigned location_index = idx + num_x * jdx + num_x * num_y * kdx;
-                    c_vector<double,3> location;
-                    location[0] = double(idx) * spacing;
-                    location[1] = double(jdx) * spacing;
-                    location[2] = 0.0;
+        boost::shared_ptr<Part<3> > p_domain = Part<3> ::Create();
+        boost::shared_ptr<Polygon> circle = p_domain->AddCircle(radius, origin);
+        p_domain->Extrude(circle, depth);
+        return p_domain;
+    }
 
-                    if(norm_2(location - centre) <= radius && (double(kdx) * spacing) >= 160.0 && (double(kdx) * spacing) <= 200.0)
-                    {
-                        location_indices.push_back(location_index);
-                    }
-                }
-            }
-        }
-
-        std::vector<CellPtr> cells;
-        CellsGenerator<FixedDurationGenerationBasedCellCycleModel, 3> cells_generator;
-        cells_generator.GenerateBasic(cells, location_indices.size());
-
-        // Create cell population
-        CaBasedCellPopulation<3> cell_population(*p_mesh, cells, location_indices);
-
-        // Oxygen PDE, Boundary Conditions and Solver
+    boost::shared_ptr<FiniteDifferenceSolver<3> > GetOxygenSolver(boost::shared_ptr<Part<3> > p_domain,
+                                                                  boost::shared_ptr<CaVascularNetwork<3> > p_network)
+    {
         boost::shared_ptr<HybridLinearEllipticPde<3> > p_oxygen_pde = HybridLinearEllipticPde<3>::Create();
         p_oxygen_pde->SetDiffusionConstant(0.0033);
         p_oxygen_pde->SetVariableName("oxygen");
 
-        boost::shared_ptr<DiscreteSource<3> > p_cell_oxygen_sink = boost::shared_ptr<DiscreteSource<3> >(new DiscreteSource<3>());
+        boost::shared_ptr<DiscreteSource<3> > p_cell_oxygen_sink = DiscreteSource<3>::Create();
         p_cell_oxygen_sink->SetType(SourceType::MULTI_POINT);
         p_cell_oxygen_sink->SetSource(SourceStrength::PRESCRIBED);
         p_cell_oxygen_sink->SetValue(1.e-6);
         p_cell_oxygen_sink->SetIsLinearInSolution(true);
         p_oxygen_pde->AddDiscreteSource(p_cell_oxygen_sink);
 
-        boost::shared_ptr<DirichletBoundaryCondition<3> > p_vessel_ox_boundary_condition =
-                boost::shared_ptr<DirichletBoundaryCondition<3> >(new DirichletBoundaryCondition<3>());
+        boost::shared_ptr<DirichletBoundaryCondition<3> > p_vessel_ox_boundary_condition = DirichletBoundaryCondition<3>::Create();
         p_vessel_ox_boundary_condition->SetValue(40.0);
         p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_LINE);
         p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
 
-        boost::shared_ptr<FiniteDifferenceSolver<3> > p_oxygen_solver = boost::shared_ptr<FiniteDifferenceSolver<3> >(new FiniteDifferenceSolver<3>());
+        boost::shared_ptr<FiniteDifferenceSolver<3> > p_oxygen_solver = FiniteDifferenceSolver<3>::Create();
         p_oxygen_solver->SetExtents(p_domain, 40.0);
         p_oxygen_solver->SetPde(p_oxygen_pde);
         p_oxygen_solver->SetVesselNetwork(p_network);
         p_oxygen_solver->AddDirichletBoundaryCondition(p_vessel_ox_boundary_condition);
 
-        // VEGF PDE, Boundary Conditions and Solver
+        return p_oxygen_solver;
+    }
+
+    boost::shared_ptr<FiniteDifferenceSolver<3> > GetVegfSolver(boost::shared_ptr<Part<3> > p_domain,
+                                                                  boost::shared_ptr<CaVascularNetwork<3> > p_network)
+    {
         boost::shared_ptr<HybridLinearEllipticPde<3> > p_vegf_pde = HybridLinearEllipticPde<3>::Create();
         p_vegf_pde->SetDiffusionConstant(0.0033);
         p_vegf_pde->SetVariableName("vegf");
         p_vegf_pde->SetLinearInUTerm(-1.e-7);
 
-        boost::shared_ptr<DiscreteSource<3> > p_cell_vegf_source = boost::shared_ptr<DiscreteSource<3> >(new DiscreteSource<3>());
+        boost::shared_ptr<DiscreteSource<3> > p_cell_vegf_source = DiscreteSource<3>::Create();
         p_cell_vegf_source->SetType(SourceType::MULTI_POINT);
         p_cell_vegf_source->SetSource(SourceStrength::PRESCRIBED);
         p_cell_vegf_source->SetValue(-1.e-4);
         p_cell_vegf_source->SetIsLinearInSolution(false);
         p_vegf_pde->AddDiscreteSource(p_cell_vegf_source);
 
-        boost::shared_ptr<FiniteDifferenceSolver<3> > p_vegf_solver = boost::shared_ptr<FiniteDifferenceSolver<3> >(new FiniteDifferenceSolver<3>());
+        boost::shared_ptr<FiniteDifferenceSolver<3> > p_vegf_solver = FiniteDifferenceSolver<3>::Create();
         p_vegf_solver->SetExtents(p_domain, 40.0);
         p_vegf_solver->SetPde(p_vegf_pde);
         p_vegf_solver->SetVesselNetwork(p_network);
 
-        boost::shared_ptr<OffLatticeAngiogenesisSolver<3> > p_angiogenesis_solver =
-                boost::shared_ptr<OffLatticeAngiogenesisSolver<3> >(new OffLatticeAngiogenesisSolver<3>((p_network)));
+        return p_vegf_solver;
+    }
+
+public:
+
+    void DOntTestCaBasedSpheroid() throw (Exception)
+    {
+        // Create the simulation domain
+        boost::shared_ptr<Part<3> > p_domain = GetSimulationDomain();
+
+        // Create a lattice for the cell population
+        double spacing = 40.0;
+        unsigned num_x = unsigned(p_domain->GetBoundingBox()[1]/spacing) + 1;
+        unsigned num_y = unsigned(p_domain->GetBoundingBox()[3]/spacing) + 1;
+        unsigned num_z = unsigned(p_domain->GetBoundingBox()[5]/spacing) + 1;
+        PottsMeshGenerator<3> generator(num_x, 0, 0, num_y, 0, 0, num_z, 0, 0);
+        PottsMesh<3>* p_mesh = generator.GetMesh();
+        p_mesh->Scale(spacing, spacing, spacing);
+
+        // Create a tumour cells in a cylinder in the middle of the domain
+        boost::shared_ptr<Part<3> > p_tumour_cell_region = GetInitialTumourCellRegion();
+        std::vector<unsigned> location_indices = p_tumour_cell_region->GetContainingGridIndices(num_x, num_y, num_z, spacing);
+
+        std::vector<CellPtr> cells;
+        CellsGenerator<SimpleOxygenBasedCellCycleModel, 3> cells_generator;
+        cells_generator.GenerateBasic(cells, location_indices.size());
+
+        // Create cell population
+        CaBasedCellPopulation<3> cell_population(*p_mesh, cells, location_indices);
+        cell_population.AddCellWriter<CellLabelWriter>();
+
+        // Create the vessel network
+        boost::shared_ptr<CaVascularNetwork<3> > p_network = GetVesselNetwork();
+
+        // Create the oxygen pde solver
+        boost::shared_ptr<FiniteDifferenceSolver<3> > p_oxygen_solver = GetOxygenSolver(p_domain, p_network);
+
+        // Create the vegf pde solver
+        boost::shared_ptr<FiniteDifferenceSolver<3> > p_vegf_solver = GetVegfSolver(p_domain, p_network);
+
+        // Create the angiogenesis solver
+        boost::shared_ptr<AbstractAngiogenesisSolver<3> > p_angiogenesis_solver = AbstractAngiogenesisSolver<3>::Create(p_network);
         p_angiogenesis_solver->AddPdeSolver(p_oxygen_solver);
         p_angiogenesis_solver->AddPdeSolver(p_vegf_solver);
-        //p_angiogenesis_solver->SetSproutingProbability(0.2);
-        p_angiogenesis_solver->SetSolveFlow();
+
+        boost::shared_ptr<OffLatticePrwGrowthDirectionModifier<3> > p_grow_direction_modifier = OffLatticePrwGrowthDirectionModifier<3>::Create();
+        boost::shared_ptr<OffLatticeTipAttractionGrowthDirectionModifier<3> > p_grow_direction_modifier2 = OffLatticeTipAttractionGrowthDirectionModifier<3>::Create();
+        p_grow_direction_modifier2->SetNetwork(p_network);
+        boost::shared_ptr<OffLatticeRandomNormalSproutingRule<3> > p_sprouting_rule = OffLatticeRandomNormalSproutingRule<3>::Create();
+        p_sprouting_rule->SetSproutingProbability(0.05);
+
+        p_angiogenesis_solver->AddGrowthDirectionModifier(p_grow_direction_modifier);
+        p_angiogenesis_solver->AddGrowthDirectionModifier(p_grow_direction_modifier2);
+        p_angiogenesis_solver->SetSproutingRule(p_sprouting_rule);
+        p_angiogenesis_solver->SetAnastamosisRadius(5.0);
 
         boost::shared_ptr<AngiogenesisModifier<3> > p_simulation_modifier = boost::shared_ptr<AngiogenesisModifier<3> >(new AngiogenesisModifier<3>);
         p_simulation_modifier->SetAngiogenesisSolver(p_angiogenesis_solver);
-
         OnLatticeSimulation<3> simulator(cell_population);
         simulator.SetOutputDirectory("TestAngiogenesisSimulationModifier/CaBased");
         simulator.SetDt(1.0);
         simulator.SetEndTime(10.0);
-        //simulator.AddSimulationModifier(p_simulation_modifier);
+        simulator.AddSimulationModifier(p_simulation_modifier);
         simulator.Solve();
     }
 
-    void DOntTestNodeBasedSpheroid() throw (Exception)
+    void TestNodeBasedSpheroid() throw (Exception)
     {
         // Create the domain
-        double domain_x = 800.0;
-        double domain_y = 800.0;
-        double domain_z = 400.0;
-        boost::shared_ptr<Part<3> > p_domain = Part<3> ::Create();
-        p_domain->AddCuboid(domain_x, domain_y, domain_z);
+        boost::shared_ptr<Part<3> > p_domain = GetSimulationDomain();
 
-        // Create the vessels
-        VasculatureGenerator<3> generator;
-        c_vector<double, 3> vessel_start_point;
-        vessel_start_point[0] = 400.0;
-        vessel_start_point[1] = 400.0;
-        vessel_start_point[2] = 0.0;
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(400.0, vessel_start_point);
-
-        // Set the flow properties
-        p_network->GetVessel(0)->GetStartNode()->GetFlowProperties()->SetIsInputNode(true);
-        p_network->GetVessel(0)->GetStartNode()->GetFlowProperties()->SetPressure(3000.0);
-        p_network->GetVessel(0)->GetEndNode()->GetFlowProperties()->SetIsOutputNode(true);
-        p_network->GetVessel(0)->GetEndNode()->GetFlowProperties()->SetPressure(1000.0);
-
-        c_vector<double, 3> sprout_start;
-        sprout_start[0] = 400.0;
-        sprout_start[1] = 400.0;
-        sprout_start[2] = 200.0;
-        c_vector<double, 3> sprout_end;
-        sprout_end[0] = 400.0;
-        sprout_end[1] = 410.0;
-        sprout_end[2] = 200.0;
-        p_network->FormSprout(sprout_start, sprout_end);
-
-        p_network->UpdateSegments();
-        p_network->SetSegmentRadii(10.0);
-        std::vector<boost::shared_ptr<CaVesselSegment<3> > > segments = p_network->GetVesselSegments();
-        for(unsigned idx=0; idx<segments.size(); idx++)
-        {
-            segments[idx]->GetFlowProperties()->SetViscosity(1.e-9);
-        }
-
-        // Create cells in a cylinder
+        // Create nodes corresponding to cell positions
         double spacing = 40.0;
-        unsigned num_x = unsigned(domain_x/spacing) + 1;
-        unsigned num_y = unsigned(domain_y/spacing) + 1;
-        unsigned num_z = unsigned(domain_z/spacing) + 1;
+        unsigned num_x = unsigned(p_domain->GetBoundingBox()[1]/spacing) + 1;
+        unsigned num_y = unsigned(p_domain->GetBoundingBox()[3]/spacing) + 1;
+        unsigned num_z = unsigned(p_domain->GetBoundingBox()[5]/spacing) + 1;
+
+        // Create a tumour cells in a cylinder in the middle of the domain
+        boost::shared_ptr<Part<3> > p_tumour_cell_region = GetInitialTumourCellRegion();
+        std::vector<unsigned> location_indices = p_tumour_cell_region->GetContainingGridIndices(num_x, num_y, num_z, spacing);
+
         std::vector<Node<3>*> nodes;
-        c_vector<double,3> centre;
-        centre[0] = domain_x/2.0;
-        centre[1] = domain_y/2.0;
-        centre[2] = 0.0;
-        double radius = 100.0;
-
-        unsigned counter = 0;
-        for(unsigned kdx=0; kdx<num_z; kdx++)
+        for(unsigned idx=0; idx<location_indices.size(); idx++)
         {
-            for(unsigned jdx=0; jdx<num_y; jdx++)
-            {
-                for(unsigned idx=0; idx<num_x; idx++)
-                {
-                    c_vector<double,3> location;
-                    location[0] = double(idx) * spacing;
-                    location[1] = double(jdx) * spacing;
-                    location[2] = 0.0;
-
-                    double position_z = double(kdx) * spacing;
-                    if(norm_2(location - centre) <= radius && position_z >= 160.0 && position_z <= 240.0)
-                    {
-                        nodes.push_back(new Node<3>(counter,  false, location[0], location[1], position_z));
-                        counter++;
-                    }
-                }
-            }
+            c_vector<double, 3> location = Grid::GetLocationOf1dIndex(location_indices[idx], num_x, num_y, spacing);
+            nodes.push_back(new Node<3>(idx, location, false));
         }
-
         NodesOnlyMesh<3> mesh;
         mesh.ConstructNodesWithoutMesh(nodes, 1.5 * spacing);
         std::vector<CellPtr> cells;
-
         CellsGenerator<SimpleOxygenBasedCellCycleModel, 3> cells_generator;
         cells_generator.GenerateBasic(cells, mesh.GetNumNodes());
         NodeBasedCellPopulation<3> cell_population(mesh, cells);
         cell_population.SetAbsoluteMovementThreshold(2.0 * spacing);
         cell_population.AddCellWriter<CellLabelWriter>();
 
-        // Oxygen PDE, Boundary Conditions and Solver
-        boost::shared_ptr<HybridLinearEllipticPde<3> > p_oxygen_pde = HybridLinearEllipticPde<3>::Create();
-        p_oxygen_pde->SetDiffusionConstant(0.0033);
-        p_oxygen_pde->SetVariableName("oxygen");
+        // Create the vessel network
+        boost::shared_ptr<CaVascularNetwork<3> > p_network = GetVesselNetwork();
 
-        boost::shared_ptr<DiscreteSource<3> > p_cell_oxygen_sink = boost::shared_ptr<DiscreteSource<3> >(new DiscreteSource<3>());
-        p_cell_oxygen_sink->SetType(SourceType::MULTI_POINT);
-        p_cell_oxygen_sink->SetSource(SourceStrength::PRESCRIBED);
-        p_cell_oxygen_sink->SetValue(5.e-6);
-        p_cell_oxygen_sink->SetIsLinearInSolution(true);
-        p_oxygen_pde->AddDiscreteSource(p_cell_oxygen_sink);
+        // Create the oxygen pde solver
+        boost::shared_ptr<FiniteDifferenceSolver<3> > p_oxygen_solver = GetOxygenSolver(p_domain, p_network);
 
-        boost::shared_ptr<DirichletBoundaryCondition<3> > p_vessel_ox_boundary_condition =
-                boost::shared_ptr<DirichletBoundaryCondition<3> >(new DirichletBoundaryCondition<3>());
-        p_vessel_ox_boundary_condition->SetValue(40.0);
-        p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_LINE);
-        p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
+        // Create the vegf pde solver
+        boost::shared_ptr<FiniteDifferenceSolver<3> > p_vegf_solver = GetVegfSolver(p_domain, p_network);
 
-        boost::shared_ptr<FiniteDifferenceSolver<3> > p_oxygen_solver = boost::shared_ptr<FiniteDifferenceSolver<3> >(new FiniteDifferenceSolver<3>());
-        p_oxygen_solver->SetExtents(p_domain, 40.0);
-        p_oxygen_solver->SetPde(p_oxygen_pde);
-        p_oxygen_solver->SetVesselNetwork(p_network);
-        p_oxygen_solver->AddDirichletBoundaryCondition(p_vessel_ox_boundary_condition);
-
-        // VEGF PDE, Boundary Conditions and Solver
-        boost::shared_ptr<HybridLinearEllipticPde<3> > p_vegf_pde = HybridLinearEllipticPde<3>::Create();
-        p_vegf_pde->SetDiffusionConstant(0.0033);
-        p_vegf_pde->SetVariableName("vegf");
-        p_vegf_pde->SetLinearInUTerm(-1.e-7);
-
-        boost::shared_ptr<DiscreteSource<3> > p_cell_vegf_source = boost::shared_ptr<DiscreteSource<3> >(new DiscreteSource<3>());
-        p_cell_vegf_source->SetType(SourceType::MULTI_POINT);
-        p_cell_vegf_source->SetSource(SourceStrength::PRESCRIBED);
-        p_cell_vegf_source->SetValue(-1.e-4);
-        p_cell_vegf_source->SetIsLinearInSolution(false);
-        p_vegf_pde->AddDiscreteSource(p_cell_vegf_source);
-
-        boost::shared_ptr<FiniteDifferenceSolver<3> > p_vegf_solver = boost::shared_ptr<FiniteDifferenceSolver<3> >(new FiniteDifferenceSolver<3>());
-        p_vegf_solver->SetExtents(p_domain, 40.0);
-        p_vegf_solver->SetPde(p_vegf_pde);
-        p_vegf_solver->SetVesselNetwork(p_network);
-
-        boost::shared_ptr<OffLatticeAngiogenesisSolver<3> > p_angiogenesis_solver =
-                boost::shared_ptr<OffLatticeAngiogenesisSolver<3> >(new OffLatticeAngiogenesisSolver<3>((p_network)));
+        // Create the angiogenesis solver
+        boost::shared_ptr<AbstractAngiogenesisSolver<3> > p_angiogenesis_solver = AbstractAngiogenesisSolver<3>::Create(p_network);
         p_angiogenesis_solver->AddPdeSolver(p_oxygen_solver);
         p_angiogenesis_solver->AddPdeSolver(p_vegf_solver);
-        //p_angiogenesis_solver->SetSproutingProbability(0.2);
+
+        boost::shared_ptr<OffLatticePrwGrowthDirectionModifier<3> > p_grow_direction_modifier = OffLatticePrwGrowthDirectionModifier<3>::Create();
+        boost::shared_ptr<OffLatticeTipAttractionGrowthDirectionModifier<3> > p_grow_direction_modifier2 = OffLatticeTipAttractionGrowthDirectionModifier<3>::Create();
+        p_grow_direction_modifier2->SetNetwork(p_network);
+        boost::shared_ptr<OffLatticeRandomNormalSproutingRule<3> > p_sprouting_rule = OffLatticeRandomNormalSproutingRule<3>::Create();
+        p_sprouting_rule->SetSproutingProbability(0.05);
+
+        p_angiogenesis_solver->AddGrowthDirectionModifier(p_grow_direction_modifier);
+        p_angiogenesis_solver->AddGrowthDirectionModifier(p_grow_direction_modifier2);
+        p_angiogenesis_solver->SetSproutingRule(p_sprouting_rule);
+        p_angiogenesis_solver->SetAnastamosisRadius(5.0);
 
         boost::shared_ptr<AngiogenesisModifier<3> > p_simulation_modifier = boost::shared_ptr<AngiogenesisModifier<3> >(new AngiogenesisModifier<3>);
         p_simulation_modifier->SetAngiogenesisSolver(p_angiogenesis_solver);
@@ -363,6 +327,7 @@ public:
         simulator.AddForce(p_force);
         simulator.Solve();
 
+        // Tidy up
         for (unsigned i=0; i<nodes.size(); i++)
         {
             delete nodes[i];

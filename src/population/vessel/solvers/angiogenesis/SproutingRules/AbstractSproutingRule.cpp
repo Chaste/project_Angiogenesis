@@ -33,6 +33,7 @@
 
  */
 
+#include <stdio.h>
 #include "RandomNumberGenerator.hpp"
 #include "AbstractSproutingRule.hpp"
 
@@ -48,6 +49,13 @@ template<unsigned DIM>
 AbstractSproutingRule<DIM>::~AbstractSproutingRule()
 {
 
+}
+
+template <unsigned DIM>
+boost::shared_ptr<AbstractSproutingRule<DIM> > AbstractSproutingRule<DIM>::Create()
+{
+    MAKE_PTR(AbstractSproutingRule<DIM>, pSelf);
+    return pSelf;
 }
 
 template<unsigned DIM>
@@ -102,11 +110,11 @@ std::vector<c_vector<double, DIM> > AbstractSproutingRule<DIM>::GetSproutDirecti
             c_vector<double, DIM> sprout_direction;
             if(RandomNumberGenerator::Instance()->ranf()>=0.5)
             {
-                sprout_direction = unit_vector<double>(DIM,0);
+                sprout_direction = unit_vector<double>(DIM,1);
             }
             else
             {
-                sprout_direction = -unit_vector<double>(DIM,0);
+                sprout_direction = -unit_vector<double>(DIM,1);
             }
             directions.push_back(sprout_direction);
         }

@@ -159,6 +159,8 @@ public:
      */
     boost::shared_ptr<VascularNode<DIM> > GetNearestNode(c_vector<double, DIM> location);
 
+    boost::shared_ptr<VascularNode<DIM> > GetNearestNode(boost::shared_ptr<VascularNode<DIM> > pInputNode);
+
     /**
      Get the segment nearest to the specified segment and the distance to it
      */

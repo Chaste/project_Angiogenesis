@@ -56,7 +56,8 @@ AbstractAngiogenesisSolver<DIM>::AbstractAngiogenesisSolver(boost::shared_ptr<Ca
         mGrowthDirectionModifiers(),
         mpSproutingRule(),
         mpFlowSolver(),
-        mpStructuralAdaptationSolver()
+        mpStructuralAdaptationSolver(),
+        mpBoundingDomain()
 {
 
 }
@@ -65,6 +66,13 @@ template<unsigned DIM>
 AbstractAngiogenesisSolver<DIM>::~AbstractAngiogenesisSolver()
 {
 
+}
+
+template<unsigned DIM>
+boost::shared_ptr<AbstractAngiogenesisSolver<DIM> > AbstractAngiogenesisSolver<DIM>::Create(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
+{
+    MAKE_PTR_ARGS(AbstractAngiogenesisSolver<DIM>, pSelf, (pNetwork));
+    return pSelf;
 }
 
 template<unsigned DIM>
@@ -99,6 +107,18 @@ c_vector<double, DIM> AbstractAngiogenesisSolver<DIM>::GetGrowthDirection(c_vect
     }
 
     return new_direction;
+}
+
+template<unsigned DIM>
+void AbstractAngiogenesisSolver<DIM>::SetAnastamosisRadius(double radius)
+{
+    mNodeAnastamosisRadius = radius;
+}
+
+template<unsigned DIM>
+void AbstractAngiogenesisSolver<DIM>::SetBoundingDomain(boost::shared_ptr<Part<DIM> > pDomain)
+{
+    mpBoundingDomain = pDomain;
 }
 
 template<unsigned DIM>
@@ -154,7 +174,7 @@ void AbstractAngiogenesisSolver<DIM>::DoSprouting()
     // Get the sprout indices and directions
     mpSproutingRule->SetNodes(nodes);
     std::vector<bool> sprout_indices = mpSproutingRule->WillSprout();
-    std::vector<c_vector<double, DIM> > sprout_directions = mpSproutingRule->GetSproutDirection();
+    std::vector<c_vector<double, DIM> > sprout_directions = mpSproutingRule->GetSproutDirection(sprout_indices);
 
     // Do the sprouting
     for(unsigned idx = 0; idx < nodes.size(); idx++)
@@ -193,26 +213,39 @@ void AbstractAngiogenesisSolver<DIM>::UpdateNodalPositions(const std::string& sp
                  nodes[idx]->GetVesselSegment(0)->GetOppositeNode(nodes[idx])->GetLocationVector();
             direction /= norm_2(direction);
 
-            // Create a new segment along the growth vector
-            boost::shared_ptr<VascularNode<DIM> > p_new_node = VascularNode<DIM>::Create(nodes[idx]);
-            p_new_node->SetLocation(nodes[idx]->GetLocationVector() + mGrowthVelocity * GetGrowthDirection(direction, nodes[idx]));
+            // Get the new location
+            c_vector<double,DIM> new_location = nodes[idx]->GetLocationVector() + mGrowthVelocity * GetGrowthDirection(direction, nodes[idx]);
+            bool do_move = true;
+            if(mpBoundingDomain)
+            {
+                if(!mpBoundingDomain->IsPointInPart(new_location))
+                {
+                    do_move = false;
+                }
+            }
 
-            if(nodes[idx]->GetVesselSegment(0)->GetVessel()->GetStartNode() == nodes[idx])
+            if(do_move)
             {
-                boost::shared_ptr<CaVesselSegment<DIM> > p_segment = CaVesselSegment<DIM>::Create(p_new_node, nodes[idx]);
-                p_segment->SetFlowProperties(*nodes[idx]->GetVesselSegment(0)->GetFlowProperties());
-                p_segment->SetRadius(nodes[idx]->GetVesselSegment(0)->GetRadius());
-                nodes[idx]->GetVesselSegment(0)->GetVessel()->AddSegment(p_segment);
+                boost::shared_ptr<VascularNode<DIM> > p_new_node = VascularNode<DIM>::Create(nodes[idx]);
+                p_new_node->SetLocation(new_location);
+
+                if(nodes[idx]->GetVesselSegment(0)->GetVessel()->GetStartNode() == nodes[idx])
+                {
+                    boost::shared_ptr<CaVesselSegment<DIM> > p_segment = CaVesselSegment<DIM>::Create(p_new_node, nodes[idx]);
+                    p_segment->SetFlowProperties(*nodes[idx]->GetVesselSegment(0)->GetFlowProperties());
+                    p_segment->SetRadius(nodes[idx]->GetVesselSegment(0)->GetRadius());
+                    nodes[idx]->GetVesselSegment(0)->GetVessel()->AddSegment(p_segment);
+                }
+                else
+                {
+                    boost::shared_ptr<CaVesselSegment<DIM> > p_segment = CaVesselSegment<DIM>::Create(nodes[idx], p_new_node);
+                    p_segment->SetFlowProperties(*nodes[idx]->GetVesselSegment(0)->GetFlowProperties());
+                    p_segment->SetRadius(nodes[idx]->GetVesselSegment(0)->GetRadius());
+                    nodes[idx]->GetVesselSegment(0)->GetVessel()->AddSegment(p_segment);
+                }
+                nodes[idx]->SetIsMigrating(false);
+                p_new_node->SetIsMigrating(true);
             }
-            else
-            {
-                boost::shared_ptr<CaVesselSegment<DIM> > p_segment = CaVesselSegment<DIM>::Create(nodes[idx], p_new_node);
-                p_segment->SetFlowProperties(*nodes[idx]->GetVesselSegment(0)->GetFlowProperties());
-                p_segment->SetRadius(nodes[idx]->GetVesselSegment(0)->GetRadius());
-                nodes[idx]->GetVesselSegment(0)->GetVessel()->AddSegment(p_segment);
-            }
-            nodes[idx]->SetIsMigrating(false);
-            p_new_node->SetIsMigrating(true);
         }
     }
     mpNetwork->UpdateSegments();

@@ -25,6 +25,7 @@
 #include "CaVesselSegment.hpp"
 #include "AbstractCellBasedTestSuite.hpp"
 #include "AbstractGrowthDirectionModifier.hpp"
+#include "SimpleFlowSolver.hpp"
 
 class TestAbstractAngiogenesisSolver : public AbstractCellBasedTestSuite
 {
@@ -323,15 +324,15 @@ public:
             p_network->FormSprout(ChastePoint<3>(double(idx)*10, 10.0, 0.0), ChastePoint<3>(double(idx)*10, 20.0, 0.0));
         }
 
-        boost::shared_ptr<AbstractGrowthDirectionModifier<3> > p_grow_direction_modifier =
-                boost::shared_ptr<AbstractGrowthDirectionModifier<3> >(new AbstractGrowthDirectionModifier<3>());
-
         p_network->UpdateSegments();
         std::vector<boost::shared_ptr<CaVesselSegment<3> > > segments = p_network->GetVesselSegments();
         for(unsigned idx=0; idx<segments.size(); idx++)
         {
             segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);
         }
+
+        boost::shared_ptr<AbstractGrowthDirectionModifier<3> > p_grow_direction_modifier = AbstractGrowthDirectionModifier<3>::Create();
+        boost::shared_ptr<SimpleFlowSolver<3> > p_flow_solver = SimpleFlowSolver<3>::Create();
 
         OutputFileHandler output_file_handler("TestAbstractAngiogenesisSolver/MultiSproutFlow/", false);
         std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
@@ -340,7 +341,7 @@ public:
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
         AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
         angiogenesis_solver.SetOutputDirectory(output_directory);
-        angiogenesis_solver.SetSolveFlow();
+        angiogenesis_solver.SetFlowSolver(p_flow_solver);
         angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
         angiogenesis_solver.Run();
     }
@@ -375,8 +376,8 @@ public:
             segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);
         }
 
-        boost::shared_ptr<AbstractGrowthDirectionModifier<3> > p_grow_direction_modifier =
-                boost::shared_ptr<AbstractGrowthDirectionModifier<3> >(new AbstractGrowthDirectionModifier<3>());
+        boost::shared_ptr<AbstractGrowthDirectionModifier<3> > p_grow_direction_modifier = AbstractGrowthDirectionModifier<3>::Create();
+        boost::shared_ptr<SimpleFlowSolver<3> > p_flow_solver = SimpleFlowSolver<3>::Create();
 
         OutputFileHandler output_file_handler("TestAbstractAngiogenesisSolver/SproutingFlow/", false);
         std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
@@ -385,9 +386,8 @@ public:
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
         AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
         angiogenesis_solver.SetOutputDirectory(output_directory);
-        angiogenesis_solver.SetSolveFlow();
+        angiogenesis_solver.SetFlowSolver(p_flow_solver);
         angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
-        angiogenesis_solver.SetSproutingProbability(0.5);
         angiogenesis_solver.Run();
     }
 };

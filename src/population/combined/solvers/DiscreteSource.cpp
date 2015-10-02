@@ -64,6 +64,13 @@ DiscreteSource<DIM>::~DiscreteSource()
 }
 
 template<unsigned DIM>
+boost::shared_ptr<DiscreteSource<DIM> > DiscreteSource<DIM>::Create()
+{
+    MAKE_PTR(DiscreteSource<DIM>, pSelf);
+    return pSelf;
+}
+
+template<unsigned DIM>
 SourceType::Value DiscreteSource<DIM>::GetType()
 {
     return mType;

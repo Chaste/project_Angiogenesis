@@ -59,6 +59,8 @@ public:
      */
     virtual ~OffLatticeRandomNormalSproutingRule();
 
+    static boost::shared_ptr<OffLatticeRandomNormalSproutingRule<DIM> > Create();
+
     std::vector<c_vector<double, DIM> > GetSproutDirection(std::vector<bool> sprout_indices = std::vector<bool>());
 
 };

@@ -33,50 +33,49 @@
 
  */
 
-#ifndef OFFLATTICEPRWGROWTHDIRECTIONMODIFIER_HPP_
-#define OFFLATTICEPRWGROWTHDIRECTIONMODIFIER_HPP_
+#ifndef OFFLATTICETDGROWTHDIRECTIONMODIFIER_HPP_
+#define OFFLATTICETDGROWTHDIRECTIONMODIFIER_HPP_
 
 #include <vector>
 #include <string>
-
 #include "VascularNode.hpp"
 #include "SmartPointers.hpp"
 #include "AbstractGrowthDirectionModifier.hpp"
+#include "CaVascularNetwork.hpp"
+#include "VascularNode.hpp"
+#include "UblasIncludes.hpp"
 
 template<unsigned DIM>
-class OffLatticePrwGrowthDirectionModifier : public AbstractGrowthDirectionModifier<DIM>
+class OffLatticeTipAttractionGrowthDirectionModifier : public AbstractGrowthDirectionModifier<DIM>
 {
 
-    c_vector<double, DIM> mGlobalX;
+private:
 
-    c_vector<double, DIM> mGlobalY;
-
-    c_vector<double, DIM> mGlobalZ;
-
-    std::vector<double> mMeanAngles;
-
-    std::vector<double> mSdvAngles;
+    boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
 
 public:
 
     /**
      * Constructor.
      */
-    OffLatticePrwGrowthDirectionModifier();
+    OffLatticeTipAttractionGrowthDirectionModifier();
 
     /**
      * Destructor.
      */
-    virtual ~OffLatticePrwGrowthDirectionModifier();
+    virtual ~OffLatticeTipAttractionGrowthDirectionModifier();
 
+    static boost::shared_ptr<OffLatticeTipAttractionGrowthDirectionModifier<DIM> > Create();
+
+    void SetNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
     /*
      * Construct a new instance of the class and return a shared pointer to it.
      */
-    static boost::shared_ptr<OffLatticePrwGrowthDirectionModifier<DIM> > Create();
+
 
     c_vector<double, DIM> GetGrowthDirection(c_vector<double, DIM> currentDirection,
                                              boost::shared_ptr<VascularNode<DIM> > pNode);
 
 };
 
-#endif /* OFFLATTICEPRWGROWTHDIRECTIONMODIFIER_HPP_ */
+#endif /* OFFLATTICETDGROWTHDIRECTIONMODIFIER_HPP_ */

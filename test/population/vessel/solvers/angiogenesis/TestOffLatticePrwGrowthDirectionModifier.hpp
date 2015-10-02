@@ -285,8 +285,7 @@ public:
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
         AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
         angiogenesis_solver.SetOutputDirectory(output_directory);
-        boost::shared_ptr<SimpleFlowSolver<3> > p_simple_flow_solver =
-                boost::shared_ptr<SimpleFlowSolver<3> >(new SimpleFlowSolver<3>());
+        boost::shared_ptr<SimpleFlowSolver<3> > p_simple_flow_solver =SimpleFlowSolver<3>::Create();
 
         angiogenesis_solver.SetFlowSolver(p_simple_flow_solver);
         angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);

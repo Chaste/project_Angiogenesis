@@ -49,8 +49,64 @@
 #include "UblasVectorInclude.hpp"
 
 /*
- * A collection of useful geometry functions
+ * A collection of useful geometry and grid functions
  */
+
+struct Grid
+{
+    /*
+     * Get the 1-D grid index for given x,y,z indices
+     */
+    static unsigned Get1dGridIndex(unsigned x_index, unsigned y_index, unsigned z_index, unsigned x_extent, unsigned y_extent)
+    {
+        return x_index + x_extent * y_index + x_extent * y_extent * z_index;
+    }
+
+    /*
+     * Get the location of a point on the grid for given x,y,z indices
+     */
+    static c_vector<double, 3> GetLocation(unsigned x_index, unsigned y_index, unsigned z_index, double spacing = 1.0,
+                                      double originX = 0.0, double originY = 0.0, double originZ = 0.0)
+    {
+        c_vector<double, 3> location;
+        location[0] = double(x_index) * spacing + originX;
+        location[1] = double(y_index) * spacing + originY;
+        location[2] = double(z_index) * spacing + originZ;
+        return location;
+    }
+
+    /*
+     * Get the location of a point on the grid for given 1-d grid index
+     */
+    static c_vector<double, 3> GetLocationOf1dIndex(unsigned grid_index, unsigned x_extent, unsigned y_extent, double spacing = 1.0,
+                                      double originX = 0.0, double originY = 0.0, double originZ = 0.0)
+    {
+        unsigned mod_z = grid_index % (x_extent * y_extent);
+        unsigned z_index = (grid_index - mod_z) / (x_extent * y_extent);
+        unsigned mod_y = mod_z % x_extent;
+        unsigned y_index = (mod_z - mod_y) / x_extent;
+        unsigned x_index = mod_y;
+        return GetLocation(x_index, y_index, z_index, spacing, originX, originY, originZ);
+    }
+};
+
+/*
+ * Is the point inside the cone defined by apex, aperture and  base centre
+ */
+template<unsigned DIM>
+bool IsPointInCone(c_vector<double, DIM> point, c_vector<double, DIM> apex, c_vector<double, DIM> base, double aperture)
+{
+    c_vector<double, DIM> apex_to_point = apex - point;
+    c_vector<double, DIM> apex_to_base = apex - base;
+    bool in_infinite_cone = inner_prod(apex_to_point, apex_to_base) /
+            (norm_2(apex_to_point) * norm_2(apex_to_base)) > std::cos(aperture/2.0);
+    if(!in_infinite_cone)
+    {
+        return false;
+    }
+    return inner_prod(apex_to_point, apex_to_base) / norm_2(apex_to_base) < norm_2(apex_to_base);
+}
+
 
 /*
  * Is the point inside the cube box defined by a centre location and box side length

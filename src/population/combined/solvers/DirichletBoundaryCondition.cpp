@@ -58,6 +58,13 @@ DirichletBoundaryCondition<DIM>::~DirichletBoundaryCondition()
 }
 
 template<unsigned DIM>
+boost::shared_ptr<DirichletBoundaryCondition<DIM> > DirichletBoundaryCondition<DIM>::Create()
+{
+    MAKE_PTR(DirichletBoundaryCondition<DIM>, pSelf);
+    return pSelf;
+}
+
+template<unsigned DIM>
 BoundaryConditionType::Value DirichletBoundaryCondition<DIM>::GetType()
 {
     return mType;

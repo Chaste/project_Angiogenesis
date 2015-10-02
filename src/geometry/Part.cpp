@@ -311,6 +311,36 @@ std::vector<boost::shared_ptr<Vertex> > Part<DIM>::GetVertices()
 }
 
 template<unsigned DIM>
+std::vector<unsigned> Part<DIM>::GetContainingGridIndices(unsigned num_x, unsigned num_y, unsigned num_z, double spacing)
+{
+    std::vector<unsigned> location_indices;
+    for(unsigned kdx=0; kdx<num_z; kdx++)
+    {
+        for(unsigned jdx=0; jdx<num_y; jdx++)
+        {
+            for(unsigned idx=0; idx<num_x; idx++)
+            {
+                c_vector<double,3> location;
+                location[0] = double(idx) * spacing;
+                location[1] = double(jdx) * spacing;
+                location[2] = double(kdx) * spacing;
+                unsigned index = idx + num_x * jdx + num_x * num_y * kdx;
+                bool update = false;
+                if(index==0)
+                {
+                    update = true;
+                }
+                if(IsPointInPart(location, update))
+                {
+                    location_indices.push_back(index);
+                }
+            }
+        }
+    }
+    return location_indices;
+}
+
+template<unsigned DIM>
 std::vector<c_vector<double, DIM> > Part<DIM>::GetVertexLocations()
 {
     std::vector<boost::shared_ptr<Vertex> > vertices = GetVertices();

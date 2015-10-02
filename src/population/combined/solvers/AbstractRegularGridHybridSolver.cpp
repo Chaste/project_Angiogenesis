@@ -41,6 +41,7 @@
 #include <vtkLineSource.h>
 #include "SmartPointers.hpp"
 #include "UblasVectorInclude.hpp"
+#include "GeometryTools.hpp"
 
 #include "AbstractRegularGridHybridSolver.hpp"
 

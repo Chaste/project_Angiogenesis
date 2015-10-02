@@ -50,6 +50,13 @@ OffLatticeRandomNormalSproutingRule<DIM>::~OffLatticeRandomNormalSproutingRule()
 
 }
 
+template <unsigned DIM>
+boost::shared_ptr<OffLatticeRandomNormalSproutingRule<DIM> > OffLatticeRandomNormalSproutingRule<DIM>::Create()
+{
+    MAKE_PTR(OffLatticeRandomNormalSproutingRule<DIM>, pSelf);
+    return pSelf;
+}
+
 template<unsigned DIM>
 std::vector<c_vector<double, DIM> > OffLatticeRandomNormalSproutingRule<DIM>::GetSproutDirection(std::vector<bool> sprout_indices)
 {
@@ -85,13 +92,14 @@ std::vector<c_vector<double, DIM> > OffLatticeRandomNormalSproutingRule<DIM>::Ge
 
                 if(DIM==2 or tangent[2]==0.0)
                 {
-                    normal[0] = 1.0;
                     if(tangent[1] == 0.0)
                     {
-                        normal[1] = 0.0;
+                        normal[0] = 0.0;
+                        normal[1] = 1.0;
                     }
                     else
                     {
+                        normal[0] = 1.0;
                         normal[1] = -tangent[0] /tangent[1];
                     }
 

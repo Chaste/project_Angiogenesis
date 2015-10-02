@@ -74,11 +74,21 @@ std::vector<bool> AbstractSolutionDependentSproutingRule<DIM>::WillSprout()
         // Only non-tip nodes can sprout
         if(this->mNodes[idx]->GetNumberOfSegments()==2)
         {
-            c_vector<double, DIM> location = this->mNodes[idx]->GetLocationVector();
-            std::vector<double> solution_values = mpSolver->GetSolutionAtPoints(std::vector<c_vector<double, DIM> >(1, location));
-            if(solution_values[0] >= mSolutionThreshold && prob < this->mSproutingProbability)
+            if(mpSolver)
             {
-                will_sprout = true;
+                c_vector<double, DIM> location = this->mNodes[idx]->GetLocationVector();
+                std::vector<double> solution_values = mpSolver->GetSolutionAtPoints(std::vector<c_vector<double, DIM> >(1, location));
+                if(solution_values[0] >= mSolutionThreshold && prob < this->mSproutingProbability)
+                {
+                    will_sprout = true;
+                }
+            }
+            else
+            {
+                if(this->mNodes[idx]->GetNumberOfSegments()==2 && prob < this->mSproutingProbability)
+                {
+                    will_sprout = true;
+                }
             }
         }
         sprout_flags.push_back(will_sprout);

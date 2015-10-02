@@ -114,6 +114,10 @@ public:
      */
     virtual ~DiscreteSource();
 
+    /* Factory constructor method
+     */
+    static boost::shared_ptr<DiscreteSource<DIM> > Create();
+
     void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
 
     void SetCellPopulation(boost::shared_ptr<SimpleCellPopulation<DIM> > pCellPopulation);

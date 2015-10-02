@@ -34,54 +34,74 @@
  */
 
 #include "GeometryTools.hpp"
-#include "OffLatticePrwGrowthDirectionModifier.hpp"
+#include "OffLatticeTipAttractionGrowthDirectionModifier.hpp"
 #include "RandomNumberGenerator.hpp"
 
 template<unsigned DIM>
-OffLatticePrwGrowthDirectionModifier<DIM>::OffLatticePrwGrowthDirectionModifier()
+OffLatticeTipAttractionGrowthDirectionModifier<DIM>::OffLatticeTipAttractionGrowthDirectionModifier()
     : AbstractGrowthDirectionModifier<DIM>(),
-      mGlobalX(unit_vector<double>(DIM,0)),
-      mGlobalY(unit_vector<double>(DIM,0)),
-      mGlobalZ(zero_vector<double>(DIM)),
-      mMeanAngles(std::vector<double>(DIM, 0.0)),
-      mSdvAngles(std::vector<double>(DIM, M_PI/18.0))
+      mpNetwork()
 {
-    if(DIM==3)
-    {
-        mGlobalZ = unit_vector<double>(DIM,2);
-    }
+
 }
 
 template <unsigned DIM>
-boost::shared_ptr<OffLatticePrwGrowthDirectionModifier<DIM> > OffLatticePrwGrowthDirectionModifier<DIM>::Create()
+boost::shared_ptr<OffLatticeTipAttractionGrowthDirectionModifier<DIM> > OffLatticeTipAttractionGrowthDirectionModifier<DIM>::Create()
 {
-    MAKE_PTR(OffLatticePrwGrowthDirectionModifier<DIM>, pSelf);
+    MAKE_PTR(OffLatticeTipAttractionGrowthDirectionModifier<DIM>, pSelf);
     return pSelf;
 }
 
 template<unsigned DIM>
-OffLatticePrwGrowthDirectionModifier<DIM>::~OffLatticePrwGrowthDirectionModifier()
+OffLatticeTipAttractionGrowthDirectionModifier<DIM>::~OffLatticeTipAttractionGrowthDirectionModifier()
 {
 
 }
 
 template<unsigned DIM>
-c_vector<double, DIM> OffLatticePrwGrowthDirectionModifier<DIM>::GetGrowthDirection(c_vector<double, DIM> currentDirection,
+void OffLatticeTipAttractionGrowthDirectionModifier<DIM>::SetNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
+{
+    mpNetwork = pNetwork;
+}
+
+template<unsigned DIM>
+c_vector<double, DIM> OffLatticeTipAttractionGrowthDirectionModifier<DIM>::GetGrowthDirection(c_vector<double, DIM> currentDirection,
                                                                                     boost::shared_ptr<VascularNode<DIM> > pNode)
 {
-    double angle_x = RandomNumberGenerator::Instance()->NormalRandomDeviate(mMeanAngles[0], mSdvAngles[0]);
-    double angle_y = RandomNumberGenerator::Instance()->NormalRandomDeviate(mMeanAngles[1], mSdvAngles[1]);
-    double angle_z = 0.0;
-    if(DIM==3)
+    // Get the closest node in the search cone
+    std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = mpNetwork->GetNodes();
+
+    double min_distance = 1.e12;
+    c_vector<double, DIM> min_direction = zero_vector<double>(DIM);
+    for(unsigned idx=0; idx<nodes.size(); idx++)
     {
-        angle_z = RandomNumberGenerator::Instance()->NormalRandomDeviate(mMeanAngles[2], mSdvAngles[2]);
+        if(IsPointInCone<3>(nodes[idx]->GetLocationVector(), pNode->GetLocationVector(), pNode->GetLocationVector() + currentDirection * 100.0, M_PI/3.0))
+        {
+            double distance = norm_2(pNode->GetLocationVector() - nodes[idx]->GetLocationVector());
+            if(distance < min_distance)
+            {
+                min_distance = distance;
+                min_direction = nodes[idx]->GetLocationVector() - pNode->GetLocationVector();
+                min_direction /= norm_2(min_direction);
+            }
+        }
     }
 
-    c_vector<double, DIM> new_direction_z = RotateAboutAxis<DIM>(currentDirection, mGlobalZ, angle_z);
-    c_vector<double, DIM> new_direction_y = RotateAboutAxis<DIM>(new_direction_z, mGlobalY, angle_y);
-    return RotateAboutAxis<DIM>(new_direction_y, mGlobalX, angle_x);
+    double strength;
+    double crictical_distance = 100.0;
+    if(min_distance >= crictical_distance)
+    {
+        strength = 0.0;
+    }
+    else
+    {
+        strength = 2.0 *  (1.0 - (min_distance * min_distance) / (crictical_distance * crictical_distance));
+    }
+
+    this->SetStrength(strength);
+    return min_direction;
 }
 
 // Explicit instantiation
-template class OffLatticePrwGrowthDirectionModifier<2> ;
-template class OffLatticePrwGrowthDirectionModifier<3> ;
+template class OffLatticeTipAttractionGrowthDirectionModifier<2> ;
+template class OffLatticeTipAttractionGrowthDirectionModifier<3> ;

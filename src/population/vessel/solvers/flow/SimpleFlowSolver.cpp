@@ -58,6 +58,13 @@ SimpleFlowSolver<DIM>::~SimpleFlowSolver()
 
 }
 
+template <unsigned DIM>
+boost::shared_ptr<SimpleFlowSolver<DIM> > SimpleFlowSolver<DIM>::Create()
+{
+    MAKE_PTR(SimpleFlowSolver<DIM>, pSelf);
+    return pSelf;
+}
+
 template<unsigned DIM>
 void SimpleFlowSolver<DIM>::SetUseDirectSolver(bool useDirectSolver)
 {

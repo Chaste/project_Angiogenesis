@@ -48,6 +48,13 @@ AbstractGrowthDirectionModifier<DIM>::~AbstractGrowthDirectionModifier()
 
 }
 
+template <unsigned DIM>
+boost::shared_ptr<AbstractGrowthDirectionModifier<DIM> > AbstractGrowthDirectionModifier<DIM>::Create()
+{
+    MAKE_PTR(AbstractGrowthDirectionModifier<DIM>, pSelf);
+    return pSelf;
+}
+
 template<unsigned DIM>
 double AbstractGrowthDirectionModifier<DIM>::GetStrength()
 {

@@ -64,6 +64,11 @@ public:
      */
     virtual ~AbstractSproutingRule();
 
+    /*
+     * Construct a new instance of the class and return a shared pointer to it.
+     */
+    static boost::shared_ptr<AbstractSproutingRule<DIM> > Create();
+
     void SetNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes);
 
     void SetSproutingProbability(double probability);

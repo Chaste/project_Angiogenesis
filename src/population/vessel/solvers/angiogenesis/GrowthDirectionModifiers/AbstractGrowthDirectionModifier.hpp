@@ -62,6 +62,11 @@ public:
      */
     virtual ~AbstractGrowthDirectionModifier();
 
+    /*
+     * Construct a new instance of the class and return a shared pointer to it.
+     */
+    static boost::shared_ptr<AbstractGrowthDirectionModifier<DIM> > Create();
+
     double GetStrength();
 
     void SetStrength(double strength);
