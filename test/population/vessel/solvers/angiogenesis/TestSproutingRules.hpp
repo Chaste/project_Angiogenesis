@@ -36,7 +36,7 @@ class TestSproutingRules : public AbstractCellBasedTestSuite
 
 public:
 
-    void DontTestAbstractSprouting() throw(Exception)
+    void TestAbstractSprouting() throw(Exception)
     {
         // Make a network
         std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
@@ -72,7 +72,7 @@ public:
         angiogenesis_solver.Run();
     }
 
-    void DOntTestOffLatticeSprouting() throw(Exception)
+    void TestOffLatticeSprouting() throw(Exception)
     {
         // Make a network
         std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
@@ -141,7 +141,7 @@ public:
         std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
 
         // Grow the vessel
-        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(20, 20);
         AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
         angiogenesis_solver.SetOutputDirectory(output_directory);
         angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);

@@ -42,22 +42,10 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "AbstractCaUpdateRule.hpp"
 #include "StalkCellMutationState.hpp"
 #include "TipCellMutationState.hpp"
-
-/**
- *  Struct to choose tip movement type
- */
-struct MovementType
-{
-    enum Value
-    {
-        SPROUT, MIGRATE
-    };
-};
+#include "CaVascularNetwork.hpp"
 
 template<unsigned DIM>
 class CellBasedPdeHandler; // circular definition
-
-#include "CaVascularNetwork.hpp"
 
 template<unsigned DIM>
 class AbstractCaUpdateRule; // Circular definition
@@ -104,6 +92,41 @@ public:
                                      bool deleteMesh=false,
                                      bool validate=false);
 
+    virtual ~CaBasedCellPopulationWithVessels();
+
+    void AddPdeHandler(boost::shared_ptr<CellBasedPdeHandler<DIM> > pde_handler);
+
+    /**
+     * Select a cell to take on stalk cell mutation
+     */
+    void DeselectTipCell(boost::shared_ptr<Cell> pCell);
+
+    void DoSprouting(std::vector<boost::shared_ptr<Cell> > candidate_tips);
+
+    void DoMigration();
+
+    std::map<std::string, std::vector<double> > GetNeighbourData(unsigned meshIndex, CellPtr pCell);
+
+    /**
+     * Return number of tip cells in population.
+     */
+    unsigned GetNumberOfTipCells();
+
+    /**
+     * Return vector of tip cells.
+     */
+    std::vector<boost::shared_ptr<Cell> > GetTipCells();
+
+    /**
+     * Find if a given node has space available.
+     *
+     * @param index  The global index of a specified node.
+     * @param pCell  The cell wanting to divide into the lattice site.
+     *
+     * @return whether the node is an empty site
+     */
+    virtual bool IsSiteAvailable(unsigned index, CellPtr pCell);
+
     /**
      * Add a vessel network to the population
      *
@@ -117,41 +140,9 @@ public:
     void SelectTipCell(boost::shared_ptr<Cell> pCell);
 
     /**
-     * Select a cell to take on stalk cell mutation
-     */
-    void DeselectTipCell(boost::shared_ptr<Cell> pCell);
-
-    /**
-     * Return number of tip cells in population.
-     */
-    unsigned GetNumberOfTipCells();
-
-    /**
-     * Find if a given node has space available.
-     *
-     * @param index  The global index of a specified node.
-     * @param pCell  The cell wanting to divide into the lattice site.
-     *
-     * @return whether the node is an empty site
-     */
-    virtual bool IsSiteAvailable(unsigned index, CellPtr pCell);
-
-    /**
-     * Return vector of tip cells.
-     */
-    std::vector<boost::shared_ptr<Cell> > GetTipCells();
-
-    void AddPdeHandler(boost::shared_ptr<CellBasedPdeHandler<DIM> > pde_handler);
-
-    /**
      * Method to update endothelial cell population
      */
     void UpdateVascularCellPopulation();
-
-    void MoveTips(std::vector<boost::shared_ptr<Cell> > activeTips, MovementType::Value moveType);
-
-    std::map<std::string, std::vector<double> > GetNeighbourData(unsigned meshIndex, CellPtr pCell);
-
 
 };
 

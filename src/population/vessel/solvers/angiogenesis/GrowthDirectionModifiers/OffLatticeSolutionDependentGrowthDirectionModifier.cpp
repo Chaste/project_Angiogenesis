@@ -36,6 +36,7 @@
 #include "GeometryTools.hpp"
 #include "OffLatticeSolutionDependentGrowthDirectionModifier.hpp"
 #include "RandomNumberGenerator.hpp"
+#include "Debug.hpp"
 
 template<unsigned DIM>
 OffLatticeSolutionDependentGrowthDirectionModifier<DIM>::OffLatticeSolutionDependentGrowthDirectionModifier()
@@ -52,6 +53,13 @@ OffLatticeSolutionDependentGrowthDirectionModifier<DIM>::~OffLatticeSolutionDepe
 
 }
 
+template <unsigned DIM>
+boost::shared_ptr<OffLatticeSolutionDependentGrowthDirectionModifier<DIM> > OffLatticeSolutionDependentGrowthDirectionModifier<DIM>::Create()
+{
+    MAKE_PTR(OffLatticeSolutionDependentGrowthDirectionModifier<DIM>, pSelf);
+    return pSelf;
+}
+
 template<unsigned DIM>
 void OffLatticeSolutionDependentGrowthDirectionModifier<DIM>::SetSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pSolver)
 {
@@ -66,7 +74,6 @@ c_vector<double, DIM> OffLatticeSolutionDependentGrowthDirectionModifier<DIM>::G
     // If there is a PDE get the direction of highest solution gradient for the specified species
     if(mpSolver)
     {
-
         // Make points
         std::vector<c_vector<double, DIM> > locations;
         locations.push_back(pNode->GetLocationVector());
@@ -81,7 +88,7 @@ c_vector<double, DIM> OffLatticeSolutionDependentGrowthDirectionModifier<DIM>::G
         }
 
         // Get the solution
-        std::vector<double> solutions = mpSolver->GetSolutionAtPoints(locations);
+        std::vector<double> solutions = mpSolver->GetSolutionAtPoints(locations, mpSolver->GetPde()->GetVariableName());
 
         // Get the gradients
         std::vector<double> gradients;

@@ -73,8 +73,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "GeometryTools.hpp"
 #include "OffLatticePrwGrowthDirectionModifier.hpp"
 #include "OffLatticeTipAttractionGrowthDirectionModifier.hpp"
+#include "OffLatticeSolutionDependentGrowthDirectionModifier.hpp"
 #include "OffLatticeRandomNormalSproutingRule.hpp"
-#include "Debug.hpp"
+#include "RandomNumberGenerator.hpp"
 
 class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
 {
@@ -94,16 +95,16 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
         boost::shared_ptr<CaVascularNetwork<3> > p_network = CaVascularNetwork<3>::Create();
 
         std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
-        for(unsigned idx=0; idx<9; idx++)
+        for(unsigned idx=0; idx<81; idx++)
         {
-            bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*100, 50.0, 100.0));
+            bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 50.0, 100.0));
         }
         boost::shared_ptr<CaVessel<3> > p_vessel_1 = CaVessel<3>::Create(bottom_nodes);
 
         std::vector<boost::shared_ptr<VascularNode<3> > > top_nodes;
-        for(unsigned idx=0; idx<9; idx++)
+        for(unsigned idx=0; idx<81; idx++)
         {
-            top_nodes.push_back(VascularNode<3>::Create(double(idx)*100, 750.0, 100.0));
+            top_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 750.0, 100.0));
         }
         boost::shared_ptr<CaVessel<3> > p_vessel_2 = CaVessel<3>::Create(top_nodes);
 
@@ -261,6 +262,10 @@ public:
 
     void TestNodeBasedSpheroid() throw (Exception)
     {
+        //
+
+
+
         // Create the domain
         boost::shared_ptr<Part<3> > p_domain = GetSimulationDomain();
 
@@ -305,12 +310,16 @@ public:
 
         boost::shared_ptr<OffLatticePrwGrowthDirectionModifier<3> > p_grow_direction_modifier = OffLatticePrwGrowthDirectionModifier<3>::Create();
         boost::shared_ptr<OffLatticeTipAttractionGrowthDirectionModifier<3> > p_grow_direction_modifier2 = OffLatticeTipAttractionGrowthDirectionModifier<3>::Create();
+        boost::shared_ptr<OffLatticeSolutionDependentGrowthDirectionModifier<3> > p_grow_direction_modifier3 = OffLatticeSolutionDependentGrowthDirectionModifier<3>::Create();
         p_grow_direction_modifier2->SetNetwork(p_network);
+        p_grow_direction_modifier3->SetSolver(p_vegf_solver);
+        p_grow_direction_modifier3->SetStrength(0.2);
         boost::shared_ptr<OffLatticeRandomNormalSproutingRule<3> > p_sprouting_rule = OffLatticeRandomNormalSproutingRule<3>::Create();
-        p_sprouting_rule->SetSproutingProbability(0.05);
+        p_sprouting_rule->SetSproutingProbability(0.005);
 
         p_angiogenesis_solver->AddGrowthDirectionModifier(p_grow_direction_modifier);
         p_angiogenesis_solver->AddGrowthDirectionModifier(p_grow_direction_modifier2);
+        p_angiogenesis_solver->AddGrowthDirectionModifier(p_grow_direction_modifier3);
         p_angiogenesis_solver->SetSproutingRule(p_sprouting_rule);
         p_angiogenesis_solver->SetAnastamosisRadius(5.0);
 

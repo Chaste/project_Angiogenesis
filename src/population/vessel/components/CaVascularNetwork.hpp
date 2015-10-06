@@ -131,13 +131,20 @@ public:
      */
     std::vector<boost::shared_ptr<CaVessel<DIM> > > CopyVessels();
 
-
+    /**
+     Copy flow properties from the specified segment to all other segments
+     */
     void CopySegmentFlowProperties(unsigned index=0);
 
     /**
      Make a copy of the selected vessels, but with new nodes and segments in each copy. Return the new vessels.
      */
     std::vector<boost::shared_ptr<CaVessel<DIM> > > CopyVessels(std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels);
+
+    /*
+     * Divides a vessel into two at the specified location.
+     */
+    boost::shared_ptr<VascularNode<DIM> > DivideVessel(boost::shared_ptr<CaVessel<DIM> > pVessel, ChastePoint<DIM> location);
 
     /*
      * Add a new node to the end of the vessel
@@ -149,9 +156,9 @@ public:
                       boost::shared_ptr<VascularNode<DIM> > pNewNode);
 
     /*
-     * Removes a vessel from the network
+     * Forms a sprout at the specified locations.
      */
-    void RemoveVessel(boost::shared_ptr<CaVessel<DIM> > pVessel, bool deleteVessel = false);
+    boost::shared_ptr<CaVessel<DIM> > FormSprout(ChastePoint<DIM> sproutBaseLocation, ChastePoint<DIM> sproutTipLocation);
 
     /**
      Get distance to nearest node
@@ -168,6 +175,9 @@ public:
      */
     boost::shared_ptr<VascularNode<DIM> > GetNearestNode(c_vector<double, DIM> location);
 
+    /**
+     Get the node nearest to the specified node
+     */
     boost::shared_ptr<VascularNode<DIM> > GetNearestNode(boost::shared_ptr<VascularNode<DIM> > pInputNode);
 
     /**
@@ -178,7 +188,7 @@ public:
     /**
      Get the segment nearest to the specified node and the distance to it
      */
-    std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> GetNearestSegment(boost::shared_ptr<VascularNode<DIM> > pNode);
+    std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> GetNearestSegment(boost::shared_ptr<VascularNode<DIM> > pNode, bool sameVessel = true);
 
     /**
      Get the segment nearest to the specified location and the distance to it
@@ -190,6 +200,9 @@ public:
      */
     std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> GetNearestSegment(c_vector<double, DIM> location);
 
+    /**
+     Get the intercapillary distance using a 2d measure
+     */
     std::vector<double> GetInterCapillaryDistances();
 
     /**
@@ -247,21 +260,35 @@ public:
      */
     unsigned GetMaxBranchesOnNode();
 
+    /**
+     Return the total length of the network
+     */
     double GetTotalLength();
 
+    /**
+     Return the total volume of the network
+     */
     double GetTotalVolume();
 
+    /**
+     Return the total surface area of the network
+     */
     double GetTotalSurfaceArea();
 
+    /**
+     Return the average distance between segments
+     */
     double GetAverageInterSegmentDistance();
 
+    /**
+     Return the average vessel length
+     */
     double GetAverageVesselLength();
 
+    /**
+     Return a histogram of vessel length distributions
+     */
     std::vector<unsigned> GetVesselLengthDistribution(double binSpacing = 10.0, unsigned numberOfBins = 10);
-
-    void RemoveShortVessels(double cutoff = 10.0, bool endsOnly = true);
-
-    void MergeShortVessels(double cutoff = 10.0);
 
     /**
      Return the vessel with the specified index in the network
@@ -326,6 +353,11 @@ public:
     bool NodeIsInNetwork(boost::shared_ptr<VascularNode<DIM> > pSourceNode);
 
     /**
+     Merge short vessels in the network
+     */
+    void MergeShortVessels(double cutoff = 10.0);
+
+    /**
      Merge nodes with the same spatial location. Useful for
      tidying up networks read from file.
      */
@@ -342,6 +374,16 @@ public:
      tidying up networks read from file.
      */
     void MergeCoincidentNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes, double tolerance = 0.0);
+
+    /*
+     * Removes a vessel from the network
+     */
+    void RemoveVessel(boost::shared_ptr<CaVessel<DIM> > pVessel, bool deleteVessel = false);
+
+    /**
+     Remove short vessels from the network
+     */
+    void RemoveShortVessels(double cutoff = 10.0, bool endsOnly = true);
 
     /**
      Apply the input data to all nodes in the network
@@ -384,16 +426,6 @@ public:
     void Translate(const c_vector<double, DIM>& rTranslationVector, std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels);
 
     /*
-     * Divides a vessel into two at the specified location.
-     */
-    boost::shared_ptr<VascularNode<DIM> > DivideVessel(boost::shared_ptr<CaVessel<DIM> > pVessel, ChastePoint<DIM> location);
-
-    /*
-     * Forms a sprout at the specified locations.
-     */
-    boost::shared_ptr<CaVessel<DIM> > FormSprout(ChastePoint<DIM> sproutBaseLocation, ChastePoint<DIM> sproutTipLocation);
-
-    /*
      * Update the network node collection
      */
     void UpdateNodes();
@@ -412,6 +444,11 @@ public:
      * Update the vessel id tags
      */
     void UpdateVesselIds();
+
+    /*
+     * Update all dynamic storage in the vessel network, optionally merge coinciden nodes
+     */
+    void UpdateAll(bool merge=false);
 
     /**
      Write the VesselNetwork data to a file.

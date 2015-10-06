@@ -64,6 +64,11 @@ public:
      */
     virtual ~OffLatticeSolutionDependentGrowthDirectionModifier();
 
+    /*
+     * Construct a new instance of the class and return a shared pointer to it.
+     */
+    static boost::shared_ptr<OffLatticeSolutionDependentGrowthDirectionModifier<DIM> > Create();
+
     void SetSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pSolver);
 
     c_vector<double, DIM> GetGrowthDirection(c_vector<double, DIM> currentDirection, boost::shared_ptr<VascularNode<DIM> > pNode);

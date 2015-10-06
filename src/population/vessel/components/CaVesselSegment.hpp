@@ -39,7 +39,6 @@
 #include <vector>
 #include <string>
 #include <boost/enable_shared_from_this.hpp>
-
 #include "SegmentFlowProperties.hpp"
 #include "VasculatureData.hpp"
 #include "UblasVectorInclude.hpp"
@@ -158,8 +157,6 @@ public:
      * @param pTargetSegment the segment from which data is to be copied
      */
     void CopyDataFromExistingSegment(const boost::shared_ptr<CaVesselSegment<DIM> > pTargetSegment);
-
-    void Remove();
 
     /**
      * Return the segment data for the input key. An attempt is made
@@ -331,6 +328,11 @@ public:
      * @param pNewNode the node to be added to the segment
      */
     void ReplaceNode(unsigned oldNodeIndex, boost::shared_ptr<VascularNode<DIM> > pNewNode);
+
+    /**
+     * Remove the segment from its nodes.
+     */
+    void Remove();
 
     /**
      *  Add data of any type to the segment using the identifying key

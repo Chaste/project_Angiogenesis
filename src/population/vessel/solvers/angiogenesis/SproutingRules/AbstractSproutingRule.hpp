@@ -52,6 +52,8 @@ protected:
 
     std::vector<boost::shared_ptr<VascularNode<DIM> > > mNodes;
 
+    double mVesselEndCutoff;
+
 public:
 
     /**
@@ -72,6 +74,8 @@ public:
     void SetNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes);
 
     void SetSproutingProbability(double probability);
+
+    void SetVesselEndCutoff(double cutoff);
 
     std::vector<bool> WillSprout();
 

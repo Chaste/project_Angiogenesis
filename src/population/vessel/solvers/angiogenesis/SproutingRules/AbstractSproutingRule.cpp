@@ -36,11 +36,14 @@
 #include <stdio.h>
 #include "RandomNumberGenerator.hpp"
 #include "AbstractSproutingRule.hpp"
+#include "CaVesselSegment.hpp"
+#include "CaVessel.hpp"
 
 template<unsigned DIM>
 AbstractSproutingRule<DIM>::AbstractSproutingRule()
     : mSproutingProbability(0.1),
-      mNodes()
+      mNodes(),
+      mVesselEndCutoff(20.0)
 {
 
 }
@@ -49,6 +52,12 @@ template<unsigned DIM>
 AbstractSproutingRule<DIM>::~AbstractSproutingRule()
 {
 
+}
+
+template<unsigned DIM>
+void AbstractSproutingRule<DIM>::SetVesselEndCutoff(double cutoff)
+{
+    mVesselEndCutoff = cutoff;
 }
 
 template <unsigned DIM>
@@ -81,7 +90,13 @@ std::vector<bool> AbstractSproutingRule<DIM>::WillSprout()
         // Only non-tip nodes can sprout
         if(mNodes[idx]->GetNumberOfSegments()==2 && prob < mSproutingProbability)
         {
-            will_sprout = true;
+            if(mNodes[idx]->GetVesselSegment(0)->GetVessel()->GetClosestEndNodeDistance(mNodes[idx]->GetLocationVector())>= mVesselEndCutoff)
+            {
+                if(mNodes[idx]->GetVesselSegment(1)->GetVessel()->GetClosestEndNodeDistance(mNodes[idx]->GetLocationVector())>= mVesselEndCutoff)
+                {
+                    will_sprout = true;
+                }
+            }
         }
         sprout_flags.push_back(will_sprout);
     }

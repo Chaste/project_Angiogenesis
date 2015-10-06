@@ -35,6 +35,7 @@
 
 #include "SmartPointers.hpp"
 #include "Exception.hpp"
+#include "UblasIncludes.hpp"
 
 #include "CaVessel.hpp"
 
@@ -300,6 +301,21 @@ template<unsigned DIM>
 template<typename T> T CaVessel<DIM>::GetData(const std::string& variableName)
 {
     return mDataContainer.GetData<T>(variableName);
+}
+
+template<unsigned DIM>
+double CaVessel<DIM>::GetClosestEndNodeDistance(c_vector<double, DIM> location)
+{
+    double distance_1 = this->GetStartNode()->GetDistance(location);
+    double distance_2 = this->GetEndNode()->GetDistance(location);
+    if(distance_1 > distance_2)
+    {
+        return distance_2;
+    }
+    else
+    {
+        return distance_1;
+    }
 }
 
 template<unsigned DIM>
@@ -571,18 +587,6 @@ bool CaVessel<DIM>::IsConnectedTo(boost::shared_ptr<CaVessel<DIM> > pOtherVessel
 }
 
 template<unsigned DIM>
-void CaVessel<DIM>::Remove()
-{
-    // Detach all segments from their nodes
-    for (unsigned idx = 0; idx < mSegments.size(); idx++)
-    {
-        mSegments[idx]->Remove();
-    }
-    mNodesUpToDate = false;
-    mSegments = std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >();
-}
-
-template<unsigned DIM>
 boost::shared_ptr<VascularNode<DIM> > CaVessel<DIM>::DivideSegment(ChastePoint<DIM> location)
 {
     // Identify segment
@@ -592,7 +596,6 @@ boost::shared_ptr<VascularNode<DIM> > CaVessel<DIM>::DivideSegment(ChastePoint<D
         if (mSegments[i]->GetDistance(location) <= 1e-6)
         {
             pVesselSegment = mSegments[i];
-
             if (pVesselSegment->GetNode(0)->IsCoincident(location))
             {
                 return pVesselSegment->GetNode(0);
@@ -607,6 +610,19 @@ boost::shared_ptr<VascularNode<DIM> > CaVessel<DIM>::DivideSegment(ChastePoint<D
     if (!pVesselSegment)
     {
         EXCEPTION("Specified location is not on a segment in this vessel.");
+    }
+    for (unsigned i = 0; i < mSegments.size(); i++)
+    {
+        for (unsigned j = 0; j < mSegments.size(); j++)
+        {
+            if (i != j && i != j - 1 && i != j + 1)
+            {
+                if (mSegments[i]->IsConnectedTo(mSegments[j]))
+                {
+                    EXCEPTION("Input vessel segments are not correctly connected.");
+                }
+            }
+        }
     }
 
     // The node's data is averaged from the original segments's nodes
@@ -625,8 +641,7 @@ boost::shared_ptr<VascularNode<DIM> > CaVessel<DIM>::DivideSegment(ChastePoint<D
     }
 
     // Make a copy of the closest node
-    boost::shared_ptr<VascularNode<DIM> > p_new_node = boost::shared_ptr<VascularNode<DIM> >(
-            new VascularNode<DIM>(*pVesselSegment->GetNode(closest_index)));
+    boost::shared_ptr<VascularNode<DIM> > p_new_node = VascularNode<DIM>::Create(*pVesselSegment->GetNode(closest_index));
     p_new_node->SetLocation(location);
 
     // Make two new segments
@@ -644,10 +659,29 @@ boost::shared_ptr<VascularNode<DIM> > CaVessel<DIM>::DivideSegment(ChastePoint<D
     typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator it = std::find(mSegments.begin(),
                                                                                              mSegments.end(),
                                                                                              pVesselSegment);
+
+    if (it == mSegments.end())
+    {
+        EXCEPTION("Vessel segment is not contained inside vessel.");
+    }
+
     if (mSegments.size() == 1)
     {
         newSegments.push_back(p_new_segment0);
         newSegments.push_back(p_new_segment1);
+    }
+    else if(it == mSegments.begin())
+    {
+        if((*(it + 1))->IsConnectedTo(p_new_segment1))
+        {
+            newSegments.push_back(p_new_segment0);
+            newSegments.push_back(p_new_segment1);
+        }
+        else
+        {
+            newSegments.push_back(p_new_segment1);
+            newSegments.push_back(p_new_segment0);
+        }
     }
     else if ((*(it - 1))->IsConnectedTo(p_new_segment0))
     {
@@ -673,7 +707,6 @@ boost::shared_ptr<VascularNode<DIM> > CaVessel<DIM>::DivideSegment(ChastePoint<D
     {
         EXCEPTION("Vessel segment is not contained inside vessel.");
     }
-
     for (unsigned i = 0; i < mSegments.size(); i++)
     {
         for (unsigned j = 0; j < mSegments.size(); j++)
@@ -695,8 +728,19 @@ boost::shared_ptr<VascularNode<DIM> > CaVessel<DIM>::DivideSegment(ChastePoint<D
     }
 
     mNodesUpToDate = false;
-
     return p_new_node;
+}
+
+template<unsigned DIM>
+void CaVessel<DIM>::Remove()
+{
+    // Detach all segments from their nodes
+    for (unsigned idx = 0; idx < mSegments.size(); idx++)
+    {
+        mSegments[idx]->Remove();
+    }
+    mNodesUpToDate = false;
+    mSegments = std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >();
 }
 
 template<unsigned DIM>

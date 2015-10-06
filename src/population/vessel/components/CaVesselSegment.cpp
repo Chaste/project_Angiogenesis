@@ -119,14 +119,6 @@ void CaVesselSegment<DIM>::CopyDataFromExistingSegment(const boost::shared_ptr<C
 }
 
 template<unsigned DIM>
-void CaVesselSegment<DIM>::Remove()
-{
-    mNodes.first->RemoveSegment(Shared());
-    mNodes.second->RemoveSegment(Shared());
-    RemoveVessel();
-}
-
-template<unsigned DIM>
 const VasculatureData& CaVesselSegment<DIM>::rGetDataContainer() const
 {
     return mDataContainer;
@@ -263,7 +255,7 @@ c_vector<double, DIM> CaVesselSegment<DIM>::GetPointProjection(c_vector<double, 
     double dp_segment_point = inner_prod(segment_vector, point_vector);
     double dp_segment_segment = inner_prod(segment_vector, segment_vector);
 
-    if ((dp_segment_point <= 0.0 || dp_segment_segment <= dp_segment_point) && !projectToEnds)
+    if (dp_segment_point <= 0.0 || dp_segment_segment <= dp_segment_point)
     {
         if(!projectToEnds)
         {
@@ -282,7 +274,6 @@ c_vector<double, DIM> CaVesselSegment<DIM>::GetPointProjection(c_vector<double, 
                 return end_location;
             }
         }
-
     }
 
     // Point projection is inside segment, get distance to point projection
@@ -345,6 +336,14 @@ template<unsigned DIM>
 void CaVesselSegment<DIM>::RemoveVessel()
 {
     mVessel = boost::weak_ptr<CaVessel<DIM> >();
+}
+
+template<unsigned DIM>
+void CaVesselSegment<DIM>::Remove()
+{
+    mNodes.first->RemoveSegment(Shared());
+    mNodes.second->RemoveSegment(Shared());
+    RemoveVessel();
 }
 
 template<unsigned DIM>

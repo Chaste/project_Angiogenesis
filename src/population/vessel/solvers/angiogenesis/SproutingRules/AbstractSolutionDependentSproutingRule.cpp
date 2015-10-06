@@ -35,6 +35,8 @@
 
 #include "RandomNumberGenerator.hpp"
 #include "AbstractSolutionDependentSproutingRule.hpp"
+#include "CaVesselSegment.hpp"
+#include "CaVessel.hpp"
 
 template<unsigned DIM>
 AbstractSolutionDependentSproutingRule<DIM>::AbstractSolutionDependentSproutingRule()
@@ -80,14 +82,23 @@ std::vector<bool> AbstractSolutionDependentSproutingRule<DIM>::WillSprout()
                 std::vector<double> solution_values = mpSolver->GetSolutionAtPoints(std::vector<c_vector<double, DIM> >(1, location));
                 if(solution_values[0] >= mSolutionThreshold && prob < this->mSproutingProbability)
                 {
-                    will_sprout = true;
+                    if(this->mNodes[idx]->GetVesselSegment(0)->GetVessel()->GetClosestEndNodeDistance(this->mNodes[idx]->GetLocationVector())>= this->mVesselEndCutoff)
+                    {
+                        if(this->mNodes[idx]->GetVesselSegment(1)->GetVessel()->GetClosestEndNodeDistance(this->mNodes[idx]->GetLocationVector())>= this->mVesselEndCutoff)
+                        {
+                            will_sprout = true;
+                        }
+                    }
                 }
             }
             else
             {
-                if(this->mNodes[idx]->GetNumberOfSegments()==2 && prob < this->mSproutingProbability)
+                if(this->mNodes[idx]->GetVesselSegment(0)->GetVessel()->GetClosestEndNodeDistance(this->mNodes[idx]->GetLocationVector())>= this->mVesselEndCutoff)
                 {
-                    will_sprout = true;
+                    if(this->mNodes[idx]->GetVesselSegment(1)->GetVessel()->GetClosestEndNodeDistance(this->mNodes[idx]->GetLocationVector())>= this->mVesselEndCutoff)
+                    {
+                        will_sprout = true;
+                    }
                 }
             }
         }

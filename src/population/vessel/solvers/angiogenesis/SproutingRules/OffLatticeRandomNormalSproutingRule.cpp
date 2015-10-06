@@ -106,7 +106,17 @@ std::vector<c_vector<double, DIM> > OffLatticeRandomNormalSproutingRule<DIM>::Ge
                 }
                 else
                 {
-                    normal[2] = -(tangent[0] + tangent[0])/tangent[2];
+                    if(std::abs(tangent[0]) + std::abs(tangent[1]) == 0.0)
+                    {
+                        normal[0] = 1.0;
+                        normal[1] = 1.0;
+                    }
+                    else
+                    {
+                        normal[0] = 1.0;
+                        normal[1] = 1.0;
+                        normal[2] = -(tangent[0] + tangent[1])/tangent[2];
+                    }
                 }
                 if(RandomNumberGenerator::Instance()->ranf()>=0.5)
                 {
@@ -132,7 +142,8 @@ std::vector<c_vector<double, DIM> > OffLatticeRandomNormalSproutingRule<DIM>::Ge
 
             // Rotate by a random angle around the axis
             double angle = RandomNumberGenerator::Instance()->ranf() * 2.0 * M_PI;
-            directions.push_back(RotateAboutAxis<DIM>(sprout_direction, this->mNodes[idx]->GetVesselSegments()[0]->GetUnitTangent(), angle));
+            c_vector<double, DIM> new_direction = RotateAboutAxis<DIM>(sprout_direction, this->mNodes[idx]->GetVesselSegments()[0]->GetUnitTangent(), angle);
+            directions.push_back(new_direction);
         }
         else
         {

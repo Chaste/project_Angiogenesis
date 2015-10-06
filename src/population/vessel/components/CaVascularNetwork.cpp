@@ -149,11 +149,6 @@ boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::DivideVessel(boost
     // If the divide location coincides with one of the end nodes don't divide and return that node
     if (pVessel->GetStartNode()->IsCoincident(location) || pVessel->GetEndNode()->IsCoincident(location))
     {
-//        // both vessel nodes cannot be present at the same location in this case
-//        if(pVessel->GetStartNode()->IsCoincident(pVessel->GetEndNode()))
-//        {
-//            EXCEPTION("Cannot divide a vessel with coincident start and end nodes.");
-//        }
 
         if (pVessel->GetStartNode()->IsCoincident(location))
         {
@@ -177,16 +172,12 @@ boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::DivideVessel(boost
                 break;
             }
         }
-
         if(!locatedInsideVessel)
         {
-            std::cout<< location.rGetLocation() << std::endl;
-
             EXCEPTION("There is no segment at the requested division location.");
         }
     }
-
-    boost::shared_ptr<VascularNode<DIM> > p_new_node = pVessel->DivideSegment(location);
+    boost::shared_ptr<VascularNode<DIM> > p_new_node = pVessel->DivideSegment(location); // network segments and nodes out of date
 
     // create two new vessels and assign them the old vessel's properties
     std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > start_segments;
@@ -211,7 +202,6 @@ boost::shared_ptr<VascularNode<DIM> > CaVascularNetwork<DIM>::DivideVessel(boost
     {
         end_segments.push_back(segments[idx]);
     }
-
     boost::shared_ptr<CaVessel<DIM> > p_new_vessel1 = CaVessel<DIM>::Create(start_segments);
     boost::shared_ptr<CaVessel<DIM> > p_new_vessel2 = CaVessel<DIM>::Create(end_segments);
     p_new_vessel1->CopyDataFromExistingVessel(pVessel);
@@ -261,8 +251,6 @@ boost::shared_ptr<CaVessel<DIM> > CaVascularNetwork<DIM>::FormSprout(ChastePoint
     {
         EXCEPTION("No vessel located at sprout base.");
     }
-
-    std::cout << "c" << sproutBaseLocation.rGetLocation() << "," << sproutTipLocation.rGetLocation() << std::endl;
 
     // divide vessel at location of sprout base
     boost::shared_ptr<VascularNode<DIM> > p_new_node = DivideVessel(nearest_segment.first->GetVessel(), sproutBaseLocation);
@@ -541,7 +529,7 @@ std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> CaVascularNetwork<DI
 }
 
 template <unsigned DIM>
-std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> CaVascularNetwork<DIM>::GetNearestSegment(boost::shared_ptr<VascularNode<DIM> > pNode)
+std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> CaVascularNetwork<DIM>::GetNearestSegment(boost::shared_ptr<VascularNode<DIM> > pNode, bool sameVessel)
 {
     boost::shared_ptr<CaVesselSegment<DIM> > nearest_segment;
     std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = GetVesselSegments();
@@ -551,10 +539,31 @@ std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> CaVascularNetwork<DI
     for(segment_iter = segments.begin(); segment_iter != segments.end(); segment_iter++)
     {
         double segment_distance = (*segment_iter)->GetDistance(pNode->GetLocationVector());
+
         if (segment_distance < min_distance && (*segment_iter)->GetNode(0) != pNode && (*segment_iter)->GetNode(1) != pNode)
         {
-            min_distance = segment_distance;
-            nearest_segment = (*segment_iter) ;
+            if(sameVessel)
+            {
+                min_distance = segment_distance;
+                nearest_segment = (*segment_iter) ;
+            }
+            else
+            {
+                bool same_vessel = false;
+                std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > node_segs = pNode->GetVesselSegments();
+                for(unsigned idx=0;idx<node_segs.size();idx++)
+                {
+                    if(node_segs[idx]->GetVessel() == (*segment_iter)->GetVessel())
+                    {
+                        same_vessel = true;
+                    }
+                }
+                if(!same_vessel)
+                {
+                    min_distance = segment_distance;
+                    nearest_segment = (*segment_iter);
+                }
+            }
         }
     }
     std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> return_pair =
@@ -724,8 +733,6 @@ void CaVascularNetwork<DIM>::RemoveShortVessels(double cutoff, bool endsOnly)
 template <unsigned DIM>
 void CaVascularNetwork<DIM>::MergeShortVessels(double cutoff)
 {
-    // todo need to think about how to avoid creating vessels which contain bifurcations ... (?)
-
     std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels_to_merge;
     for(unsigned idx=0; idx<mVessels.size(); idx++)
     {
@@ -1223,6 +1230,7 @@ void CaVascularNetwork<DIM>::MergeCoincidentNodes(std::vector<boost::shared_ptr<
             }
         }
     }
+    mSegmentsUpToDate = false;
     mNodesUpToDate = false;
     mVesselNodesUpToDate = false;
 }
@@ -1349,6 +1357,19 @@ void CaVascularNetwork<DIM>::SetSegmentRadii(double radius)
     {
         segments[idx]->SetRadius(radius);
     }
+}
+
+template <unsigned DIM>
+void CaVascularNetwork<DIM>::UpdateAll(bool merge)
+{
+    if(merge)
+    {
+        MergeCoincidentNodes();
+    }
+    UpdateSegments();
+    UpdateVesselNodes();
+    UpdateNodes();
+    UpdateVesselIds();
 }
 
 #ifdef CHASTE_VTK

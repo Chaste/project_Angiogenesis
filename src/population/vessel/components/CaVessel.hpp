@@ -39,7 +39,6 @@
 #include <vector>
 #include <map>
 #include <boost/enable_shared_from_this.hpp>
-
 #include "CaVesselSegment.hpp"
 #include "VascularNode.hpp"
 #include "VasculatureData.hpp"
@@ -170,7 +169,10 @@ public:
      */
     void CopyDataFromExistingVessel(boost::shared_ptr<CaVessel<DIM> > pTargetVessel);
 
-    void Remove();
+    /**
+     Divide the vessel at the specified location
+     */
+    boost::shared_ptr<VascularNode<DIM> > DivideSegment(ChastePoint<DIM> location);
 
     /**
      *  Return the vessel data for the input key. An attempt is made
@@ -194,6 +196,14 @@ public:
      */
     std::vector<std::string> GetDataKeys(bool castable_to_double = false) const;
 
+    /**
+     *  Return the distance to the vessel end node closest to the input location
+     */
+    double GetClosestEndNodeDistance(c_vector<double, DIM> location);
+
+    /**
+     *  Return the distance from the vessel to the input location
+     */
     double GetDistance(c_vector<double, DIM> location) const;
 
     /**
@@ -317,9 +327,9 @@ public:
     bool IsConnectedTo(boost::shared_ptr<CaVessel<DIM> > pOtherVessel);
 
     /**
-     Divide the vessel at the specified location
+     Remove the vessel from all its segments
      */
-    boost::shared_ptr<VascularNode<DIM> > DivideSegment(ChastePoint<DIM> location);
+    void Remove();
 
     /**
      Remove segments from the ends of a vessel
