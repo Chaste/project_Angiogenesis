@@ -500,12 +500,12 @@ bool Part<DIM>::IsPointInPart(c_vector<double, DIM> location, bool update)
     #if VTK_MAJOR_VERSION <= 5
     selectEnclosedPoints->SetInput(p_point_data);
     #else
-    selectEnclosedPoints->SetInputData(pointsPolydata);
+    selectEnclosedPoints->SetInputData(p_point_data);
     #endif
     #if VTK_MAJOR_VERSION <= 5
     selectEnclosedPoints->SetSurface(p_part);
     #else
-    selectEnclosedPoints->SetSurfaceData(cube);
+    selectEnclosedPoints->SetSurfaceData(p_part);
     #endif
     selectEnclosedPoints->Update();
 

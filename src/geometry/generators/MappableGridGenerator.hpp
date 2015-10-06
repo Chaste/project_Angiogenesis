@@ -33,70 +33,50 @@
 
  */
 
-#ifndef FINITEELEMENTSOLVER_HPP_
-#define FINITEELEMENTSOLVER_HPP_
+#ifndef MAPPABLEGRIDGENERATOR_HPP_
+#define MAPPABLEGRIDGENERATOR_HPP_
 
+#include <vector>
 #include "SmartPointers.hpp"
-#include "AbstractHybridSolver.hpp"
-#include "PlcMesh.hpp"
+#include "UblasVectorInclude.hpp"
 #include "Part.hpp"
-#include "HybridLinearEllipticPde.hpp"
-#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the strstream deprecated warning for now (gcc4.3)
-#include <vtkUnstructuredGrid.h>
-#include <vtkSmartPointer.h>
 
-struct VesselRepresentation
-{
-    enum Value
-    {
-        LINE, SURFACE
-    };
-};
-
+/*
+ * Generate a part consisting of a regular grid of polygons, useful for coordinate mapping onto
+ * more complex geometries.
+ */
 
 template<unsigned DIM>
-class FiniteElementSolver : public AbstractHybridSolver<DIM>
+class MappableGridGenerator
 {
-    using AbstractHybridSolver<DIM>::Solve;
-    boost::shared_ptr<Part<DIM> > mpDomain;
-    double mGridSize;
-    std::string mMeshWriterPath;
-    vtkSmartPointer<vtkUnstructuredGrid> mFeSolution;
-
-    VesselRepresentation::Value mVesselRepresentation;
-    boost::shared_ptr<PlcMesh<DIM, DIM> > mpMesh;
 
 public:
 
-    FiniteElementSolver();
-
-    ~FiniteElementSolver();
-
-    /*
-     * Construct a new instance of the class and return a shared pointer to it.
+    /* Constructor
      */
-    static boost::shared_ptr<FiniteElementSolver<DIM> > Create();
+    MappableGridGenerator();
 
-    std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints,
-                                            const std::string& rSpeciesLabel = "Default");
+    /* Destructor
+     */
+    ~MappableGridGenerator();
 
-    void SetDomain(boost::shared_ptr<Part<DIM> > pDomain);
+    /* Generate the grid
+     */
+    boost::shared_ptr<Part<DIM> > GeneratePlane(unsigned numX, unsigned numY);
 
-    void SetMesh(boost::shared_ptr<PlcMesh<DIM, DIM> > pMesh);
+    boost::shared_ptr<Part<DIM> > GenerateCylinder(double cylinder_radius,
+                                                   double cylinder_thickness,
+                                                   double cylinder_angle,
+                                                   double cylinder_height,
+                                                   unsigned numX,
+                                                   unsigned numY);
 
-    void SetVesselRepresentation(VesselRepresentation::Value vesselRepresentation);
-
-    void SetMaxElementArea(double maxElementArea);
-
-    void Solve(bool writeSolution = false);
-
-    void SetMeshWriterPath(std::string path);
-
-    void ReadSolution();
-
-private:
-
-    void Write(std::vector<double> output, boost::shared_ptr<PlcMesh<DIM, DIM> > p_mesh);
+    boost::shared_ptr<Part<DIM> > GenerateHemisphere(double sphere_radius,
+                                                   double sphere_thickness,
+                                                   double sphere_azimuth_angle,
+                                                   double sphere_polar_angle,
+                                                   unsigned numX,
+                                                   unsigned numY);
 };
 
-#endif /* FINITEELEMENTSOLVER_HPP_ */
+#endif /*MAPPABLEGRIDGENERATOR_HPP_*/

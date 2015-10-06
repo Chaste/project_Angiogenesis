@@ -268,6 +268,30 @@ std::pair<bool, double> DirichletBoundaryCondition<DIM>::GetValue(c_vector<doubl
         }
         return std::pair<bool, double>(false, mValue);
     }
+    else if(mType == BoundaryConditionType::IN_PART)
+    {
+        if(!mpDomain)
+        {
+            EXCEPTION("A part is required for this type of boundary condition");
+        }
+        else
+        {
+
+            if(mpDomain->IsPointInPart(location))
+            {
+                if(BoundaryConditionSource::PRESCRIBED)
+                {
+                    return std::pair<bool, double>(true, mValue);
+                }
+                else
+                {
+                    return std::pair<bool, double>(true, mValue);
+                }
+            }
+            return std::pair<bool, double>(false, mValue);
+        }
+    }
+
     return std::pair<bool, double>(false, mValue);
 }
 

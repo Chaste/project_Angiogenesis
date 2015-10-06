@@ -35,6 +35,16 @@
 
 #include <math.h>
 #include "SimpleLinearEllipticSolver.hpp"
+//Requires  "sudo aptitude install libvtk5-dev" or similar
+#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the strstream deprecated warning for now (gcc4.3)
+#include <vtkDataArray.h>
+#include <vtkDoubleArray.h>
+#include <vtkCellData.h>
+#include <vtkPointData.h>
+#include <vtkTetra.h>
+#include <vtkUnstructuredGrid.h>
+#include <vtkProbeFilter.h>
+#include "VtkMeshReader.hpp"
 #include "VtkMeshWriter.hpp"
 #include "ConstBoundaryCondition.hpp"
 #include "FiniteElementSolver.hpp"
@@ -42,14 +52,17 @@
 #include "PlcMesh.hpp"
 #include "CaVesselSegment.hpp"
 #include "CaVascularNetwork.hpp"
+#include "Debug.hpp"
 
 template<unsigned DIM>
 FiniteElementSolver<DIM>::FiniteElementSolver()
     : AbstractHybridSolver<DIM>(),
       mpDomain(),
       mGridSize(100.0),
-      mpPde(),
-      mVesselRepresentation(VesselRepresentation::LINE)
+      mMeshWriterPath(),
+      mFeSolution(),
+      mVesselRepresentation(VesselRepresentation::LINE),
+      mpMesh()
 {
 
 }
@@ -58,6 +71,69 @@ template<unsigned DIM>
 FiniteElementSolver<DIM>::~FiniteElementSolver()
 {
 
+}
+
+template<unsigned DIM>
+void FiniteElementSolver<DIM>::SetMeshWriterPath(std::string path)
+{
+    mMeshWriterPath = path;
+}
+
+template <unsigned DIM>
+boost::shared_ptr<FiniteElementSolver<DIM> > FiniteElementSolver<DIM>::Create()
+{
+    MAKE_PTR(FiniteElementSolver<DIM>, pSelf);
+    return pSelf;
+}
+
+template<unsigned DIM>
+void FiniteElementSolver<DIM>::ReadSolution()
+{
+    mFeSolution = vtkSmartPointer<vtkUnstructuredGrid>::New();
+    VtkMeshReader<DIM,DIM> mesh_reader(this->mWorkingDirectory + this->mFilename + ".vtu");
+    vtkUnstructuredGrid* p_grid = mesh_reader.OutputMeshAsVtkUnstructuredGrid();
+    mFeSolution->DeepCopy(p_grid);
+}
+
+template<unsigned DIM>
+std::vector<double> FiniteElementSolver<DIM>::GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints,
+                                                                              const std::string& rSpeciesLabel)
+{
+    // Read the vtk mesh back in and sample it at the requested points
+    if(!mFeSolution)
+    {
+        ReadSolution();
+    }
+    std::vector<double> sampled_solution(samplePoints.size(), 0.0);
+
+    // Sample the field at these locations
+    vtkSmartPointer<vtkPolyData> p_polydata = vtkSmartPointer<vtkPolyData>::New();
+    vtkSmartPointer<vtkPoints> p_points = vtkSmartPointer<vtkPoints>::New();
+    p_points->SetNumberOfPoints(samplePoints.size());
+    for(unsigned idx=0; idx< samplePoints.size(); idx++)
+    {
+        if(DIM==3)
+        {
+            p_points->SetPoint(idx, samplePoints[idx][0], samplePoints[idx][1], samplePoints[idx][2]);
+        }
+        else
+        {
+            p_points->SetPoint(idx, samplePoints[idx][0], samplePoints[idx][1], 0.0);
+        }
+    }
+    p_polydata->SetPoints(p_points);
+
+    vtkSmartPointer<vtkProbeFilter> p_probe_filter = vtkSmartPointer<vtkProbeFilter>::New();
+    p_probe_filter->SetInput(p_polydata);
+    p_probe_filter->SetSource(mFeSolution);
+    p_probe_filter->Update();
+    vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetOutput()->GetPointData();
+    unsigned num_points = p_point_data->GetArray(rSpeciesLabel.c_str())->GetNumberOfTuples();
+    for(unsigned idx=0; idx<num_points; idx++)
+    {
+        sampled_solution[idx] = p_point_data->GetArray(rSpeciesLabel.c_str())->GetTuple1(idx);
+    }
+    return sampled_solution;
 }
 
 template<unsigned DIM>
@@ -79,9 +155,9 @@ void FiniteElementSolver<DIM>::SetMaxElementArea(double maxElementArea)
 }
 
 template<unsigned DIM>
-void FiniteElementSolver<DIM>::SetPde(boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > pPde)
+void FiniteElementSolver<DIM>::SetMesh(boost::shared_ptr<PlcMesh<DIM, DIM> > pMesh)
 {
-    mpPde = pPde;
+    mpMesh = pMesh;
 }
 
 template<unsigned DIM>
@@ -94,8 +170,11 @@ void FiniteElementSolver<DIM>::Solve(bool writeSolution)
     }
 
     // Mesh the domain
-    boost::shared_ptr<PlcMesh<DIM, DIM> > p_mesh = PlcMesh<DIM, DIM>::Create();
-    p_mesh->GenerateFromPart(mpDomain, mGridSize);
+    if(!mpMesh)
+    {
+        mpMesh = PlcMesh<DIM, DIM>::Create();
+        mpMesh->GenerateFromPart(mpDomain, mGridSize);
+    }
 
     // Apply the dirichlet boundary conditions
     double node_distance_tolerance = 1.e-3;
@@ -121,8 +200,8 @@ void FiniteElementSolver<DIM>::Solve(bool writeSolution)
 
         if(!use_boundry_nodes)
         {
-            typename PlcMesh<DIM, DIM>::NodeIterator iter = p_mesh->GetNodeIteratorBegin();
-            while (iter != p_mesh->GetNodeIteratorEnd())
+            typename PlcMesh<DIM, DIM>::NodeIterator iter = mpMesh->GetNodeIteratorBegin();
+            while (iter != mpMesh->GetNodeIteratorEnd())
             {
                 std::pair<bool,double> result = this->mDirichletBoundaryConditions[idx]->GetValue((*iter).GetPoint().rGetLocation(), node_distance_tolerance);
                 if(result.first)
@@ -135,8 +214,8 @@ void FiniteElementSolver<DIM>::Solve(bool writeSolution)
         }
         else
         {
-            typename PlcMesh<DIM, DIM>::BoundaryNodeIterator iter = p_mesh->GetBoundaryNodeIteratorBegin();
-            while (iter < p_mesh->GetBoundaryNodeIteratorEnd())
+            typename PlcMesh<DIM, DIM>::BoundaryNodeIterator iter = mpMesh->GetBoundaryNodeIteratorBegin();
+            while (iter < mpMesh->GetBoundaryNodeIteratorEnd())
             {
                 std::pair<bool,double> result = this->mDirichletBoundaryConditions[idx]->GetValue((*iter)->GetPoint().rGetLocation(), node_distance_tolerance);
                 if(result.first)
@@ -150,7 +229,7 @@ void FiniteElementSolver<DIM>::Solve(bool writeSolution)
     }
 
     // Do the solve
-    SimpleLinearEllipticSolver<DIM, DIM> static_solver(p_mesh.get(), mpPde.get(), &bcc);
+    SimpleLinearEllipticSolver<DIM, DIM> static_solver(mpMesh.get(), this->mpPde.get(), &bcc);
     ReplicatableVector static_solution_repl(static_solver.Solve());
     std::vector<double> output;
     for (unsigned idx = 0; idx < static_solution_repl.GetSize(); idx++)
@@ -160,7 +239,7 @@ void FiniteElementSolver<DIM>::Solve(bool writeSolution)
 
     if(writeSolution)
     {
-        this->Write(output, p_mesh);
+        this->Write(output, mpMesh);
     }
 }
 
@@ -178,12 +257,13 @@ void FiniteElementSolver<DIM>::Write(std::vector<double> output, boost::shared_p
         fname = "solution";
     }
 
-    VtkMeshWriter <DIM, DIM> mesh_writer(this->mWorkingDirectory, fname, false);
+    VtkMeshWriter <DIM, DIM> mesh_writer(mMeshWriterPath, fname, false);
     if(output.size() > 0)
     {
-        mesh_writer.AddPointData(mpPde->GetVariableName(), output);
+        mesh_writer.AddPointData(this->mpPde->GetVariableName(), output);
     }
     mesh_writer.WriteFilesUsingMesh(*p_mesh);
+    ReadSolution();
 }
 
 // Explicit instantiation
