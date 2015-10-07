@@ -56,7 +56,7 @@ public:
     void TestMakeGeometry() throw(Exception)
     {
         MappableGridGenerator<3> generator;
-        boost::shared_ptr<Part<3> > p_part = generator.GenerateHemisphere(1.5, 0.1 , M_PI, M_PI/2.0, 10, 10);
+        boost::shared_ptr<Part<3> > p_part = generator.GenerateHemisphere(1.5, 0.1 , 1.99 * M_PI, 0.999*M_PI, 10, 10);
 
         boost::shared_ptr<PlcMesh<3> > p_mesh = PlcMesh<3>::Create();
         p_mesh->GenerateFromPart(p_part);

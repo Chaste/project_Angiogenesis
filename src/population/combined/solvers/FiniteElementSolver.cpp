@@ -44,6 +44,7 @@
 #include <vtkTetra.h>
 #include <vtkUnstructuredGrid.h>
 #include <vtkProbeFilter.h>
+#include <vtkImageData.h>
 #include "VtkMeshReader.hpp"
 #include "VtkMeshWriter.hpp"
 #include "ConstBoundaryCondition.hpp"
@@ -53,6 +54,7 @@
 #include "CaVesselSegment.hpp"
 #include "CaVascularNetwork.hpp"
 #include "Debug.hpp"
+
 
 template<unsigned DIM>
 FiniteElementSolver<DIM>::FiniteElementSolver()
@@ -93,6 +95,35 @@ void FiniteElementSolver<DIM>::ReadSolution()
     VtkMeshReader<DIM,DIM> mesh_reader(this->mWorkingDirectory + this->mFilename + ".vtu");
     vtkUnstructuredGrid* p_grid = mesh_reader.OutputMeshAsVtkUnstructuredGrid();
     mFeSolution->DeepCopy(p_grid);
+}
+
+template<unsigned DIM>
+std::pair<std::vector<double>, std::vector<unsigned> > FiniteElementSolver<DIM>::GetSolutionOnRegularGrid(std::vector<unsigned> extents, double spacing)
+{
+    if(!mFeSolution)
+    {
+        ReadSolution();
+    }
+    vtkSmartPointer<vtkImageData> p_sampling_grid = vtkSmartPointer<vtkImageData>::New();
+    p_sampling_grid->SetSpacing(spacing, spacing, spacing);
+    p_sampling_grid->SetDimensions(extents[0], extents[1], extents[2]);
+
+    vtkSmartPointer<vtkProbeFilter> p_probe_filter = vtkSmartPointer<vtkProbeFilter>::New();
+    p_probe_filter->SetInput(p_sampling_grid);
+    p_probe_filter->SetSource(mFeSolution);
+    p_probe_filter->Update();
+    vtkSmartPointer<vtkImageData> result = p_probe_filter->GetImageDataOutput();
+
+    std::vector<double> solutions;
+    std::vector<unsigned> valid_points;
+
+    unsigned num_points = result->GetPointData()->GetArray(this->mpPde->GetVariableName().c_str())->GetNumberOfTuples();
+    for(unsigned idx=0; idx<num_points; idx++)
+    {
+        solutions.push_back(result->GetPointData()->GetArray(this->mpPde->GetVariableName().c_str())->GetTuple1(idx));
+        valid_points.push_back(result->GetPointData()->GetArray("vtkValidPointMask")->GetTuple1(idx));
+    }
+    return std::pair<std::vector<double>, std::vector<unsigned> >(solutions, valid_points);
 }
 
 template<unsigned DIM>

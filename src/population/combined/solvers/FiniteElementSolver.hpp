@@ -80,6 +80,8 @@ public:
     std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints,
                                             const std::string& rSpeciesLabel = "Default");
 
+    std::pair<std::vector<double>, std::vector<unsigned> > GetSolutionOnRegularGrid(std::vector<unsigned> extents, double spacing);
+
     void SetDomain(boost::shared_ptr<Part<DIM> > pDomain);
 
     void SetMesh(boost::shared_ptr<PlcMesh<DIM, DIM> > pMesh);
