@@ -222,7 +222,7 @@ public:
         TS_ASSERT_EQUALS(cell_population->IsSiteAvailable(1,cell_population->GetCellUsingLocationIndex(1)), false);
                         }
 
-    void dontTestAngiogenesis() throw (Exception)
+    void TestAngiogenesis() throw (Exception)
                     {
         // Create the mesh
         PottsMeshGenerator<3> generator(10, 0, 0, 50, 0, 0, 50, 0, 0);
