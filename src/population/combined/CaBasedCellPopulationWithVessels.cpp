@@ -61,10 +61,11 @@ CaBasedCellPopulationWithVessels<DIM>::CaBasedCellPopulationWithVessels(PottsMes
                                                                                                      mp_tip_mutation_state(new TipCellMutationState),
                                                                                                      mp_stalk_mutation_state(new StalkCellMutationState),
                                                                                                      mp_pde_handler(),
-                                                                                                     mCellNodeMap()
-{
+                                                                                                     mCellNodeMap(),
+                                                                                                     mVolumeFractionMap()
+                                                                                                     {
 
-}
+                                                                                                     }
 
 template<unsigned DIM>
 CaBasedCellPopulationWithVessels<DIM>::~CaBasedCellPopulationWithVessels()
@@ -116,11 +117,13 @@ void CaBasedCellPopulationWithVessels<DIM>::DoSprouting(std::vector<boost::share
 
                 for (unsigned seg_index = 0; seg_index < p_node->GetNumberOfSegments(); seg_index++)
                 {
+                    MARK;
                     if(p_node->GetVesselSegment(seg_index)->GetOppositeNode(p_node)->IsCoincident(ChastePoint<DIM>(neighbour_location)))
                     {
                         back_on_self = true;
                         break;
                     }
+                    MARK;
                 }
 
                 double gradient = (nbr_data["VEGF"][idx] - tip_concentration) / norm_2(tip_location - neighbour_location);
@@ -143,9 +146,10 @@ void CaBasedCellPopulationWithVessels<DIM>::DoSprouting(std::vector<boost::share
                  * Note: the 'tip_location' here is a tip cell already located on the vessel, as decided by
                  * a sprouting rule. This actually creates the sprout, which moves to the candidate_location.
                  */
+                MARK;
                 boost::shared_ptr<CaVessel<DIM> > p_vessel = mpNetwork->FormSprout(tip_location, candidate_location);
                 p_new_node = p_vessel->GetNodeAtOppositeEnd(p_node);
-
+                MARK;
 
                 // Check for anastamosis
                 std::set<CellPtr> cells = this->GetCellsUsingLocationIndex(max_grandient_index);
@@ -161,14 +165,15 @@ void CaBasedCellPopulationWithVessels<DIM>::DoSprouting(std::vector<boost::share
                         // Update vessel network
                         mpNetwork->UpdateNodes();
                         mpNetwork->UpdateVesselNodes();
+                        MARK;
                         boost::shared_ptr<VascularNode<DIM> > p_other_node = mpNetwork->DivideVessel(mCellNodeMap[(*it)]->GetVesselSegment(0)->GetVessel(),
                                                                                                      candidate_location);
-
+                        MARK;
                         std::vector<boost::shared_ptr<VascularNode<DIM> > > merge_nodes;
                         merge_nodes.push_back(p_other_node);
                         merge_nodes.push_back(p_new_node);
                         mpNetwork->MergeCoincidentNodes(merge_nodes);
-
+                        MARK;
                         // If we are a tip also de-select at neighbour location
                         if((*it)->GetMutationState()->IsSame(mp_tip_mutation_state))
                         {
@@ -231,11 +236,12 @@ void CaBasedCellPopulationWithVessels<DIM>::DoMigration()
                 // make sure that tip cell does not go back on itself
                 c_vector<double, DIM> neighbour_location = this->rGetMesh().GetNode(unsigned(nbr_data["Index"][idx]))->rGetLocation();
                 bool back_on_self = false;
+                MARK;
                 if(p_node->GetVesselSegment(0)->GetOppositeNode(p_node)->IsCoincident(ChastePoint<DIM>(neighbour_location)))
                 {
                     back_on_self = true;
                 }
-
+                MARK;
                 double gradient = (nbr_data["VEGF"][idx] - tip_concentration) / norm_2(tip_location - neighbour_location);
                 if(gradient > max_gradient && bool(nbr_data["Occupancy"][idx]) && !back_on_self)
                 {
@@ -249,16 +255,18 @@ void CaBasedCellPopulationWithVessels<DIM>::DoMigration()
             {
                 c_vector<double, DIM> candidate_location = this->rGetMesh().GetNode(max_grandient_index)->rGetLocation();
 
+                MARK;
                 // Make a node at the location
                 boost::shared_ptr<VascularNode<DIM> > p_new_node;
                 boost::shared_ptr<CaVessel<DIM> > p_vessel = p_node->GetVesselSegment(0)->GetVessel();
                 p_new_node = boost::shared_ptr<VascularNode<DIM> > (new VascularNode<DIM>(candidate_location));
                 p_node->SetIsMigrating(false);
+                MARK;
                 p_new_node->SetIsMigrating(true);
                 p_vessel->AddSegment(CaVesselSegment<DIM>::Create(p_node, p_new_node));
                 mpNetwork->UpdateNodes();
                 mpNetwork->UpdateVesselNodes();
-
+                MARK;
                 // Check for anastamosis
                 std::set<CellPtr> cells = this->GetCellsUsingLocationIndex(max_grandient_index);
                 std::set<CellPtr>::iterator it;
@@ -273,14 +281,16 @@ void CaBasedCellPopulationWithVessels<DIM>::DoMigration()
                         // Update vessel network
                         mpNetwork->UpdateNodes();
                         mpNetwork->UpdateVesselNodes();
+                        MARK;
+                        // todo problem line here ... something may be going wrong with the node map
                         boost::shared_ptr<VascularNode<DIM> > p_other_node = mpNetwork->DivideVessel(mCellNodeMap[(*it)]->GetVesselSegment(0)->GetVessel(),
                                                                                                      candidate_location);
-
+                        MARK;
                         std::vector<boost::shared_ptr<VascularNode<DIM> > > merge_nodes;
                         merge_nodes.push_back(p_other_node);
                         merge_nodes.push_back(p_new_node);
                         mpNetwork->MergeCoincidentNodes(merge_nodes);
-
+                        MARK;
                         // If we are a tip also de-select at neighbour location
                         if((*it)->GetMutationState()->IsSame(mp_tip_mutation_state))
                         {
@@ -317,34 +327,101 @@ template<unsigned DIM>
 bool CaBasedCellPopulationWithVessels<DIM>::IsSiteAvailable(unsigned index, CellPtr pCell)
 {
     std::vector<unsigned> available_spaces = this->rGetAvailableSpaces();
-    if (pCell->GetMutationState()->IsSame(mp_tip_mutation_state))
-    {
-        if (available_spaces[index] != 0)
-        {
-            return true;
-        }
-        else
-        {
-            // if any cell at location index is a stalk or tip cell then the
-            // tip cell can move in to that location
-            std::set<CellPtr> cells = this->GetCellsUsingLocationIndex(index);
-            std::set<CellPtr>::iterator it;
+    double current_occupied_fraction = GetOccupiedVolumeFraction(index);
+    double candidate_fraction = GetOccupyingVolumeFraction(pCell->GetMutationState());
+    return(current_occupied_fraction + candidate_fraction <=1.0);
+//
+//
+//    if (pCell->GetMutationState()->IsSame(mp_tip_mutation_state))
+//    {
+//        if (available_spaces[index] != 0)
+//        {
+//            return true;
+//        }
+//        else
+//        {
+//            // if any cell at location index is a stalk or tip cell then the
+//            // tip cell can move in to that location
+//            std::set<CellPtr> cells = this->GetCellsUsingLocationIndex(index);
+//            std::set<CellPtr>::iterator it;
+//
+//            for (it = cells.begin(); it != cells.end(); ++it)
+//            {
+//                if((*it)->GetMutationState()->IsSame(mp_tip_mutation_state) ||
+//                        (*it)->GetMutationState()->IsSame(mp_stalk_mutation_state))
+//                {
+//                    return true;
+//                }
+//            }
+//            return false;
+//        }
+//    }
+//    else
+//    {
+//        return (available_spaces[index] != 0);
+//    }
+}
 
-            for (it = cells.begin(); it != cells.end(); ++it)
-            {
-                if((*it)->GetMutationState()->IsSame(mp_tip_mutation_state) ||
-                        (*it)->GetMutationState()->IsSame(mp_stalk_mutation_state))
-                {
-                    return true;
-                }
-            }
-            return false;
+template<unsigned DIM>
+void CaBasedCellPopulationWithVessels<DIM>::SetVolumeFraction(boost::shared_ptr<AbstractCellMutationState> mutation_state, double volume_fraction)
+{
+    if(volume_fraction >1.0)
+    {
+        EXCEPTION("Specified volume fractions should not be greater than 1.");
+    }
+
+    typedef std::map<boost::shared_ptr<AbstractCellMutationState> , double>::iterator it_type;
+    it_type iterator;
+    for(iterator = mVolumeFractionMap.begin(); iterator != mVolumeFractionMap.end(); iterator++)
+    {
+        if (iterator->first->IsSame(mutation_state))
+        {
+            iterator->second = volume_fraction;
+            break;
         }
     }
-    else
+
+    // if mutation state does not exist in map yet then add it to the map
+    if (iterator == mVolumeFractionMap.end())
     {
-        return (available_spaces[index] != 0);
+        mVolumeFractionMap[mutation_state] = volume_fraction;
     }
+}
+
+template<unsigned DIM>
+double CaBasedCellPopulationWithVessels<DIM>::GetOccupyingVolumeFraction(boost::shared_ptr<AbstractCellMutationState> mutation_state)
+{
+    typedef std::map<boost::shared_ptr<AbstractCellMutationState> , double>::iterator it_type;
+    it_type iterator;
+    for(iterator = mVolumeFractionMap.begin(); iterator != mVolumeFractionMap.end(); iterator++)
+    {
+        if (iterator->first->IsSame(mutation_state))
+        {
+            return iterator->second;
+        }
+    }
+
+    // if a map is not provided or if the prescribed mutation state is not in the map then the
+    // occupying volume fraction is 1.
+    return 1;
+
+}
+
+template<unsigned DIM>
+double CaBasedCellPopulationWithVessels<DIM>::GetOccupiedVolumeFraction(unsigned index)
+{
+    std::set<CellPtr> cells = this->GetCellsUsingLocationIndex(index);
+    std::set<CellPtr>::iterator it;
+
+    double occupied_volume_fraction = 0;
+
+    for (it = cells.begin(); it != cells.end(); ++it)
+    {
+        occupied_volume_fraction += GetOccupyingVolumeFraction((*it)->GetMutationState());
+    }
+
+    assert(occupied_volume_fraction <= 1.0);
+    return occupied_volume_fraction;
 }
 
 template<unsigned DIM>

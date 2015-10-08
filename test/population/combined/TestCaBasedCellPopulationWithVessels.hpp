@@ -28,6 +28,7 @@
 #include "StalkCellMutationState.hpp"
 #include "TipCellMutationState.hpp"
 #include "CancerCellMutationState.hpp"
+#include "MacrophageMutationState.hpp"
 #include "SimulationTime.hpp"
 #include "PottsMesh.hpp"
 #include "PottsMeshGenerator.hpp"
@@ -104,7 +105,7 @@ public:
     }
 
     void TestSelectTipCell() throw (Exception)
-    {
+                    {
         // Create the mesh
         PottsMeshGenerator<3> generator(20, 0, 0, 20, 0, 0, 21, 0, 0);
         PottsMesh<3>* p_mesh = generator.GetMesh();
@@ -168,10 +169,61 @@ public:
         cell_population->DeselectTipCell(p_network->GetNode(10)->GetCell());
         TS_ASSERT_EQUALS(cell_population->GetNumberOfTipCells(), 0u);
 
-    }
+                    }
 
-    void TestAngiogenesis() throw (Exception)
-    {
+    void TestVolumeFractionMap() throw (Exception)
+                        {
+        // Create the mesh
+        PottsMeshGenerator<3> generator(20, 0, 0, 20, 0, 0, 21, 0, 0);
+        PottsMesh<3>* p_mesh = generator.GetMesh();
+
+        // Create the vessel network: single vessel in middle of domain
+        c_vector<double, 3> start_position;
+        start_position[0] = 10;
+        start_position[1] = 10;
+        start_position[2] = 0;
+        VasculatureGenerator<3> network_generator;
+        boost::shared_ptr<CaVascularNetwork<3> > p_network = network_generator.GenerateSingleVessel(20, start_position);
+
+        // Write the initial network to file
+        std::string output_directory = "TestCaBasedCellPopulationWithVesselsSelectTipCell";
+        OutputFileHandler output_file_handler(output_directory, false);
+        std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append(
+                "InitialVesselNetwork.vtp");
+        p_network->Write(output_filename);
+
+        // Create cell population
+        OnLatticeVascularTumourCellPopulationGenerator<3> cellPopulationGenerator;
+        cellPopulationGenerator.SetIncludeNormalCellPopulation(true);
+        boost::shared_ptr<CaBasedCellPopulationWithVessels<3> > cell_population =
+                cellPopulationGenerator.CreateCellPopulation(*p_mesh, p_network);
+
+        boost::shared_ptr<WildTypeCellMutationState> wild_mutation_state(new WildTypeCellMutationState);
+        boost::shared_ptr<WildTypeCellMutationState> wild_mutation_state2(new WildTypeCellMutationState);
+        boost::shared_ptr<CancerCellMutationState> cancer_mutation_state(new CancerCellMutationState);
+        boost::shared_ptr<CancerCellMutationState> cancer_mutation_state2(new CancerCellMutationState);
+        boost::shared_ptr<MacrophageMutationState> mac_mutation_state(new MacrophageMutationState);
+        boost::shared_ptr<StalkCellMutationState> stalk_mutation_state(new StalkCellMutationState);
+        boost::shared_ptr<StalkCellMutationState> stalk_mutation_state2(new StalkCellMutationState);
+
+        cell_population->SetVolumeFraction(wild_mutation_state, 0.6);
+        cell_population->SetVolumeFraction(cancer_mutation_state2, 0.6);
+        cell_population->SetVolumeFraction(cancer_mutation_state, 0.8);
+        TS_ASSERT_THROWS_ANYTHING(cell_population->SetVolumeFraction(mac_mutation_state, 1.6));
+
+        cell_population->SetVolumeFraction(mac_mutation_state, 0.5);
+        cell_population->SetVolumeFraction(stalk_mutation_state, 0.9);
+
+        TS_ASSERT_DELTA(cell_population->GetOccupyingVolumeFraction(stalk_mutation_state2), 0.9,1e-3);
+        TS_ASSERT_DELTA(cell_population->GetOccupyingVolumeFraction(cancer_mutation_state), 0.8,1e-3);
+        TS_ASSERT_DELTA(cell_population->GetOccupyingVolumeFraction(mac_mutation_state), 0.5,1e-3);
+        TS_ASSERT_DELTA(cell_population->GetOccupyingVolumeFraction(wild_mutation_state2), 0.6,1e-3);
+
+        TS_ASSERT_EQUALS(cell_population->IsSiteAvailable(1,cell_population->GetCellUsingLocationIndex(1)), false);
+                        }
+
+    void dontTestAngiogenesis() throw (Exception)
+                    {
         // Create the mesh
         PottsMeshGenerator<3> generator(10, 0, 0, 50, 0, 0, 50, 0, 0);
         PottsMesh<3>* p_mesh = generator.GetMesh();
@@ -213,13 +265,16 @@ public:
         pde_handler->SetImposeBcsOnCoarseBoundary(true);
 
         cell_population->AddPdeHandler(pde_handler);
-        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(20, 20);
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(40, 40);
 
         while (!(SimulationTime::Instance()->IsFinished()))
         {
-            pde_handler->OpenResultsFiles(output_directory);
-            pde_handler->SolvePdeAndWriteResultsToFile(1);
-            pde_handler->CloseResultsFiles();
+            if(SimulationTime::Instance()->GetTimeStepsElapsed() < 3)
+            {
+                pde_handler->OpenResultsFiles(output_directory);
+                pde_handler->SolvePdeAndWriteResultsToFile(1);
+                pde_handler->CloseResultsFiles();
+            }
 
             cell_population->UpdateVascularCellPopulation();
 
@@ -232,7 +287,7 @@ public:
 
             SimulationTime::Instance()->IncrementTimeOneStep();
         }
-    }
+                    }
 };
 
 #endif /*TESTCABASEDCELLPOPULATIONWITHVESSELS_HPP*/

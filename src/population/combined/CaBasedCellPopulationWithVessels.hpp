@@ -69,6 +69,8 @@ private:
 
     std::map<boost::shared_ptr<Cell> , boost::shared_ptr<VascularNode<DIM> > > mCellNodeMap;
 
+    std::map<boost::shared_ptr<AbstractCellMutationState> , double > mVolumeFractionMap;
+
 public:
 
     /**
@@ -88,7 +90,7 @@ public:
     CaBasedCellPopulationWithVessels(PottsMesh<DIM>& rMesh,
                                      std::vector<CellPtr>& rCells,
                                      const std::vector<unsigned> locationIndices,
-                                     unsigned latticeCarryingCapacity=1u,
+                                     unsigned latticeCarryingCapacity=1000u,
                                      bool deleteMesh=false,
                                      bool validate=false);
 
@@ -128,6 +130,21 @@ public:
     virtual bool IsSiteAvailable(unsigned index, CellPtr pCell);
 
     /**
+     * Method to set volume fraction for particular type of cell.
+     */
+    void SetVolumeFraction(boost::shared_ptr<AbstractCellMutationState> mutation_state, double volume_fraction);
+
+    /**
+     * Return occupying volume fraction for particular type of cell.
+     */
+    double GetOccupyingVolumeFraction(boost::shared_ptr<AbstractCellMutationState> mutation_state);
+
+    /**
+     * Return occupyied volume fraction for a given location.
+     */
+    double GetOccupiedVolumeFraction(unsigned index);
+
+    /**
      * Add a vessel network to the population
      *
      * @param pNetwork
@@ -143,6 +160,8 @@ public:
      * Method to update endothelial cell population
      */
     void UpdateVascularCellPopulation();
+
+
 
 };
 
