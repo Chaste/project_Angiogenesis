@@ -460,6 +460,11 @@ public:
      */
     void WriteConnectivity(const std::string& rFilename);
 
+    /**
+     * Returns whether a vessel crosses a line segment.
+     */
+    bool VesselCrossesLineSegment(c_vector<double, DIM> coordinate_1, c_vector<double, DIM> coordinate_2, double radius = 1e-6);
+
 };
 
 #endif /* CAVASCULARNETWORK_HPP_ */

@@ -450,7 +450,7 @@ std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> CaVascularNetwork<DI
             double sc, sn, sd = dv;
             double tc, tn ,td = dv;
 
-            if(dv < 1.e-12) // almost parrallel segments
+            if(dv < 1.e-12) // almost parallel segments
             {
                 sn = 0.0;
                 sd = 1.0;
@@ -1713,6 +1713,22 @@ void CaVascularNetwork<DIM>::UpdateVesselIds()
     {
         mVessels[idx]->SetId(idx);
     }
+}
+
+template<unsigned DIM>
+bool CaVascularNetwork<DIM>::VesselCrossesLineSegment(c_vector<double, DIM> coordinate_1, c_vector<double, DIM> coordinate_2, double radius)
+{
+
+    boost::shared_ptr<CaVesselSegment<DIM> > temp_segment = CaVesselSegment<DIM>::Create(VascularNode<DIM>::Create(coordinate_1), VascularNode<DIM>::Create(coordinate_2));
+
+    std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> nearest_segment = GetNearestSegment(temp_segment);
+
+    // todo a false here does not necessarily guarantee that a vessel does not cross a line segment since get nearest
+    // segment only returns one segment
+    bool crosses_segment = (nearest_segment.second <= radius) && (nearest_segment.first->GetDistance(coordinate_1) > radius) && (nearest_segment.first->GetDistance(coordinate_2) > radius);
+
+    return  crosses_segment;
+
 }
 
 // Explicit instantiation

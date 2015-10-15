@@ -140,6 +140,11 @@ public:
     double GetOccupyingVolumeFraction(boost::shared_ptr<AbstractCellMutationState> mutation_state);
 
     /**
+     * Return the maximum carying capacity of a particular cell type.
+     */
+    unsigned GetMaximumCarryingCapacity(boost::shared_ptr<AbstractCellMutationState> mutation_state);
+
+    /**
      * Return occupyied volume fraction for a given location.
      */
     double GetOccupiedVolumeFraction(unsigned index);
@@ -160,8 +165,6 @@ public:
      * Method to update endothelial cell population
      */
     void UpdateVascularCellPopulation();
-
-
 
 };
 
