@@ -68,6 +68,16 @@ class Owen2011OxygenBasedCellCycleModel : public AbstractOdeBasedCellCycleModel
 
 private:
 
+    /**
+     * Constants for the Owen et al. (2011) model
+     */
+
+    /** Tmin represents the minimum period of the cell cycle (in mins) */
+    double mTmin;
+
+    /** C0 represents the oxygen concentration at which the speed is half maximal (in mmHg) */
+    double mC0;
+
 	/** Needed for serialization. */
 	friend class boost::serialization::access;
 	/**
@@ -95,6 +105,26 @@ private:
 	void AdjustOdeParameters(double currentTime);
 
 protected:
+
+    /** phi (phase representative) */
+    double mPhi;
+
+    /**
+     * Maximum initial value allocated to phi.
+     * no units
+     */
+    double mMaxRandInitialPhase;
+
+    /**
+     * Maximum value that phi can take.
+     * no units
+     */
+    double mMaxPhi;
+
+    /**
+     * Whether the cell is currently ready to undergo division.
+     */
+    bool mReadyToDivide;
 
 	/**
 	 * How long the current period of quiescence has lasted.
@@ -246,7 +276,7 @@ public:
 	 */
 	void Initialise();
 
-	double Getphi();
+	double GetPhi();
 
 	/**
 	 * Outputs cell cycle model parameters to files.

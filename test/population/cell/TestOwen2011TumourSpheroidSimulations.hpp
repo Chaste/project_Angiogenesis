@@ -155,7 +155,7 @@ public:
          * object to return the mesh, which is of type {{{MutableMesh}}}.
          */
         HoneycombMeshGenerator generator(20, 20, 0);
-        MutableMesh<2,2>* p_mesh = generator.GetCircularMesh(2);
+        MutableMesh<2,2>* p_mesh = generator.GetCircularMesh(3);
 
         /*
          * Next, we need to create some cells. Unlike in the the crypt simulation
@@ -189,24 +189,6 @@ public:
             CellPtr p_cell(new Cell(p_state, p_model));
             p_cell->SetCellProliferativeType(p_stem_type);
             p_cell->SetApoptosisTime(30);
-
-            /*
-             * We also alter the default cell-cycle times.
-             */
-            p_model->SetStemCellG1Duration(8.0);
-            p_model->SetTransitCellG1Duration(8.0);
-
-            /*
-             * We now define a random birth time, chosen from [-T,0], where
-             * T = t,,1,, + t,,2,,, where t,,1,, is a parameter representing the G,,1,, duration
-             * of a 'stem' cell, and t,,2,, is the basic S+G,,2,,+M phases duration...
-             */
-            double birth_time = RandomNumberGenerator::Instance()->ranf() * 26.67; // time needed for cancer cell to complete cycle when well oxygenated according to Owen2011
-            /*
-             * ...then we set the birth time and push the cell back into the vector
-             * of cells.
-             */
-            p_cell->SetBirthTime(birth_time);
             cells.push_back(p_cell);
 
             p_cell->GetCellData()->SetItem("oxygen", oxygen_concentration);
@@ -222,8 +204,6 @@ public:
         cell_population.SetWriteVtkAsPoints(true);
         cell_population.SetOutputResultsForChasteVisualizer(false);
         cell_population.AddCellPopulationCountWriter<CellProliferativePhasesCountWriter>();
-        //        cell_population.SetWriteVtkAsPoints(false);
-        //        cell_population.AddPopulationWriter<VoronoiDataWriter>();
 
         CellBasedPdeHandler<2> pde_handler(&cell_population);
         AveragedSourcePde<2> pde(cell_population, -0.0359);
@@ -234,9 +214,9 @@ public:
 
 
         ChastePoint<2> lower(0.0, 0.0);
-        ChastePoint<2> upper(10.0, 10.0);
+        ChastePoint<2> upper(52.0, 52.0);
         ChasteCuboid<2> cuboid(lower, upper);
-        pde_handler.UseCoarsePdeMesh(2.0, cuboid, true);
+        pde_handler.UseCoarsePdeMesh(4.0, cuboid, true);
         pde_handler.SetImposeBcsOnCoarseBoundary(true);
 
         /*
@@ -252,7 +232,7 @@ public:
         std::string resultsDirectoryName = "TestOwen2011TumourSpheroidGrowth";
         simulator.SetOutputDirectory(resultsDirectoryName);
         simulator.SetSamplingTimestepMultiple(60); // 60 saves a point every 30min
-        simulator.SetEndTime(50.0);
+        simulator.SetEndTime(100.0);
 
         /*
          * Create cell killer to remove apoptotic cell from simulation
