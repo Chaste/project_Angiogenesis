@@ -56,7 +56,7 @@ class TestFiniteElementSolver : public CxxTest::TestSuite
 {
 public:
 
-    void Test3dKroghCylinderNetwork()
+    void Test3dKroghCylinderNetwork() throw(Exception)
     {
         // Set up the vessel network
         double vessel_length = 100;
@@ -81,12 +81,15 @@ public:
         solver.SetDomain(p_domain);
         solver.SetPde(p_pde);
         solver.SetMaxElementArea(500.0);
-
-        solver.SetWorkingDirectory("TestFiniteElementSolver/KroghCylinder3d");
+        OutputFileHandler output_file_handler("TestFiniteElementSolver/KroghCylinder3d", false);
+        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
+        solver.SetMeshWriterPath("TestFiniteElementSolver/KroghCylinder3d");
+        solver.SetFileName("cylinder");
+        solver.SetWorkingDirectory(output_directory);
         solver.Solve(true);
     }
 
-    void Test3dKroghCylinderNetworkSurface()
+    void Test3dKroghCylinderNetworkSurface() throw(Exception)
     {
         // Set up the vessel network
         double vessel_length = 100;
@@ -111,12 +114,15 @@ public:
         solver.SetDomain(p_domain);
         solver.SetPde(p_pde);
         solver.SetMaxElementArea(500.0);
-
-        solver.SetWorkingDirectory("TestFiniteElementSolver/KroghCylinder3d_Surface");
+        OutputFileHandler output_file_handler("TestFiniteElementSolver/KroghCylinder3d_Surface", false);
+        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
+        solver.SetMeshWriterPath("TestFiniteElementSolver/KroghCylinder3d_Surface");
+        solver.SetFileName("cylinder");
+        solver.SetWorkingDirectory(output_directory);
         solver.Solve(true);
     }
 
-    void Test3dKroghCylinderNetworkCircle()
+    void Test3dKroghCylinderNetworkCircle() throw(Exception)
     {
         // Set up the vessel network
         double vessel_length = 100.0;
@@ -137,12 +143,15 @@ public:
         solver.SetDomain(p_domain);
         solver.SetPde(p_pde);
         solver.SetMaxElementArea(500.0);
-
-        solver.SetWorkingDirectory("TestFiniteElementSolver/KroghCylinder3dCircle");
+        OutputFileHandler output_file_handler("TestFiniteElementSolver/KroghCylinder3dCircle", false);
+        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
+        solver.SetMeshWriterPath("TestFiniteElementSolver/KroghCylinder3dCircle");
+        solver.SetFileName("cylinder");
+        solver.SetWorkingDirectory(output_directory);
         solver.Solve(true);
     }
 
-    void Test3dKroghCylinderNetworkCircleSurface()
+    void Test3dKroghCylinderNetworkCircleSurface() throw(Exception)
     {
         // Set up the vessel network
         double vessel_length = 100.0;
@@ -163,8 +172,11 @@ public:
         solver.SetDomain(p_domain);
         solver.SetPde(p_pde);
         solver.SetMaxElementArea(500.0);
-
-        solver.SetWorkingDirectory("TestFiniteElementSolver/KroghCylinder3dCircle_Surface");
+        OutputFileHandler output_file_handler("TestFiniteElementSolver/KroghCylinder3dCircle_Surface", false);
+        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
+        solver.SetMeshWriterPath("TestFiniteElementSolver/KroghCylinder3dCircle_Surface");
+        solver.SetFileName("cylinder");
+        solver.SetWorkingDirectory(output_directory);
         solver.Solve(true);
     }
 };

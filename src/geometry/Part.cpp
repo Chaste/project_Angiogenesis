@@ -433,6 +433,9 @@ std::vector<std::pair<unsigned, unsigned> > Part<DIM>::GetSegmentIndices()
                 indexes.push_back(
                         std::pair<unsigned, unsigned>(vertices[jdx]->GetIndex(), vertices[jdx + 1]->GetIndex()));
             }
+            indexes.push_back(
+                    std::pair<unsigned, unsigned>(vertices[vertices.size() - 1]->GetIndex(), vertices[0]->GetIndex()));
+
         }
     }
     return indexes;

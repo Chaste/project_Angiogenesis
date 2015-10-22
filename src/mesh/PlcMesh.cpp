@@ -66,7 +66,6 @@ PlcMesh<ELEMENT_DIM, SPACE_DIM>::~PlcMesh()
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void PlcMesh<ELEMENT_DIM, SPACE_DIM>::Mesh2d(boost::shared_ptr<Part<SPACE_DIM> > pPart, double maxElementArea)
 {
-
     std::vector<c_vector<double, SPACE_DIM> > vertex_locations = pPart->GetVertexLocations();
     unsigned num_vertices = vertex_locations.size();
     struct triangulateio mesher_input, mesher_output;
@@ -84,6 +83,7 @@ void PlcMesh<ELEMENT_DIM, SPACE_DIM>::Mesh2d(boost::shared_ptr<Part<SPACE_DIM> >
     }
     std::vector<std::pair<unsigned, unsigned> > segments = pPart->GetSegmentIndices();
     unsigned num_segments = segments.size();
+
     mesher_input.segmentlist = (int *) malloc(num_segments * 2 * sizeof(int));
     mesher_input.numberofsegments = num_segments;
     for (unsigned idx = 0; idx < num_segments; idx++)
