@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2012, University of Oxford.
+Copyright (c) 2005-2015, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -38,41 +38,101 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ChasteSerialization.hpp"
 #include <boost/serialization/base_object.hpp>
-#include <boost/serialization/shared_ptr.hpp>
 
 #include <cmath>
-
-#include "AbstractOdeSystem.hpp"
-#include "AbstractCellMutationState.hpp"
+#include "AbstractCellProperty.hpp"
 #include "CancerCellMutationState.hpp"
+#include "AbstractOdeSystem.hpp"
 
 /**
- * Oxygen-dependent ODE-based cell-cycle model. Published by Owen et al.
- * (doi:10.1158/0008-5472.CAN-10-2834).
+ * Represents the Owen (2011) system of ODEs.
  *
  * The variables are
- *
- *  0. phi = phase of the cell cycle
- *  1. oxygen_concentration
+ * 0. phi = Cell-cycle phase
+ * 1. p53 = p53 concentration
+ * 2. VEGF = VEGF concentration
+ * 3. O2 = Oxygen concentration
  */
+
 class Owen2011OxygenBasedCellCycleOdeSystem : public AbstractOdeSystem
 {
 private:
 
     /**
-     * Constants for the Owen et al. (2011) model
+     * Constants for the Owen (2011) model
      */
 
-    /** Tmin represents the minimum period of the cell cycle (in mins) */
-    double mTmin;
-    /** C0 represents the oxygen concentration at which the speed is half maximal (in mmHg) */
-    double mC0;
+    /**
+     * Parameters for the Owen 2011 cell-cycle model
+     */
+
+    /**
+     * Parameter with units of mmHg
+     */
+
+    double Cphi;
+
+    /**
+     * Parameter with units of min
+     */
+
+    double Tmin;
+
+    /**
+     * Parameter with units of min^-1
+     */
+
+    double k7;
+
+    /**
+     * Parameter with units of min^-1
+     */
+
+    double k7dash;
+
+    /**
+     * Parameter with units of mmHg
+     */
+
+    double Cp53;
+
+    /**
+     * Parameter with units of min^-1
+     */
+
+    double k8;
+
+    /**
+     * Parameter with units of min^-1
+     */
+
+    double k8doubledash;
+
+    /**
+     * Parameter with units of ----
+     */
+
+    double J5;
+
+    /**
+     * Parameter with units of min^-1
+     */
+
+    double k8dash;
+
+    /**
+     * Parameter with units of mmHg
+     */
+
+    double CVEGF;
 
     /** The oxygen concentration (this affects the ODE system). */
-    double mOxygenConcentration;
+    double oxygenConcentration;
 
-    /** The mutation state of the cell (this affects the ODE system). */
-    boost::shared_ptr<AbstractCellMutationState> mpMutationState;
+    /**
+     * Mutation state.
+     */
+    boost::shared_ptr<AbstractCellProperty> pmMutationState;
 
     friend class boost::serialization::access;
     /**
@@ -92,11 +152,12 @@ public:
     /**
      * Constructor.
      *
+     * @param oxygenConcentration is a non-dimensional oxygen concentration value between 0 and 1
      * @param isLabelled whether the cell associated with this cell cycle ODE system is labelled (this affects the ODE system)
      * @param stateVariables optional initial conditions for state variables (only used in archiving)
      */
-    Owen2011OxygenBasedCellCycleOdeSystem(double oxygen_concentration,
-    		                               boost::shared_ptr<AbstractCellMutationState> pMutationState,
+    Owen2011OxygenBasedCellCycleOdeSystem(double oxygenConcentration,
+                                             boost::shared_ptr<AbstractCellProperty> mutation_state,
                                              std::vector<double> stateVariables=std::vector<double>());
 
     /**
@@ -105,14 +166,31 @@ public:
     ~Owen2011OxygenBasedCellCycleOdeSystem();
 
     /**
-     * Compute the RHS of the Owen et al. (2011) system of ODEs.
+     * Set the cell's mutation state.
+     *
+     * @param pMutationState the cell's new mutation state
+     */
+    void SetMutationState(boost::shared_ptr<AbstractCellProperty> pMutationState);
+
+    /**
+     * Get the cell's mutation state.
+     */
+    boost::shared_ptr<AbstractCellProperty> GetMutationState() const;
+
+    /**
+     * Initialise parameter values.
+     */
+    void Init();
+
+    /**
+     * Compute the RHS of the Owen (2011) system of ODEs.
      *
      * Returns a vector representing the RHS of the ODEs at each time step, y' = [y1' ... yn'].
      * An ODE solver will call this function repeatedly to solve for y = [y1 ... yn].
      *
      * @param time used to evaluate the RHS.
      * @param rY value of the solution vector used to evaluate the RHS.
-     * @param rDY filled in with the resulting derivatives (using Alarcons et al. (2004) system of equations).
+     * @param rDY filled in with the resulting derivatives (using Owen (2011) system of equations).
      */
     void EvaluateYDerivatives(double time, const std::vector<double>& rY, std::vector<double>& rDY);
 
@@ -127,24 +205,7 @@ public:
     bool CalculateStoppingEvent(double time, const std::vector<double>& rY);
 
     /**
-     * Set the mutation state of the cell.
-     *
-     * This should be called by the relevant cell-cycle model before any solving
-     * of the ODE system (as it is used to evaluate the Y derivatives).
-     *
-     * @param pMutationState the mutation state.
-     */
-    void SetMutationState(boost::shared_ptr<AbstractCellMutationState> pMutationState);
-
-    /**
-     * Called by the archive function on the Wnt cell-cycle model.
-     *
-     * @return #mpMutationState
-     */
-    const boost::shared_ptr<AbstractCellMutationState> GetMutationState() const;
-
-    /**
-     * Get method for mOxygenConcentration.
+     * @return #mOxygenConcentration.
      */
     double GetOxygenConcentration() const;
 };
@@ -159,6 +220,7 @@ namespace serialization
 {
 /**
  * Serialize information required to construct an Owen2011OxygenBasedCellCycleOdeSystem.
+ * todo should also include mutation state
  */
 template<class Archive>
 inline void save_construct_data(
@@ -168,8 +230,8 @@ inline void save_construct_data(
     const double oxygen_concentration = t->GetOxygenConcentration();
     ar & oxygen_concentration;
 
-    const boost::shared_ptr<AbstractCellMutationState> p_mutation_state = t->GetMutationState();
-    ar & p_mutation_state;
+//    const boost::shared_ptr<AbstractCellProperty> mutation_state = t->GetMutationState();
+//    ar & mutation_state;
 
     const std::vector<double> state_variables = t->rGetConstStateVariables();
     ar & state_variables;
@@ -177,6 +239,7 @@ inline void save_construct_data(
 
 /**
  * De-serialize constructor parameters and initialise an Owen2011OxygenBasedCellCycleOdeSystem.
+ * todo should also include mutation state
  */
 template<class Archive>
 inline void load_construct_data(
@@ -186,14 +249,15 @@ inline void load_construct_data(
     double oxygen_concentration;
     ar & oxygen_concentration;
 
-    boost::shared_ptr<AbstractCellMutationState> p_mutation_state;
-    ar & p_mutation_state;
+//    boost::shared_ptr<AbstractCellProperty> mutation_state;
+//    ar & mutation_state;
+    boost::shared_ptr<AbstractCellProperty> mutation_state(new CancerCellMutationState);
 
     std::vector<double> state_variables;
     ar & state_variables;
 
     // Invoke inplace constructor to initialise instance
-    ::new(t)Owen2011OxygenBasedCellCycleOdeSystem(oxygen_concentration, p_mutation_state, state_variables);
+    ::new(t)Owen2011OxygenBasedCellCycleOdeSystem(oxygen_concentration, mutation_state, state_variables);
 }
 }
 } // namespace ...

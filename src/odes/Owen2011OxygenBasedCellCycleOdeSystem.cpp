@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2012, University of Oxford.
+Copyright (c) 2005-2015, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -31,43 +31,51 @@ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-*/
+ */
 
 #include "Owen2011OxygenBasedCellCycleOdeSystem.hpp"
 #include "CellwiseOdeSystemInformation.hpp"
-
+#include "IsNan.hpp"
+#include "CancerCellMutationState.hpp"
+#include "QuiescentCancerCellMutationState.hpp"
+#include "WildTypeCellMutationState.hpp"
 
 Owen2011OxygenBasedCellCycleOdeSystem::Owen2011OxygenBasedCellCycleOdeSystem(double oxygenConcentration,
-		                                                                     boost::shared_ptr<AbstractCellMutationState> pMutationState,
-                                                                             std::vector<double> stateVariables)
-    : AbstractOdeSystem(2),
-      mOxygenConcentration(oxygenConcentration),
-      mpMutationState(pMutationState)
+        boost::shared_ptr<AbstractCellProperty> mutation_state,
+        std::vector<double> stateVariables)
+: AbstractOdeSystem(4),
+  oxygenConcentration(oxygenConcentration),
+  pmMutationState(mutation_state)
 {
     mpSystemInfo.reset(new CellwiseOdeSystemInformation<Owen2011OxygenBasedCellCycleOdeSystem>);
 
-    /**
-     * State variables
-     *
-     * 0. phi = phase of the cell cycle
-     * 1. oxygen_concentration
+
+    assert(pmMutationState->IsType<CancerCellMutationState>() || pmMutationState->IsType<WildTypeCellMutationState>() || pmMutationState->IsType<QuiescentCancerCellMutationState>());
+
+
+    /*
+     % The variables are
+     % 0. phi = Cell-cycle phase
+     % 1. p53 = p53 concentration
+     % 2. VEGF = VEGF concentration
+     % 3. O2 = Oxygen concentration
      */
 
-    // Parameter values are taken from the Owen et al. (2011) paper. Oxygen concentration is measured in mmHg.
-    //It is assumed that C=0.045 corresponds to typical dimensional perivascular oxygen tension of 20mmHg.
-        if (mpMutationState->IsType<CancerCellMutationState>())
-        {
-        	 mTmin = 1600;
-        	 mC0 = 1.4; // mmHg
-        }
-        else
-        {
-        	mTmin=3000;
-        	mC0=3.0; // mmHg
-        }
+    Init(); // set up parameters
 
-    // Cell-specific initial conditions
-    SetDefaultInitialCondition(1, oxygenConcentration);
+    // Parameter values are taken from the Owen (2011) paper
+    if (pmMutationState->IsType<CancerCellMutationState>() || pmMutationState->IsType<QuiescentCancerCellMutationState>()) // cancer cell
+    {
+        Cphi = 1.4;
+        Tmin = 1600;
+        k8doubledash = 0.002;
+    }
+    else // normal cells
+    {
+        Cphi = 3;
+        Tmin = 3000;
+        k8doubledash = -0.002;
+    }
 
 
     if (stateVariables != std::vector<double>())
@@ -81,55 +89,113 @@ Owen2011OxygenBasedCellCycleOdeSystem::~Owen2011OxygenBasedCellCycleOdeSystem()
     // Do nothing
 }
 
+void Owen2011OxygenBasedCellCycleOdeSystem::Init()
+{
+    // Parameter values are taken from the Owen (2011) paper
+    k7 = 0.002;
+    k7dash = 0.01;
+    Cp53 = 4.44;
+    k8 = 0.002;
+    J5 = 0.04;
+    k8dash = 0.01;
+    CVEGF = 4.44;
+}
+
+void Owen2011OxygenBasedCellCycleOdeSystem::SetMutationState(boost::shared_ptr<AbstractCellProperty> pMutationState)
+{
+
+    if (!pMutationState->IsSubType<AbstractCellMutationState>())
+    {
+        EXCEPTION("Attempting to give cell a cell mutation state that is not a subtype of AbstractCellMutationState");
+    }
+
+    pmMutationState = pMutationState;
+
+}
+
+boost::shared_ptr<AbstractCellProperty> Owen2011OxygenBasedCellCycleOdeSystem::GetMutationState() const
+{
+    return pmMutationState;
+}
+
 void Owen2011OxygenBasedCellCycleOdeSystem::EvaluateYDerivatives(double time, const std::vector<double>& rY, std::vector<double>& rDY)
 {
-    //double phi = rY[0];
-    double oxygen_concentration = rY[1];
+
+
+    assert(pmMutationState->IsType<CancerCellMutationState>() || pmMutationState->IsType<WildTypeCellMutationState>() || pmMutationState->IsType<QuiescentCancerCellMutationState>());
+
+    double p53 = rY[1];
+    double VEGF = rY[2];
+    double oxygenConcentration = rY[3];
+
+    double dphi = 0.0;
+    double dp53 = 0.0;
+    double dVEGF = 0.0;
+
     /*
-     * The variables are
-     * 0. phi = phase of the cell cycle
-     * 1. oxygen concentration
+     % The variables are
+     % 0. phi = Cell-cycle phase
+     % 1. p53 = p53 concentration
+     % 2. VEGF = VEGF concentration
+     % 3. O2 = Oxygen concentration
      */
-       double dphi = oxygen_concentration/(mTmin*(mC0+oxygen_concentration));
+
+    if (pmMutationState->IsType<CancerCellMutationState>() || pmMutationState->IsType<WildTypeCellMutationState>())
+    {
+        dphi = oxygenConcentration/(Tmin*(Cphi + oxygenConcentration));
+    }
+    else
+    {
+        assert(pmMutationState->IsType<QuiescentCancerCellMutationState>());
+        dphi = 0.0;
+    }
+
+    dp53 = k7 - k7dash*p53*oxygenConcentration/(Cp53 + oxygenConcentration);
+    dVEGF = k8 + k8doubledash*p53*VEGF/(J5 + VEGF) - k8dash*VEGF*oxygenConcentration/(CVEGF + oxygenConcentration);
+
+    rDY[0] = dphi;
+    rDY[1] = dp53;
+    rDY[2] = dVEGF;
+    rDY[3] = 0.0; // oxygen concentration will not change
+
 
     // Rescale time to be in hours
-    rDY[0] =60*dphi;
-    rDY[1]=0.0;
+    rDY[0] = 60.0*dphi;
+    rDY[1] = 60.0*dp53;
+    rDY[2] = 60.0*dVEGF;
+    rDY[3] = 0.0; // do not change the oxygen concentration
 }
 
 bool Owen2011OxygenBasedCellCycleOdeSystem::CalculateStoppingEvent(double time, const std::vector<double>& rY)
 {
-    return (rY[0] >= 1 );
+    return (rY[0] > 1);
 }
 
 template<>
 void CellwiseOdeSystemInformation<Owen2011OxygenBasedCellCycleOdeSystem>::Initialise()
 {
-    this->mVariableNames.push_back("phase_of_the_cell_cycle");
-    this->mVariableUnits.push_back("non_dim");
+    this->mVariableNames.push_back("Cell_cycle_phase");
+    this->mVariableUnits.push_back("unitless");
     this->mInitialConditions.push_back(0.0);
 
-     ///\toDo Oxygen Concentration (C) is calculated through a PDE in the cell population. However, for the moment the PDE is not working.
-    this->mVariableNames.push_back("O2");
-    this->mVariableUnits.push_back("non_dim");
-    this->mInitialConditions.push_back(NAN); // will be filled in later
+    this->mVariableNames.push_back("p53");
+    this->mVariableUnits.push_back("unitless");
+    this->mInitialConditions.push_back(0.0);
+
+    this->mVariableNames.push_back("VEGF");
+    this->mVariableUnits.push_back("unitless");
+    this->mInitialConditions.push_back(0.0);
+
+    this->mVariableNames.push_back("Oxygen");
+    this->mVariableUnits.push_back("mmHg");
+    this->mInitialConditions.push_back(20.0);
 
     this->mInitialised = true;
 }
 
-void Owen2011OxygenBasedCellCycleOdeSystem::SetMutationState(boost::shared_ptr<AbstractCellMutationState> pMutationState)
-{
-    mpMutationState = pMutationState;
-}
-
-const boost::shared_ptr<AbstractCellMutationState> Owen2011OxygenBasedCellCycleOdeSystem::GetMutationState() const
-{
-    return mpMutationState;
-}
-
 double Owen2011OxygenBasedCellCycleOdeSystem::GetOxygenConcentration() const
 {
-    return mOxygenConcentration;
+    return oxygenConcentration;
 }
 
 // Serialization for Boost >= 1.36

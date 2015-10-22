@@ -352,6 +352,36 @@ double Owen2011OxygenBasedCellCycleModelWithoutOde::UpdatePhi(double oxygen, dou
 	return mPhi;
 }
 
+double Owen2011OxygenBasedCellCycleModelWithoutOde::GetSDuration()
+{
+    /**
+     * This cell cycle model  pretends it is running ODEs in just G1,
+     * but it really represent the whole cell cycle, so
+     * we set the other phases to zero.
+     */
+    return 0.0;
+}
+
+double Owen2011OxygenBasedCellCycleModelWithoutOde::GetG2Duration()
+{
+    /**
+     * This cell cycle model  pretends it is running ODEs in just G1,
+     * but it really represent the whole cell cycle, so
+     * we set the other phases to zero.
+     */
+    return 0.0;
+}
+
+double Owen2011OxygenBasedCellCycleModelWithoutOde::GetMDuration()
+{
+    /**
+     * This cell cycle model  pretends it is running ODEs in just G1,
+     * but it really represent the whole cell cycle, so
+     * we set the other phases to zero.
+     */
+    return 0.0;
+}
+
 void Owen2011OxygenBasedCellCycleModelWithoutOde::OutputCellCycleModelParameters(out_stream& rParamsFile)
 {
 	*rParamsFile << "\t\t\t<EnterQuiescenceOxygenConcentration>" << mEnterQuiescenceOxygenConcentration << "</EnterQuiescenceOxygenConcentration>\n";

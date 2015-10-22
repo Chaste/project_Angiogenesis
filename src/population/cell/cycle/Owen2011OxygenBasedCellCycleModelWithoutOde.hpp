@@ -149,6 +149,12 @@ public:
 	 */
 	Owen2011OxygenBasedCellCycleModelWithoutOde();
 
+    void SetG2Onset(double value);
+
+    void SetSOnset(double value);
+
+    void SetMOnset(double value);
+
 	/**
 	 * Update cell-cycle phase.
 	 */
@@ -257,6 +263,21 @@ public:
 	 * @param currentQuiescenceOnsetTime the new value of mCurrentQuiescenceOnsetTime
 	 */
 	void SetCurrentQuiescenceOnsetTime(double currentQuiescenceOnsetTime);
+
+    /**
+     * Get the duration of the cell's S phase.
+     */
+    double GetSDuration();
+
+    /**
+     * Get the duration of the cell's G2 phase.
+     */
+    double GetG2Duration();
+
+    /**
+     * Get the duration of the cell's M phase.
+     */
+    double GetMDuration();
 
 	/**
 	 * Get the value of phi.

@@ -51,63 +51,50 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 class Owen2011OxygenBasedCellCycleModel : public AbstractOdeBasedCellCycleModel
 {
-	/**
-	 * Cell cycle time at which S phase begins
-	 */
-	double sOnset;
+    /**
+     * Cell cycle time at which S phase begins
+     */
+    double sOnset;
 
-	/**
-	 * Cell cycle time at which G2 phase begins
-	 */
-	double g2Onset;
+    /**
+     * Cell cycle time at which G2 phase begins
+     */
+    double g2Onset;
 
-	/**
-	 * Cell cycle time at which M phase begins
-	 */
-	double mOnset;
+    /**
+     * Cell cycle time at which M phase begins
+     */
+    double mOnset;
 
 private:
 
+    /** Needed for serialization. */
+    friend class boost::serialization::access;
     /**
-     * Constants for the Owen et al. (2011) model
+     * Archive the cell-cycle model and ODE system.
+     *
+     * @param archive the archive
+     * @param version the archive version
      */
+    template<class Archive>
+    void serialize(Archive & archive, const unsigned int version)
+    {
+        archive & boost::serialization::base_object<AbstractOdeBasedCellCycleModel>(*this);
+        archive & mCurrentQuiescentDuration;
+        archive & mCurrentQuiescenceOnsetTime;
+        archive & mEnterQuiescenceOxygenConcentration;
+        archive & mLeaveQuiescenceOxygenConcentration;
+        archive & mCriticalQuiescentDuration;
+    }
 
-    /** Tmin represents the minimum period of the cell cycle (in mins) */
-    double mTmin;
-
-    /** C0 represents the oxygen concentration at which the speed is half maximal (in mmHg) */
-    double mC0;
-
-	/** Needed for serialization. */
-	friend class boost::serialization::access;
-	/**
-	 * Archive the cell-cycle model and ODE system.
-	 *
-	 * @param archive the archive
-	 * @param version the archive version
-	 */
-	template<class Archive>
-	void serialize(Archive & archive, const unsigned int version)
-	{
-		archive & boost::serialization::base_object<AbstractOdeBasedCellCycleModel>(*this);
-		archive & mCurrentQuiescentDuration;
-		archive & mCurrentQuiescenceOnsetTime;
-		archive & mEnterQuiescenceOxygenConcentration;
-		archive & mLeaveQuiescenceOxygenConcentration;
-		archive & mCriticalQuiescentDuration;
-	}
-
-	/**
-	 * Adjust any ODE parameters needed before solving until currentTime.
-	 *
-	 * @param currentTime  the time up to which the system will be solved.
-	 */
-	void AdjustOdeParameters(double currentTime);
+    /**
+     * Adjust any ODE parameters needed before solving until currentTime.
+     *
+     * @param currentTime  the time up to which the system will be solved.
+     */
+    void AdjustOdeParameters(double currentTime);
 
 protected:
-
-    /** phi (phase representative) */
-    double mPhi;
 
     /**
      * Maximum initial value allocated to phi.
@@ -116,174 +103,214 @@ protected:
     double mMaxRandInitialPhase;
 
     /**
-     * Maximum value that phi can take.
-     * no units
+     * How long the current period of quiescence has lasted.
+     * Has units of mins
      */
-    double mMaxPhi;
+    double mCurrentQuiescentDuration;
 
     /**
-     * Whether the cell is currently ready to undergo division.
+     * The time when the current period of quiescence began.
      */
-    bool mReadyToDivide;
+    double mCurrentQuiescenceOnsetTime;
 
-	/**
-	 * How long the current period of quiescence has lasted.
-	 * Has units of mins
-	 */
-	double mCurrentQuiescentDuration;
+    /**
+     * Oxygen concentration below which cancerous cells enter quiescence.
+     * A prolonged period of quiescence causes the cell to become apoptotic.
+     */
+    double mEnterQuiescenceOxygenConcentration;
 
-	/**
-	 * The time when the current period of quiescence began.
-	 */
-	double mCurrentQuiescenceOnsetTime;
+    /**
+     * Oxygen concentration above which cancerous cells leave their state of being quiescent
+     */
+    double mLeaveQuiescenceOxygenConcentration;
 
-	/**
-	 * Oxygen concentration below which cells enter quiescence.
-	 * A prolonged period of quiescence causes the cell to become apoptotic.
-	 */
-	double mEnterQuiescenceOxygenConcentration;
+    /**
+     * Critical quiescent duration.
+     * Has units of hours.
+     */
+    double mCriticalQuiescentDuration;
 
-	/**
-	 * Oxygen concentration above which cells leave their state of being quiescent
-	 */
-	double mLeaveQuiescenceOxygenConcentration;
+    /**
+     * p53 threshold above which normal cells become apoptotic in a healthy environment.
+     */
+    double mp53ThresholdForApoptosisOfNormalCellsInHealthyMicroenvironment;
 
-	/**
-	 * Critical quiescent duration.
-	 * Has units of mins.
-	 */
-	double mCriticalQuiescentDuration;
+    /**
+     * p53 threshold above which normal cells become apoptotic in a tumour environment.
+     */
+    double mp53ThresholdForApoptosisOfNormalCellsInTumourMicroenvironment;
+
 
 public:
 
-	/**
-	 * Default constructor.
-	 *
-	 * @param pOdeSolver An optional pointer to a cell-cycle model ODE solver object (allows the use of different ODE solvers)
-	 */
-	Owen2011OxygenBasedCellCycleModel(boost::shared_ptr<AbstractCellCycleModelOdeSolver> pOdeSolver = boost::shared_ptr<AbstractCellCycleModelOdeSolver>());
+    /**
+     * Default constructor.
+     *
+     * @param pOdeSolver An optional pointer to a cell-cycle model ODE solver object (allows the use of different ODE solvers)
+     */
+    Owen2011OxygenBasedCellCycleModel(boost::shared_ptr<AbstractCellCycleModelOdeSolver> pOdeSolver = boost::shared_ptr<AbstractCellCycleModelOdeSolver>());
 
-	void SetG2Onset(double value);
+    void SetG2Onset(double value);
 
-	void SetSOnset(double value);
+    void SetSOnset(double value);
 
-	void SetMOnset(double value);
+    void SetMOnset(double value);
 
-	/**
-	 * Update cell-cycle phase.
-	 */
-	void UpdateCellCyclePhase();
+    /**
+     * Update cell-cycle phase.
+     */
+    void UpdateCellCyclePhase();
 
-	/**
-	 * Resets the oxygen-based model to the start of the cell cycle
-	 * (this model does not cycle naturally). Cells are given a new
-	 * birth time and cell cycle proteins are reset. Note that the
-	 * oxygen concentration maintains its current value.
-	 *
-	 * Should only be called by the Cell Divide() method.
-	 */
-	virtual void ResetForDivision();
+    /**
+     * @return whether the cell is ready to divide (enter M phase).
+     *
+     * The intention is that this method is called precisely once at
+     * each timestep of the simulation. However this does not appear
+     * to always be the case at present, and so it can cope with more
+     * unusual usage patterns.
+     */
+    bool ReadyToDivide();
 
-	/**
-	 * Overridden builder method to create new copies of
-	 * this cell-cycle model.
-	 */
-	AbstractCellCycleModel* CreateCellCycleModel();
+    /**
+     * Resets the oxygen-based model to the start of the cell cycle
+     * (this model does not cycle naturally). Cells are given a new
+     * birth time and cell cycle proteins are reset. Note that the
+     * oxygen concentration maintains its current value.
+     *
+     * Should only be called by the Cell Divide() method.
+     */
+    virtual void ResetForDivision();
 
-	/**
-	 * Update the duration for which the cell has been quiescent.
-	 */
-	void UpdateQuiescentDuration();
+    /**
+     * Overridden builder method to create new copies of
+     * this cell-cycle model.
+     */
+    AbstractCellCycleModel* CreateCellCycleModel();
 
-	/**
-	 * Check if the oxygen concentration of the cell is below the EnterQuiescenceOxygenConcentration.
-	 * If it is true the label cells.
-	 */
-	void CheckAndLabelCell();
+    /**
+     * Initialise the cell-cycle model at the start of a simulation.
+     *
+     * This method will be called precisely once per cell set up in the initial
+     * cell population. It is not called on cell division; use ResetForDivision(),
+     * CreateCellCycleModel() and InitialiseDaughterCell() for that.
+     *
+     * By the time this is called, a CellPopulation will have been set up, so the model
+     * can know where its cell is located in space. If relevant to the simulation,
+     * any singletons will also have been initialised.
+     */
+    void Initialise();
 
-	/**
-	 * @return mCurrentQuiescentDuration
-	 */
-	double GetCurrentQuiescentDuration();
+    /**
+     * Overridden InitialiseDaughterCell() method.
+     */
+    void InitialiseDaughterCell();
 
-	/**
-	 * @return mCurrentQuiescenceOnsetTime
-	 */
-	double GetCurrentQuiescenceOnsetTime();
+    /**
+     * Set maximum phase of cell upon initialisation.
+     */
+    void SetMaxRandInitialPhase(double rand_max_phase);
 
-	/**
-	 * @return mEnterQuiescenceOxygenConcentration
-	 */
-	double GetEnterQuiescenceOxygenConcentration();
 
-	/**
-	 * Set method for mEnterQuiescenceOxygenConcentration.
-	 *
-	 * @param enterQuiescenceOxygenConcentration the new value of mEnterQuiescenceOxygenConcentration
-	 */
-	void SetEnterQuiescenceOxygenConcentration(double enterQuiescenceOxygenConcentration);
+    /**
+     * Update the duration for which the cell has been quiescent.
+     */
+    void UpdateQuiescentDuration();
 
-	/**
-	 * @return mLeaveQuiescenceOxygenConcentration
-	 */
-	double GetLeaveQuiescenceOxygenConcentration();
+    /**
+     * Check if the oxygen concentration of the cell is below the EnterQuiescenceOxygenConcentration.
+     * If it is true the label cells.
+     */
+    void CheckAndLabelCell();
 
-	/**
-	 * Set method for mLeaveQuiescenceOxygenConcentration.
-	 *
-	 * @param leaveQuiescenceOxygenConcentration the new value of mLeaveQuiescenceOxygenConcentration
-	 */
-	void SetLeaveQuiescenceOxygenConcentration(double leaveQuiescenceOxygenConcentration);
+    /**
+     * @return mCurrentQuiescentDuration
+     */
+    double GetCurrentQuiescentDuration();
 
-	/**
-	 * @return mCriticalQuiescentDuration
-	 */
-	double GetCriticalQuiescentDuration();
+    /**
+     * @return mCurrentQuiescenceOnsetTime
+     */
+    double GetCurrentQuiescenceOnsetTime();
 
-	/**
-	 * Set method for mCriticalQuiescentDuration.
-	 *
-	 * @param criticalQuiescentDuration the new value of mCriticalQuiescentDuration
-	 */
-	void SetCriticalQuiescentDuration(double criticalQuiescentDuration);
+    /**
+     * @return mEnterQuiescenceOxygenConcentration
+     */
+    double GetEnterQuiescenceOxygenConcentration();
 
-	/**
-	 * Set method for mCurrentQuiescenceOnsetTime.
-	 *
-	 * @param currentQuiescenceOnsetTime the new value of mCurrentQuiescenceOnsetTime
-	 */
-	void SetCurrentQuiescenceOnsetTime(double currentQuiescenceOnsetTime);
+    /**
+     * Set method for mEnterQuiescenceOxygenConcentration.
+     *
+     * @param enterQuiescenceOxygenConcentration the new value of mEnterQuiescenceOxygenConcentration
+     */
+    void SetEnterQuiescenceOxygenConcentration(double enterQuiescenceOxygenConcentration);
 
-	/**
-	 * Get the duration of the cell's S phase.
-	 */
-	double GetSDuration();
+    /**
+     * @return mLeaveQuiescenceOxygenConcentration
+     */
+    double GetLeaveQuiescenceOxygenConcentration();
 
-	/**
-	 * Get the duration of the cell's G2 phase.
-	 */
-	double GetG2Duration();
+    /**
+     * Set method for mLeaveQuiescenceOxygenConcentration.
+     *
+     * @param leaveQuiescenceOxygenConcentration the new value of mLeaveQuiescenceOxygenConcentration
+     */
+    void SetLeaveQuiescenceOxygenConcentration(double leaveQuiescenceOxygenConcentration);
 
-	/**
-	 * Get the duration of the cell's M phase.
-	 */
-	double GetMDuration();
+    /**
+     * @return mCriticalQuiescentDuration
+     */
+    double GetCriticalQuiescentDuration();
 
-	/**
-	 * Initialise the cell-cycle model at the start of a simulation.
-	 *
-	 * This overridden method sets up a new ODE system.
-	 */
-	void Initialise();
+    /**
+     * Set method for mCriticalQuiescentDuration.
+     *
+     * @param criticalQuiescentDuration the new value of mCriticalQuiescentDuration
+     */
+    void SetCriticalQuiescentDuration(double criticalQuiescentDuration);
 
-	double GetPhi();
+    /**
+     * Set method for mCurrentQuiescenceOnsetTime.
+     *
+     * @param currentQuiescenceOnsetTime the new value of mCurrentQuiescenceOnsetTime
+     */
+    void SetCurrentQuiescenceOnsetTime(double currentQuiescenceOnsetTime);
 
-	/**
-	 * Outputs cell cycle model parameters to files.
-	 *
-	 * @param rParamsFile the file stream to which the parameters are output
-	 */
-	virtual void OutputCellCycleModelParameters(out_stream& rParamsFile);
+    /**
+     * Get the duration of the cell's S phase.
+     */
+    double GetSDuration();
+
+    /**
+     * Get the duration of the cell's G2 phase.
+     */
+    double GetG2Duration();
+
+    /**
+     * Get the duration of the cell's M phase.
+     */
+    double GetMDuration();
+
+    /**
+     * Get the value of phi.
+     */
+    double GetPhi();
+
+    /**
+     * Get the value of VEGF.
+     */
+    double GetVEGF();
+
+    /**
+     * Get the value of p53.
+     */
+    double GetP53();
+
+    /**
+     * Outputs cell cycle model parameters to files.
+     *
+     * @param rParamsFile the file stream to which the parameters are output
+     */
+    virtual void OutputCellCycleModelParameters(out_stream& rParamsFile);
 };
 
 // Declare identifier for the serializer

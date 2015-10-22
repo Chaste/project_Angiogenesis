@@ -34,7 +34,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "Owen2011TrackingModifier.hpp"
-#include "Owen2011OxygenBasedCellCycleModelWithoutOde.hpp"
+#include "Owen2011OxygenBasedCellCycleModel.hpp"
 
 template<unsigned DIM>
 Owen2011TrackingModifier<DIM>::Owen2011TrackingModifier()
@@ -74,15 +74,15 @@ void Owen2011TrackingModifier<DIM>::UpdateCellData(AbstractCellPopulation<DIM,DI
          cell_iter != rCellPopulation.End();
          ++cell_iter)
     {
-        Owen2011OxygenBasedCellCycleModelWithoutOde* p_model = static_cast<Owen2011OxygenBasedCellCycleModelWithoutOde*>(cell_iter->GetCellCycleModel());
+        Owen2011OxygenBasedCellCycleModel* p_model = static_cast<Owen2011OxygenBasedCellCycleModel*>(cell_iter->GetCellCycleModel());
         double this_phi = p_model->GetPhi();
-//        double this_p53 = p_model->Getp53();
-//        double this_VEGF = p_model->GetVEGF();
+        double this_p53 = p_model->GetP53();
+        double this_VEGF = p_model->GetVEGF();
 
         // Note that the state variables must be in the same order as listed in Owen2011OxygenBasedOdeSystem
         cell_iter->GetCellData()->SetItem("Phi", this_phi);
-//        cell_iter->GetCellData()->SetItem("p53", this_p53);
-//        cell_iter->GetCellData()->SetItem("VEGF", this_VEGF);
+        cell_iter->GetCellData()->SetItem("p53", this_p53);
+        cell_iter->GetCellData()->SetItem("VEGF", this_VEGF);
     }
 
 }
