@@ -48,10 +48,13 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "OutputFileHandler.hpp"
 
+#include "WildTypeCellMutationState.hpp"
+#include "CancerCellMutationState.hpp"
+
 #include "Owen2011OxygenBasedCellCycleOdeSystem.hpp"
 #include "RungeKutta4IvpOdeSolver.hpp"
 #include "RungeKuttaFehlbergIvpOdeSolver.hpp"
-#include "BackwardEulerIvpOdeSolver.hpp"
+#include "CvodeAdaptor.hpp"
 
 /**
  * This class contains tests for Owen2011OxygenBasedCellCycleOdeSystem,
@@ -66,21 +69,24 @@ public:
     /**
      * Test derivative calculations (correct values calculated using Matlab).
      */
-    void TestOwen2011Equations()
+    void TestOwen2011EquationsForNormalCells()
     {
         // Set up
         double time = 0.0;
         double oxygen_concentration = 1.0;
 
-        Owen2011OxygenBasedCellCycleOdeSystem normal_system(oxygen_concentration, false);
-//      Owen2011OxygenBasedCellCycleOdeSystem cancer_system(oxygen_concentration, true);
+        boost::shared_ptr<WildTypeCellMutationState> mutation_state(new WildTypeCellMutationState);
+
+        Owen2011OxygenBasedCellCycleOdeSystem normal_system(oxygen_concentration, mutation_state);
 
         std::vector<double> initial_conditions = normal_system.GetInitialConditions();
+        TS_ASSERT_DELTA(initial_conditions[0],0,1e-5);
+        TS_ASSERT_DELTA(initial_conditions[1],0,1e-5);
+        TS_ASSERT_DELTA(initial_conditions[2],0,1e-5);
+        TS_ASSERT_DELTA(initial_conditions[3],oxygen_concentration,1e-5);
 
         std::vector<double> normal_derivs(initial_conditions.size());
-//        std::vector<double> cancer_derivs(initial_conditions.size());
         normal_system.EvaluateYDerivatives(time, initial_conditions, normal_derivs);
-//        cancer_system.EvaluateYDerivatives(time, initial_conditions, cancer_derivs);
 
         /**
          * Test derivatives are correct initially
@@ -88,16 +94,10 @@ public:
          */
 
         // Normal cell
-        TS_ASSERT_DELTA(normal_derivs[0], 0.0198659050, 1e-5);
-        TS_ASSERT_DELTA(normal_derivs[1], 0.0000000000, 1e-5);
-
-//        // Cancer cell
-//        TS_ASSERT_DELTA(cancer_derivs[0], 455.630699088, 1e-5);
-//        TS_ASSERT_DELTA(cancer_derivs[1], 1.83600000000, 1e-5);
-//        TS_ASSERT_DELTA(cancer_derivs[2], 0.42000000000, 1e-5);
-//        TS_ASSERT_DELTA(cancer_derivs[3], 1.50000000000, 1e-5);
-//        TS_ASSERT_DELTA(cancer_derivs[4], -5.4060000000, 1e-5);
-//        TS_ASSERT_DELTA(cancer_derivs[5], 0.00000000000, 1e-5);
+        TS_ASSERT_DELTA(normal_derivs[0], 0.005, 1e-5);
+        TS_ASSERT_DELTA(normal_derivs[1], 0.120, 1e-5);
+        TS_ASSERT_DELTA(normal_derivs[2], 0.120, 1e-5);
+        TS_ASSERT_DELTA(normal_derivs[3], 0.0, 1e-5);
 
         /**
          * Again test derivatives are correct initially, but for
@@ -107,31 +107,75 @@ public:
          */
         oxygen_concentration = 0.1;
 
-        Owen2011OxygenBasedCellCycleOdeSystem normal_system2(oxygen_concentration, false);
-//      Owen2011OxygenBasedCellCycleOdeSystem cancer_system2(oxygen_concentration, true);
+        Owen2011OxygenBasedCellCycleOdeSystem normal_system2(oxygen_concentration, mutation_state);
 
         std::vector<double> normal_derivs2(initial_conditions.size());
         normal_system2.SetDefaultInitialCondition(1, 0.1);
 
-//        std::vector<double> cancer_derivs2(initial_conditions.size());
-//        cancer_system2.SetDefaultInitialCondition(2, 0.1);
-
         std::vector<double> initial_conditions2 = normal_system2.GetInitialConditions();
 
         normal_system2.EvaluateYDerivatives(time, initial_conditions2, normal_derivs2);
-//        cancer_system2.EvaluateYDerivatives(time, initial_conditions2, cancer_derivs2);
 
         // Normal cell
-        TS_ASSERT_DELTA(normal_derivs2[0], 0.0187353630, 1e-5);
-        TS_ASSERT_DELTA(normal_derivs2[1], 0.0000000000, 1e-5);
+        TS_ASSERT_DELTA(normal_derivs2[0], 0.000645161, 1e-5);
+        TS_ASSERT_DELTA(normal_derivs2[1], 0.118678414, 1e-5);
+        TS_ASSERT_DELTA(normal_derivs2[2], 0.120, 1e-5);
+        TS_ASSERT_DELTA(normal_derivs2[3], 0.0, 1e-5);
 
-//        // Cancer cell
-//        TS_ASSERT_DELTA(cancer_derivs2[0], 455.630699088, 1e-5);
-//        TS_ASSERT_DELTA(cancer_derivs2[1], 1.82100000000, 1e-5);
-//        TS_ASSERT_DELTA(cancer_derivs2[2], 0.36545454545, 1e-5);
-//        TS_ASSERT_DELTA(cancer_derivs2[3], 1.50000000000, 1e-5);
-//        TS_ASSERT_DELTA(cancer_derivs2[4], -5.4060000000, 1e-5);
-//        TS_ASSERT_DELTA(cancer_derivs2[5], 0.00000000000, 1e-5);
+    }
+
+    /**
+     * Test derivative calculations (correct values calculated using Matlab).
+     */
+    void TestOwen2011EquationsForCancerCells()
+    {
+        // Set up
+        double time = 0.0;
+        double oxygen_concentration = 1.0;
+
+        boost::shared_ptr<CancerCellMutationState> mutation_state(new CancerCellMutationState);
+
+        Owen2011OxygenBasedCellCycleOdeSystem cancer_system(oxygen_concentration, mutation_state);
+
+        std::vector<double> initial_conditions = cancer_system.GetInitialConditions();
+
+        std::vector<double> cancer_derivs(initial_conditions.size());
+        cancer_system.EvaluateYDerivatives(time, initial_conditions, cancer_derivs);
+
+        /**
+         * Test derivatives are correct initially
+         * (correct values calculated using Matlab code)
+         */
+
+        // Cancer cell
+        TS_ASSERT_DELTA(cancer_derivs[0], 0.015625, 1e-5);
+        TS_ASSERT_DELTA(cancer_derivs[1], 0.120, 1e-5);
+        TS_ASSERT_DELTA(cancer_derivs[2], 0.120, 1e-5);
+        TS_ASSERT_DELTA(cancer_derivs[3], 0.0, 1e-5);
+
+        /**
+         * Again test derivatives are correct initially, but for
+         * different initial conditions (corresponding to a low
+         * oxygen concentration). The usual initial condition for
+         * z is zero, so we need to change it to see any difference.
+         */
+        oxygen_concentration = 0.1;
+
+        Owen2011OxygenBasedCellCycleOdeSystem cancer_system2(oxygen_concentration, mutation_state);
+
+        std::vector<double> cancer_derivs2(initial_conditions.size());
+        cancer_system2.SetDefaultInitialCondition(2, 0.1);
+
+        std::vector<double> initial_conditions2 = cancer_system2.GetInitialConditions();
+
+        cancer_system2.EvaluateYDerivatives(time, initial_conditions2, cancer_derivs2);
+
+        // Cancer cell
+        TS_ASSERT_DELTA(cancer_derivs2[0], 0.0025, 1e-5);
+        TS_ASSERT_DELTA(cancer_derivs2[1], 0.120, 1e-5);
+        TS_ASSERT_DELTA(cancer_derivs2[2], 0.118678414, 1e-5);
+        TS_ASSERT_DELTA(cancer_derivs2[3], 0.0, 1e-5);
+
     }
 
     /**
@@ -142,15 +186,20 @@ public:
     {
         // Set up
         double oxygen_concentration = 1.0;
-        Owen2011OxygenBasedCellCycleOdeSystem owen_system(oxygen_concentration, false);
+        boost::shared_ptr<WildTypeCellMutationState> mutation_state(new WildTypeCellMutationState);
+
+        Owen2011OxygenBasedCellCycleOdeSystem owen_system(oxygen_concentration, mutation_state);
 
         // Create ODE solvers
         RungeKutta4IvpOdeSolver rk4_solver;
         RungeKuttaFehlbergIvpOdeSolver rkf_solver;
-        BackwardEulerIvpOdeSolver back_solver(2);
+        CvodeAdaptor cvode_solver;
+        cvode_solver.CheckForStoppingEvents();
 
         // Set up for solver
-        OdeSolution solutions;
+        OdeSolution solutions1;
+        OdeSolution solutions2;
+        OdeSolution solutions3;
         std::vector<double> initial_conditions = owen_system.GetInitialConditions();
         double start_time = 0.0;
         double end_time = 0.0;
@@ -159,32 +208,47 @@ public:
 
         // Solve the ODE system using a Runge Kutta fourth order solver
         start_time = std::clock();
-        solutions = rk4_solver.Solve(&owen_system, initial_conditions, 0.0, 60.0, h_value, h_value);
+        solutions1 = rk4_solver.Solve(&owen_system, initial_conditions, 0.0, 210.0, h_value, h_value);
         end_time = std::clock();
         elapsed_time = (end_time - start_time)/(CLOCKS_PER_SEC);
         std::cout << "1. Runge-Kutta Elapsed time = " << elapsed_time << "\n";
 
-//        // Reset maximum tolerance for Runge Kutta Fehlber solver
-//        h_value = 1e-1;
-
         // Solve the ODE system using a Runge Kutta Fehlber solver
         initial_conditions = owen_system.GetInitialConditions();
         start_time = std::clock();
-        solutions = rkf_solver.Solve(&owen_system, initial_conditions, 0.0, 60.0, h_value, h_value);
+        solutions2 = rkf_solver.Solve(&owen_system, initial_conditions, 0.0, 210.0, h_value, h_value);
         end_time = std::clock();
         elapsed_time = (end_time - start_time)/(CLOCKS_PER_SEC);
         std::cout << "2. Runge-Kutta-Fehlberg Elapsed time = " << elapsed_time << "\n";
 
+        // Solve the ODE system using the Cvode solver
+        initial_conditions = owen_system.GetInitialConditions();
+        start_time = std::clock();
+        solutions3 = cvode_solver.Solve(&owen_system, initial_conditions, 0.0, 210.0, 10.0, 10);
+        end_time = std::clock();
+        elapsed_time = (end_time - start_time)/(CLOCKS_PER_SEC);
+        std::cout << "3. Cvode Solver Elapsed time = " << elapsed_time << "\n";
+
         // Test that solutions are accurate for a small time increase
-        int end = solutions.rGetSolutions().size() - 1;
+        int end1 = solutions1.rGetSolutions().size() - 1;
+        int end2 = solutions2.rGetSolutions().size() - 1;
+        int end3 = solutions3.rGetSolutions().size() - 1;
 
         // Test that the solver stops at the right time
-        TS_ASSERT_DELTA(solutions.rGetTimes()[end], 50.3375, 1e-2);
+        // Rate of increase in phase is 0.005 hr^-1 (as in Line 97). THis remains
+        // constant in time so end/division time is 1/0.005 = 200
+        TS_ASSERT_DELTA(solutions1.rGetTimes()[end1], 200.00, 1e-2);
+        TS_ASSERT_DELTA(solutions2.rGetTimes()[end2], 200.00, 1e-2);
+        TS_ASSERT_DELTA(solutions3.rGetTimes()[end3], 200.00, 1e-2);
 
 
         // Test solution - note the high tolerances
-        TS_ASSERT_DELTA(solutions.rGetSolutions()[end][0], 1.000000000000000, 1e-3);
-        TS_ASSERT_DELTA(solutions.rGetSolutions()[end][1], 1.000000000000000, 1e-3);
+        TS_ASSERT_DELTA(solutions1.rGetSolutions()[end1][0], 1.000, 1e-3);
+        TS_ASSERT_DELTA(solutions1.rGetSolutions()[end1][3], 1.000, 1e-3);
+        TS_ASSERT_DELTA(solutions2.rGetSolutions()[end2][0], 1.000, 1e-3);
+        TS_ASSERT_DELTA(solutions2.rGetSolutions()[end2][3], 1.000, 1e-3);
+        TS_ASSERT_DELTA(solutions3.rGetSolutions()[end3][0], 1.000, 1e-3);
+        TS_ASSERT_DELTA(solutions3.rGetSolutions()[end3][3], 1.000, 1e-3);
 
     }
 
@@ -195,17 +259,19 @@ public:
 
         {
             double oxygen_concentration = 0.7;
-            bool is_labelled = true;
+            boost::shared_ptr<WildTypeCellMutationState> mutation_state(new WildTypeCellMutationState);
 
-            Owen2011OxygenBasedCellCycleOdeSystem ode_system(oxygen_concentration, is_labelled);
+            Owen2011OxygenBasedCellCycleOdeSystem ode_system(oxygen_concentration, mutation_state);
 
             TS_ASSERT_DELTA(ode_system.GetOxygenConcentration(), 0.70, 1e-6);
-            TS_ASSERT_EQUALS(ode_system.IsLabelled(), true);
+            TS_ASSERT(ode_system.GetMutationState()->IsType<WildTypeCellMutationState>());
 
             std::vector<double> initial_conditions = ode_system.GetInitialConditions();
-            TS_ASSERT_EQUALS(initial_conditions.size(), 2u);
+            TS_ASSERT_EQUALS(initial_conditions.size(), 4u);
             TS_ASSERT_DELTA(initial_conditions[0], 0.00, 1e-6);
-            TS_ASSERT_DELTA(initial_conditions[1], 0.70, 1e-6);
+            TS_ASSERT_DELTA(initial_conditions[1], 0.00, 1e-6);
+            TS_ASSERT_DELTA(initial_conditions[2], 0.00, 1e-6);
+            TS_ASSERT_DELTA(initial_conditions[3], 0.70, 1e-6);
 
             // Create an output archive
             std::ofstream ofs(archive_filename.c_str());
@@ -228,12 +294,14 @@ public:
 
             // Check that archiving worked correctly
             TS_ASSERT_DELTA(static_cast<Owen2011OxygenBasedCellCycleOdeSystem*>(p_ode_system)->GetOxygenConcentration(), 0.70, 1e-6);
-            TS_ASSERT_EQUALS(static_cast<Owen2011OxygenBasedCellCycleOdeSystem*>(p_ode_system)->IsLabelled(), true);
+            TS_ASSERT(static_cast<Owen2011OxygenBasedCellCycleOdeSystem*>(p_ode_system)->GetMutationState()->IsType<WildTypeCellMutationState>());
 
             std::vector<double> initial_conditions = p_ode_system->GetInitialConditions();
-            TS_ASSERT_EQUALS(initial_conditions.size(), 2u);
+            TS_ASSERT_EQUALS(initial_conditions.size(), 4u);
             TS_ASSERT_DELTA(initial_conditions[0], 0.00, 1e-6);
-            TS_ASSERT_DELTA(initial_conditions[1], 0.70, 1e-6);
+            TS_ASSERT_DELTA(initial_conditions[1], 0.00, 1e-6);
+            TS_ASSERT_DELTA(initial_conditions[2], 0.00, 1e-6);
+            TS_ASSERT_DELTA(initial_conditions[3], 0.70, 1e-6);
 
             // Tidy up
             delete p_ode_system;

@@ -184,8 +184,6 @@ public:
         }
 
         p_simulation_time->IncrementTimeOneStep();
-
-        p_simulation_time->IncrementTimeOneStep();
         this_phi = p_model_1d->GetPhi();
         this_p53 = p_model_1d->GetP53();
         this_VEGF = p_model_1d->GetVEGF();

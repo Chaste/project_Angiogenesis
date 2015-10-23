@@ -41,7 +41,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "WildTypeCellMutationState.hpp"
 
 Owen2011OxygenBasedCellCycleOdeSystem::Owen2011OxygenBasedCellCycleOdeSystem(double oxygenConcentration,
-        boost::shared_ptr<AbstractCellProperty> mutation_state,
+        boost::shared_ptr<AbstractCellMutationState> mutation_state,
         std::vector<double> stateVariables)
 : AbstractOdeSystem(4),
   oxygenConcentration(oxygenConcentration),
@@ -49,9 +49,9 @@ Owen2011OxygenBasedCellCycleOdeSystem::Owen2011OxygenBasedCellCycleOdeSystem(dou
 {
     mpSystemInfo.reset(new CellwiseOdeSystemInformation<Owen2011OxygenBasedCellCycleOdeSystem>);
 
+    mpSystemInfo->SetDefaultInitialCondition(3, oxygenConcentration);
 
     assert(pmMutationState->IsType<CancerCellMutationState>() || pmMutationState->IsType<WildTypeCellMutationState>() || pmMutationState->IsType<QuiescentCancerCellMutationState>());
-
 
     /*
      % The variables are
@@ -82,6 +82,7 @@ Owen2011OxygenBasedCellCycleOdeSystem::Owen2011OxygenBasedCellCycleOdeSystem(dou
     {
         SetStateVariables(stateVariables);
     }
+
 }
 
 Owen2011OxygenBasedCellCycleOdeSystem::~Owen2011OxygenBasedCellCycleOdeSystem()
@@ -101,7 +102,7 @@ void Owen2011OxygenBasedCellCycleOdeSystem::Init()
     CVEGF = 4.44;
 }
 
-void Owen2011OxygenBasedCellCycleOdeSystem::SetMutationState(boost::shared_ptr<AbstractCellProperty> pMutationState)
+void Owen2011OxygenBasedCellCycleOdeSystem::SetMutationState(boost::shared_ptr<AbstractCellMutationState> pMutationState)
 {
 
     if (!pMutationState->IsSubType<AbstractCellMutationState>())
@@ -113,7 +114,7 @@ void Owen2011OxygenBasedCellCycleOdeSystem::SetMutationState(boost::shared_ptr<A
 
 }
 
-boost::shared_ptr<AbstractCellProperty> Owen2011OxygenBasedCellCycleOdeSystem::GetMutationState() const
+boost::shared_ptr<AbstractCellMutationState> Owen2011OxygenBasedCellCycleOdeSystem::GetMutationState() const
 {
     return pmMutationState;
 }

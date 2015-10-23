@@ -38,9 +38,10 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ChasteSerialization.hpp"
 #include <boost/serialization/base_object.hpp>
+#include <boost/serialization/shared_ptr.hpp>
 
 #include <cmath>
-#include "AbstractCellProperty.hpp"
+#include "AbstractCellMutationState.hpp"
 #include "CancerCellMutationState.hpp"
 #include "AbstractOdeSystem.hpp"
 
@@ -132,7 +133,7 @@ private:
     /**
      * Mutation state.
      */
-    boost::shared_ptr<AbstractCellProperty> pmMutationState;
+    boost::shared_ptr<AbstractCellMutationState> pmMutationState;
 
     friend class boost::serialization::access;
     /**
@@ -157,7 +158,7 @@ public:
      * @param stateVariables optional initial conditions for state variables (only used in archiving)
      */
     Owen2011OxygenBasedCellCycleOdeSystem(double oxygenConcentration,
-                                             boost::shared_ptr<AbstractCellProperty> mutation_state,
+                                             boost::shared_ptr<AbstractCellMutationState> mutation_state,
                                              std::vector<double> stateVariables=std::vector<double>());
 
     /**
@@ -170,12 +171,12 @@ public:
      *
      * @param pMutationState the cell's new mutation state
      */
-    void SetMutationState(boost::shared_ptr<AbstractCellProperty> pMutationState);
+    void SetMutationState(boost::shared_ptr<AbstractCellMutationState> pMutationState);
 
     /**
      * Get the cell's mutation state.
      */
-    boost::shared_ptr<AbstractCellProperty> GetMutationState() const;
+    boost::shared_ptr<AbstractCellMutationState> GetMutationState() const;
 
     /**
      * Initialise parameter values.
@@ -220,7 +221,6 @@ namespace serialization
 {
 /**
  * Serialize information required to construct an Owen2011OxygenBasedCellCycleOdeSystem.
- * todo should also include mutation state
  */
 template<class Archive>
 inline void save_construct_data(
@@ -230,8 +230,8 @@ inline void save_construct_data(
     const double oxygen_concentration = t->GetOxygenConcentration();
     ar & oxygen_concentration;
 
-//    const boost::shared_ptr<AbstractCellProperty> mutation_state = t->GetMutationState();
-//    ar & mutation_state;
+    const boost::shared_ptr<AbstractCellMutationState> mutation_state = t->GetMutationState();
+    ar & mutation_state;
 
     const std::vector<double> state_variables = t->rGetConstStateVariables();
     ar & state_variables;
@@ -239,7 +239,6 @@ inline void save_construct_data(
 
 /**
  * De-serialize constructor parameters and initialise an Owen2011OxygenBasedCellCycleOdeSystem.
- * todo should also include mutation state
  */
 template<class Archive>
 inline void load_construct_data(
@@ -249,9 +248,8 @@ inline void load_construct_data(
     double oxygen_concentration;
     ar & oxygen_concentration;
 
-//    boost::shared_ptr<AbstractCellProperty> mutation_state;
-//    ar & mutation_state;
-    boost::shared_ptr<AbstractCellProperty> mutation_state(new CancerCellMutationState);
+    boost::shared_ptr<AbstractCellMutationState> mutation_state;
+    ar & mutation_state;
 
     std::vector<double> state_variables;
     ar & state_variables;
