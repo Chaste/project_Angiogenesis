@@ -80,7 +80,7 @@ public:
      * Constructor.
      * @param pNetwork the network to perform angiogenesis on
      */
-    AbstractAngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
+    AbstractAngiogenesisSolver();
 
     /**
      * Destructor.
@@ -90,7 +90,7 @@ public:
     /* Factory constructor method
      * @return a shared pointer to a new solver
      */
-    static boost::shared_ptr<AbstractAngiogenesisSolver> Create(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
+    static boost::shared_ptr<AbstractAngiogenesisSolver> Create();
 
     /**
      * Add a growth direction modifier to the collection

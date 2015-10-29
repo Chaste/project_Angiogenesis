@@ -52,7 +52,8 @@ DiscreteSource<DIM>::DiscreteSource()
         mSourceStrength(SourceStrength::PRESCRIBED),
         mLabel("Default"),
         mValue(0.0),
-        mIsLinearInSolution(false)
+        mIsLinearInSolution(false),
+        mMutationSpecificConsumptionRateMap()
 {
 
 }
@@ -77,6 +78,12 @@ SourceType::Value DiscreteSource<DIM>::GetType()
 }
 
 template<unsigned DIM>
+void DiscreteSource<DIM>::SetMutationSpecificConsumptionRateMap(std::vector<std::pair<AbstractCellProperty, double > > mutationSpecificConsumptionRateMap)
+{
+    mMutationSpecificConsumptionRateMap = mutationSpecificConsumptionRateMap;
+}
+
+template<unsigned DIM>
 void DiscreteSource<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
 {
     mpNetwork = pNetwork;
@@ -89,9 +96,9 @@ void DiscreteSource<DIM>::SetSolution(vtkSmartPointer<vtkImageData>  pSolution)
 }
 
 template<unsigned DIM>
-void DiscreteSource<DIM>::SetCellPopulation(boost::shared_ptr<SimpleCellPopulation<DIM> > pCellPopulation)
+void DiscreteSource<DIM>::SetCellPopulation(AbstractCellPopulation<DIM>& rCellPopulation)
 {
-    mpCellPopulation = pCellPopulation;
+    mpCellPopulation = boost::shared_ptr<AbstractCellPopulation<DIM> >(&rCellPopulation);
 }
 
 template<unsigned DIM>
@@ -220,18 +227,55 @@ std::pair<bool, double> DiscreteSource<DIM>::GetValue(c_vector<double, DIM> loca
     {
         if(!mpCellPopulation)
         {
-            EXCEPTION("A simple cell population is required for this type of source");
+            EXCEPTION("A cell population is required for this type of source");
         }
 
-        std::vector<boost::shared_ptr<SimpleCell<DIM> > > cells = mpCellPopulation->GetCells();
-        for(unsigned idx=0; idx<cells.size(); idx++)
+        double total_source_value = 0.0;
+
+        boost::shared_ptr<AbstractCellProperty> apoptotic_property(new AbstractCellProperty);
+
+        for (typename AbstractCellPopulation<DIM>::Iterator cell_iter = mpCellPopulation->Begin();
+             cell_iter != mpCellPopulation->End(); ++cell_iter)
         {
-            if (norm_2(cells[idx]->rGetLocation()-location)<tolerance)
+            if (norm_2(mpCellPopulation->GetLocationOfCellCentre(*cell_iter)-location)<tolerance)
             {
-                return std::pair<bool, double>(true, mValue);
+                if(mMutationSpecificConsumptionRateMap.size()>0)
+                {
+
+                    // first check for if a cell is apoptotic
+                    std::vector<std::pair<AbstractCellProperty, double > >::iterator it;
+                    if ((*cell_iter)->template HasCellProperty<ApoptoticCellProperty>())
+                    {
+                        for (it = mMutationSpecificConsumptionRateMap.begin(); it != mMutationSpecificConsumptionRateMap.end(); it++)
+                        {
+                            if (it->first.IsSame(apoptotic_property))
+                            {
+                                total_source_value += it->second;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (it = mMutationSpecificConsumptionRateMap.begin(); it != mMutationSpecificConsumptionRateMap.end(); it++)
+                        {
+                            if ((*cell_iter)->GetMutationState()->IsSame(&(it->first)))
+                            {
+                                total_source_value += it->second;
+                                break;
+                            }
+                        }
+                    }
+
+                }
+                else
+                {
+                    total_source_value += mValue;
+                }
+
             }
         }
-        return std::pair<bool, double>(false, mValue);
+        return std::pair<bool, double>(total_source_value != 0.0, total_source_value);
     }
 
     else if(mType == SourceType::SOLUTION)

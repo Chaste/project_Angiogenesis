@@ -77,6 +77,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * or {{{CellBasedSimulationArchiver.hpp}}} must be included as the first Chaste header.
  */
 #include <cxxtest/TestSuite.h>
+#include <vector>
 #include "CheckpointArchiveTypes.hpp"
 #include "AbstractCellBasedTestSuite.hpp"
 #include "HoneycombMeshGenerator.hpp"
@@ -95,7 +96,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * allowed us to avoid having to construct cells directly.
  */
 #include "Owen2011OxygenBasedCellCycleModel.hpp"
-#include "Owen2011OxygenBasedCellCycleModelWithoutOde.hpp"
 #include "WildTypeCellMutationState.hpp"
 #include "CancerCellMutationState.hpp"
 #include "StemCellProliferativeType.hpp"
@@ -105,7 +105,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CellProliferativePhasesWriter.hpp"
 #include "CellMutationStatesWriter.hpp"
 #include "CellLabelWriter.hpp"
-#include "CellProliferativePhasesCountWriterWithApoptoticCells.hpp"
+#include "CellProliferativePhasesCountWriter.hpp"
 
 /*
  * The next three header files define: a PDE that describes how oxygen is transported via through the
@@ -124,6 +124,16 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "VoronoiDataWriter.hpp"
 
 #include "Owen2011TrackingModifier.hpp"
+
+#include "AngiogenesisModifier.hpp"
+#include "FiniteDifferenceSolver.hpp"
+#include "HybridLinearEllipticPde.hpp"
+#include "DirichletBoundaryCondition.hpp"
+#include "DiscreteSource.hpp"
+#include "QuiescentCancerCellMutationState.hpp"
+#include "CancerCellMutationState.hpp"
+#include "ApoptoticCellProperty.hpp"
+
 
 /*
  * The header file {{{PetscSetupAndFinalize.hpp}}} must be included in all tests which use Petsc. This is
@@ -145,7 +155,7 @@ class TestOwen2011TumourSpheroidSimulations : public AbstractCellBasedTestSuite
 {
 public:
 
-    void TestSimpleSpheroidOwen2011OxygenBasedCellCycleModel_CancerCells()
+    void TestSimpleSpheroidOwen2011OxygenBasedCellCycleModel_CancerCells() throw (Exception)
     {
 
         Timer::Reset();
@@ -208,36 +218,77 @@ public:
         MeshBasedCellPopulation<2> cell_population(*p_mesh, cells);
         cell_population.SetWriteVtkAsPoints(true);
         cell_population.SetOutputResultsForChasteVisualizer(false);
-        cell_population.AddCellPopulationCountWriter<CellProliferativePhasesCountWriterWithApoptoticCells>();
+        cell_population.AddCellPopulationCountWriter<CellProliferativePhasesCountWriter>();
         cell_population.AddCellWriter<CellMutationStatesWriter>();
         cell_population.AddCellWriter<CellProliferativeTypesWriter>();
         cell_population.AddCellWriter<CellProliferativePhasesWriter>();
 
-        CellBasedPdeHandler<2> pde_handler(&cell_population);
-        AveragedSourcePde<2> pde(cell_population, -0.0359);
-        ConstBoundaryCondition<2> bc(oxygen_concentration);
-        PdeAndBoundaryConditions<2> pde_and_bc(&pde, &bc, false);
-        pde_and_bc.SetDependentVariableName("oxygen");
-        pde_handler.AddPdeAndBc(&pde_and_bc);
+//        CellBasedPdeHandler<2> pde_handler(&cell_population);
+//        AveragedSourcePde<2> pde(cell_population, -0.0359);
+//        ConstBoundaryCondition<2> bc(oxygen_concentration);
+//        PdeAndBoundaryConditions<2> pde_and_bc(&pde, &bc, false);
+//        pde_and_bc.SetDependentVariableName("oxygen");
+//        pde_handler.AddPdeAndBc(&pde_and_bc);
 
 
-        ChastePoint<2> lower(0.0, 0.0);
-        ChastePoint<2> upper(40.0, 40.0);
-        ChasteCuboid<2> cuboid(lower, upper);
-        pde_handler.UseCoarsePdeMesh(5.0, cuboid, true);
-        pde_handler.SetImposeBcsOnCoarseBoundary(true);
+        boost::shared_ptr<HybridLinearEllipticPde<2> > p_oxygen_pde = HybridLinearEllipticPde<2>::Create();
+        p_oxygen_pde->SetDiffusionConstant(0.0033/400.0); // assume cell width is 20 microns
+        p_oxygen_pde->SetVariableName("oxygen");
+
+        boost::shared_ptr<DiscreteSource<2> > p_cell_oxygen_sink = DiscreteSource<2>::Create();
+        p_cell_oxygen_sink->SetType(SourceType::CELL_POINT);
+        p_cell_oxygen_sink->SetSource(SourceStrength::PRESCRIBED);
+//        p_cell_oxygen_sink->SetValue(1.e-7);
+        p_cell_oxygen_sink->SetIsLinearInSolution(true);
+        p_oxygen_pde->AddDiscreteSource(p_cell_oxygen_sink);
+
+        ApoptoticCellProperty apoptotic_property;
+        QuiescentCancerCellMutationState quiescent_property;
+        std::vector<std::pair<AbstractCellProperty, double > > mutationSpecificConsumptionRateMap;
+        mutationSpecificConsumptionRateMap.push_back(std::pair<AbstractCellProperty, double >(apoptotic_property, 0.0));
+        mutationSpecificConsumptionRateMap.push_back(std::pair<AbstractCellProperty, double >(*p_state.get(), 1.e-8));
+        mutationSpecificConsumptionRateMap.push_back(std::pair<AbstractCellProperty, double >(quiescent_property, 1.e-8));
+        p_cell_oxygen_sink->SetMutationSpecificConsumptionRateMap(mutationSpecificConsumptionRateMap);
+
+
+        boost::shared_ptr<DirichletBoundaryCondition<2> > p_vessel_ox_boundary_condition = DirichletBoundaryCondition<2>::Create();
+        p_vessel_ox_boundary_condition->SetValue(oxygen_concentration);
+        p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::OUTER_2D);
+        p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
+
+        boost::shared_ptr<FiniteDifferenceSolver<2> > p_oxygen_solver = FiniteDifferenceSolver<2>::Create();
+        double domain_x = 40.0;
+        double domain_y = 40.0;
+        boost::shared_ptr<Part<2> > p_domain = Part<2> ::Create();
+
+        c_vector<double,2> translation_vector;
+        translation_vector[0]= -20.0;
+        translation_vector[1]= -20.0;
+        p_domain->AddRectangle(domain_x, domain_y, translation_vector);
+
+        p_oxygen_solver->SetExtents(p_domain, 2.0);
+        p_oxygen_solver->SetPde(p_oxygen_pde);
+        p_oxygen_solver->AddDirichletBoundaryCondition(p_vessel_ox_boundary_condition);
+
+        boost::shared_ptr<AbstractAngiogenesisSolver<2> > p_angiogenesis_solver = AbstractAngiogenesisSolver<2>::Create();
+        p_angiogenesis_solver->AddPdeSolver(p_oxygen_solver);
+        p_angiogenesis_solver->SetOutputFrequency(60);
+
+        boost::shared_ptr<AngiogenesisModifier<2> > p_simulation_modifier =
+                boost::shared_ptr<AngiogenesisModifier<2> >(new AngiogenesisModifier<2>);
+        p_simulation_modifier->SetAngiogenesisSolver(p_angiogenesis_solver);
 
         /*
          * We are now in a position to construct an {{{OffLatticeSimulationWithPdes}}} object,
          * using the cell population. We then pass the PDE handler object to the simulation.
          */
         OffLatticeSimulation<2> simulator(cell_population);
-        simulator.SetCellBasedPdeHandler(&pde_handler);
+        simulator.AddSimulationModifier(p_simulation_modifier);
 
         /*
          * We next set the output directory and end time.
          */
-        std::string resultsDirectoryName = "TestOwen2011TumourSpheroidGrowthWithODE";
+        std::string resultsDirectoryName = "TestOwen2011TumourSpheroidGrowthWithODEWithHybridSolver";
         simulator.SetOutputDirectory(resultsDirectoryName);
         simulator.SetSamplingTimestepMultiple(60); // 60 saves a point every 30min
         simulator.SetEndTime(150.0);
@@ -273,12 +324,14 @@ public:
         /*
          * We call {{{Solve()}}} on the simulator to run the simulation.
          */
+
         simulator.Solve();
+
         Timer::Print("Elapsed time = ");
     }
 
 
-    void TestSimpleSpheroidOwen2011OxygenBasedCellCycleModel_NormalCells()
+    void dontTestSimpleSpheroidOwen2011OxygenBasedCellCycleModel_NormalCells()
     {
 
         Timer::Reset();
@@ -341,7 +394,7 @@ public:
         MeshBasedCellPopulation<2> cell_population(*p_mesh, cells);
         cell_population.SetWriteVtkAsPoints(true);
         cell_population.SetOutputResultsForChasteVisualizer(false);
-        cell_population.AddCellPopulationCountWriter<CellProliferativePhasesCountWriterWithApoptoticCells>();
+        cell_population.AddCellPopulationCountWriter<CellProliferativePhasesCountWriter>();
         cell_population.AddCellWriter<CellMutationStatesWriter>();
         cell_population.AddCellWriter<CellProliferativeTypesWriter>();
         cell_population.AddCellWriter<CellProliferativePhasesWriter>();

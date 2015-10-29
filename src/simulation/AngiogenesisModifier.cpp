@@ -64,24 +64,6 @@ void AngiogenesisModifier<DIM>::UpdateAtEndOfTimeStep(AbstractCellPopulation<DIM
     // If there is an angiogenesis solver solve for the upcoming step
     if(mpSolver)
     {
-        // Set the cell locations in PDEs requiring them
-        std::vector<c_vector<double, DIM> > locations;
-        for (typename AbstractCellPopulation<DIM>::Iterator cell_iter = rCellPopulation.Begin();
-             cell_iter != rCellPopulation.End(); ++cell_iter)
-        {
-            locations.push_back(rCellPopulation.GetLocationOfCellCentre(*cell_iter));
-        }
-        for(unsigned idx=0; idx<mpSolver->GetPdeSolvers().size(); idx++)
-        {
-            for(unsigned jdx=0; jdx<mpSolver->GetPdeSolvers()[idx]->GetPde()->GetDiscreteSources().size(); jdx++)
-            {
-                if(mpSolver->GetPdeSolvers()[idx]->GetPde()->GetDiscreteSources()[jdx]->GetType() == SourceType::MULTI_POINT)
-                {
-                    mpSolver->GetPdeSolvers()[idx]->GetPde()->GetDiscreteSources()[jdx]->SetPoints(locations);
-                }
-            }
-        }
-
         // Increment the solver
         mpSolver->Increment();
     }
@@ -98,20 +80,13 @@ void AngiogenesisModifier<DIM>::SetupSolve(AbstractCellPopulation<DIM,DIM>& rCel
     // If there is an angiogenesis solver solve for the upcoming step
     if(mpSolver)
     {
-        // Set the cell locations in PDEs requiring them
-        std::vector<c_vector<double, DIM> > locations;
-        for (typename AbstractCellPopulation<DIM>::Iterator cell_iter = rCellPopulation.Begin();
-             cell_iter != rCellPopulation.End(); ++cell_iter)
-        {
-            locations.push_back(rCellPopulation.GetLocationOfCellCentre(*cell_iter));
-        }
         for(unsigned idx=0; idx<mpSolver->GetPdeSolvers().size(); idx++)
         {
             for(unsigned jdx=0; jdx<mpSolver->GetPdeSolvers()[idx]->GetPde()->GetDiscreteSources().size(); jdx++)
             {
-                if(mpSolver->GetPdeSolvers()[idx]->GetPde()->GetDiscreteSources()[jdx]->GetType() == SourceType::MULTI_POINT)
+                if(mpSolver->GetPdeSolvers()[idx]->GetPde()->GetDiscreteSources()[jdx]->GetType() == SourceType::CELL_POINT)
                 {
-                    mpSolver->GetPdeSolvers()[idx]->GetPde()->GetDiscreteSources()[jdx]->SetPoints(locations);
+                    mpSolver->GetPdeSolvers()[idx]->GetPde()->GetDiscreteSources()[jdx]->SetCellPopulation(rCellPopulation);
                 }
             }
         }
@@ -154,7 +129,7 @@ void AngiogenesisModifier<DIM>::UpdateCellData(AbstractCellPopulation<DIM,DIM>& 
             {
                 for(unsigned jdx=0;jdx<cell_vector.size();jdx++)
                 {
-                    cell_vector[jdx]->GetCellData()->SetItem("oxygen", sampled_solution[jdx]/20.0);
+                    cell_vector[jdx]->GetCellData()->SetItem("oxygen", sampled_solution[jdx]);
                 }
             }
             else

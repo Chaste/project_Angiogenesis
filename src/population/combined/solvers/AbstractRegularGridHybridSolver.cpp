@@ -42,6 +42,7 @@
 #include "SmartPointers.hpp"
 #include "UblasVectorInclude.hpp"
 #include "GeometryTools.hpp"
+#include "Debug.hpp"
 
 #include "AbstractRegularGridHybridSolver.hpp"
 
@@ -251,6 +252,10 @@ void AbstractRegularGridHybridSolver<DIM>::SetExtents(boost::shared_ptr<Part<DIM
     {
         mExtents[2] = unsigned((spatial_extents[5] - spatial_extents[4]) / mGridSize) + 1u;
     }
+    else
+    {
+        mExtents[2] = 1;
+    }
     mOrigin[0] = spatial_extents[0];
     mOrigin[1] = spatial_extents[2];
     if(DIM==3)
@@ -331,6 +336,7 @@ void AbstractRegularGridHybridSolver<DIM>::Write()
         {
             pImageDataWriter->SetFileName((this->mWorkingDirectory + "/solution.vti").c_str());
         }
+
         pImageDataWriter->SetInput(mpSolution);
         pImageDataWriter->Update();
         pImageDataWriter->Write();

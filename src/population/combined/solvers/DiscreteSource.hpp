@@ -38,13 +38,16 @@
 
 #include <vector>
 #include <string>
+#include <vector>
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning for now (gcc4.3)
 #include <vtkImageData.h>
 #include <vtkSmartPointer.h>
 #include "UblasIncludes.hpp"
-#include "SimpleCellPopulation.hpp"
+#include "AbstractCellPopulation.hpp"
 #include "CaVascularNetwork.hpp"
 #include "Part.hpp"
+#include "AbstractCellProperty.hpp"
+#include "ApoptoticCellProperty.hpp"
 
 /*
  * Helper struct for defining the type of source.
@@ -86,7 +89,7 @@ private:
 
     /* The cell population
     */
-    boost::shared_ptr<SimpleCellPopulation<DIM> > mpCellPopulation;
+    boost::shared_ptr<AbstractCellPopulation<DIM> > mpCellPopulation;
 
     boost::shared_ptr<Part<DIM> > mpDomain;
 
@@ -104,6 +107,8 @@ private:
 
     bool mIsLinearInSolution;
 
+    std::vector<std::pair<AbstractCellProperty, double > > mMutationSpecificConsumptionRateMap;
+
 public:
 
     /* Constructor
@@ -118,9 +123,11 @@ public:
      */
     static boost::shared_ptr<DiscreteSource<DIM> > Create();
 
+    void SetMutationSpecificConsumptionRateMap(std::vector<std::pair<AbstractCellProperty, double > > mutationSpecificConsumptionRateMap);
+
     void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
 
-    void SetCellPopulation(boost::shared_ptr<SimpleCellPopulation<DIM> > pCellPopulation);
+    void SetCellPopulation(AbstractCellPopulation<DIM>& rCellPopulation);
 
     void SetDomain(boost::shared_ptr<Part<DIM> > pDomain);
 

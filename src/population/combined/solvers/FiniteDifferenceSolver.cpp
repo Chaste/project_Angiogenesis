@@ -40,6 +40,7 @@
 #include "HybridLinearEllipticPde.hpp"
 
 #include "FiniteDifferenceSolver.hpp"
+#include "Debug.hpp"
 
 template<unsigned DIM>
 FiniteDifferenceSolver<DIM>::FiniteDifferenceSolver()
@@ -152,7 +153,6 @@ void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
             this->mDirichletBoundaryConditions[bound_index]->SetVesselNetwork(this->mpNetwork);
         }
     }
-
 
     double grid_tolerance = this->mGridSize * (std::sqrt(2.0) / 2.0);
     std::vector<unsigned> bc_indices;

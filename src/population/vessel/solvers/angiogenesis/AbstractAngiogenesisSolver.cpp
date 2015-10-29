@@ -46,8 +46,8 @@
 #include "Debug.hpp"
 
 template<unsigned DIM>
-AbstractAngiogenesisSolver<DIM>::AbstractAngiogenesisSolver(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork) :
-        mpNetwork(pNetwork),
+AbstractAngiogenesisSolver<DIM>::AbstractAngiogenesisSolver() :
+        mpNetwork(),
         mGrowthVelocity(10.0),
         mEndTime(10.0),
         mOutputFrequency(1),
@@ -70,9 +70,9 @@ AbstractAngiogenesisSolver<DIM>::~AbstractAngiogenesisSolver()
 }
 
 template<unsigned DIM>
-boost::shared_ptr<AbstractAngiogenesisSolver<DIM> > AbstractAngiogenesisSolver<DIM>::Create(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
+boost::shared_ptr<AbstractAngiogenesisSolver<DIM> > AbstractAngiogenesisSolver<DIM>::Create()
 {
-    MAKE_PTR_ARGS(AbstractAngiogenesisSolver<DIM>, pSelf, (pNetwork));
+    MAKE_PTR(AbstractAngiogenesisSolver<DIM>, pSelf);
     return pSelf;
 }
 
@@ -323,7 +323,6 @@ void AbstractAngiogenesisSolver<DIM>::Increment()
                     }
                 }
             }
-
             if(mOutputFrequency > 0 && num_steps % mOutputFrequency == 0)
             {
                 mPdeSolvers[idx]->Solve(true);
@@ -335,31 +334,39 @@ void AbstractAngiogenesisSolver<DIM>::Increment()
         }
     }
 
-    // Move any migrating nodes
-    UpdateNodalPositions();
-
-    // Check for anastamosis
-    DoAnastamosis();
-
-    // Do sprouting
-    if(mpSproutingRule)
+    if(this->mpNetwork)
     {
-        DoSprouting();
+        // Move any migrating nodes
+        UpdateNodalPositions();
+
+        // Check for anastamosis
         DoAnastamosis();
+
+        // Do sprouting
+        if(mpSproutingRule)
+        {
+            DoSprouting();
+            DoAnastamosis();
+        }
+
+        mpNetwork->UpdateAll();
+
+        if(mOutputFrequency > 0 && num_steps % mOutputFrequency == 0)
+        {
+            mpNetwork->Write(mOutputDirectory + "/VesselNetwork_inc_" + boost::lexical_cast<std::string>(num_steps+1)+".vtp");
+        }
     }
 
-    mpNetwork->UpdateAll();
-    if(mOutputFrequency > 0 && num_steps % mOutputFrequency == 0)
-    {
-        mpNetwork->Write(mOutputDirectory + "/VesselNetwork_inc_" + boost::lexical_cast<std::string>(num_steps+1)+".vtp");
-    }
 }
 
 template<unsigned DIM>
 void AbstractAngiogenesisSolver<DIM>::Run()
 {
-    mpNetwork->UpdateAll(true);
-    mpNetwork->Write(mOutputDirectory + "/VesselNetwork_inc_0.vtp");
+    if(this->mpNetwork)
+    {
+        mpNetwork->UpdateAll(true);
+        mpNetwork->Write(mOutputDirectory + "/VesselNetwork_inc_0.vtp");
+    }
 
     while(SimulationTime::Instance()->GetTime() < mEndTime)
     {
