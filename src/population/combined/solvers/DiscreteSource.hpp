@@ -49,33 +49,37 @@
 #include "AbstractCellProperty.hpp"
 #include "ApoptoticCellProperty.hpp"
 
-/*
- * Helper struct for defining the type of source.
- * It can be point, multipoint, facet, vessel-line, vessel-volume, cell-point or cell-volume
+/**
+ * Specify the type of source.
+ * POINT: Source locations are given by a vector of c_vectors
+ * VESSEL: Source locations are along a vessel
+ * CELL: Source locations are cell centres
+ * SOLUTION: Source strength depends on a previous solution at this location
  */
 struct SourceType
 {
     enum Value
     {
-        POINT, MULTI_POINT, VESSEL_LINE, CELL_POINT, SOLUTION
+        POINT, VESSEL, CELL, SOLUTION
     };
 };
 
-/*
- * Helper struct for defining the source strength.
- * It can be from a data array or a single prescribed value.
+/**
+ * Specify whether a single prescribed value is used for the source (PRESCRIBED) or
+ * whether the source strength depends on a specified label or map (LABEL).
  */
 struct SourceStrength
 {
     enum Value
     {
-        LABEL_BASED, PRESCRIBED
+        LABEL, PRESCRIBED
     };
 };
 
-
-/*
- * An class for describing discrete sources for use with some hybrid solvers.
+/**
+ * This class manages the value of discrete sources at grid locations in continuum problems.
+ * A grid location and grid point volume is passed in and the class returns the value of the
+ * discrete source in this volume. It can be used on structured and unstructured grids.
  */
 
 template<unsigned DIM>
@@ -83,77 +87,155 @@ class DiscreteSource
 {
 private:
 
-    /* The vessel network
-    */
+    /**
+     * The vessel network, used for VESSEL type sources
+     */
     boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
 
-    /* The cell population
-    */
+    /**
+     * The cell population, used for CELL type sources
+     */
     boost::shared_ptr<AbstractCellPopulation<DIM> > mpCellPopulation;
 
-    boost::shared_ptr<Part<DIM> > mpDomain;
-
+    /**
+     * A field sampled on a regular grid. Used for SOLUTION type sources
+     */
     vtkSmartPointer<vtkImageData>  mpSolution;
 
+    /**
+     * Point locations for POINT type sources
+     */
     std::vector<c_vector<double, DIM> > mPoints;
 
+    /**
+     * The type of source
+     */
     SourceType::Value mType;
 
+    /**
+     * Where the source strength is obtained from
+     */
     SourceStrength::Value mSourceStrength;
 
+    /**
+     * A label specifying the array name from which to obtain the source strength. Used for LABEL
+     * source strengths.
+     */
     std::string mLabel;
 
+    /**
+     * The prescribed value of the source strength. Used for PRESCRIBED source strengths.
+     */
     double mValue;
 
+    /**
+     * Is the source linear in the solution, if not it is constant in it.
+     */
     bool mIsLinearInSolution;
 
+    /**
+     * Relation between cell mutation state and consumption rate.
+     */
     std::vector<std::pair<AbstractCellProperty, double > > mMutationSpecificConsumptionRateMap;
 
 public:
 
-    /* Constructor
+    /**
+     *  Constructor
      */
     DiscreteSource();
 
-    /* Destructor
+    /**
+     * Destructor
      */
     virtual ~DiscreteSource();
 
-    /* Factory constructor method
+    /**
+     * Factory constructor method
+     * @return a pointer to an instance of the class
      */
     static boost::shared_ptr<DiscreteSource<DIM> > Create();
 
-    void SetMutationSpecificConsumptionRateMap(std::vector<std::pair<AbstractCellProperty, double > > mutationSpecificConsumptionRateMap);
-
-    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
-
-    void SetCellPopulation(AbstractCellPopulation<DIM>& rCellPopulation);
-
-    void SetDomain(boost::shared_ptr<Part<DIM> > pDomain);
-
-    void SetPoint(c_vector<double, DIM> point);
-
-    void SetPoints(std::vector<c_vector<double, DIM> > points);
-
-    void SetSolution(vtkSmartPointer<vtkImageData>  pSolution);
-
-    void SetType(SourceType::Value boundaryType);
-
+    /**
+     * Return the type of source, (POINT, VESSEL, etc.)
+     * @return an enum giving the type of source
+     */
     SourceType::Value GetType();
 
-    void SetSource(SourceStrength::Value boundarySource);
+    /**
+     * Return the values of the source for the given grid locations
+     * @param locations vector of grid locations to sample on
+     * @param tolerance used to evaluate coincidence between a grid and source location
+     * @return a vector of source strengths
+     */
+    std::vector<double> GetValues(std::vector<c_vector<double, DIM> > locations, double tolerance = 1.e-6);
 
-    void SetLabelName(const std::string& label);
-
+    /**
+     * Is the source strength linear in the solution variable, otherwise it is constant
+     * @return a bool asking is the source strength linear in the solution variable
+     */
     bool IsLinearInSolution();
 
+    /**
+     * Set the cell population, used in CELL type sources
+     * @param rCellPopulation a reference to the cell population
+     */
+    void SetCellPopulation(AbstractCellPopulation<DIM>& rCellPopulation);
+
+    /**
+     * Set whether the source strength is linear in the solution
+     * @param isLinear a bool asking is the source strength linear in the solution variable
+     */
     void SetIsLinearInSolution(bool isLinear);
 
+    /**
+     * Set the name of the label used in LABEL type sources
+     * @param rLabel the label for the source strength value
+     */
+    void SetLabelName(const std::string& rLabel);
+
+    /**
+     * Set the relationship between cell mutation states and source strengths, used in some CELL
+     * type sources.
+     * @param mutationSpecificConsumptionRateMap the label for the source strength value
+     */
+    void SetMutationSpecificConsumptionRateMap(std::vector<std::pair<AbstractCellProperty, double > > mutationSpecificConsumptionRateMap);
+
+    /**
+     * Set the points for POINT type sources
+     * @param points the point locations for POINT type sources
+     */
+    void SetPoints(std::vector<c_vector<double, DIM> > points);
+
+    /**
+     * Set the sampled field from which to obtain a solution for SOLUTION type sources
+     * @param pSolution the field from which to use solution values
+     */
+    void SetSolution(vtkSmartPointer<vtkImageData>  pSolution);
+
+    /**
+     * Set where the value of the source strength is obtained, e.g. LABEL, PRESCRIBED
+     * @param boundarySource enum specifying where the value of the source strength is obtained
+     */
+    void SetSource(SourceStrength::Value boundarySource);
+
+    /**
+     * Set the type of source, e.g. CELL, VESSEL
+     * @param boundaryType enum specifying the type of source
+     */
+    void SetType(SourceType::Value boundaryType);
+
+    /**
+     * Set the vessel network used in VESSEL type sources
+     * @param pNetwork the vessel network
+     */
+    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
+
+    /**
+     * Set the value of the source for PRESCRIBED type sources
+     * @param value the value of the source
+     */
     void SetValue(double value);
-
-    std::pair<bool, double> GetValue(c_vector<double, DIM> location = zero_vector<double>(DIM), double tolerance = 1.e-6);
-
-    std::vector<std::pair<bool, double> > GetValues(std::vector<c_vector<double, DIM> > locations, double tolerance = 1.e-6);
 };
 
 #endif /* DISCRETESOURCE_HPP_ */

@@ -205,6 +205,10 @@ public:
      */
     bool IsPointInPart(c_vector<double, DIM> location, bool update=true);
 
+    /* Merge vertices that overlap in polygons and facets
+     */
+    void MergeCoincidentVertices();
+
     /* Move the part along the translation vector
      * @param vector the vector to move the part along
      */

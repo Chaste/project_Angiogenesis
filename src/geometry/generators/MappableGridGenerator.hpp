@@ -36,47 +36,71 @@
 #ifndef MAPPABLEGRIDGENERATOR_HPP_
 #define MAPPABLEGRIDGENERATOR_HPP_
 
-#include <vector>
 #include "SmartPointers.hpp"
-#include "UblasVectorInclude.hpp"
 #include "Part.hpp"
 
-/*
- * Generate a part consisting of a regular grid of polygons, useful for coordinate mapping onto
- * more complex geometries.
+/**
+ * Generate a part consisting of a grid of unit rectangles or cuboids. It is useful for mapping
+ * onto more complex geometries for subsequent meshing. 3-D only.
  */
-
-template<unsigned DIM>
 class MappableGridGenerator
 {
 
 public:
-
-    /* Constructor
+    /**
+     * Constructor
      */
     MappableGridGenerator();
 
-    /* Destructor
+    /**
+     * Destructor
      */
     ~MappableGridGenerator();
 
-    /* Generate the grid
+    /**
+     * Generate a planar grid with one block in the z direction
+     * @param numX number of blocks in the x direction
+     * @param numY number of blocks in the y direction
+     * @param withEndCaps include polygons at the ends of the plane, turned off for closed cylinder generation
+     * @return pointer to a Part representation of the plane
      */
-    boost::shared_ptr<Part<DIM> > GeneratePlane(unsigned numX, unsigned numY);
+    boost::shared_ptr<Part<3> > GeneratePlane(unsigned numX, unsigned numY, bool withEndCaps = true);
 
-    boost::shared_ptr<Part<DIM> > GenerateCylinder(double cylinder_radius,
-                                                   double cylinder_thickness,
-                                                   double cylinder_angle,
-                                                   double cylinder_height,
+    /**
+     * Generate a cylindrical grid, where the planar grid is mapped on to a cylinder
+     * of specified dimensions.
+     * @param cylinderRadius radius of the cylinder
+     * @param cylinderThickness thickness of the  cylinder
+     * @param cylinderAngle sweep angle of the cylinder (radians)
+     * @param cylinderHeight height of the cylinder
+     * @param numX number of blocks around the cylinder circumference
+     * @param numY number of blocks over the cylinder height
+     * @return pointer to a Part representation of the cylinder
+     */
+    boost::shared_ptr<Part<3> > GenerateCylinder(double cylinderRadius,
+                                                   double cylinderThickness,
+                                                   double cylinderHeight,
                                                    unsigned numX,
-                                                   unsigned numY);
+                                                   unsigned numY,
+                                                   double cylinderAngle = 2.0 * M_PI);
 
-    boost::shared_ptr<Part<DIM> > GenerateHemisphere(double sphere_radius,
-                                                   double sphere_thickness,
-                                                   double sphere_azimuth_angle,
-                                                   double sphere_polar_angle,
+    /**
+     * Generate a hemispherical grid, where the planar grid is mapped on to a sphere
+     * of specified dimensions.
+     * @param sphereRadius radius of the sphere
+     * @param sphereThickness thickness of the  cylinder
+     * @param sphereAzimuthAngle azimuth angle of the hemisphere (radians)
+     * @param spherePolarAngle polar angle of the hemisphere (radians)
+     * @param numX number of blocks around the cylinder circumference
+     * @param numY number of blocks over the cylinder height
+     * @return pointer to a Part representation of the hemisphere
+     */
+    boost::shared_ptr<Part<3> > GenerateHemisphere(double sphereRadius,
+                                                   double sphereThickness,
                                                    unsigned numX,
-                                                   unsigned numY);
+                                                   unsigned numY,
+                                                   double sphereAzimuthAngle = 2.0 * M_PI,
+                                                   double spherePolarAngle = 0.5 * M_PI);
 };
 
 #endif /*MAPPABLEGRIDGENERATOR_HPP_*/

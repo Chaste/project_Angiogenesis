@@ -65,6 +65,11 @@ FiniteDifferenceSolver<DIM>::~FiniteDifferenceSolver()
 template<unsigned DIM>
 void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
 {
+    this->mpRegularGrid = RegularGrid::Create();
+    this->mpRegularGrid->SetSpacing(this->mGridSize);
+    this->mpRegularGrid->SetExtents(this->mExtents);
+    this->mpPde->SetRegularGrid(this->mpRegularGrid);
+
     // Set up the system
     unsigned number_of_points = this->mExtents[0] * this->mExtents[1] * this->mExtents[2];
 
@@ -78,7 +83,7 @@ void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
                 unsigned grid_index = this->GetGridIndex(k, j, i);
                 c_vector<double, DIM> location = this->GetLocation(k ,j, i);
                 double diffusion_term =  this->mpPde->GetDiffusionConstant() / (this->mGridSize * this->mGridSize);
-                linear_system.AddToMatrixElement(grid_index, grid_index, this->mpPde->GetLinearInUTerm(location, this->mGridSize) - 6.0 * diffusion_term);
+                linear_system.AddToMatrixElement(grid_index, grid_index, this->mpPde->GetLinearInUTerm(grid_index) - 6.0 * diffusion_term);
 
                 // Assume no flux on domain boundaries by default
                 // No flux at x bottom
@@ -140,7 +145,7 @@ void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
                 {
                     linear_system.AddToMatrixElement(grid_index, grid_index, diffusion_term);
                 }
-                linear_system.SetRhsVectorElement(grid_index, -this->mpPde->GetConstantInUTerm(location, this->mGridSize));
+                linear_system.SetRhsVectorElement(grid_index, -this->mpPde->GetConstantInUTerm(grid_index));
             }
         }
     }

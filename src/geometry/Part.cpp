@@ -516,6 +516,39 @@ bool Part<DIM>::IsPointInPart(c_vector<double, DIM> location, bool update)
 }
 
 template<unsigned DIM>
+void Part<DIM>::MergeCoincidentVertices()
+{
+    // Loop through the nodes of each polygon. If it is in another polygon, replace it.
+    std::vector<boost::shared_ptr<Polygon> > polygons = GetPolygons();
+    for(unsigned idx=0; idx<polygons.size(); idx++)
+    {
+        for(unsigned jdx=0; jdx<polygons.size(); jdx++)
+        {
+            if(idx != jdx)
+            {
+                std::vector<boost::shared_ptr<Vertex> > p1_verts = polygons[idx]->GetVertices();
+                std::vector<boost::shared_ptr<Vertex> > p2_verts = polygons[jdx]->GetVertices();
+                for(unsigned mdx=0; mdx<p1_verts.size(); mdx++)
+                {
+                    for(unsigned ndx=0; ndx<p2_verts.size(); ndx++)
+                    {
+                        if(norm_2(p2_verts[ndx]->rGetLocation()- p1_verts[mdx]->rGetLocation())< 1.e-6)
+                        {
+                            polygons[jdx]->ReplaceVertex(ndx, polygons[idx]->GetVertex(mdx));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    for(unsigned idx=0; idx<mFacets.size(); idx++)
+    {
+        mFacets[idx]->UpdateVertices();
+    }
+}
+
+template<unsigned DIM>
 void Part<DIM>::Translate(c_vector<double, DIM> vector)
 {
     std::vector<boost::shared_ptr<Vertex> > vertices = GetVertices();

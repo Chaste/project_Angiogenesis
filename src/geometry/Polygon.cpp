@@ -80,6 +80,18 @@ void Polygon::AddVertex(boost::shared_ptr<Vertex> pVertex)
     mVertices.push_back(pVertex);
 }
 
+boost::shared_ptr<Vertex> Polygon::GetVertex(unsigned idx)
+{
+    if(idx >= mVertices.size())
+    {
+        EXCEPTION("Requested vertex index out of range");
+    }
+    else
+    {
+        return mVertices[idx];
+    }
+}
+
 std::vector<boost::shared_ptr<Vertex> > Polygon::GetVertices()
 {
     return mVertices;
@@ -194,6 +206,18 @@ bool Polygon::ContainsPoint(c_vector<double, 3> location)
         }
     }
     return contains_point;
+}
+
+void Polygon::ReplaceVertex(unsigned idx, boost::shared_ptr<Vertex > pVertex)
+{
+    if(idx >= mVertices.size())
+    {
+        EXCEPTION("Requested vertex index out of range");
+    }
+    else
+    {
+        mVertices[idx] = pVertex;
+    }
 }
 
 void Polygon::RotateAboutAxis(c_vector<double, 3> axis, double angle)

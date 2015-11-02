@@ -42,7 +42,6 @@
 #include "SmartPointers.hpp"
 #include "UblasVectorInclude.hpp"
 #include "GeometryTools.hpp"
-#include "Debug.hpp"
 
 #include "AbstractRegularGridHybridSolver.hpp"
 
@@ -52,7 +51,8 @@ AbstractRegularGridHybridSolver<DIM>::AbstractRegularGridHybridSolver()
         mpSolution(),
         mGridSize(1.0),
         mOrigin(zero_vector<double>(DIM)),
-        mExtents(std::vector<unsigned>(3, 1))
+        mExtents(std::vector<unsigned>(3, 1)),
+        mpRegularGrid()
 {
 
 }

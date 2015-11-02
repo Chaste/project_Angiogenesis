@@ -45,7 +45,6 @@ template<unsigned DIM>
 DiscreteSource<DIM>::DiscreteSource()
     :   mpNetwork(),
         mpCellPopulation(),
-        mpDomain(),
         mpSolution(),
         mPoints(),
         mType(SourceType::POINT),
@@ -78,86 +77,10 @@ SourceType::Value DiscreteSource<DIM>::GetType()
 }
 
 template<unsigned DIM>
-void DiscreteSource<DIM>::SetMutationSpecificConsumptionRateMap(std::vector<std::pair<AbstractCellProperty, double > > mutationSpecificConsumptionRateMap)
+std::vector<double> DiscreteSource<DIM>::GetValues(std::vector<c_vector<double, DIM> > locations, double tolerance)
 {
-    mMutationSpecificConsumptionRateMap = mutationSpecificConsumptionRateMap;
-}
+    std::vector<double> values(locations.size(), 0.0);
 
-template<unsigned DIM>
-void DiscreteSource<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
-{
-    mpNetwork = pNetwork;
-}
-
-template<unsigned DIM>
-void DiscreteSource<DIM>::SetSolution(vtkSmartPointer<vtkImageData>  pSolution)
-{
-    mpSolution = pSolution;
-}
-
-template<unsigned DIM>
-void DiscreteSource<DIM>::SetCellPopulation(AbstractCellPopulation<DIM>& rCellPopulation)
-{
-    mpCellPopulation = boost::shared_ptr<AbstractCellPopulation<DIM> >(&rCellPopulation);
-}
-
-template<unsigned DIM>
-void DiscreteSource<DIM>::SetDomain(boost::shared_ptr<Part<DIM> > pDomain)
-{
-    mpDomain = pDomain;
-}
-
-template<unsigned DIM>
-void DiscreteSource<DIM>::SetPoint(c_vector<double, DIM> point)
-{
-    mPoints.push_back(point);
-}
-
-template<unsigned DIM>
-void DiscreteSource<DIM>::SetPoints(std::vector<c_vector<double, DIM> > points)
-{
-    mPoints = points;
-}
-
-template<unsigned DIM>
-void DiscreteSource<DIM>::SetType(SourceType::Value boundaryType)
-{
-    mType = boundaryType;
-}
-
-template<unsigned DIM>
-void DiscreteSource<DIM>::SetSource(SourceStrength::Value boundarySource)
-{
-    mSourceStrength = boundarySource;
-}
-
-template<unsigned DIM>
-void DiscreteSource<DIM>::SetLabelName(const std::string& label)
-{
-    mLabel = label;
-}
-
-template<unsigned DIM>
-void DiscreteSource<DIM>::SetValue(double value)
-{
-    mValue = value;
-}
-
-template<unsigned DIM>
-bool DiscreteSource<DIM>::IsLinearInSolution()
-{
-    return mIsLinearInSolution;
-}
-
-template<unsigned DIM>
-void DiscreteSource<DIM>::SetIsLinearInSolution(bool isLinear)
-{
-    mIsLinearInSolution = isLinear;
-}
-
-template<unsigned DIM>
-std::pair<bool, double> DiscreteSource<DIM>::GetValue(c_vector<double, DIM> location, double tolerance)
-{
     // Check the source type
     if(mType == SourceType::POINT)
     {
@@ -165,117 +88,100 @@ std::pair<bool, double> DiscreteSource<DIM>::GetValue(c_vector<double, DIM> loca
         {
             EXCEPTION("A point is required for this type of source");
         }
-        else
+
+        for(unsigned idx=0; idx<locations.size(); idx++)
         {
-            if(norm_2(location-mPoints[0]) < tolerance)
+            for(unsigned jdx=0; jdx<mPoints.size(); jdx++)
             {
-                return std::pair<bool, double>(true, mValue);
-            }
-            else
-            {
-                return std::pair<bool, double>(false, mValue);
-            }
-        }
-    }
-    else if(mType == SourceType::MULTI_POINT)
-    {
-        if(mPoints.size()==0)
-        {
-            EXCEPTION("A point is required for this type of source");
-        }
-        else
-        {
-            for(unsigned idx=0; idx<mPoints.size(); idx++)
-            {
-                if(norm_2(location-mPoints[idx]) < tolerance)
+                if(norm_2(locations[idx]-mPoints[jdx]) < tolerance)
                 {
-                    return std::pair<bool, double>(true, mValue);
+                    values[idx] += mValue;
                 }
             }
-            return std::pair<bool, double>(false, mValue);
         }
     }
-
-    else if(mType == SourceType::VESSEL_LINE)
+    else if(mType == SourceType::VESSEL)
     {
         if(!mpNetwork)
         {
             EXCEPTION("A vessel network is required for this type of source");
         }
-        else
+
+        for(unsigned idx=0; idx<locations.size(); idx++)
         {
             std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
-            for (unsigned idx = 0; idx <  segments.size(); idx++)
+            for (unsigned jdx = 0; jdx < segments.size(); jdx++)
             {
-                if (segments[idx]->GetDistance(location) <= tolerance)
+                if (segments[jdx]->GetDistance(locations[idx]) <= tolerance)
                 {
                     if(SourceStrength::PRESCRIBED)
                     {
-                        return std::pair<bool, double>(true, mValue);
+                        values[idx] += mValue;
                     }
                     else
                     {
-                        return std::pair<bool, double>(true, segments[idx]->template GetData<double>(mLabel));
+                        values[idx] += segments[idx]->template GetData<double>(mLabel);
                     }
                 }
             }
-            return std::pair<bool, double>(false, mValue);
         }
     }
 
-    else if(mType == SourceType::CELL_POINT)
+    else if(mType == SourceType::CELL)
     {
         if(!mpCellPopulation)
         {
             EXCEPTION("A cell population is required for this type of source");
         }
 
-        double total_source_value = 0.0;
-
         boost::shared_ptr<AbstractCellProperty> apoptotic_property(new AbstractCellProperty);
 
-        for (typename AbstractCellPopulation<DIM>::Iterator cell_iter = mpCellPopulation->Begin();
-             cell_iter != mpCellPopulation->End(); ++cell_iter)
+        // Loop through all points
+        for(unsigned idx=0; idx<locations.size(); idx++)
         {
-            if (norm_2(mpCellPopulation->GetLocationOfCellCentre(*cell_iter)-location)<tolerance)
+            // Loop through all cells
+            for (typename AbstractCellPopulation<DIM>::Iterator cell_iter = mpCellPopulation->Begin();
+                 cell_iter != mpCellPopulation->End(); ++cell_iter)
             {
-                if(mMutationSpecificConsumptionRateMap.size()>0)
+                if (norm_2(mpCellPopulation->GetLocationOfCellCentre(*cell_iter)-locations[idx])<tolerance)
                 {
-
-                    // first check for if a cell is apoptotic
-                    std::vector<std::pair<AbstractCellProperty, double > >::iterator it;
-                    if ((*cell_iter)->template HasCellProperty<ApoptoticCellProperty>())
+                    // If a mutation specific consumption rate has been specified
+                    if(mMutationSpecificConsumptionRateMap.size()>0)
                     {
-                        for (it = mMutationSpecificConsumptionRateMap.begin(); it != mMutationSpecificConsumptionRateMap.end(); it++)
+                        std::vector<std::pair<AbstractCellProperty, double > >::iterator it;
+
+                        // If the cell is apoptotic
+                        if ((*cell_iter)->template HasCellProperty<ApoptoticCellProperty>())
                         {
-                            if (it->first.IsSame(apoptotic_property))
+                            for (it = mMutationSpecificConsumptionRateMap.begin(); it != mMutationSpecificConsumptionRateMap.end(); it++)
                             {
-                                total_source_value += it->second;
-                                break;
+                                if (it->first.IsSame(apoptotic_property))
+                                {
+                                    values[idx] += it->second;
+                                    break;
+                                }
                             }
                         }
+                        else
+                        {
+                            for (it = mMutationSpecificConsumptionRateMap.begin(); it != mMutationSpecificConsumptionRateMap.end(); it++)
+                            {
+                                if ((*cell_iter)->GetMutationState()->IsSame(&(it->first)))
+                                {
+                                    values[idx] += it->second;
+                                    break;
+                                }
+                            }
+                        }
+
                     }
                     else
                     {
-                        for (it = mMutationSpecificConsumptionRateMap.begin(); it != mMutationSpecificConsumptionRateMap.end(); it++)
-                        {
-                            if ((*cell_iter)->GetMutationState()->IsSame(&(it->first)))
-                            {
-                                total_source_value += it->second;
-                                break;
-                            }
-                        }
+                        values[idx] += mValue;
                     }
-
                 }
-                else
-                {
-                    total_source_value += mValue;
-                }
-
             }
         }
-        return std::pair<bool, double>(total_source_value != 0.0, total_source_value);
     }
 
     else if(mType == SourceType::SOLUTION)
@@ -284,22 +190,20 @@ std::pair<bool, double> DiscreteSource<DIM>::GetValue(c_vector<double, DIM> loca
         {
             EXCEPTION("A previous solution is required for this type of source");
         }
-        std::vector<c_vector<double, DIM> > samplePoints(1, location);
-        std::vector<double> sampled_solution(samplePoints.size(), 0.0);
 
         // Sample the field at these locations
         vtkSmartPointer<vtkPolyData> p_polydata = vtkSmartPointer<vtkPolyData>::New();
         vtkSmartPointer<vtkPoints> p_points = vtkSmartPointer<vtkPoints>::New();
-        p_points->SetNumberOfPoints(samplePoints.size());
-        for(unsigned idx=0; idx< samplePoints.size(); idx++)
+        p_points->SetNumberOfPoints(locations.size());
+        for(unsigned idx=0; idx< locations.size(); idx++)
         {
             if(DIM==3)
             {
-                p_points->SetPoint(idx, samplePoints[idx][0], samplePoints[idx][1], samplePoints[idx][2]);
+                p_points->SetPoint(idx, locations[idx][0], locations[idx][1], locations[idx][2]);
             }
             else
             {
-                p_points->SetPoint(idx, samplePoints[idx][0], samplePoints[idx][1], 0.0);
+                p_points->SetPoint(idx, locations[idx][0], locations[idx][1], 0.0);
             }
         }
         p_polydata->SetPoints(p_points);
@@ -312,22 +216,76 @@ std::pair<bool, double> DiscreteSource<DIM>::GetValue(c_vector<double, DIM> loca
         unsigned num_points = p_point_data->GetArray(mLabel.c_str())->GetNumberOfTuples();
         for(unsigned idx=0; idx<num_points; idx++)
         {
-            sampled_solution[idx] = p_point_data->GetArray(mLabel.c_str())->GetTuple1(idx);
+            values[idx] = p_point_data->GetArray(mLabel.c_str())->GetTuple1(idx);
         }
-        return std::pair<bool, double>(true, sampled_solution[0]);
     }
-    return std::pair<bool, double>(false, mValue);
+    return values;
 }
 
 template<unsigned DIM>
-std::vector<std::pair<bool, double> > DiscreteSource<DIM>::GetValues(std::vector<c_vector<double, DIM> > locations, double tolerance)
+bool DiscreteSource<DIM>::IsLinearInSolution()
 {
-    std::vector<std::pair<bool, double> > result;
-    for(unsigned idx=0; idx<locations.size();idx++)
-    {
-        result.push_back(GetValue(locations[idx],tolerance));
-    }
-    return result;
+    return mIsLinearInSolution;
+}
+
+template<unsigned DIM>
+void DiscreteSource<DIM>::SetCellPopulation(AbstractCellPopulation<DIM>& rCellPopulation)
+{
+    mpCellPopulation = boost::shared_ptr<AbstractCellPopulation<DIM> >(&rCellPopulation);
+}
+
+template<unsigned DIM>
+void DiscreteSource<DIM>::SetIsLinearInSolution(bool isLinear)
+{
+    mIsLinearInSolution = isLinear;
+}
+
+template<unsigned DIM>
+void DiscreteSource<DIM>::SetLabelName(const std::string& label)
+{
+    mLabel = label;
+}
+
+template<unsigned DIM>
+void DiscreteSource<DIM>::SetMutationSpecificConsumptionRateMap(std::vector<std::pair<AbstractCellProperty, double > > mutationSpecificConsumptionRateMap)
+{
+    mMutationSpecificConsumptionRateMap = mutationSpecificConsumptionRateMap;
+}
+
+template<unsigned DIM>
+void DiscreteSource<DIM>::SetPoints(std::vector<c_vector<double, DIM> > points)
+{
+    mPoints = points;
+}
+
+template<unsigned DIM>
+void DiscreteSource<DIM>::SetSolution(vtkSmartPointer<vtkImageData>  pSolution)
+{
+    mpSolution = pSolution;
+}
+
+template<unsigned DIM>
+void DiscreteSource<DIM>::SetSource(SourceStrength::Value boundarySource)
+{
+    mSourceStrength = boundarySource;
+}
+
+template<unsigned DIM>
+void DiscreteSource<DIM>::SetType(SourceType::Value boundaryType)
+{
+    mType = boundaryType;
+}
+
+template<unsigned DIM>
+void DiscreteSource<DIM>::SetValue(double value)
+{
+    mValue = value;
+}
+
+template<unsigned DIM>
+void DiscreteSource<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
+{
+    mpNetwork = pNetwork;
 }
 
 // Explicit instantiation

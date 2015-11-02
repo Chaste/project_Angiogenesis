@@ -127,6 +127,12 @@ public:
     c_vector<double, 3> GetNormal();
 
     /* Return the vertices
+     * @param idx index of the vertex to return
+     * @return pointer to the indexed vertex
+     */
+    boost::shared_ptr<Vertex > GetVertex(unsigned idx);
+
+    /* Return the vertices
      * @return the polygon's vertices
      */
     std::vector<boost::shared_ptr<Vertex> > GetVertices();
@@ -140,6 +146,12 @@ public:
      * @return a pair consisting of vtk representation of the vertices and corresponding ids
      */
     std::pair<vtkSmartPointer<vtkPoints>, vtkSmartPointer<vtkIdTypeArray> > GetVtkVertices();
+
+    /* Replace an exiting vertex with the passed in one.
+     * @param idx the index of the vertex to be replaced
+     * @param pVertex the new vertex
+     */
+    void ReplaceVertex(unsigned idx, boost::shared_ptr<Vertex > pVertex);
 
     /* Rotate about the specified axis by the specified angle
      * @param axis the rotation axis

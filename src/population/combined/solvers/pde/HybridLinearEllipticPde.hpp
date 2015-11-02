@@ -42,161 +42,193 @@
 #include "SmartPointers.hpp"
 #include "UblasVectorInclude.hpp"
 #include "AbstractLinearEllipticPde.hpp"
-#include "CaVascularNetwork.hpp"
 #include "DiscreteSource.hpp"
 #include "GeometryTools.hpp"
+#include "RegularGrid.hpp"
+#include "TetrahedralMesh.hpp"
 
-/*
- * Linear Elliptic PDE with discrete or averaged cell and
- * vessel source terms.
+/**
+ * Linear Elliptic PDE with both continuum and discrete source terms.
  */
-
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM = ELEMENT_DIM>
 class HybridLinearEllipticPde : public AbstractLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>
 {
+    /**
+     * The diffusion tensor
+     */
     c_matrix<double, SPACE_DIM, SPACE_DIM> mDiffusionTensor;
-    double mDiffusivity;
-    double mConstantInUTerm;
-    double mLinearInUTerm;
-    std::string mVariableName;
-//    boost::shared_ptr<SimpleCellPopulation<SPACE_DIM> > mpPopulation;
-    boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > mpNetwork;
 
-    /* The discrete sources
-    */
+    /**
+     * The diffusion constant for isotropic diffusion
+     */
+    double mDiffusivity;
+
+    /**
+     * The continuum constant in U term, discrete terms are added to this.
+     */
+    double mConstantInUTerm;
+
+    /**
+     * The continuum linear in U term, discrete terms are added to this.
+     */
+    double mLinearInUTerm;
+
+    /**
+     * The name of the quantity in the pde
+     */
+    std::string mVariableName;
+
+    /**
+     * The collection of discrete sources for addition to the continuum terms
+     */
     std::vector<boost::shared_ptr<DiscreteSource<SPACE_DIM> > > mDiscreteSources;
+
+    /**
+     * The grid for solvers using regular grids
+     */
+    boost::shared_ptr<RegularGrid> mpRegularGrid;
+
+    /**
+     * The mesh for solvers using finite element meshes
+     */
+    boost::shared_ptr<TetrahedralMesh<ELEMENT_DIM, SPACE_DIM> > mpMesh;
+
+    /**
+     * Whether to use a regular grid or mesh for discrete source calculations
+     */
+    bool mUseRegularGrid;
+
+    /**
+     * The constant source strengths for each point on the grid or mesh
+     */
+    std::vector<double> mDiscreteConstantSourceStrengths;
+
+    /**
+     * The linear source strengths for each point on the grid or mesh
+     */
+    std::vector<double> mDiscreteLinearSourceStrengths;
 
 public:
 
-    HybridLinearEllipticPde() :
-            mDiffusionTensor(identity_matrix<double>(SPACE_DIM)),
-            mDiffusivity(1.e-3),
-            mConstantInUTerm(0.0),
-            mLinearInUTerm(0.0),
-            mVariableName("Default"),
-//            mpPopulation(),
-            mpNetwork(),
-            mDiscreteSources()
-    {
-        mDiffusionTensor *= mDiffusivity;
-    }
+    /**
+     * Constructor
+     */
+    HybridLinearEllipticPde();
 
-    static boost::shared_ptr<HybridLinearEllipticPde<ELEMENT_DIM, SPACE_DIM> > Create()
-    {
-        MAKE_PTR(HybridLinearEllipticPde<ELEMENT_DIM>, pSelf);
-        return pSelf;
-    }
+    /**
+     * Factory Constructor
+     * @return a pointer to an instance of the pde
+     */
+    static boost::shared_ptr<HybridLinearEllipticPde<ELEMENT_DIM, SPACE_DIM> > Create();
 
-    void AddDiscreteSource(boost::shared_ptr<DiscreteSource<SPACE_DIM> > pDiscreteSource)
-    {
-        mDiscreteSources.push_back(pDiscreteSource);
-    }
+    /**
+     * Add a discrete source to the pde
+     * @param pDiscreteSource a pointer the discrete source
+     */
+    void AddDiscreteSource(boost::shared_ptr<DiscreteSource<SPACE_DIM> > pDiscreteSource);
 
-    double ComputeConstantInUSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement)
-    {
-        return mConstantInUTerm;
-    }
+    /**
+     * Overwritten method to return the constant in U contribution to the Chaste FE solver
+     * @param rX grid location
+     * @param pElement pointer to containing element
+     * @return source strength
+     */
+    double ComputeConstantInUSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement);
 
-    double ComputeLinearInUCoeffInSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement)
-    {
-        return mLinearInUTerm;
-    }
+    /**
+     * Overwritten method to return the diffusion term to the Chaste FE solver
+     * @return the diffusion matrix
+     */
+    c_matrix<double, SPACE_DIM, SPACE_DIM> ComputeDiffusionTerm(const ChastePoint<SPACE_DIM>&);
 
-    c_matrix<double, SPACE_DIM, SPACE_DIM> ComputeDiffusionTerm(const ChastePoint<SPACE_DIM>&)
-    {
-        return mDiffusionTensor;
-    }
+    /**
+     * Overwritten method to return the linear in U contribution to the Chaste FE solver
+     * @param rX grid location
+     * @param pElement pointer to containing element
+     * @return source strength
+     */
+    double ComputeLinearInUCoeffInSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement);
 
-    double GetDiffusionConstant()
-    {
-        return mDiffusivity;
-    }
+    /**
+     * Return the constant in U contribution to the hybrid solvers
+     * @param location the sample location
+     * @param spacing the distance from the sample location demarking 'coincident' discrete points
+     * @return the constant in U contribution
+     */
+    double GetConstantInUTerm(unsigned gridIndex=0);
 
-    double GetConstantInUTerm(c_vector<double, SPACE_DIM> location = zero_vector<double>(SPACE_DIM), double spacing = 0.0)
-    {
-        double consumption_term = 0.0;
-        for(unsigned idx=0; idx<mDiscreteSources.size(); idx++)
-        {
-            if(mDiscreteSources[idx]->GetType()==SourceType::SOLUTION && !mDiscreteSources[idx]->IsLinearInSolution())
-            {
-                consumption_term =  -1.e-5 * mDiscreteSources[idx]->GetValue(location).second;
-            }
+    /**
+     * Return the diffusion constant for isotropic diffusion
+     * @return the diffusion constant
+     */
+    double GetDiffusionConstant();
 
-            if(mDiscreteSources[idx]->GetType()==SourceType::MULTI_POINT && !mDiscreteSources[idx]->IsLinearInSolution())
-            {
-                std::pair<bool, double> result = mDiscreteSources[idx]->GetValue(location, spacing/2.0);
-                if(result.first)
-                {
-                    consumption_term = result.second;
-                }
-            }
-        }
-        return mConstantInUTerm - consumption_term;
-    }
+    /**
+     * Return the collection of discrete sources
+     * @return vector of pointers to the discrete sources
+     */
+    std::vector<boost::shared_ptr<DiscreteSource<SPACE_DIM> > > GetDiscreteSources();
 
-    std::vector<boost::shared_ptr<DiscreteSource<SPACE_DIM> > > GetDiscreteSources()
-    {
-        return mDiscreteSources;
-    }
+    /**
+     * Return the linear in U contribution to the hybrid solvers
+     * @param location the sample location
+     * @param spacing the distance from the sample location demarking 'coincident' discrete points
+     * @return the linear in U contribution
+     */
+    double GetLinearInUTerm(unsigned gridIndex=0);
 
-    double GetLinearInUTerm(c_vector<double, SPACE_DIM> location  = zero_vector<double>(SPACE_DIM), double spacing = 0.0)
-    {
-        double consumption_term = 0.0;
-        for(unsigned idx=0; idx<mDiscreteSources.size(); idx++)
-        {
-            if(mDiscreteSources[idx]->GetType()==SourceType::SOLUTION && mDiscreteSources[idx]->IsLinearInSolution())
-            {
-                consumption_term =  -1.e-5 * mDiscreteSources[idx]->GetValue(location).second;
-            }
+    /**
+     * Return the name of the pde variable
+     * @return the name of the pde variable
+     */
+    const std::string& GetVariableName();
 
-            if(mDiscreteSources[idx]->GetType()==SourceType::MULTI_POINT && mDiscreteSources[idx]->IsLinearInSolution())
-            {
-                std::pair<bool, double> result = mDiscreteSources[idx]->GetValue(location, spacing/2.0);
-                if(result.first)
-                {
-                    consumption_term = result.second;
-                }
-            }
-        }
+    /**
+     * Set the continuum constant in U term
+     * @param constantInUTerm the continuum constant in U term
+     */
+    void SetConstantInUTerm(double constantInUTerm);
 
-        return mLinearInUTerm - consumption_term;
-    }
+    /**
+     * Set the isotropic diffusion constant
+     * @param diffusivity the isotropic diffusion constant
+     */
+    void SetDiffusionConstant(double diffusivity);
 
-    const std::string& GetVariableName()
-    {
-        return mVariableName;
-    }
+    /**
+     * Set the linear constant in U term
+     * @param linearInUTerm the linear constant in U term
+     */
+    void SetLinearInUTerm(double linearInUTerm);
 
-//    void SetCellPopulation(boost::shared_ptr<SimpleCellPopulation<SPACE_DIM> > pPopulation)
-//    {
-//        mpPopulation = pPopulation;
-//    }
+    /**
+     * Set the regular grid
+     * @param pRegularGrid the regular grid
+     */
+    void SetRegularGrid(boost::shared_ptr<RegularGrid> pRegularGrid);
 
-    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > pNetwork)
-    {
-        mpNetwork = pNetwork;
-    }
+    /**
+     * Set the finite element mesh
+     * @param pMesh the finite element mesh
+     */
+    void SetMesh(boost::shared_ptr<TetrahedralMesh<ELEMENT_DIM, SPACE_DIM> > pMesh);
 
-    void SetConstantInUTerm(double constantInUTerm)
-    {
-        mConstantInUTerm = constantInUTerm;
-    }
+    /**
+     * Set whether to use a regular grid
+     * @param useRegularGrid whether to use a regular grid
+     */
+    void SetUseRegularGrid(bool useRegularGrid);
 
-    void SetLinearInUTerm(double linearInUTerm)
-    {
-        mLinearInUTerm = linearInUTerm;
-    }
+    /**
+     * Set the name of the pde variable
+     * @param rVariableName the name of the pde variable
+     */
+    void SetVariableName(const std::string& rVariableName);
 
-    void SetDiffusionConstant(double diffusivity)
-    {
-        mDiffusivity = diffusivity;
-        mDiffusionTensor = identity_matrix<double>(SPACE_DIM)* mDiffusivity;
-    }
-
-    void SetVariableName(const std::string& rVariableName)
-    {
-        mVariableName = rVariableName;
-    }
+    /**
+     * Update the discrete source strengths
+     */
+    void UpdateDiscreteSourceStrengths();
 
 };
 

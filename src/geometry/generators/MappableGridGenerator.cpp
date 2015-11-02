@@ -34,27 +34,25 @@
  */
 
 #include <math.h>
+#include <vector>
+#include "UblasIncludes.hpp"
 #include "Polygon.hpp"
 #include "Vertex.hpp"
-
 #include "MappableGridGenerator.hpp"
 
-template<unsigned DIM>
-MappableGridGenerator<DIM>::MappableGridGenerator()
+MappableGridGenerator::MappableGridGenerator()
 {
 }
 
-template<unsigned DIM>
-MappableGridGenerator<DIM>::~MappableGridGenerator()
+MappableGridGenerator::~MappableGridGenerator()
 {
 
 }
 
-template<unsigned DIM>
-boost::shared_ptr<Part<DIM> > MappableGridGenerator<DIM>::GeneratePlane(unsigned numX, unsigned numY)
+boost::shared_ptr<Part<3> > MappableGridGenerator::GeneratePlane(unsigned numX, unsigned numY, bool withEndCaps)
 {
     // Make a regular grid of polygons
-    // Make the vertices
+    // Front vertices
     std::vector<boost::shared_ptr<Vertex> > vertices;
     for(unsigned jdx=0; jdx< numY; jdx++)
     {
@@ -66,10 +64,10 @@ boost::shared_ptr<Part<DIM> > MappableGridGenerator<DIM>::GeneratePlane(unsigned
 
             // Create the vertices
             vertices.push_back(Vertex::Create(x_location, y_location, z_location));
-
         }
     }
 
+    // Back vertices
     for(unsigned jdx=0; jdx< numY; jdx++)
     {
         for(unsigned idx=0; idx<numX; idx++)
@@ -124,36 +122,39 @@ boost::shared_ptr<Part<DIM> > MappableGridGenerator<DIM>::GeneratePlane(unsigned
         }
     }
 
-    // Left face
-    for(unsigned jdx=0; jdx< numY - 1; jdx++)
+    if(withEndCaps)
     {
-        unsigned front_index = numX * jdx;
-        unsigned top_front_index = numX * (jdx+1);
-        unsigned back_index = numX * jdx + numX*numY;
-        unsigned top_back_index = numX * (jdx+1) + numX*numY;
+        // Left face
+        for(unsigned jdx=0; jdx< numY - 1; jdx++)
+        {
+            unsigned front_index = numX * jdx;
+            unsigned top_front_index = numX * (jdx+1);
+            unsigned back_index = numX * jdx + numX*numY;
+            unsigned top_back_index = numX * (jdx+1) + numX*numY;
 
-        std::vector<boost::shared_ptr<Vertex> > poly_vertices;
-        poly_vertices.push_back(vertices[front_index]);
-        poly_vertices.push_back(vertices[top_front_index]);
-        poly_vertices.push_back(vertices[top_back_index]);
-        poly_vertices.push_back(vertices[back_index]);
-        polygons.push_back(Polygon::Create(poly_vertices));
-    }
+            std::vector<boost::shared_ptr<Vertex> > poly_vertices;
+            poly_vertices.push_back(vertices[front_index]);
+            poly_vertices.push_back(vertices[top_front_index]);
+            poly_vertices.push_back(vertices[top_back_index]);
+            poly_vertices.push_back(vertices[back_index]);
+            polygons.push_back(Polygon::Create(poly_vertices));
+        }
 
-    // Right face
-    for(unsigned jdx=0; jdx< numY - 1; jdx++)
-    {
-        unsigned front_index = numX * (jdx+1) - 1;
-        unsigned top_front_index = numX * (jdx+2) - 1;
-        unsigned back_index = numX * (jdx + 1) - 1 + numX*numY;
-        unsigned top_back_index = numX * (jdx+2) -1 + numX*numY;
+        // Right face
+        for(unsigned jdx=0; jdx< numY - 1; jdx++)
+        {
+            unsigned front_index = numX * (jdx+1) - 1;
+            unsigned top_front_index = numX * (jdx+2) - 1;
+            unsigned back_index = numX * (jdx + 1) - 1 + numX*numY;
+            unsigned top_back_index = numX * (jdx+2) -1 + numX*numY;
 
-        std::vector<boost::shared_ptr<Vertex> > poly_vertices;
-        poly_vertices.push_back(vertices[front_index]);
-        poly_vertices.push_back(vertices[top_front_index]);
-        poly_vertices.push_back(vertices[top_back_index]);
-        poly_vertices.push_back(vertices[back_index]);
-        polygons.push_back(Polygon::Create(poly_vertices));
+            std::vector<boost::shared_ptr<Vertex> > poly_vertices;
+            poly_vertices.push_back(vertices[front_index]);
+            poly_vertices.push_back(vertices[top_front_index]);
+            poly_vertices.push_back(vertices[top_back_index]);
+            poly_vertices.push_back(vertices[back_index]);
+            polygons.push_back(Polygon::Create(poly_vertices));
+        }
     }
 
     // Bottom face
@@ -189,7 +190,7 @@ boost::shared_ptr<Part<DIM> > MappableGridGenerator<DIM>::GeneratePlane(unsigned
     }
 
     // Create a part
-    boost::shared_ptr<Part<DIM> > p_part = Part<DIM>::Create();
+    boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
     for(unsigned idx=0; idx<polygons.size(); idx++)
     {
         p_part->AddPolygon(polygons[idx], true);
@@ -197,34 +198,38 @@ boost::shared_ptr<Part<DIM> > MappableGridGenerator<DIM>::GeneratePlane(unsigned
     return p_part;
 }
 
-template<unsigned DIM>
-boost::shared_ptr<Part<DIM> > MappableGridGenerator<DIM>::GenerateCylinder(double cylinder_radius,
-                                               double cylinder_thickness,
-                                               double cylinder_angle,
-                                               double cylinder_height,
+boost::shared_ptr<Part<3> > MappableGridGenerator::GenerateCylinder(double cylinderRadius,
+                                               double cylinderThickness,
+                                               double cylinderHeight,
                                                unsigned numX,
-                                               unsigned numY)
+                                               unsigned numY,
+                                               double cylinderAngle)
 {
-    boost::shared_ptr<Part<DIM> > p_part = GeneratePlane(numX, numY);
+    if(cylinderAngle > 2.0 * M_PI)
+    {
+        EXCEPTION("The cylinder angle should be <= 2*pi");
+    }
+
+    boost::shared_ptr<Part<3> > p_part = GeneratePlane(numX, numY, !cylinderAngle == 2.0 * M_PI);
 
     // Get the part extents
-    c_vector<double, 2*DIM> bbox = p_part->GetBoundingBox();
+    c_vector<double, 6> bbox = p_part->GetBoundingBox();
 
     // Get the vertices
     std::vector<boost::shared_ptr<Vertex> > vertices = p_part->GetVertices();
     for(unsigned idx =0; idx<vertices.size(); idx++)
     {
         double x_frac = vertices[idx]->rGetLocation()[0] / (bbox[1] - bbox[0]);
-        double angle = x_frac * cylinder_angle;
+        double angle = x_frac * cylinderAngle;
 
         double y_frac = vertices[idx]->rGetLocation()[1] / (bbox[3] - bbox[2]);
-        double height = y_frac * cylinder_height;
+        double height = y_frac * cylinderHeight;
 
         double z_frac = vertices[idx]->rGetLocation()[2] / (bbox[5] - bbox[4]);
-        double radius = cylinder_radius - cylinder_thickness * z_frac;
+        double radius = cylinderRadius - cylinderThickness * z_frac;
 
         // Get the new x
-        c_vector<double, DIM> new_position;
+        c_vector<double, 3> new_position;
         new_position[0] = radius * std::cos(angle);
 
         // Get the new y
@@ -235,37 +240,48 @@ boost::shared_ptr<Part<DIM> > MappableGridGenerator<DIM>::GenerateCylinder(doubl
 
         vertices[idx]->Translate(new_position - vertices[idx]->rGetLocation());
     }
+
+    p_part->MergeCoincidentVertices();
     return p_part;
 }
 
-template<unsigned DIM>
-boost::shared_ptr<Part<DIM> > MappableGridGenerator<DIM>::GenerateHemisphere(double sphere_radius,
-                                               double sphere_thickness,
-                                               double sphere_azimuth_angle,
-                                               double sphere_polar_angle,
+boost::shared_ptr<Part<3> > MappableGridGenerator::GenerateHemisphere(double sphereRadius,
+                                               double sphereThickness,
                                                unsigned numX,
-                                               unsigned numY)
+                                               unsigned numY,
+                                               double sphereAzimuthAngle,
+                                               double spherePolarAngle)
 {
-    boost::shared_ptr<Part<DIM> > p_part = GeneratePlane(numX, numY);
+    if(sphereAzimuthAngle >= 2.0 * M_PI)
+    {
+        EXCEPTION("The azimuth angle should be < 2*pi");
+    }
 
-    // The the part extents
-    c_vector<double, 2*DIM> bbox = p_part->GetBoundingBox();
+    if(spherePolarAngle >= M_PI)
+    {
+        EXCEPTION("The polar angle should be < pi");
+    }
+
+    boost::shared_ptr<Part<3> > p_part = GeneratePlane(numX, numY);
+
+    // The part extents
+    c_vector<double, 6> bbox = p_part->GetBoundingBox();
 
     // Get the vertices
     std::vector<boost::shared_ptr<Vertex> > vertices = p_part->GetVertices();
     for(unsigned idx =0; idx<vertices.size(); idx++)
     {
         double x_frac = vertices[idx]->rGetLocation()[0] / (bbox[1] - bbox[0]);
-        double azimuth_angle = x_frac * sphere_azimuth_angle;
+        double azimuth_angle = x_frac * sphereAzimuthAngle;
 
         double y_frac = vertices[idx]->rGetLocation()[1] / (bbox[3] - bbox[2]);
-        double polar_angle = y_frac * sphere_polar_angle;
+        double polar_angle = y_frac * spherePolarAngle;
 
         double z_frac = vertices[idx]->rGetLocation()[2] / (bbox[5] - bbox[4]);
-        double radius = sphere_radius - sphere_thickness * z_frac;
+        double radius = sphereRadius - sphereThickness * z_frac;
 
         // Get the new x
-        c_vector<double, DIM> new_position;
+        c_vector<double, 3> new_position;
         new_position[0] = radius * std::cos(azimuth_angle) * std::sin(polar_angle);
 
         // Get the new y
@@ -276,9 +292,7 @@ boost::shared_ptr<Part<DIM> > MappableGridGenerator<DIM>::GenerateHemisphere(dou
 
         vertices[idx]->Translate(new_position - vertices[idx]->rGetLocation());
     }
+
+    p_part->MergeCoincidentVertices();
     return p_part;
 }
-
-//Explicit instantiation
-template class MappableGridGenerator<2> ;
-template class MappableGridGenerator<3> ;

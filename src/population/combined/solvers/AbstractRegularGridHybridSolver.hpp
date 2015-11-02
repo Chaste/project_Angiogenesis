@@ -43,6 +43,7 @@
 #include <vtkSmartPointer.h>
 #include "Part.hpp"
 #include "AbstractHybridSolver.hpp"
+#include "RegularGrid.hpp"
 
 /*
  * An abstract solver class for linear elliptic PDEs on regular grids which can include
@@ -69,6 +70,11 @@ protected:
     /* The number of grid points in each direction
     */
     std::vector<unsigned> mExtents;
+
+    /**
+     * The grid for solvers using regular grids
+     */
+    boost::shared_ptr<RegularGrid> mpRegularGrid;
 
 public:
 
