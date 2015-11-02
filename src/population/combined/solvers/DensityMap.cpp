@@ -37,7 +37,7 @@
 #include <vtkBox.h>
 #include "CaVesselSegment.hpp"
 #include "ChastePoint.hpp"
-#include "SimpleCell.hpp"
+//#include "SimpleCell.hpp"
 
 #include "DensityMap.hpp"
 
@@ -151,18 +151,18 @@ void DensityMap<DIM>::Solve(bool writeSolution)
     std::vector<double> cell_solution(number_of_points, 0.0);
 
     std::vector<c_vector<double, DIM> > cell_locations;
-    if(this->mpCellPopulation)
-    {
-        std::vector<boost::shared_ptr<SimpleCell<DIM> > > cells = this->mpCellPopulation->GetCells();
-        for(unsigned idx = 0; idx < cells.size(); idx++)
-        {
-            cell_locations.push_back(cells[idx]->rGetLocation());
-        }
-    }
+//    if(this->mpCellPopulation)
+//    {
+//        std::vector<boost::shared_ptr<SimpleCell<DIM> > > cells = this->mpCellPopulation->GetCells();
+//        for(unsigned idx = 0; idx < cells.size(); idx++)
+//        {
+//            cell_locations.push_back(cells[idx]->rGetLocation());
+//        }
+//    }
     std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments;
 
     unsigned grid_index;
-    if (this->mpNetwork || this->mpCellPopulation)
+    if (this->mpNetwork)// || this->mpCellPopulation)
     {
         if(this->mpNetwork)
         {
@@ -194,17 +194,17 @@ void DensityMap<DIM>::Solve(bool writeSolution)
                         }
                         vessel_solution[grid_index] /= (std::pow(this->mGridSize,3));
                     }
-                    if(this->mpCellPopulation)
-                    {
-                        for (unsigned idx=0; idx<cell_locations.size(); idx++)
-                        {
-                            if(IsPointInBox(cell_locations[idx], location, this->mGridSize))
-                            {
-                                cell_solution[grid_index] += 1.0;
-                            }
-                        }
-                        cell_solution[grid_index] /= (std::pow(this->mGridSize,3));
-                    }
+//                    if(this->mpCellPopulation)
+//                    {
+//                        for (unsigned idx=0; idx<cell_locations.size(); idx++)
+//                        {
+//                            if(IsPointInBox(cell_locations[idx], location, this->mGridSize))
+//                            {
+//                                cell_solution[grid_index] += 1.0;
+//                            }
+//                        }
+//                        cell_solution[grid_index] /= (std::pow(this->mGridSize,3));
+//                    }
                 }
             }
         }

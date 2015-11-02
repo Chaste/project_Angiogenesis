@@ -52,8 +52,8 @@
 #include "PetscSetupAndFinalize.hpp"
 #include "OutputFileHandler.hpp"
 #include "VasculatureGenerator.hpp"
-#include "SimpleCell.hpp"
-#include "SimpleCellPopulation.hpp"
+//#include "SimpleCell.hpp"
+//#include "SimpleCellPopulation.hpp"
 
 class TestFiniteDifferenceSolver : public CxxTest::TestSuite
 {
@@ -87,40 +87,40 @@ public:
         solver.Solve(true);
     }
 
-    void Test3dKroghCylinderNetworkWithCells()
-    {
-        // Set up the vessel network
-        double vessel_length = 100;
-        VasculatureGenerator<3> generator;
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length);
-
-        // Set up the PDE domain
-        boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
-        p_domain->AddCuboid(vessel_length, vessel_length, vessel_length);
-
-        // Set up the cells
-        boost::shared_ptr<SimpleCellPopulation<3> > p_population = SimpleCellPopulation<3>::Create();
-        double spacing = 10;
-        unsigned num_x = unsigned(vessel_length/spacing) + 1;
-        p_population->GenerateCellsOnGrid(num_x, num_x, num_x, spacing);
-        p_population->BooleanWithVesselNetwork(p_network);
-
-        // Choose the PDE
-        boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
-        p_pde->SetDiffusionConstant(0.0033);
-        p_pde->SetLinearInUTerm(-2.e-7);
-
-        // Set up and run the solver
-        FiniteDifferenceSolver<3> solver;
-        solver.SetVesselNetwork(p_network);
-        solver.SetCellPopulation(p_population);
-        solver.SetExtents(p_domain, 10.0);
-        solver.SetPde(p_pde);
-
-        OutputFileHandler output_file_handler("TestFiniteDifferenceSolver/KroghCylinder3dCells", false);
-        solver.SetWorkingDirectory(output_file_handler.GetOutputDirectoryFullPath());
-        solver.Solve(true);
-    }
+//    void Test3dKroghCylinderNetworkWithCells()
+//    {
+//        // Set up the vessel network
+//        double vessel_length = 100;
+//        VasculatureGenerator<3> generator;
+//        boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length);
+//
+//        // Set up the PDE domain
+//        boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
+//        p_domain->AddCuboid(vessel_length, vessel_length, vessel_length);
+//
+//        // Set up the cells
+//        boost::shared_ptr<SimpleCellPopulation<3> > p_population = SimpleCellPopulation<3>::Create();
+//        double spacing = 10;
+//        unsigned num_x = unsigned(vessel_length/spacing) + 1;
+//        p_population->GenerateCellsOnGrid(num_x, num_x, num_x, spacing);
+//        p_population->BooleanWithVesselNetwork(p_network);
+//
+//        // Choose the PDE
+//        boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
+//        p_pde->SetDiffusionConstant(0.0033);
+//        p_pde->SetLinearInUTerm(-2.e-7);
+//
+//        // Set up and run the solver
+//        FiniteDifferenceSolver<3> solver;
+//        solver.SetVesselNetwork(p_network);
+//        solver.SetCellPopulation(p_population);
+//        solver.SetExtents(p_domain, 10.0);
+//        solver.SetPde(p_pde);
+//
+//        OutputFileHandler output_file_handler("TestFiniteDifferenceSolver/KroghCylinder3dCells", false);
+//        solver.SetWorkingDirectory(output_file_handler.GetOutputDirectoryFullPath());
+//        solver.Solve(true);
+//    }
 
     void Test2dBifurcationNetwork()
     {

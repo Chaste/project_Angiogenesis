@@ -43,7 +43,7 @@
 #include <vtkSmartPointer.h>
 #include "CaVascularNetwork.hpp"
 #include "HybridLinearEllipticPde.hpp"
-#include "SimpleCellPopulation.hpp"
+//#include "SimpleCellPopulation.hpp"
 #include "DirichletBoundaryCondition.hpp"
 
 /*
@@ -64,7 +64,7 @@ protected:
 
     /* The cell population
     */
-    boost::shared_ptr<SimpleCellPopulation<DIM> > mpCellPopulation;
+//    boost::shared_ptr<SimpleCellPopulation<DIM> > mpCellPopulation;
 
     /* The pde to be solved
     */
@@ -104,7 +104,7 @@ public:
     /* Set a cell population
      * @param pCellPopulation a Chaste cell population
      */
-    void SetCellPopulation(boost::shared_ptr<SimpleCellPopulation<DIM> > pCellPopulation);
+//    void SetCellPopulation(boost::shared_ptr<SimpleCellPopulation<DIM> > pCellPopulation);
 
     /* Set a boundary condition for the domain
      * @param pBoundaryCondition the boundary condition

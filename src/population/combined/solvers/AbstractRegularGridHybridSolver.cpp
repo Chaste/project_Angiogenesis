@@ -321,10 +321,10 @@ void AbstractRegularGridHybridSolver<DIM>::Write()
             // Write the vessel network data
             this->mpNetwork->Write((this->mWorkingDirectory + "/vessel_network.vtp").c_str());
         }
-        if (this->mpCellPopulation)
-        {
-           this->mpCellPopulation->Write((this->mWorkingDirectory + "/cell_population.vtp").c_str());
-        }
+//        if (this->mpCellPopulation)
+//        {
+//           this->mpCellPopulation->Write((this->mWorkingDirectory + "/cell_population.vtp").c_str());
+//        }
 
         // Write the PDE solution
         vtkSmartPointer<vtkXMLImageDataWriter> pImageDataWriter = vtkSmartPointer<vtkXMLImageDataWriter>::New();

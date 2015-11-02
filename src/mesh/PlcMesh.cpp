@@ -43,6 +43,7 @@
 #include "UblasVectorInclude.hpp"
 #include "AbstractTetrahedralMesh.hpp"
 #include "VtkMeshWriter.hpp"
+#include "Debug.hpp"
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 PlcMesh<ELEMENT_DIM, SPACE_DIM>::PlcMesh()
@@ -173,6 +174,7 @@ void PlcMesh<ELEMENT_DIM, SPACE_DIM>::Mesh3d(boost::shared_ptr<Part<SPACE_DIM> >
 
     // Library call
     tetgen15::tetrahedralize((char*) mesher_command.c_str(), &mesher_input, &mesher_output);
+
     this->ImportFromTetgen(mesher_output, mesher_output.numberoftetrahedra, mesher_output.tetrahedronlist,
                            mesher_output.numberoftrifaces, mesher_output.trifacelist, NULL);
 }

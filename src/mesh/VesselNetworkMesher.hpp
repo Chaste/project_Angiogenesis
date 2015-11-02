@@ -33,52 +33,55 @@
 
  */
 
-#ifndef SIMPLECELL_HPP_
-#define SIMPLECELL_HPP_
+#ifndef VESSELNETWORKMESHER_HPP_
+#define VESSELNETWORKMESHER_HPP_
 
-#include "ChastePoint.hpp"
-#include "UblasIncludes.hpp"
+#include <string>
+#include <vtkPlane.h>
+#include <vtkSmartPointer.h>
+#include <vtkPolyData.h>
 #include "SmartPointers.hpp"
+#include "UblasVectorInclude.hpp"
+#include "CaVascularNetwork.hpp"
+#include "Polygon.hpp"
 
-/* A minimal cell class. Can be used to create Chaste cells of different types.
+/**
+ * Class for generating surface representations of vessel networks. The generated surface is suitable for
+ * finite element meshing and can be returned in PLC or VTK formats.
  */
-
 template<unsigned DIM>
-class SimpleCell : public ChastePoint<DIM>
+class VesselNetworkMesher
 {
-    unsigned mIndex;
+    /**
+     * The vessel network for which the surface will be generated.
+     */
+    boost::shared_ptr<CaVascularNetwork<DIM> > mpVesselNetwork;
+
+    /**
+     * A VTK representation of the surface.
+     */
+    vtkSmartPointer<vtkPolyData> mpSurface;
 
 public:
 
-    /* Constructor
+    /**
+     * Constructor
+     * @param pVesselNetwork the vessel network to generate the surface on
      */
-    SimpleCell(double v1 = 0, double v2 = 0, double v3 = 0);
+    VesselNetworkMesher(boost::shared_ptr<CaVascularNetwork<DIM> > pVesselNetwork);
 
-    /* Constructor
+    /**
+     * Destructor
+     * @param pVesselNetwork the vessel network to generate the surface on
      */
-    SimpleCell(c_vector<double, DIM> location);
+    ~VesselNetworkMesher();
 
-    /* Factory constructor method
-     * @return a shared pointer to a new cell
+    /**
+     * Return the surface in the form of VTK polydata
+     * @return the surface in the form of VTK polydata
      */
-    static boost::shared_ptr<SimpleCell<DIM> > Create(double v1 = 0, double v2 = 0, double v3 = 0);
+    vtkSmartPointer<vtkPolyData> GetVtkSurface();
 
-    /* Factory constructor method
-     * @return a shared pointer to a new cell
-     */
-    static boost::shared_ptr<SimpleCell<DIM> > Create(c_vector<double, DIM> location);
-
-    /* Desctructor
-     */
-    ~SimpleCell();
-
-    /* Return the index
-     */
-    unsigned GetIndex();
-
-    /* Set the index
-     */
-    void SetIndex(unsigned index);
 };
 
-#endif /* SIMPLECELL_HPP_*/
+#endif /* VESSELNETWORKMESHER_HPP_*/

@@ -5,7 +5,6 @@ geometry/TestPart.hpp
 geometry/TestVesselSurfaceGenerator.hpp
 geometry/TestVoronoiGenerator.hpp
 geometry/TestGeometryTools.hpp
-mesh/TestPlcMesh.hpp
 population/vessel/components/TestVascularNode.hpp
 population/vessel/components/TestCaVesselSegment.hpp
 population/vessel/components/TestCaVessel.hpp
@@ -17,15 +16,12 @@ population/vessel/solvers/flow/haematocrit/TestAlarcon03HaematocritSolver.hpp
 population/vessel/solvers/flow/haematocrit/TestBetteridgeHaematocritSolver.hpp
 population/vessel/solvers/flow/TestAlarcon03MechanicalStimulusCalculator.hpp
 population/vessel/solvers/flow/TestAlarcon03MetabolicStimulusCalculator.hpp
-population/vessel/solvers/angiogenesis/TestAbstractAngiogenesisSolver.hpp
 population/vessel/solvers/field/TestKroghCylinderSolver.hpp
 population/vessel/TestVasculatureData.hpp
 population/vessel/TestVasculatureGenerator.hpp
-population/cell/TestSimpleCellPopulation.hpp
 population/combined/TestCaBasedCellPopulationWithVessels.hpp
 population/combined/solvers/TestDistanceTransform.hpp
 population/combined/solvers/TestDensityMap.hpp
 population/combined/solvers/TestFiniteDifferenceSolver.hpp
 population/combined/solvers/TestGreensFunctionSolver.hpp
 population/combined/solvers/TestFiniteElementSolver.hpp
-simulation/TestAngiogenesisSimulationModifier.hpp

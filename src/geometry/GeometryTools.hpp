@@ -37,6 +37,7 @@
 #define GEOMETRYTOOLS_HPP_
 
 #include <vector>
+#include <math.h>
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning for now (gcc4.3)
 #include <vtkBox.h>
 #include <vtkTetra.h>
@@ -87,6 +88,18 @@ struct Grid
         unsigned y_index = (mod_z - mod_y) / x_extent;
         unsigned x_index = mod_y;
         return GetLocation(x_index, y_index, z_index, spacing, originX, originY, originZ);
+    }
+
+    /*
+     * Get the grid index closest to the specified location
+     */
+    static unsigned Get1dIndexOfLocation(c_vector<double, 3> location, unsigned x_extent, unsigned y_extent, double spacing = 1.0,
+                                                      double originX = 0.0, double originY = 0.0, double originZ = 0.0)
+    {
+        unsigned grid_x = round((location[0] - originX) / spacing);
+        unsigned grid_y = round((location[1] - originY) / spacing);
+        unsigned grid_z = round((location[2] - originZ) / spacing);
+        return Get1dGridIndex(grid_x, grid_y, grid_z, x_extent, y_extent);
     }
 };
 

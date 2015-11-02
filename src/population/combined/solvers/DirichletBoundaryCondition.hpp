@@ -39,7 +39,7 @@
 #include <vector>
 #include <string>
 #include "UblasIncludes.hpp"
-#include "SimpleCellPopulation.hpp"
+//#include "SimpleCellPopulation.hpp"
 #include "CaVascularNetwork.hpp"
 #include "Part.hpp"
 
@@ -82,7 +82,7 @@ private:
 
     /* The cell population
     */
-    boost::shared_ptr<SimpleCellPopulation<DIM> > mpCellPopulation;
+//    boost::shared_ptr<SimpleCellPopulation<DIM> > mpCellPopulation;
 
     boost::shared_ptr<Part<DIM> > mpDomain;
 
@@ -112,7 +112,7 @@ public:
 
     void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
 
-    void SetCellPopulation(boost::shared_ptr<SimpleCellPopulation<DIM> > pCellPopulation);
+//    void SetCellPopulation(boost::shared_ptr<SimpleCellPopulation<DIM> > pCellPopulation);
 
     void SetDomain(boost::shared_ptr<Part<DIM> > pDomain);
 

@@ -35,12 +35,12 @@
 
 #include "Facet.hpp"
 #include "DirichletBoundaryCondition.hpp"
-#include "SimpleCell.hpp"
+//#include "SimpleCell.hpp"
 
 template<unsigned DIM>
 DirichletBoundaryCondition<DIM>::DirichletBoundaryCondition()
     :   mpNetwork(),
-        mpCellPopulation(),
+//        mpCellPopulation(),
         mpDomain(),
         mPoints(),
         mType(BoundaryConditionType::POINT),
@@ -76,11 +76,11 @@ void DirichletBoundaryCondition<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascu
     mpNetwork = pNetwork;
 }
 
-template<unsigned DIM>
-void DirichletBoundaryCondition<DIM>::SetCellPopulation(boost::shared_ptr<SimpleCellPopulation<DIM> > pCellPopulation)
-{
-    mpCellPopulation = pCellPopulation;
-}
+//template<unsigned DIM>
+//void DirichletBoundaryCondition<DIM>::SetCellPopulation(boost::shared_ptr<SimpleCellPopulation<DIM> > pCellPopulation)
+//{
+//    mpCellPopulation = pCellPopulation;
+//}
 
 template<unsigned DIM>
 void DirichletBoundaryCondition<DIM>::SetDomain(boost::shared_ptr<Part<DIM> > pDomain)
@@ -253,19 +253,19 @@ std::pair<bool, double> DirichletBoundaryCondition<DIM>::GetValue(c_vector<doubl
 
     else if(mType == BoundaryConditionType::CELL_POINT)
     {
-        if(!mpCellPopulation)
-        {
-            EXCEPTION("A simple cell population is required for this type of boundary condition");
-        }
-
-        std::vector<boost::shared_ptr<SimpleCell<DIM> > > cells = mpCellPopulation->GetCells();
-        for(unsigned idx=0; idx<cells.size(); idx++)
-        {
-            if (norm_2(cells[idx]->rGetLocation()-location)<tolerance)
-            {
-                return std::pair<bool, double>(true, mValue);
-            }
-        }
+//        if(!mpCellPopulation)
+//        {
+//            EXCEPTION("A simple cell population is required for this type of boundary condition");
+//        }
+//
+//        std::vector<boost::shared_ptr<SimpleCell<DIM> > > cells = mpCellPopulation->GetCells();
+//        for(unsigned idx=0; idx<cells.size(); idx++)
+//        {
+//            if (norm_2(cells[idx]->rGetLocation()-location)<tolerance)
+//            {
+//                return std::pair<bool, double>(true, mValue);
+//            }
+//        }
         return std::pair<bool, double>(false, mValue);
     }
     else if(mType == BoundaryConditionType::IN_PART)

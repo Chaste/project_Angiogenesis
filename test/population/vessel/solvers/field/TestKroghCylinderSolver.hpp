@@ -52,8 +52,6 @@
 #include "PetscSetupAndFinalize.hpp"
 #include "OutputFileHandler.hpp"
 #include "VasculatureGenerator.hpp"
-#include "SimpleCell.hpp"
-#include "SimpleCellPopulation.hpp"
 #include "KroghCylinderSolver.hpp"
 
 class TestKroghCylinderSolver: public CxxTest::TestSuite

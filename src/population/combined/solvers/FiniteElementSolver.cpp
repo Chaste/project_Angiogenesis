@@ -127,6 +127,34 @@ std::pair<std::vector<double>, std::vector<unsigned> > FiniteElementSolver<DIM>:
 }
 
 template<unsigned DIM>
+vtkSmartPointer<vtkImageData> FiniteElementSolver<DIM>::GetSampledSolution(std::vector<unsigned> extents, double spacing)
+{
+    if(!mFeSolution)
+    {
+        ReadSolution();
+    }
+    vtkSmartPointer<vtkImageData> p_sampling_grid = vtkSmartPointer<vtkImageData>::New();
+    p_sampling_grid->SetSpacing(spacing, spacing, spacing);
+    p_sampling_grid->SetDimensions(extents[0], extents[1], extents[2]);
+
+    vtkSmartPointer<vtkProbeFilter> p_probe_filter = vtkSmartPointer<vtkProbeFilter>::New();
+    p_probe_filter->SetInput(p_sampling_grid);
+    p_probe_filter->SetSource(mFeSolution);
+    p_probe_filter->Update();
+    vtkSmartPointer<vtkImageData> result = p_probe_filter->GetImageDataOutput();
+
+    unsigned num_points = result->GetPointData()->GetArray(this->mpPde->GetVariableName().c_str())->GetNumberOfTuples();
+    for(unsigned idx=0; idx<num_points; idx++)
+    {
+        if(!result->GetPointData()->GetArray("vtkValidPointMask")->GetTuple1(idx))
+        {
+            result->GetPointData()->GetArray(this->mpPde->GetVariableName().c_str())->SetTuple1(idx, 40.0);
+        }
+    }
+    return result;
+}
+
+template<unsigned DIM>
 std::vector<double> FiniteElementSolver<DIM>::GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints,
                                                                               const std::string& rSpeciesLabel)
 {
@@ -224,7 +252,6 @@ void FiniteElementSolver<DIM>::Solve(bool writeSolution)
             if(this->mDirichletBoundaryConditions[idx]->GetType() == BoundaryConditionType::VESSEL_LINE
                     || this->mDirichletBoundaryConditions[idx]->GetType() == BoundaryConditionType::VESSEL_VOLUME)
             {
-
                 use_boundry_nodes = true;
             }
         }
@@ -267,7 +294,6 @@ void FiniteElementSolver<DIM>::Solve(bool writeSolution)
     {
         output.push_back(static_solution_repl[idx]);
     }
-
     if(writeSolution)
     {
         this->Write(output, mpMesh);

@@ -44,6 +44,7 @@
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the strstream deprecated warning for now (gcc4.3)
 #include <vtkUnstructuredGrid.h>
 #include <vtkSmartPointer.h>
+#include <vtkImageData.h>
 
 struct VesselRepresentation
 {
@@ -81,6 +82,8 @@ public:
                                             const std::string& rSpeciesLabel = "Default");
 
     std::pair<std::vector<double>, std::vector<unsigned> > GetSolutionOnRegularGrid(std::vector<unsigned> extents, double spacing);
+
+    vtkSmartPointer<vtkImageData> GetSampledSolution(std::vector<unsigned> extents, double spacing);
 
     void SetDomain(boost::shared_ptr<Part<DIM> > pDomain);
 

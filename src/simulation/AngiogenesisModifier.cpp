@@ -35,7 +35,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "AngiogenesisModifier.hpp"
 #include "MeshBasedCellPopulation.hpp"
-#include "SimpleCellPopulation.hpp"
+//#include "SimpleCellPopulation.hpp"
 #include "boost/lexical_cast.hpp"
 #include "Debug.hpp"
 

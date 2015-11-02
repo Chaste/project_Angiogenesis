@@ -38,7 +38,7 @@
 template<unsigned DIM>
 AbstractHybridSolver<DIM>::AbstractHybridSolver()
     :   mpNetwork(),
-        mpCellPopulation(),
+//        mpCellPopulation(),
         mpPde(),
         mDirichletBoundaryConditions(),
         mWorkingDirectory(),
@@ -91,11 +91,11 @@ vtkSmartPointer<vtkImageData> AbstractHybridSolver<DIM>::GetSolution()
     return vtkSmartPointer<vtkImageData>::New();
 }
 
-template<unsigned DIM>
-void AbstractHybridSolver<DIM>::SetCellPopulation(boost::shared_ptr<SimpleCellPopulation<DIM> > pCellPopulation)
-{
-    mpCellPopulation = pCellPopulation;
-}
+//template<unsigned DIM>
+//void AbstractHybridSolver<DIM>::SetCellPopulation(boost::shared_ptr<SimpleCellPopulation<DIM> > pCellPopulation)
+//{
+//    mpCellPopulation = pCellPopulation;
+//}
 
 template<unsigned DIM>
 void AbstractHybridSolver<DIM>::SetPde(boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > pPde)

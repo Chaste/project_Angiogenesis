@@ -35,7 +35,7 @@
 
 #include "CaVesselSegment.hpp"
 #include "ChastePoint.hpp"
-#include "SimpleCell.hpp"
+//#include "SimpleCell.hpp"
 
 #include "DistanceTransform.hpp"
 
@@ -68,17 +68,17 @@ void DistanceTransform<DIM>::Solve(bool writeSolution)
     std::vector<double> cell_solution(number_of_points, 0.0);
 
     std::vector<c_vector<double, DIM> > cell_locations;
-    if(this->mpCellPopulation)
-    {
-        std::vector<boost::shared_ptr<SimpleCell<DIM> > > cells = this->mpCellPopulation->GetCells();
-        for(unsigned idx = 0; idx < cells.size(); idx++)
-        {
-            cell_locations.push_back(cells[idx]->rGetLocation());
-        }
-    }
+//    if(this->mpCellPopulation)
+//    {
+//        std::vector<boost::shared_ptr<SimpleCell<DIM> > > cells = this->mpCellPopulation->GetCells();
+//        for(unsigned idx = 0; idx < cells.size(); idx++)
+//        {
+//            cell_locations.push_back(cells[idx]->rGetLocation());
+//        }
+//    }
 
     unsigned grid_index;
-    if (this->mpNetwork || this->mpCellPopulation)
+    if (this->mpNetwork )//|| this->mpCellPopulation)
     {
         std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments;
         if(this->mpNetwork)
@@ -114,19 +114,19 @@ void DistanceTransform<DIM>::Solve(bool writeSolution)
                         }
                         vessel_solution[grid_index] = min_distance;
                     }
-                    if(this->mpCellPopulation)
-                    {
-                        double min_dist = 1.e6;
-                        for (unsigned index=0; index<cell_locations.size(); index++)
-                        {
-                            double dist = norm_2(location - cell_locations[index]);
-                            if(dist < min_dist)
-                            {
-                                min_dist = dist;
-                            }
-                        }
-                        cell_solution[grid_index] = min_dist;
-                    }
+//                    if(this->mpCellPopulation)
+//                    {
+//                        double min_dist = 1.e6;
+//                        for (unsigned index=0; index<cell_locations.size(); index++)
+//                        {
+//                            double dist = norm_2(location - cell_locations[index]);
+//                            if(dist < min_dist)
+//                            {
+//                                min_dist = dist;
+//                            }
+//                        }
+//                        cell_solution[grid_index] = min_dist;
+//                    }
                 }
             }
         }

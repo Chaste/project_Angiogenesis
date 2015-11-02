@@ -42,7 +42,6 @@
 #include "SmartPointers.hpp"
 #include "UblasVectorInclude.hpp"
 #include "AbstractLinearEllipticPde.hpp"
-#include "SimpleCellPopulation.hpp"
 #include "CaVascularNetwork.hpp"
 #include "DiscreteSource.hpp"
 #include "GeometryTools.hpp"
@@ -60,7 +59,7 @@ class HybridLinearEllipticPde : public AbstractLinearEllipticPde<ELEMENT_DIM, SP
     double mConstantInUTerm;
     double mLinearInUTerm;
     std::string mVariableName;
-    boost::shared_ptr<SimpleCellPopulation<SPACE_DIM> > mpPopulation;
+//    boost::shared_ptr<SimpleCellPopulation<SPACE_DIM> > mpPopulation;
     boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > mpNetwork;
 
     /* The discrete sources
@@ -75,7 +74,7 @@ public:
             mConstantInUTerm(0.0),
             mLinearInUTerm(0.0),
             mVariableName("Default"),
-            mpPopulation(),
+//            mpPopulation(),
             mpNetwork(),
             mDiscreteSources()
     {
@@ -168,10 +167,10 @@ public:
         return mVariableName;
     }
 
-    void SetCellPopulation(boost::shared_ptr<SimpleCellPopulation<SPACE_DIM> > pPopulation)
-    {
-        mpPopulation = pPopulation;
-    }
+//    void SetCellPopulation(boost::shared_ptr<SimpleCellPopulation<SPACE_DIM> > pPopulation)
+//    {
+//        mpPopulation = pPopulation;
+//    }
 
     void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > pNetwork)
     {

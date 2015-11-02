@@ -199,7 +199,7 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
 
 public:
 
-    void DOntTestCaBasedSpheroid() throw (Exception)
+    void TestCaBasedSpheroid() throw (Exception)
     {
         // Create the simulation domain
         boost::shared_ptr<Part<3> > p_domain = GetSimulationDomain();
@@ -260,7 +260,7 @@ public:
         simulator.Solve();
     }
 
-    void TestNodeBasedSpheroid() throw (Exception)
+    void DOntestNodeBasedSpheroid() throw (Exception)
     {
         //
 

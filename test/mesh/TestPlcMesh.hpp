@@ -198,6 +198,28 @@ public:
         mesh_writer.WriteFilesUsingMesh(*p_mesh);
     }
 
+//    void TestMeshCubeWithInternalVesselSurface()
+//    {
+//        double vessel_length = 100.0;
+//        VasculatureGenerator<3> generator;
+//        c_vector<double,3> centre = zero_vector<double>(3);
+//        centre[0] = vessel_length/2.0;
+//        centre[1] = vessel_length/2.0;
+//        centre[2] = vessel_length/2.0;
+//        boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre);
+//        p_network->GetVessels()[0]->GetStartNode()->SetRadius(10.0);
+//        p_network->GetVessels()[0]->GetEndNode()->SetRadius(10.0);
+//
+//        boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
+//        p_part->AddCuboid(2.0 * vessel_length, 2.0 * vessel_length, 2.0*vessel_length);
+//        p_part->AddVesselNetwork(p_network, true);
+//
+//        boost::shared_ptr<PlcMesh<3> > p_mesh = PlcMesh<3>::Create();
+//        p_mesh->GenerateFromPart(p_part, 100.0);
+//        VtkMeshWriter<3, 3> mesh_writer("TestPlcMesh", "CubeWithInternalVesselSurface", false);
+//        mesh_writer.WriteFilesUsingMesh(*p_mesh);
+//    }
+
     void TestParrallelVesselSurfaceCube()
     {
         double vessel_length = 100;
