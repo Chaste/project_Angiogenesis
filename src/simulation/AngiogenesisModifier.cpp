@@ -34,8 +34,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "AngiogenesisModifier.hpp"
-#include "MeshBasedCellPopulation.hpp"
-//#include "SimpleCellPopulation.hpp"
+#include "AbstractCellPopulation.hpp"
 #include "boost/lexical_cast.hpp"
 #include "Debug.hpp"
 
@@ -160,7 +159,6 @@ void AngiogenesisModifier<DIM>::OutputSimulationModifierParameters(out_stream& r
 }
 
 // Explicit instantiation
-//template class AngiogenesisModifier<1>;
 template class AngiogenesisModifier<2>;
 template class AngiogenesisModifier<3>;
 

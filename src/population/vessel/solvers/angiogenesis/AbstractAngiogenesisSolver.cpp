@@ -307,7 +307,6 @@ void AbstractAngiogenesisSolver<DIM>::Increment()
     {
         for(unsigned idx=0; idx<mPdeSolvers.size(); idx++)
         {
-            mPdeSolvers[idx]->SetVesselNetwork(mpNetwork);
             mPdeSolvers[idx]->SetWorkingDirectory(mOutputDirectory);
             std::string species_name = mPdeSolvers[idx]->GetPde()->GetVariableName();
             mPdeSolvers[idx]->SetFileName("/" + species_name +"_solution_" + boost::lexical_cast<std::string>(num_steps)+".vti");
@@ -319,7 +318,14 @@ void AbstractAngiogenesisSolver<DIM>::Increment()
                 {
                     if(mPdeSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->GetType()==SourceType::SOLUTION)
                     {
-                        mPdeSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->SetSolution(mPdeSolvers[idx-1]->GetSolution());
+                        mPdeSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->SetSolution(mPdeSolvers[idx-1]->GetVtkSolution());
+                    }
+                    else if(mPdeSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->GetType()==SourceType::VESSEL)
+                    {
+                        if(mpNetwork)
+                        {
+                            mPdeSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->SetVesselNetwork(mpNetwork);
+                        }
                     }
                 }
             }

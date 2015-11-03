@@ -41,9 +41,7 @@
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning for now (gcc4.3)
 #include <vtkImageData.h>
 #include <vtkSmartPointer.h>
-#include "CaVascularNetwork.hpp"
 #include "HybridLinearEllipticPde.hpp"
-//#include "SimpleCellPopulation.hpp"
 #include "DirichletBoundaryCondition.hpp"
 
 /*
@@ -51,7 +49,6 @@
  * discrete representations of cells and vessels.
  *
  */
-
 template<unsigned DIM>
 class AbstractHybridSolver
 {
@@ -61,10 +58,6 @@ protected:
     /* The vessel network
     */
     boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
-
-    /* The cell population
-    */
-//    boost::shared_ptr<SimpleCellPopulation<DIM> > mpCellPopulation;
 
     /* The pde to be solved
     */
@@ -95,16 +88,11 @@ public:
     /* Get the solution as vtk image data. If the solution is on an unstructured grid it must be first resampled.
      * @return the solution as vtk image data
      */
-    virtual vtkSmartPointer<vtkImageData> GetSolution();
+    virtual vtkSmartPointer<vtkImageData> GetVtkSolution();
 
     boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > GetPde();
 
     virtual std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints, const std::string& rSpeciesLabel = "Default");
-
-    /* Set a cell population
-     * @param pCellPopulation a Chaste cell population
-     */
-//    void SetCellPopulation(boost::shared_ptr<SimpleCellPopulation<DIM> > pCellPopulation);
 
     /* Set a boundary condition for the domain
      * @param pBoundaryCondition the boundary condition
@@ -116,15 +104,10 @@ public:
      */
     void SetPde(boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > pPde);
 
-    /* Set the vessel network
-     * @param pNetwork the vessel network
-     */
-    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
-
     /* Solve the pde
      * @param writeSolution whether to write the solution to file
      */
-    virtual void Solve(bool writeSolution = false);
+    virtual void Solve(bool writeSolution = false) = 0;
 
     /* Set the working directory
      * @param directory the working directory

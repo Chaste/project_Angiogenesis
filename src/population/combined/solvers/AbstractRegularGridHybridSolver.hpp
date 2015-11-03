@@ -57,24 +57,12 @@ protected:
 
     /* The solution in the form of vtk image data
     */
-    vtkSmartPointer<vtkImageData> mpSolution;
-
-    /* The grid spacing, assumed the same in all directions
-    */
-    double mGridSize;
-
-    /* The origin of the domain
-    */
-    c_vector<double, DIM> mOrigin;
-
-    /* The number of grid points in each direction
-    */
-    std::vector<unsigned> mExtents;
+    vtkSmartPointer<vtkImageData> mpRegularGridVtkSolution;
 
     /**
      * The grid for solvers using regular grids
      */
-    boost::shared_ptr<RegularGrid> mpRegularGrid;
+    boost::shared_ptr<RegularGrid<DIM> > mpRegularGrid;
 
 public:
 
@@ -86,13 +74,7 @@ public:
      */
     ~AbstractRegularGridHybridSolver();
 
-    /* Return the grid index corresponding to the input location indices.
-     */
-    unsigned GetGridIndex(unsigned x_index, unsigned y_index, unsigned z_index);
-
-    /* Return the spatial location of the point corresponding to the input grid indices
-     */
-    c_vector<double, DIM> GetLocation(unsigned x_index, unsigned y_index, unsigned z_index);
+    boost::shared_ptr<RegularGrid<DIM> > GetGrid();
 
     std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints,
                                             const std::string& rSpeciesLabel = "Default");
@@ -110,37 +92,19 @@ public:
     /* Get the solution as vtk image data
      * @return the solution as vtk image data
      */
-    vtkSmartPointer<vtkImageData> GetSolution();
+    vtkSmartPointer<vtkImageData> GetVtkSolution();
 
     double GetVolumeAverageSolution(const std::string& arrayName);
-
-    void WriteHistograms(const std::string& arrayName, const std::string& fileName, double binSize, unsigned numberOfBins);
-
-    /* Return true if the specified indexes correspond to a lattice point on the
-     * domain boundary.
-     */
-    bool IsOnBoundary(unsigned x_index, unsigned y_index, unsigned z_index);
-
-    /* Set the number of grid points in each dimension
-     * @param extents the number of grid points in each dimension
-     */
-    void SetExtents(std::vector<unsigned> extents);
 
     /* Set the number of grid points in each dimension based on the bounding box of
      * a part.
      * @param pPart the part from which to get the dimension
      */
-    void SetExtents(boost::shared_ptr<Part<DIM> > pPart, double gridSize);
+    void SetGridFromPart(boost::shared_ptr<Part<DIM> > pPart, double gridSize);
 
-    /* Set the spacing between lattice points. It is assumed the same in all directions.
-     * @param gridSize the spacing between lattice points
-     */
-    void SetGridSize(double gridSize);
+    void SetGrid(boost::shared_ptr<RegularGrid<DIM> > pRegularGrid);
 
-    /* Set the origin of the finite difference grid
-     * @param origin the origin of the finite difference grid
-     */
-    void SetOrigin(c_vector<double, DIM> origin);
+    void WriteHistograms(const std::string& arrayName, const std::string& fileName, double binSize, unsigned numberOfBins);
 
 protected:
 

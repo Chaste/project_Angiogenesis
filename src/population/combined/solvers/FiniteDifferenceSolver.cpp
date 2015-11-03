@@ -65,24 +65,27 @@ FiniteDifferenceSolver<DIM>::~FiniteDifferenceSolver()
 template<unsigned DIM>
 void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
 {
-    this->mpRegularGrid = RegularGrid::Create();
-    this->mpRegularGrid->SetSpacing(this->mGridSize);
-    this->mpRegularGrid->SetExtents(this->mExtents);
     this->mpPde->SetRegularGrid(this->mpRegularGrid);
+    this->mpPde->UpdateDiscreteSourceStrengths();
 
     // Set up the system
-    unsigned number_of_points = this->mExtents[0] * this->mExtents[1] * this->mExtents[2];
+    unsigned number_of_points = this->mpRegularGrid->GetNumberOfPoints();
+    unsigned extents_x = this->mpRegularGrid->GetExtents()[0];
+    unsigned extents_y = this->mpRegularGrid->GetExtents()[1];
+    unsigned extents_z = this->mpRegularGrid->GetExtents()[2];
+    double spacing = this->mpRegularGrid->GetSpacing();
+    double diffusion_term = this->mpPde->GetDiffusionConstant() / (spacing * spacing);
 
     LinearSystem linear_system(number_of_points, 7);
-    for (unsigned i = 0; i < this->mExtents[2]; i++) // Z
+    for (unsigned i = 0; i < extents_z; i++) // Z
     {
-        for (unsigned j = 0; j < this->mExtents[1]; j++) // Y
+        for (unsigned j = 0; j < extents_y; j++) // Y
         {
-            for (unsigned k = 0; k < this->mExtents[0]; k++) // X
+            for (unsigned k = 0; k < extents_x; k++) // X
             {
-                unsigned grid_index = this->GetGridIndex(k, j, i);
-                c_vector<double, DIM> location = this->GetLocation(k ,j, i);
-                double diffusion_term =  this->mpPde->GetDiffusionConstant() / (this->mGridSize * this->mGridSize);
+                unsigned grid_index = this->mpRegularGrid->Get1dGridIndex(k, j, i);
+
+                c_vector<double, DIM> location = this->mpRegularGrid->GetLocation(k ,j, i);
                 linear_system.AddToMatrixElement(grid_index, grid_index, this->mpPde->GetLinearInUTerm(grid_index) - 6.0 * diffusion_term);
 
                 // Assume no flux on domain boundaries by default
@@ -97,7 +100,7 @@ void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
                 }
 
                 // No flux at x top
-                if (k < this->mExtents[0] - 1)
+                if (k < extents_x - 1)
                 {
                     linear_system.AddToMatrixElement(grid_index, grid_index + 1, diffusion_term);
                 }
@@ -109,7 +112,7 @@ void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
                 // No flux at y bottom
                 if (j > 0)
                 {
-                    linear_system.AddToMatrixElement(grid_index, grid_index - this->mExtents[0], diffusion_term);
+                    linear_system.AddToMatrixElement(grid_index, grid_index - extents_x, diffusion_term);
                 }
                 else
                 {
@@ -117,9 +120,9 @@ void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
                 }
 
                 // No flux at y top
-                if (j < this->mExtents[1] - 1)
+                if (j < extents_y - 1)
                 {
-                    linear_system.AddToMatrixElement(grid_index, grid_index + this->mExtents[0], diffusion_term);
+                    linear_system.AddToMatrixElement(grid_index, grid_index + extents_x, diffusion_term);
                 }
                 else
                 {
@@ -129,7 +132,7 @@ void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
                 // No flux at z bottom
                 if (i > 0)
                 {
-                    linear_system.AddToMatrixElement(grid_index, grid_index - this->mExtents[0] * this->mExtents[1], diffusion_term);
+                    linear_system.AddToMatrixElement(grid_index, grid_index - extents_x * extents_y, diffusion_term);
                 }
                 else
                 {
@@ -137,9 +140,9 @@ void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
                 }
 
                 // No flux at z top
-                if (i < this->mExtents[2] - 1)
+                if (i < extents_z - 1)
                 {
-                    linear_system.AddToMatrixElement(grid_index, grid_index + this->mExtents[0] * this->mExtents[1], diffusion_term);
+                    linear_system.AddToMatrixElement(grid_index, grid_index + extents_x * extents_y, diffusion_term);
                 }
                 else
                 {
@@ -150,31 +153,22 @@ void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
         }
     }
 
-    // Apply dirichlet boundary conditions
-    for(unsigned bound_index=0; bound_index<this->mDirichletBoundaryConditions.size(); bound_index++)
-    {
-        if(this->mpNetwork)
-        {
-            this->mDirichletBoundaryConditions[bound_index]->SetVesselNetwork(this->mpNetwork);
-        }
-    }
-
-    double grid_tolerance = this->mGridSize * (std::sqrt(2.0) / 2.0);
+    double grid_tolerance = spacing * (std::sqrt(2.0) / 2.0);
     std::vector<unsigned> bc_indices;
-    for (unsigned i = 0; i < this->mExtents[2]; i++) // Z
+    for (unsigned i = 0; i < extents_z; i++) // Z
     {
-        for (unsigned j = 0; j < this->mExtents[1]; j++) // Y
+        for (unsigned j = 0; j < extents_y; j++) // Y
         {
-            for (unsigned k = 0; k < this->mExtents[0]; k++) // X
+            for (unsigned k = 0; k < extents_x; k++) // X
             {
-                unsigned grid_index = this->GetGridIndex(k, j, i);
+                unsigned grid_index = this->mpRegularGrid->Get1dGridIndex(k, j, i);
                 for(unsigned bound_index=0; bound_index<this->mDirichletBoundaryConditions.size(); bound_index++)
                 {
                     if(this->mDirichletBoundaryConditions[bound_index]->GetType()== BoundaryConditionType::OUTER)
                     {
-                        if(i==0 || i==this->mExtents[2]-1 || j==0 || j==this->mExtents[1]-1 || k==0 || k == this->mExtents[0]-1)
+                        if(i==0 || i==extents_z-1 || j==0 || j==extents_y-1 || k==0 || k == extents_x-1)
                         {
-                            std::pair<bool, double> is_boundary = this->mDirichletBoundaryConditions[bound_index]->GetValue(this->GetLocation(k ,j, i), grid_tolerance);
+                            std::pair<bool, double> is_boundary = this->mDirichletBoundaryConditions[bound_index]->GetValue(this->mpRegularGrid->GetLocation(k ,j, i), grid_tolerance);
                             bc_indices.push_back(grid_index);
                             linear_system.SetRhsVectorElement(grid_index, is_boundary.second);
                             break;
@@ -182,9 +176,9 @@ void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
                     }
                     else if(this->mDirichletBoundaryConditions[bound_index]->GetType()== BoundaryConditionType::OUTER_2D)
                     {
-                        if(j==0 || j==this->mExtents[1]-1 || k==0 || k == this->mExtents[0]-1)
+                        if(j==0 || j==extents_y-1 || k==0 || k == extents_x-1)
                         {
-                            std::pair<bool, double> is_boundary = this->mDirichletBoundaryConditions[bound_index]->GetValue(this->GetLocation(k ,j, i), grid_tolerance);
+                            std::pair<bool, double> is_boundary = this->mDirichletBoundaryConditions[bound_index]->GetValue(this->mpRegularGrid->GetLocation(k ,j, i), grid_tolerance);
                             bc_indices.push_back(grid_index);
                             linear_system.SetRhsVectorElement(grid_index, is_boundary.second);
                             break;
@@ -192,7 +186,7 @@ void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
                     }
                     else
                     {
-                        std::pair<bool, double> is_boundary = this->mDirichletBoundaryConditions[bound_index]->GetValue(this->GetLocation(k ,j, i), grid_tolerance);
+                        std::pair<bool, double> is_boundary = this->mDirichletBoundaryConditions[bound_index]->GetValue(this->mpRegularGrid->GetLocation(k ,j, i), grid_tolerance);
                         if(is_boundary.first)
                         {
                             bc_indices.push_back(grid_index);
@@ -204,6 +198,7 @@ void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
             }
         }
     }
+
     linear_system.ZeroMatrixRowsWithValueOnDiagonal(bc_indices, 1.0);
 
     // Solve the linear system

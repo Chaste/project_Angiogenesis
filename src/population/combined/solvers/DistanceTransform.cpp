@@ -63,44 +63,28 @@ DistanceTransform<DIM>::~DistanceTransform()
 template<unsigned DIM>
 void DistanceTransform<DIM>::Solve(bool writeSolution)
 {
-    unsigned number_of_points = this->mExtents[0] * this->mExtents[1] * this->mExtents[2];
+    unsigned number_of_points = this->mpRegularGrid->GetNumberOfPoints();
+    unsigned extents_x = this->mpRegularGrid->GetExtents()[0];
+    unsigned extents_y = this->mpRegularGrid->GetExtents()[1];
+    unsigned extents_z = this->mpRegularGrid->GetExtents()[2];
+
     std::vector<double> vessel_solution(number_of_points, 0.0);
-    std::vector<double> cell_solution(number_of_points, 0.0);
 
-    std::vector<c_vector<double, DIM> > cell_locations;
-//    if(this->mpCellPopulation)
-//    {
-//        std::vector<boost::shared_ptr<SimpleCell<DIM> > > cells = this->mpCellPopulation->GetCells();
-//        for(unsigned idx = 0; idx < cells.size(); idx++)
-//        {
-//            cell_locations.push_back(cells[idx]->rGetLocation());
-//        }
-//    }
-
-    unsigned grid_index;
-    if (this->mpNetwork )//|| this->mpCellPopulation)
+    if (this->mpNetwork)
     {
         std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments;
         if(this->mpNetwork)
         {
             segments = this->mpNetwork->GetVesselSegments();
         }
-        for (unsigned i = 0; i < this->mExtents[2]; i++) // Z
+        for (unsigned i = 0; i < extents_z; i++) // Z
         {
-            for (unsigned j = 0; j < this->mExtents[1]; j++) // Y
+            for (unsigned j = 0; j < extents_y; j++) // Y
             {
-                for (unsigned k = 0; k < this->mExtents[0]; k++) // X
+                for (unsigned k = 0; k < extents_x; k++) // X
                 {
-                    grid_index = k + this->mExtents[0] * j + this->mExtents[0] * this->mExtents[1] * i;
-
-                    // If the grid point is crossed by a vessel segment add the segment's contribution
-                    c_vector<double, DIM> location;
-                    location[0] = double(k) * this->mGridSize + this->mOrigin[0];
-                    location[1] = double(j) * this->mGridSize + this->mOrigin[1];
-                    if(DIM==3)
-                    {
-                        location[2] = double(i) * this->mGridSize + this->mOrigin[2];
-                    }
+                    unsigned grid_index = this->mpRegularGrid->Get1dGridIndex(k, j, i);
+                    c_vector<double, DIM> location = this->mpRegularGrid->GetLocation(k ,j, i);
                     if(this->mpNetwork)
                     {
                         double min_distance = 1.e6;
@@ -114,26 +98,12 @@ void DistanceTransform<DIM>::Solve(bool writeSolution)
                         }
                         vessel_solution[grid_index] = min_distance;
                     }
-//                    if(this->mpCellPopulation)
-//                    {
-//                        double min_dist = 1.e6;
-//                        for (unsigned index=0; index<cell_locations.size(); index++)
-//                        {
-//                            double dist = norm_2(location - cell_locations[index]);
-//                            if(dist < min_dist)
-//                            {
-//                                min_dist = dist;
-//                            }
-//                        }
-//                        cell_solution[grid_index] = min_dist;
-//                    }
                 }
             }
         }
     }
 
     std::map<std::string, std::vector<double> > data;
-    data["CellDistance"] = cell_solution;
     data["VesselDistance"] = vessel_solution;
     this->UpdateSolution(data);
 

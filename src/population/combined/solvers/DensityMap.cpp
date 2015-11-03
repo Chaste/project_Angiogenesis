@@ -146,43 +146,28 @@ double DensityMap<DIM>::LengthOfLineInBox(c_vector<double, DIM> start_point, c_v
 template<unsigned DIM>
 void DensityMap<DIM>::Solve(bool writeSolution)
 {
-    unsigned number_of_points = this->mExtents[0] * this->mExtents[1] * this->mExtents[2];
+    unsigned number_of_points = this->mpRegularGrid->GetNumberOfPoints();
+    unsigned extents_x = this->mpRegularGrid->GetExtents()[0];
+    unsigned extents_y = this->mpRegularGrid->GetExtents()[1];
+    unsigned extents_z = this->mpRegularGrid->GetExtents()[2];
+    double spacing = this->mpRegularGrid->GetSpacing();
+
     std::vector<double> vessel_solution(number_of_points, 0.0);
-    std::vector<double> cell_solution(number_of_points, 0.0);
-
-    std::vector<c_vector<double, DIM> > cell_locations;
-//    if(this->mpCellPopulation)
-//    {
-//        std::vector<boost::shared_ptr<SimpleCell<DIM> > > cells = this->mpCellPopulation->GetCells();
-//        for(unsigned idx = 0; idx < cells.size(); idx++)
-//        {
-//            cell_locations.push_back(cells[idx]->rGetLocation());
-//        }
-//    }
     std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments;
-
-    unsigned grid_index;
-    if (this->mpNetwork)// || this->mpCellPopulation)
+    if (this->mpNetwork)
     {
         if(this->mpNetwork)
         {
             segments = this->mpNetwork->GetVesselSegments();
         }
-        for (unsigned i = 0; i < this->mExtents[2]; i++) // Z
+        for (unsigned i = 0; i < extents_z; i++) // Z
         {
-            for (unsigned j = 0; j < this->mExtents[1]; j++) // Y
+            for (unsigned j = 0; j < extents_y; j++) // Y
             {
-                for (unsigned k = 0; k < this->mExtents[0]; k++) // X
+                for (unsigned k = 0; k < extents_x; k++) // X
                 {
-                    grid_index = k + this->mExtents[0] * j + this->mExtents[0] * this->mExtents[1] * i;
-                    // If the vessel is in the box add it's length
-                    c_vector<double, DIM> location;
-                    location[0] = double(k) * this->mGridSize + this->mOrigin[0];
-                    location[1] = double(j) * this->mGridSize + this->mOrigin[1];
-                    if(DIM==3)
-                    {
-                        location[2] = double(i) * this->mGridSize + this->mOrigin[2];
-                    }
+                    unsigned grid_index = this->mpRegularGrid->Get1dGridIndex(k, j, i);
+                    c_vector<double, DIM> location = this->mpRegularGrid->GetLocation(k ,j, i);
 
                     if(this->mpNetwork)
                     {
@@ -190,27 +175,15 @@ void DensityMap<DIM>::Solve(bool writeSolution)
                         {
                             vessel_solution[grid_index] += LengthOfLineInBox(segments[idx]->GetNode(0)->GetLocationVector(),
                                                                              segments[idx]->GetNode(1)->GetLocationVector(),
-                                                                             location, this->mGridSize);
+                                                                             location, spacing);
                         }
-                        vessel_solution[grid_index] /= (std::pow(this->mGridSize,3));
+                        vessel_solution[grid_index] /= (std::pow(spacing,3));
                     }
-//                    if(this->mpCellPopulation)
-//                    {
-//                        for (unsigned idx=0; idx<cell_locations.size(); idx++)
-//                        {
-//                            if(IsPointInBox(cell_locations[idx], location, this->mGridSize))
-//                            {
-//                                cell_solution[grid_index] += 1.0;
-//                            }
-//                        }
-//                        cell_solution[grid_index] /= (std::pow(this->mGridSize,3));
-//                    }
                 }
             }
         }
     }
     std::map<std::string, std::vector<double> > data;
-    data["CellDensity"] = cell_solution;
     data["VesselDensity"] = vessel_solution;
     this->UpdateSolution(data);
 

@@ -35,45 +35,57 @@
 
 #include "Exception.hpp"
 #include "RegularGrid.hpp"
+#include "Debug.hpp"
 
-RegularGrid::RegularGrid() :
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+RegularGrid<ELEMENT_DIM, SPACE_DIM>::RegularGrid() :
     mSpacing(1.0),
     mExtents(std::vector<unsigned>(3,10)),
-    mOrigin(zero_vector<double>(3))
+    mOrigin(zero_vector<double>(SPACE_DIM))
 {
 
 }
 
-boost::shared_ptr<RegularGrid> RegularGrid::Create()
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+boost::shared_ptr<RegularGrid<ELEMENT_DIM, SPACE_DIM> > RegularGrid<ELEMENT_DIM, SPACE_DIM>::Create()
 {
-    MAKE_PTR(RegularGrid, pSelf);
+    typedef RegularGrid<ELEMENT_DIM, SPACE_DIM> Reg_Grid_Templated;
+    MAKE_PTR(Reg_Grid_Templated, pSelf);
     return pSelf;
 }
 
-RegularGrid::~RegularGrid()
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+RegularGrid<ELEMENT_DIM, SPACE_DIM>::~RegularGrid()
 {
 }
 
-unsigned RegularGrid::Get1dGridIndex(unsigned x_index, unsigned y_index, unsigned z_index)
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+unsigned RegularGrid<ELEMENT_DIM, SPACE_DIM>::Get1dGridIndex(unsigned x_index, unsigned y_index, unsigned z_index)
 {
     return x_index + mExtents[0] * y_index + mExtents[0] * mExtents[1] * z_index;
 }
 
-std::vector<unsigned> RegularGrid::GetExtents()
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+std::vector<unsigned> RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetExtents()
 {
     return mExtents;
 }
 
-c_vector<double, 3> RegularGrid::GetLocation(unsigned x_index, unsigned y_index, unsigned z_index)
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+c_vector<double, SPACE_DIM> RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetLocation(unsigned x_index, unsigned y_index, unsigned z_index)
 {
-    c_vector<double, 3> location;
+    c_vector<double, SPACE_DIM> location;
     location[0] = double(x_index) * mSpacing + mOrigin[0];
     location[1] = double(y_index) * mSpacing + mOrigin[1];
-    location[2] = double(z_index) * mSpacing + mOrigin[2];
+    if(SPACE_DIM == 3)
+    {
+        location[2] = double(z_index) * mSpacing + mOrigin[2];
+    }
     return location;
 }
 
-c_vector<double, 3> RegularGrid::GetLocationOf1dIndex(unsigned grid_index)
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+c_vector<double, SPACE_DIM> RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetLocationOf1dIndex(unsigned grid_index)
 {
     unsigned mod_z = grid_index % (mExtents[0] * mExtents[1]);
     unsigned z_index = (grid_index - mod_z) / (mExtents[0] * mExtents[1]);
@@ -83,37 +95,67 @@ c_vector<double, 3> RegularGrid::GetLocationOf1dIndex(unsigned grid_index)
     return GetLocation(x_index, y_index, z_index);
 }
 
-c_vector<double, 3> RegularGrid::GetOrigin()
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+c_vector<double, SPACE_DIM> RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetOrigin()
 {
     return mOrigin;
 }
 
-unsigned RegularGrid::GetNumberOfPoints()
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+unsigned RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetNumberOfPoints()
 {
     return mExtents[0] * mExtents[1] * mExtents[2];
 }
 
-double RegularGrid::GetSpacing()
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+double RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetSpacing()
 {
     return mSpacing;
 }
 
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+bool RegularGrid<ELEMENT_DIM, SPACE_DIM>::IsOnBoundary(unsigned x_index, unsigned y_index, unsigned z_index)
+{
+    if(x_index == 0 || x_index == mExtents[0] - 1)
+    {
+        return true;
+    }
+    if(y_index == 0 || y_index == mExtents[1] - 1)
+    {
+        return true;
+    }
+    if(ELEMENT_DIM == 3)
+    {
+        if(z_index == 0 || z_index == mExtents[2] - 1)
+        {
+            return true;
+        }
+    }
+    return false;
+}
 
-void RegularGrid::SetExtents(std::vector<unsigned> extents)
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+void RegularGrid<ELEMENT_DIM, SPACE_DIM>::SetExtents(std::vector<unsigned> extents)
 {
     if(extents.size()<3)
     {
-        EXCEPTION("The extents should be of dimension 3");
+        EXCEPTION("The extents should be of dimension 3, regardless of element or space dimension");
     }
     mExtents = extents;
 }
 
-void RegularGrid::SetOrigin(c_vector<double, 3> origin)
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+void RegularGrid<ELEMENT_DIM, SPACE_DIM>::SetOrigin(c_vector<double, SPACE_DIM> origin)
 {
     mOrigin = origin;
 }
 
-void RegularGrid::SetSpacing(double spacing)
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+void RegularGrid<ELEMENT_DIM, SPACE_DIM>::SetSpacing(double spacing)
 {
     mSpacing = spacing;
 }
+
+// Explicit instantiation
+template class RegularGrid<2> ;
+template class RegularGrid<3> ;

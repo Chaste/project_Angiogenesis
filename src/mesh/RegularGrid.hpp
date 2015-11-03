@@ -43,6 +43,7 @@
 /**
  * A simple description of a regular lattice for use in hybrid simulations.
  */
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM = ELEMENT_DIM>
 class RegularGrid
 {
     /**
@@ -58,7 +59,7 @@ class RegularGrid
     /**
      *  The origin of the grid in x,y,z. Corresponds to location of front, bottom, left corner.
      */
-    c_vector<double, 3> mOrigin;
+    c_vector<double, SPACE_DIM> mOrigin;
 
 public:
 
@@ -71,7 +72,7 @@ public:
      * Factory constructor method
      * @return a shared pointer to a new grid
      */
-    static boost::shared_ptr<RegularGrid> Create();
+    static boost::shared_ptr<RegularGrid<ELEMENT_DIM, SPACE_DIM> > Create();
 
     /**
      * Desctructor
@@ -95,17 +96,17 @@ public:
     /*
      * Get the location of a point on the grid for given x,y,z indices
      */
-    c_vector<double, 3> GetLocation(unsigned x_index, unsigned y_index, unsigned z_index);
+    c_vector<double, SPACE_DIM> GetLocation(unsigned x_index, unsigned y_index, unsigned z_index);
 
     /*
      * Get the location of a point on the grid for given 1-d grid index
      */
-    c_vector<double, 3> GetLocationOf1dIndex(unsigned grid_index);
+    c_vector<double, SPACE_DIM> GetLocationOf1dIndex(unsigned grid_index);
 
     /* Return the origin in x, y, z
      * @return the grid origin
      */
-    c_vector<double, 3> GetOrigin();
+    c_vector<double, SPACE_DIM> GetOrigin();
 
     unsigned GetNumberOfPoints();
 
@@ -115,6 +116,8 @@ public:
      */
     double GetSpacing();
 
+    bool IsOnBoundary(unsigned x_index, unsigned y_index, unsigned z_index);
+
     /* Set the grid extents in x, y, z
      * @param extents the grid extents
      */
@@ -123,7 +126,7 @@ public:
     /* Set the origin in x, y, z
      * @param origin the grid origin
      */
-    void SetOrigin(c_vector<double, 3> origin);
+    void SetOrigin(c_vector<double, SPACE_DIM> origin);
 
     /**
      * Set the grid spacing

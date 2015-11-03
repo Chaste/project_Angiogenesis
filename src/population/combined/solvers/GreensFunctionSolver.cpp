@@ -92,7 +92,7 @@ void GreensFunctionSolver<DIM>::Solve(bool writeSolution)
     // Get the sink rates
     unsigned number_of_sinks = mSinkCoordinates.size();
     double sink_rate_per_volume = this->mpPde->GetConstantInUTerm();
-    double sink_volume = pow(this->mGridSize, 3);
+    double sink_volume = pow(this->mpRegularGrid->GetSpacing(), 3);
     mSinkRates = std::vector<double>(number_of_sinks, sink_rate_per_volume * sink_volume);
     double total_sink_rate = std::accumulate(mSinkRates.begin(), mSinkRates.end(), 0.0);
 
@@ -264,26 +264,13 @@ void GreensFunctionSolver<DIM>::GenerateSubSegments()
 template<unsigned DIM>
 void GreensFunctionSolver<DIM>::GenerateTissuePoints()
 {
-    unsigned num_points = this->mExtents[0] * this->mExtents[1] *this->mExtents[2];
+    unsigned num_points = this->mpRegularGrid->GetNumberOfPoints();
     mSinkCoordinates = std::vector<ChastePoint<DIM> >(num_points);
     mSinkPointMap = std::vector<unsigned>(num_points);
-    for (unsigned i = 0; i < this->mExtents[2]; i++) //Z
+    for(unsigned idx=0; idx<num_points; idx++)
     {
-        for (unsigned j = 0; j < this->mExtents[1]; j++) //Y
-        {
-            for (unsigned k = 0; k < this->mExtents[0]; k++) //X
-            {
-                unsigned index = k + this->mExtents[0] * j + this->mExtents[0] * this->mExtents[1] * i;
-                mSinkCoordinates[index] = ChastePoint<DIM>(double(k) * this->mGridSize + this->mOrigin[0],
-                                         double(j) * this->mGridSize + this->mOrigin[1],
-                                         double(i) * this->mGridSize + this->mOrigin[2]);
-            }
-        }
-    }
-
-    for (unsigned i = 0; i < mSinkCoordinates.size(); i++)
-    {
-        mSinkPointMap[i] = i;
+        mSinkCoordinates[idx] = this->mpRegularGrid->GetLocationOf1dIndex(idx);
+        mSinkPointMap[idx] = idx;
     }
 }
 
@@ -359,7 +346,7 @@ boost::shared_ptr<boost::multi_array<double, 2> > GreensFunctionSolver<DIM>::Get
     typedef boost::multi_array<double, 2>::index index;
     unsigned num_points = mSinkCoordinates.size();
     double coefficient = 1.0 / (4.0 * M_PI);
-    double tissue_point_volume = pow(this->mGridSize, 3);
+    double tissue_point_volume = pow(this->mpRegularGrid->GetSpacing(), 3);
     double equivalent_tissue_point_radius = pow(tissue_point_volume * 0.75 / M_PI, 0.333333);
 
     boost::shared_ptr<boost::multi_array<double, 2> > p_interaction_matrix(new boost::multi_array<double, 2>(boost::extents[num_points][num_points]));
@@ -389,7 +376,7 @@ boost::shared_ptr<boost::multi_array<double, 2> > GreensFunctionSolver<DIM>::Get
     unsigned num_sinks = mSinkCoordinates.size();
     unsigned num_subsegments = mSubSegmentCoordinates.size();
 
-    double tissue_point_volume = pow(this->mGridSize, 3);
+    double tissue_point_volume = pow(this->mpRegularGrid->GetSpacing(), 3);
     double equivalent_tissue_point_radius = pow(tissue_point_volume * 0.75 / M_PI, 0.333333);
     double coefficient = 1.0 / (4.0 * M_PI);
 
@@ -422,7 +409,7 @@ boost::shared_ptr<boost::multi_array<double, 2> > GreensFunctionSolver<DIM>::Get
     unsigned num_sinks = mSinkCoordinates.size();
     double coefficient = 1.0 / (4.0 * M_PI);
 
-    double tissue_point_volume = pow(this->mGridSize, 3);
+    double tissue_point_volume = pow(this->mpRegularGrid->GetSpacing(), 3);
     double equivalent_tissue_point_radius = pow(tissue_point_volume * 0.75 / M_PI, 0.333333);
 
     boost::shared_ptr<boost::multi_array<double, 2> > p_interaction_matrix(new boost::multi_array<double, 2>(boost::extents[num_subsegments][num_sinks]));
@@ -449,13 +436,10 @@ boost::shared_ptr<boost::multi_array<double, 2> > GreensFunctionSolver<DIM>::Get
 template<unsigned DIM>
 void GreensFunctionSolver<DIM>::WriteSolution(std::map<std::string, std::vector<double> >& segmentPointData)
 {
-    // Write the vessel network data
-    this->mpNetwork->Write((this->mWorkingDirectory + "/vessels.vtp").c_str());
-
     // Write the tissue point data
     vtkSmartPointer<vtkXMLImageDataWriter> pImageDataWriter = vtkSmartPointer<vtkXMLImageDataWriter>::New();
     pImageDataWriter->SetFileName((this->mWorkingDirectory + "/pde_solution.vti").c_str());
-    pImageDataWriter->SetInput(this->mpSolution);
+    pImageDataWriter->SetInput(this->mpRegularGridVtkSolution);
     pImageDataWriter->Update();
     pImageDataWriter->Write();
 

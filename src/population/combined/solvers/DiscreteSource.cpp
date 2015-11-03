@@ -40,6 +40,7 @@
 #include <vtkPointData.h>
 #include <vtkProbeFilter.h>
 #include <vtkLineSource.h>
+#include "Debug.hpp"
 
 template<unsigned DIM>
 DiscreteSource<DIM>::DiscreteSource()

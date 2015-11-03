@@ -48,10 +48,7 @@
 template<unsigned DIM>
 AbstractRegularGridHybridSolver<DIM>::AbstractRegularGridHybridSolver()
     :   AbstractHybridSolver<DIM>(),
-        mpSolution(),
-        mGridSize(1.0),
-        mOrigin(zero_vector<double>(DIM)),
-        mExtents(std::vector<unsigned>(3, 1)),
+        mpRegularGridVtkSolution(),
         mpRegularGrid()
 {
 
@@ -61,6 +58,12 @@ template<unsigned DIM>
 AbstractRegularGridHybridSolver<DIM>::~AbstractRegularGridHybridSolver()
 {
 
+}
+
+template<unsigned DIM>
+boost::shared_ptr<RegularGrid<DIM> > AbstractRegularGridHybridSolver<DIM>::GetGrid()
+{
+    return mpRegularGrid;
 }
 
 template<unsigned DIM>
@@ -88,7 +91,7 @@ std::vector<double> AbstractRegularGridHybridSolver<DIM>::GetSolutionAtPoints(st
 
     vtkSmartPointer<vtkProbeFilter> p_probe_filter = vtkSmartPointer<vtkProbeFilter>::New();
     p_probe_filter->SetInput(p_polydata);
-    p_probe_filter->SetSource(GetSolution());
+    p_probe_filter->SetSource(GetVtkSolution());
     p_probe_filter->Update();
     vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetOutput()->GetPointData();
     unsigned num_points = p_point_data->GetArray(rSpeciesLabel.c_str())->GetNumberOfTuples();
@@ -97,18 +100,6 @@ std::vector<double> AbstractRegularGridHybridSolver<DIM>::GetSolutionAtPoints(st
         sampled_solution[idx] = p_point_data->GetArray(rSpeciesLabel.c_str())->GetTuple1(idx);
     }
     return sampled_solution;
-}
-
-template<unsigned DIM>
-double AbstractRegularGridHybridSolver<DIM>::GetVolumeAverageSolution(const std::string& arrayName)
-{
-    unsigned num_points = mpSolution->GetPointData()->GetArray(0)->GetNumberOfTuples();
-    double sum = 0.0;
-    for(unsigned idx=0; idx<num_points; idx++)
-    {
-        sum+= mpSolution->GetPointData()->GetArray(arrayName.c_str())->GetTuple1(idx);
-    }
-    return sum / double(num_points);
 }
 
 template<unsigned DIM>
@@ -123,7 +114,7 @@ std::vector<double> AbstractRegularGridHybridSolver<DIM>::GetSolutionOnLine(doub
     p_line->SetResolution(sampleSpacing);
     vtkSmartPointer<vtkProbeFilter> p_probe_filter = vtkSmartPointer<vtkProbeFilter>::New();
     p_probe_filter->SetInputConnection(p_line->GetOutputPort());
-    p_probe_filter->SetSource(mpSolution);
+    p_probe_filter->SetSource(mpRegularGridVtkSolution);
     p_probe_filter->Update();
 
     vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetOutput()->GetPointData();
@@ -148,9 +139,127 @@ vtkSmartPointer<vtkImageData> AbstractRegularGridHybridSolver<DIM>::GetSolutionO
 
     vtkSmartPointer<vtkProbeFilter> p_probe_filter = vtkSmartPointer<vtkProbeFilter>::New();
     p_probe_filter->SetInput(p_sampling_grid);
-    p_probe_filter->SetSource(mpSolution);
+    p_probe_filter->SetSource(mpRegularGridVtkSolution);
     p_probe_filter->Update();
     return p_probe_filter->GetImageDataOutput();
+}
+
+template<unsigned DIM>
+double AbstractRegularGridHybridSolver<DIM>::GetVolumeAverageSolution(const std::string& arrayName)
+{
+    unsigned num_points = mpRegularGridVtkSolution->GetPointData()->GetArray(0)->GetNumberOfTuples();
+    double sum = 0.0;
+    for(unsigned idx=0; idx<num_points; idx++)
+    {
+        sum+= mpRegularGridVtkSolution->GetPointData()->GetArray(arrayName.c_str())->GetTuple1(idx);
+    }
+    return sum / double(num_points);
+}
+
+template<unsigned DIM>
+vtkSmartPointer<vtkImageData> AbstractRegularGridHybridSolver<DIM>::GetVtkSolution()
+{
+    return mpRegularGridVtkSolution;
+}
+
+template<unsigned DIM>
+void AbstractRegularGridHybridSolver<DIM>::SetGridFromPart(boost::shared_ptr<Part<DIM> > pPart, double gridSize)
+{
+    mpRegularGrid = RegularGrid<DIM>::Create();
+    mpRegularGrid->SetSpacing(gridSize);
+
+    std::vector<unsigned> extents = std::vector<unsigned>(3);
+
+    c_vector<double, 2*DIM> spatial_extents = pPart->GetBoundingBox();
+    extents[0] = unsigned((spatial_extents[1] - spatial_extents[0]) / gridSize) + 1u;
+    extents[1] = unsigned((spatial_extents[3] - spatial_extents[2]) / gridSize) + 1u;
+    if(DIM==3)
+    {
+        extents[2] = unsigned((spatial_extents[5] - spatial_extents[4]) / gridSize) + 1u;
+    }
+    else
+    {
+        extents[2] = 1;
+    }
+    mpRegularGrid->SetExtents(extents);
+
+    c_vector<double, DIM> origin;
+    origin[0] = spatial_extents[0];
+    origin[1] = spatial_extents[2];
+    if(DIM==3)
+    {
+        origin[2] = spatial_extents[4];
+    }
+    mpRegularGrid->SetOrigin(origin);
+}
+
+template<unsigned DIM>
+void AbstractRegularGridHybridSolver<DIM>::SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid)
+{
+    mpRegularGrid = pGrid;
+}
+
+template<unsigned DIM>
+void AbstractRegularGridHybridSolver<DIM>::UpdateSolution(std::map<std::string, std::vector<double> >& data)
+{
+    mpRegularGridVtkSolution = vtkSmartPointer<vtkImageData>::New();
+
+    if(DIM==3)
+    {
+        mpRegularGridVtkSolution->SetDimensions(mpRegularGrid->GetExtents()[0], mpRegularGrid->GetExtents()[1], mpRegularGrid->GetExtents()[2]);
+    }
+    else
+    {
+        mpRegularGridVtkSolution->SetDimensions(mpRegularGrid->GetExtents()[0], mpRegularGrid->GetExtents()[1], 1);
+    }
+
+    mpRegularGridVtkSolution->SetSpacing(mpRegularGrid->GetSpacing(), mpRegularGrid->GetSpacing(), mpRegularGrid->GetSpacing());
+
+    if(DIM==3)
+    {
+        mpRegularGridVtkSolution->SetOrigin(mpRegularGrid->GetOrigin()[0], mpRegularGrid->GetOrigin()[1], mpRegularGrid->GetOrigin()[2]);
+    }
+    else
+    {
+        mpRegularGridVtkSolution->SetOrigin(mpRegularGrid->GetOrigin()[0], mpRegularGrid->GetOrigin()[1], 0.0);
+    }
+
+    std::map<std::string, std::vector<double> >::iterator iter;
+    for (iter = data.begin(); iter != data.end(); ++iter)
+    {
+        vtkSmartPointer<vtkDoubleArray> pPointData = vtkSmartPointer<vtkDoubleArray>::New();
+        pPointData->SetNumberOfComponents(1);
+        pPointData->SetNumberOfTuples(iter->second.size());
+        pPointData->SetName(iter->first.c_str());
+
+        for (unsigned i = 0; i < iter->second.size(); i++)
+        {
+            pPointData->SetValue(i, data[iter->first][i]);
+        }
+        mpRegularGridVtkSolution->GetPointData()->AddArray(pPointData);
+    }
+}
+
+template<unsigned DIM>
+void AbstractRegularGridHybridSolver<DIM>::Write()
+{
+    if (!this->mWorkingDirectory.empty())
+    {
+        // Write the PDE solution
+        vtkSmartPointer<vtkXMLImageDataWriter> pImageDataWriter = vtkSmartPointer<vtkXMLImageDataWriter>::New();
+        if(!this->mFilename.empty())
+        {
+            pImageDataWriter->SetFileName((this->mWorkingDirectory + "/" + this->mFilename).c_str());
+        }
+        else
+        {
+            pImageDataWriter->SetFileName((this->mWorkingDirectory + "/solution.vti").c_str());
+        }
+
+        pImageDataWriter->SetInput(mpRegularGridVtkSolution);
+        pImageDataWriter->Update();
+        pImageDataWriter->Write();
+    }
 }
 
 template<unsigned DIM>
@@ -159,10 +268,10 @@ void AbstractRegularGridHybridSolver<DIM>::WriteHistograms(const std::string& ar
     std::vector<unsigned> bins(numberOfBins, 0);
 
     // populate the bins
-    unsigned num_points = mpSolution->GetPointData()->GetArray(arrayName.c_str())->GetNumberOfTuples();
+    unsigned num_points = mpRegularGridVtkSolution->GetPointData()->GetArray(arrayName.c_str())->GetNumberOfTuples();
     for(unsigned idx=0; idx<num_points; idx++)
     {
-        unsigned bin_label = std::floor(mpSolution->GetPointData()->GetArray(arrayName.c_str())->GetTuple1(idx)/ binSize);
+        unsigned bin_label = std::floor(mpRegularGridVtkSolution->GetPointData()->GetArray(arrayName.c_str())->GetTuple1(idx)/ binSize);
         if(bin_label > numberOfBins)
         {
             bin_label = numberOfBins;
@@ -179,167 +288,6 @@ void AbstractRegularGridHybridSolver<DIM>::WriteHistograms(const std::string& ar
             output_file << double(idx) * binSize << " , "<< bins[idx] << "\n";
         }
         output_file.close();
-    }
-}
-
-template<unsigned DIM>
-unsigned AbstractRegularGridHybridSolver<DIM>::GetGridIndex(unsigned x_index, unsigned y_index, unsigned z_index)
-{
-    return x_index + mExtents[0] * y_index + mExtents[0] * mExtents[1] * z_index;
-}
-
-template<unsigned DIM>
-c_vector<double, DIM> AbstractRegularGridHybridSolver<DIM>::GetLocation(unsigned x_index, unsigned y_index, unsigned z_index)
-{
-    c_vector<double, DIM> location;
-    location[0] = double(x_index) * mGridSize + mOrigin[0];
-    location[1] = double(y_index) * mGridSize + mOrigin[1];
-    if(DIM==3)
-    {
-        location[2] = double(z_index) * mGridSize + mOrigin[2];
-    }
-    return location;
-}
-
-template<unsigned DIM>
-void AbstractRegularGridHybridSolver<DIM>::SetOrigin(c_vector<double, DIM> origin)
-{
-    mOrigin = origin;
-}
-
-template<unsigned DIM>
-vtkSmartPointer<vtkImageData> AbstractRegularGridHybridSolver<DIM>::GetSolution()
-{
-    return mpSolution;
-}
-
-template<unsigned DIM>
-bool AbstractRegularGridHybridSolver<DIM>::IsOnBoundary(unsigned x_index, unsigned y_index, unsigned z_index)
-{
-    if(x_index == 0 || x_index == mExtents[0] - 1)
-    {
-        return true;
-    }
-    if(y_index == 0 || y_index == mExtents[1] - 1)
-    {
-        return true;
-    }
-    if(DIM==3)
-    {
-        if(z_index == 0 || z_index == mExtents[2] - 1)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-template<unsigned DIM>
-void AbstractRegularGridHybridSolver<DIM>::SetExtents(std::vector<unsigned> extents)
-{
-    mExtents = extents;
-}
-
-template<unsigned DIM>
-void AbstractRegularGridHybridSolver<DIM>::SetExtents(boost::shared_ptr<Part<DIM> > pPart, double gridSize)
-{
-    mGridSize = gridSize;
-    c_vector<double, 2*DIM> spatial_extents = pPart->GetBoundingBox();
-    mExtents = std::vector<unsigned>(DIM);
-    mExtents[0] = unsigned((spatial_extents[1] - spatial_extents[0]) / mGridSize) + 1u;
-    mExtents[1] = unsigned((spatial_extents[3] - spatial_extents[2]) / mGridSize) + 1u;
-    if(DIM==3)
-    {
-        mExtents[2] = unsigned((spatial_extents[5] - spatial_extents[4]) / mGridSize) + 1u;
-    }
-    else
-    {
-        mExtents[2] = 1;
-    }
-    mOrigin[0] = spatial_extents[0];
-    mOrigin[1] = spatial_extents[2];
-    if(DIM==3)
-    {
-        mOrigin[2] = spatial_extents[4];
-    }
-}
-
-template<unsigned DIM>
-void AbstractRegularGridHybridSolver<DIM>::SetGridSize(double gridSize)
-{
-    mGridSize = gridSize;
-}
-
-
-template<unsigned DIM>
-void AbstractRegularGridHybridSolver<DIM>::UpdateSolution(std::map<std::string, std::vector<double> >& data)
-{
-    mpSolution = vtkSmartPointer<vtkImageData>::New();
-    if(DIM==3)
-    {
-        mpSolution->SetDimensions(mExtents[0], mExtents[1], mExtents[2]);
-    }
-    else
-    {
-        mpSolution->SetDimensions(mExtents[0], mExtents[1], 1);
-    }
-
-    mpSolution->SetSpacing(mGridSize, mGridSize, mGridSize);
-
-    if(DIM==3)
-    {
-        mpSolution->SetOrigin(mOrigin[0], mOrigin[1], mOrigin[2]);
-    }
-    else
-    {
-        mpSolution->SetOrigin(mOrigin[0], mOrigin[1], 0.0);
-    }
-
-    std::map<std::string, std::vector<double> >::iterator iter;
-    for (iter = data.begin(); iter != data.end(); ++iter)
-    {
-        vtkSmartPointer<vtkDoubleArray> pPointData = vtkSmartPointer<vtkDoubleArray>::New();
-        pPointData->SetNumberOfComponents(1);
-        pPointData->SetNumberOfTuples(iter->second.size());
-        pPointData->SetName(iter->first.c_str());
-
-        for (unsigned i = 0; i < iter->second.size(); i++)
-        {
-            pPointData->SetValue(i, data[iter->first][i]);
-        }
-        mpSolution->GetPointData()->AddArray(pPointData);
-    }
-}
-
-template<unsigned DIM>
-void AbstractRegularGridHybridSolver<DIM>::Write()
-{
-    if (!this->mWorkingDirectory.empty())
-    {
-        if (this->mpNetwork)
-        {
-            // Write the vessel network data
-            this->mpNetwork->Write((this->mWorkingDirectory + "/vessel_network.vtp").c_str());
-        }
-//        if (this->mpCellPopulation)
-//        {
-//           this->mpCellPopulation->Write((this->mWorkingDirectory + "/cell_population.vtp").c_str());
-//        }
-
-        // Write the PDE solution
-        vtkSmartPointer<vtkXMLImageDataWriter> pImageDataWriter = vtkSmartPointer<vtkXMLImageDataWriter>::New();
-        if(!this->mFilename.empty())
-        {
-            pImageDataWriter->SetFileName((this->mWorkingDirectory + "/" + this->mFilename).c_str());
-        }
-        else
-        {
-            pImageDataWriter->SetFileName((this->mWorkingDirectory + "/solution.vti").c_str());
-        }
-
-        pImageDataWriter->SetInput(mpSolution);
-        pImageDataWriter->Update();
-        pImageDataWriter->Write();
     }
 }
 

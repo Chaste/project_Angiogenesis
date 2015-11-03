@@ -86,7 +86,7 @@ class HybridLinearEllipticPde : public AbstractLinearEllipticPde<ELEMENT_DIM, SP
     /**
      * The grid for solvers using regular grids
      */
-    boost::shared_ptr<RegularGrid> mpRegularGrid;
+    boost::shared_ptr<RegularGrid<ELEMENT_DIM, SPACE_DIM> > mpRegularGrid;
 
     /**
      * The mesh for solvers using finite element meshes
@@ -205,7 +205,7 @@ public:
      * Set the regular grid
      * @param pRegularGrid the regular grid
      */
-    void SetRegularGrid(boost::shared_ptr<RegularGrid> pRegularGrid);
+    void SetRegularGrid(boost::shared_ptr<RegularGrid<ELEMENT_DIM, SPACE_DIM> > pRegularGrid);
 
     /**
      * Set the finite element mesh

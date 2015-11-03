@@ -72,6 +72,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ApoptoticCellProperty.hpp"
 #include "PetscSetupAndFinalize.hpp"
 #include "Debug.hpp"
+#include "RegularGrid.hpp"
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -123,7 +124,21 @@ public:
         cell_population.AddCellWriter<CellProliferativeTypesWriter>();
         cell_population.AddCellWriter<CellProliferativePhasesWriter>();
 
-        // Create the oxygen pde
+        // Create a grid to solve PDEs on
+        boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
+        p_grid->SetSpacing(2.0);
+        std::vector<unsigned> extents;
+        extents.push_back(20); // num_x
+        extents.push_back(20); // num_y
+        extents.push_back(1); // num_z
+        p_grid->SetExtents(extents);
+
+        c_vector<double,2> origin; // Grid bottom left corner
+        origin[0]= -20.0;
+        origin[1]= -20.0;
+        p_grid->SetOrigin(origin);
+
+        // Create the oxygen pde, discrete sources and boundary condition
         boost::shared_ptr<HybridLinearEllipticPde<2> > p_oxygen_pde = HybridLinearEllipticPde<2>::Create();
         p_oxygen_pde->SetDiffusionConstant(0.0033/400.0); // assume cell width is 20 microns
         p_oxygen_pde->SetVariableName("oxygen");
@@ -135,30 +150,22 @@ public:
         p_cell_oxygen_sink->SetIsLinearInSolution(true);
         p_oxygen_pde->AddDiscreteSource(p_cell_oxygen_sink);
 
-        ApoptoticCellProperty apoptotic_property;
-        QuiescentCancerCellMutationState quiescent_property;
-        std::vector<std::pair<AbstractCellProperty, double > > mutationSpecificConsumptionRateMap;
-        mutationSpecificConsumptionRateMap.push_back(std::pair<AbstractCellProperty, double >(apoptotic_property, 0.0));
-        mutationSpecificConsumptionRateMap.push_back(std::pair<AbstractCellProperty, double >(*p_state.get(), 1.e-8));
-        mutationSpecificConsumptionRateMap.push_back(std::pair<AbstractCellProperty, double >(quiescent_property, 1.e-8));
-        p_cell_oxygen_sink->SetMutationSpecificConsumptionRateMap(mutationSpecificConsumptionRateMap);
+//        ApoptoticCellProperty apoptotic_property;
+//        QuiescentCancerCellMutationState quiescent_property;
+//        std::vector<std::pair<AbstractCellProperty, double > > mutationSpecificConsumptionRateMap;
+//        mutationSpecificConsumptionRateMap.push_back(std::pair<AbstractCellProperty, double >(apoptotic_property, 0.0));
+//        mutationSpecificConsumptionRateMap.push_back(std::pair<AbstractCellProperty, double >(*p_state.get(), 1.e-8));
+//        mutationSpecificConsumptionRateMap.push_back(std::pair<AbstractCellProperty, double >(quiescent_property, 1.e-8));
+//        p_cell_oxygen_sink->SetMutationSpecificConsumptionRateMap(mutationSpecificConsumptionRateMap);
 
         boost::shared_ptr<DirichletBoundaryCondition<2> > p_domain_ox_boundary_condition = DirichletBoundaryCondition<2>::Create();
         p_domain_ox_boundary_condition->SetValue(oxygen_concentration);
         p_domain_ox_boundary_condition->SetType(BoundaryConditionType::OUTER_2D);
         p_domain_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
 
-        double domain_x = 40.0;
-        double domain_y = 40.0;
-        boost::shared_ptr<Part<2> > p_domain = Part<2> ::Create();
-
-        c_vector<double,2> origin;
-        origin[0]= -20.0;
-        origin[1]= -20.0;
-        p_domain->AddRectangle(domain_x, domain_y, origin);
-
+        // Create the pde solver
         boost::shared_ptr<FiniteDifferenceSolver<2> > p_oxygen_solver = FiniteDifferenceSolver<2>::Create();
-        p_oxygen_solver->SetExtents(p_domain, 2.0);
+        p_oxygen_solver->SetGrid(p_grid);
         p_oxygen_solver->SetPde(p_oxygen_pde);
         p_oxygen_solver->AddDirichletBoundaryCondition(p_domain_ox_boundary_condition);
 
@@ -177,14 +184,15 @@ public:
          */
         std::string resultsDirectoryName = "TestOwen2011TumourSpheroidGrowthWithODEWithHybridSolver";
         simulator.SetOutputDirectory(resultsDirectoryName);
-        simulator.SetSamplingTimestepMultiple(10);
-        simulator.SetEndTime(150.0);
+        simulator.SetSamplingTimestepMultiple(1);
+        simulator.SetEndTime(0.1);
 
         /*
          * Create cell killer to remove apoptotic cell from simulation
          */
         //  boost::shared_ptr<ApoptoticCellKiller<2> > apoptotic_cell_killer(new ApoptoticCellKiller<2>(&cell_population));
         //  simulator.AddCellKiller(apoptotic_cell_killer);
+
 
         // Create a Cell Concentration tracking modifier and add it to the simulation
         MAKE_PTR(Owen2011TrackingModifier<2>, p_modifier);

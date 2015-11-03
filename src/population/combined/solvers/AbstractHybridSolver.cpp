@@ -37,9 +37,7 @@
 
 template<unsigned DIM>
 AbstractHybridSolver<DIM>::AbstractHybridSolver()
-    :   mpNetwork(),
-//        mpCellPopulation(),
-        mpPde(),
+    :   mpPde(),
         mDirichletBoundaryConditions(),
         mWorkingDirectory(),
         mFilename()
@@ -86,36 +84,15 @@ void AbstractHybridSolver<DIM>::SetWorkingDirectory(const std::string& rDirector
 }
 
 template<unsigned DIM>
-vtkSmartPointer<vtkImageData> AbstractHybridSolver<DIM>::GetSolution()
+vtkSmartPointer<vtkImageData> AbstractHybridSolver<DIM>::GetVtkSolution()
 {
     return vtkSmartPointer<vtkImageData>::New();
 }
-
-//template<unsigned DIM>
-//void AbstractHybridSolver<DIM>::SetCellPopulation(boost::shared_ptr<SimpleCellPopulation<DIM> > pCellPopulation)
-//{
-//    mpCellPopulation = pCellPopulation;
-//}
 
 template<unsigned DIM>
 void AbstractHybridSolver<DIM>::SetPde(boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > pPde)
 {
     mpPde = pPde;
-}
-
-template<unsigned DIM>
-void AbstractHybridSolver<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
-{
-    mpNetwork = pNetwork;
-}
-
-template<unsigned DIM>
-void AbstractHybridSolver<DIM>::Solve(bool writeSolution)
-{
-    if (writeSolution)
-    {
-        Write();
-    }
 }
 
 template<unsigned DIM>
