@@ -51,7 +51,7 @@ AngiogenesisModifier<DIM>::~AngiogenesisModifier()
 }
 
 template<unsigned DIM>
-void AngiogenesisModifier<DIM>::SetAngiogenesisSolver(boost::shared_ptr<AbstractAngiogenesisSolver<DIM> > pSolver)
+void AngiogenesisModifier<DIM>::SetAngiogenesisSolver(boost::shared_ptr<AngiogenesisSolver<DIM> > pSolver)
 {
     mpSolver = pSolver;
 }

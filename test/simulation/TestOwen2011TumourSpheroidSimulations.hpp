@@ -160,7 +160,7 @@ public:
 
         boost::shared_ptr<DirichletBoundaryCondition<2> > p_domain_ox_boundary_condition = DirichletBoundaryCondition<2>::Create();
         p_domain_ox_boundary_condition->SetValue(oxygen_concentration);
-        p_domain_ox_boundary_condition->SetType(BoundaryConditionType::OUTER_2D);
+        p_domain_ox_boundary_condition->SetType(BoundaryConditionType::OUTER);
         p_domain_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
 
         // Create the pde solver
@@ -169,7 +169,7 @@ public:
         p_oxygen_solver->SetPde(p_oxygen_pde);
         p_oxygen_solver->AddDirichletBoundaryCondition(p_domain_ox_boundary_condition);
 
-        boost::shared_ptr<AbstractAngiogenesisSolver<2> > p_angiogenesis_solver = AbstractAngiogenesisSolver<2>::Create();
+        boost::shared_ptr<AngiogenesisSolver<2> > p_angiogenesis_solver = AngiogenesisSolver<2>::Create();
         p_angiogenesis_solver->AddPdeSolver(p_oxygen_solver);
         p_angiogenesis_solver->SetOutputFrequency(100);
 

@@ -42,11 +42,11 @@
 #include "CaVesselSegment.hpp"
 #include "VascularNode.hpp"
 #include "PoiseuilleImpedanceCalculator.hpp"
-#include "AbstractAngiogenesisSolver.hpp"
+#include "AngiogenesisSolver.hpp"
 #include "Debug.hpp"
 
 template<unsigned DIM>
-AbstractAngiogenesisSolver<DIM>::AbstractAngiogenesisSolver() :
+AngiogenesisSolver<DIM>::AngiogenesisSolver() :
         mpNetwork(),
         mGrowthVelocity(10.0),
         mEndTime(10.0),
@@ -64,38 +64,44 @@ AbstractAngiogenesisSolver<DIM>::AbstractAngiogenesisSolver() :
 }
 
 template<unsigned DIM>
-AbstractAngiogenesisSolver<DIM>::~AbstractAngiogenesisSolver()
+AngiogenesisSolver<DIM>::~AngiogenesisSolver()
 {
 
 }
 
 template<unsigned DIM>
-boost::shared_ptr<AbstractAngiogenesisSolver<DIM> > AbstractAngiogenesisSolver<DIM>::Create()
+void AngiogenesisSolver<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
 {
-    MAKE_PTR(AbstractAngiogenesisSolver<DIM>, pSelf);
+    mpNetwork = pNetwork;
+}
+
+template<unsigned DIM>
+boost::shared_ptr<AngiogenesisSolver<DIM> > AngiogenesisSolver<DIM>::Create()
+{
+    MAKE_PTR(AngiogenesisSolver<DIM>, pSelf);
     return pSelf;
 }
 
 template<unsigned DIM>
-void AbstractAngiogenesisSolver<DIM>::AddGrowthDirectionModifier(boost::shared_ptr<AbstractGrowthDirectionModifier<DIM> > pModifier)
+void AngiogenesisSolver<DIM>::AddGrowthDirectionModifier(boost::shared_ptr<AbstractGrowthDirectionModifier<DIM> > pModifier)
 {
     mGrowthDirectionModifiers.push_back(pModifier);
 }
 
 template<unsigned DIM>
-void AbstractAngiogenesisSolver<DIM>::AddPdeSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pPdeSolver)
+void AngiogenesisSolver<DIM>::AddPdeSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pPdeSolver)
 {
     mPdeSolvers.push_back(pPdeSolver);
 }
 
 template<unsigned DIM>
-std::vector<boost::shared_ptr<AbstractHybridSolver<DIM> > > AbstractAngiogenesisSolver<DIM>::GetPdeSolvers()
+std::vector<boost::shared_ptr<AbstractHybridSolver<DIM> > > AngiogenesisSolver<DIM>::GetPdeSolvers()
 {
     return mPdeSolvers;
 }
 
 template<unsigned DIM>
-c_vector<double, DIM> AbstractAngiogenesisSolver<DIM>::GetGrowthDirection(c_vector<double, DIM> currentDirection,
+c_vector<double, DIM> AngiogenesisSolver<DIM>::GetGrowthDirection(c_vector<double, DIM> currentDirection,
                                                                           boost::shared_ptr<VascularNode<DIM> > pNode)
 {
     c_vector<double,DIM> new_direction = currentDirection;
@@ -111,61 +117,61 @@ c_vector<double, DIM> AbstractAngiogenesisSolver<DIM>::GetGrowthDirection(c_vect
 }
 
 template<unsigned DIM>
-void AbstractAngiogenesisSolver<DIM>::SetAnastamosisRadius(double radius)
+void AngiogenesisSolver<DIM>::SetAnastamosisRadius(double radius)
 {
     mNodeAnastamosisRadius = radius;
 }
 
 template<unsigned DIM>
-void AbstractAngiogenesisSolver<DIM>::SetBoundingDomain(boost::shared_ptr<Part<DIM> > pDomain)
+void AngiogenesisSolver<DIM>::SetBoundingDomain(boost::shared_ptr<Part<DIM> > pDomain)
 {
     mpBoundingDomain = pDomain;
 }
 
 template<unsigned DIM>
-void AbstractAngiogenesisSolver<DIM>::SetEndTime(double time)
+void AngiogenesisSolver<DIM>::SetEndTime(double time)
 {
     mEndTime = time;
 }
 
 template<unsigned DIM>
-void AbstractAngiogenesisSolver<DIM>::SetFlowSolver(boost::shared_ptr<SimpleFlowSolver<DIM> > pFlowSolver)
+void AngiogenesisSolver<DIM>::SetFlowSolver(boost::shared_ptr<SimpleFlowSolver<DIM> > pFlowSolver)
 {
     mpFlowSolver = pFlowSolver;
 }
 
 template<unsigned DIM>
-void AbstractAngiogenesisSolver<DIM>::SetGrowthVelocity(double velocity)
+void AngiogenesisSolver<DIM>::SetGrowthVelocity(double velocity)
 {
     mGrowthVelocity = velocity;
 }
 
 template<unsigned DIM>
-void AbstractAngiogenesisSolver<DIM>::SetOutputDirectory(const std::string& rDirectory)
+void AngiogenesisSolver<DIM>::SetOutputDirectory(const std::string& rDirectory)
 {
     mpOutputFileHandler = boost::shared_ptr<OutputFileHandler>(new OutputFileHandler(rDirectory, false));
 }
 
 template<unsigned DIM>
-void AbstractAngiogenesisSolver<DIM>::SetOutputFrequency(unsigned frequency)
+void AngiogenesisSolver<DIM>::SetOutputFrequency(unsigned frequency)
 {
     mOutputFrequency = frequency;
 }
 
 template<unsigned DIM>
-void AbstractAngiogenesisSolver<DIM>::SetSproutingRule(boost::shared_ptr<AbstractSproutingRule<DIM> > pSproutingRule)
+void AngiogenesisSolver<DIM>::SetSproutingRule(boost::shared_ptr<AbstractSproutingRule<DIM> > pSproutingRule)
 {
     mpSproutingRule = pSproutingRule;
 }
 
 template<unsigned DIM>
-void AbstractAngiogenesisSolver<DIM>::SetStructuralAdaptationSolver(boost::shared_ptr<SimpleStructuralAdaptationSolver<DIM> > pStructuralAdaptationSolver)
+void AngiogenesisSolver<DIM>::SetStructuralAdaptationSolver(boost::shared_ptr<SimpleStructuralAdaptationSolver<DIM> > pStructuralAdaptationSolver)
 {
     mpStructuralAdaptationSolver = pStructuralAdaptationSolver;
 }
 
 template<unsigned DIM>
-void AbstractAngiogenesisSolver<DIM>::DoSprouting()
+void AngiogenesisSolver<DIM>::DoSprouting()
 {
     // Get the candidate nodes
     std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = mpNetwork->GetNodes();
@@ -196,7 +202,7 @@ void AbstractAngiogenesisSolver<DIM>::DoSprouting()
 }
 
 template<unsigned DIM>
-void AbstractAngiogenesisSolver<DIM>::UpdateNodalPositions(const std::string& speciesLabel)
+void AngiogenesisSolver<DIM>::UpdateNodalPositions(const std::string& speciesLabel)
 {
     // Move any nodes marked as migrating and located at the end of a vessel
     std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = mpNetwork->GetNodes();
@@ -236,7 +242,7 @@ void AbstractAngiogenesisSolver<DIM>::UpdateNodalPositions(const std::string& sp
 }
 
 template<unsigned DIM>
-void AbstractAngiogenesisSolver<DIM>::DoAnastamosis()
+void AngiogenesisSolver<DIM>::DoAnastamosis()
 {
     std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = mpNetwork->GetNodes();
 
@@ -285,7 +291,7 @@ void AbstractAngiogenesisSolver<DIM>::DoAnastamosis()
 }
 
 template<unsigned DIM>
-void AbstractAngiogenesisSolver<DIM>::Increment()
+void AngiogenesisSolver<DIM>::Increment()
 {
     unsigned num_steps = SimulationTime::Instance()->GetTimeStepsElapsed();
 
@@ -365,7 +371,7 @@ void AbstractAngiogenesisSolver<DIM>::Increment()
 }
 
 template<unsigned DIM>
-void AbstractAngiogenesisSolver<DIM>::Run()
+void AngiogenesisSolver<DIM>::Run()
 {
     if(this->mpNetwork)
     {
@@ -381,5 +387,5 @@ void AbstractAngiogenesisSolver<DIM>::Run()
 }
 
 // Explicit instantiation
-template class AbstractAngiogenesisSolver<2> ;
-template class AbstractAngiogenesisSolver<3> ;
+template class AngiogenesisSolver<2> ;
+template class AngiogenesisSolver<3> ;

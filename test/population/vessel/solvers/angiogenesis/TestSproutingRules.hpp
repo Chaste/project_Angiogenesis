@@ -20,7 +20,7 @@
 #include "CaVascularNetwork.hpp"
 #include "Part.hpp"
 #include "FiniteDifferenceSolver.hpp"
-#include "AbstractAngiogenesisSolver.hpp"
+#include "AngiogenesisSolver.hpp"
 #include "PetscSetupAndFinalize.hpp"
 #include "CaVesselSegment.hpp"
 #include "AbstractCellBasedTestSuite.hpp"
@@ -60,13 +60,11 @@ public:
         boost::shared_ptr<AbstractSproutingRule<3> > p_sprouting_rule = AbstractSproutingRule<3>::Create();
         p_sprouting_rule->SetSproutingProbability(0.1);
 
-        OutputFileHandler output_file_handler("TestSproutingRules/Abstract", false);
-        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
-
         // Grow the vessel
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
-        angiogenesis_solver.SetOutputDirectory(output_directory);
+        AngiogenesisSolver<3> angiogenesis_solver;
+        angiogenesis_solver.SetVesselNetwork(p_network);
+        angiogenesis_solver.SetOutputDirectory("TestSproutingRules/Abstract");
         angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
         angiogenesis_solver.SetSproutingRule(p_sprouting_rule);
         angiogenesis_solver.Run();
@@ -96,13 +94,11 @@ public:
         boost::shared_ptr<OffLatticeRandomNormalSproutingRule<3> > p_sprouting_rule = OffLatticeRandomNormalSproutingRule<3>::Create();
         p_sprouting_rule->SetSproutingProbability(0.1);
 
-        OutputFileHandler output_file_handler("TestSproutingRules/OffLattice", false);
-        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
-
         // Grow the vessel
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
-        angiogenesis_solver.SetOutputDirectory(output_directory);
+        AngiogenesisSolver<3> angiogenesis_solver;
+        angiogenesis_solver.SetVesselNetwork(p_network);
+        angiogenesis_solver.SetOutputDirectory("TestSproutingRules/OffLattice");
         angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
         angiogenesis_solver.SetSproutingRule(p_sprouting_rule);
         angiogenesis_solver.Run();
@@ -137,13 +133,11 @@ public:
         boost::shared_ptr<OffLatticeRandomNormalSproutingRule<3> > p_sprouting_rule = OffLatticeRandomNormalSproutingRule<3>::Create();
         p_sprouting_rule->SetSproutingProbability(0.1);
 
-        OutputFileHandler output_file_handler("TestSproutingRules/OffLatticeAttraction", false);
-        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
-
         // Grow the vessel
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(20, 20);
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
-        angiogenesis_solver.SetOutputDirectory(output_directory);
+        AngiogenesisSolver<3> angiogenesis_solver;
+        angiogenesis_solver.SetVesselNetwork(p_network);
+        angiogenesis_solver.SetOutputDirectory("TestSproutingRules/OffLatticeAttraction");
         angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
         angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier2);
         angiogenesis_solver.SetSproutingRule(p_sprouting_rule);

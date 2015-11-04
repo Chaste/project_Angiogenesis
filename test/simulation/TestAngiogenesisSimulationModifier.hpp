@@ -154,7 +154,7 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
         p_oxygen_pde->SetVariableName("oxygen");
 
         boost::shared_ptr<DiscreteSource<3> > p_cell_oxygen_sink = DiscreteSource<3>::Create();
-        p_cell_oxygen_sink->SetType(SourceType::MULTI_POINT);
+        p_cell_oxygen_sink->SetType(SourceType::POINT);
         p_cell_oxygen_sink->SetSource(SourceStrength::PRESCRIBED);
         p_cell_oxygen_sink->SetValue(1.e-6);
         p_cell_oxygen_sink->SetIsLinearInSolution(true);
@@ -164,13 +164,13 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
         p_vessel_ox_boundary_condition->SetValue(40.0);
         p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_LINE);
         p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
+        p_vessel_ox_boundary_condition->SetVesselNetwork(p_network);
 
         boost::shared_ptr<FiniteDifferenceSolver<3> > p_oxygen_solver = FiniteDifferenceSolver<3>::Create();
-        p_oxygen_solver->SetExtents(p_domain, 40.0);
+        p_oxygen_solver->SetGridFromPart(p_domain, 40.0);
         p_oxygen_solver->SetPde(p_oxygen_pde);
-        p_oxygen_solver->SetVesselNetwork(p_network);
         p_oxygen_solver->AddDirichletBoundaryCondition(p_vessel_ox_boundary_condition);
-
+        p_oxygen_solver->Setup();
         return p_oxygen_solver;
     }
 
@@ -183,17 +183,16 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
         p_vegf_pde->SetLinearInUTerm(-1.e-7);
 
         boost::shared_ptr<DiscreteSource<3> > p_cell_vegf_source = DiscreteSource<3>::Create();
-        p_cell_vegf_source->SetType(SourceType::MULTI_POINT);
+        p_cell_vegf_source->SetType(SourceType::POINT);
         p_cell_vegf_source->SetSource(SourceStrength::PRESCRIBED);
         p_cell_vegf_source->SetValue(-1.e-4);
         p_cell_vegf_source->SetIsLinearInSolution(false);
         p_vegf_pde->AddDiscreteSource(p_cell_vegf_source);
 
         boost::shared_ptr<FiniteDifferenceSolver<3> > p_vegf_solver = FiniteDifferenceSolver<3>::Create();
-        p_vegf_solver->SetExtents(p_domain, 40.0);
+        p_vegf_solver->SetGridFromPart(p_domain, 40.0);
         p_vegf_solver->SetPde(p_vegf_pde);
-        p_vegf_solver->SetVesselNetwork(p_network);
-
+        p_vegf_solver->Setup();
         return p_vegf_solver;
     }
 
@@ -235,7 +234,8 @@ public:
         boost::shared_ptr<FiniteDifferenceSolver<3> > p_vegf_solver = GetVegfSolver(p_domain, p_network);
 
         // Create the angiogenesis solver
-        boost::shared_ptr<AbstractAngiogenesisSolver<3> > p_angiogenesis_solver = AbstractAngiogenesisSolver<3>::Create(p_network);
+        boost::shared_ptr<AngiogenesisSolver<3> > p_angiogenesis_solver = AngiogenesisSolver<3>::Create();
+        p_angiogenesis_solver->SetVesselNetwork(p_network);
         p_angiogenesis_solver->AddPdeSolver(p_oxygen_solver);
         p_angiogenesis_solver->AddPdeSolver(p_vegf_solver);
 
@@ -262,10 +262,6 @@ public:
 
     void DOntestNodeBasedSpheroid() throw (Exception)
     {
-        //
-
-
-
         // Create the domain
         boost::shared_ptr<Part<3> > p_domain = GetSimulationDomain();
 
@@ -304,7 +300,8 @@ public:
         boost::shared_ptr<FiniteDifferenceSolver<3> > p_vegf_solver = GetVegfSolver(p_domain, p_network);
 
         // Create the angiogenesis solver
-        boost::shared_ptr<AbstractAngiogenesisSolver<3> > p_angiogenesis_solver = AbstractAngiogenesisSolver<3>::Create(p_network);
+        boost::shared_ptr<AngiogenesisSolver<3> > p_angiogenesis_solver = AngiogenesisSolver<3>::Create();
+        p_angiogenesis_solver->SetVesselNetwork(p_network);
         p_angiogenesis_solver->AddPdeSolver(p_oxygen_solver);
         p_angiogenesis_solver->AddPdeSolver(p_vegf_solver);
 

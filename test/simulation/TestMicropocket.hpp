@@ -54,7 +54,7 @@
 #include "OffLatticePrwGrowthDirectionModifier.hpp"
 #include "OffLatticeTipAttractionGrowthDirectionModifier.hpp"
 #include "OffLatticeRandomNormalSproutingRule.hpp"
-#include "AbstractAngiogenesisSolver.hpp"
+#include "AngiogenesisSolver.hpp"
 #include "OffLatticeSolutionDependentGrowthDirectionModifier.hpp"
 #include "Debug.hpp"
 
@@ -71,8 +71,8 @@ public:
         double sphere_azimuth_angle = M_PI;
         double sphere_polar_angle = M_PI/2.0;
 
-        MappableGridGenerator<3> generator;
-        boost::shared_ptr<Part<3> > p_part = generator.GenerateHemisphere(sphere_radius, sphere_thickness , sphere_azimuth_angle, sphere_polar_angle, 10, 10);
+        MappableGridGenerator generator;
+        boost::shared_ptr<Part<3> > p_part = generator.GenerateHemisphere(sphere_radius, sphere_thickness , 10, 10, sphere_azimuth_angle, sphere_polar_angle);
 
         boost::shared_ptr<PlcMesh<3> > p_mesh = PlcMesh<3>::Create();
         p_mesh->GenerateFromPart(p_part, 1.e6);
@@ -141,8 +141,6 @@ public:
         p_vegf_pde->SetLinearInUTerm(-1.e-8);
 
         boost::shared_ptr<FiniteElementSolver<3> > p_vegf_solver = FiniteElementSolver<3>::Create();
-        p_vegf_solver->SetDomain(p_part);
-        p_vegf_solver->SetVesselNetwork(p_network);
 
         // Generate the boundary condition region
         boost::shared_ptr<Part<3> > p_boundary_part = Part<3>::Create();
@@ -160,9 +158,7 @@ public:
 
         p_vegf_solver->AddDirichletBoundaryCondition(p_vegf_boundary_condition);
         p_vegf_solver->SetMesh(p_mesh);
-
         p_vegf_solver->SetPde(p_vegf_pde);
-        p_vegf_solver->SetMeshWriterPath("TestMicropocket");
 
         boost::shared_ptr<OffLatticePrwGrowthDirectionModifier<3> > p_grow_direction_modifier = OffLatticePrwGrowthDirectionModifier<3>::Create();
         boost::shared_ptr<OffLatticeTipAttractionGrowthDirectionModifier<3> > p_grow_direction_modifier2 = OffLatticeTipAttractionGrowthDirectionModifier<3>::Create();
@@ -175,13 +171,11 @@ public:
         boost::shared_ptr<OffLatticeRandomNormalSproutingRule<3> > p_sprouting_rule = OffLatticeRandomNormalSproutingRule<3>::Create();
         p_sprouting_rule->SetSproutingProbability(0.05);
 
-        OutputFileHandler output_file_handler("TestMicropocket", false);
-        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
-
         // Grow the vessel
-        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(100, 100);
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
-        angiogenesis_solver.SetOutputDirectory(output_directory);
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
+        AngiogenesisSolver<3> angiogenesis_solver;
+        angiogenesis_solver.SetVesselNetwork(p_network);
+        angiogenesis_solver.SetOutputDirectory("TestMicropocket");
         angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
         angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier2);
         angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier3);
@@ -189,11 +183,8 @@ public:
         angiogenesis_solver.SetAnastamosisRadius(5.0);
         angiogenesis_solver.AddPdeSolver(p_vegf_solver);
         angiogenesis_solver.SetBoundingDomain(p_part);
-        angiogenesis_solver.SetEndTime(100);
-
-        MARK;
+        angiogenesis_solver.SetEndTime(10);
         angiogenesis_solver.Run();
-        MARK;
     }
 };
 

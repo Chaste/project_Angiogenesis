@@ -1,10 +1,37 @@
-//
-//  TestSimpleStructuralAdaptationSolver.hpp
-//  VascularTumourGrowthModellingFramework
-//
-//  Created by Anthony Connor on 03/12/2012.
-//  Copyright (c) 2012 Anthony Connor. All rights reserved.
-//
+/*
+
+Copyright (c) 2005-2014, University of Oxford.
+All rights reserved.
+
+University of Oxford means the Chancellor, Masters and Scholars of the
+University of Oxford, having an administrative office at Wellington
+Square, Oxford OX1 2JD, UK.
+
+This file is part of Chaste.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+ * Redistributions of source code must retain the above copyright notice,
+   this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+ * Neither the name of the University of Oxford nor the names of its
+   contributors may be used to endorse or promote products derived from this
+   software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
 
 #ifndef TestOnLatticeRwGrowthDirectionModifier_hpp
 #define TestOnLatticeRwGrowthDirectionModifier_hpp
@@ -20,7 +47,7 @@
 #include "CaVascularNetwork.hpp"
 #include "Part.hpp"
 #include "FiniteDifferenceSolver.hpp"
-#include "AbstractAngiogenesisSolver.hpp"
+#include "AngiogenesisSolver.hpp"
 #include "PetscSetupAndFinalize.hpp"
 #include "CaVesselSegment.hpp"
 #include "AbstractCellBasedTestSuite.hpp"
@@ -47,13 +74,11 @@ public:
         boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> > p_grow_direction_modifier =
                 boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> >(new OnLatticeRwGrowthDirectionModifier<3>());
 
-        OutputFileHandler output_file_handler("TestOnLatticeRwGrowthDirectionModifier/SingleVesselGrowth/", false);
-        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
-
         // Grow the vessel
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
-        angiogenesis_solver.SetOutputDirectory(output_directory);
+        AngiogenesisSolver<3> angiogenesis_solver;
+        angiogenesis_solver.SetVesselNetwork(p_network);
+        angiogenesis_solver.SetOutputDirectory("TestOnLatticeRwGrowthDirectionModifier/SingleVesselGrowth/");
         angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
         angiogenesis_solver.Run();
     }
@@ -85,13 +110,11 @@ public:
         boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> > p_grow_direction_modifier =
                 boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> >(new OnLatticeRwGrowthDirectionModifier<3>());
 
-        OutputFileHandler output_file_handler("TestOnLatticeRwGrowthDirectionModifier/Multisegment/", false);
-        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
-
         // Grow the vessel
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
-        angiogenesis_solver.SetOutputDirectory(output_directory);
+        AngiogenesisSolver<3> angiogenesis_solver;
+        angiogenesis_solver.SetVesselNetwork(p_network);
+        angiogenesis_solver.SetOutputDirectory("TestOnLatticeRwGrowthDirectionModifier/Multisegment/");
         angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
         angiogenesis_solver.Run();
     }
@@ -118,13 +141,11 @@ public:
         boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> > p_grow_direction_modifier =
                 boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> >(new OnLatticeRwGrowthDirectionModifier<3>());
 
-        OutputFileHandler output_file_handler("TestOnLatticeRwGrowthDirectionModifier/MultiSprout/", false);
-        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
-
         // Grow the vessel
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
-        angiogenesis_solver.SetOutputDirectory(output_directory);
+        AngiogenesisSolver<3> angiogenesis_solver;
+        angiogenesis_solver.SetVesselNetwork(p_network);
+        angiogenesis_solver.SetOutputDirectory("TestOnLatticeRwGrowthDirectionModifier/MultiSprout/");
         angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
         angiogenesis_solver.Run();
     }
@@ -164,21 +185,26 @@ public:
         p_pde->SetDiffusionConstant(0.0033);
         p_pde->SetLinearInUTerm(-2.e-7);
 
+        // Set up the boundary condition
+        boost::shared_ptr<DirichletBoundaryCondition<3> > p_vessel_ox_boundary_condition = DirichletBoundaryCondition<3>::Create();
+        p_vessel_ox_boundary_condition->SetValue(40.0);
+        p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_LINE);
+        p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
+        p_vessel_ox_boundary_condition->SetVesselNetwork(p_network);
+
         // Set up and run the solver
         boost::shared_ptr<FiniteDifferenceSolver<3> > p_solver = FiniteDifferenceSolver<3>::Create();
-        p_solver->SetExtents(p_domain, 10.0);
+        p_solver->SetGridFromPart(p_domain, 10.0);
         p_solver->SetPde(p_pde);
 
         boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> > p_grow_direction_modifier =
                 boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> >(new OnLatticeRwGrowthDirectionModifier<3>());
 
-        OutputFileHandler output_file_handler("TestOnLatticeRwGrowthDirectionModifier/MultiSproutPde/", false);
-        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
-
         // Grow the vessel
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
-        angiogenesis_solver.SetOutputDirectory(output_directory);
+        AngiogenesisSolver<3> angiogenesis_solver;
+        angiogenesis_solver.SetVesselNetwork(p_network);
+        angiogenesis_solver.SetOutputDirectory("TestOnLatticeRwGrowthDirectionModifier/MultiSproutPde/");
         angiogenesis_solver.AddPdeSolver(p_solver);
         angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
         angiogenesis_solver.Run();
@@ -229,14 +255,11 @@ public:
         boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> > p_grow_direction_modifier =
                 boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> >(new OnLatticeRwGrowthDirectionModifier<3>());
 
-        OutputFileHandler output_file_handler("TestOnLatticeRwGrowthDirectionModifier/MultiSproutFlow/", false);
-        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
-
         // Grow the vessel
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
-        angiogenesis_solver.SetOutputDirectory(output_directory);
-        angiogenesis_solver.SetSolveFlow();
+        AngiogenesisSolver<3> angiogenesis_solver;
+        angiogenesis_solver.SetVesselNetwork(p_network);
+        angiogenesis_solver.SetOutputDirectory("TestOnLatticeRwGrowthDirectionModifier/MultiSproutFlow/");
         angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
         angiogenesis_solver.Run();
     }
@@ -274,16 +297,12 @@ public:
         boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> > p_grow_direction_modifier =
                 boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> >(new OnLatticeRwGrowthDirectionModifier<3>());
 
-        OutputFileHandler output_file_handler("TestOnLatticeRwGrowthDirectionModifier/SproutingFlow/", false);
-        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
-
         // Grow the vessel
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
-        angiogenesis_solver.SetOutputDirectory(output_directory);
-        angiogenesis_solver.SetSolveFlow();
+        AngiogenesisSolver<3> angiogenesis_solver;
+        angiogenesis_solver.SetVesselNetwork(p_network);
+        angiogenesis_solver.SetOutputDirectory("TestOnLatticeRwGrowthDirectionModifier/SproutingFlow/");
         angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
-        angiogenesis_solver.SetSproutingProbability(0.5);
         angiogenesis_solver.Run();
     }
 };

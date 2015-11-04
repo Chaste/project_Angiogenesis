@@ -156,10 +156,10 @@ public:
         p_network3->Write(output_filename5);
     }
 
-    void Test3dNetworks() throw (Exception)
+    void dontTest3dNetworks() throw (Exception)
     {
         boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
-        p_part->AddCuboid(1000.0, 1000.0, 1000.0);
+        p_part->AddCuboid(2000.0, 2000.0, 2000.0);
         std::vector<double> density;
         density.push_back(8.e-5);
         density.push_back(8.e-5);

@@ -20,7 +20,7 @@
 #include "CaVascularNetwork.hpp"
 #include "Part.hpp"
 #include "FiniteDifferenceSolver.hpp"
-#include "AbstractAngiogenesisSolver.hpp"
+#include "AngiogenesisSolver.hpp"
 #include "PetscSetupAndFinalize.hpp"
 #include "CaVesselSegment.hpp"
 #include "AbstractCellBasedTestSuite.hpp"
@@ -48,13 +48,11 @@ public:
         boost::shared_ptr<OffLatticePrwGrowthDirectionModifier<3> > p_grow_direction_modifier =
                 boost::shared_ptr<OffLatticePrwGrowthDirectionModifier<3> >(new OffLatticePrwGrowthDirectionModifier<3>());
 
-        OutputFileHandler output_file_handler("TestOffLatticePrwGrowthDirectionModifier/SingleVesselGrowth/", false);
-        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
-
         // Grow the vessel
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
-        angiogenesis_solver.SetOutputDirectory(output_directory);
+        AngiogenesisSolver<3> angiogenesis_solver;
+        angiogenesis_solver.SetVesselNetwork(p_network);
+        angiogenesis_solver.SetOutputDirectory("TestOffLatticePrwGrowthDirectionModifier/SingleVesselGrowth/");
         angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
         angiogenesis_solver.Run();
     }
@@ -86,13 +84,11 @@ public:
         boost::shared_ptr<OffLatticePrwGrowthDirectionModifier<3> > p_grow_direction_modifier =
                 boost::shared_ptr<OffLatticePrwGrowthDirectionModifier<3> >(new OffLatticePrwGrowthDirectionModifier<3>());
 
-        OutputFileHandler output_file_handler("TestOffLatticePrwGrowthDirectionModifier/Multisegment/", false);
-        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
-
         // Grow the vessel
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
-        angiogenesis_solver.SetOutputDirectory(output_directory);
+        AngiogenesisSolver<3> angiogenesis_solver;
+        angiogenesis_solver.SetVesselNetwork(p_network);
+        angiogenesis_solver.SetOutputDirectory("TestOffLatticePrwGrowthDirectionModifier/Multisegment/");
         angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
         angiogenesis_solver.Run();
     }
@@ -119,13 +115,11 @@ public:
         boost::shared_ptr<OffLatticePrwGrowthDirectionModifier<3> > p_grow_direction_modifier =
                 boost::shared_ptr<OffLatticePrwGrowthDirectionModifier<3> >(new OffLatticePrwGrowthDirectionModifier<3>());
 
-        OutputFileHandler output_file_handler("TestOffLatticePrwGrowthDirectionModifier/MultiSprout/", false);
-        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
-
         // Grow the vessel
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
-        angiogenesis_solver.SetOutputDirectory(output_directory);
+        AngiogenesisSolver<3> angiogenesis_solver;
+        angiogenesis_solver.SetVesselNetwork(p_network);
+        angiogenesis_solver.SetOutputDirectory("TestOffLatticePrwGrowthDirectionModifier/MultiSprout/");
         angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
         angiogenesis_solver.Run();
     }
@@ -165,21 +159,27 @@ public:
         p_pde->SetDiffusionConstant(0.0033);
         p_pde->SetLinearInUTerm(-2.e-7);
 
+        // Set up the boundary condition
+        boost::shared_ptr<DirichletBoundaryCondition<3> > p_vessel_ox_boundary_condition = DirichletBoundaryCondition<3>::Create();
+        p_vessel_ox_boundary_condition->SetValue(40.0);
+        p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_LINE);
+        p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
+        p_vessel_ox_boundary_condition->SetVesselNetwork(p_network);
+
         // Set up and run the solver
         boost::shared_ptr<FiniteDifferenceSolver<3> > p_solver = FiniteDifferenceSolver<3>::Create();
-        p_solver->SetExtents(p_domain, 10.0);
+        p_solver->SetGridFromPart(p_domain, 10.0);
         p_solver->SetPde(p_pde);
+        p_solver->Setup();
 
         boost::shared_ptr<OffLatticePrwGrowthDirectionModifier<3> > p_grow_direction_modifier =
                 boost::shared_ptr<OffLatticePrwGrowthDirectionModifier<3> >(new OffLatticePrwGrowthDirectionModifier<3>());
 
-        OutputFileHandler output_file_handler("TestOffLatticePrwGrowthDirectionModifier/MultiSproutPde/", false);
-        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
-
         // Grow the vessel
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
-        angiogenesis_solver.SetOutputDirectory(output_directory);
+        AngiogenesisSolver<3> angiogenesis_solver;
+        angiogenesis_solver.SetVesselNetwork(p_network);
+        angiogenesis_solver.SetOutputDirectory("TestOffLatticePrwGrowthDirectionModifier/MultiSproutPde/");
         angiogenesis_solver.AddPdeSolver(p_solver);
         angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
         angiogenesis_solver.Run();
@@ -230,13 +230,11 @@ public:
         boost::shared_ptr<OffLatticePrwGrowthDirectionModifier<3> > p_grow_direction_modifier =
                 boost::shared_ptr<OffLatticePrwGrowthDirectionModifier<3> >(new OffLatticePrwGrowthDirectionModifier<3>());
 
-        OutputFileHandler output_file_handler("TestOffLatticePrwGrowthDirectionModifier/MultiSproutFlow/", false);
-        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
-
         // Grow the vessel
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
-        angiogenesis_solver.SetOutputDirectory(output_directory);
+        AngiogenesisSolver<3> angiogenesis_solver;
+        angiogenesis_solver.SetVesselNetwork(p_network);
+        angiogenesis_solver.SetOutputDirectory("TestOffLatticePrwGrowthDirectionModifier/MultiSproutFlow/");
 
         boost::shared_ptr<SimpleFlowSolver<3> > p_simple_flow_solver =
                 boost::shared_ptr<SimpleFlowSolver<3> >(new SimpleFlowSolver<3>());
@@ -278,13 +276,11 @@ public:
         boost::shared_ptr<OffLatticePrwGrowthDirectionModifier<3> > p_grow_direction_modifier =
                 boost::shared_ptr<OffLatticePrwGrowthDirectionModifier<3> >(new OffLatticePrwGrowthDirectionModifier<3>());
 
-        OutputFileHandler output_file_handler("TestOffLatticePrwGrowthDirectionModifier/SproutingFlow/", false);
-        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
-
         // Grow the vessel
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
-        AbstractAngiogenesisSolver<3> angiogenesis_solver(p_network);
-        angiogenesis_solver.SetOutputDirectory(output_directory);
+        AngiogenesisSolver<3> angiogenesis_solver;
+        angiogenesis_solver.SetVesselNetwork(p_network);
+        angiogenesis_solver.SetOutputDirectory("TestOffLatticePrwGrowthDirectionModifier/SproutingFlow/");
         boost::shared_ptr<SimpleFlowSolver<3> > p_simple_flow_solver =SimpleFlowSolver<3>::Create();
 
         angiogenesis_solver.SetFlowSolver(p_simple_flow_solver);

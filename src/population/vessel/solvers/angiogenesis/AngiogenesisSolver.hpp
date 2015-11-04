@@ -33,8 +33,8 @@
 
  */
 
-#ifndef ABSTRACTANGIOGENESISSOLVER_HPP_
-#define ABSTRACTANGIOGENESISSOLVER_HPP_
+#ifndef AngiogenesisSolver_HPP_
+#define AngiogenesisSolver_HPP_
 
 #include <vector>
 #include <string>
@@ -48,7 +48,7 @@
 #include "Part.hpp"
 
 template<unsigned DIM>
-class AbstractAngiogenesisSolver
+class AngiogenesisSolver
 {
     boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
 
@@ -82,17 +82,17 @@ public:
      * Constructor.
      * @param pNetwork the network to perform angiogenesis on
      */
-    AbstractAngiogenesisSolver();
+    AngiogenesisSolver();
 
     /**
      * Destructor.
      */
-    virtual ~AbstractAngiogenesisSolver();
+    virtual ~AngiogenesisSolver();
 
     /* Factory constructor method
      * @return a shared pointer to a new solver
      */
-    static boost::shared_ptr<AbstractAngiogenesisSolver> Create();
+    static boost::shared_ptr<AngiogenesisSolver> Create();
 
     /**
      * Add a growth direction modifier to the collection
@@ -148,6 +148,8 @@ public:
      */
     void SetStructuralAdaptationSolver(boost::shared_ptr<SimpleStructuralAdaptationSolver<DIM> > pStructuralAdaptationSolver);
 
+    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
+
     /**
      * Increment one step in time
      */
@@ -182,4 +184,4 @@ protected:
     void UpdateNodalPositions(const std::string& speciesLabel = "Default");
 };
 
-#endif /* ABSTRACTANGIOGENESISSOLVER_HPP_ */
+#endif /* AngiogenesisSolver_HPP_ */
