@@ -200,8 +200,9 @@ void AbstractRegularGridHybridSolver<DIM>::SetGrid(boost::shared_ptr<RegularGrid
 }
 
 template<unsigned DIM>
-void AbstractRegularGridHybridSolver<DIM>::UpdateSolution(std::map<std::string, std::vector<double> >& data)
+void AbstractRegularGridHybridSolver<DIM>::Setup()
 {
+    // Set up the VTK solution
     mpRegularGridVtkSolution = vtkSmartPointer<vtkImageData>::New();
 
     if(DIM==3)
@@ -223,7 +224,11 @@ void AbstractRegularGridHybridSolver<DIM>::UpdateSolution(std::map<std::string, 
     {
         mpRegularGridVtkSolution->SetOrigin(mpRegularGrid->GetOrigin()[0], mpRegularGrid->GetOrigin()[1], 0.0);
     }
+}
 
+template<unsigned DIM>
+void AbstractRegularGridHybridSolver<DIM>::UpdateSolution(std::map<std::string, std::vector<double> >& data)
+{
     std::map<std::string, std::vector<double> >::iterator iter;
     for (iter = data.begin(); iter != data.end(); ++iter)
     {
@@ -231,7 +236,6 @@ void AbstractRegularGridHybridSolver<DIM>::UpdateSolution(std::map<std::string, 
         pPointData->SetNumberOfComponents(1);
         pPointData->SetNumberOfTuples(iter->second.size());
         pPointData->SetName(iter->first.c_str());
-
         for (unsigned i = 0; i < iter->second.size(); i++)
         {
             pPointData->SetValue(i, data[iter->first][i]);
@@ -243,17 +247,17 @@ void AbstractRegularGridHybridSolver<DIM>::UpdateSolution(std::map<std::string, 
 template<unsigned DIM>
 void AbstractRegularGridHybridSolver<DIM>::Write()
 {
-    if (!this->mWorkingDirectory.empty())
+    if(this->mpOutputFileHandler)
     {
         // Write the PDE solution
         vtkSmartPointer<vtkXMLImageDataWriter> pImageDataWriter = vtkSmartPointer<vtkXMLImageDataWriter>::New();
         if(!this->mFilename.empty())
         {
-            pImageDataWriter->SetFileName((this->mWorkingDirectory + "/" + this->mFilename).c_str());
+            pImageDataWriter->SetFileName((this->mpOutputFileHandler->GetOutputDirectoryFullPath() + "/" + this->mFilename).c_str());
         }
         else
         {
-            pImageDataWriter->SetFileName((this->mWorkingDirectory + "/solution.vti").c_str());
+            pImageDataWriter->SetFileName((this->mpOutputFileHandler->GetOutputDirectoryFullPath() + "/solution.vti").c_str());
         }
 
         pImageDataWriter->SetInput(mpRegularGridVtkSolution);

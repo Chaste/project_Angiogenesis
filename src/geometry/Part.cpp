@@ -38,6 +38,8 @@
 #include "vtkXMLPolyDataWriter.h"
 #include "vtkCleanPolyData.h"
 #include "vtkSelectEnclosedPoints.h"
+#include "vtkTriangleFilter.h"
+#include "vtkSTLWriter.h"
 #include <boost/random.hpp>
 #include <boost/generator_iterator.hpp>
 #include "VascularNode.hpp"
@@ -568,6 +570,19 @@ void Part<DIM>::Write(const std::string& fileName)
     writer->SetFileName(fileName.c_str());
     writer->SetInput(mVtkPart);
     writer->Write();
+}
+
+template<unsigned DIM>
+void Part<DIM>::WriteStl(const std::string& rFilename)
+{
+    vtkSmartPointer<vtkTriangleFilter> p_tri_filter = vtkSmartPointer<vtkTriangleFilter>::New();
+    p_tri_filter->SetInput(GetVtk());
+
+    vtkSmartPointer<vtkSTLWriter> stlWriter = vtkSmartPointer<vtkSTLWriter>::New();
+    stlWriter->SetFileName(rFilename.c_str());
+    stlWriter->SetInput(p_tri_filter->GetOutput());
+    stlWriter->SetFileTypeToASCII();
+    stlWriter->Write();
 }
 
 // Explicit instantiation

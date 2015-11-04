@@ -21,7 +21,6 @@ population/vessel/solvers/flow/TestAlarcon03MetabolicStimulusCalculator.hpp
 population/vessel/solvers/field/TestKroghCylinderSolver.hpp
 population/vessel/TestVasculatureData.hpp
 population/vessel/TestVasculatureGenerator.hpp
-population/combined/TestCaBasedCellPopulationWithVessels.hpp
 population/combined/solvers/TestDistanceTransform.hpp
 population/combined/solvers/TestDensityMap.hpp
 population/combined/solvers/TestFiniteDifferenceSolver.hpp

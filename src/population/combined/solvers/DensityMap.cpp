@@ -37,13 +37,13 @@
 #include <vtkBox.h>
 #include "CaVesselSegment.hpp"
 #include "ChastePoint.hpp"
-//#include "SimpleCell.hpp"
 
 #include "DensityMap.hpp"
 
 template<unsigned DIM>
 DensityMap<DIM>::DensityMap()
-    :   AbstractRegularGridHybridSolver<DIM>()
+    :   AbstractRegularGridHybridSolver<DIM>(),
+        mpNetwork()
 {
 
 }
@@ -59,6 +59,12 @@ template<unsigned DIM>
 DensityMap<DIM>::~DensityMap()
 {
 
+}
+
+template<unsigned DIM>
+void DensityMap<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
+{
+    mpNetwork = pNetwork;
 }
 
 template<unsigned DIM>

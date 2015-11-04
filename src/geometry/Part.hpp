@@ -218,6 +218,11 @@ public:
      * @param rFilename the path to the file to be written, should include the file extension.
      */
     void Write(const std::string& rFilename);
+
+    /* Write the part to file in stl format
+     * @param rFilename the path to the file to be written, should include the file extension.
+     */
+    void WriteStl(const std::string& rFilename);
 };
 
 #endif /*PART_HPP_*/

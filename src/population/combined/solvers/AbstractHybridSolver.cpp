@@ -39,7 +39,7 @@ template<unsigned DIM>
 AbstractHybridSolver<DIM>::AbstractHybridSolver()
     :   mpPde(),
         mDirichletBoundaryConditions(),
-        mWorkingDirectory(),
+        mpOutputFileHandler(),
         mFilename()
 {
 
@@ -78,9 +78,9 @@ void AbstractHybridSolver<DIM>::SetFileName(const std::string& filename)
 }
 
 template<unsigned DIM>
-void AbstractHybridSolver<DIM>::SetWorkingDirectory(const std::string& rDirectory)
+void AbstractHybridSolver<DIM>::SetFileHandler(boost::shared_ptr<OutputFileHandler> pOutputFileHandler)
 {
-    mWorkingDirectory = rDirectory;
+    mpOutputFileHandler = pOutputFileHandler;
 }
 
 template<unsigned DIM>

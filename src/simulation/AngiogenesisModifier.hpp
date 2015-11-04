@@ -67,7 +67,6 @@ class AngiogenesisModifier : public AbstractCellBasedSimulationModifier<DIM,DIM>
 private:
 
     boost::shared_ptr<AbstractAngiogenesisSolver<DIM> > mpSolver;
-    std::string mOutputDirectory;
 
 public:
 

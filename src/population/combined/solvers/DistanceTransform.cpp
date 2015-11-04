@@ -42,7 +42,8 @@
 template<unsigned DIM>
 DistanceTransform<DIM>::DistanceTransform()
 
-    :   AbstractRegularGridHybridSolver<DIM>()
+    :   AbstractRegularGridHybridSolver<DIM>(),
+        mpNetwork()
 {
 
 }
@@ -58,6 +59,12 @@ template<unsigned DIM>
 DistanceTransform<DIM>::~DistanceTransform()
 {
 
+}
+
+template<unsigned DIM>
+void DistanceTransform<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
+{
+    mpNetwork = pNetwork;
 }
 
 template<unsigned DIM>

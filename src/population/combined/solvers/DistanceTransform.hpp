@@ -43,6 +43,8 @@ template<unsigned DIM>
 class DistanceTransform : public AbstractRegularGridHybridSolver<DIM>
 {
 
+    boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
+
 public:
 
     DistanceTransform();
@@ -51,6 +53,8 @@ public:
      * @return a shared pointer to a new solver
      */
     static boost::shared_ptr<DistanceTransform<DIM> > Create();
+
+    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
 
     ~DistanceTransform();
 

@@ -35,7 +35,6 @@
 
 #include "Facet.hpp"
 #include "DiscreteSource.hpp"
-//#include "SimpleCell.hpp"
 #include <vtkDoubleArray.h>
 #include <vtkPointData.h>
 #include <vtkProbeFilter.h>

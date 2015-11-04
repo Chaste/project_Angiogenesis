@@ -40,8 +40,6 @@
 #include <vector>
 #include <string>
 #include <boost/lexical_cast.hpp>
-#include <boost/random.hpp>
-#include <boost/generator_iterator.hpp>
 #include "UblasIncludes.hpp"
 #include "Part.hpp"
 #include "HybridLinearEllipticPde.hpp"
@@ -49,11 +47,10 @@
 #include "CaVascularNetwork.hpp"
 #include "VasculatureGenerator.hpp"
 #include "SmartPointers.hpp"
-#include "PetscSetupAndFinalize.hpp"
 #include "OutputFileHandler.hpp"
 #include "VasculatureGenerator.hpp"
-//#include "SimpleCell.hpp"
-//#include "SimpleCellPopulation.hpp"
+
+#include "PetscSetupAndFinalize.hpp"
 
 class TestFiniteDifferenceSolver : public CxxTest::TestSuite
 {
@@ -76,51 +73,24 @@ public:
         p_pde->SetDiffusionConstant(0.0033);
         p_pde->SetLinearInUTerm(-2.e-7);
 
+        // Set up the boundary condition
+        boost::shared_ptr<DirichletBoundaryCondition<3> > p_vessel_ox_boundary_condition = DirichletBoundaryCondition<3>::Create();
+        p_vessel_ox_boundary_condition->SetValue(40.0);
+        p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_LINE);
+        p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
+        p_vessel_ox_boundary_condition->SetVesselNetwork(p_network);
+
         // Set up and run the solver
         FiniteDifferenceSolver<3> solver;
-        solver.SetVesselNetwork(p_network);
-        solver.SetExtents(p_domain, 10.0);
+        solver.SetGridFromPart(p_domain, 10.0);
         solver.SetPde(p_pde);
+        solver.AddDirichletBoundaryCondition(p_vessel_ox_boundary_condition);
 
-        OutputFileHandler output_file_handler("TestFiniteDifferenceSolver/KroghCylinder3d", false);
-        solver.SetWorkingDirectory(output_file_handler.GetOutputDirectoryFullPath());
+        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestFiniteDifferenceSolver/KroghCylinder3d", false));
+        solver.SetFileHandler(p_output_file_handler);
+        solver.Setup();
         solver.Solve(true);
     }
-
-//    void Test3dKroghCylinderNetworkWithCells()
-//    {
-//        // Set up the vessel network
-//        double vessel_length = 100;
-//        VasculatureGenerator<3> generator;
-//        boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length);
-//
-//        // Set up the PDE domain
-//        boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
-//        p_domain->AddCuboid(vessel_length, vessel_length, vessel_length);
-//
-//        // Set up the cells
-//        boost::shared_ptr<SimpleCellPopulation<3> > p_population = SimpleCellPopulation<3>::Create();
-//        double spacing = 10;
-//        unsigned num_x = unsigned(vessel_length/spacing) + 1;
-//        p_population->GenerateCellsOnGrid(num_x, num_x, num_x, spacing);
-//        p_population->BooleanWithVesselNetwork(p_network);
-//
-//        // Choose the PDE
-//        boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
-//        p_pde->SetDiffusionConstant(0.0033);
-//        p_pde->SetLinearInUTerm(-2.e-7);
-//
-//        // Set up and run the solver
-//        FiniteDifferenceSolver<3> solver;
-//        solver.SetVesselNetwork(p_network);
-//        solver.SetCellPopulation(p_population);
-//        solver.SetExtents(p_domain, 10.0);
-//        solver.SetPde(p_pde);
-//
-//        OutputFileHandler output_file_handler("TestFiniteDifferenceSolver/KroghCylinder3dCells", false);
-//        solver.SetWorkingDirectory(output_file_handler.GetOutputDirectoryFullPath());
-//        solver.Solve(true);
-//    }
 
     void Test2dBifurcationNetwork()
     {
@@ -138,14 +108,22 @@ public:
         p_pde->SetDiffusionConstant(0.0033);
         p_pde->SetLinearInUTerm(-2.e-7);
 
+        // Set up the boundary condition
+        boost::shared_ptr<DirichletBoundaryCondition<3> > p_vessel_ox_boundary_condition = DirichletBoundaryCondition<3>::Create();
+        p_vessel_ox_boundary_condition->SetValue(40.0);
+        p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_LINE);
+        p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
+        p_vessel_ox_boundary_condition->SetVesselNetwork(p_network);
+
         // Set up and run the simulation
         FiniteDifferenceSolver<3> solver;
-        solver.SetVesselNetwork(p_network);
-        solver.SetExtents(p_domain, 10.0);
+        solver.SetGridFromPart(p_domain, 10.0);
         solver.SetPde(p_pde);
+        solver.AddDirichletBoundaryCondition(p_vessel_ox_boundary_condition);
 
-        OutputFileHandler output_file_handler("TestFiniteDifferenceSolver/Bifurcation2d", false);
-        solver.SetWorkingDirectory(output_file_handler.GetOutputDirectoryFullPath());
+        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestFiniteDifferenceSolver/Bifurcation2d", false));
+        solver.SetFileHandler(p_output_file_handler);
+        solver.Setup();
         solver.Solve(true);
     }
 
@@ -165,14 +143,22 @@ public:
         p_pde->SetDiffusionConstant(0.0033);
         p_pde->SetLinearInUTerm(-2.e-7);
 
+        // Set up the boundary condition
+        boost::shared_ptr<DirichletBoundaryCondition<3> > p_vessel_ox_boundary_condition = DirichletBoundaryCondition<3>::Create();
+        p_vessel_ox_boundary_condition->SetValue(40.0);
+        p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_LINE);
+        p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
+        p_vessel_ox_boundary_condition->SetVesselNetwork(p_network);
+
         // Set up and run the simulation
         FiniteDifferenceSolver<3> solver;
-        solver.SetVesselNetwork(p_network);
-        solver.SetExtents(p_domain, 10.0);
+        solver.SetGridFromPart(p_domain, 10.0);
         solver.SetPde(p_pde);
+        solver.AddDirichletBoundaryCondition(p_vessel_ox_boundary_condition);
 
-        OutputFileHandler output_file_handler("TestFiniteDifferenceSolver/Bifurcation3d", false);
-        solver.SetWorkingDirectory(output_file_handler.GetOutputDirectoryFullPath());
+        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestFiniteDifferenceSolver/Bifurcation3d", false));
+        solver.SetFileHandler(p_output_file_handler);
+        solver.Setup();
         solver.Solve(true);
     }
 };

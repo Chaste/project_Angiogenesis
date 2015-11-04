@@ -38,7 +38,7 @@
 
 #include "SmartPointers.hpp"
 #include "AbstractHybridSolver.hpp"
-#include "PlcMesh.hpp"
+#include "TetrahedralMesh.hpp"
 #include "Part.hpp"
 #include "HybridLinearEllipticPde.hpp"
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the strstream deprecated warning for now (gcc4.3)
@@ -46,26 +46,13 @@
 #include <vtkSmartPointer.h>
 #include <vtkImageData.h>
 
-struct VesselRepresentation
-{
-    enum Value
-    {
-        LINE, SURFACE
-    };
-};
-
 
 template<unsigned DIM>
 class FiniteElementSolver : public AbstractHybridSolver<DIM>
 {
     using AbstractHybridSolver<DIM>::Solve;
-    boost::shared_ptr<Part<DIM> > mpDomain;
-    double mGridSize;
-    std::string mMeshWriterPath;
     vtkSmartPointer<vtkUnstructuredGrid> mFeSolution;
-
-    VesselRepresentation::Value mVesselRepresentation;
-    boost::shared_ptr<PlcMesh<DIM, DIM> > mpMesh;
+    boost::shared_ptr<TetrahedralMesh<DIM, DIM> > mpMesh;
 
 public:
 
@@ -85,23 +72,15 @@ public:
 
     vtkSmartPointer<vtkImageData> GetSampledSolution(std::vector<unsigned> extents, double spacing);
 
-    void SetDomain(boost::shared_ptr<Part<DIM> > pDomain);
-
-    void SetMesh(boost::shared_ptr<PlcMesh<DIM, DIM> > pMesh);
-
-    void SetVesselRepresentation(VesselRepresentation::Value vesselRepresentation);
-
-    void SetMaxElementArea(double maxElementArea);
+    void SetMesh(boost::shared_ptr<TetrahedralMesh<DIM, DIM> > pMesh);
 
     void Solve(bool writeSolution = false);
-
-    void SetMeshWriterPath(std::string path);
 
     void ReadSolution();
 
 private:
 
-    void Write(std::vector<double> output, boost::shared_ptr<PlcMesh<DIM, DIM> > p_mesh);
+    void Write(std::vector<double> output, boost::shared_ptr<TetrahedralMesh<DIM, DIM> > p_mesh);
 };
 
 #endif /* FINITEELEMENTSOLVER_HPP_ */

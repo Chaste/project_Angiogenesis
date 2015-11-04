@@ -87,8 +87,8 @@ public:
         }
         solver.SetSampleLocations(locations);
 
-        OutputFileHandler output_file_handler("TestKroghCylinderSolver/0Order", false);
-        solver.SetWorkingDirectory(output_file_handler.GetOutputDirectoryFullPath());
+        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestKroghCylinderSolver/0Order", false));
+        solver.SetFileHandler(p_output_file_handler);
         solver.Solve(true);
     }
 
@@ -120,8 +120,8 @@ public:
         }
         solver.SetSampleLocations(locations);
 
-        OutputFileHandler output_file_handler("TestKroghCylinderSolver/1stOrder", false);
-        solver.SetWorkingDirectory(output_file_handler.GetOutputDirectoryFullPath());
+        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestKroghCylinderSolver/1stOrder", false));
+        solver.SetFileHandler(p_output_file_handler);
         solver.Solve(true);
     }
 };

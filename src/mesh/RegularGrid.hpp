@@ -116,6 +116,8 @@ public:
      */
     double GetSpacing();
 
+    bool IsOnBoundary(unsigned grid_index);
+
     bool IsOnBoundary(unsigned x_index, unsigned y_index, unsigned z_index);
 
     /* Set the grid extents in x, y, z

@@ -70,11 +70,12 @@ public:
 
         GreensFunctionSolver<3> solver;
         solver.SetVesselNetwork(p_network);
-        solver.SetExtents(p_domain, 10.0);
+        solver.SetGridFromPart(p_domain, 10.0);
         solver.SetPde(p_pde);
 
-        OutputFileHandler output_file_handler("TestGreensFunctionSolver/KroghCylinder3d", false);
-        solver.SetWorkingDirectory(output_file_handler.GetOutputDirectoryFullPath());
+        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestGreensFunctionSolver/KroghCylinder3d", false));
+        solver.SetFileHandler(p_output_file_handler);
+        solver.Setup();
         solver.Solve(true);
     }
 };

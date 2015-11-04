@@ -50,6 +50,8 @@
 #include "VasculatureGenerator.hpp"
 #include "SmartPointers.hpp"
 #include "VasculatureData.hpp"
+#include "DirichletBoundaryCondition.hpp"
+#include "PlcMesh.hpp"
 #include "PetscSetupAndFinalize.hpp"
 
 class TestFiniteElementSolver : public CxxTest::TestSuite
@@ -66,26 +68,34 @@ public:
         centre[1] = vessel_length/2.0;
         boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre);
 
-        // Set up the PDE domain
-        boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
-        p_domain->AddCuboid(vessel_length, vessel_length, vessel_length);
-
         // Choose the PDE
         boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
         p_pde->SetDiffusionConstant(0.0033);
         p_pde->SetLinearInUTerm(-2.e-7);
 
+        // Choose the Boundary conditions
+        boost::shared_ptr<DirichletBoundaryCondition<3> > p_vessel_ox_boundary_condition = DirichletBoundaryCondition<3>::Create();
+        p_vessel_ox_boundary_condition->SetValue(40.0);
+        p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_LINE);
+        p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
+        p_vessel_ox_boundary_condition->SetVesselNetwork(p_network);
+
+        // Set up the mesh
+        boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
+        p_domain->AddCuboid(vessel_length, vessel_length, vessel_length);
+        p_domain->AddVesselNetwork(p_network);
+        boost::shared_ptr<PlcMesh<3, 3> > p_mesh = PlcMesh<3, 3>::Create();
+        p_mesh->GenerateFromPart(p_domain, 500);
+
         // Set up and run the solver
         FiniteElementSolver<3> solver;
-        solver.SetVesselNetwork(p_network);
-        solver.SetDomain(p_domain);
+        solver.SetMesh(p_mesh);
         solver.SetPde(p_pde);
-        solver.SetMaxElementArea(500.0);
-        OutputFileHandler output_file_handler("TestFiniteElementSolver/KroghCylinder3d", false);
-        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
-        solver.SetMeshWriterPath("TestFiniteElementSolver/KroghCylinder3d");
+        solver.AddDirichletBoundaryCondition(p_vessel_ox_boundary_condition);
+
+        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestFiniteElementSolver/KroghCylinder3d", false));
         solver.SetFileName("cylinder");
-        solver.SetWorkingDirectory(output_directory);
+        solver.SetFileHandler(p_output_file_handler);
         solver.Solve(true);
     }
 
@@ -99,26 +109,33 @@ public:
         centre[1] = vessel_length/2.0;
         boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre);
 
-        // Set up the PDE domain
-        boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
-        p_domain->AddCuboid(vessel_length, vessel_length, vessel_length);
-
         // Choose the PDE
         boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
         p_pde->SetDiffusionConstant(0.0033);
-        p_pde->SetLinearInUTerm(-2.e-7);
+
+        // Choose the Boundary conditions
+        boost::shared_ptr<DirichletBoundaryCondition<3> > p_vessel_ox_boundary_condition = DirichletBoundaryCondition<3>::Create();
+        p_vessel_ox_boundary_condition->SetValue(40.0);
+        p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_VOLUME);
+        p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
+        p_vessel_ox_boundary_condition->SetVesselNetwork(p_network);
+
+        // Set up the mesh
+        boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
+        p_domain->AddCuboid(vessel_length, vessel_length, vessel_length);
+        p_domain->AddVesselNetwork(p_network, true);
+        boost::shared_ptr<PlcMesh<3, 3> > p_mesh = PlcMesh<3, 3>::Create();
+        p_mesh->GenerateFromPart(p_domain, 500);
 
         // Set up and run the solver
         FiniteElementSolver<3> solver;
-        solver.SetVesselNetwork(p_network);
-        solver.SetDomain(p_domain);
+        solver.SetMesh(p_mesh);
         solver.SetPde(p_pde);
-        solver.SetMaxElementArea(500.0);
-        OutputFileHandler output_file_handler("TestFiniteElementSolver/KroghCylinder3d_Surface", false);
-        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
-        solver.SetMeshWriterPath("TestFiniteElementSolver/KroghCylinder3d_Surface");
+        solver.AddDirichletBoundaryCondition(p_vessel_ox_boundary_condition);
+
+        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestFiniteElementSolver/KroghCylinder3dSurface", false));
         solver.SetFileName("cylinder");
-        solver.SetWorkingDirectory(output_directory);
+        solver.SetFileHandler(p_output_file_handler);
         solver.Solve(true);
     }
 
@@ -138,16 +155,27 @@ public:
         p_pde->SetDiffusionConstant(0.0033);
         p_pde->SetLinearInUTerm(-2.e-7);
 
+        // Choose the Boundary conditions
+        boost::shared_ptr<DirichletBoundaryCondition<3> > p_vessel_ox_boundary_condition = DirichletBoundaryCondition<3>::Create();
+        p_vessel_ox_boundary_condition->SetValue(40.0);
+        p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_VOLUME);
+        p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
+        p_vessel_ox_boundary_condition->SetVesselNetwork(p_network);
+
+        // Set up the mesh
+        p_domain->AddVesselNetwork(p_network);
+        boost::shared_ptr<PlcMesh<3, 3> > p_mesh = PlcMesh<3, 3>::Create();
+        p_mesh->GenerateFromPart(p_domain, 500);
+
+        // Set up and run the solver
         FiniteElementSolver<3> solver;
-        solver.SetVesselNetwork(p_network);
-        solver.SetDomain(p_domain);
+        solver.SetMesh(p_mesh);
         solver.SetPde(p_pde);
-        solver.SetMaxElementArea(500.0);
-        OutputFileHandler output_file_handler("TestFiniteElementSolver/KroghCylinder3dCircle", false);
-        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
-        solver.SetMeshWriterPath("TestFiniteElementSolver/KroghCylinder3dCircle");
+        solver.AddDirichletBoundaryCondition(p_vessel_ox_boundary_condition);
+
+        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestFiniteElementSolver/KroghCylinder3dCircle", false));
         solver.SetFileName("cylinder");
-        solver.SetWorkingDirectory(output_directory);
+        solver.SetFileHandler(p_output_file_handler);
         solver.Solve(true);
     }
 
@@ -167,16 +195,27 @@ public:
         p_pde->SetDiffusionConstant(0.0033);
         p_pde->SetLinearInUTerm(-2.e-7);
 
+        // Choose the Boundary conditions
+        boost::shared_ptr<DirichletBoundaryCondition<3> > p_vessel_ox_boundary_condition = DirichletBoundaryCondition<3>::Create();
+        p_vessel_ox_boundary_condition->SetValue(40.0);
+        p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_VOLUME);
+        p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
+        p_vessel_ox_boundary_condition->SetVesselNetwork(p_network);
+
+        // Set up the mesh
+        p_domain->AddVesselNetwork(p_network, true);
+        boost::shared_ptr<PlcMesh<3, 3> > p_mesh = PlcMesh<3, 3>::Create();
+        p_mesh->GenerateFromPart(p_domain, 500);
+
+        // Set up and run the solver
         FiniteElementSolver<3> solver;
-        solver.SetVesselNetwork(p_network);
-        solver.SetDomain(p_domain);
+        solver.SetMesh(p_mesh);
         solver.SetPde(p_pde);
-        solver.SetMaxElementArea(500.0);
-        OutputFileHandler output_file_handler("TestFiniteElementSolver/KroghCylinder3dCircle_Surface", false);
-        std::string output_directory = output_file_handler.GetOutputDirectoryFullPath();
-        solver.SetMeshWriterPath("TestFiniteElementSolver/KroghCylinder3dCircle_Surface");
+        solver.AddDirichletBoundaryCondition(p_vessel_ox_boundary_condition);
+
+        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestFiniteElementSolver/KroghCylinder3dCircle", false));
         solver.SetFileName("cylinder");
-        solver.SetWorkingDirectory(output_directory);
+        solver.SetFileHandler(p_output_file_handler);
         solver.Solve(true);
     }
 };

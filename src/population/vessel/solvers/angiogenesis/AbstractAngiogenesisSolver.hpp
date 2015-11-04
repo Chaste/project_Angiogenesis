@@ -58,7 +58,9 @@ class AbstractAngiogenesisSolver
 
     unsigned mOutputFrequency;
 
-    std::string mOutputDirectory;
+    /* Filehandler containing output directory info
+    */
+    boost::shared_ptr<OutputFileHandler> mpOutputFileHandler;
 
     double mNodeAnastamosisRadius;
 

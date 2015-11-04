@@ -63,6 +63,7 @@ class GreensFunctionSolver : public AbstractRegularGridHybridSolver<DIM>
     boost::shared_ptr<boost::multi_array<double, 2> > mGvv;
     boost::shared_ptr<boost::multi_array<double, 2> > mGvt;
     boost::shared_ptr<boost::multi_array<double, 2> > mGtv;
+    boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
 
 public:
 
@@ -71,6 +72,8 @@ public:
     ~GreensFunctionSolver();
 
     void Solve(bool writeSolution = false);
+
+    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
 
 private:
 

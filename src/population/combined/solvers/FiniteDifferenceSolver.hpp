@@ -37,6 +37,7 @@
 #define FINITEDIFFERENCESOLVER_HPP_
 
 #include "SmartPointers.hpp"
+#include "LinearSystem.hpp"
 #include "AbstractRegularGridHybridSolver.hpp"
 
 /*
@@ -47,6 +48,8 @@
 template<unsigned DIM>
 class FiniteDifferenceSolver : public AbstractRegularGridHybridSolver<DIM>
 {
+
+    boost::shared_ptr<std::vector<std::pair<bool, double> > > mpBoundaryConditions;
 
 public:
 
@@ -62,6 +65,10 @@ public:
     /* Destructor
      */
     ~FiniteDifferenceSolver();
+
+    void Setup();
+
+    void UpdateSourcesAndBoundaryConditions();
 
     /* Solve the pde
      * @param writeSolution whether to write the solution to file

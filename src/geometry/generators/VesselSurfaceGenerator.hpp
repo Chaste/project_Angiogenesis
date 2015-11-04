@@ -112,7 +112,7 @@ private:
     /**
      * Return a vector of locations on a circle centred at x=0, y=0 with specified radius.
      */
-    std::vector<c_vector<double, DIM> > MakeCircle(double radius, unsigned numberOfSegments = 24);
+    std::vector<c_vector<double, DIM> > MakeCircle(double radius, unsigned numberOfSegments = 16);
 
     /**
      * Project the input points onto the specified plane

@@ -41,8 +41,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 template<unsigned DIM>
 AngiogenesisModifier<DIM>::AngiogenesisModifier()
     : AbstractCellBasedSimulationModifier<DIM>(),
-      mpSolver(),
-      mOutputDirectory()
+      mpSolver()
 {
 }
 
@@ -74,8 +73,6 @@ void AngiogenesisModifier<DIM>::UpdateAtEndOfTimeStep(AbstractCellPopulation<DIM
 template<unsigned DIM>
 void AngiogenesisModifier<DIM>::SetupSolve(AbstractCellPopulation<DIM,DIM>& rCellPopulation, std::string outputDirectory)
 {
-    mOutputDirectory = outputDirectory;
-
     // If there is an angiogenesis solver solve for the upcoming step
     if(mpSolver)
     {
@@ -91,8 +88,7 @@ void AngiogenesisModifier<DIM>::SetupSolve(AbstractCellPopulation<DIM,DIM>& rCel
         }
 
         // Set the output directory
-        OutputFileHandler output_file_handler(mOutputDirectory, false);
-        mpSolver->SetOutputDirectory(output_file_handler.GetOutputDirectoryFullPath());
+        mpSolver->SetOutputDirectory(outputDirectory);
         mpSolver->Increment();
     }
 

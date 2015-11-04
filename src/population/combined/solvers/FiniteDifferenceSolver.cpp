@@ -63,11 +63,46 @@ FiniteDifferenceSolver<DIM>::~FiniteDifferenceSolver()
 }
 
 template<unsigned DIM>
-void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
+void FiniteDifferenceSolver<DIM>::Setup()
 {
+    // Set up the PDE
     this->mpPde->SetRegularGrid(this->mpRegularGrid);
+
+    // Set up the boundary conditions
+    mpBoundaryConditions = boost::shared_ptr<std::vector<std::pair<bool, double> > > (new std::vector<std::pair<bool, double> >(this->mpRegularGrid->GetNumberOfPoints()));
+    for(unsigned idx=0; idx<this->mpRegularGrid->GetNumberOfPoints(); idx++)
+    {
+        (*mpBoundaryConditions)[idx] = std::pair<bool, double>(false, 0.0);
+    }
+    for(unsigned bound_index=0; bound_index<this->mDirichletBoundaryConditions.size(); bound_index++)
+    {
+        this->mDirichletBoundaryConditions[bound_index]->SetRegularGrid(this->mpRegularGrid);
+    }
+
+    // Set up the vtk solution grid
+    AbstractRegularGridHybridSolver<DIM>::Setup();
+
+    // Update the source strengths and boundary conditions;
+    UpdateSourcesAndBoundaryConditions();
+}
+
+template<unsigned DIM>
+void FiniteDifferenceSolver<DIM>::UpdateSourcesAndBoundaryConditions()
+{
+    // Update the PDE source strengths
     this->mpPde->UpdateDiscreteSourceStrengths();
 
+    // Update the boundary conditions
+    double grid_tolerance = this->mpRegularGrid->GetSpacing() * (std::sqrt(2.0) / 2.0);
+    for(unsigned bound_index=0; bound_index<this->mDirichletBoundaryConditions.size(); bound_index++)
+    {
+        this->mDirichletBoundaryConditions[bound_index]->UpdateRegularGridBoundaryConditions(mpBoundaryConditions, grid_tolerance);
+    }
+}
+
+template<unsigned DIM>
+void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
+{
     // Set up the system
     unsigned number_of_points = this->mpRegularGrid->GetNumberOfPoints();
     unsigned extents_x = this->mpRegularGrid->GetExtents()[0];
@@ -153,52 +188,16 @@ void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
         }
     }
 
-    double grid_tolerance = spacing * (std::sqrt(2.0) / 2.0);
+    // Apply the boundary conditions
     std::vector<unsigned> bc_indices;
-    for (unsigned i = 0; i < extents_z; i++) // Z
+    for(unsigned idx=0; idx<this->mpRegularGrid->GetNumberOfPoints(); idx++)
     {
-        for (unsigned j = 0; j < extents_y; j++) // Y
+        if((*mpBoundaryConditions)[idx].first)
         {
-            for (unsigned k = 0; k < extents_x; k++) // X
-            {
-                unsigned grid_index = this->mpRegularGrid->Get1dGridIndex(k, j, i);
-                for(unsigned bound_index=0; bound_index<this->mDirichletBoundaryConditions.size(); bound_index++)
-                {
-                    if(this->mDirichletBoundaryConditions[bound_index]->GetType()== BoundaryConditionType::OUTER)
-                    {
-                        if(i==0 || i==extents_z-1 || j==0 || j==extents_y-1 || k==0 || k == extents_x-1)
-                        {
-                            std::pair<bool, double> is_boundary = this->mDirichletBoundaryConditions[bound_index]->GetValue(this->mpRegularGrid->GetLocation(k ,j, i), grid_tolerance);
-                            bc_indices.push_back(grid_index);
-                            linear_system.SetRhsVectorElement(grid_index, is_boundary.second);
-                            break;
-                        }
-                    }
-                    else if(this->mDirichletBoundaryConditions[bound_index]->GetType()== BoundaryConditionType::OUTER_2D)
-                    {
-                        if(j==0 || j==extents_y-1 || k==0 || k == extents_x-1)
-                        {
-                            std::pair<bool, double> is_boundary = this->mDirichletBoundaryConditions[bound_index]->GetValue(this->mpRegularGrid->GetLocation(k ,j, i), grid_tolerance);
-                            bc_indices.push_back(grid_index);
-                            linear_system.SetRhsVectorElement(grid_index, is_boundary.second);
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        std::pair<bool, double> is_boundary = this->mDirichletBoundaryConditions[bound_index]->GetValue(this->mpRegularGrid->GetLocation(k ,j, i), grid_tolerance);
-                        if(is_boundary.first)
-                        {
-                            bc_indices.push_back(grid_index);
-                            linear_system.SetRhsVectorElement(grid_index, is_boundary.second);
-                            break;
-                        }
-                    }
-                }
-            }
+            bc_indices.push_back(idx);
+            linear_system.SetRhsVectorElement(idx, (*mpBoundaryConditions)[idx].second);
         }
     }
-
     linear_system.ZeroMatrixRowsWithValueOnDiagonal(bc_indices, 1.0);
 
     // Solve the linear system
@@ -207,10 +206,8 @@ void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
 
     // Populate the solution vector
     std::vector<double> solution(number_of_points, 0.0);
-    double sum = 0.0;
     for (unsigned row = 0; row < number_of_points; row++)
     {
-        sum += soln_repl[row];
         solution[row] = soln_repl[row];
     }
 

@@ -67,9 +67,9 @@ protected:
     */
     std::vector<boost::shared_ptr<DirichletBoundaryCondition<DIM> > > mDirichletBoundaryConditions;
 
-    /* The working directory for output
+    /* Filehandler containing output directory info
     */
-    std::string mWorkingDirectory;
+    boost::shared_ptr<OutputFileHandler> mpOutputFileHandler;
 
     /* The filename for output
     */
@@ -112,7 +112,7 @@ public:
     /* Set the working directory
      * @param directory the working directory
      */
-    void SetWorkingDirectory(const std::string& directory);
+    void SetFileHandler(boost::shared_ptr<OutputFileHandler> pOutputFileHandler);
 
     /* Set the file name for output
      * @param filename the file name

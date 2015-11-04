@@ -39,19 +39,21 @@
 #include <vector>
 #include <string>
 #include "UblasIncludes.hpp"
-//#include "SimpleCellPopulation.hpp"
+#include "AbstractCellPopulation.hpp"
 #include "CaVascularNetwork.hpp"
 #include "Part.hpp"
+#include "BoundaryConditionsContainer.hpp"
+#include "RegularGrid.hpp"
+#include "TetrahedralMesh.hpp"
 
-/*
+/**
  * Helper struct for defining the type of boundary condition.
- * It can be, point, multipoint, facet, vessel-line, vessel-volume, cell-point or cell-volume
  */
 struct BoundaryConditionType
 {
     enum Value
     {
-        POINT, MULTI_POINT, OUTER, OUTER_2D, FACET, VESSEL_LINE, VESSEL_VOLUME, CELL_POINT, IN_PART
+        POINT, FACET, OUTER, VESSEL_LINE, VESSEL_VOLUME, CELL, IN_PART
     };
 };
 
@@ -76,63 +78,123 @@ class DirichletBoundaryCondition
 {
 private:
 
-    /* The vessel network
-    */
+    /**
+     * The vessel network, used for VESSEL_ type conditions
+     */
     boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
 
-    /* The cell population
-    */
-//    boost::shared_ptr<SimpleCellPopulation<DIM> > mpCellPopulation;
+    /**
+     * The cell population, used for CELL type conditions
+     */
+    boost::shared_ptr<AbstractCellPopulation<DIM> > mpCellPopulation;
 
+    /**
+     * A part for prescribing part and facet based conditions
+     */
     boost::shared_ptr<Part<DIM> > mpDomain;
 
+    /**
+     * Point locations for POINT type conditions
+     */
     std::vector<c_vector<double, DIM> > mPoints;
 
+    /**
+     * The type of boundary condition
+     */
     BoundaryConditionType::Value mType;
 
+    /**
+     * Where the boundary condition value is obtained from
+     */
     BoundaryConditionSource::Value mSource;
 
+    /**
+     * A label specifying the array name from which to obtain the condition magnitude. Used for LABEL
+     * conditions.
+     */
     std::string mLabel;
 
+    /**
+     * The prescribed value of the boundary condition.
+     */
     double mValue;
+
+    /**
+     * The grid for solvers using regular grids
+     */
+    boost::shared_ptr<RegularGrid<DIM, DIM> > mpRegularGrid;
+
+    /**
+     * The mesh for solvers using finite element meshes
+     */
+    boost::shared_ptr<TetrahedralMesh<DIM, DIM> > mpMesh;
 
 public:
 
-    /* Constructor
+    /**
+     * Constructor
      */
     DirichletBoundaryCondition();
 
-    /* Destructor
+    /**
+     * Destructor
      */
     virtual ~DirichletBoundaryCondition();
 
-    /* Factory constructor method
+    /**
+     * Factory constructor method
      */
     static boost::shared_ptr<DirichletBoundaryCondition<DIM> > Create();
 
-    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
+    BoundaryConditionType::Value GetType();
 
-//    void SetCellPopulation(boost::shared_ptr<SimpleCellPopulation<DIM> > pCellPopulation);
+    double GetValue();
+
+    std::pair<bool, double> GetValue(c_vector<double,DIM> location, double tolerance);
+
+    void UpdateBoundaryConditionContainer(boost::shared_ptr<BoundaryConditionsContainer<DIM, DIM, 1> > pContainer);
+
+    void UpdateRegularGridBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > > pBoundaryConditions, double tolerance);
+
+    /**
+     * Set the cell population, used in CELL type sources
+     * @param rCellPopulation a reference to the cell population
+     */
+    void SetCellPopulation(AbstractCellPopulation<DIM>& rCellPopulation);
 
     void SetDomain(boost::shared_ptr<Part<DIM> > pDomain);
 
-    void SetPoint(c_vector<double, DIM> point);
+    void SetLabelName(const std::string& label);
 
+    /**
+     * Set the points for POINT type sources
+     * @param points the point locations for POINT type sources
+     */
     void SetPoints(std::vector<c_vector<double, DIM> > points);
 
-    void SetType(BoundaryConditionType::Value boundaryType);
+    /**
+     * Set the finite element mesh
+     * @param pMesh the finite element mesh
+     */
+    void SetMesh(boost::shared_ptr<TetrahedralMesh<DIM, DIM> > pMesh);
 
-    BoundaryConditionType::Value GetType();
+    /**
+     * Set the regular grid
+     * @param pRegularGrid the regular grid
+     */
+    void SetRegularGrid(boost::shared_ptr<RegularGrid<DIM, DIM> > pRegularGrid);
 
     void SetSource(BoundaryConditionSource::Value boundarySource);
 
-    void SetLabelName(const std::string& label);
+    void SetType(BoundaryConditionType::Value boundaryType);
 
     void SetValue(double value);
 
-    std::pair<bool, double> GetValue(c_vector<double, DIM> location = zero_vector<double>(DIM), double tolerance = 1.e-6);
-
-    std::vector<std::pair<bool, double> > GetValues(std::vector<c_vector<double, DIM> > locations, double tolerance = 1.e-6);
+    /**
+     * Set the vessel network used in VESSEL type sources
+     * @param pNetwork the vessel network
+     */
+    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
 };
 
 #endif /* DIRICHLETBOUNDARYCONDITION_HPP_ */

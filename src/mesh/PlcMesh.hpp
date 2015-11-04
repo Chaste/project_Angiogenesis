@@ -56,42 +56,64 @@
 struct triangulateio;
 
 /**
- * A concrete TetrahedralMesh which can be constructed through
- * the input of PLC (piecewise linear complex) info.
+ * A TetrahedralMesh which can be constructed through the input of PLC (piecewise linear complex) or STL info.
  */
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM = ELEMENT_DIM>
 class PlcMesh : public TetrahedralMesh<ELEMENT_DIM, SPACE_DIM>
 {
 public:
 
-    /*
+    /**
      * Constructor
      */
     PlcMesh();
 
-    /*
+    /**
      * Destructor
      */
     ~PlcMesh();
 
-    /* Factory constructor method
+    /**
+     *  Factory constructor method
      * @return a shared pointer to a new mesh
      */
     static boost::shared_ptr<PlcMesh<ELEMENT_DIM, SPACE_DIM> > Create();
 
+    /**
+     * Generate the mesh based on a Part description
+     * @param pPart pointer to the part
+     * @param maxElementArea if greater than 0.0 quality meshing is used in Tetgen
+     */
+    void GenerateFromPart(boost::shared_ptr<Part<SPACE_DIM> > pPart, double maxElementArea = 0.0);
 
-    void GenerateFromPart(boost::shared_ptr<Part<SPACE_DIM> > pPart, double maxElementArea = 0.0, bool useTetgen1_5 = true);
+    /**
+     * Generate the mesh based on a STL description
+     * @param filename path to the STL file
+     * @param maxElementArea if greater than 0.0 quality meshing is used in Tetgen
+     */
+    void GenerateFromStl(const std::string& filename, double maxElementArea = 0.0, std::vector<c_vector<double, SPACE_DIM> > holes =
+            std::vector<c_vector<double, SPACE_DIM> >());
 
+    /**
+     * Return the node connectivity
+     */
     std::vector<std::vector<unsigned> > GetConnectivity();
 
+    /**
+     * Return the node locations
+     */
     std::vector<std::vector<double> > GetNodeLocations();
-
-    void Write(const std::string& fileName);
 
 private:
 
+    /**
+     * Use triangle for 2-D meshing
+     */
     void Mesh2d(boost::shared_ptr<Part<SPACE_DIM> > pPart, double maxElementArea = 0.0);
 
+    /**
+     * Use tetgen for 3-D meshing
+     */
     void Mesh3d(boost::shared_ptr<Part<SPACE_DIM> > pPart, double maxElementArea = 0.0);
 
     // This is the same as the TetrahedralMesh implementation of ImportFromMesher but avoids a lot of templating hassle.

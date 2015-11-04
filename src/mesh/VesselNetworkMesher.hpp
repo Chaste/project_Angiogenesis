@@ -33,8 +33,8 @@
 
  */
 
-#ifndef VESSELNETWORKMESHER_HPP_
-#define VESSELNETWORKMESHER_HPP_
+#ifndef TETGENMESHER_HPP_
+#define TETGENMESHER_HPP_
 
 #include <string>
 #include <vtkPlane.h>
@@ -46,8 +46,7 @@
 #include "Polygon.hpp"
 
 /**
- * Class for generating surface representations of vessel networks. The generated surface is suitable for
- * finite element meshing and can be returned in PLC or VTK formats.
+
  */
 template<unsigned DIM>
 class VesselNetworkMesher
@@ -84,4 +83,4 @@ public:
 
 };
 
-#endif /* VESSELNETWORKMESHER_HPP_*/
+#endif /* TETGENMESHER_HPP_*/

@@ -55,6 +55,8 @@ class KroghCylinderSolver : public AbstractHybridSolver<DIM>
 
     std::vector<double> mSolution;
 
+    boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
+
 public:
 
     KroghCylinderSolver();
@@ -62,6 +64,8 @@ public:
     ~KroghCylinderSolver();
 
     std::vector<double> GetLineSolution();
+
+    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
 
     void SetPde(boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > pPde);
 

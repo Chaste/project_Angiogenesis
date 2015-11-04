@@ -45,7 +45,6 @@
 #include "VasculatureGenerator.hpp"
 #include "SmartPointers.hpp"
 #include "OutputFileHandler.hpp"
-//#include "SimpleCellPopulation.hpp"
 
 class TestDistanceTransform : public CxxTest::TestSuite
 {
@@ -68,43 +67,13 @@ public:
         // Set up and run the simulation
         DistanceTransform<3> solver;
         solver.SetVesselNetwork(p_network);
-        solver.SetExtents(p_domain, 40.0);
+        solver.SetGridFromPart(p_domain, 40.0);
 
-        OutputFileHandler output_file_handler("TestDistanceTransform/Bifurcation3d", false);
-        solver.SetWorkingDirectory(output_file_handler.GetOutputDirectoryFullPath());
+        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestDistanceTransform/Bifurcation3d", false));
+        solver.SetFileHandler(p_output_file_handler);
+        solver.Setup();
         solver.Solve(true);
     }
-
-//    void Test3dBifurcationNetworkWithCells()
-//    {
-//        // Set up the vessel network
-//        double vessel_length = 100;
-//        VasculatureGenerator<3> generator;
-//        c_vector<double,3> start_position = zero_vector<double>(3);
-//        start_position[2] = vessel_length;
-//        boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateBifurcationUnit(vessel_length, start_position);
-//
-//        // Set up the domain
-//        boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
-//        p_domain->AddCuboid(4.0 * vessel_length, 2.0 * vessel_length, 2.0 * vessel_length);
-//
-//        // Set up the cells
-//        boost::shared_ptr<SimpleCellPopulation<3> > p_population = SimpleCellPopulation<3>::Create();
-//        double spacing = 20;
-//        unsigned num_x = 4.0 * vessel_length / spacing + 1;
-//        p_population->GenerateCellsOnGrid(num_x, num_x/2 + 1, num_x/2 + 1, spacing);
-//        p_population->BooleanWithVesselNetwork(p_network);
-//
-//        // Set up and run the solver
-//        DistanceTransform<3> solver;
-//        solver.SetVesselNetwork(p_network);
-//        solver.SetCellPopulation(p_population);
-//        solver.SetExtents(p_domain, 10.0);
-//
-//        OutputFileHandler output_file_handler("TestDistanceTransform/Bifurcation3dCells", false);
-//        solver.SetWorkingDirectory(output_file_handler.GetOutputDirectoryFullPath());
-//        solver.Solve(true);
-//    }
 };
 
 #endif /*TESTDISTANCETRANSFORM_HPP_*/

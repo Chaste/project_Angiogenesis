@@ -38,10 +38,13 @@
 
 #include "SmartPointers.hpp"
 #include "AbstractRegularGridHybridSolver.hpp"
+#include "CaVascularNetwork.hpp"
 
 template<unsigned DIM>
 class DensityMap : public AbstractRegularGridHybridSolver<DIM>
 {
+
+    boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
 
 public:
 
@@ -51,6 +54,8 @@ public:
      * @return a shared pointer to a new solver
      */
     static boost::shared_ptr<DensityMap<DIM> > Create();
+
+    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
 
     ~DensityMap();
 

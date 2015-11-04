@@ -51,7 +51,7 @@ AbstractAngiogenesisSolver<DIM>::AbstractAngiogenesisSolver() :
         mGrowthVelocity(10.0),
         mEndTime(10.0),
         mOutputFrequency(1),
-        mOutputDirectory(),
+        mpOutputFileHandler(),
         mNodeAnastamosisRadius(0.0),
         mPdeSolvers(),
         mGrowthDirectionModifiers(),
@@ -143,7 +143,7 @@ void AbstractAngiogenesisSolver<DIM>::SetGrowthVelocity(double velocity)
 template<unsigned DIM>
 void AbstractAngiogenesisSolver<DIM>::SetOutputDirectory(const std::string& rDirectory)
 {
-    mOutputDirectory = rDirectory;
+    mpOutputFileHandler = boost::shared_ptr<OutputFileHandler>(new OutputFileHandler(rDirectory, false));
 }
 
 template<unsigned DIM>
@@ -307,9 +307,8 @@ void AbstractAngiogenesisSolver<DIM>::Increment()
     {
         for(unsigned idx=0; idx<mPdeSolvers.size(); idx++)
         {
-            mPdeSolvers[idx]->SetWorkingDirectory(mOutputDirectory);
-            std::string species_name = mPdeSolvers[idx]->GetPde()->GetVariableName();
-            mPdeSolvers[idx]->SetFileName("/" + species_name +"_solution_" + boost::lexical_cast<std::string>(num_steps)+".vti");
+            mPdeSolvers[idx]->SetFileHandler(mpOutputFileHandler);
+            mPdeSolvers[idx]->SetFileName("/" + mPdeSolvers[idx]->GetPde()->GetVariableName() +"_solution_" + boost::lexical_cast<std::string>(num_steps)+".vti");
 
             // Take the previous pde solution if needed
             if(idx>0)
@@ -359,7 +358,7 @@ void AbstractAngiogenesisSolver<DIM>::Increment()
 
         if(mOutputFrequency > 0 && num_steps % mOutputFrequency == 0)
         {
-            mpNetwork->Write(mOutputDirectory + "/VesselNetwork_inc_" + boost::lexical_cast<std::string>(num_steps+1)+".vtp");
+            mpNetwork->Write(mpOutputFileHandler->GetOutputDirectoryFullPath() + "/VesselNetwork_inc_" + boost::lexical_cast<std::string>(num_steps+1)+".vtp");
         }
     }
 
@@ -371,7 +370,7 @@ void AbstractAngiogenesisSolver<DIM>::Run()
     if(this->mpNetwork)
     {
         mpNetwork->UpdateAll(true);
-        mpNetwork->Write(mOutputDirectory + "/VesselNetwork_inc_0.vtp");
+        mpNetwork->Write(mpOutputFileHandler->GetOutputDirectoryFullPath() + "/VesselNetwork_inc_0.vtp");
     }
 
     while(SimulationTime::Instance()->GetTime() < mEndTime)

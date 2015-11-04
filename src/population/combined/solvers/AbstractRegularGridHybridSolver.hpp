@@ -72,7 +72,7 @@ public:
 
     /* Destructor
      */
-    ~AbstractRegularGridHybridSolver();
+    virtual ~AbstractRegularGridHybridSolver();
 
     boost::shared_ptr<RegularGrid<DIM> > GetGrid();
 
@@ -103,6 +103,10 @@ public:
     void SetGridFromPart(boost::shared_ptr<Part<DIM> > pPart, double gridSize);
 
     void SetGrid(boost::shared_ptr<RegularGrid<DIM> > pRegularGrid);
+
+    virtual void Setup();
+
+    virtual void Solve(bool writeSolution = false) = 0;
 
     void WriteHistograms(const std::string& arrayName, const std::string& fileName, double binSize, unsigned numberOfBins);
 

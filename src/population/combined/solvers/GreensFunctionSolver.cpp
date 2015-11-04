@@ -68,7 +68,8 @@ GreensFunctionSolver<DIM>::GreensFunctionSolver()
       mGtt(),
       mGvv(),
       mGvt(),
-      mGtv()
+      mGtv(),
+      mpNetwork()
 {
 
 }
@@ -77,6 +78,12 @@ template<unsigned DIM>
 GreensFunctionSolver<DIM>::~GreensFunctionSolver()
 {
 
+}
+
+template<unsigned DIM>
+void GreensFunctionSolver<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
+{
+    mpNetwork = pNetwork;
 }
 
 template<unsigned DIM>
@@ -438,7 +445,7 @@ void GreensFunctionSolver<DIM>::WriteSolution(std::map<std::string, std::vector<
 {
     // Write the tissue point data
     vtkSmartPointer<vtkXMLImageDataWriter> pImageDataWriter = vtkSmartPointer<vtkXMLImageDataWriter>::New();
-    pImageDataWriter->SetFileName((this->mWorkingDirectory + "/pde_solution.vti").c_str());
+    pImageDataWriter->SetFileName((this->mpOutputFileHandler->GetOutputDirectoryFullPath() + "/pde_solution.vti").c_str());
     pImageDataWriter->SetInput(this->mpRegularGridVtkSolution);
     pImageDataWriter->Update();
     pImageDataWriter->Write();
@@ -470,7 +477,7 @@ void GreensFunctionSolver<DIM>::WriteSolution(std::map<std::string, std::vector<
     }
 
     vtkSmartPointer<vtkXMLPolyDataWriter> p_poldata_writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-    p_poldata_writer->SetFileName((this->mWorkingDirectory + "/segments.vtp").c_str());
+    p_poldata_writer->SetFileName((this->mpOutputFileHandler->GetOutputDirectoryFullPath() + "/segments.vtp").c_str());
     p_poldata_writer->SetInput(pPolyData);
     p_poldata_writer->Write();
 }

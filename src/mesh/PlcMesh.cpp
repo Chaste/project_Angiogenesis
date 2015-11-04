@@ -119,6 +119,7 @@ void PlcMesh<ELEMENT_DIM, SPACE_DIM>::Mesh3d(boost::shared_ptr<Part<SPACE_DIM> >
     unsigned num_facets = facets.size();
 
     class tetgen15::tetgenio mesher_input, mesher_output;
+
     tetgen15::tetgenio::facet *f;
     tetgen15::tetgenio::polygon *p;
     mesher_input.pointlist = new double[(num_vertices) * 3];
@@ -177,6 +178,42 @@ void PlcMesh<ELEMENT_DIM, SPACE_DIM>::Mesh3d(boost::shared_ptr<Part<SPACE_DIM> >
 
     this->ImportFromTetgen(mesher_output, mesher_output.numberoftetrahedra, mesher_output.tetrahedronlist,
                            mesher_output.numberoftrifaces, mesher_output.trifacelist, NULL);
+
+}
+
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+void PlcMesh<ELEMENT_DIM, SPACE_DIM>::GenerateFromStl(const std::string& filename, double maxElementArea, std::vector<c_vector<double, SPACE_DIM> > holes)
+{
+    class tetgen15::tetgenio mesher_input, mesher_output;
+    char * writable = new char[filename.size() + 1];
+    std::copy(filename.begin(), filename.end(), writable);
+    writable[filename.size()] = '\0';
+    mesher_input.load_stl(writable);
+
+    unsigned num_holes = holes.size();
+    mesher_input.holelist = new double[(num_holes) * 3];
+    mesher_input.numberofholes = num_holes;
+    for (unsigned idx = 0; idx < num_holes; idx++)
+    {
+        for (unsigned jdx = 0; jdx < 3; jdx++)
+        {
+            mesher_input.holelist[3 * idx + jdx] = holes[idx][jdx];
+        }
+    }
+
+    std::string mesher_command = "pqQz";
+    if (maxElementArea > 0.0)
+    {
+        mesher_command += "a" + boost::lexical_cast<std::string>(maxElementArea);
+    }
+
+    // Library call
+    tetgen15::tetrahedralize((char*) mesher_command.c_str(), &mesher_input, &mesher_output);
+
+    this->ImportFromTetgen(mesher_output, mesher_output.numberoftetrahedra, mesher_output.tetrahedronlist,
+                           mesher_output.numberoftrifaces, mesher_output.trifacelist, NULL);
+
+    delete[] writable;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
@@ -310,7 +347,7 @@ void PlcMesh<ELEMENT_DIM, SPACE_DIM>::ImportFromTetgen(tetgen15::tetgenio& meshe
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void PlcMesh<ELEMENT_DIM, SPACE_DIM>::GenerateFromPart(boost::shared_ptr<Part<SPACE_DIM>  > pPart,
-                                                    double maxElementArea, bool useTetgen1_5)
+                                                    double maxElementArea)
 {
     // For 2D parts use triangle
     if (ELEMENT_DIM == 2)
@@ -425,13 +462,6 @@ void PlcMesh<ELEMENT_DIM, SPACE_DIM>::FreeTriangulateIo(triangulateio& mesherIo)
     free(mesherIo.triangleattributelist);
     free(mesherIo.edgelist);
     free(mesherIo.edgemarkerlist);
-}
-
-template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void PlcMesh<ELEMENT_DIM, SPACE_DIM>::Write(const std::string& fileName)
-{
-    VtkMeshWriter < ELEMENT_DIM, SPACE_DIM > mesh_writer("Temp", fileName, false);
-    mesh_writer.WriteFilesUsingMesh(*this);
 }
 
 // Explicit instantiation

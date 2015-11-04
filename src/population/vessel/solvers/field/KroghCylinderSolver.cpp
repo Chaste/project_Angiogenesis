@@ -52,7 +52,8 @@ KroghCylinderSolver<DIM>::KroghCylinderSolver()
       mOuterRadius(100.0),
       mLocations(),
       mpPde(),
-      mSolution()
+      mSolution(),
+      mpNetwork()
 {
 
 }
@@ -61,6 +62,12 @@ template<unsigned DIM>
 KroghCylinderSolver<DIM>::~KroghCylinderSolver()
 {
 
+}
+
+template<unsigned DIM>
+void KroghCylinderSolver<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
+{
+    mpNetwork = pNetwork;
 }
 
 template<unsigned DIM>
@@ -195,7 +202,7 @@ void KroghCylinderSolver<DIM>::Solve(bool writeSolution)
 template<unsigned DIM>
 void KroghCylinderSolver<DIM>::Write()
 {
-    std::ofstream output_file(this->mWorkingDirectory.append("concentration.dat").c_str());
+    std::ofstream output_file(this->mpOutputFileHandler->GetOutputDirectoryFullPath().append("concentration.dat").c_str());
     if (output_file.is_open())
     {
         output_file << "Location Concentration \n";
