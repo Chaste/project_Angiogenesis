@@ -171,7 +171,7 @@ public:
 
         boost::shared_ptr<AngiogenesisSolver<2> > p_angiogenesis_solver = AngiogenesisSolver<2>::Create();
         p_angiogenesis_solver->AddPdeSolver(p_oxygen_solver);
-        p_angiogenesis_solver->SetOutputFrequency(100);
+        p_angiogenesis_solver->SetOutputFrequency(1);
 
         boost::shared_ptr<AngiogenesisModifier<2> > p_simulation_modifier = boost::shared_ptr<AngiogenesisModifier<2> >(new AngiogenesisModifier<2>);
         p_simulation_modifier->SetAngiogenesisSolver(p_angiogenesis_solver);
@@ -184,8 +184,8 @@ public:
          */
         std::string resultsDirectoryName = "TestOwen2011TumourSpheroidGrowthWithODEWithHybridSolver";
         simulator.SetOutputDirectory(resultsDirectoryName);
-        simulator.SetSamplingTimestepMultiple(100);
-        simulator.SetEndTime(1500);
+        simulator.SetSamplingTimestepMultiple(1);
+        simulator.SetEndTime(1);
 
         /*
          * Create cell killer to remove apoptotic cell from simulation

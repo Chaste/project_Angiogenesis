@@ -76,6 +76,8 @@ public:
 
     void Solve(bool writeSolution = false);
 
+    void Setup();
+
     void ReadSolution();
 
 private:

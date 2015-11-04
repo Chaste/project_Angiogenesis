@@ -129,10 +129,10 @@ std::vector<double> DiscreteSource<DIM>::GetValues(std::vector<c_vector<double, 
 
     else if(mType == SourceType::CELL)
     {
-        if(!mpCellPopulation)
-        {
-            EXCEPTION("A cell population is required for this type of source");
-        }
+//        if(!mpCellPopulation)
+//        {
+//            EXCEPTION("A cell population is required for this type of source");
+//        }
 
         boost::shared_ptr<AbstractCellProperty> apoptotic_property(new AbstractCellProperty);
 
@@ -231,7 +231,7 @@ bool DiscreteSource<DIM>::IsLinearInSolution()
 template<unsigned DIM>
 void DiscreteSource<DIM>::SetCellPopulation(AbstractCellPopulation<DIM>& rCellPopulation)
 {
-    mpCellPopulation = boost::shared_ptr<AbstractCellPopulation<DIM> >(&rCellPopulation);
+    mpCellPopulation = &rCellPopulation;
 }
 
 template<unsigned DIM>

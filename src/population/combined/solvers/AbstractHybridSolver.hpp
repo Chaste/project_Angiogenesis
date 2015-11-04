@@ -109,6 +109,8 @@ public:
      */
     virtual void Solve(bool writeSolution = false) = 0;
 
+    virtual void Setup() = 0;
+
     /* Set the working directory
      * @param directory the working directory
      */

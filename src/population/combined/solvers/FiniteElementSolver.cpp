@@ -72,6 +72,12 @@ boost::shared_ptr<FiniteElementSolver<DIM> > FiniteElementSolver<DIM>::Create()
 }
 
 template<unsigned DIM>
+void FiniteElementSolver<DIM>::Setup()
+{
+
+}
+
+template<unsigned DIM>
 void FiniteElementSolver<DIM>::ReadSolution()
 {
     mFeSolution = vtkSmartPointer<vtkUnstructuredGrid>::New();

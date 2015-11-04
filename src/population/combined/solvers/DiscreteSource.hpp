@@ -95,7 +95,7 @@ private:
     /**
      * The cell population, used for CELL type sources
      */
-    boost::shared_ptr<AbstractCellPopulation<DIM> > mpCellPopulation;
+    AbstractCellPopulation<DIM>* mpCellPopulation;
 
     /**
      * A field sampled on a regular grid. Used for SOLUTION type sources

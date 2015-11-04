@@ -83,6 +83,7 @@ void AngiogenesisModifier<DIM>::SetupSolve(AbstractCellPopulation<DIM,DIM>& rCel
                 if(mpSolver->GetPdeSolvers()[idx]->GetPde()->GetDiscreteSources()[jdx]->GetType() == SourceType::CELL)
                 {
                     mpSolver->GetPdeSolvers()[idx]->GetPde()->GetDiscreteSources()[jdx]->SetCellPopulation(rCellPopulation);
+                    mpSolver->GetPdeSolvers()[idx]->Setup();
                 }
             }
         }
