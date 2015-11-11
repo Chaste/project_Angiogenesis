@@ -88,7 +88,7 @@ c_vector<double, DIM> OffLatticeSolutionDependentGrowthDirectionModifier<DIM>::G
         }
 
         // Get the solution
-        std::vector<double> solutions = mpSolver->GetSolutionAtPoints(locations, mpSolver->GetPde()->GetVariableName());
+        std::vector<double> solutions = mpSolver->GetSolutionAtPoints(locations);
 
         // Get the gradients
         std::vector<double> gradients;

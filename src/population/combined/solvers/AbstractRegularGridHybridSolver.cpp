@@ -67,8 +67,7 @@ boost::shared_ptr<RegularGrid<DIM> > AbstractRegularGridHybridSolver<DIM>::GetGr
 }
 
 template<unsigned DIM>
-std::vector<double> AbstractRegularGridHybridSolver<DIM>::GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints,
-                                                                              const std::string& rSpeciesLabel)
+std::vector<double> AbstractRegularGridHybridSolver<DIM>::GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints, bool useVtkSampling)
 {
     std::vector<double> sampled_solution(samplePoints.size(), 0.0);
 
@@ -94,10 +93,10 @@ std::vector<double> AbstractRegularGridHybridSolver<DIM>::GetSolutionAtPoints(st
     p_probe_filter->SetSource(GetVtkSolution());
     p_probe_filter->Update();
     vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetOutput()->GetPointData();
-    unsigned num_points = p_point_data->GetArray(rSpeciesLabel.c_str())->GetNumberOfTuples();
+    unsigned num_points = p_point_data->GetArray(this->mpPde->GetVariableName().c_str())->GetNumberOfTuples();
     for(unsigned idx=0; idx<num_points; idx++)
     {
-        sampled_solution[idx] = p_point_data->GetArray(rSpeciesLabel.c_str())->GetTuple1(idx);
+        sampled_solution[idx] = p_point_data->GetArray(this->mpPde->GetVariableName().c_str())->GetTuple1(idx);
     }
     return sampled_solution;
 }

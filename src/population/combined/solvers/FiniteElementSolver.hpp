@@ -42,17 +42,24 @@
 #include "Part.hpp"
 #include "HybridLinearEllipticPde.hpp"
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the strstream deprecated warning for now (gcc4.3)
-#include <vtkUnstructuredGrid.h>
 #include <vtkSmartPointer.h>
 #include <vtkImageData.h>
-
+#include <vtkUnstructuredGrid.h>
 
 template<unsigned DIM>
 class FiniteElementSolver : public AbstractHybridSolver<DIM>
 {
     using AbstractHybridSolver<DIM>::Solve;
-    vtkSmartPointer<vtkUnstructuredGrid> mFeSolution;
+
+    std::vector<double> mFeSolution;
+    vtkSmartPointer<vtkUnstructuredGrid> mFeVtkSolution;
     boost::shared_ptr<TetrahedralMesh<DIM, DIM> > mpMesh;
+
+    std::vector<double> mDomainBounds;
+    double mDomainOutOfBoundsValue;
+
+    boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
+    double mNetworkBounds;
 
 public:
 
@@ -65,24 +72,29 @@ public:
      */
     static boost::shared_ptr<FiniteElementSolver<DIM> > Create();
 
-    std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints,
-                                            const std::string& rSpeciesLabel = "Default");
+    std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints, bool useVtkSampling = true);
 
-    std::pair<std::vector<double>, std::vector<unsigned> > GetSolutionOnRegularGrid(std::vector<unsigned> extents, double spacing);
+    std::vector<double> GetSolutionAtPointsUsingVtk(std::vector<c_vector<double, DIM> > samplePoints);
 
-    vtkSmartPointer<vtkImageData> GetSampledSolution(std::vector<unsigned> extents, double spacing);
+    std::vector<double> GetSolutionOnRegularGrid(boost::shared_ptr<RegularGrid<DIM, DIM> > pGrid, bool useVtkSampling = true);
+
+    vtkSmartPointer<vtkImageData> GetVtkRegularGridSolution(boost::shared_ptr<RegularGrid<DIM, DIM> > pGrid, bool useVtkSampling = true);
+
+    void SetSamplingDomainBounds(std::vector<double> domainBounds, double domainOutOfBoundsValue);
+
+    void SetSamplingNetworkBounds(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork, double networkBounds);
 
     void SetMesh(boost::shared_ptr<TetrahedralMesh<DIM, DIM> > pMesh);
 
     void Solve(bool writeSolution = false);
 
     void Setup();
-
-    void ReadSolution();
+    
+	void ReadSolution();
 
 private:
 
-    void Write(std::vector<double> output, boost::shared_ptr<TetrahedralMesh<DIM, DIM> > p_mesh);
+    void Write();
 };
 
 #endif /* FINITEELEMENTSOLVER_HPP_ */

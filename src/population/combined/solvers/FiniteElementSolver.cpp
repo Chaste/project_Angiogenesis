@@ -46,6 +46,7 @@
 #include <vtkImageData.h>
 #include "VtkMeshWriter.hpp"
 #include "FiniteElementSolver.hpp"
+#include "VtkMeshReader.hpp"
 #include "Debug.hpp"
 
 
@@ -53,7 +54,12 @@ template<unsigned DIM>
 FiniteElementSolver<DIM>::FiniteElementSolver()
     : AbstractHybridSolver<DIM>(),
       mFeSolution(),
-      mpMesh()
+      mFeVtkSolution(),
+      mpMesh(),
+      mDomainBounds(),
+      mDomainOutOfBoundsValue(0.0),
+      mpNetwork(),
+      mNetworkBounds(0.0)
 {
 
 }
@@ -80,80 +86,26 @@ void FiniteElementSolver<DIM>::Setup()
 template<unsigned DIM>
 void FiniteElementSolver<DIM>::ReadSolution()
 {
-    mFeSolution = vtkSmartPointer<vtkUnstructuredGrid>::New();
+    mFeVtkSolution = vtkSmartPointer<vtkUnstructuredGrid>::New();
     VtkMeshReader<DIM,DIM> mesh_reader(this->mpOutputFileHandler->GetOutputDirectoryFullPath() + this->mFilename + ".vtu");
     vtkUnstructuredGrid* p_grid = mesh_reader.OutputMeshAsVtkUnstructuredGrid();
-    mFeSolution->DeepCopy(p_grid);
+    mFeVtkSolution->DeepCopy(p_grid);
 }
 
 template<unsigned DIM>
-std::pair<std::vector<double>, std::vector<unsigned> > FiniteElementSolver<DIM>::GetSolutionOnRegularGrid(std::vector<unsigned> extents, double spacing)
+std::vector<double> FiniteElementSolver<DIM>::GetSolutionOnRegularGrid(boost::shared_ptr<RegularGrid<DIM, DIM> > pGrid, bool useVtkSampling)
 {
-    if(!mFeSolution)
-    {
-        ReadSolution();
-    }
-    vtkSmartPointer<vtkImageData> p_sampling_grid = vtkSmartPointer<vtkImageData>::New();
-    p_sampling_grid->SetSpacing(spacing, spacing, spacing);
-    p_sampling_grid->SetDimensions(extents[0], extents[1], extents[2]);
-
-    vtkSmartPointer<vtkProbeFilter> p_probe_filter = vtkSmartPointer<vtkProbeFilter>::New();
-    p_probe_filter->SetInput(p_sampling_grid);
-    p_probe_filter->SetSource(mFeSolution);
-    p_probe_filter->Update();
-    vtkSmartPointer<vtkImageData> result = p_probe_filter->GetImageDataOutput();
-
-    std::vector<double> solutions;
-    std::vector<unsigned> valid_points;
-
-    unsigned num_points = result->GetPointData()->GetArray(this->mpPde->GetVariableName().c_str())->GetNumberOfTuples();
-    for(unsigned idx=0; idx<num_points; idx++)
-    {
-        solutions.push_back(result->GetPointData()->GetArray(this->mpPde->GetVariableName().c_str())->GetTuple1(idx));
-        valid_points.push_back(result->GetPointData()->GetArray("vtkValidPointMask")->GetTuple1(idx));
-    }
-    return std::pair<std::vector<double>, std::vector<unsigned> >(solutions, valid_points);
+    return GetSolutionAtPoints(pGrid->GetLocations(), useVtkSampling);
 }
 
 template<unsigned DIM>
-vtkSmartPointer<vtkImageData> FiniteElementSolver<DIM>::GetSampledSolution(std::vector<unsigned> extents, double spacing)
+std::vector<double> FiniteElementSolver<DIM>::GetSolutionAtPointsUsingVtk(std::vector<c_vector<double, DIM> > samplePoints)
 {
-    if(!mFeSolution)
+    if(!mFeVtkSolution)
     {
         ReadSolution();
     }
-    vtkSmartPointer<vtkImageData> p_sampling_grid = vtkSmartPointer<vtkImageData>::New();
-    p_sampling_grid->SetSpacing(spacing, spacing, spacing);
-    p_sampling_grid->SetDimensions(extents[0], extents[1], extents[2]);
-
-    vtkSmartPointer<vtkProbeFilter> p_probe_filter = vtkSmartPointer<vtkProbeFilter>::New();
-    p_probe_filter->SetInput(p_sampling_grid);
-    p_probe_filter->SetSource(mFeSolution);
-    p_probe_filter->Update();
-    vtkSmartPointer<vtkImageData> result = p_probe_filter->GetImageDataOutput();
-
-    unsigned num_points = result->GetPointData()->GetArray(this->mpPde->GetVariableName().c_str())->GetNumberOfTuples();
-    for(unsigned idx=0; idx<num_points; idx++)
-    {
-        if(!result->GetPointData()->GetArray("vtkValidPointMask")->GetTuple1(idx))
-        {
-            result->GetPointData()->GetArray(this->mpPde->GetVariableName().c_str())->SetTuple1(idx, 40.0);
-        }
-    }
-    return result;
-}
-
-template<unsigned DIM>
-std::vector<double> FiniteElementSolver<DIM>::GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints,
-                                                                              const std::string& rSpeciesLabel)
-{
-    // Read the vtk mesh back in and sample it at the requested points
-    if(!mFeSolution)
-    {
-        ReadSolution();
-    }
-    std::vector<double> sampled_solution(samplePoints.size(), 0.0);
-
+    
     // Sample the field at these locations
     vtkSmartPointer<vtkPolyData> p_polydata = vtkSmartPointer<vtkPolyData>::New();
     vtkSmartPointer<vtkPoints> p_points = vtkSmartPointer<vtkPoints>::New();
@@ -173,21 +125,123 @@ std::vector<double> FiniteElementSolver<DIM>::GetSolutionAtPoints(std::vector<c_
 
     vtkSmartPointer<vtkProbeFilter> p_probe_filter = vtkSmartPointer<vtkProbeFilter>::New();
     p_probe_filter->SetInput(p_polydata);
-    p_probe_filter->SetSource(mFeSolution);
+    p_probe_filter->SetSource(mFeVtkSolution);
     p_probe_filter->Update();
+
     vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetOutput()->GetPointData();
-    unsigned num_points = p_point_data->GetArray(rSpeciesLabel.c_str())->GetNumberOfTuples();
+    unsigned num_points = p_point_data->GetArray(this->mpPde->GetVariableName().c_str())->GetNumberOfTuples();
+    std::vector<double> results(num_points);
     for(unsigned idx=0; idx<num_points; idx++)
     {
-        sampled_solution[idx] = p_point_data->GetArray(rSpeciesLabel.c_str())->GetTuple1(idx);
+        results[idx] = p_point_data->GetArray(this->mpPde->GetVariableName().c_str())->GetTuple1(idx);
     }
-    return sampled_solution;
+    return results;
+}
+
+template<unsigned DIM>
+vtkSmartPointer<vtkImageData> FiniteElementSolver<DIM>::GetVtkRegularGridSolution(boost::shared_ptr<RegularGrid<DIM, DIM> > pGrid, bool useVtkSampling)
+{
+    vtkSmartPointer<vtkImageData> p_vtk_grid = vtkSmartPointer<vtkImageData>::New();
+    p_vtk_grid->SetSpacing(pGrid->GetSpacing(), pGrid->GetSpacing(), pGrid->GetSpacing());
+    std::vector<unsigned> extents = pGrid->GetExtents();
+    if(DIM==3)
+    {
+        p_vtk_grid->SetDimensions(extents[0], extents[1], extents[2]);
+    }
+    else
+    {
+        p_vtk_grid->SetDimensions(extents[0], extents[1], 1);
+    }
+
+    c_vector<double, DIM> orign = pGrid->GetOrigin();
+    if(DIM==3)
+    {
+        p_vtk_grid->SetOrigin(orign[0], orign[1], orign[2]);
+    }
+    else
+    {
+        p_vtk_grid->SetOrigin(orign[0], orign[1], 0.0);
+    }
+
+    std::vector<double> result = GetSolutionOnRegularGrid(pGrid);
+
+    vtkSmartPointer<vtkDoubleArray> pPointData = vtkSmartPointer<vtkDoubleArray>::New();
+    pPointData->SetNumberOfComponents(1);
+    pPointData->SetNumberOfTuples(result.size());
+    pPointData->SetName(this->mpPde->GetVariableName().c_str());
+    for (unsigned i = 0; i < result.size(); i++)
+    {
+        pPointData->SetValue(i, result[i]);
+    }
+    p_vtk_grid->GetPointData()->AddArray(pPointData);
+    return p_vtk_grid;
+}
+
+template<unsigned DIM>
+std::vector<double> FiniteElementSolver<DIM>::GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints, bool useVtkSampling)
+{
+    if(useVtkSampling)
+    {
+        return GetSolutionAtPointsUsingVtk(samplePoints);
+    }
+    else
+    {
+        std::vector<double> sampled_solution(samplePoints.size(), 0.0);
+        double tolerance = 1.e-3;
+
+        for(unsigned idx=0; idx<samplePoints.size(); idx++)
+        {
+            double solution_at_point = 0.0;
+
+            if(mDomainBounds.size() > 0)
+            {
+                // TODO fill in
+            }
+            if(mNetworkBounds)
+            {
+                std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
+                for (unsigned jdx = 0; jdx <  segments.size(); jdx++)
+                {
+                    if (segments[jdx]->GetDistance(samplePoints[idx]) <= segments[jdx]->GetRadius() + tolerance)
+                    {
+                        sampled_solution[idx] = mNetworkBounds;
+                        continue;
+                    }
+                }
+            }
+
+            unsigned elem_index = mpMesh->GetContainingElementIndex(ChastePoint<DIM>(samplePoints[idx]));
+            Element<DIM,DIM>* p_containing_element = mpMesh->GetElement(elem_index);
+            c_vector<double,DIM+1> weights = p_containing_element->CalculateInterpolationWeights(samplePoints[idx]);
+            for (unsigned i=0; i<DIM+1; i++)
+            {
+                double nodal_value = mFeSolution[p_containing_element->GetNodeGlobalIndex(i)];
+                solution_at_point += nodal_value * weights(i);
+            }
+            sampled_solution[idx] = solution_at_point;
+        }
+        return sampled_solution;
+    }
 }
 
 template<unsigned DIM>
 void FiniteElementSolver<DIM>::SetMesh(boost::shared_ptr<TetrahedralMesh<DIM, DIM> > pMesh)
 {
     mpMesh = pMesh;
+}
+
+template<unsigned DIM>
+void FiniteElementSolver<DIM>::SetSamplingDomainBounds(std::vector<double> domainBounds, double domainOutOfBoundsValue)
+{
+    mDomainBounds = domainBounds;
+    mDomainOutOfBoundsValue = domainOutOfBoundsValue;
+}
+
+template<unsigned DIM>
+void FiniteElementSolver<DIM>::SetSamplingNetworkBounds(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork, double networkBounds)
+{
+    mpNetwork = pNetwork;
+    mNetworkBounds = networkBounds;
 }
 
 template<unsigned DIM>
@@ -209,19 +263,19 @@ void FiniteElementSolver<DIM>::Solve(bool writeSolution)
     // Do the solve
     SimpleLinearEllipticSolver<DIM, DIM> static_solver(mpMesh.get(), this->mpPde.get(), p_bcc.get());
     ReplicatableVector static_solution_repl(static_solver.Solve());
-    std::vector<double> output;
-    for (unsigned idx = 0; idx < static_solution_repl.GetSize(); idx++)
+    mFeSolution = std::vector<double>(static_solution_repl.GetSize());
+    for(unsigned idx = 0; idx < static_solution_repl.GetSize(); idx++)
     {
-        output.push_back(static_solution_repl[idx]);
+        mFeSolution[idx]= static_solution_repl[idx];
     }
     if(writeSolution)
     {
-        this->Write(output, mpMesh);
+        this->Write();
     }
 }
 
 template<unsigned DIM>
-void FiniteElementSolver<DIM>::Write(std::vector<double> output, boost::shared_ptr<TetrahedralMesh<DIM, DIM> > p_mesh)
+void FiniteElementSolver<DIM>::Write()
 {
     // Write the output
     std::string fname;
@@ -239,11 +293,11 @@ void FiniteElementSolver<DIM>::Write(std::vector<double> output, boost::shared_p
         EXCEPTION("Output file handler not set");
     }
     VtkMeshWriter <DIM, DIM> mesh_writer(this->mpOutputFileHandler->GetRelativePath(), fname, false);
-    if(output.size() > 0)
+    if(mFeSolution.size() > 0)
     {
-        mesh_writer.AddPointData(this->mpPde->GetVariableName(), output);
+        mesh_writer.AddPointData(this->mpPde->GetVariableName(), mFeSolution);
     }
-    mesh_writer.WriteFilesUsingMesh(*p_mesh);
+    mesh_writer.WriteFilesUsingMesh(*mpMesh);
     ReadSolution();
 }
 

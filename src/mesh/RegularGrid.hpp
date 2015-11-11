@@ -103,6 +103,11 @@ public:
      */
     c_vector<double, SPACE_DIM> GetLocationOf1dIndex(unsigned grid_index);
 
+    /*
+     * Get all of the grid locations
+     */
+    std::vector<c_vector<double, SPACE_DIM> > GetLocations();
+
     /* Return the origin in x, y, z
      * @return the grid origin
      */

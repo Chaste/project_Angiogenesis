@@ -92,7 +92,7 @@ public:
 
     boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > GetPde();
 
-    virtual std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints, const std::string& rSpeciesLabel = "Default");
+    virtual std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints, bool useVtkSampling = true);
 
     /* Set a boundary condition for the domain
      * @param pBoundaryCondition the boundary condition

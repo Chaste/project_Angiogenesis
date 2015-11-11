@@ -119,7 +119,7 @@ void AngiogenesisModifier<DIM>::UpdateCellData(AbstractCellPopulation<DIM,DIM>& 
         for(unsigned idx=0; idx<mpSolver->GetPdeSolvers().size(); idx++)
         {
             std::string label = mpSolver->GetPdeSolvers()[idx]->GetPde()->GetVariableName();
-            std::vector<double> sampled_solution = mpSolver->GetPdeSolvers()[idx]->GetSolutionAtPoints(locations, label);
+            std::vector<double> sampled_solution = mpSolver->GetPdeSolvers()[idx]->GetSolutionAtPoints(locations);
 
             if(label == "oxygen")
             {

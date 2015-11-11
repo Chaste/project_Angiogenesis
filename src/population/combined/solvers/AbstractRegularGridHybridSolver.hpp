@@ -76,8 +76,7 @@ public:
 
     boost::shared_ptr<RegularGrid<DIM> > GetGrid();
 
-    std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints,
-                                            const std::string& rSpeciesLabel = "Default");
+    std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints, bool useVtkSampling = true);
 
     std::vector<double> GetSolutionOnLine(double sampleSpacing,
                                           c_vector<double, DIM> start_point,

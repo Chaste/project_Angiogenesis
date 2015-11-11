@@ -160,16 +160,9 @@ std::pair<bool, double> DirichletBoundaryCondition<DIM>::GetValue(c_vector<doubl
             std::vector<boost::shared_ptr<Facet> > facets =  mpDomain->GetFacets();
             for(unsigned jdx=0; jdx<facets.size();jdx++)
             {
-                if(facets[jdx]->ContainsPoint(location))
+                if(facets[jdx]->ContainsPoint(location) && (facets[jdx]->GetData("Boundary")>0.0))
                 {
-                    if(BoundaryConditionSource::PRESCRIBED)
-                    {
-                        return std::pair<bool, double>(true, mValue);
-                    }
-                    else
-                    {
-                        return std::pair<bool, double>(true, facets[jdx]->GetData(mLabel));
-                    }
+                    return std::pair<bool, double>(true, mValue);
                 }
             }
         }

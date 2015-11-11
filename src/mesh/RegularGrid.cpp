@@ -85,6 +85,17 @@ c_vector<double, SPACE_DIM> RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetLocation(uns
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+std::vector<c_vector<double, SPACE_DIM> > RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetLocations()
+{
+    std::vector<c_vector<double, SPACE_DIM> > locations(GetNumberOfPoints());
+    for(unsigned idx=0; idx<GetNumberOfPoints(); idx++)
+    {
+        locations[idx] = GetLocationOf1dIndex(idx);
+    }
+    return locations;
+}
+
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 bool RegularGrid<ELEMENT_DIM, SPACE_DIM>::IsOnBoundary(unsigned grid_index)
 {
     unsigned mod_z = grid_index % (mExtents[0] * mExtents[1]);
