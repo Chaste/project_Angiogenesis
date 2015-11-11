@@ -210,7 +210,7 @@ boost::shared_ptr<Part<3> > MappableGridGenerator::GenerateCylinder(double cylin
         EXCEPTION("The cylinder angle should be <= 2*pi");
     }
 
-    boost::shared_ptr<Part<3> > p_part = GeneratePlane(numX, numY, !cylinderAngle == 2.0 * M_PI);
+    boost::shared_ptr<Part<3> > p_part = GeneratePlane(numX, numY, !(cylinderAngle == 2.0 * M_PI));
 
     // Get the part extents
     c_vector<double, 6> bbox = p_part->GetBoundingBox();
