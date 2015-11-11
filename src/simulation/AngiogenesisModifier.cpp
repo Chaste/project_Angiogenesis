@@ -62,6 +62,18 @@ void AngiogenesisModifier<DIM>::UpdateAtEndOfTimeStep(AbstractCellPopulation<DIM
     // If there is an angiogenesis solver solve for the upcoming step
     if(mpSolver)
     {
+        for(unsigned idx=0; idx<mpSolver->GetPdeSolvers().size(); idx++)
+        {
+            for(unsigned jdx=0; jdx<mpSolver->GetPdeSolvers()[idx]->GetPde()->GetDiscreteSources().size(); jdx++)
+            {
+                if(mpSolver->GetPdeSolvers()[idx]->GetPde()->GetDiscreteSources()[jdx]->GetType() == SourceType::CELL)
+                {
+                    mpSolver->GetPdeSolvers()[idx]->GetPde()->GetDiscreteSources()[jdx]->SetCellPopulation(rCellPopulation);
+                    mpSolver->GetPdeSolvers()[idx]->Setup();
+                }
+            }
+        }
+
         // Increment the solver
         mpSolver->Increment();
     }
