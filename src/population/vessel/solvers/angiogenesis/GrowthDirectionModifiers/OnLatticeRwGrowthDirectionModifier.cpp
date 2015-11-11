@@ -97,7 +97,7 @@ c_vector<double, DIM> OnLatticeRwGrowthDirectionModifier<DIM>::GetGrowthDirectio
 
     // Get a new direction that does not go back on itself
     bool found = false;
-    unsigned new_direction_index;
+    unsigned new_direction_index = 0;
     while(!found)
     {
         unsigned random_num = (RandomNumberGenerator::Instance()->randMod(2*DIM) + 1);
