@@ -52,7 +52,7 @@ DiscreteSource<DIM>::DiscreteSource()
         mLabel("Default"),
         mValue(0.0),
         mIsLinearInSolution(false),
-        mCellColorSinkRates()
+        mMutationSpecificConsumptionRateMap()
 {
 
 }
@@ -133,7 +133,8 @@ std::vector<double> DiscreteSource<DIM>::GetValues(std::vector<c_vector<double, 
             EXCEPTION("A cell population is required for this type of source");
         }
 
-        boost::shared_ptr<AbstractCellProperty> apoptotic_property(new AbstractCellProperty);
+        boost::shared_ptr<ApoptoticCellProperty> apoptotic_property(new ApoptoticCellProperty);
+        unsigned apoptotic_label = apoptotic_property->GetColour();
 
         // Loop through all points
         for(unsigned idx=0; idx<locations.size(); idx++)
@@ -142,21 +143,51 @@ std::vector<double> DiscreteSource<DIM>::GetValues(std::vector<c_vector<double, 
             for (typename AbstractCellPopulation<DIM>::Iterator cell_iter = mpCellPopulation->Begin();
                  cell_iter != mpCellPopulation->End(); ++cell_iter)
             {
-                // If the cell is apoptotic do not count it
-                if ((*cell_iter)->template HasCellProperty<ApoptoticCellProperty>())
-                {
-                    continue;
-                }
-
-                // If the cell is near the point add its contribution
                 if (norm_2(mpCellPopulation->GetLocationOfCellCentre(*cell_iter)-locations[idx])<tolerance)
                 {
-
-                    // If a mutation state specific consumption rate has been specified use it
-                    if(mCellColorSinkRates.size()>0)
+                    // If a mutation specific consumption rate has been specified
+                    if(mMutationSpecificConsumptionRateMap.size()>0)
                     {
-                        // If a key for the colour does not exist expect a 0.0 to be added.
-                        values[idx] += mCellColorSinkRates[(*cell_iter)->GetMutationState()->GetColour()];
+
+                        std::map<unsigned, double>::iterator it;
+
+                        // If the cell is apoptotic
+                        if ((*cell_iter)->template HasCellProperty<ApoptoticCellProperty>())
+                        {
+
+                            it = mMutationSpecificConsumptionRateMap.find(apoptotic_label);
+
+                            if (it != mMutationSpecificConsumptionRateMap.end())
+                            {
+                                values[idx] += it->second;
+                            }
+                            else
+                            {
+                                // do nothing - print warning
+                                TRACE("Warning: Apoptotic cell found but no consumption rate has been supplied for apoptotic cells."
+                                        "Ignoring cell.");
+                            }
+
+                        }
+                        else
+                        {
+
+                            it = mMutationSpecificConsumptionRateMap.find((*cell_iter)->GetMutationState()->GetColour());
+
+                            if (it != mMutationSpecificConsumptionRateMap.end())
+                            {
+                                values[idx] += it->second;
+                            }
+                            else
+                            {
+                                // do nothing - print warning
+
+                                TRACE("Warning: cell with mutation state label " << (*cell_iter)->GetMutationState()->GetColour() << " found but no consumption rate has been supplied for such cells."
+                                        "Ignoring cell.");
+                            }
+
+                        }
+
                     }
                     else
                     {
@@ -229,9 +260,9 @@ void DiscreteSource<DIM>::SetLabelName(const std::string& label)
 }
 
 template<unsigned DIM>
-void DiscreteSource<DIM>::SetCellColorSpecificSinkRates(std::map<unsigned, double> cellColorSinkRates)
+void DiscreteSource<DIM>::SetMutationSpecificConsumptionRateMap(std::map<unsigned,double> mutationSpecificConsumptionRateMap)
 {
-    mCellColorSinkRates = cellColorSinkRates;
+    mMutationSpecificConsumptionRateMap = mutationSpecificConsumptionRateMap;
 }
 
 template<unsigned DIM>

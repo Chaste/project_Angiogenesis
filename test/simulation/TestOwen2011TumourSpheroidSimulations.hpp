@@ -126,16 +126,16 @@ public:
 
         // Create a grid to solve PDEs on
         boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
-        p_grid->SetSpacing(2.0);
+        p_grid->SetSpacing(4.0);
         std::vector<unsigned> extents;
-        extents.push_back(20); // num_x
-        extents.push_back(20); // num_y
+        extents.push_back(10); // num_x
+        extents.push_back(10); // num_y
         extents.push_back(1); // num_z
         p_grid->SetExtents(extents);
 
         c_vector<double,2> origin; // Grid bottom left corner
-        origin[0]= -20.0;
-        origin[1]= -20.0;
+        origin[0]= -15.0;
+        origin[1]= -15.0;
         p_grid->SetOrigin(origin);
 
         // Create the oxygen pde, discrete sources and boundary condition
@@ -146,16 +146,17 @@ public:
         boost::shared_ptr<DiscreteSource<2> > p_cell_oxygen_sink = DiscreteSource<2>::Create();
         p_cell_oxygen_sink->SetType(SourceType::CELL); // cell population is added automatically in AngiogenesisModifier
         p_cell_oxygen_sink->SetSource(SourceStrength::PRESCRIBED);
-        p_cell_oxygen_sink->SetValue(1.e-7);
+        p_cell_oxygen_sink->SetValue(2.e-8);
         p_cell_oxygen_sink->SetIsLinearInSolution(true);
         p_oxygen_pde->AddDiscreteSource(p_cell_oxygen_sink);
 
-        QuiescentCancerCellMutationState quiescent_state;
-        std::map<unsigned, double> cell_color_sink_rates;
-        cell_color_sink_rates[p_state->GetColour()] = 2.e-8; // cancer cell mutation state
-        cell_color_sink_rates[quiescent_state.GetColour()] = 1.e-8; // Quiescent cancer cell mutation state
-
-        p_cell_oxygen_sink->SetCellColorSpecificSinkRates(cell_color_sink_rates);
+        ApoptoticCellProperty apoptotic_property;
+        QuiescentCancerCellMutationState quiescent_property;
+        std::map<unsigned, double > mutationSpecificConsumptionRateMap;
+        mutationSpecificConsumptionRateMap[apoptotic_property.GetColour()] =  0.0;
+        mutationSpecificConsumptionRateMap[p_state.get()->GetColour()] =  2e-8;
+        mutationSpecificConsumptionRateMap[quiescent_property.GetColour()] =  2e-8;
+        p_cell_oxygen_sink->SetMutationSpecificConsumptionRateMap(mutationSpecificConsumptionRateMap);
 
         boost::shared_ptr<DirichletBoundaryCondition<2> > p_domain_ox_boundary_condition = DirichletBoundaryCondition<2>::Create();
         p_domain_ox_boundary_condition->SetValue(oxygen_concentration);

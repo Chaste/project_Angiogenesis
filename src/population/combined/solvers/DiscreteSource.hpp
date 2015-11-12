@@ -38,7 +38,7 @@
 
 #include <vector>
 #include <string>
-#include <vector>
+#include <map>
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning for now (gcc4.3)
 #include <vtkImageData.h>
 #include <vtkSmartPointer.h>
@@ -136,7 +136,7 @@ private:
     /**
      * Cells of different 'color' (i.e. mutation state label) can have different sink rates.
      */
-    std::map<unsigned, double> mCellColorSinkRates;
+    std::map<unsigned, double > mMutationSpecificConsumptionRateMap;
 
 public:
 
@@ -202,7 +202,7 @@ public:
      *
      * @param cellColorSinkRates the label for the source strength value
      */
-    void SetCellColorSpecificSinkRates(std::map<unsigned, double> cellColorSinkRates);
+    void SetMutationSpecificConsumptionRateMap(std::map<unsigned, double > mutationSpecificConsumptionRateMap);
 
     /**
      * Set the points for POINT type sources
