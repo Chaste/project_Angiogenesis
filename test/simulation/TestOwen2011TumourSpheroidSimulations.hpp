@@ -171,19 +171,19 @@ public:
 
         // Create the vegf pde, discrete sources and boundary condition
         boost::shared_ptr<HybridLinearEllipticPde<2> > p_vegf_pde = HybridLinearEllipticPde<2>::Create();
-        p_vegf_pde->SetDiffusionConstant(0.0033/400.0); // assume cell width is 20 microns
+        p_vegf_pde->SetDiffusionConstant(0.0033/(400.0*145.0)); // assume cell width is 20 microns and vegf D is oxygen D/145.0
         p_vegf_pde->SetVariableName("vegf");
+        p_vegf_pde->SetLinearInUTerm(0.8);
 
         boost::shared_ptr<DiscreteSource<2> > p_cell_vegf_source = DiscreteSource<2>::Create();
         p_cell_vegf_source->SetType(SourceType::CELL); // cell population is added automatically in AngiogenesisModifier
         p_cell_vegf_source->SetSource(SourceStrength::PRESCRIBED);
-        p_cell_vegf_source->SetValue(1.e-7);
-        p_cell_vegf_source->SetIsLinearInSolution(true);
+        p_cell_vegf_source->SetIsLinearInSolution(false);
         p_vegf_pde->AddDiscreteSource(p_cell_vegf_source);
 
         std::map<unsigned, double> vegf_cell_color_source_rates;
-        vegf_cell_color_source_rates[quiescent_state.GetColour()] = -1.e-8; // Quiescent cancer cell mutation state
-        p_cell_vegf_source->SetCellColorSpecificSinkRates(vegf_cell_color_source_rates);
+        vegf_cell_color_source_rates[quiescent_property.GetColour()] = -0.6; // Quiescent cancer cell mutation state
+        p_cell_vegf_source->SetMutationSpecificConsumptionRateMap(vegf_cell_color_source_rates);
 
         boost::shared_ptr<DirichletBoundaryCondition<2> > p_domain_vegf_boundary_condition = DirichletBoundaryCondition<2>::Create();
         p_domain_vegf_boundary_condition->SetValue(0.0);

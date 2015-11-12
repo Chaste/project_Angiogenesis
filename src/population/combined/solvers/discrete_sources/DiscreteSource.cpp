@@ -81,6 +81,11 @@ std::vector<double> DiscreteSource<DIM>::GetValues(std::vector<c_vector<double, 
 {
     std::vector<double> values(locations.size(), 0.0);
 
+    /*
+     * \note Need to make sure that we are checking that a cell is located in a BOX/ELEMENT
+     *  of a given size rather than within a CIRCLE/SPHERE.
+     */
+
     // Check the source type
     if(mType == SourceType::POINT)
     {
