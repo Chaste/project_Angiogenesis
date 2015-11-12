@@ -460,7 +460,7 @@ vtkSmartPointer<vtkPolyData> Part<DIM>::GetVtk(bool update)
         p_polygon->GetPointIds()->SetNumberOfIds(vertices.size());
         for (vtkIdType jdx = 0; jdx < vtkIdType(vertices.size()); jdx++)
         {
-            c_vector<double, DIM> location = vertices[jdx]->rGetLocation();
+            c_vector<double, 3> location = vertices[jdx]->rGetLocation();
             if(DIM==3)
             {
                 p_vertices->InsertNextPoint(location[0], location[1], location[2]);
