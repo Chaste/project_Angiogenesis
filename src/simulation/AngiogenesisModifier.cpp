@@ -64,10 +64,7 @@ void AngiogenesisModifier<DIM>::UpdateAtEndOfTimeStep(AbstractCellPopulation<DIM
     {
         for(unsigned idx=0; idx<mpSolver->GetPdeSolvers().size(); idx++)
         {
-            for(unsigned jdx=0; jdx<mpSolver->GetPdeSolvers()[idx]->GetPde()->GetDiscreteSources().size(); jdx++)
-            {
-                mpSolver->GetPdeSolvers()[idx]->Setup();
-            }
+            mpSolver->GetPdeSolvers()[idx]->Setup();
         }
 
         // Increment the solver
@@ -91,9 +88,9 @@ void AngiogenesisModifier<DIM>::SetupSolve(AbstractCellPopulation<DIM,DIM>& rCel
                 if(mpSolver->GetPdeSolvers()[idx]->GetPde()->GetDiscreteSources()[jdx]->GetType() == SourceType::CELL)
                 {
                     mpSolver->GetPdeSolvers()[idx]->GetPde()->GetDiscreteSources()[jdx]->SetCellPopulation(rCellPopulation);
-                    mpSolver->GetPdeSolvers()[idx]->Setup();
                 }
             }
+            mpSolver->GetPdeSolvers()[idx]->Setup();
         }
 
         // Set the output directory

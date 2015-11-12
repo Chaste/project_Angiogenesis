@@ -52,7 +52,8 @@ DiscreteSource<DIM>::DiscreteSource()
         mLabel("Default"),
         mValue(0.0),
         mIsLinearInSolution(false),
-        mMutationSpecificConsumptionRateMap()
+        mMutationSpecificConsumptionRateMap(),
+        mMutationSpecificConsumptionRateThresholdMap()
 {
 
 }
@@ -119,7 +120,7 @@ std::vector<double> DiscreteSource<DIM>::GetValues(std::vector<c_vector<double, 
             {
                 if (segments[jdx]->GetDistance(locations[idx]) <= tolerance)
                 {
-                    if(SourceStrength::PRESCRIBED)
+                    if(mSourceStrength == SourceStrength::PRESCRIBED)
                     {
                         values[idx] += mValue;
                     }
@@ -153,7 +154,6 @@ std::vector<double> DiscreteSource<DIM>::GetValues(std::vector<c_vector<double, 
                     // If a mutation specific consumption rate has been specified
                     if(mMutationSpecificConsumptionRateMap.size()>0)
                     {
-
                         std::map<unsigned, double>::iterator it;
 
                         // If the cell is apoptotic
@@ -166,13 +166,6 @@ std::vector<double> DiscreteSource<DIM>::GetValues(std::vector<c_vector<double, 
                             {
                                 values[idx] += it->second;
                             }
-                            else
-                            {
-                                // do nothing - print warning
-                                TRACE("Warning: Apoptotic cell found but no consumption rate has been supplied for apoptotic cells."
-                                        "Ignoring cell.");
-                            }
-
                         }
                         else
                         {
@@ -181,16 +174,59 @@ std::vector<double> DiscreteSource<DIM>::GetValues(std::vector<c_vector<double, 
 
                             if (it != mMutationSpecificConsumptionRateMap.end())
                             {
-                                values[idx] += it->second;
+                                if(mSourceStrength == SourceStrength::LABEL)
+                                {
+                                    // Get a threshold value if it has been set, use the label to determine the field from which the label
+                                    // value is obtained.
+                                    double threshold = 0.0;
+                                    if(mMutationSpecificConsumptionRateThresholdMap.size()>0)
+                                    {
+                                        std::map<unsigned, double>::iterator it_threshold;
+                                        it_threshold = mMutationSpecificConsumptionRateThresholdMap.find((*cell_iter)->GetMutationState()->GetColour());
+                                        if (it_threshold != mMutationSpecificConsumptionRateThresholdMap.end())
+                                        {
+                                            threshold = it_threshold->second;
+                                        }
+                                    }
+                                    if(threshold>0.0)
+                                    {
+                                        if((*cell_iter)->GetCellData()->GetItem(mLabel)>threshold)
+                                        {
+                                            values[idx] += (*cell_iter)->GetCellData()->GetItem(mLabel);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        values[idx] += (*cell_iter)->GetCellData()->GetItem(mLabel);
+                                    }
+                                }
+                                else
+                                {
+                                    // Get a threshold value if it has been set, use the label to determine the field from which the label
+                                    // value is obtained.
+                                    double threshold = 0.0;
+                                    if(mMutationSpecificConsumptionRateThresholdMap.size()>0)
+                                    {
+                                        std::map<unsigned, double>::iterator it_threshold;
+                                        it_threshold = mMutationSpecificConsumptionRateThresholdMap.find((*cell_iter)->GetMutationState()->GetColour());
+                                        if (it_threshold != mMutationSpecificConsumptionRateThresholdMap.end())
+                                        {
+                                            threshold = it_threshold->second;
+                                        }
+                                    }
+                                    if(threshold>0.0)
+                                    {
+                                        if((*cell_iter)->GetCellData()->GetItem(mLabel)>threshold)
+                                        {
+                                            values[idx] += it->second;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        values[idx] += it->second;
+                                    }
+                                }
                             }
-                            else
-                            {
-                                // do nothing - print warning
-
-                                TRACE("Warning: cell with mutation state label " << (*cell_iter)->GetMutationState()->GetColour() << " found but no consumption rate has been supplied for such cells."
-                                        "Ignoring cell.");
-                            }
-
                         }
 
                     }
@@ -268,6 +304,12 @@ template<unsigned DIM>
 void DiscreteSource<DIM>::SetMutationSpecificConsumptionRateMap(std::map<unsigned,double> mutationSpecificConsumptionRateMap)
 {
     mMutationSpecificConsumptionRateMap = mutationSpecificConsumptionRateMap;
+}
+
+template<unsigned DIM>
+void DiscreteSource<DIM>::SetMutationSpecificConsumptionRateThresholdMap(std::map<unsigned,double> mutationSpecificConsumptionRateThresholdMap)
+{
+    mMutationSpecificConsumptionRateThresholdMap = mutationSpecificConsumptionRateThresholdMap;
 }
 
 template<unsigned DIM>

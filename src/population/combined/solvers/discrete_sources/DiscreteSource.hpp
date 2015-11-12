@@ -138,6 +138,11 @@ private:
      */
     std::map<unsigned, double > mMutationSpecificConsumptionRateMap;
 
+    /**
+     * Cells of different 'color' (i.e. mutation state label) can have different sink rate thresholds.
+     */
+    std::map<unsigned, double > mMutationSpecificConsumptionRateThresholdMap;
+
 public:
 
     /**
@@ -203,6 +208,15 @@ public:
      * @param cellColorSinkRates the label for the source strength value
      */
     void SetMutationSpecificConsumptionRateMap(std::map<unsigned, double > mutationSpecificConsumptionRateMap);
+
+    /**
+     * Set cell 'color' specific consumption rate thresholds.
+     * If a cell 'color' key is requested from the map that does not have a value assigned then its consumption rate threshold will
+     * be 0.0.
+     *
+     * @param cellColorSinkRates the label for the source strength value
+     */
+    void SetMutationSpecificConsumptionRateThresholdMap(std::map<unsigned, double > mutationSpecificConsumptionRateThresholdMap);
 
     /**
      * Set the points for POINT type sources

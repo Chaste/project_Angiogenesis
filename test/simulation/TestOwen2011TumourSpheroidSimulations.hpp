@@ -152,10 +152,12 @@ public:
 
         ApoptoticCellProperty apoptotic_property;
         QuiescentCancerCellMutationState quiescent_property;
+        WildTypeCellMutationState normal_cell_state;
         std::map<unsigned, double > mutationSpecificConsumptionRateMap;
         mutationSpecificConsumptionRateMap[apoptotic_property.GetColour()] =  0.0;
-        mutationSpecificConsumptionRateMap[p_state.get()->GetColour()] =  2e-8;
-        mutationSpecificConsumptionRateMap[quiescent_property.GetColour()] =  2e-8;
+        mutationSpecificConsumptionRateMap[p_state.get()->GetColour()] =  3e-8;
+        mutationSpecificConsumptionRateMap[quiescent_property.GetColour()] =  3e-8;
+        mutationSpecificConsumptionRateMap[normal_cell_state.GetColour()] =  2e-8;
         p_cell_oxygen_sink->SetMutationSpecificConsumptionRateMap(mutationSpecificConsumptionRateMap);
 
         boost::shared_ptr<DirichletBoundaryCondition<2> > p_domain_ox_boundary_condition = DirichletBoundaryCondition<2>::Create();
@@ -172,18 +174,32 @@ public:
         // Create the vegf pde, discrete sources and boundary condition
         boost::shared_ptr<HybridLinearEllipticPde<2> > p_vegf_pde = HybridLinearEllipticPde<2>::Create();
         p_vegf_pde->SetDiffusionConstant(0.0033/(400.0*145.0)); // assume cell width is 20 microns and vegf D is oxygen D/145.0
-        p_vegf_pde->SetVariableName("vegf");
+        p_vegf_pde->SetVariableName("VEGF");
         p_vegf_pde->SetLinearInUTerm(0.8);
 
+        // VEGF for normal cells
         boost::shared_ptr<DiscreteSource<2> > p_cell_vegf_source = DiscreteSource<2>::Create();
         p_cell_vegf_source->SetType(SourceType::CELL); // cell population is added automatically in AngiogenesisModifier
         p_cell_vegf_source->SetSource(SourceStrength::PRESCRIBED);
         p_cell_vegf_source->SetIsLinearInSolution(false);
         p_vegf_pde->AddDiscreteSource(p_cell_vegf_source);
-
         std::map<unsigned, double> vegf_cell_color_source_rates;
-        vegf_cell_color_source_rates[quiescent_property.GetColour()] = -0.6; // Quiescent cancer cell mutation state
+        std::map<unsigned, double > vegf_cell_color_source_thresholds;
+        vegf_cell_color_source_rates[normal_cell_state.GetColour()] = -0.6; // Normal cell mutation state
         p_cell_vegf_source->SetMutationSpecificConsumptionRateMap(vegf_cell_color_source_rates);
+        vegf_cell_color_source_thresholds[normal_cell_state.GetColour()] = 0.27;
+        p_cell_vegf_source->SetLabelName("VEGF");
+        p_cell_vegf_source->SetMutationSpecificConsumptionRateThresholdMap(vegf_cell_color_source_thresholds);
+
+        // VEGF for cancer cells
+        boost::shared_ptr<DiscreteSource<2> > p_cancer_cell_vegf_source = DiscreteSource<2>::Create();
+        p_cancer_cell_vegf_source->SetType(SourceType::CELL); // cell population is added automatically in AngiogenesisModifier
+        p_cancer_cell_vegf_source->SetSource(SourceStrength::PRESCRIBED);
+        p_cancer_cell_vegf_source->SetIsLinearInSolution(false);
+        std::map<unsigned, double> vegf_cancer_cell_color_source_rates;
+        vegf_cancer_cell_color_source_rates[quiescent_property.GetColour()] = -0.6; // Quiescent cancer cell mutation state
+        p_cell_vegf_source->SetMutationSpecificConsumptionRateMap(vegf_cancer_cell_color_source_rates);
+        p_vegf_pde->AddDiscreteSource(p_cancer_cell_vegf_source);
 
         boost::shared_ptr<DirichletBoundaryCondition<2> > p_domain_vegf_boundary_condition = DirichletBoundaryCondition<2>::Create();
         p_domain_vegf_boundary_condition->SetValue(0.0);
@@ -199,7 +215,7 @@ public:
         boost::shared_ptr<AngiogenesisSolver<2> > p_angiogenesis_solver = AngiogenesisSolver<2>::Create();
         p_angiogenesis_solver->AddPdeSolver(p_oxygen_solver);
         p_angiogenesis_solver->AddPdeSolver(p_vegf_solver);
-        p_angiogenesis_solver->SetOutputFrequency(120);
+        p_angiogenesis_solver->SetOutputFrequency(100);
 
         boost::shared_ptr<AngiogenesisModifier<2> > p_simulation_modifier = boost::shared_ptr<AngiogenesisModifier<2> >(new AngiogenesisModifier<2>);
         p_simulation_modifier->SetAngiogenesisSolver(p_angiogenesis_solver);
@@ -212,7 +228,8 @@ public:
          */
         std::string resultsDirectoryName = "TestOwen2011TumourSpheroidGrowthWithODEWithHybridSolver";
         simulator.SetOutputDirectory(resultsDirectoryName);
-        simulator.SetSamplingTimestepMultiple(120);
+        simulator.SetSamplingTimestepMultiple(100);
+        simulator.SetDt(0.01);
         simulator.SetEndTime(150);
 
         /*
