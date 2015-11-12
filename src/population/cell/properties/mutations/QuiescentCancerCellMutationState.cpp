@@ -36,7 +36,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../mutations/QuiescentCancerCellMutationState.hpp"
 
 QuiescentCancerCellMutationState::QuiescentCancerCellMutationState()
-    : AbstractCellMutationState(1)
+    : AbstractCellMutationState(7)
 {}
 
 

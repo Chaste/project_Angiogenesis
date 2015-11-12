@@ -134,9 +134,9 @@ private:
     bool mIsLinearInSolution;
 
     /**
-     * Relation between cell mutation state and consumption rate.
+     * Cells of different 'color' (i.e. mutation state label) can have different sink rates.
      */
-    std::vector<std::pair<AbstractCellProperty, double > > mMutationSpecificConsumptionRateMap;
+    std::map<unsigned, double> mCellColorSinkRates;
 
 public:
 
@@ -195,11 +195,14 @@ public:
     void SetLabelName(const std::string& rLabel);
 
     /**
-     * Set the relationship between cell mutation states and source strengths, used in some CELL
-     * type sources.
-     * @param mutationSpecificConsumptionRateMap the label for the source strength value
+     * Set cell 'color' specific consumption rates. 'Color' is a property of the cell mutation state set in its constructor.
+     * It is up to the user to ensure that different mutation states of interest have different 'color' values assigned.
+     * If a cell 'color' key is requested from the map that does not have a value assigned then its consumption rate will
+     * be 0.0.
+     *
+     * @param cellColorSinkRates the label for the source strength value
      */
-    void SetMutationSpecificConsumptionRateMap(std::vector<std::pair<AbstractCellProperty, double > > mutationSpecificConsumptionRateMap);
+    void SetCellColorSpecificSinkRates(std::map<unsigned, double> cellColorSinkRates);
 
     /**
      * Set the points for POINT type sources

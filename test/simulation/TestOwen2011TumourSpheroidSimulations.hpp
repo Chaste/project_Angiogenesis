@@ -150,13 +150,12 @@ public:
         p_cell_oxygen_sink->SetIsLinearInSolution(true);
         p_oxygen_pde->AddDiscreteSource(p_cell_oxygen_sink);
 
-//        ApoptoticCellProperty apoptotic_property;
-//        QuiescentCancerCellMutationState quiescent_property;
-//        std::vector<std::pair<AbstractCellProperty, double > > mutationSpecificConsumptionRateMap;
-//        mutationSpecificConsumptionRateMap.push_back(std::pair<AbstractCellProperty, double >(apoptotic_property, 0.0));
-//        mutationSpecificConsumptionRateMap.push_back(std::pair<AbstractCellProperty, double >(*p_state.get(), 1.e-8));
-//        mutationSpecificConsumptionRateMap.push_back(std::pair<AbstractCellProperty, double >(quiescent_property, 1.e-8));
-//        p_cell_oxygen_sink->SetMutationSpecificConsumptionRateMap(mutationSpecificConsumptionRateMap);
+        QuiescentCancerCellMutationState quiescent_state;
+        std::map<unsigned, double> cell_color_sink_rates;
+        cell_color_sink_rates[p_state->GetColour()] = 2.e-8; // cancer cell mutation state
+        cell_color_sink_rates[quiescent_state.GetColour()] = 1.e-8; // Quiescent cancer cell mutation state
+
+        p_cell_oxygen_sink->SetCellColorSpecificSinkRates(cell_color_sink_rates);
 
         boost::shared_ptr<DirichletBoundaryCondition<2> > p_domain_ox_boundary_condition = DirichletBoundaryCondition<2>::Create();
         p_domain_ox_boundary_condition->SetValue(oxygen_concentration);
@@ -169,8 +168,36 @@ public:
         p_oxygen_solver->SetPde(p_oxygen_pde);
         p_oxygen_solver->AddDirichletBoundaryCondition(p_domain_ox_boundary_condition);
 
+        // Create the vegf pde, discrete sources and boundary condition
+        boost::shared_ptr<HybridLinearEllipticPde<2> > p_vegf_pde = HybridLinearEllipticPde<2>::Create();
+        p_vegf_pde->SetDiffusionConstant(0.0033/400.0); // assume cell width is 20 microns
+        p_vegf_pde->SetVariableName("vegf");
+
+        boost::shared_ptr<DiscreteSource<2> > p_cell_vegf_source = DiscreteSource<2>::Create();
+        p_cell_vegf_source->SetType(SourceType::CELL); // cell population is added automatically in AngiogenesisModifier
+        p_cell_vegf_source->SetSource(SourceStrength::PRESCRIBED);
+        p_cell_vegf_source->SetValue(1.e-7);
+        p_cell_vegf_source->SetIsLinearInSolution(true);
+        p_vegf_pde->AddDiscreteSource(p_cell_vegf_source);
+
+        std::map<unsigned, double> vegf_cell_color_source_rates;
+        vegf_cell_color_source_rates[quiescent_state.GetColour()] = -1.e-8; // Quiescent cancer cell mutation state
+        p_cell_vegf_source->SetCellColorSpecificSinkRates(vegf_cell_color_source_rates);
+
+        boost::shared_ptr<DirichletBoundaryCondition<2> > p_domain_vegf_boundary_condition = DirichletBoundaryCondition<2>::Create();
+        p_domain_vegf_boundary_condition->SetValue(0.0);
+        p_domain_vegf_boundary_condition->SetType(BoundaryConditionType::OUTER);
+        p_domain_vegf_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
+
+        // Create the pde solver
+        boost::shared_ptr<FiniteDifferenceSolver<2> > p_vegf_solver = FiniteDifferenceSolver<2>::Create();
+        p_vegf_solver->SetGrid(p_grid);
+        p_vegf_solver->SetPde(p_vegf_pde);
+        p_vegf_solver->AddDirichletBoundaryCondition(p_domain_vegf_boundary_condition);
+
         boost::shared_ptr<AngiogenesisSolver<2> > p_angiogenesis_solver = AngiogenesisSolver<2>::Create();
         p_angiogenesis_solver->AddPdeSolver(p_oxygen_solver);
+        p_angiogenesis_solver->AddPdeSolver(p_vegf_solver);
         p_angiogenesis_solver->SetOutputFrequency(120);
 
         boost::shared_ptr<AngiogenesisModifier<2> > p_simulation_modifier = boost::shared_ptr<AngiogenesisModifier<2> >(new AngiogenesisModifier<2>);
