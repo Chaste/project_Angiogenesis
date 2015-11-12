@@ -1,0 +1,230 @@
+%% BASIC CLASS FILE
+\documentclass[superscriptaddress, a4paper]{article}
+
+%% ADDITIONAL OPTIONAL STYLE FILES
+\usepackage{graphicx}
+\usepackage{amssymb,amsfonts,amsmath}
+\usepackage{array}
+\usepackage{color}
+\usepackage[normalem]{ulem}
+\usepackage{subcaption}
+\usepackage{authblk}
+\usepackage{geometry}
+\usepackage{afterpage}
+\usepackage{framed}
+\usepackage{titlesec}
+
+\geometry{verbose,lmargin=2.2cm,rmargin=2.2cm,tmargin=2.2cm,bmargin=3cm}
+% control itemize and enumerate spacings
+\usepackage{enumitem}
+\setlist[itemize]{noitemsep, topsep=0pt}
+\setlist[enumerate]{noitemsep, topsep=0pt}
+
+\usepackage{float}
+\usepackage[maxfloats=100]{morefloats}
+
+\usepackage[table]{xcolor} % for highlighting table rows
+\definecolor{LightCyan}{rgb}{0.88,1,1}
+
+%% MACROS
+% new command to make nice spacing for units
+\newcommand{\vu}[2]{\ensuremath{#1\,\mathrm{#2}}}
+
+\newenvironment{authorsummary}
+{\begin{framed} \begin{center} \begin{minipage}{0.9\textwidth} \noindent}
+{\end{minipage} \end{center} \end{framed}}
+
+\usepackage[hyperref=true,
+            url=false,
+            isbn=false,
+	     firstinits=true,
+            backref=true,
+            backend=bibtex,
+            style=authoryear,
+            uniquelist=false,
+            uniquename=false,
+            maxcitenames=2,
+            maxbibnames=10,
+            block=none]{biblatex}
+
+\bibliography{chaste_angiogenesis_bibliography.bib}
+
+\newcommand\NOTE[1]{\textcolor{orange}{[\textsc{Note:} {#1}]}}
+
+\usepackage{setspace}
+\singlespacing
+
+\begin{document}
+
+\title{A flexible and extensible modelling framework for the simulation of vascular tumour growth: an extension to the CHASTE open source C++ library for computational physiology and biology}
+
+
+\author[1,2]{Anthony J Connor}
+\author[1]{James Grogan}
+\author[2]{Joe Pitt-Francis}
+\author[1]{Philip K Maini}
+\author[1,2]{Helen M Byrne}
+ 
+\affil[1]{Wolfson Centre for Mathematical Biology, Mathematical Institute, University of Oxford, Oxford, \mbox{OX2 6GG}, UK.}
+\affil[2]{Department of Computer Science, University of Oxford, Oxford, \mbox{OX1 3QD}, UK.}
+  
+\date{}
+  
+\maketitle
+
+\begin{abstract}
+CHASTE — Cancer, Heart And Soft Tissue Environment — is an open source C++ library for the computational simulation of mathematical models developed for physiology and biology. Code development has been driven by two initial applications: cardiac electrophysiology and cancer development. ... \NOTE{This is to be completed ...}
+
+\smallskip
+\noindent \textbf{Keywords:} CHASTE - agent-based simulation - multi-scale model - vascular tumour growth - on-lattice model - off-lattice model
+
+\end{abstract}
+
+\vspace{1.5cm}
+
+\begin{authorsummary}
+
+\textbf{AUTHOR SUMMARY:}
+
+\begin{itemize}
+ \item Insert a few bullets in here explaining major contributions of paper.
+\end{itemize}
+
+\end{authorsummary}
+
+\newpage
+
+\setcounter{tocdepth}{3}
+\tableofcontents
+
+
+\newpage
+
+\doublespacing
+
+
+%###############################################################
+%###############################################################
+%####                                                                                                            #####
+%####   ######  ###### ###### ######   ######  ######    ###    ##      #####
+%####   ##          ##         ##             ##           ##      ##    ##    ####  ##      #####
+%####   ######  #####   ##             ##           ##      ##    ##    ## ## ##      #####
+%####           ##  ##         ##             ##           ##      ##    ##    ##  ####      #####
+%####   ######  ###### ######     ##       ######  ######    ##    ###      #####
+%####                                                                                                            #####
+%###############################################################
+%###############################################################
+\section{Introduction}
+\label{sec:introduction}
+
+
+
+%###############################################################
+%###############################################################
+%####                                                                                                            #####
+%####   ######  ###### ###### ######   ######  ######    ###    ##      #####
+%####   ##          ##         ##             ##           ##      ##    ##    ####  ##      #####
+%####   ######  #####   ##             ##           ##      ##    ##    ## ## ##      #####
+%####           ##  ##         ##             ##           ##      ##    ##    ##  ####      #####
+%####   ######  ###### ######     ##       ######  ######    ##    ###      #####
+%####                                                                                                            #####
+%###############################################################
+%###############################################################
+\section{Design and implementation}
+\label{sec:design and implementation}
+
+
+
+%###############################################################
+%###############################################################
+%####                                                                                                            #####
+%####   ######  ###### ###### ######   ######  ######    ###    ##      #####
+%####   ##          ##         ##             ##           ##      ##    ##    ####  ##      #####
+%####   ######  #####   ##             ##           ##      ##    ##    ## ## ##      #####
+%####           ##  ##         ##             ##           ##      ##    ##    ##  ####      #####
+%####   ######  ###### ######     ##       ######  ######    ##    ###      #####
+%####                                                                                                            #####
+%###############################################################
+%###############################################################
+\section{Results and exemplar simulations}
+\label{sec:results}
+
+%###########################################################################################
+%###########################################################################################
+%####                                                                                                                                                                    #####
+%####    ######  ##    ##  ######                ######  ###### ###### ######   ######  ######    ###    ##     #####
+%####    ##          ##    ##  ##    ##                ##          ##         ##             ##           ##      ##    ##    ####  ##     #####
+%####    ######  ##    ##  #####    ######  ######  #####   ##             ##           ##      ##    ##    ## ## ##     #####
+%####            ##  ##    ##  ##    ##                        ##  ##         ##             ##           ##      ##    ##    ##  ####     #####
+%####    ######  ######  ######                ######  ###### ######     ##       ######  ######    ##    ###     #####
+%####                                                                                                                                                                    #####
+%###########################################################################################
+%###########################################################################################
+\subsection{Avascular tumour spheroid growth}
+\label{sec:avascular tumour spheroid growth}
+
+\subsubsection{On-lattice}
+\label{sec:on-lattice avascular tumour spheroid growth}
+
+
+
+\subsubsection{Off-lattice}
+\label{sec:off-lattice avascular tumour spheroid growth}
+
+
+
+%###########################################################################################
+%###########################################################################################
+%####                                                                                                                                                                    #####
+%####    ######  ##    ##  ######                ######  ###### ###### ######   ######  ######    ###    ##     #####
+%####    ##          ##    ##  ##    ##                ##          ##         ##             ##           ##      ##    ##    ####  ##     #####
+%####    ######  ##    ##  #####    ######  ######  #####   ##             ##           ##      ##    ##    ## ## ##     #####
+%####            ##  ##    ##  ##    ##                        ##  ##         ##             ##           ##      ##    ##    ##  ####     #####
+%####    ######  ######  ######                ######  ###### ######     ##       ######  ######    ##    ###     #####
+%####                                                                                                                                                                    #####
+%###########################################################################################
+%###########################################################################################
+\subsection{Vascular tumour growth}
+\label{sec:vascular tumour growth}
+
+\subsubsection{On-lattice}
+\label{sec:on-lattice vascular tumour growth}
+
+
+
+\subsubsection{Off-lattice}
+\label{sec:off-lattice vascular tumour growth}
+
+
+
+%###########################################################################################
+%###########################################################################################
+%####                                                                                                                                                                    #####
+%####    ######  ##    ##  ######                ######  ###### ###### ######   ######  ######    ###    ##     #####
+%####    ##          ##    ##  ##    ##                ##          ##         ##             ##           ##      ##    ##    ####  ##     #####
+%####    ######  ##    ##  #####    ######  ######  #####   ##             ##           ##      ##    ##    ## ## ##     #####
+%####            ##  ##    ##  ##    ##                        ##  ##         ##             ##           ##      ##    ##    ##  ####     #####
+%####    ######  ######  ######                ######  ###### ######     ##       ######  ######    ##    ###     #####
+%####                                                                                                                                                                    #####
+%###########################################################################################
+%###########################################################################################
+\subsection{An off-lattice model of corneal angiogenesis on a complex domain}
+\label{sec:an off-lattice model of corneal angiogenesis on a complex domain}
+
+
+
+%###############################################################
+%###############################################################
+%####                                                                                                            #####
+%####   ######  ###### ###### ######   ######  ######    ###    ##      #####
+%####   ##          ##         ##             ##           ##      ##    ##    ####  ##      #####
+%####   ######  #####   ##             ##           ##      ##    ##    ## ## ##      #####
+%####           ##  ##         ##             ##           ##      ##    ##    ##  ####      #####
+%####   ######  ###### ######     ##       ######  ######    ##    ###      #####
+%####                                                                                                            #####
+%###############################################################
+%###############################################################
+\section{Discussion and future work}
+\label{sec:discussion and future work}
+
+\end{document}
