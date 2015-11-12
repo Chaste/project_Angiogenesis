@@ -133,6 +133,13 @@ void Owen2011OxygenBasedCellCycleModel::UpdateCellCyclePhase()
     assert(!mpCell->HasApoptosisBegun());
     assert(!mpCell->IsDead());
 
+    // if cell is still marked for division then the cell has failed to divide and we need to reset the cell here
+    // most notably this happens in on-lattice simulations where there is no space available for a cell to divide
+    if(mReadyToDivide)
+    {
+        ResetForDivision();
+    }
+
     if(mpCell->GetMutationState()->IsType<CancerCellMutationState>() || mpCell->GetMutationState()->IsType<WildTypeCellMutationState>())
     {
         CheckAndLabelCell();
@@ -146,7 +153,6 @@ void Owen2011OxygenBasedCellCycleModel::UpdateCellCyclePhase()
     // must do this because we are using CVode and by
     // default stopping events are not found
     mpOdeSolver->CheckForStoppingEvents();
-    //		AbstractOdeBasedCellCycleModel::UpdateCellCyclePhase();
 
     assert(mpOdeSystem != NULL);
 
