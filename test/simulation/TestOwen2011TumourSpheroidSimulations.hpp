@@ -73,6 +73,10 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "PetscSetupAndFinalize.hpp"
 #include "Debug.hpp"
 #include "RegularGrid.hpp"
+#include "CaBasedCellPopulation.hpp"
+#include "PottsMeshGenerator.hpp"
+#include "PottsMesh.hpp"
+#include "OnLatticeSimulation.hpp"
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -83,7 +87,200 @@ class TestOwen2011TumourSpheroidSimulations : public AbstractCellBasedTestSuite
 {
 public:
 
-    void TestSimpleSpheroidOwen2011OxygenBasedCellCycleModel_CancerCells() throw (Exception)
+
+
+    void TestSimpleOnLatticeSpheroidOwen2011OxygenBasedCellCycleModel() throw (Exception)
+    {
+        Timer::Reset();
+
+        // set up simulation domain
+        double domain_x = 40.0;
+        double domain_y = 40.0;
+        boost::shared_ptr<Part<2> > p_domain = Part<2>::Create();
+        p_domain->AddRectangle(domain_x, domain_y);
+
+        // Create a lattice for the cell population
+        double spacing = 1.0;
+        unsigned num_x = unsigned(p_domain->GetBoundingBox()[1]/spacing);
+        unsigned num_y = unsigned(p_domain->GetBoundingBox()[3]/spacing);
+        PottsMeshGenerator<2> generator(num_x, 0, 0, num_y, 0, 0);
+        PottsMesh<2>* p_mesh = generator.GetMesh();
+        p_mesh->Scale(spacing, spacing);
+
+        // get initital tumour cell region
+        double radius = 3.0;
+        c_vector<double, 2> origin;
+        origin[0] = 18.0;
+        origin[1] = 18.0;
+        boost::shared_ptr<Part<2> > p_sub_domain = Part<2>::Create();
+        boost::shared_ptr<Polygon> circle = p_sub_domain->AddCircle(radius, origin);
+        std::vector<unsigned> location_indices;
+
+        for(unsigned ind = 0; ind < p_mesh->GetNumNodes(); ind++)
+        {
+            if(p_sub_domain->IsPointInPart(p_mesh->GetNode(ind)->rGetLocation()))
+            {
+                location_indices.push_back(ind);
+            }
+        }
+
+        // Make the cells and set up the state and type
+        std::vector<CellPtr> cells;
+        MAKE_PTR(CancerCellMutationState, p_state);
+        MAKE_PTR(StemCellProliferativeType, p_stem_type);
+
+        // Set up oxygen_concentration (mmHg)
+        double oxygen_concentration = 30.0;
+
+        for (unsigned i=0; i<location_indices.size(); i++)
+        {
+            // Assign an oxygen based cell cycle model, which requires a dimension to be set.
+            Owen2011OxygenBasedCellCycleModel* const p_model = new Owen2011OxygenBasedCellCycleModel;
+            p_model->SetDimension(2);
+
+            CellPtr p_cell(new Cell(p_state, p_model));
+            p_cell->SetCellProliferativeType(p_stem_type);
+
+            p_cell->SetApoptosisTime(30);
+            cells.push_back(p_cell);
+
+            // Start all cells with the specified oxygen concentration
+            p_cell->GetCellData()->SetItem("oxygen", oxygen_concentration);
+        }
+
+        // Create cell population
+        CaBasedCellPopulation<2> cell_population(*p_mesh, cells, location_indices);
+        cell_population.SetOutputResultsForChasteVisualizer(false);
+        cell_population.AddCellWriter<CellLabelWriter>();
+        cell_population.AddCellPopulationCountWriter<CellProliferativePhasesCountWriter>();
+        cell_population.AddCellWriter<CellMutationStatesWriter>();
+        cell_population.AddCellWriter<CellProliferativeTypesWriter>();
+        cell_population.AddCellWriter<CellProliferativePhasesWriter>();
+
+        // Create a grid to solve PDEs on
+        boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
+        p_grid->SetSpacing(4.0);
+        std::vector<unsigned> extents;
+        extents.push_back(10); // num_x
+        extents.push_back(10); // num_y
+        extents.push_back(1); // num_z
+        p_grid->SetExtents(extents);
+
+        //        c_vector<double,2> origin; // Grid bottom left corner
+        //        origin[0]= -20.0;
+        //        origin[1]= -20.0;
+        //        p_grid->SetOrigin(origin);
+
+        // Create the oxygen pde, discrete sources and boundary condition
+        boost::shared_ptr<HybridLinearEllipticPde<2> > p_oxygen_pde = HybridLinearEllipticPde<2>::Create();
+        p_oxygen_pde->SetDiffusionConstant(0.0033/400.0); // assume cell width is 20 microns
+        p_oxygen_pde->SetVariableName("oxygen");
+
+        boost::shared_ptr<DiscreteSource<2> > p_cell_oxygen_sink = DiscreteSource<2>::Create();
+        p_cell_oxygen_sink->SetType(SourceType::CELL); // cell population is added automatically in AngiogenesisModifier
+        p_cell_oxygen_sink->SetSource(SourceStrength::PRESCRIBED);
+        p_cell_oxygen_sink->SetValue(2.e-8);
+        p_cell_oxygen_sink->SetIsLinearInSolution(true);
+        p_oxygen_pde->AddDiscreteSource(p_cell_oxygen_sink);
+
+        ApoptoticCellProperty apoptotic_property;
+        QuiescentCancerCellMutationState quiescent_property;
+        WildTypeCellMutationState normal_cell_state;
+        std::map<unsigned, double > mutationSpecificConsumptionRateMap;
+        mutationSpecificConsumptionRateMap[apoptotic_property.GetColour()] =  0.0;
+        mutationSpecificConsumptionRateMap[p_state.get()->GetColour()] =  2.5e-8;
+        mutationSpecificConsumptionRateMap[quiescent_property.GetColour()] =  2.5e-8;
+        mutationSpecificConsumptionRateMap[normal_cell_state.GetColour()] =  1e-8;
+        p_cell_oxygen_sink->SetMutationSpecificConsumptionRateMap(mutationSpecificConsumptionRateMap);
+
+        boost::shared_ptr<DirichletBoundaryCondition<2> > p_domain_ox_boundary_condition = DirichletBoundaryCondition<2>::Create();
+        p_domain_ox_boundary_condition->SetValue(oxygen_concentration);
+        p_domain_ox_boundary_condition->SetType(BoundaryConditionType::OUTER);
+        p_domain_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
+
+        // Create the pde solver
+        boost::shared_ptr<FiniteDifferenceSolver<2> > p_oxygen_solver = FiniteDifferenceSolver<2>::Create();
+        p_oxygen_solver->SetGrid(p_grid);
+        p_oxygen_solver->SetPde(p_oxygen_pde);
+        p_oxygen_solver->AddDirichletBoundaryCondition(p_domain_ox_boundary_condition);
+
+        // Create the vegf pde, discrete sources and boundary condition
+        boost::shared_ptr<HybridLinearEllipticPde<2> > p_vegf_pde = HybridLinearEllipticPde<2>::Create();
+        p_vegf_pde->SetDiffusionConstant(0.0033/(400.0*145.0)); // assume cell width is 20 microns and vegf D is oxygen D/145.0
+        p_vegf_pde->SetVariableName("VEGF");
+        p_vegf_pde->SetLinearInUTerm(-0.8);
+
+        // VEGF for normal cells
+        boost::shared_ptr<DiscreteSource<2> > p_cell_vegf_source = DiscreteSource<2>::Create();
+        p_cell_vegf_source->SetType(SourceType::CELL); // cell population is added automatically in AngiogenesisModifier
+        p_cell_vegf_source->SetSource(SourceStrength::PRESCRIBED);
+        p_cell_vegf_source->SetIsLinearInSolution(false);
+        p_vegf_pde->AddDiscreteSource(p_cell_vegf_source);
+        std::map<unsigned, double> vegf_cell_color_source_rates;
+        std::map<unsigned, double > vegf_cell_color_source_thresholds;
+        vegf_cell_color_source_rates[normal_cell_state.GetColour()] = 0.6; // Normal cell mutation state
+        p_cell_vegf_source->SetMutationSpecificConsumptionRateMap(vegf_cell_color_source_rates);
+        vegf_cell_color_source_thresholds[normal_cell_state.GetColour()] = 0.27;
+        p_cell_vegf_source->SetLabelName("VEGF");
+        p_cell_vegf_source->SetMutationSpecificConsumptionRateThresholdMap(vegf_cell_color_source_thresholds);
+
+        // VEGF for cancer cells
+        boost::shared_ptr<DiscreteSource<2> > p_cancer_cell_vegf_source = DiscreteSource<2>::Create();
+        p_cancer_cell_vegf_source->SetType(SourceType::CELL); // cell population is added automatically in AngiogenesisModifier
+        p_cancer_cell_vegf_source->SetSource(SourceStrength::PRESCRIBED);
+        p_cancer_cell_vegf_source->SetIsLinearInSolution(false);
+        std::map<unsigned, double> vegf_cancer_cell_color_source_rates;
+        vegf_cancer_cell_color_source_rates[quiescent_property.GetColour()] = 0.6; // Quiescent cancer cell mutation state
+        p_cell_vegf_source->SetMutationSpecificConsumptionRateMap(vegf_cancer_cell_color_source_rates);
+        p_vegf_pde->AddDiscreteSource(p_cancer_cell_vegf_source);
+
+        boost::shared_ptr<DirichletBoundaryCondition<2> > p_domain_vegf_boundary_condition = DirichletBoundaryCondition<2>::Create();
+        p_domain_vegf_boundary_condition->SetValue(0.0);
+        p_domain_vegf_boundary_condition->SetType(BoundaryConditionType::OUTER);
+        p_domain_vegf_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
+
+        // Create the pde solver
+        boost::shared_ptr<FiniteDifferenceSolver<2> > p_vegf_solver = FiniteDifferenceSolver<2>::Create();
+        p_vegf_solver->SetGrid(p_grid);
+        p_vegf_solver->SetPde(p_vegf_pde);
+        p_vegf_solver->AddDirichletBoundaryCondition(p_domain_vegf_boundary_condition);
+
+        boost::shared_ptr<AngiogenesisSolver<2> > p_angiogenesis_solver = AngiogenesisSolver<2>::Create();
+        p_angiogenesis_solver->AddPdeSolver(p_oxygen_solver);
+        p_angiogenesis_solver->AddPdeSolver(p_vegf_solver);
+        p_angiogenesis_solver->SetOutputFrequency(1);
+
+        boost::shared_ptr<AngiogenesisModifier<2> > p_simulation_modifier = boost::shared_ptr<AngiogenesisModifier<2> >(new AngiogenesisModifier<2>);
+        p_simulation_modifier->SetAngiogenesisSolver(p_angiogenesis_solver);
+
+        OnLatticeSimulation<2> simulator(cell_population);
+        simulator.AddSimulationModifier(p_simulation_modifier);
+
+        /*
+         * We next set the output directory and end time.
+         */
+        std::string resultsDirectoryName = "TestOwen2011OnLatticeTumourSpheroidGrowthWithODEWithHybridSolver";
+        simulator.SetOutputDirectory(resultsDirectoryName);
+        simulator.SetSamplingTimestepMultiple(1);
+        simulator.SetDt(1);
+        simulator.SetEndTime(300);
+
+        /*
+         * Create cell killer to remove apoptotic cell from simulation
+         */
+        //  boost::shared_ptr<ApoptoticCellKiller<2> > apoptotic_cell_killer(new ApoptoticCellKiller<2>(&cell_population));
+        //  simulator.AddCellKiller(apoptotic_cell_killer);
+
+        // Create a Cell Concentration tracking modifier and add it to the simulation
+        MAKE_PTR(Owen2011TrackingModifier<2>, p_modifier);
+        simulator.AddSimulationModifier(p_modifier);
+
+        simulator.Solve();
+
+        Timer::Print("Elapsed time = ");
+    }
+
+    void dontTestSimpleOffLatticeSpheroidOwen2011OxygenBasedCellCycleModel() throw (Exception)
     {
         Timer::Reset();
 
@@ -134,8 +331,8 @@ public:
         p_grid->SetExtents(extents);
 
         c_vector<double,2> origin; // Grid bottom left corner
-        origin[0]= -15.0;
-        origin[1]= -15.0;
+        origin[0]= -18.0;
+        origin[1]= -18.0;
         p_grid->SetOrigin(origin);
 
         // Create the oxygen pde, discrete sources and boundary condition
@@ -155,9 +352,9 @@ public:
         WildTypeCellMutationState normal_cell_state;
         std::map<unsigned, double > mutationSpecificConsumptionRateMap;
         mutationSpecificConsumptionRateMap[apoptotic_property.GetColour()] =  0.0;
-        mutationSpecificConsumptionRateMap[p_state.get()->GetColour()] =  3e-8;
-        mutationSpecificConsumptionRateMap[quiescent_property.GetColour()] =  3e-8;
-        mutationSpecificConsumptionRateMap[normal_cell_state.GetColour()] =  2e-8;
+        mutationSpecificConsumptionRateMap[p_state.get()->GetColour()] =  2.5e-8;
+        mutationSpecificConsumptionRateMap[quiescent_property.GetColour()] =  2.5e-8;
+        mutationSpecificConsumptionRateMap[normal_cell_state.GetColour()] =  1e-8;
         p_cell_oxygen_sink->SetMutationSpecificConsumptionRateMap(mutationSpecificConsumptionRateMap);
 
         boost::shared_ptr<DirichletBoundaryCondition<2> > p_domain_ox_boundary_condition = DirichletBoundaryCondition<2>::Create();
@@ -197,7 +394,7 @@ public:
         p_cancer_cell_vegf_source->SetSource(SourceStrength::PRESCRIBED);
         p_cancer_cell_vegf_source->SetIsLinearInSolution(false);
         std::map<unsigned, double> vegf_cancer_cell_color_source_rates;
-        vegf_cancer_cell_color_source_rates[quiescent_property.GetColour()] = -0.6; // Quiescent cancer cell mutation state
+        vegf_cancer_cell_color_source_rates[quiescent_property.GetColour()] = 0.6; // Quiescent cancer cell mutation state
         p_cell_vegf_source->SetMutationSpecificConsumptionRateMap(vegf_cancer_cell_color_source_rates);
         p_vegf_pde->AddDiscreteSource(p_cancer_cell_vegf_source);
 
@@ -226,7 +423,7 @@ public:
         /*
          * We next set the output directory and end time.
          */
-        std::string resultsDirectoryName = "TestOwen2011TumourSpheroidGrowthWithODEWithHybridSolver";
+        std::string resultsDirectoryName = "TestOwen2011OffLatticeTumourSpheroidGrowthWithODEWithHybridSolver";
         simulator.SetOutputDirectory(resultsDirectoryName);
         simulator.SetSamplingTimestepMultiple(100);
         simulator.SetDt(0.01);
@@ -249,139 +446,6 @@ public:
 
         simulator.Solve();
 
-        Timer::Print("Elapsed time = ");
-    }
-
-
-    void dontTestSimpleSpheroidOwen2011OxygenBasedCellCycleModel_NormalCells()
-    {
-
-        Timer::Reset();
-
-        /*
-         * First we want to create a '''non-periodic''' 'honeycomb' mesh.
-         * We use the honeycomb mesh generator, as before, saying 10 cells wide
-         * and 10 cells high. Note that the thickness of the ghost nodes layer is
-         * 0, i.e. there are no ghost nodes, and the {{{false}}} indicates that the
-         * returned mesh is '''not''' cylindrical. In contrast to the crypt simulation
-         * tutorial, here we call {{{GetMesh()}}} on the {{{HoneycombMeshGenerator}}}
-         * object to return the mesh, which is of type {{{MutableMesh}}}.
-         */
-        HoneycombMeshGenerator generator(20, 20, 0);
-        MutableMesh<2,2>* p_mesh = generator.GetCircularMesh(3);
-
-        /*
-         * Next, we need to create some cells. Unlike in the the crypt simulation
-         * tutorial, we don't just use a {{{CellsGenerator}}} class, but do it manually,
-         * in a loop. First, we define a {{{std::vector}}} of cell pointers.
-         */
-        std::vector<CellPtr> cells;
-
-        /*
-         * This line defines a mutation state to be used for all cells, of type
-         * `WildTypeCellMutationState` (i.e. 'healthy'):
-         */
-        MAKE_PTR(WildTypeCellMutationState, p_state);
-        MAKE_PTR(StemCellProliferativeType, p_stem_type);
-
-        // Set up oxygen_concentration
-        double oxygen_concentration = 30.0;
-
-        /*
-         * Now we loop over the nodes...
-         */
-        for (unsigned i=0; i<p_mesh->GetNumNodes(); i++)
-        {
-
-            /*
-             * ...then create a cell, giving it a {{{SimpleOxygenBasedCellCycleModel}}}.
-             * The spatial dimension (1, 2 or 3) needs to be set on the cell-cycle model before it is passed to the cell.
-             */
-            Owen2011OxygenBasedCellCycleModel* const p_model = new Owen2011OxygenBasedCellCycleModel;
-            p_model->SetDimension(2);
-            CellPtr p_cell(new Cell(p_state, p_model));
-            p_cell->SetCellProliferativeType(p_stem_type);
-            p_cell->SetApoptosisTime(30);
-            cells.push_back(p_cell);
-
-            p_cell->GetCellData()->SetItem("oxygen", oxygen_concentration);
-
-        }
-
-        /*
-         * Now that we have defined the cells, we can define the {{{CellPopulation}}}. We use a
-         * {{{MeshBasedCellPopulation}}} since although the cell population is mesh-based, it does
-         * not include any ghost nodes. The constructor takes in the mesh and the cells vector.
-         */
-        MeshBasedCellPopulation<2> cell_population(*p_mesh, cells);
-        cell_population.SetWriteVtkAsPoints(true);
-        cell_population.SetOutputResultsForChasteVisualizer(false);
-        cell_population.AddCellPopulationCountWriter<CellProliferativePhasesCountWriter>();
-        cell_population.AddCellWriter<CellMutationStatesWriter>();
-        cell_population.AddCellWriter<CellProliferativeTypesWriter>();
-        cell_population.AddCellWriter<CellProliferativePhasesWriter>();
-
-        CellBasedPdeHandler<2> pde_handler(&cell_population);
-        AveragedSourcePde<2> pde(cell_population, -0.0359);
-        ConstBoundaryCondition<2> bc(oxygen_concentration);
-        PdeAndBoundaryConditions<2> pde_and_bc(&pde, &bc, false);
-        pde_and_bc.SetDependentVariableName("oxygen");
-        pde_handler.AddPdeAndBc(&pde_and_bc);
-
-
-        ChastePoint<2> lower(0.0, 0.0);
-        ChastePoint<2> upper(40.0, 40.0);
-        ChasteCuboid<2> cuboid(lower, upper);
-        pde_handler.UseCoarsePdeMesh(5.0, cuboid, true);
-        pde_handler.SetImposeBcsOnCoarseBoundary(true);
-
-        /*
-         * We are now in a position to construct an {{{OffLatticeSimulationWithPdes}}} object,
-         * using the cell population. We then pass the PDE handler object to the simulation.
-         */
-        OffLatticeSimulation<2> simulator(cell_population);
-        simulator.SetCellBasedPdeHandler(&pde_handler);
-
-        /*
-         * We next set the output directory and end time.
-         */
-        std::string resultsDirectoryName = "TestOwen2011TumourSpheroidGrowthWithODE_NormalCells";
-        simulator.SetOutputDirectory(resultsDirectoryName);
-        simulator.SetSamplingTimestepMultiple(60); // 60 saves a point every 30min
-        simulator.SetEndTime(150.0);
-
-        /*
-         * Create cell killer to remove apoptotic cell from simulation
-         */
-        //        boost::shared_ptr<ApoptoticCellKiller<2> > apoptotic_cell_killer(new ApoptoticCellKiller<2>(&cell_population));
-        //        simulator.AddCellKiller(apoptotic_cell_killer);
-
-
-        // Create a Cell Concentration tracking modifier and add it to the simulation
-        MAKE_PTR(Owen2011TrackingModifier<2>, p_modifier);
-        simulator.AddSimulationModifier(p_modifier);
-
-        /*
-         * We must now create one or more force laws, which determine the mechanics of
-         * the cell population. As in the crypt simulation tutorial, we assume that a cell
-         * experiences a force from each neighbour that can be represented as a linear overdamped
-         * spring, so we use a {{{GeneralisedLinearSpringForce}}} object.
-         * Note that we have called the method {{{SetCutOffLength}}} on the
-         * {{{GeneralisedLinearSpringForce}}} before passing it to the simulator: this call
-         * modifies the force law so that two neighbouring cells do not impose
-         * a force on each other if they are located more than 3 units (=3 cell widths)
-         * away from each other. This modification is necessary when no ghost nodes are used,
-         * for example to avoid artificially large forces between cells that lie close together
-         * on the spheroid boundary.
-         */
-        MAKE_PTR(GeneralisedLinearSpringForce<2>, p_linear_force);
-        p_linear_force->SetCutOffLength(3);
-        simulator.AddForce(p_linear_force);
-
-        /*
-         * We call {{{Solve()}}} on the simulator to run the simulation.
-         */
-        simulator.Solve();
         Timer::Print("Elapsed time = ");
     }
 
