@@ -29,6 +29,7 @@
 									<listOptionValue builtIn="false" value="/scratch/jgrogan/Software/VTK/IO"/>
 									<listOptionValue builtIn="false" value="/scratch/jgrogan/Software/VTK/Graphics"/>
 									<listOptionValue builtIn="false" value="/scratch/jgrogan/Software/VTK/Rendering"/>
+									<listOptionValue builtIn="false" value="/scratch/jgrogan/Software/PETSc/petsc-3.4.4/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.347161366" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>

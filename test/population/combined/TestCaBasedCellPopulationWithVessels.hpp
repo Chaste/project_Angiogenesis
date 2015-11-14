@@ -19,7 +19,7 @@
 #include "CaBasedCellPopulationWithVessels.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "DifferentiatedCellProliferativeType.hpp"
-#include "OnLatticeVascularTumourCellPopulationGenerator.hpp"
+#include "CaBasedCellPopulationWithVesselsGenerator.hpp"
 #include "StochasticDurationCellCycleModel.hpp"
 #include "CellLabelWriter.hpp"
 #include "CellMutationStatesWriter.hpp"
@@ -71,7 +71,7 @@ public:
         // Create cell population
         // use OnLatticeVascularTumourCellPopulationGenerator to generate cells and associate cells
         // with vessels
-        OnLatticeVascularTumourCellPopulationGenerator<3> cellPopulationGenerator;
+        CaBasedCellPopulationWithVesselsGenerator<3> cellPopulationGenerator;
         cellPopulationGenerator.SetIncludeNormalCellPopulation(false);
         boost::shared_ptr<CaBasedCellPopulationWithVessels<3> > cell_population =
                 cellPopulationGenerator.CreateCellPopulation(*p_mesh, p_network);
@@ -126,7 +126,7 @@ public:
         p_network->Write(output_filename);
 
         // Create cell population
-        OnLatticeVascularTumourCellPopulationGenerator<3> cellPopulationGenerator;
+        CaBasedCellPopulationWithVesselsGenerator<3> cellPopulationGenerator;
         cellPopulationGenerator.SetIncludeNormalCellPopulation(false);
         boost::shared_ptr<CaBasedCellPopulationWithVessels<3> > cell_population =
                 cellPopulationGenerator.CreateCellPopulation(*p_mesh, p_network);
@@ -193,7 +193,7 @@ public:
         p_network->Write(output_filename);
 
         // Create cell population
-        OnLatticeVascularTumourCellPopulationGenerator<3> cellPopulationGenerator;
+        CaBasedCellPopulationWithVesselsGenerator<3> cellPopulationGenerator;
         cellPopulationGenerator.SetIncludeNormalCellPopulation(true);
         boost::shared_ptr<CaBasedCellPopulationWithVessels<3> > cell_population =
                 cellPopulationGenerator.CreateCellPopulation(*p_mesh, p_network);
@@ -240,7 +240,7 @@ public:
         std::string output_directory = "TestCaBasedCellPopulationWithVesselsAngiogenesis";
         OutputFileHandler output_file_handler(output_directory, true);
 
-        OnLatticeVascularTumourCellPopulationGenerator<3> cellPopulationGenerator;
+        CaBasedCellPopulationWithVesselsGenerator<3> cellPopulationGenerator;
         cellPopulationGenerator.SetIncludeNormalCellPopulation(false);
         boost::shared_ptr<CaBasedCellPopulationWithVessels<3> > cell_population =
                 cellPopulationGenerator.CreateCellPopulation(*p_mesh, p_network);

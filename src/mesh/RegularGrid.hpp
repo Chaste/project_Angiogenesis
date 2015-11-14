@@ -37,11 +37,16 @@
 #define REGULARGRID_HPP_
 
 #include <vector>
-#include "UblasVectorInclude.hpp"
+#include "UblasIncludes.hpp"
 #include "SmartPointers.hpp"
+#include "CaVascularNetwork.hpp"
+#include "CaVesselSegment.hpp"
+#include "AbstractCellPopulation.hpp"
+#include "Part.hpp"
 
 /**
- * A simple description of a regular lattice for use in hybrid simulations.
+ * A class for describing regular grids, calculating point and line to grid point relationships and
+ * storing cell and vessel to grid point maps.
  */
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM = ELEMENT_DIM>
 class RegularGrid
@@ -61,10 +66,30 @@ class RegularGrid
      */
     c_vector<double, SPACE_DIM> mOrigin;
 
+    /**
+     * The vessel network
+     */
+    boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > mpNetwork;
+
+    /**
+     * The cell population. This memory pointed to is not managed in this class.
+     */
+    AbstractCellPopulation<SPACE_DIM>* mpCellPopulation;
+
+    /**
+     * A map of cells corresponding to a point on the grid
+     */
+    std::vector<std::vector<CellPtr> > mPointCellMap;
+
+    /**
+     * A map of vessel segments corresponding to a point on the grid
+     */
+    std::vector<std::vector<boost::shared_ptr<CaVesselSegment<SPACE_DIM> > > > mPointSegmentMap;
+
 public:
 
     /**
-     *  Constructor
+     * Constructor
      */
     RegularGrid();
 
@@ -80,40 +105,81 @@ public:
     ~RegularGrid();
 
     /**
+     * Generate a grid based on the bounding box of the supplied part
+     * @param pPart the part from which to get the bounding box
+     * @param gridSize the grid spacing
+     */
+    void GenerateFromPart(boost::shared_ptr<Part<SPACE_DIM> > pPart, double gridSize);
+
+    /**
      * Get the 1-D grid index for given x,y,z indices
      * @param x_index the grid x index
      * @param y_index the grid y index
      * @param z_index the grid z index
      * @return the grid 1-d index
      */
-    unsigned Get1dGridIndex(unsigned x_index, unsigned y_index, unsigned z_index);
+    unsigned Get1dGridIndex(unsigned xIndex, unsigned yIndex, unsigned zIndex);
 
-    /* Return the grid extents in x, y, z
+    /**
+     * Return the grid extents in x, y, z. Always dimension 3.
      * @return the grid extents
      */
     std::vector<unsigned> GetExtents();
 
-    /*
-     * Get the location of a point on the grid for given x,y,z indices
+    /**
+     * Get the location of a point on the grid for given x, y ,z indices
+     * @param x_index the grid x index
+     * @param y_index the grid y index
+     * @param z_index the grid z index
+     * @return the location of the point
      */
-    c_vector<double, SPACE_DIM> GetLocation(unsigned x_index, unsigned y_index, unsigned z_index);
+    c_vector<double, SPACE_DIM> GetLocation(unsigned xIndex, unsigned yIndex, unsigned zIndex);
 
     /*
      * Get the location of a point on the grid for given 1-d grid index
+     * @param gridIndex the 1d grid index
+     * @return the location of the point
      */
-    c_vector<double, SPACE_DIM> GetLocationOf1dIndex(unsigned grid_index);
+    c_vector<double, SPACE_DIM> GetLocationOf1dIndex(unsigned gridIndex);
 
-    /*
+    /**
      * Get all of the grid locations
+     * @return a vector containing all grid locations in grid order
      */
     std::vector<c_vector<double, SPACE_DIM> > GetLocations();
 
-    /* Return the origin in x, y, z
+    /**
+     * Return the number of points in the grid
+     * @return the number of points in the grid
+     */
+    unsigned GetNumberOfPoints();
+
+    /**
+     * Return the origin in x, y, z
      * @return the grid origin
      */
     c_vector<double, SPACE_DIM> GetOrigin();
 
-    unsigned GetNumberOfPoints();
+    /**
+     * Return a vector of input point indices which in the bounding boxes of each grid point
+     * @bool inputPoints a vector of point locations
+     * @return the indices of input points in the bounding box of each grid point
+     */
+    std::vector<std::vector<unsigned> > GetPointPointMap(std::vector<c_vector<double, SPACE_DIM> > inputPoints);
+
+    /**
+     * Return the point cell map
+     * @bool update update the map
+     * @return the point cell map
+     */
+    std::vector<std::vector<CellPtr> > GetPointCellMap(bool update = true);
+
+    /**
+     * Return the point segments map
+     * @bool update update the map
+     * @return the point segment map
+     */
+    std::vector<std::vector<boost::shared_ptr<CaVesselSegment<SPACE_DIM> > > > GetPointSegmentMap(bool update = true, bool useVesselSurface = false);
 
     /**
      * Return the grid spacing
@@ -121,9 +187,35 @@ public:
      */
     double GetSpacing();
 
-    bool IsOnBoundary(unsigned grid_index);
+    /**
+     * Is the input location in the bounding box of the grid point
+     * @param point the location of interest
+     * @param gridIndex the grid point of interest
+     * @return is the input location in the bounding box of the grid point
+     */
+    bool IsLocationInPointVolume(c_vector<double, SPACE_DIM> point, unsigned gridIndex);
 
-    bool IsOnBoundary(unsigned x_index, unsigned y_index, unsigned z_index);
+    /**
+     * Is the point on the outer boundary of the domain
+     * @param the 1d grid index gridIndex
+     * @return is the point on the outer boundary of the domain
+     */
+    bool IsOnBoundary(unsigned gridIndex);
+
+    /**
+     * Is the point on the outer boundary of the domain
+     * @param xIndex the grid x index
+     * @param yIndex the grid y index
+     * @param zIndex the grid z index
+     * @return is the point on the outer boundary of the domain
+     */
+    bool IsOnBoundary(unsigned xIndex, unsigned yIndex, unsigned zIndex);
+
+    /**
+     * Set the cell population
+     * @param rCellPopulation a reference to the cell population
+     */
+    void SetCellPopulation(AbstractCellPopulation<SPACE_DIM>& rCellPopulation);
 
     /* Set the grid extents in x, y, z
      * @param extents the grid extents
@@ -140,6 +232,12 @@ public:
      * @param spacing the grid spacing
      */
     void SetSpacing(double spacing);
+
+    /**
+     * Set the vessel network
+     * @param pNetwork the vessel network
+     */
+    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > pNetwork);
 };
 
 #endif /* REGULARGRID_HPP_*/
