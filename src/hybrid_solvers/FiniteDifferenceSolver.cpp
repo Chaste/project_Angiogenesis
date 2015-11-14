@@ -78,6 +78,12 @@ void FiniteDifferenceSolver<DIM>::Setup()
     {
         this->mpRegularGrid->SetCellPopulation(*(this->mpCellPopulation));
     }
+
+    if(this->mpNetwork)
+    {
+    	this->mpRegularGrid->SetVesselNetwork(this->mpNetwork);
+    }
+
     this->mpPde->SetRegularGrid(this->mpRegularGrid);
 
     // Set up the boundary conditions

@@ -57,12 +57,12 @@ private:
     /**
      * Cells of different 'color' (i.e. mutation state label) can have different sink rates.
      */
-    std::map<unsigned, double > mMutationSpecificConsumptionRateMap;
+    std::map<unsigned, double > mStateRateMap;
 
     /**
      * Cells of different 'color' (i.e. mutation state label) can have different sink rate thresholds.
      */
-    std::map<unsigned, double > mMutationSpecificConsumptionRateThresholdMap;
+    std::map<unsigned, double > mStateRateThresholdMap;
 
 public:
 
@@ -82,6 +82,9 @@ public:
      */
     static boost::shared_ptr<CellStateDependentDiscreteSource<DIM> > Create();
 
+    /**
+     * Over-ridden method for obtaining discrete source strengths due to cells
+     */
     std::vector<double> GetCellRegularGridValues();
 
     /**
@@ -92,7 +95,7 @@ public:
      *
      * @param cellColorSinkRates the label for the source strength value
      */
-    void SetMutationSpecificConsumptionRateMap(std::map<unsigned, double > mutationSpecificConsumptionRateMap);
+    void SetStateRateMap(std::map<unsigned, double > stateRateMap);
 
     /**
      * Set cell 'color' specific consumption rate thresholds.
@@ -101,7 +104,7 @@ public:
      *
      * @param cellColorSinkRates the label for the source strength value
      */
-    void SetMutationSpecificConsumptionRateThresholdMap(std::map<unsigned, double > mutationSpecificConsumptionRateThresholdMap);
+    void SetStateRateThresholdMap(std::map<unsigned, double > stateThresholdMap);
 };
 
 #endif /* CELLSTATEDEPENDENTDISCRETESOURCE_HPP_ */

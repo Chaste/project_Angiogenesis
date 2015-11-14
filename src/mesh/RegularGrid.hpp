@@ -172,7 +172,7 @@ public:
      * @bool update update the map
      * @return the point cell map
      */
-    std::vector<std::vector<CellPtr> > GetPointCellMap(bool update = true);
+    const std::vector<std::vector<CellPtr> >& GetPointCellMap(bool update = true);
 
     /**
      * Return the point segments map

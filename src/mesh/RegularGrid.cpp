@@ -35,6 +35,8 @@
 
 #include "Exception.hpp"
 #include "RegularGrid.hpp"
+#include "vtkSmartPointer.h"
+#include "Debug.hpp"
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 RegularGrid<ELEMENT_DIM, SPACE_DIM>::RegularGrid() :
@@ -97,25 +99,36 @@ unsigned RegularGrid<ELEMENT_DIM, SPACE_DIM>::Get1dGridIndex(unsigned x_index, u
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 std::vector<std::vector<unsigned> > RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetPointPointMap(std::vector<c_vector<double, SPACE_DIM> > inputPoints)
 {
-    std::vector<std::vector<unsigned> > point_point_map(GetNumberOfPoints());
-    for(unsigned idx=0; idx<GetNumberOfPoints(); idx++)
-    {
-        std::vector<unsigned> point_index_vector;
+	double origin_x = mOrigin[0];
+	double origin_y = mOrigin[1];
+	double origin_z = 0.0;
+	if(SPACE_DIM == 3)
+	{
+		origin_z = mOrigin[2];
+	}
 
-        // Loop through all input points
-        for(unsigned jdx=0; jdx<inputPoints.size(); jdx++)
-        {
-            if (IsLocationInPointVolume(inputPoints[jdx], idx))
-            {
-                point_index_vector.push_back(jdx);
-            }
-        }
+    std::vector<std::vector<unsigned> > point_point_map(GetNumberOfPoints());
+    for(unsigned idx=0; idx<inputPoints.size(); idx++)
+    {
+    	unsigned x_index = round((inputPoints[idx][0] - origin_x) / mSpacing);
+    	unsigned y_index = round((inputPoints[idx][1] - origin_y) / mSpacing);
+    	unsigned z_index = 1;
+    	if(SPACE_DIM == 3)
+    	{
+    		z_index = round((inputPoints[idx][2] - origin_z) / mSpacing);
+    	}
+
+    	if(x_index<=mExtents[0] && y_index<=mExtents[1] && z_index<=mExtents[2])
+    	{
+    		unsigned grid_index = x_index + y_index * mExtents[1] + z_index * mExtents[1] + mExtents[2];
+    		point_point_map[grid_index].push_back(idx);
+    	}
     }
     return point_point_map;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-std::vector<std::vector<CellPtr> > RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetPointCellMap(bool update)
+const std::vector<std::vector<CellPtr> >& RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetPointCellMap(bool update)
 {
     if(!update)
     {
@@ -127,21 +140,34 @@ std::vector<std::vector<CellPtr> > RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetPoint
         EXCEPTION("A cell population has not been set. Can not create a cell point map.");
     }
 
-    // Loop over all points and cells and associate cells with the points
-    mPointCellMap = std::vector<std::vector<CellPtr> >(GetNumberOfPoints());
-    for(unsigned idx=0; idx<GetNumberOfPoints(); idx++)
-    {
-        std::vector<CellPtr> cell_vector;
+    // Loop over all cells and associate cells with the points
+	double origin_x = mOrigin[0];
+	double origin_y = mOrigin[1];
+	double origin_z = 0.0;
+	if(SPACE_DIM == 3)
+	{
+		origin_z = mOrigin[2];
+	}
 
-        // Loop through all cells
-        for (typename AbstractCellPopulation<SPACE_DIM>::Iterator cell_iter = mpCellPopulation->Begin();
-             cell_iter != mpCellPopulation->End(); ++cell_iter)
-        {
-            if (IsLocationInPointVolume(mpCellPopulation->GetLocationOfCellCentre(*cell_iter), idx))
-            {
-                cell_vector.push_back(*cell_iter);
-            }
-        }
+    mPointCellMap = std::vector<std::vector<CellPtr> >(GetNumberOfPoints());
+    for (typename AbstractCellPopulation<SPACE_DIM>::Iterator cell_iter = mpCellPopulation->Begin();
+         cell_iter != mpCellPopulation->End(); ++cell_iter)
+    {
+    	c_vector<double,SPACE_DIM> location = mpCellPopulation->GetLocationOfCellCentre(*cell_iter);
+    	unsigned x_index = round((location[0] - origin_x) / mSpacing);
+    	unsigned y_index = round((location[1] - origin_y) / mSpacing);
+    	unsigned z_index = 1;
+    	if(SPACE_DIM == 3)
+    	{
+    		z_index = round((location[2] - origin_z) / mSpacing);
+    	}
+
+    	if(x_index<=mExtents[0] && y_index<=mExtents[1] && z_index<=mExtents[2])
+    	{
+    		unsigned grid_index = x_index + y_index * mExtents[1] + z_index * mExtents[1] + mExtents[2];
+    		mPointCellMap[grid_index].push_back(*cell_iter);
+    	}
+
     }
     return mPointCellMap;
 }
@@ -277,18 +303,33 @@ bool RegularGrid<ELEMENT_DIM, SPACE_DIM>::IsOnBoundary(unsigned x_index, unsigne
     return false;
 }
 
+
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 bool RegularGrid<ELEMENT_DIM, SPACE_DIM>::IsLocationInPointVolume(c_vector<double, SPACE_DIM> point, unsigned gridIndex)
 {
     bool point_in_box = false;
-    c_vector<double, SPACE_DIM> location = GetLocationOf1dIndex(gridIndex);
-    if(point[0] >= location[0] -mSpacing/2.0 && point[0] <= location [0] + mSpacing/2.0)
+    unsigned mod_z = gridIndex % (mExtents[0] * mExtents[1]);
+    unsigned z_index = (gridIndex - mod_z) / (mExtents[0] * mExtents[1]);
+    unsigned mod_y = mod_z % mExtents[0];
+    unsigned y_index = (mod_z - mod_y) / mExtents[0];
+    unsigned x_index = mod_y;
+
+    double loc_x = double(x_index) * mSpacing + mOrigin[0];
+    double loc_y = double(y_index) * mSpacing + mOrigin[1];
+    double loc_z = 0.0;
+    if(SPACE_DIM == 3)
     {
-        if(point[1] >= location[1] -mSpacing/2.0 && point[1] <= location [1] + mSpacing/2.0)
+    	loc_z = double(z_index) * mSpacing + mOrigin[2];
+    }
+
+    c_vector<double, SPACE_DIM> location = GetLocation(x_index, y_index, z_index);
+    if(point[0] >= loc_x -mSpacing/2.0 && point[0] <= loc_x + mSpacing/2.0)
+    {
+        if(point[1] >= loc_y -mSpacing/2.0 && point[1] <= loc_y + mSpacing/2.0)
         {
             if(SPACE_DIM==3)
             {
-                if(point[2] >= location[2] -mSpacing/2.0 && point[2] <= location [2] + mSpacing/2.0)
+                if(point[2] >= loc_z -mSpacing/2.0 && point[2] <= loc_z + mSpacing/2.0)
                 {
                     return true;
                 }

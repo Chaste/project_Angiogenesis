@@ -41,8 +41,8 @@
 template<unsigned DIM>
 CellStateDependentDiscreteSource<DIM>::CellStateDependentDiscreteSource()
     :   DiscreteSource<DIM>(),
-        mMutationSpecificConsumptionRateMap(),
-        mMutationSpecificConsumptionRateThresholdMap()
+        mStateRateMap(),
+        mStateRateThresholdMap()
 {
     this->mType = SourceType::CELL;
 }
@@ -70,41 +70,39 @@ std::vector<double> CellStateDependentDiscreteSource<DIM>::GetCellRegularGridVal
 
     // Loop through all points
     std::vector<std::vector<CellPtr> > point_cell_map = this->mpRegularGrid->GetPointCellMap();
-
     for(unsigned idx=0; idx<point_cell_map.size(); idx++)
     {
-        for(unsigned jdx=0; idx<point_cell_map[idx].size(); jdx++)
+        for(unsigned jdx=0; jdx<point_cell_map[idx].size(); jdx++)
         {
             // If a mutation specific consumption rate has been specified
-            if(mMutationSpecificConsumptionRateMap.size()>0)
+            if(mStateRateMap.size()>0)
             {
                 std::map<unsigned, double>::iterator it;
                 // If the cell is apoptotic
                 if (point_cell_map[idx][jdx]->template HasCellProperty<ApoptoticCellProperty>())
                 {
-                    it = mMutationSpecificConsumptionRateMap.find(apoptotic_label);
-
-                    if (it != mMutationSpecificConsumptionRateMap.end())
+                    it = mStateRateMap.find(apoptotic_label);
+                    if (it != mStateRateMap.end())
                     {
                         values[idx] += it->second;
                     }
                 }
                 else
                 {
-                    it = mMutationSpecificConsumptionRateMap.find(point_cell_map[idx][jdx]->GetMutationState()->GetColour());
+                    it = mStateRateMap.find(point_cell_map[idx][jdx]->GetMutationState()->GetColour());
 
-                    if (it != mMutationSpecificConsumptionRateMap.end())
+                    if (it != mStateRateMap.end())
                     {
                         if(this->mSourceStrength == SourceStrength::LABEL)
                         {
                             // Get a threshold value if it has been set, use the label to determine the field from which the label
                             // value is obtained.
                             double threshold = 0.0;
-                            if(mMutationSpecificConsumptionRateThresholdMap.size()>0)
+                            if(mStateRateThresholdMap.size()>0)
                             {
                                 std::map<unsigned, double>::iterator it_threshold;
-                                it_threshold = mMutationSpecificConsumptionRateThresholdMap.find(point_cell_map[idx][jdx]->GetMutationState()->GetColour());
-                                if (it_threshold != mMutationSpecificConsumptionRateThresholdMap.end())
+                                it_threshold = mStateRateThresholdMap.find(point_cell_map[idx][jdx]->GetMutationState()->GetColour());
+                                if (it_threshold != mStateRateThresholdMap.end())
                                 {
                                     threshold = it_threshold->second;
                                 }
@@ -126,11 +124,11 @@ std::vector<double> CellStateDependentDiscreteSource<DIM>::GetCellRegularGridVal
                             // Get a threshold value if it has been set, use the label to determine the field from which the label
                             // value is obtained.
                             double threshold = 0.0;
-                            if(mMutationSpecificConsumptionRateThresholdMap.size()>0)
+                            if(mStateRateThresholdMap.size()>0)
                             {
                                 std::map<unsigned, double>::iterator it_threshold;
-                                it_threshold = mMutationSpecificConsumptionRateThresholdMap.find(point_cell_map[idx][jdx]->GetMutationState()->GetColour());
-                                if (it_threshold != mMutationSpecificConsumptionRateThresholdMap.end())
+                                it_threshold = mStateRateThresholdMap.find(point_cell_map[idx][jdx]->GetMutationState()->GetColour());
+                                if (it_threshold != mStateRateThresholdMap.end())
                                 {
                                     threshold = it_threshold->second;
                                 }
@@ -160,15 +158,15 @@ std::vector<double> CellStateDependentDiscreteSource<DIM>::GetCellRegularGridVal
 }
 
 template<unsigned DIM>
-void CellStateDependentDiscreteSource<DIM>::SetMutationSpecificConsumptionRateMap(std::map<unsigned,double> mutationSpecificConsumptionRateMap)
+void CellStateDependentDiscreteSource<DIM>::SetStateRateMap(std::map<unsigned,double> stateRateMap)
 {
-    mMutationSpecificConsumptionRateMap = mutationSpecificConsumptionRateMap;
+	mStateRateMap = stateRateMap;
 }
 
 template<unsigned DIM>
-void CellStateDependentDiscreteSource<DIM>::SetMutationSpecificConsumptionRateThresholdMap(std::map<unsigned,double> mutationSpecificConsumptionRateThresholdMap)
+void CellStateDependentDiscreteSource<DIM>::SetStateRateThresholdMap(std::map<unsigned,double> stateThresholdMap)
 {
-    mMutationSpecificConsumptionRateThresholdMap = mutationSpecificConsumptionRateThresholdMap;
+	mStateRateThresholdMap = stateThresholdMap;
 }
 
 // Explicit instantiation

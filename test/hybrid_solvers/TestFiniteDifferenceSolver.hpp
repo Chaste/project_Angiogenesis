@@ -39,16 +39,13 @@
 #include <cxxtest/TestSuite.h>
 #include <vector>
 #include <string>
-#include <boost/lexical_cast.hpp>
-#include "UblasIncludes.hpp"
+#include "SmartPointers.hpp"
 #include "Part.hpp"
 #include "HybridLinearEllipticPde.hpp"
 #include "FiniteDifferenceSolver.hpp"
 #include "CaVascularNetwork.hpp"
 #include "VasculatureGenerator.hpp"
-#include "SmartPointers.hpp"
 #include "OutputFileHandler.hpp"
-#include "VasculatureGenerator.hpp"
 #include "RegularGrid.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
@@ -58,7 +55,63 @@ class TestFiniteDifferenceSolver : public CxxTest::TestSuite
 
 public:
 
-    void Test3dKroghCylinderNetwork()
+    void TestRectangleDomain() throw(Exception)
+    {
+        // Set up the grid
+        boost::shared_ptr<Part<2> > p_domain = Part<2>::Create();
+        p_domain->AddRectangle(1.0, 2.0);
+        boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
+        p_grid->GenerateFromPart(p_domain, 0.1);
+
+        // Choose the PDE
+        boost::shared_ptr<HybridLinearEllipticPde<2> > p_pde = HybridLinearEllipticPde<2>::Create();
+        p_pde->SetIsotropicDiffusionConstant(1.e-6);
+        p_pde->SetContinuumLinearInUTerm(-2.e-5);
+
+        // Prescribe a value on the domain boundaries
+        boost::shared_ptr<HybridBoundaryCondition<2> > p_boundary_condition = HybridBoundaryCondition<2>::Create();
+        p_boundary_condition->SetValue(1.0);
+
+        // Set up and run the solver
+        FiniteDifferenceSolver<2> solver;
+        solver.SetGrid(p_grid);
+        solver.SetPde(p_pde);
+        solver.AddBoundaryCondition(p_boundary_condition);
+
+        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestFiniteDifferenceSolver/RectangleDomain", false));
+        solver.SetFileHandler(p_output_file_handler);
+        solver.Solve(true);
+    }
+
+    void TestCuboidalDomain() throw(Exception)
+    {
+        // Set up the grid
+        boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
+        p_domain->AddCuboid(1.0, 2.0, 1.0);
+        boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
+        p_grid->GenerateFromPart(p_domain, 0.1);
+
+        // Choose the PDE
+        boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
+        p_pde->SetIsotropicDiffusionConstant(1.e-6);
+        p_pde->SetContinuumLinearInUTerm(-2.e-5);
+
+        // Prescribe a value on the domain boundaries
+        boost::shared_ptr<HybridBoundaryCondition<3> > p_boundary_condition = HybridBoundaryCondition<3>::Create();
+        p_boundary_condition->SetValue(1.0);
+
+        // Set up and run the solver
+        FiniteDifferenceSolver<3> solver;
+        solver.SetGrid(p_grid);
+        solver.SetPde(p_pde);
+        solver.AddBoundaryCondition(p_boundary_condition);
+
+        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestFiniteDifferenceSolver/CuboidalDomain", false));
+        solver.SetFileHandler(p_output_file_handler);
+        solver.Solve(true);
+    }
+
+    void TestWithVesselBoundaryConditions() throw(Exception)
     {
         // Set up the vessel network
         double vessel_length = 100;
@@ -77,18 +130,19 @@ public:
         p_pde->SetContinuumLinearInUTerm(-2.e-7);
 
         // Set up the boundary condition
-        boost::shared_ptr<HybridBoundaryCondition<3> > p_vessel_ox_boundary_condition = HybridBoundaryCondition<3>::Create();
-        p_vessel_ox_boundary_condition->SetValue(40.0);
-        p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_LINE);
-        p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
+        boost::shared_ptr<HybridBoundaryCondition<3> > p_vessel_boundary_condition = HybridBoundaryCondition<3>::Create();
+        p_vessel_boundary_condition->SetValue(40.0);
+        p_vessel_boundary_condition->SetType(BoundaryConditionType::VESSEL_LINE);
+        p_vessel_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
 
         // Set up and run the solver
         FiniteDifferenceSolver<3> solver;
         solver.SetGrid(p_grid);
         solver.SetPde(p_pde);
-        solver.AddBoundaryCondition(p_vessel_ox_boundary_condition);
+        solver.AddBoundaryCondition(p_vessel_boundary_condition);
+        solver.SetVesselNetwork(p_network);
 
-        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestFiniteDifferenceSolver/KroghCylinder3d", false));
+        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestFiniteDifferenceSolver/WithVessels", false));
         solver.SetFileHandler(p_output_file_handler);
         solver.Solve(true);
     }

@@ -81,7 +81,7 @@ double HybridLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeConstantInUSource
     {
         EXCEPTION("Requested out of bound grid index in discrete sources. Maybe you forgot to update the source strengths.");
     }
-    return mConstantInUTerm - mDiscreteConstantSourceStrengths[gridIndex];
+    return mConstantInUTerm + mDiscreteConstantSourceStrengths[gridIndex];
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
@@ -103,7 +103,7 @@ double HybridLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeLinearInUCoeffInS
     {
         EXCEPTION("Requested out of bound grid index in discrete sources. Maybe you forgot to update the source strengths.");
     }
-    return mLinearInUTerm - mDiscreteLinearSourceStrengths[gridIndex];
+    return mLinearInUTerm + mDiscreteLinearSourceStrengths[gridIndex];
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
