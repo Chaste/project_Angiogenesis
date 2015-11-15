@@ -187,6 +187,10 @@ public:
      */
     double GetSpacing();
 
+    std::vector<double> InterpolateGridValues(std::vector<c_vector<double, SPACE_DIM> > locations, std::vector<double> values, bool useVtk = false);
+
+
+	//double VolumeAverageQuantity(std::vector<double> values);
     /**
      * Is the input location in the bounding box of the grid point
      * @param point the location of interest

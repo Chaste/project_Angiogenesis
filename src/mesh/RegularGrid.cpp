@@ -35,7 +35,15 @@
 
 #include "Exception.hpp"
 #include "RegularGrid.hpp"
-#include "vtkSmartPointer.h"
+#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning for now (gcc4.3)
+#include <vtkImageData.h>
+#include <vtkXMLImageDataWriter.h>
+#include <vtkDoubleArray.h>
+#include <vtkPointData.h>
+#include <vtkProbeFilter.h>
+#include <vtkPolyData.h>
+#include <vtkPoints.h>
+#include <vtkSmartPointer.h>
 #include "Debug.hpp"
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
@@ -125,6 +133,193 @@ std::vector<std::vector<unsigned> > RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetPoin
     	}
     }
     return point_point_map;
+}
+
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+std::vector<double> RegularGrid<ELEMENT_DIM, SPACE_DIM>::InterpolateGridValues(std::vector<c_vector<double, SPACE_DIM> > locations,
+		std::vector<double> values, bool useVtk)
+{
+	std::vector<double> sampled_values(locations.size(), 0.0);
+
+	if(!useVtk)
+	{
+		double origin_x = mOrigin[0];
+		double origin_y = mOrigin[1];
+		double origin_z = 0.0;
+		if(SPACE_DIM == 3)
+		{
+			origin_z = mOrigin[2];
+		}
+
+		// Use a simple version
+		for(unsigned idx=0; idx<locations.size(); idx++)
+		{
+			// Get the nearest front bottom left point and distances
+			unsigned x_index = unsigned((locations[idx][0] - origin_x) / mSpacing);
+			double del_x = locations[idx][0] - (double(x_index) * mSpacing + origin_x);
+			unsigned y_index = unsigned((locations[idx][1] - origin_y) / mSpacing);
+			double del_y = locations[idx][1] - (double(y_index) * mSpacing + origin_y);
+			unsigned z_index = 0;
+			double del_z = 0.0;
+			if(SPACE_DIM == 3)
+			{
+				z_index = unsigned((locations[idx][2] - origin_z) / mSpacing);
+				del_z = locations[idx][2] - (double(z_index) * mSpacing + origin_z);
+			}
+
+			if(x_index<mExtents[0] && y_index<mExtents[1] && z_index<mExtents[2])
+			{
+				double p000 = values[x_index + y_index * mExtents[0] +
+				                       z_index * mExtents[0] * mExtents[1]];
+				double p100 = x_index<(mExtents[0] - 1) ? values[(x_index +1) +
+				                                                   y_index * mExtents[0] +
+				                                                   z_index * mExtents[0] * mExtents[1]] : p000;
+				double p010 = y_index<(mExtents[1] - 1) ? values[x_index +
+				                                                   (y_index + 1) * mExtents[0] +
+				                                                   z_index * mExtents[0] * mExtents[1]] : p000;
+				double p110 = 0.0;
+				if(x_index==mExtents[0]-1 && y_index==mExtents[1]-1 )
+				{
+					p110 = p000;
+				}
+				else if(x_index ==mExtents[0]-1)
+				{
+					p110 = p010;
+				}
+				else if(y_index ==mExtents[1]-1)
+				{
+					p110 = p100;
+				}
+				else
+				{
+					p110 = values[(x_index + 1) + (y_index + 1) * mExtents[0] + z_index * mExtents[0] * mExtents[1]];
+				}
+				double p001 = 0.0;
+				double p101 = 0.0;
+				double p111 = 0.0;
+				double p011 = 0.0;
+				if(z_index<mExtents[2] - 1)
+				{
+					p001 = values[x_index + y_index * mExtents[0] + (z_index + 1) * mExtents[0] * mExtents[1]];
+					p101 = x_index<(mExtents[0] - 1) ? values[(x_index + 1) +
+					                                          y_index * mExtents[0] +
+					                                          (z_index + 1) * mExtents[0] * mExtents[1]] : p001;
+					p011 = y_index<(mExtents[1] - 1) ? values[x_index +
+					                                          (y_index + 1) * mExtents[0] +
+					                                          (z_index + 1) * mExtents[0] * mExtents[1]] : p001;
+					if(x_index==mExtents[0]-1 && y_index==mExtents[1]-1 )
+					{
+						p111 = p001;
+					}
+					else if(x_index ==mExtents[0]-1)
+					{
+						p111 = p011;
+					}
+					else if(y_index ==mExtents[1]-1)
+					{
+						p111 = p101;
+					}
+					else
+					{
+						p111 = values[(x_index + 1) + (y_index + 1) * mExtents[0] + (z_index + 1) * mExtents[0] * mExtents[1]];
+					}
+				}
+				else
+				{
+					p001 = p000;
+					p101 = p100;
+					p111 = p110;
+					p011 = p010;
+				}
+				double c0 = p000;
+				double c1 = p100 - p000;
+				double c2 = p010 - p000;
+				double c3 = p001 - p000;
+				double c4 = p110 - (p010 + p100) + p000;
+				double c5 = p011 - p001 - p010 + p000;
+				double c6 = p101 - p001 - p100 + p000;
+				double c7 = p111 - p011 -p101 - p110 + p100 + p001 + p010 - p000;
+				sampled_values[idx] = c0 + c1*del_x + c2*del_y + c3*del_z +
+						c4 * del_x*del_y + c5* del_y*del_z + c6*del_z*del_x  + c7*del_x*del_y*del_z;
+			}
+	    	else
+	    	{
+	    		EXCEPTION("Sample point is outside grid.");
+	    	}
+		}
+
+	}
+	else
+	{
+		// Set up a VTK grid
+		vtkSmartPointer<vtkImageData> p_vtk_grid = vtkSmartPointer<vtkImageData>::New();
+	    if(SPACE_DIM==3)
+	    {
+	    	p_vtk_grid->SetDimensions(mExtents[0], mExtents[1], mExtents[2]);
+	    }
+	    else
+	    {
+	    	p_vtk_grid->SetDimensions(mExtents[0], mExtents[1], 1);
+	    }
+	    p_vtk_grid->SetSpacing(mSpacing, mSpacing, mSpacing);
+
+	    if(SPACE_DIM==3)
+	    {
+	    	p_vtk_grid->SetOrigin(mOrigin[0], mOrigin[1], mOrigin[2]);
+	    }
+	    else
+	    {
+	    	p_vtk_grid->SetOrigin(mOrigin[0], mOrigin[1], 0.0);
+	    }
+
+        vtkSmartPointer<vtkDoubleArray> pPointData = vtkSmartPointer<vtkDoubleArray>::New();
+        pPointData->SetNumberOfComponents(1);
+        pPointData->SetNumberOfTuples(locations.size());
+        const std::string ny_name = "test";
+        pPointData->SetName(ny_name.c_str());
+        for (unsigned idx = 0; idx < locations.size(); idx++)
+        {
+            pPointData->SetValue(idx, values[idx]);
+        }
+        p_vtk_grid->GetPointData()->AddArray(pPointData);
+        p_vtk_grid->Update();
+
+		// Sample the field at these locations
+		vtkSmartPointer<vtkPolyData> p_polydata = vtkSmartPointer<vtkPolyData>::New();
+		vtkSmartPointer<vtkPoints> p_points = vtkSmartPointer<vtkPoints>::New();
+		p_points->SetNumberOfPoints(locations.size());
+		for(unsigned idx=0; idx< locations.size(); idx++)
+		{
+			if(SPACE_DIM==3)
+			{
+				p_points->SetPoint(idx, locations[idx][0], locations[idx][1], locations[idx][2]);
+			}
+			else
+			{
+				p_points->SetPoint(idx, locations[idx][0], locations[idx][1], 0.0);
+			}
+		}
+		p_polydata->SetPoints(p_points);
+		p_polydata->Update();
+		std::cout<<p_vtk_grid->GetPointData()->GetArray(0)->GetName()<< std::endl;;
+
+		vtkSmartPointer<vtkProbeFilter> p_probe_filter = vtkSmartPointer<vtkProbeFilter>::New();
+		p_probe_filter->SetInput(p_polydata);
+		p_probe_filter->SetSource(p_vtk_grid);
+		MARK;
+		p_probe_filter->Update();
+		MARK;
+		vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetPolyDataOutput()->GetPointData();
+		MARK;
+		std::cout<<p_point_data->GetNumberOfArrays() << std::endl;
+
+		unsigned num_points = p_point_data->GetArray(1)->GetNumberOfTuples();
+		for(unsigned idx=0; idx<num_points; idx++)
+		{
+			sampled_values[idx] = p_point_data->GetArray(1)->GetTuple1(idx);
+		}
+	}
+	return sampled_values;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>

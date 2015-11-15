@@ -55,9 +55,9 @@ class TestRegularGrid : public AbstractCellBasedWithTimingsTestSuite
 
 public:
 
-    void TestPointPointMapGeneration()
+    void dontTestPointPointMapGeneration()
     {
-    	// Set up a big grid
+    	// Set up a grid
     	boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
     	std::vector<unsigned> extents(3);
     	extents[0] = 100;
@@ -65,7 +65,7 @@ public:
     	extents[2] = 100;
     	p_grid->SetExtents(extents);
 
-    	// Set up lots of points
+    	// Set up points
     	RandomNumberGenerator::Instance()->Reseed(1000);
     	std::vector<c_vector<double, 3> > points(10000);
     	for(unsigned idx=0; idx<10000; idx++)
@@ -89,9 +89,9 @@ public:
     	TS_ASSERT_EQUALS(sum, 10000);
     }
 
-    void TestPointCellMapGeneration()
+    void dontTestPointCellMapGeneration()
     {
-    	// Set up a big grid
+    	// Set up a grid
     	boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
     	std::vector<unsigned> extents(3);
     	extents[0] = 1000;
@@ -100,7 +100,7 @@ public:
     	p_grid->SetExtents(extents);
     	p_grid->SetSpacing(0.333);
 
-    	// Set up lots of cells
+    	// Set up cells
         HoneycombMeshGenerator generator(100, 100);    // Parameters are: cells across, cells up
         MutableMesh<2,2>* p_mesh = generator.GetMesh();
         std::vector<CellPtr> cells;
@@ -110,7 +110,7 @@ public:
 
         MeshBasedCellPopulation<2> cell_population(*p_mesh, cells);
 
-    	// Get a point-point map
+    	// Get a point-cell map
         p_grid->SetCellPopulation(cell_population);
     	std::vector<std::vector<CellPtr> > map = p_grid->GetPointCellMap();
 
@@ -121,6 +121,122 @@ public:
     		sum += map[idx].size();
     	}
     	TS_ASSERT_EQUALS(sum, 10000);
+    }
+
+    void TestInterpolateGridValues() throw(Exception)
+    {
+    	// Set up a grid
+    	RandomNumberGenerator::Instance()->Reseed(1000);
+    	boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
+    	std::vector<unsigned> extents(3);
+    	extents[0] = 100;
+    	extents[1] = 100;
+    	extents[2] = 100;
+    	p_grid->SetExtents(extents);
+    	double spacing = 0.33;
+    	p_grid->SetSpacing(spacing);
+
+    	// Set up a function increasing quadratically from bottom front left to top back right
+    	std::vector<double> my_grid_func(extents[0]*extents[1]*extents[2]);
+    	for(unsigned idx=0; idx<extents[2]; idx++)
+    	{
+        	for(unsigned jdx=0; jdx<extents[1]; jdx++)
+        	{
+            	for(unsigned kdx=0; kdx<extents[0]; kdx++)
+            	{
+            		double value = spacing*spacing*double(kdx*kdx +jdx*jdx +idx*idx);
+            		unsigned grid_index = kdx + jdx*extents[0] + idx*extents[0]*extents[1];
+            		my_grid_func[grid_index] = value;
+            	}
+        	}
+    	}
+
+    	// Set up some sample points
+    	std::vector<c_vector<double, 3> > points(100);
+    	for(unsigned idx=0; idx<100; idx++)
+    	{
+    		c_vector<double, 3> location;
+    		location[0] = RandomNumberGenerator::Instance()->ranf() * 30.0;
+    		location[1] = RandomNumberGenerator::Instance()->ranf() * 30.0;
+    		location[2] = RandomNumberGenerator::Instance()->ranf() * 30.0;
+    		points[idx] = location;
+    	}
+
+    	// Get the interpolated values
+    	std::vector<double> interpolated_vals = p_grid->InterpolateGridValues(points, my_grid_func);
+
+    	// Get the max error
+    	double max_error = 0.0;
+    	for(unsigned idx=0; idx<interpolated_vals.size(); idx++)
+    	{
+    		double analytical = points[idx][0]*points[idx][0] + points[idx][1]*points[idx][1] + points[idx][2]*points[idx][2];
+    		double error = std::abs((analytical - interpolated_vals[idx]) / analytical);
+    		if(error > max_error)
+    		{
+    			max_error = error;
+    		}
+    	}
+    	TS_ASSERT(max_error<0.1);
+    	std::cout << "Max Error: " << max_error << std::endl;
+    }
+
+    void TestInterpolateGridValuesWithVtk() throw(Exception)
+    {
+    	// Set up a grid
+    	RandomNumberGenerator::Instance()->Reseed(1000);
+    	boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
+    	std::vector<unsigned> extents(3);
+    	extents[0] = 100;
+    	extents[1] = 100;
+    	extents[2] = 100;
+    	p_grid->SetExtents(extents);
+    	double spacing = 0.33;
+    	p_grid->SetSpacing(spacing);
+
+    	// Set up a function increasing quadratically from bottom front left to top back right
+    	std::vector<double> my_grid_func(extents[0]*extents[1]*extents[2]);
+    	for(unsigned idx=0; idx<extents[2]; idx++)
+    	{
+        	for(unsigned jdx=0; jdx<extents[1]; jdx++)
+        	{
+            	for(unsigned kdx=0; kdx<extents[0]; kdx++)
+            	{
+            		double value = spacing*spacing*double(kdx*kdx +jdx*jdx +idx*idx);
+            		unsigned grid_index = kdx + jdx*extents[0] + idx*extents[0]*extents[1];
+            		my_grid_func[grid_index] = value;
+            	}
+        	}
+    	}
+
+    	// Set up some sample points
+    	std::vector<c_vector<double, 3> > points(100);
+    	for(unsigned idx=0; idx<100; idx++)
+    	{
+    		c_vector<double, 3> location;
+    		location[0] = RandomNumberGenerator::Instance()->ranf() * 30.0;
+    		location[1] = RandomNumberGenerator::Instance()->ranf() * 30.0;
+    		location[2] = RandomNumberGenerator::Instance()->ranf() * 30.0;
+    		points[idx] = location;
+    	}
+
+    	// Get the interpolated values
+    	std::vector<double> interpolated_vals = p_grid->InterpolateGridValues(points, my_grid_func, true);
+
+    	// Get the max error
+    	double max_error = 0.0;
+    	for(unsigned idx=0; idx<interpolated_vals.size(); idx++)
+    	{
+    		double analytical = points[idx][0]*points[idx][0] + points[idx][1]*points[idx][1] + points[idx][2]*points[idx][2];
+    		double error = std::abs((analytical - interpolated_vals[idx]) / analytical);
+    		if(error > max_error)
+    		{
+    			max_error = error;
+    		}
+        	std::cout << "vals: " << analytical<< "," << interpolated_vals[idx] << std::endl;
+
+    	}
+    	std::cout << "Max Error: " << max_error << std::endl;
+    	TS_ASSERT(max_error<0.1);
     }
 };
 

@@ -132,6 +132,11 @@ public:
      */
     std::vector<std::vector<CellPtr> > GetNodeSegmentMap(bool update = true);
 
+    std::vector<double> InterpolateGridValues(std::vector<c_vector<double, SPACE_DIM> > locations, std::vector<double> values, bool useVtk = false);
+
+
+	double VolumeAverageQuantity(std::vector<double> values);
+
 private:
 
     /**
