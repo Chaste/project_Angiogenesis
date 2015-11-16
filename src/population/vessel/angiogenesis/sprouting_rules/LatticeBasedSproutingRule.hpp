@@ -33,85 +33,104 @@
 
  */
 
-#ifndef ABSTRACTSPROUTINGRULE_HPP_
-#define ABSTRACTSPROUTINGRULE_HPP_
+#ifndef LATTICEBASEDSPROUTINGRULE_HPP_
+#define LATTICEBASEDSPROUTINGRULE_HPP_
 
 #include <vector>
 #include <string>
-#include "CaVascularNetwork.hpp"
 #include "VascularNode.hpp"
 #include "SmartPointers.hpp"
+#include "AbstractSproutingRule.hpp"
 #include "RegularGrid.hpp"
+#include "AbstractRegularGridHybridSolver.hpp"
 
 /**
- * Abstract class for implementing sprouting rules in angiogenesis solver.
- * Child classes implement WillSprout() which determines if a node will sprout
- * and GetSproutDirection() which gives directions for each sprout
+ * A concrete sprouting rule for lattice based simulations based on
+ * a model described in Owen et al. 2011. Default Parameter values are taken
+ * from that study.
  */
 template<unsigned DIM>
-class AbstractSproutingRule
+class LatticeBasedSproutingRule : public AbstractSproutingRule<DIM>
 {
 
 protected:
 
     /**
-     * The probability that a sprout will form per unit time
+     * The grid for the vessel simulation
      */
-    double mSproutingProbability;
+    boost::shared_ptr<RegularGrid<DIM> > mpGrid;
 
     /**
-     * Vessel network, useful if sprouting depends on neighbouring nodes
+     * A hybrid solver for calculating the VEGF field
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > mpVesselNetwork;
+    boost::shared_ptr<AbstractRegularGridHybridSolver<DIM> > mpSolver;
 
     /**
-     * How far from vessel ends can sprouts form
+     * Cell motility for random walks
      */
-    double mVesselEndCutoff;
+    double mCellMotility;
+
+    /**
+     * Cell chemotactic sensitivity
+     */
+    double mCellChemotacticParameter;
+
+    /**
+     * Cell sprouting probability in high vegf regions
+     */
+    double mMaxSproutingProbability;
+
+    /**
+     * VEGF concentration for half max sprouting probability
+     */
+    double mHalfMaxSproutingProbability;
 
 public:
 
     /**
      * Constructor.
      */
-    AbstractSproutingRule();
+    LatticeBasedSproutingRule();
 
     /**
      * Destructor.
      */
-    virtual ~AbstractSproutingRule();
+    virtual ~LatticeBasedSproutingRule();
 
     /**
-     * Set the vessel network
-     * @param pVesselNetwork pointer to a new method for the class
+     * Construct a new instance of the class and return a shared pointer to it.
+     * @return a pointer to a new instance of the class
      */
-    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pVesselNetwork);
+    static boost::shared_ptr<LatticeBasedSproutingRule<DIM> > Create();
 
     /**
-     * Set the sprouting probability
-     * @param probability probability of sprouting per unit time
+     * Set the grid for the vessel network
+     * @param pGrid the grid for the vessel network
      */
-    void SetSproutingProbability(double probability);
+    void SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid);
 
     /**
-     * Set the minimum distance to a vessel end at which sprouting can occur
-     * @param probability probability of sprouting per unit time
+     * Set the grid for the vessel network
+     * @param pGrid the grid for the vessel network
      */
-    void SetVesselEndCutoff(double cutoff);
+    void SetHybridSolver(boost::shared_ptr<AbstractRegularGridHybridSolver<DIM> > pSolver);
+
+
+    void SetCellMotilityParameter(double cellMotility);
+
+    void SetCellChemotacticParameter(double cellChemotacticParameter);
+
+    void SetMaxSproutingProbability(double maxSproutingProbability);
+
+    void SetHalfMaxSproutingProbability(double halfMaxSproutingProbability);
 
     /**
-     * Method to be implemented in concrete classes giving a direction for each node that will sprout.
-     * A zero vector is return if the node does not sprout
+     * Calculate direction for each node that will sprout
      * @param rNodes nodes to calculate directions for
      * @return a vector of bools which true for nodes that will sprout
      */
-    virtual std::vector<c_vector<double, DIM> > GetSproutDirections(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes) = 0;
-
-    virtual void SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid)
-    {
-
-    }
+    virtual std::vector<c_vector<double, DIM> > GetSproutDirections(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes);
 
 };
 
-#endif /* ABSTRACTSPROUTINGRULE_HPP_ */
+#endif /* RANDOMLATTICEBASEDSPROUTINGRULE_HPP_ */

@@ -874,26 +874,49 @@ boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateBi
 
 template<unsigned DIM>
 boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateSingleVessel(double vesselLength,
-        c_vector<double, DIM> startPosition)
+        c_vector<double, DIM> startPosition, unsigned divisions, unsigned axis)
 {
     std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes;
-    nodes.push_back(VascularNode<DIM>::Create(0.0, 0.0, 0.0)); //0
-    if(DIM==2)
+    nodes.push_back(VascularNode<DIM>::Create(startPosition)); //0
+    double interval = vesselLength/double(divisions + 1);
+
+    for(unsigned idx=0;idx<divisions+1;idx++)
     {
-        nodes.push_back(VascularNode<DIM>::Create(0.0, vesselLength, 0.0)); //1
-    }
-    else
-    {
-        nodes.push_back(VascularNode<DIM>::Create(0.0, 0.0, vesselLength)); //1
+        if(DIM==2)
+        {
+            if(axis==0)
+            {
+                nodes.push_back(VascularNode<DIM>::Create(startPosition[0] + interval*double(idx+1), startPosition[1])); //1
+            }
+            else
+            {
+                nodes.push_back(VascularNode<DIM>::Create(startPosition[0], startPosition[1] + interval*double(idx+1))); //1
+            }
+
+        }
+        else
+        {
+            if(axis==0)
+            {
+                nodes.push_back(VascularNode<DIM>::Create(startPosition[0] + interval*double(idx+1), startPosition[1], startPosition[2])); //1
+            }
+            else if(axis==1)
+            {
+                nodes.push_back(VascularNode<DIM>::Create(startPosition[0], startPosition[1] + interval*double(idx+1), startPosition[2])); //2
+            }
+            else
+            {
+                nodes.push_back(VascularNode<DIM>::Create(startPosition[0], startPosition[1], startPosition[2] + interval*double(idx+1))); //3
+            }
+        }
     }
 
     std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels;
-    vessels.push_back(CaVessel<DIM>::Create(CaVesselSegment<DIM>::Create(nodes[0], nodes[1])));
+    vessels.push_back(CaVessel<DIM>::Create(nodes));
 
     // Generate the network
     boost::shared_ptr<CaVascularNetwork<DIM> > p_network(new CaVascularNetwork<DIM>());
     p_network->AddVessels(vessels);
-    p_network->Translate(startPosition);
     return p_network;
 }
 

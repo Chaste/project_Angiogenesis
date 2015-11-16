@@ -37,10 +37,14 @@
 #define REGULARGRID_HPP_
 
 #include <vector>
+#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning for now (gcc4.3)
+#include <vtkImageData.h>
+#include <vtkSmartPointer.h>
 #include "UblasIncludes.hpp"
 #include "SmartPointers.hpp"
 #include "CaVascularNetwork.hpp"
 #include "CaVesselSegment.hpp"
+#include "VascularNode.hpp"
 #include "AbstractCellPopulation.hpp"
 #include "Part.hpp"
 
@@ -82,9 +86,25 @@ class RegularGrid
     std::vector<std::vector<CellPtr> > mPointCellMap;
 
     /**
+     * A map of vessel nodes corresponding to a point on the grid
+     */
+    std::vector<std::vector<boost::shared_ptr<VascularNode<SPACE_DIM> > > > mPointNodeMap;
+
+    /**
      * A map of vessel segments corresponding to a point on the grid
      */
     std::vector<std::vector<boost::shared_ptr<CaVesselSegment<SPACE_DIM> > > > mPointSegmentMap;
+
+    std::vector<double> mPointSolution;
+
+    /**
+     *  The grid in the form of vtk image data
+     */
+    vtkSmartPointer<vtkImageData> mpVtkGrid;
+
+    bool mVtkGridIsSetUp;
+
+    std::vector<std::vector<unsigned> > mNeighbourData;
 
 public:
 
@@ -103,6 +123,10 @@ public:
      * Desctructor
      */
     ~RegularGrid();
+
+    void CalculateNeighbourData();
+
+    const std::vector<std::vector<unsigned> >& GetNeighbourData();
 
     /**
      * Generate a grid based on the bounding box of the supplied part
@@ -175,11 +199,19 @@ public:
     const std::vector<std::vector<CellPtr> >& GetPointCellMap(bool update = true);
 
     /**
+     * Return the point node map
+     * @bool update update the map
+     * @return the point node map
+     */
+    const std::vector<std::vector<boost::shared_ptr<VascularNode<SPACE_DIM> > > >& GetPointNodeMap(bool update = true);
+
+    /**
      * Return the point segments map
      * @bool update update the map
      * @return the point segment map
      */
-    std::vector<std::vector<boost::shared_ptr<CaVesselSegment<SPACE_DIM> > > > GetPointSegmentMap(bool update = true, bool useVesselSurface = false);
+    std::vector<std::vector<boost::shared_ptr<CaVesselSegment<SPACE_DIM> > > > GetPointSegmentMap(
+            bool update = true, bool useVesselSurface = false);
 
     /**
      * Return the grid spacing
@@ -187,10 +219,10 @@ public:
      */
     double GetSpacing();
 
-    std::vector<double> InterpolateGridValues(std::vector<c_vector<double, SPACE_DIM> > locations, std::vector<double> values, bool useVtk = false);
+    std::vector<double> InterpolateGridValues(std::vector<c_vector<double, SPACE_DIM> > locations,
+                                              std::vector<double> values, bool useVtk = false);
 
-
-	//double VolumeAverageQuantity(std::vector<double> values);
+    //double VolumeAverageQuantity(std::vector<double> values);
     /**
      * Is the input location in the bounding box of the grid point
      * @param point the location of interest
@@ -237,11 +269,17 @@ public:
      */
     void SetSpacing(double spacing);
 
+    void SetUpVtkGrid();
+
+    void SetPointValues(std::vector<double> pointSolution);
+
     /**
      * Set the vessel network
      * @param pNetwork the vessel network
      */
     void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > pNetwork);
+
+    void Write(boost::shared_ptr<OutputFileHandler> pFileHandler);
 };
 
 #endif /* REGULARGRID_HPP_*/

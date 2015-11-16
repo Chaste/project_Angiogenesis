@@ -10,8 +10,9 @@
 #define TESTSPROUTINGRULES_HPP
 
 #include <cxxtest/TestSuite.h>
-#include "../../src/angiogenesis_solvers/growth_direction_modifiers/OffLatticePrwGrowthDirectionModifier.hpp"
-#include "../../src/angiogenesis_solvers/growth_direction_modifiers/OffLatticeTipAttractionGrowthDirectionModifier.hpp"
+#include "../../../../../src/population/vessel/angiogenesis/sprouting_rules/OffLatticeSproutingRule.hpp"
+#include "OffLatticePrwGrowthDirectionModifier.hpp"
+#include "OffLatticeTipAttractionGrowthDirectionModifier.hpp"
 #include "FileFinder.hpp"
 #include "OutputFileHandler.hpp"
 #include "SmartPointers.hpp"
@@ -26,9 +27,8 @@
 #include "PetscSetupAndFinalize.hpp"
 #include "CaVesselSegment.hpp"
 #include "AbstractCellBasedTestSuite.hpp"
-#include "SimpleFlowSolver.hpp"
+#include "FlowSolver.hpp"
 #include "AbstractSproutingRule.hpp"
-#include "OffLatticeRandomNormalSproutingRule.hpp"
 #include "RandomNumberGenerator.hpp"
 
 class TestSproutingRules : public AbstractCellBasedTestSuite

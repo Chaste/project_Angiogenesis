@@ -43,6 +43,7 @@
 #include "Part.hpp"
 #include "AbstractGrowthDirectionModifier.hpp"
 #include "AbstractSproutingRule.hpp"
+#include "RegularGrid.hpp"
 
 /**
  * This class is for simulating modifications to the vessel network due to angiogenesis.
@@ -60,11 +61,6 @@ class AngiogenesisSolver
      * The growth velocity of vessels in angiogenesis simulations
      */
     double mGrowthVelocity;
-
-    /**
-     * The end time for solves if used in standalone
-     */
-    double mEndTime;
 
     /**
      * The radius in which anastamosis is allowed in angiogenesis simulations
@@ -85,6 +81,15 @@ class AngiogenesisSolver
      * The bounding domain for the vessel network
      */
     boost::shared_ptr<Part<DIM> > mpBoundingDomain;
+
+    /**
+     * File handler containing output directory information
+     */
+    boost::shared_ptr<OutputFileHandler> mpFileHandler;
+
+    boost::shared_ptr<RegularGrid<DIM> > mpVesselGrid;
+
+    bool mUseLattice;
 
 public:
 
@@ -110,7 +115,12 @@ public:
      */
     void AddGrowthDirectionModifier(boost::shared_ptr<AbstractGrowthDirectionModifier<DIM> > pModifier);
 
+
     bool IsSproutingRuleSet();
+
+    void SetVesselGrid(boost::shared_ptr<RegularGrid<DIM> >pVesselGrid);
+
+    void SetUseOffLattice();
 
     /**
      * Set the radius within which anastamosis of vessels is allowed
@@ -123,12 +133,6 @@ public:
      * @param pDomain the domain which vessels a not permitted to leave
      */
     void SetBoundingDomain(boost::shared_ptr<Part<DIM> > pDomain);
-
-    /**
-     * Set the simulation end time
-     * @param time the simulation end time
-     */
-    void SetEndTime(double time);
 
     /**
      * Set the base growth velocity for migrating tips
@@ -148,6 +152,9 @@ public:
      */
     void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
 
+
+    void SetOutputFileHandler(boost::shared_ptr<OutputFileHandler> pHandler);
+
     /**
      * Increment one step in time
      */
@@ -156,7 +163,7 @@ public:
     /**
      * Run until the specified end time
      */
-    void Run();
+    void Run(bool writeOutput = false);
 
 
 protected:

@@ -10,6 +10,7 @@
 #define TESTSPROUTINGRULES_HPP
 
 #include <cxxtest/TestSuite.h>
+#include "../../../../src/population/vessel/angiogenesis/sprouting_rules/OffLatticeSproutingRule.hpp"
 #include "../../src/angiogenesis_solvers/growth_direction_modifiers/OffLatticePrwGrowthDirectionModifier.hpp"
 #include "../../src/angiogenesis_solvers/growth_direction_modifiers/OffLatticeTipAttractionGrowthDirectionModifier.hpp"
 #include "FileFinder.hpp"
@@ -28,7 +29,6 @@
 #include "AbstractCellBasedTestSuite.hpp"
 #include "SimpleFlowSolver.hpp"
 #include "AbstractSproutingRule.hpp"
-#include "OffLatticeRandomNormalSproutingRule.hpp"
 #include "RandomNumberGenerator.hpp"
 
 class TestPrwNetworkGenerator : public AbstractCellBasedTestSuite

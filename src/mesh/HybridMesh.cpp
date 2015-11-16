@@ -182,7 +182,8 @@ void HybridMesh<ELEMENT_DIM, SPACE_DIM>::Mesh3d(boost::shared_ptr<Part<SPACE_DIM
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridMesh<ELEMENT_DIM, SPACE_DIM>::GenerateFromStl(const std::string& filename, double maxElementArea, std::vector<c_vector<double, SPACE_DIM> > holes)
+void HybridMesh<ELEMENT_DIM, SPACE_DIM>::GenerateFromStl(const std::string& filename, double maxElementArea,
+                                                         std::vector<c_vector<double, SPACE_DIM> > holes)
 {
     class tetgen15::tetgenio mesher_input, mesher_output;
     char * writable = new char[filename.size() + 1];
@@ -218,8 +219,8 @@ void HybridMesh<ELEMENT_DIM, SPACE_DIM>::GenerateFromStl(const std::string& file
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void HybridMesh<ELEMENT_DIM, SPACE_DIM>::ImportFromTetgen(tetgen15::tetgenio& mesherOutput, unsigned numberOfElements,
-                                                    int *elementList, unsigned numberOfFaces, int *faceList,
-                                                    int *edgeMarkerList)
+                                                          int *elementList, unsigned numberOfFaces, int *faceList,
+                                                          int *edgeMarkerList)
 {
     unsigned nodes_per_element = mesherOutput.numberofcorners;
 
@@ -346,18 +347,18 @@ void HybridMesh<ELEMENT_DIM, SPACE_DIM>::ImportFromTetgen(tetgen15::tetgenio& me
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridMesh<ELEMENT_DIM, SPACE_DIM>::GenerateFromPart(boost::shared_ptr<Part<SPACE_DIM>  > pPart,
-                                                    double maxElementArea)
+void HybridMesh<ELEMENT_DIM, SPACE_DIM>::GenerateFromPart(boost::shared_ptr<Part<SPACE_DIM> > pPart,
+                                                          double maxElementArea)
 {
     // For 2D parts use triangle
     if (ELEMENT_DIM == 2)
     {
-        c_vector<double, 2*ELEMENT_DIM> bounding_box = pPart->GetBoundingBox();
-        if(SPACE_DIM==2)
+        c_vector<double, 2 * ELEMENT_DIM> bounding_box = pPart->GetBoundingBox();
+        if (SPACE_DIM == 2)
         {
             Mesh2d(pPart, maxElementArea);
         }
-        else if(std::abs(bounding_box[4]) <1.e-6 && std::abs(bounding_box[5])<1.e-6)
+        else if (std::abs(bounding_box[4]) < 1.e-6 && std::abs(bounding_box[5]) < 1.e-6)
         {
             Mesh2d(pPart, maxElementArea);
         }
@@ -369,8 +370,8 @@ void HybridMesh<ELEMENT_DIM, SPACE_DIM>::GenerateFromPart(boost::shared_ptr<Part
     // Try to use tetgen
     else
     {
-        c_vector<double, 2*ELEMENT_DIM> bounding_box = pPart->GetBoundingBox();
-        if(std::abs(bounding_box[4]) <1.e-6 && std::abs(bounding_box[5])<1.e-6)
+        c_vector<double, 2 * ELEMENT_DIM> bounding_box = pPart->GetBoundingBox();
+        if (std::abs(bounding_box[4]) < 1.e-6 && std::abs(bounding_box[5]) < 1.e-6)
         {
             EXCEPTION("The part is two-dimensional, use the 2D meshing functionality.");
         }

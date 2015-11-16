@@ -33,45 +33,45 @@
 
  */
 
-#ifndef ABSTRACTSOLUTIONDEPENDENTSPROUTINGRULE_HPP_
-#define ABSTRACTSOLUTIONDEPENDENTSPROUTINGRULE_HPP_
+#ifndef FunctionMap_HPP_
+#define FunctionMap_HPP_
 
-#include <vector>
-#include <string>
-
-#include "../sprouting_rules/AbstractSproutingRule.hpp"
-#include "VascularNode.hpp"
 #include "SmartPointers.hpp"
-#include "AbstractHybridSolver.hpp"
+#include "AbstractRegularGridHybridSolver.hpp"
 
 template<unsigned DIM>
-class AbstractSolutionDependentSproutingRule : public AbstractSproutingRule<DIM>
+class FunctionMap : public AbstractRegularGridHybridSolver<DIM>
 {
-
-protected:
-
-    boost::shared_ptr<AbstractHybridSolver<DIM> > mpSolver;
-
-    double mSolutionThreshold;
-
 
 public:
 
-    /**
-     * Constructor.
+    FunctionMap();
+
+    /* Factory constructor method
+     * @return a shared pointer to a new solver
      */
-    AbstractSolutionDependentSproutingRule();
+    static boost::shared_ptr<FunctionMap<DIM> > Create();
 
-    /**
-     * Destructor.
-     */
-    virtual ~AbstractSolutionDependentSproutingRule();
 
-    void SetSolutionThreshold(double threshold);
+    ~FunctionMap();
 
-    void SetSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pSolver);
+    void Update()
+    {
 
-    std::vector<bool> WillSprout();
+    }
+
+    void UpdateCellData()
+    {
+
+    }
+
+    void SetPointSolution(std::vector<double> solution);
+
+    void Solve(bool writeSolution = false)
+    {
+
+    }
+
 };
 
-#endif /* ABSTRACTSOLUTIONDEPENDENTSPROUTINGRULE_HPP_ */
+#endif /* FunctionMap_HPP_ */

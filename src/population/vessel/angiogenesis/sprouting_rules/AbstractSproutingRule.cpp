@@ -33,9 +33,7 @@
 
  */
 
-#include "../sprouting_rules/AbstractSproutingRule.hpp"
-
-#include <stdio.h>
+#include "AbstractSproutingRule.hpp"
 #include "RandomNumberGenerator.hpp"
 #include "CaVesselSegment.hpp"
 #include "CaVessel.hpp"
@@ -43,8 +41,8 @@
 template<unsigned DIM>
 AbstractSproutingRule<DIM>::AbstractSproutingRule()
     : mSproutingProbability(0.1),
-      mNodes(),
-      mVesselEndCutoff(20.0)
+      mpVesselNetwork(),
+      mVesselEndCutoff(0.0)
 {
 
 }
@@ -56,90 +54,21 @@ AbstractSproutingRule<DIM>::~AbstractSproutingRule()
 }
 
 template<unsigned DIM>
-void AbstractSproutingRule<DIM>::SetVesselEndCutoff(double cutoff)
-{
-    mVesselEndCutoff = cutoff;
-}
-
-template <unsigned DIM>
-boost::shared_ptr<AbstractSproutingRule<DIM> > AbstractSproutingRule<DIM>::Create()
-{
-    MAKE_PTR(AbstractSproutingRule<DIM>, pSelf);
-    return pSelf;
-}
-
-template<unsigned DIM>
 void AbstractSproutingRule<DIM>::SetSproutingProbability(double probability)
 {
     mSproutingProbability = probability;
 }
 
 template<unsigned DIM>
-void AbstractSproutingRule<DIM>::SetNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes)
+void AbstractSproutingRule<DIM>::SetVesselEndCutoff(double cutoff)
 {
-    mNodes = nodes;
+    mVesselEndCutoff = cutoff;
 }
 
 template<unsigned DIM>
-std::vector<bool> AbstractSproutingRule<DIM>::WillSprout()
+void AbstractSproutingRule<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pVesselNetwork)
 {
-    std::vector<bool> sprout_flags;
-    for(unsigned idx = 0; idx < mNodes.size(); idx++)
-    {
-        double prob = RandomNumberGenerator::Instance()->ranf();
-        bool will_sprout = false;
-        // Only non-tip nodes can sprout
-        if(mNodes[idx]->GetNumberOfSegments()==2 && prob < mSproutingProbability)
-        {
-            if(mNodes[idx]->GetVesselSegment(0)->GetVessel()->GetClosestEndNodeDistance(mNodes[idx]->GetLocationVector())>= mVesselEndCutoff)
-            {
-                if(mNodes[idx]->GetVesselSegment(1)->GetVessel()->GetClosestEndNodeDistance(mNodes[idx]->GetLocationVector())>= mVesselEndCutoff)
-                {
-                    will_sprout = true;
-                }
-            }
-        }
-        sprout_flags.push_back(will_sprout);
-    }
-    return sprout_flags;
-}
-
-template<unsigned DIM>
-std::vector<c_vector<double, DIM> > AbstractSproutingRule<DIM>::GetSproutDirection(std::vector<bool> sprout_indices)
-{
-
-    std::vector<bool> indices;
-    if(sprout_indices.size()>0)
-    {
-        indices = sprout_indices;
-    }
-    else
-    {
-        indices = WillSprout();
-    }
-
-    std::vector<c_vector<double, DIM> > directions;
-    for(unsigned idx = 0; idx < mNodes.size(); idx++)
-    {
-        if(indices[idx])
-        {
-            c_vector<double, DIM> sprout_direction;
-            if(RandomNumberGenerator::Instance()->ranf()>=0.5)
-            {
-                sprout_direction = unit_vector<double>(DIM,1);
-            }
-            else
-            {
-                sprout_direction = -unit_vector<double>(DIM,1);
-            }
-            directions.push_back(sprout_direction);
-        }
-        else
-        {
-            directions.push_back(zero_vector<double>(DIM));
-        }
-    }
-    return directions;
+    mpVesselNetwork = pVesselNetwork;
 }
 
 // Explicit instantiation

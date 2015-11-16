@@ -37,10 +37,10 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TESTSPHEROIDWITHANGIOGENESIS_HPP_
 
 #include <cxxtest/TestSuite.h>
+#include "../../src/population/vessel/angiogenesis/sprouting_rules/OffLatticeSproutingRule.hpp"
 #include "OffLatticePrwGrowthDirectionModifier.hpp"
 #include "OffLatticeSolutionDependentGrowthDirectionModifier.hpp"
 #include "OffLatticeTipAttractionGrowthDirectionModifier.hpp"
-#include "OffLatticeRandomNormalSproutingRule.hpp"
 #include "VascularTumourModifier.hpp"
 #include "CheckpointArchiveTypes.hpp"
 #include "AbstractCellBasedTestSuite.hpp"
@@ -76,6 +76,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "VascularNode.hpp"
 #include "GeometryTools.hpp"
 #include "RandomNumberGenerator.hpp"
+#include "VascularTumourModifier.hpp"
+#include "RegularGrid.hpp"
 
 class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
 {
@@ -93,14 +95,12 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
     boost::shared_ptr<CaVascularNetwork<3> > GetVesselNetwork()
     {
         boost::shared_ptr<CaVascularNetwork<3> > p_network = CaVascularNetwork<3>::Create();
-
         std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
         for(unsigned idx=0; idx<81; idx++)
         {
             bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 50.0, 100.0));
         }
         boost::shared_ptr<CaVessel<3> > p_vessel_1 = CaVessel<3>::Create(bottom_nodes);
-
         std::vector<boost::shared_ptr<VascularNode<3> > > top_nodes;
         for(unsigned idx=0; idx<81; idx++)
         {
@@ -139,7 +139,6 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
         origin[0] = 400.0;
         origin[1] = 400.0;
         origin[2] = 0.0;
-
         boost::shared_ptr<Part<3> > p_domain = Part<3> ::Create();
         boost::shared_ptr<Polygon> circle = p_domain->AddCircle(radius, origin);
         p_domain->Extrude(circle, depth);
@@ -165,8 +164,11 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
         p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_LINE);
         p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
 
+        boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
+        p_grid->GenerateFromPart(p_domain, 40.0);
+
         boost::shared_ptr<FiniteDifferenceSolver<3> > p_oxygen_solver = FiniteDifferenceSolver<3>::Create();
-        p_oxygen_solver->SetGridFromPart(p_domain, 40.0);
+        p_oxygen_solver->SetGrid(p_grid);
         p_oxygen_solver->SetPde(p_oxygen_pde);
         p_oxygen_solver->AddBoundaryCondition(p_vessel_ox_boundary_condition);
         p_oxygen_solver->Setup();
@@ -188,8 +190,11 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
         p_cell_vegf_source->SetIsLinearInSolution(false);
         p_vegf_pde->AddDiscreteSource(p_cell_vegf_source);
 
+        boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
+        p_grid->GenerateFromPart(p_domain, 40.0);
+
         boost::shared_ptr<FiniteDifferenceSolver<3> > p_vegf_solver = FiniteDifferenceSolver<3>::Create();
-        p_vegf_solver->SetGridFromPart(p_domain, 40.0);
+        p_vegf_solver->SetGrid(p_grid);
         p_vegf_solver->SetPde(p_vegf_pde);
         p_vegf_solver->Setup();
         return p_vegf_solver;
@@ -233,24 +238,14 @@ public:
         boost::shared_ptr<FiniteDifferenceSolver<3> > p_vegf_solver = GetVegfSolver(p_domain, p_network);
 
         // Create the angiogenesis solver
-        boost::shared_ptr<VascularTumourSolver<3> > p_angiogenesis_solver = VascularTumourSolver<3>::Create();
-        p_angiogenesis_solver->SetVesselNetwork(p_network);
-        p_angiogenesis_solver->AddHybridSolver(p_oxygen_solver);
-        p_angiogenesis_solver->AddPdeSolver(p_vegf_solver);
+        boost::shared_ptr<VascularTumourSolver<3> > p_vascular_tumour_solver = VascularTumourSolver<3>::Create();
+        p_vascular_tumour_solver->SetVesselNetwork(p_network);
+        p_vascular_tumour_solver->AddHybridSolver(p_oxygen_solver);
+        p_vascular_tumour_solver->AddHybridSolver(p_vegf_solver);
 
-        boost::shared_ptr<OffLatticePrwGrowthDirectionModifier<3> > p_grow_direction_modifier = OffLatticePrwGrowthDirectionModifier<3>::Create();
-        boost::shared_ptr<OffLatticeTipAttractionGrowthDirectionModifier<3> > p_grow_direction_modifier2 = OffLatticeTipAttractionGrowthDirectionModifier<3>::Create();
-        p_grow_direction_modifier2->SetNetwork(p_network);
-        boost::shared_ptr<OffLatticeRandomNormalSproutingRule<3> > p_sprouting_rule = OffLatticeRandomNormalSproutingRule<3>::Create();
-        p_sprouting_rule->SetSproutingProbability(0.05);
+        boost::shared_ptr<VascularTumourModifier<3> > p_simulation_modifier = boost::shared_ptr<VascularTumourModifier<3> >(new VascularTumourModifier<3>);
+        p_simulation_modifier->SetVascularTumourSolver(p_vascular_tumour_solver);
 
-        p_angiogenesis_solver->AddGrowthDirectionModifier(p_grow_direction_modifier);
-        p_angiogenesis_solver->AddGrowthDirectionModifier(p_grow_direction_modifier2);
-        p_angiogenesis_solver->SetSproutingRule(p_sprouting_rule);
-        p_angiogenesis_solver->SetAnastamosisRadius(5.0);
-
-        boost::shared_ptr<AngiogenesisModifier<3> > p_simulation_modifier = boost::shared_ptr<AngiogenesisModifier<3> >(new AngiogenesisModifier<3>);
-        p_simulation_modifier->SetVascularTumourSolver(p_angiogenesis_solver);
         OnLatticeSimulation<3> simulator(cell_population);
         simulator.SetOutputDirectory("TestAngiogenesisSimulationModifier/CaBased");
         simulator.SetDt(1.0);
@@ -259,7 +254,7 @@ public:
         simulator.Solve();
     }
 
-    void DOntestNodeBasedSpheroid() throw (Exception)
+    void TestNodeBasedSpheroid() throw (Exception)
     {
         // Create the domain
         boost::shared_ptr<Part<3> > p_domain = GetSimulationDomain();
@@ -299,33 +294,18 @@ public:
         boost::shared_ptr<FiniteDifferenceSolver<3> > p_vegf_solver = GetVegfSolver(p_domain, p_network);
 
         // Create the angiogenesis solver
-        boost::shared_ptr<VascularTumourSolver<3> > p_angiogenesis_solver = VascularTumourSolver<3>::Create();
-        p_angiogenesis_solver->SetVesselNetwork(p_network);
-        p_angiogenesis_solver->AddPdeSolver(p_oxygen_solver);
-        p_angiogenesis_solver->AddPdeSolver(p_vegf_solver);
+        boost::shared_ptr<VascularTumourSolver<3> > p_vascular_tumour_solver = VascularTumourSolver<3>::Create();
+        p_vascular_tumour_solver->SetVesselNetwork(p_network);
+        p_vascular_tumour_solver->AddHybridSolver(p_oxygen_solver);
+        p_vascular_tumour_solver->AddHybridSolver(p_vegf_solver);
 
-        boost::shared_ptr<OffLatticePrwGrowthDirectionModifier<3> > p_grow_direction_modifier = OffLatticePrwGrowthDirectionModifier<3>::Create();
-        boost::shared_ptr<OffLatticeTipAttractionGrowthDirectionModifier<3> > p_grow_direction_modifier2 = OffLatticeTipAttractionGrowthDirectionModifier<3>::Create();
-        boost::shared_ptr<OffLatticeSolutionDependentGrowthDirectionModifier<3> > p_grow_direction_modifier3 = OffLatticeSolutionDependentGrowthDirectionModifier<3>::Create();
-        p_grow_direction_modifier2->SetNetwork(p_network);
-        p_grow_direction_modifier3->SetSolver(p_vegf_solver);
-        p_grow_direction_modifier3->SetStrength(0.2);
-        boost::shared_ptr<OffLatticeRandomNormalSproutingRule<3> > p_sprouting_rule = OffLatticeRandomNormalSproutingRule<3>::Create();
-        p_sprouting_rule->SetSproutingProbability(0.005);
-
-        p_angiogenesis_solver->AddGrowthDirectionModifier(p_grow_direction_modifier);
-        p_angiogenesis_solver->AddGrowthDirectionModifier(p_grow_direction_modifier2);
-        p_angiogenesis_solver->AddGrowthDirectionModifier(p_grow_direction_modifier3);
-        p_angiogenesis_solver->SetSproutingRule(p_sprouting_rule);
-        p_angiogenesis_solver->SetAnastamosisRadius(5.0);
-
-        boost::shared_ptr<AngiogenesisModifier<3> > p_simulation_modifier = boost::shared_ptr<AngiogenesisModifier<3> >(new AngiogenesisModifier<3>);
-        p_simulation_modifier->SetVascularTumourSolver(p_angiogenesis_solver);
+        boost::shared_ptr<VascularTumourModifier<3> > p_simulation_modifier = boost::shared_ptr<VascularTumourModifier<3> >(new VascularTumourModifier<3>);
+        p_simulation_modifier->SetVascularTumourSolver(p_vascular_tumour_solver);
 
         OffLatticeSimulation<3> simulator(cell_population);
         simulator.SetOutputDirectory("TestAngiogenesisSimulationModifier/NodeBased");
         simulator.SetDt(1.0);
-        simulator.SetEndTime(100.0);
+        simulator.SetEndTime(10.0);
         simulator.AddSimulationModifier(p_simulation_modifier);
 
         MAKE_PTR(GeneralisedLinearSpringForce<3>, p_force);

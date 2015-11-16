@@ -83,9 +83,6 @@ void CaBasedCellPopulationWithVessels<DIM>::SetVesselNetwork(boost::shared_ptr<C
 template<unsigned DIM>
 void CaBasedCellPopulationWithVessels<DIM>::DoSprouting(std::vector<boost::shared_ptr<Cell> > activeTips)
 {
-
-
-
     double D = 1e-12/(2e-5*2e-5);
     double chi = 2e-5/(1e3*2e-5*2e-5);
 

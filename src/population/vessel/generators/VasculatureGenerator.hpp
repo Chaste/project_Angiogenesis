@@ -137,7 +137,9 @@ public:
      * Creates a single vessel
      */
     boost::shared_ptr<CaVascularNetwork<DIM> > GenerateSingleVessel(double vesselLength= 100.0,
-                                                                    c_vector<double, DIM> startPosition = zero_vector<double>(DIM));
+                                                                    c_vector<double, DIM> startPosition = zero_vector<double>(DIM),
+                                                                    unsigned divisions = 0,
+                                                                    unsigned axis = 2);
 
     /*
      * Creates an oval shaped network with one inlet and one outlet

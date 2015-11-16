@@ -33,54 +33,41 @@
 
  */
 
-#ifndef TETGENMESHER_HPP_
-#define TETGENMESHER_HPP_
+#ifndef OFFLATTICESPROUTINGRULE_HPP_
+#define OFFLATTICESPROUTINGRULE_HPP_
 
+#include <vector>
 #include <string>
-#include <vtkPlane.h>
-#include <vtkSmartPointer.h>
-#include <vtkPolyData.h>
+
+#include "AbstractSproutingRule.hpp"
+#include "VascularNode.hpp"
 #include "SmartPointers.hpp"
-#include "UblasVectorInclude.hpp"
-#include "CaVascularNetwork.hpp"
-#include "Polygon.hpp"
 
-/**
-
- */
 template<unsigned DIM>
-class VesselNetworkMesher
+class OffLatticeSproutingRule : public AbstractSproutingRule<DIM>
 {
-    /**
-     * The vessel network for which the surface will be generated.
-     */
-    boost::shared_ptr<CaVascularNetwork<DIM> > mpVesselNetwork;
-
-    /**
-     * A VTK representation of the surface.
-     */
-    vtkSmartPointer<vtkPolyData> mpSurface;
 
 public:
 
     /**
-     * Constructor
-     * @param pVesselNetwork the vessel network to generate the surface on
+     * Constructor.
      */
-    VesselNetworkMesher(boost::shared_ptr<CaVascularNetwork<DIM> > pVesselNetwork);
+    OffLatticeSproutingRule();
 
     /**
-     * Destructor
-     * @param pVesselNetwork the vessel network to generate the surface on
+     * Destructor.
      */
-    ~VesselNetworkMesher();
+    virtual ~OffLatticeSproutingRule();
+
+    static boost::shared_ptr<OffLatticeSproutingRule<DIM> > Create();
 
     /**
-     * Return the surface in the form of VTK polydata
-     * @return the surface in the form of VTK polydata
+     * Calculate direction for each node that will sprout
+     * @param rNodes nodes to calculate directions for
+     * @return a vector of bools which true for nodes that will sprout
      */
-    vtkSmartPointer<vtkPolyData> GetVtkSurface();
+    virtual std::vector<c_vector<double, DIM> > GetSproutDirections(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes);
 
 };
 
-#endif /* TETGENMESHER_HPP_*/
+#endif /* OFFLATTICERANDOMNORMALSPROUTINGRULE_HPP_ */

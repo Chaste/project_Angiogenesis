@@ -37,6 +37,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TESTANASTA_HPP
 
 #include <cxxtest/TestSuite.h>
+#include "../../../../src/population/vessel/angiogenesis/sprouting_rules/OffLatticeSproutingRule.hpp"
 #include "OffLatticePrwGrowthDirectionModifier.hpp"
 #include "OffLatticeTipAttractionGrowthDirectionModifier.hpp"
 #include "FileFinder.hpp"
@@ -55,7 +56,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "AbstractCellBasedTestSuite.hpp"
 #include "FlowSolver.hpp"
 #include "AbstractSproutingRule.hpp"
-#include "OffLatticeRandomNormalSproutingRule.hpp"
 #include "RandomNumberGenerator.hpp"
 
 class TestAnastamosis : public AbstractCellBasedTestSuite

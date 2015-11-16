@@ -21,12 +21,6 @@ population/vessel/flow/haematocrit/TestAlarcon03HaematocritSolver.hpp
 population/vessel/flow/haematocrit/TestBetteridgeHaematocritSolver.hpp
 population/vessel/flow/calculators/TestAlarcon03MechanicalStimulusCalculator.hpp
 population/vessel/flow/calculators/TestAlarcon03MetabolicStimulusCalculator.hpp
-#population/vessel/angiogenesis/TestAngiogenesisSolver.hpp
-#population/vessel/angiogenesis/TestAnastamosis.hpp
-#population/vessel/angiogenesis/growth_direction_modifiers/TestOffLatticePrwGrowthDirectionModifier.hpp
-#population/vessel/angiogenesis/growth_direction_modifiers/TestOnLatticeRwGrowthDirectionModifier.hpp
-#population/vessel/angiogenesis/growth_direction_modifiers/TestPrwNetworkGenerator.hpp
-#population/vessel/angiogenesis/sprouting_rules/TestSproutingRules.hpp
 population/combined/TestCaBasedCellPopulationWithVessels.hpp
 hybrid_solvers/maps/TestDistanceMap.hpp
 hybrid_solvers/maps/TestDensityMap.hpp
@@ -35,6 +29,4 @@ hybrid_solvers/TestGreensFunctionSolver.hpp
 hybrid_solvers/TestFiniteElementSolver.hpp
 simulation/TestVascularTumourSimulationModifier.hpp
 simulation/TestVascularTumourSolver.hpp
-tutorials/TestAvascularTumourSpheroid.hpp
-tutorials/TestVascularTumourSpheroid.hpp
-tutorials/TestCornealMicropocketAssay.hpp
+tutorials/Test2dTumourSpheroid.hpp

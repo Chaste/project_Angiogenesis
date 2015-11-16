@@ -33,36 +33,35 @@
 
  */
 
-#ifndef OFFLATTICERANDOMNORMALSPROUTINGRULE_HPP_
-#define OFFLATTICERANDOMNORMALSPROUTINGRULE_HPP_
-
-#include <vector>
-#include <string>
-
-#include "../sprouting_rules/AbstractSolutionDependentSproutingRule.hpp"
-#include "VascularNode.hpp"
-#include "SmartPointers.hpp"
+#include "CaVesselSegment.hpp"
+#include "ChastePoint.hpp"
+#include "FunctionMap.hpp"
 
 template<unsigned DIM>
-class OffLatticeRandomNormalSproutingRule : public AbstractSolutionDependentSproutingRule<DIM>
+FunctionMap<DIM>::FunctionMap()
+    :   AbstractRegularGridHybridSolver<DIM>()
 {
 
-public:
+}
 
-    /**
-     * Constructor.
-     */
-    OffLatticeRandomNormalSproutingRule();
+template<unsigned DIM>
+boost::shared_ptr<FunctionMap<DIM> > FunctionMap<DIM>::Create()
+{
+    MAKE_PTR(FunctionMap, pSelf);
+    return pSelf;
+}
 
-    /**
-     * Destructor.
-     */
-    virtual ~OffLatticeRandomNormalSproutingRule();
+template<unsigned DIM>
+FunctionMap<DIM>::~FunctionMap()
+{
 
-    static boost::shared_ptr<OffLatticeRandomNormalSproutingRule<DIM> > Create();
+}
+template<unsigned DIM>
+void FunctionMap<DIM>::SetPointSolution(std::vector<double> solution)
+{
+    this->mPointSolution = solution;
+}
 
-    std::vector<c_vector<double, DIM> > GetSproutDirection(std::vector<bool> sprout_indices = std::vector<bool>());
-
-};
-
-#endif /* OFFLATTICERANDOMNORMALSPROUTINGRULE_HPP_ */
+// Explicit instantiation
+template class FunctionMap<2> ;
+template class FunctionMap<3> ;

@@ -40,16 +40,19 @@
 #include "CaVesselSegment.hpp"
 #include "VascularNode.hpp"
 #include "AngiogenesisSolver.hpp"
+#include "Debug.hpp"
 
 template<unsigned DIM>
 AngiogenesisSolver<DIM>::AngiogenesisSolver() :
         mpNetwork(),
         mGrowthVelocity(10.0),
-        mEndTime(10.0),
         mNodeAnastamosisRadius(0.0),
         mGrowthDirectionModifiers(),
         mpSproutingRule(),
-        mpBoundingDomain()
+        mpBoundingDomain(),
+        mpFileHandler(),
+        mpVesselGrid(),
+        mUseLattice(true)
 {
 
 }
@@ -67,10 +70,23 @@ void AngiogenesisSolver<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwo
 }
 
 template<unsigned DIM>
+void AngiogenesisSolver<DIM>::SetVesselGrid(boost::shared_ptr<RegularGrid<DIM> >pVesselGrid)
+{
+    mpVesselGrid = pVesselGrid;
+    mUseLattice = true;
+}
+
+template<unsigned DIM>
 boost::shared_ptr<AngiogenesisSolver<DIM> > AngiogenesisSolver<DIM>::Create()
 {
     MAKE_PTR(AngiogenesisSolver<DIM>, pSelf);
     return pSelf;
+}
+
+template<unsigned DIM>
+void AngiogenesisSolver<DIM>::SetUseOffLattice()
+{
+    mUseLattice = false;
 }
 
 template<unsigned DIM>
@@ -114,15 +130,15 @@ void AngiogenesisSolver<DIM>::SetBoundingDomain(boost::shared_ptr<Part<DIM> > pD
 }
 
 template<unsigned DIM>
-void AngiogenesisSolver<DIM>::SetEndTime(double time)
-{
-    mEndTime = time;
-}
-
-template<unsigned DIM>
 void AngiogenesisSolver<DIM>::SetGrowthVelocity(double velocity)
 {
     mGrowthVelocity = velocity;
+}
+
+template<unsigned DIM>
+void AngiogenesisSolver<DIM>::SetOutputFileHandler(boost::shared_ptr<OutputFileHandler> pHandler)
+{
+    mpFileHandler = pHandler;
 }
 
 template<unsigned DIM>
@@ -134,29 +150,30 @@ void AngiogenesisSolver<DIM>::SetSproutingRule(boost::shared_ptr<AbstractSprouti
 template<unsigned DIM>
 void AngiogenesisSolver<DIM>::DoSprouting()
 {
-    // Get the candidate nodes
+    // Get the candidate directions
     std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = mpNetwork->GetNodes();
-
-    // Get the sprout indices and directions
-    mpSproutingRule->SetNodes(nodes);
-    std::vector<bool> sprout_indices = mpSproutingRule->WillSprout();
-    std::vector<c_vector<double, DIM> > sprout_directions = mpSproutingRule->GetSproutDirection(sprout_indices);
+    std::vector<c_vector<double, DIM> > sprout_directions = mpSproutingRule->GetSproutDirections(nodes);
 
     // Do the sprouting
     for(unsigned idx = 0; idx < nodes.size(); idx++)
     {
-        if(sprout_indices[idx])
+        if(norm_2(sprout_directions[idx]) > 0.0)
         {
-            // Ensure it is not along the segment vectors
-            bool is_along_segment_1 = std::abs(inner_prod(sprout_directions[idx],nodes[idx]->GetVesselSegments()[0]->GetUnitTangent())/
-                    (norm_2(sprout_directions[idx])*norm_2(nodes[idx]->GetVesselSegments()[0]->GetUnitTangent()))) > 1 - 1.e-6;
-            bool is_along_segment_2 = std::abs(inner_prod(sprout_directions[idx],nodes[idx]->GetVesselSegments()[1]->GetUnitTangent())/
-                    (norm_2(sprout_directions[idx])*norm_2(nodes[idx]->GetVesselSegments()[1]->GetUnitTangent()))) > 1 - 1.e-6;
+//            // Ensure it is not along the segment vectors
+//            bool is_along_segment_1 = std::abs(inner_prod(sprout_directions[idx],nodes[idx]->GetVesselSegments()[0]->GetUnitTangent())/
+//                    (norm_2(sprout_directions[idx])*norm_2(nodes[idx]->GetVesselSegments()[0]->GetUnitTangent()))) > 1 - 1.e-6;
+//            bool is_along_segment_2 = std::abs(inner_prod(sprout_directions[idx],nodes[idx]->GetVesselSegments()[1]->GetUnitTangent())/
+//                    (norm_2(sprout_directions[idx])*norm_2(nodes[idx]->GetVesselSegments()[1]->GetUnitTangent()))) > 1 - 1.e-6;
 
-            if(!is_along_segment_1 && !is_along_segment_2)
+            if(!mUseLattice)
             {
                 mpNetwork->FormSprout(nodes[idx]->GetLocation(), ChastePoint<DIM>(nodes[idx]->GetLocationVector() +
                                                                                   mGrowthVelocity*sprout_directions[idx]));
+            }
+            else
+            {
+                mpNetwork->FormSprout(nodes[idx]->GetLocation(), ChastePoint<DIM>(nodes[idx]->GetLocationVector() +
+                                                                                  mpVesselGrid->GetSpacing() * sprout_directions[idx]));
             }
         }
     }
@@ -259,25 +276,36 @@ void AngiogenesisSolver<DIM>::Increment()
         EXCEPTION("The angiogenesis solver needs an initial vessel network");
     }
 
+    if(mpVesselGrid)
+    {
+        mpVesselGrid->SetVesselNetwork(mpNetwork);
+    }
     // Move any migrating nodes
     UpdateNodalPositions();
-
     // Check for anastamosis
     DoAnastamosis();
-
     // Do sprouting
     if(mpSproutingRule)
     {
+        mpSproutingRule->SetVesselNetwork(mpNetwork);
+        if(mpVesselGrid)
+        {
+            mpSproutingRule->SetGrid(mpVesselGrid);
+        }
         DoSprouting();
         DoAnastamosis();
     }
 }
 
 template<unsigned DIM>
-void AngiogenesisSolver<DIM>::Run()
+void AngiogenesisSolver<DIM>::Run(bool writeOutput)
 {
-    while(SimulationTime::Instance()->GetTime() < mEndTime)
+    while(!SimulationTime::Instance()->IsFinished())
     {
+        if(writeOutput && mpFileHandler && mpNetwork)
+        {
+            mpNetwork->Write(mpFileHandler->GetOutputDirectoryFullPath() + "/vessel_network_" + boost::lexical_cast<std::string>(SimulationTime::Instance()->GetTime()) + ".vtp");
+        }
         Increment();
         SimulationTime::Instance()->IncrementTimeOneStep();
     }
