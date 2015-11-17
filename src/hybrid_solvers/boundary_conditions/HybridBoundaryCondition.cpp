@@ -36,6 +36,7 @@
 #include "Facet.hpp"
 #include "HybridBoundaryCondition.hpp"
 #include "CaVesselSegment.hpp"
+#include "Debug.hpp"
 
 template<unsigned DIM>
 HybridBoundaryCondition<DIM>::HybridBoundaryCondition()
@@ -46,7 +47,8 @@ HybridBoundaryCondition<DIM>::HybridBoundaryCondition()
         mLabel("Default"),
         mValue(0.0),
         mpRegularGrid(),
-        mpMesh()
+        mpMesh(),
+        mpNetwork()
 {
 
 }
@@ -55,6 +57,12 @@ template<unsigned DIM>
 HybridBoundaryCondition<DIM>::~HybridBoundaryCondition()
 {
 
+}
+
+template<unsigned DIM>
+void HybridBoundaryCondition<DIM>::SetNetwork(boost::shared_ptr<CaVascularNetwork <DIM> > pNetwork)
+{
+	mpNetwork = pNetwork;
 }
 
 template<unsigned DIM>
@@ -130,131 +138,131 @@ template<unsigned DIM>
 std::pair<bool, double> HybridBoundaryCondition<DIM>::GetValue(c_vector<double,DIM> location, double tolerance)
 {
     std::pair<bool, double> result(false, 0.0);
-//    if(mType == BoundaryConditionType::POINT)
-//    {
-//        if(mPoints.size()==0)
+    if(mType == BoundaryConditionType::POINT)
+    {
+        if(mPoints.size()==0)
+        {
+            EXCEPTION("A point is required for this type of boundary condition");
+        }
+        else
+        {
+            for(unsigned jdx=0; jdx<mPoints.size(); jdx++)
+            {
+                if(norm_2(location-mPoints[jdx]) < tolerance)
+                {
+                    return std::pair<bool, double>(true, mValue);
+                }
+            }
+        }
+    }
+    else if(mType == BoundaryConditionType::FACET)
+    {
+        if(!mpDomain)
+        {
+            EXCEPTION("A part is required for this type of boundary condition");
+        }
+        else
+        {
+            std::vector<boost::shared_ptr<Facet> > facets =  mpDomain->GetFacets();
+            for(unsigned jdx=0; jdx<facets.size();jdx++)
+            {
+                if(facets[jdx]->ContainsPoint(location) && (facets[jdx]->GetData("Boundary")>0.0))
+                {
+                    return std::pair<bool, double>(true, mValue);
+                }
+            }
+        }
+    }
+
+    else if(mType == BoundaryConditionType::VESSEL_LINE)
+    {
+        if(!mpNetwork)
+        {
+            EXCEPTION("A vessel network is required for this type of boundary condition");
+        }
+        else
+        {
+            std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
+            for (unsigned jdx = 0; jdx <  segments.size(); jdx++)
+            {
+                if (segments[jdx]->GetDistance(location) <= tolerance)
+                {
+                    if(BoundaryConditionSource::PRESCRIBED)
+                    {
+                        return std::pair<bool, double>(true, mValue);
+                    }
+                    else
+                    {
+                        return std::pair<bool, double>(true, segments[jdx]->template GetData<double>(mLabel));
+                    }
+                }
+            }
+        }
+    }
+
+    else if(mType == BoundaryConditionType::VESSEL_VOLUME)
+    {
+        if(!mpNetwork)
+        {
+            EXCEPTION("A vessel network is required for this type of boundary condition");
+        }
+        else
+        {
+            std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
+            for (unsigned jdx = 0; jdx <  segments.size(); jdx++)
+            {
+                if (segments[jdx]->GetDistance(location) <= segments[jdx]->GetRadius() + tolerance)
+                {
+                    if(BoundaryConditionSource::PRESCRIBED)
+                    {
+                        return std::pair<bool, double>(true, mValue);
+                    }
+                    else
+                    {
+                        return std::pair<bool, double>(true, segments[jdx]->template GetData<double>(mLabel));
+                    }
+                }
+            }
+        }
+    }
+
+    else if(mType == BoundaryConditionType::CELL)
+    {
+//        if(!mpCellPopulation)
 //        {
-//            EXCEPTION("A point is required for this type of boundary condition");
+//            EXCEPTION("A simple cell population is required for this type of boundary condition");
 //        }
-//        else
-//        {
-//            for(unsigned jdx=0; jdx<mPoints.size(); jdx++)
-//            {
-//                if(norm_2(location-mPoints[jdx]) < tolerance)
-//                {
-//                    return std::pair<bool, double>(true, mValue);
-//                }
-//            }
-//        }
-//    }
-//    else if(mType == BoundaryConditionType::FACET)
-//    {
-//        if(!mpDomain)
-//        {
-//            EXCEPTION("A part is required for this type of boundary condition");
-//        }
-//        else
-//        {
-//            std::vector<boost::shared_ptr<Facet> > facets =  mpDomain->GetFacets();
-//            for(unsigned jdx=0; jdx<facets.size();jdx++)
-//            {
-//                if(facets[jdx]->ContainsPoint(location) && (facets[jdx]->GetData("Boundary")>0.0))
-//                {
-//                    return std::pair<bool, double>(true, mValue);
-//                }
-//            }
-//        }
-//    }
 //
-//    else if(mType == BoundaryConditionType::VESSEL_LINE)
-//    {
-//        if(!mpNetwork)
+//        std::vector<boost::shared_ptr<SimpleCell<DIM> > > cells = mpCellPopulation->GetCells();
+//        for(unsigned idx=0; idx<cells.size(); idx++)
 //        {
-//            EXCEPTION("A vessel network is required for this type of boundary condition");
-//        }
-//        else
-//        {
-//            std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
-//            for (unsigned jdx = 0; jdx <  segments.size(); jdx++)
+//            if (norm_2(cells[idx]->rGetLocation()-location)<tolerance)
 //            {
-//                if (segments[jdx]->GetDistance(location) <= tolerance)
-//                {
-//                    if(BoundaryConditionSource::PRESCRIBED)
-//                    {
-//                        return std::pair<bool, double>(true, mValue);
-//                    }
-//                    else
-//                    {
-//                        return std::pair<bool, double>(true, segments[jdx]->template GetData<double>(mLabel));
-//                    }
-//                }
+//                return std::pair<bool, double>(true, mValue);
 //            }
 //        }
-//    }
-//
-//    else if(mType == BoundaryConditionType::VESSEL_VOLUME)
-//    {
-//        if(!mpNetwork)
-//        {
-//            EXCEPTION("A vessel network is required for this type of boundary condition");
-//        }
-//        else
-//        {
-//            std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
-//            for (unsigned jdx = 0; jdx <  segments.size(); jdx++)
-//            {
-//                if (segments[jdx]->GetDistance(location) <= segments[jdx]->GetRadius() + tolerance)
-//                {
-//                    if(BoundaryConditionSource::PRESCRIBED)
-//                    {
-//                        return std::pair<bool, double>(true, mValue);
-//                    }
-//                    else
-//                    {
-//                        return std::pair<bool, double>(true, segments[jdx]->template GetData<double>(mLabel));
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    else if(mType == BoundaryConditionType::CELL)
-//    {
-////        if(!mpCellPopulation)
-////        {
-////            EXCEPTION("A simple cell population is required for this type of boundary condition");
-////        }
-////
-////        std::vector<boost::shared_ptr<SimpleCell<DIM> > > cells = mpCellPopulation->GetCells();
-////        for(unsigned idx=0; idx<cells.size(); idx++)
-////        {
-////            if (norm_2(cells[idx]->rGetLocation()-location)<tolerance)
-////            {
-////                return std::pair<bool, double>(true, mValue);
-////            }
-////        }
-//    }
-//    else if(mType == BoundaryConditionType::IN_PART)
-//    {
-//        if(!mpDomain)
-//        {
-//            EXCEPTION("A part is required for this type of boundary condition");
-//        }
-//        else
-//        {
-//            if(mpDomain->IsPointInPart(location))
-//            {
-//                if(BoundaryConditionSource::PRESCRIBED)
-//                {
-//                    return  std::pair<bool, double>(true, mValue);
-//                }
-//                else
-//                {
-//                    return  std::pair<bool, double>(true, mValue);
-//                }
-//            }
-//        }
-//    }
+    }
+    else if(mType == BoundaryConditionType::IN_PART)
+    {
+        if(!mpDomain)
+        {
+            EXCEPTION("A part is required for this type of boundary condition");
+        }
+        else
+        {
+            if(mpDomain->IsPointInPart(location))
+            {
+                if(BoundaryConditionSource::PRESCRIBED)
+                {
+                    return  std::pair<bool, double>(true, mValue);
+                }
+                else
+                {
+                    return  std::pair<bool, double>(true, mValue);
+                }
+            }
+        }
+    }
     return result;
 }
 
@@ -313,7 +321,7 @@ void HybridBoundaryCondition<DIM>::UpdateRegularGridFacetBoundaryConditions(boos
 template<unsigned DIM>
 void HybridBoundaryCondition<DIM>::UpdateRegularGridSegmentBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions)
 {
-    std::vector<std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > > point_segment_map = mpRegularGrid->GetPointSegmentMap(true, mType == BoundaryConditionType::VESSEL_LINE);
+    std::vector<std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > > point_segment_map = mpRegularGrid->GetPointSegmentMap(true, !(mType == BoundaryConditionType::VESSEL_LINE));
     for(unsigned idx=0; idx<point_segment_map.size(); idx++)
     {
         if(point_segment_map[idx].size()>0)

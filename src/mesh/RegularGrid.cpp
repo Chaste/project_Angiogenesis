@@ -44,6 +44,7 @@
 #include <vtkPolyData.h>
 #include <vtkPoints.h>
 #include <vtkSmartPointer.h>
+#include "Debug.hpp"
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 RegularGrid<ELEMENT_DIM, SPACE_DIM>::RegularGrid() :
@@ -494,29 +495,28 @@ std::vector<std::vector<boost::shared_ptr<CaVesselSegment<SPACE_DIM> > > > Regul
 
     // Loop over all points and segments and associate segments with the points
     mPointSegmentMap = std::vector<std::vector<boost::shared_ptr<CaVesselSegment<SPACE_DIM> > > >(GetNumberOfPoints());
-    for (unsigned idx = 0; idx < GetNumberOfPoints(); idx++)
+    std::vector<boost::shared_ptr<CaVesselSegment<SPACE_DIM> > > segments = mpNetwork->GetVesselSegments();
+    for (unsigned jdx = 0; jdx < segments.size(); jdx++)
     {
-        std::vector<boost::shared_ptr<CaVesselSegment<SPACE_DIM> > > segment_vector;
-        std::vector<boost::shared_ptr<CaVesselSegment<SPACE_DIM> > > segments = mpNetwork->GetVesselSegments();
-        for (unsigned jdx = 0; jdx < segments.size(); jdx++)
+        for (unsigned idx = 0; idx < GetNumberOfPoints(); idx++)
         {
-            if (!useVesselSurface)
-            {
-                if (segments[jdx]->GetDistance(GetLocationOf1dIndex(idx)) <= mSpacing / 2.0)
-                {
-                    segment_vector.push_back(segments[jdx]);
-                }
-            }
-            else
-            {
-                if (segments[jdx]->GetDistance(GetLocationOf1dIndex(idx))<= segments[jdx]->GetRadius() + mSpacing / 2.0)
-                {
-                    segment_vector.push_back(segments[jdx]);
-                }
-            }
+			if (!useVesselSurface)
+			{
+				if (segments[jdx]->GetDistance(GetLocationOf1dIndex(idx)) < sqrt(1.0/2.0)*mSpacing)
+				{
+					mPointSegmentMap[idx].push_back(segments[jdx]);
+				}
+			}
+			else
+			{
+				if (segments[jdx]->GetDistance(GetLocationOf1dIndex(idx))< segments[jdx]->GetRadius() + sqrt(1.0/2.0)*mSpacing)
+				{
+					mPointSegmentMap[idx].push_back(segments[jdx]);
+				}
+			}
         }
-        mPointSegmentMap[idx] = segment_vector;
     }
+
     return mPointSegmentMap;
 }
 
