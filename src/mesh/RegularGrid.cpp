@@ -509,13 +509,13 @@ std::vector<std::vector<boost::shared_ptr<CaVesselSegment<SPACE_DIM> > > > Regul
             }
             else
             {
-                if (segments[jdx]->GetDistance(GetLocationOf1dIndex(idx))
-                        <= segments[jdx]->GetRadius() + mSpacing / 2.0)
+                if (segments[jdx]->GetDistance(GetLocationOf1dIndex(idx))<= segments[jdx]->GetRadius() + mSpacing / 2.0)
                 {
                     segment_vector.push_back(segments[jdx]);
                 }
             }
         }
+        mPointSegmentMap[idx] = segment_vector;
     }
     return mPointSegmentMap;
 }
