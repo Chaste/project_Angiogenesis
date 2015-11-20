@@ -21,7 +21,7 @@
 #include "Alarcon03HaematocritSolver.hpp"
 
 #include "FakePetscSetup.hpp"
-
+#include "Debug.hpp"
 class TestStructuralAdaptationSolver : public CxxTest::TestSuite
 {
 
@@ -68,6 +68,7 @@ public:
         std::string progress_output_filename = output_file_handler.GetOutputDirectoryFullPath().append("MultiVesselNetwork_SAAProgress.dat");
 
         StructuralAdaptationSolver<2> solver;
+        solver.SetVesselNetwork(p_network);
         solver.SetWriteOutput(true);
         solver.SetOutputFileName(progress_output_filename);
         solver.SetTolerance(0.0001);
@@ -78,7 +79,7 @@ public:
         p_network->Write(output_filename);
 
         TS_ASSERT_DELTA((nodes[3]->GetFlowProperties()->GetPressure() + nodes[4]->GetFlowProperties()->GetPressure())/2.0,(3322.0 + 1993.0) / 2.0, 1e-6);
-        TS_ASSERT_DELTA(abs(segments[0]->GetFlowProperties()->GetFlowRate()),abs(segments[1]->GetFlowProperties()->GetFlowRate()),1e-6);
+        TS_ASSERT_DELTA(fabs(segments[0]->GetFlowProperties()->GetFlowRate()),fabs(segments[1]->GetFlowProperties()->GetFlowRate()),1e-6);
         p_simulation_time->Destroy();
     }
 
@@ -114,6 +115,7 @@ public:
         std::string progress_output_filename = output_file_handler.GetOutputDirectoryFullPath().append("OneVesselNetwork_SAAProgress.dat");
 
         StructuralAdaptationSolver<2> solver;
+        solver.SetVesselNetwork(p_network);
         solver.SetWriteOutput(true);
         solver.SetOutputFileName(progress_output_filename);
         solver.SetTolerance(0.0001);
@@ -157,7 +159,7 @@ public:
         double y_middle = (extents[1].first + extents[1].second) /2.0;
         double x_middle = (extents[0].first + extents[0].second) /2.0;
 
-        typename std::vector<boost::shared_ptr<CaVessel<2> > >::iterator vessel_iterator;
+        std::vector<boost::shared_ptr<CaVessel<2> > >::iterator vessel_iterator;
 
         std::vector<boost::shared_ptr<CaVessel<2> > > vessels = vascular_network->GetVessels();
 
@@ -216,15 +218,16 @@ public:
 
         // Write the network to file
         OutputFileHandler output_file_handler("TestStructuralAdaptationSolver", false);
-        std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("HexagonalVesselNetworkt.vtp");
+        std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("HexagonalVesselNetwork.vtp");
         std::string progress_output_filename = output_file_handler.GetOutputDirectoryFullPath().append("HexagonalVesselNetwork_SAAProgress.dat");
 
         StructuralAdaptationSolver<2> solver;
+        solver.SetVesselNetwork(vascular_network);
         solver.SetWriteOutput(true);
         solver.SetOutputFileName(progress_output_filename);
-        solver.SetTolerance(0.001);
-        solver.SetTimeIncrement(0.0001);
-        solver.SetMaxIterations(100);
+        solver.SetTolerance(0.0001);
+        solver.SetTimeIncrement(0.001);
+        solver.SetMaxIterations(10000);
         solver.Solve();
 
         // Write the network to file

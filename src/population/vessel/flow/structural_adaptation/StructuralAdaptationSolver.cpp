@@ -114,7 +114,7 @@ void StructuralAdaptationSolver<DIM>::Iterate()
     }
 
 
-    if(this->GetTimeIncrement()==0.0)
+    if(SimulationTime::Instance()->GetTimeStepsElapsed()==0)
     {
         // todo This should not be 'hard-coded': start
         std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = this->mpVesselNetwork->GetVesselSegments();

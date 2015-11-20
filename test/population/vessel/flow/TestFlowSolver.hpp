@@ -93,6 +93,7 @@ public:
         p_vessel->GetEndNode()->GetFlowProperties()->SetPressure(1000.5);
 
         FlowSolver<3> solver;
+        solver.SetVesselNetwork(p_vascular_network);
         solver.SetUp();
         solver.Solve();
 
@@ -152,6 +153,7 @@ public:
         p_vessel->GetEndNode()->GetFlowProperties()->SetPressure(1000.5);
 
         FlowSolver<3> solver;
+        solver.SetVesselNetwork(p_vascular_network);
         solver.SetUp();
         solver.Solve();
 
@@ -211,6 +213,7 @@ public:
         nodes[2]->GetFlowProperties()->SetPressure(1000.5);
 
         FlowSolver<3> solver;
+        solver.SetVesselNetwork(p_vascular_network);
         solver.SetUp();
         solver.Solve();
 
@@ -282,6 +285,7 @@ public:
         nodes[6]->GetFlowProperties()->SetPressure(1000.5);
 
         FlowSolver<3> solver;
+        solver.SetVesselNetwork(p_vascular_network);
         solver.SetUp();
         solver.Solve();
 
@@ -359,6 +363,7 @@ public:
         nodes[3]->GetFlowProperties()->SetPressure(1000.5);
 
         FlowSolver<3> solver;
+        solver.SetVesselNetwork(p_vascular_network);
         solver.SetUp();
         solver.Solve();
         TS_ASSERT_DELTA(nodes[0]->GetFlowProperties()->GetPressure(), 3393, 1e-6);
@@ -416,7 +421,7 @@ public:
         std::vector<std::pair<double, double> > extents = vascular_network->GetExtents();
         double y_middle = (extents[1].first + extents[1].second) / 2.0;
 
-        typename std::vector<boost::shared_ptr<CaVessel<2> > >::iterator vessel_iterator;
+        std::vector<boost::shared_ptr<CaVessel<2> > >::iterator vessel_iterator;
 
         std::vector<boost::shared_ptr<CaVessel<2> > > vessels = vascular_network->GetVessels();
 
@@ -458,6 +463,7 @@ public:
         }
 
         FlowSolver<2> solver;
+        solver.SetVesselNetwork(vascular_network);
         solver.SetUp();
         solver.Solve();
 
@@ -513,6 +519,7 @@ public:
         PoiseuilleImpedanceCalculator<3> impedance_calculator;
         impedance_calculator.Calculate(p_network);
         FlowSolver<3> solver;
+        solver.SetVesselNetwork(p_network);
         solver.SetUp();
         solver.Solve();
 
@@ -560,6 +567,7 @@ public:
         PoiseuilleImpedanceCalculator<3> impedance_calculator;
         impedance_calculator.Calculate(p_network);
         FlowSolver<3> solver;
+        solver.SetVesselNetwork(p_network);
         solver.SetUp();
         solver.Solve();
 

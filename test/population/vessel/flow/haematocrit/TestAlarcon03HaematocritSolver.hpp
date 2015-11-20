@@ -177,7 +177,7 @@ public:
         double y_middle = (extents[1].first + extents[1].second) /2.0;
         double x_middle = (extents[0].first + extents[0].second) /2.0;
 
-        typename std::vector<boost::shared_ptr<CaVessel<2> > >::iterator vessel_iterator;
+        std::vector<boost::shared_ptr<CaVessel<2> > >::iterator vessel_iterator;
 
         std::vector<boost::shared_ptr<CaVessel<2> > > vessels = vascular_network->GetVessels();
 
@@ -239,6 +239,7 @@ public:
         PoiseuilleImpedanceCalculator<2> impedance_calculator;
         impedance_calculator.Calculate(vascular_network);
         FlowSolver<2> solver;
+        solver.SetVesselNetwork(vascular_network);
         solver.SetUp();
         solver.Solve();
 
