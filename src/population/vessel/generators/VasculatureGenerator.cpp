@@ -981,14 +981,14 @@ boost::shared_ptr<CaVascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateHe
 
     // Determine the number of repeating hexagonal units in the x and y directions based on the input height, width and vessel length
     double horizontal_vessel_length = vessel_length;
-    double diagonal_vessel_length = floor(vessel_length / (std::sqrt(2) * 2e-5) + 0.5) * 2e-5;
+    double diagonal_vessel_length = floor(vessel_length / std::sqrt(2) + 0.5);
     unsigned units_in_x_direction = floor(
-            ((width - horizontal_vessel_length - 2.0 * diagonal_vessel_length)
+            ((width - horizontal_vessel_length - 2.0 * diagonal_vessel_length - 1)
                     / (2.0 * (horizontal_vessel_length + diagonal_vessel_length))));
-    unsigned units_in_y_direction = floor(((height) / (2.0 * diagonal_vessel_length)));
+    unsigned units_in_y_direction = floor(((height-1) / (2.0 * diagonal_vessel_length)));
 
     // Ensure there are a minimal number of units required to generate a functional network
-    if (units_in_x_direction <= 1 || units_in_y_direction <= 1)
+    if (units_in_x_direction < 1 || units_in_y_direction < 1)
     {
         std::string message =
                 "Insufficient number of repeating units specified for the hexagonal network. Minimum length in x = ";
