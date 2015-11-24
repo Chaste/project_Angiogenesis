@@ -44,29 +44,53 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Debug.hpp"
 
+// helper method for creating a new tip cell, bypassing the need to query the sub-cellular model,
+// which otherwise causes problems
+CellPtr CreateNewTipCell(CellPtr parent_cell)
+{
+
+    // Create daughter cell with modified cell property collection
+    CellPtr p_new_cell(new Cell(parent_cell->GetMutationState(), parent_cell->GetCellCycleModel()->CreateCellCycleModel()));
+
+    // Initialise properties of daughter cell
+    p_new_cell->GetCellCycleModel()->InitialiseDaughterCell();
+
+    // Set the daughter cell to inherit the apoptosis time of the parent cell
+    p_new_cell->SetApoptosisTime(parent_cell->GetApoptosisTime());
+
+    return p_new_cell;
+}
+
 template<unsigned DIM>
 CaBasedCellPopulationWithVessels<DIM>::CaBasedCellPopulationWithVessels(PottsMesh<DIM>& rMesh,
-                                                                        std::vector<CellPtr>& rCells,
-                                                                        const std::vector<unsigned> locationIndices,
-                                                                        unsigned latticeCarryingCapacity,
-                                                                        bool deleteMesh,
-                                                                        bool validate)
-                                                                        : CaBasedCellPopulation<DIM>(rMesh,
-                                                                                                     rCells,
-                                                                                                     locationIndices,
-                                                                                                     latticeCarryingCapacity,
-                                                                                                     deleteMesh,
-                                                                                                     validate),
-                                                                                                     mpNetwork(),
-                                                                                                     mTipCells(),
-                                                                                                     mp_tip_mutation_state(new TipCellMutationState),
-                                                                                                     mp_stalk_mutation_state(new StalkCellMutationState),
-                                                                                                     mp_pde_handler(),
-                                                                                                     mCellNodeMap(),
-                                                                                                     mVolumeFractionMap()
-                                                                                                     {
+        std::vector<CellPtr>& rCells,
+        const std::vector<unsigned> locationIndices,
+        unsigned latticeCarryingCapacity,
+        bool deleteMesh,
+        bool validate)
+        : CaBasedCellPopulation<DIM>(rMesh,
+                rCells,
+                locationIndices,
+                latticeCarryingCapacity,
+                deleteMesh,
+                validate),
+                mpNetwork(),
+                mTipCells(),
+                mp_tip_mutation_state(new TipCellMutationState),
+                mp_stalk_mutation_state(new StalkCellMutationState),
+                mp_pde_handler(),
+                mCellNodeMap(),
+                mVolumeFractionMap()
+                {
 
-                                                                                                     }
+                }
+
+template<unsigned DIM>
+CaBasedCellPopulationWithVessels<DIM>::CaBasedCellPopulationWithVessels(PottsMesh<DIM>& rMesh)
+: CaBasedCellPopulation<DIM>(rMesh)
+  {
+  }
+
 
 template<unsigned DIM>
 CaBasedCellPopulationWithVessels<DIM>::~CaBasedCellPopulationWithVessels()
@@ -262,8 +286,7 @@ void CaBasedCellPopulationWithVessels<DIM>::DoSprouting(std::vector<boost::share
                     if(activeTips[tip_index]->GetMutationState()->IsSame(mp_tip_mutation_state))
                     {
                         // Create a new cell
-                        activeTips[tip_index]->ReadyToDivide();
-                        CellPtr p_new_cell = activeTips[tip_index]->Divide();
+                        CellPtr p_new_cell = CreateNewTipCell(activeTips[tip_index]);
 
                         // Add new cell to the cell population
                         this->AddCellUsingLocationIndex(candidate_location_index, p_new_cell); // this doesn't actually add a cell!
@@ -471,8 +494,7 @@ void CaBasedCellPopulationWithVessels<DIM>::DoMigration()
                         if(activeTips[tip_index]->GetMutationState()->IsSame(mp_tip_mutation_state))
                         {
                             // Create a new cell
-                            activeTips[tip_index]->ReadyToDivide();
-                            CellPtr p_new_cell = activeTips[tip_index]->Divide();
+                            CellPtr p_new_cell = CreateNewTipCell(activeTips[tip_index]);
 
                             // Add new cell to the cell population
                             this->AddCellUsingLocationIndex(candidate_location_index, p_new_cell); // this doesn't actually add a cell!
@@ -492,40 +514,9 @@ void CaBasedCellPopulationWithVessels<DIM>::DoMigration()
 template<unsigned DIM>
 bool CaBasedCellPopulationWithVessels<DIM>::IsSiteAvailable(unsigned index, CellPtr pCell)
 {
-    std::vector<unsigned> available_spaces = this->rGetAvailableSpaces();
     double current_occupied_fraction = GetOccupiedVolumeFraction(index);
     double candidate_fraction = GetOccupyingVolumeFraction(pCell->GetMutationState());
     return(current_occupied_fraction + candidate_fraction <=1.0);
-    //
-    //
-    //    if (pCell->GetMutationState()->IsSame(mp_tip_mutation_state))
-    //    {
-    //        if (available_spaces[index] != 0)
-    //        {
-    //            return true;
-    //        }
-    //        else
-    //        {
-    //            // if any cell at location index is a stalk or tip cell then the
-    //            // tip cell can move in to that location
-    //            std::set<CellPtr> cells = this->GetCellsUsingLocationIndex(index);
-    //            std::set<CellPtr>::iterator it;
-    //
-    //            for (it = cells.begin(); it != cells.end(); ++it)
-    //            {
-    //                if((*it)->GetMutationState()->IsSame(mp_tip_mutation_state) ||
-    //                        (*it)->GetMutationState()->IsSame(mp_stalk_mutation_state))
-    //                {
-    //                    return true;
-    //                }
-    //            }
-    //            return false;
-    //        }
-    //    }
-    //    else
-    //    {
-    //        return (available_spaces[index] != 0);
-    //    }
 }
 
 template<unsigned DIM>
@@ -647,7 +638,7 @@ std::vector<boost::shared_ptr<Cell> > CaBasedCellPopulationWithVessels<DIM>::Get
 }
 
 template<unsigned DIM>
-void CaBasedCellPopulationWithVessels<DIM>::AddPdeHandler(boost::shared_ptr<CellBasedPdeHandler<DIM> > pde_handler)
+void CaBasedCellPopulationWithVessels<DIM>::AddPdeHandler(boost::shared_ptr<FiniteDifferenceSolver<DIM> > pde_handler)
 {
     mp_pde_handler = pde_handler;
 }
@@ -666,7 +657,13 @@ std::map<std::string, std::vector<double> > CaBasedCellPopulationWithVessels<DIM
         data_map["Occupancy"].push_back(double(IsSiteAvailable(*it, pCell)));
         data_map["Index"].push_back(double(*it));
         c_vector<double, DIM> neighbour_location = this->rGetMesh().GetNode(*it)->rGetLocation();
-        data_map["VEGF"].push_back(mp_pde_handler->GetPdeSolutionAtPoint(neighbour_location, "VEGF"));
+
+        // todo need to tidy this up - currently there is  a little too much messing around to sample a single point in space.
+        std::vector<c_vector<double, DIM> > samplePoints;
+        samplePoints.push_back(neighbour_location);
+        std::vector<double> sample_VEGF = mp_pde_handler->GetSolutionAtPoints(samplePoints);
+
+        data_map["VEGF"].push_back(sample_VEGF[0]);
     }
     return data_map;
 }
@@ -705,7 +702,7 @@ void CaBasedCellPopulationWithVessels<DIM>::UpdateVascularCellPopulation()
     // Do Sprouting - Select candidate tips
     //
     double p_sprout_max = 5e-1;
-    double half_max_vegf = 0.65; // units of nano_molar
+    double half_max_vegf = 0.65e-3; // units of nano_molar
     double radius_of_exclusion = 2;
     std::vector<boost::shared_ptr<Cell> > candidate_tips = std::vector<boost::shared_ptr<Cell> >();
     if(mp_pde_handler)
@@ -714,7 +711,17 @@ void CaBasedCellPopulationWithVessels<DIM>::UpdateVascularCellPopulation()
         {
             if ((*cell_iter)->GetMutationState()->IsSame(mp_stalk_mutation_state) )
             {
-                double vegf_conc = (*cell_iter)->GetCellData()->GetItem("VEGF");
+
+                unsigned cell_index = this->GetLocationIndexUsingCell(*cell_iter);
+                c_vector<double, DIM> cell_location = this->rGetMesh().GetNode(cell_index)->rGetLocation();
+
+                // todo need to tidy this up - currently there is  a little too much messing around to sample a single point in space.
+                std::vector<c_vector<double, DIM> > samplePoints;
+                samplePoints.push_back(cell_location);
+
+                std::vector<double> sample_VEGF = mp_pde_handler->GetSolutionAtPoints(samplePoints);
+
+                double vegf_conc = sample_VEGF[0];
                 double prob_tip_selection = p_sprout_max*SimulationTime::Instance()->GetTimeStep()*vegf_conc/(vegf_conc + half_max_vegf);
 
                 // check to see that there are no other tip cells within the prescribed radius of exclusion
@@ -752,8 +759,9 @@ void CaBasedCellPopulationWithVessels<DIM>::UpdateVascularCellPopulation()
     DoSprouting(candidate_tips);
 }
 
-
-
 // Explicit instantiation
 template class CaBasedCellPopulationWithVessels<2>;
 template class CaBasedCellPopulationWithVessels<3>;
+
+#include "SerializationExportWrapperForCpp.hpp"
+EXPORT_TEMPLATE_CLASS_SAME_DIMS(CaBasedCellPopulationWithVessels)

@@ -43,9 +43,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "StalkCellMutationState.hpp"
 #include "TipCellMutationState.hpp"
 #include "CaVascularNetwork.hpp"
-
-template<unsigned DIM>
-class CellBasedPdeHandler; // circular definition
+#include "FiniteDifferenceSolver.hpp"
 
 template<unsigned DIM>
 class AbstractCaUpdateRule; // Circular definition
@@ -65,11 +63,32 @@ private:
 
     boost::shared_ptr<StalkCellMutationState> mp_stalk_mutation_state;
 
-    boost::shared_ptr<CellBasedPdeHandler<DIM> > mp_pde_handler;
+    boost::shared_ptr<FiniteDifferenceSolver<DIM> > mp_pde_handler;
 
     std::map<boost::shared_ptr<Cell> , boost::shared_ptr<VascularNode<DIM> > > mCellNodeMap;
 
     std::map<boost::shared_ptr<AbstractCellMutationState> , double > mVolumeFractionMap;
+
+
+    friend class boost::serialization::access;
+    /**
+     * Serialize the object and its member variables.
+     *
+     * Note that serialization of the mesh and cells is handled by load/save_construct_data.
+     *
+     * Note also that member data related to writers is not saved - output must
+     * be set up again by the caller after a restart.
+     *
+     * @param archive the archive
+     * @param version the current version of this class
+     */
+    template<class Archive>
+    void serialize(Archive & archive, const unsigned int version)
+    {
+#define COVERAGE_IGNORE
+        archive & boost::serialization::base_object<CaBasedCellPopulation<DIM> >(*this);
+#undef COVERAGE_IGNORE
+    }
 
 public:
 
@@ -94,9 +113,16 @@ public:
                                      bool deleteMesh=false,
                                      bool validate=false);
 
+    /**
+     * Constructor for use by the de-serializer.
+     *
+     * @param rMesh a Ca mesh.
+     */
+    CaBasedCellPopulationWithVessels(PottsMesh<DIM>& rMesh);
+
     virtual ~CaBasedCellPopulationWithVessels();
 
-    void AddPdeHandler(boost::shared_ptr<CellBasedPdeHandler<DIM> > pde_handler);
+    void AddPdeHandler(boost::shared_ptr<FiniteDifferenceSolver<DIM> > pde_handler);
 
     /**
      * Select a cell to take on stalk cell mutation
@@ -167,5 +193,45 @@ public:
     void UpdateVascularCellPopulation();
 
 };
+
+#include "SerializationExportWrapper.hpp"
+EXPORT_TEMPLATE_CLASS_SAME_DIMS(CaBasedCellPopulationWithVessels)
+
+// No archiving yet so untested
+#define COVERAGE_IGNORE
+namespace boost
+{
+namespace serialization
+{
+/**
+ * Serialize information required to construct a CaBasedCellPopulationWithVessels.
+ */
+template<class Archive, unsigned DIM>
+inline void save_construct_data(
+    Archive & ar, const CaBasedCellPopulationWithVessels<DIM> * t, const unsigned int file_version)
+{
+    // Save data required to construct instance
+    const PottsMesh<DIM>* p_mesh = &(t->rGetMesh());
+    ar & p_mesh;
+}
+
+/**
+ * De-serialize constructor parameters and initialise a CaBasedCellPopulationWithVessels.
+ * Loads the mesh from separate files.
+ */
+template<class Archive, unsigned DIM>
+inline void load_construct_data(
+    Archive & ar, CaBasedCellPopulationWithVessels<DIM> * t, const unsigned int file_version)
+{
+    // Retrieve data from archive required to construct new instance
+    PottsMesh<DIM>* p_mesh;
+    ar >> p_mesh;
+
+    // Invoke inplace constructor to initialise instance
+    ::new(t)CaBasedCellPopulationWithVessels<DIM>(*p_mesh);
+}
+}
+} // namespace ...
+#undef COVERAGE_IGNORE
 
 #endif /*CABASEDCELLPOPULATIONWITHVESSELS_HPP_*/
