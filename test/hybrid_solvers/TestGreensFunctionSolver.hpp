@@ -79,7 +79,7 @@ public:
         MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestGreensFunctionSolver/KroghCylinder3d", false));
         solver.SetFileHandler(p_output_file_handler);
         solver.Setup();
-        solver.Solve(true);
+        solver.Solve();
     }
 };
 

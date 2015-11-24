@@ -108,7 +108,7 @@ public:
 
         MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestFiniteDifferenceSolver/CuboidalDomain", false));
         solver.SetFileHandler(p_output_file_handler);
-        solver.Solve(true);
+        solver.Solve();
     }
 
     void TestWithVesselBoundaryConditions() throw(Exception)
@@ -144,7 +144,7 @@ public:
 
         MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestFiniteDifferenceSolver/WithVessels", false));
         solver.SetFileHandler(p_output_file_handler);
-        solver.Solve(true);
+        solver.Solve();
     }
 };
 

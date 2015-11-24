@@ -93,7 +93,7 @@ public:
 
         MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestFiniteElementSolver/KroghCylinder3d", false));
         solver.SetFileHandler(p_output_file_handler);
-        solver.Solve(true);
+        solver.Solve();
     }
 
     void Test3dKroghCylinderNetworkSurface() throw(Exception)
@@ -132,7 +132,7 @@ public:
 
         MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestFiniteElementSolver/KroghCylinder3dSurface", false));
         solver.SetFileHandler(p_output_file_handler);
-        solver.Solve(true);
+        solver.Solve();
     }
 };
 

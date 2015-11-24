@@ -89,7 +89,7 @@ public:
 
         MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestKroghCylinderSolver/0Order", false));
         solver.SetFileHandler(p_output_file_handler);
-        solver.Solve(true);
+        solver.Solve();
     }
 
     void Test1stOrderKrogh()
@@ -122,7 +122,7 @@ public:
 
         MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestKroghCylinderSolver/1stOrder", false));
         solver.SetFileHandler(p_output_file_handler);
-        solver.Solve(true);
+        solver.Solve();
     }
 };
 

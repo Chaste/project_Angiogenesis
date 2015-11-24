@@ -224,68 +224,68 @@ public:
 
     void dontTestAngiogenesis() throw (Exception)
                     {
-        // Create the mesh
-        PottsMeshGenerator<3> generator(4, 0, 0, 30, 0, 0, 30, 0, 0);
-        PottsMesh<3>* p_mesh = generator.GetMesh();
-
-        // Create the vessel network: single vessel in middle of domain
-        c_vector<double, 3> start_position;
-        start_position[0] = 2;
-        start_position[1] = 15;
-        start_position[2] = 0;
-        VasculatureGenerator<3> network_generator;
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = network_generator.GenerateSingleVessel(30, start_position);
-
-        // Write the initial network to file
-        std::string output_directory = "TestCaBasedCellPopulationWithVesselsAngiogenesis";
-        OutputFileHandler output_file_handler(output_directory, true);
-
-        CaBasedCellPopulationWithVesselsGenerator<3> cellPopulationGenerator;
-        cellPopulationGenerator.SetIncludeNormalCellPopulation(false);
-        boost::shared_ptr<CaBasedCellPopulationWithVessels<3> > cell_population =
-                cellPopulationGenerator.CreateCellPopulation(*p_mesh, p_network);
-
-        // add writers for outputting
-        cell_population->AddCellWriter<CellLabelWriter>();
-        cell_population->AddCellWriter<CellMutationStatesWriter>();
-        cell_population->AddPopulationWriter<NodeLocationWriter>();
-
-        // set up PDE
-        AveragedSourcePde<3> pde(*(cell_population.get()), -0.5);
-        ConstBoundaryCondition<3> p_zero_boundary_condition(1.0);
-        PdeAndBoundaryConditions<3> pde_and_bc(&pde, &p_zero_boundary_condition, false);
-        pde_and_bc.SetDependentVariableName("VEGF");
-
-        boost::shared_ptr<CellBasedPdeHandler<3> > pde_handler(new CellBasedPdeHandler<3>(cell_population.get()));
-        pde_handler->AddPdeAndBc(&pde_and_bc);
-        ChastePoint<3> lower(0.0, 0.0, 0.0);
-        ChastePoint<3> upper(4.0, 30.0, 30.0);
-        ChasteCuboid<3> cuboid(lower, upper);
-        pde_handler->UseCoarsePdeMesh(2.0, cuboid, true);
-        pde_handler->SetImposeBcsOnCoarseBoundary(true);
-
-        cell_population->AddPdeHandler(pde_handler);
-        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(60, 120);
-
-        while (!(SimulationTime::Instance()->IsFinished()))
-        {
-
-            pde_handler->OpenResultsFiles(output_directory);
-            pde_handler->SolvePdeAndWriteResultsToFile(1);
-            pde_handler->CloseResultsFiles();
-
-            std::string output_filename_vessels = output_file_handler.GetOutputDirectoryFullPath().append("VesselNetwork_");
-            p_network->Write(output_filename_vessels + boost::lexical_cast<std::string>(SimulationTime::Instance()->GetTimeStepsElapsed()) + ".vtp");
-
-            cell_population->OpenWritersFiles(output_file_handler);
-            cell_population->WriteResultsToFiles(output_directory);
-            cell_population->CloseWritersFiles();
-
-            cell_population->UpdateVascularCellPopulation();
-
-
-            SimulationTime::Instance()->IncrementTimeOneStep();
-        }
+//        // Create the mesh
+//        PottsMeshGenerator<3> generator(4, 0, 0, 30, 0, 0, 30, 0, 0);
+//        PottsMesh<3>* p_mesh = generator.GetMesh();
+//
+//        // Create the vessel network: single vessel in middle of domain
+//        c_vector<double, 3> start_position;
+//        start_position[0] = 2;
+//        start_position[1] = 15;
+//        start_position[2] = 0;
+//        VasculatureGenerator<3> network_generator;
+//        boost::shared_ptr<CaVascularNetwork<3> > p_network = network_generator.GenerateSingleVessel(30, start_position);
+//
+//        // Write the initial network to file
+//        std::string output_directory = "TestCaBasedCellPopulationWithVesselsAngiogenesis";
+//        OutputFileHandler output_file_handler(output_directory, true);
+//
+//        CaBasedCellPopulationWithVesselsGenerator<3> cellPopulationGenerator;
+//        cellPopulationGenerator.SetIncludeNormalCellPopulation(false);
+//        boost::shared_ptr<CaBasedCellPopulationWithVessels<3> > cell_population =
+//                cellPopulationGenerator.CreateCellPopulation(*p_mesh, p_network);
+//
+//        // add writers for outputting
+//        cell_population->AddCellWriter<CellLabelWriter>();
+//        cell_population->AddCellWriter<CellMutationStatesWriter>();
+//        cell_population->AddPopulationWriter<NodeLocationWriter>();
+//
+//        // set up PDE
+//        AveragedSourcePde<3> pde(*(cell_population.get()), -0.5);
+//        ConstBoundaryCondition<3> p_zero_boundary_condition(1.0);
+//        PdeAndBoundaryConditions<3> pde_and_bc(&pde, &p_zero_boundary_condition, false);
+//        pde_and_bc.SetDependentVariableName("VEGF");
+//
+//        boost::shared_ptr<CellBasedPdeHandler<3> > pde_handler(new CellBasedPdeHandler<3>(cell_population.get()));
+//        pde_handler->AddPdeAndBc(&pde_and_bc);
+//        ChastePoint<3> lower(0.0, 0.0, 0.0);
+//        ChastePoint<3> upper(4.0, 30.0, 30.0);
+//        ChasteCuboid<3> cuboid(lower, upper);
+//        pde_handler->UseCoarsePdeMesh(2.0, cuboid, true);
+//        pde_handler->SetImposeBcsOnCoarseBoundary(true);
+//
+//        cell_population->AddPdeHandler(pde_handler);
+//        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(60, 120);
+//
+//        while (!(SimulationTime::Instance()->IsFinished()))
+//        {
+//
+//            pde_handler->OpenResultsFiles(output_directory);
+//            pde_handler->SolvePdeAndWriteResultsToFile(1);
+//            pde_handler->CloseResultsFiles();
+//
+//            std::string output_filename_vessels = output_file_handler.GetOutputDirectoryFullPath().append("VesselNetwork_");
+//            p_network->Write(output_filename_vessels + boost::lexical_cast<std::string>(SimulationTime::Instance()->GetTimeStepsElapsed()) + ".vtp");
+//
+//            cell_population->OpenWritersFiles(output_file_handler);
+//            cell_population->WriteResultsToFiles(output_directory);
+//            cell_population->CloseWritersFiles();
+//
+//            cell_population->UpdateVascularCellPopulation();
+//
+//
+//            SimulationTime::Instance()->IncrementTimeOneStep();
+//        }
                     }
 };
 
