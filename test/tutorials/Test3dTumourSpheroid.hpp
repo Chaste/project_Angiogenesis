@@ -58,6 +58,8 @@
 #include "WildTypeCellMutationState.hpp"
 #include "CancerCellMutationState.hpp"
 #include "StemCellProliferativeType.hpp"
+#include "TipCellMutationState.hpp"
+#include "StalkCellMutationState.hpp"
 #include "RegularGrid.hpp"
 #include "FiniteDifferenceSolver.hpp"
 #include "HybridLinearEllipticPde.hpp"
@@ -75,68 +77,103 @@
 class Test3dTumourSpheroid : public AbstractCellBasedWithTimingsTestSuite
 {
     boost::shared_ptr<HybridLinearEllipticPde<3> > GetOxygenPde()
-    {
+                                {
         boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
-        p_pde->SetIsotropicDiffusionConstant(0.0033 / 400.0); // assume cell width is 20 microns
+        p_pde->SetIsotropicDiffusionConstant(8700000 / (400.0)); // assume cell width is 20 microns
 
         // Add a cell state specific discrete source for cells consuming oxygen
         boost::shared_ptr<CellStateDependentDiscreteSource<3> > p_cell_sink =
                 CellStateDependentDiscreteSource<3>::Create();
+        p_cell_sink->SetIsLinearInSolution(true);
         std::map<unsigned, double> state_specific_rates;
 
         MAKE_PTR(WildTypeCellMutationState, p_normal_cell_state);
         MAKE_PTR(CancerCellMutationState, p_cancer_state);
         MAKE_PTR(QuiescentCancerCellMutationState, p_quiescent_cancer_state);
         MAKE_PTR(ApoptoticCellProperty, p_apoptotic_property);
+        MAKE_PTR(TipCellMutationState, p_tip_state);
+        MAKE_PTR(StalkCellMutationState, p_stalk_state);
 
         state_specific_rates[p_apoptotic_property->GetColour()] = 0.0;
-        state_specific_rates[p_cancer_state->GetColour()] = -3e-8;
-        state_specific_rates[p_quiescent_cancer_state->GetColour()] = -3e-8;
-        state_specific_rates[p_normal_cell_state->GetColour()] = -2e-8;
+        state_specific_rates[p_cancer_state->GetColour()] = -780;
+        state_specific_rates[p_quiescent_cancer_state->GetColour()] = -780;
+        state_specific_rates[p_tip_state->GetColour()] = -500;
+        state_specific_rates[p_stalk_state->GetColour()] = -500;
+        state_specific_rates[p_normal_cell_state->GetColour()] = -500;
 
         p_cell_sink->SetStateRateMap(state_specific_rates);
         p_pde->AddDiscreteSource(p_cell_sink);
 
+        // todo this needs to be updated so that source strength is proportional to haematocrit level
+        boost::shared_ptr<CellStateDependentDiscreteSource<3> > p_cell_source =
+                CellStateDependentDiscreteSource<3>::Create();
+        p_cell_source->SetIsLinearInSolution(false); // constant oxygen release rate
+        std::map<unsigned, double> state_specific_rates2;
+
+        double segment_radius = 0.5;
+        double segment_length = 1.0;
+        double permeability = 20000;
+        double inter_vessel_O2_level = 20;
+        state_specific_rates2[p_stalk_state->GetColour()] = 2*M_PI*segment_radius*segment_length*permeability*inter_vessel_O2_level/pow(segment_length,3.0);
+        state_specific_rates2[p_tip_state->GetColour()] = 2*M_PI*segment_radius*segment_length*permeability*inter_vessel_O2_level/pow(segment_length,3.0);
+        p_cell_source->SetStateRateMap(state_specific_rates2);
+        p_pde->AddDiscreteSource(p_cell_source);
+
+        p_pde->SetVariableName("Oxygen");
+
         return p_pde;
-    }
+                                }
 
+    // todo need to check parameters in sink/source terms in here
     boost::shared_ptr<HybridLinearEllipticPde<3> > GetVegfPde()
-    {
+                                {
         boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
-        p_pde->SetIsotropicDiffusionConstant(0.0033 / (400.0 * 145.0)); // assume cell width is 20 microns and vegf D is oxygen D/145.0
-        p_pde->SetContinuumLinearInUTerm(0.8); //Vegf decay
+        p_pde->SetIsotropicDiffusionConstant(60000 / (400.0)); // assume cell width is 20 microns
+        p_pde->SetContinuumLinearInUTerm(-0.8); //Vegf decay
 
-        // VEGF release for normal cells, release only when intracellular vegf reaches a certain value
-        boost::shared_ptr<CellStateDependentDiscreteSource<3> > p_normal_cell_source = CellStateDependentDiscreteSource<
+        // VEGF release for normal cells and quiescent cancer cells:
+        // normal cells release only when intracellular vegf reaches a certain value
+        // quiescent cancer cells release always release vegf
+        boost::shared_ptr<CellStateDependentDiscreteSource<3> > p_normal_and_quiescent_cell_source = CellStateDependentDiscreteSource<
                 3>::Create();
-        p_normal_cell_source->SetIsLinearInSolution(false); // constant vegf release rate
+        p_normal_and_quiescent_cell_source->SetIsLinearInSolution(false); // constant vegf release rate
 
         // Set mutation specific source strengths and thresholds
-        std::map<unsigned, double> normal_cell_rates;
-        std::map<unsigned, double> normal_cell_rate_thresholds;
-
-        MAKE_PTR(WildTypeCellMutationState, p_normal_cell_state);
-        normal_cell_rates[p_normal_cell_state->GetColour()] = 0.6;
-        normal_cell_rate_thresholds[p_normal_cell_state->GetColour()] = 0.27;
-
-        p_normal_cell_source->SetStateRateMap(normal_cell_rates);
-        p_normal_cell_source->SetLabelName("VEGF");
-        p_normal_cell_source->SetStateRateThresholdMap(normal_cell_rate_thresholds);
-        p_pde->AddDiscreteSource(p_normal_cell_source);
-
-        // VEGF release for cancer cells, now there is no threshold so we use a different source
-        boost::shared_ptr<CellStateDependentDiscreteSource<3> > p_cancer_cell_source = CellStateDependentDiscreteSource<
-                3>::Create();
-        p_cancer_cell_source->SetIsLinearInSolution(false); // constant vegf release rate
-        std::map<unsigned, double> cancer_cell_rates;
+        std::map<unsigned, double> normal_and_quiescent_cell_rates;
+        std::map<unsigned, double> normal_and_quiescent_cell_rate_thresholds;
 
         MAKE_PTR(QuiescentCancerCellMutationState, p_quiescent_cancer_state);
-        cancer_cell_rates[p_quiescent_cancer_state->GetColour()] = 0.6; // Quiescent cancer cell mutation state
-        p_cancer_cell_source->SetStateRateMap(cancer_cell_rates);
-        p_pde->AddDiscreteSource(p_cancer_cell_source);
+        MAKE_PTR(WildTypeCellMutationState, p_normal_cell_state);
+        normal_and_quiescent_cell_rates[p_normal_cell_state->GetColour()] = 0.6;
+        normal_and_quiescent_cell_rate_thresholds[p_normal_cell_state->GetColour()] = 0.27;
+        normal_and_quiescent_cell_rates[p_quiescent_cancer_state->GetColour()] = 0.6;
+        normal_and_quiescent_cell_rate_thresholds[p_quiescent_cancer_state->GetColour()] = 0;
+
+        p_normal_and_quiescent_cell_source->SetStateRateMap(normal_and_quiescent_cell_rates);
+        p_normal_and_quiescent_cell_source->SetLabelName("VEGF");
+        p_normal_and_quiescent_cell_source->SetStateRateThresholdMap(normal_and_quiescent_cell_rate_thresholds);
+        p_pde->AddDiscreteSource(p_normal_and_quiescent_cell_source);
+
+        // VEGF release for cancer cells and tip cells, now there is no threshold so we use a different source
+        boost::shared_ptr<CellStateDependentDiscreteSource<3> > p_other_cell_sinks = CellStateDependentDiscreteSource<
+                3>::Create();
+        p_other_cell_sinks->SetIsLinearInSolution(true); // linear vegf uptake rate
+        std::map<unsigned, double> other_cell_rates;
+
+        double segment_radius = 0.5;
+        double segment_length = 1.0;
+        double permeability = 15;
+        MAKE_PTR(TipCellMutationState, p_tip_state);
+        MAKE_PTR(StalkCellMutationState, p_stalk_state);
+        other_cell_rates[p_tip_state->GetColour()] = -2*M_PI*segment_radius*segment_length*permeability/pow(segment_length,3.0); // tip cell mutation state
+        other_cell_rates[p_stalk_state->GetColour()] = -2*M_PI*segment_radius*segment_length*permeability/pow(segment_length,3.0); // stalk cell mutation state
+        p_other_cell_sinks->SetStateRateMap(other_cell_rates);
+        p_pde->AddDiscreteSource(p_other_cell_sinks);
+
+        p_pde->SetVariableName("VEGF");
 
         return p_pde;
-    }
+                                }
 
 public:
 
@@ -145,7 +182,7 @@ public:
         // Set up simulation domain
         double domain_x = 40.0;
         double domain_y = 40.0;
-        double domain_z = 5.0;
+        double domain_z = 6.0;
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
         p_domain->AddCuboid(domain_x, domain_y, domain_z);
 
@@ -158,12 +195,12 @@ public:
         PottsMesh<3>* p_mesh = generator.GetMesh();
         p_mesh->Scale(spacing, spacing);
 
-        // Get initital tumour cell region
+        // Get initial tumour cell region
         double radius = 3.0;
         c_vector<double, 3> origin;
-        origin[0] = 18.0;
-        origin[1] = 18.0;
-        origin[2] = 4.0;
+        origin[0] = 20.0;
+        origin[1] = 20.0;
+        origin[2] = 3.0;
         boost::shared_ptr<Part<3> > p_sub_domain = Part<3>::Create();
         boost::shared_ptr<Polygon> circle = p_sub_domain->AddCircle(radius, origin);
         std::vector<unsigned> location_indices;
@@ -204,11 +241,11 @@ public:
 
         // Create a grid to solve PDEs on
         boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
-        p_grid->SetSpacing(2.0);
+        p_grid->SetSpacing(1);
         std::vector<unsigned> extents;
-        extents.push_back(40); // num_x
-        extents.push_back(40); // num_y
-        extents.push_back(5); // num_z
+        extents.push_back(41); //
+        extents.push_back(41); //
+        extents.push_back(7); //
         p_grid->SetExtents(extents);
 
         // Create the oxygen pde solver
