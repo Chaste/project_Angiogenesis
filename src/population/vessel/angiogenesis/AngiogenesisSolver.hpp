@@ -158,7 +158,7 @@ public:
     /**
      * Increment one step in time
      */
-    void Increment();
+    virtual void Increment();
 
     /**
      * Run until the specified end time
