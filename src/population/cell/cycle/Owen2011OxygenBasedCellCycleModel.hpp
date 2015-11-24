@@ -140,6 +140,12 @@ protected:
      */
     double mp53ThresholdForApoptosisOfNormalCellsInTumourMicroenvironment;
 
+    /**
+     * Threshold which defines the proportion of neighbours which must be normal in order for
+     * a cell's micro-environment to be considered normal.
+     */
+    double mthresholdFractionOfNormalCellNeighbours;
+
 
 public:
 
@@ -304,6 +310,13 @@ public:
      * Get the value of p53.
      */
     double GetP53();
+
+    /**
+     * Set method for mthresholdFractionOfNormalCellNeighbours.
+     *
+     * @param value the new value of mthresholdFractionOfNormalCellNeighbours
+     */
+    void SetThresholdFractionOfNormalCellNeighbours(double value);
 
     /**
      * Outputs cell cycle model parameters to files.

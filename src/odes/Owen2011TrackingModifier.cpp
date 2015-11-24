@@ -31,16 +31,20 @@ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-*/
+ */
 
 #include "Owen2011TrackingModifier.hpp"
 #include "Owen2011OxygenBasedCellCycleModel.hpp"
+#include "QuiescentCancerCellMutationState.hpp"
+#include "CancerCellMutationState.hpp"
+#include "WildTypeCellMutationState.hpp"
+#include "PottsMesh.hpp"
 
 template<unsigned DIM>
 Owen2011TrackingModifier<DIM>::Owen2011TrackingModifier()
-    : AbstractCellBasedSimulationModifier<DIM>()
-{
-}
+: AbstractCellBasedSimulationModifier<DIM>()
+  {
+  }
 
 template<unsigned DIM>
 Owen2011TrackingModifier<DIM>::~Owen2011TrackingModifier()
@@ -66,13 +70,14 @@ void Owen2011TrackingModifier<DIM>::SetupSolve(AbstractCellPopulation<DIM,DIM>& 
 template<unsigned DIM>
 void Owen2011TrackingModifier<DIM>::UpdateCellData(AbstractCellPopulation<DIM,DIM>& rCellPopulation)
 {
+
     // Make sure the cell population is updated
     rCellPopulation.Update();
 
     // Recover each cell's concentrations from the ODEs and store in CellData
     for (typename AbstractCellPopulation<DIM>::Iterator cell_iter = rCellPopulation.Begin();
-         cell_iter != rCellPopulation.End();
-         ++cell_iter)
+            cell_iter != rCellPopulation.End();
+            ++cell_iter)
     {
         Owen2011OxygenBasedCellCycleModel* p_model = static_cast<Owen2011OxygenBasedCellCycleModel*>(cell_iter->GetCellCycleModel());
         double this_phi = p_model->GetPhi();
@@ -83,8 +88,40 @@ void Owen2011TrackingModifier<DIM>::UpdateCellData(AbstractCellPopulation<DIM,DI
         cell_iter->GetCellData()->SetItem("Phi", this_phi);
         cell_iter->GetCellData()->SetItem("p53", this_p53);
         cell_iter->GetCellData()->SetItem("VEGF", this_VEGF);
-    }
 
+        // also calculate number of normal and cancerous neighbours
+        unsigned number_of_normal_neighbours = 0;
+        unsigned number_of_cancerous_neighbours = 0;
+
+        std::set<unsigned> neighbouring_node_indices = static_cast<PottsMesh<DIM>& >(rCellPopulation.rGetMesh()).GetMooreNeighbouringNodeIndices(rCellPopulation.GetLocationIndexUsingCell(*cell_iter));
+        std::set<unsigned>::iterator node_it;
+        for (node_it = neighbouring_node_indices.begin(); node_it != neighbouring_node_indices.end(); node_it++)
+        {
+
+            if (rCellPopulation.IsCellAttachedToLocationIndex(*node_it))
+            {
+                std::set<CellPtr> neighbour_cells = rCellPopulation.GetCellsUsingLocationIndex(*node_it);
+                std::set<CellPtr>::iterator cell_neighbour_it;
+                for (cell_neighbour_it = neighbour_cells.begin(); cell_neighbour_it != neighbour_cells.end(); cell_neighbour_it++)
+                {
+
+                    if ((*cell_neighbour_it)->GetMutationState()->template IsType<WildTypeCellMutationState>())
+                    {
+                        number_of_normal_neighbours++;
+                    }
+                    if ((*cell_neighbour_it)->GetMutationState()->template IsType<CancerCellMutationState>() ||
+                            (*cell_neighbour_it)->GetMutationState()->template IsType<QuiescentCancerCellMutationState>())
+                    {
+                        number_of_cancerous_neighbours++;
+                    }
+
+                }
+            }
+        }
+
+        cell_iter->GetCellData()->SetItem("Number_of_cancerous_neighbours", number_of_cancerous_neighbours);
+        cell_iter->GetCellData()->SetItem("Number_of_normal_neighbours", number_of_normal_neighbours);
+    }
 }
 
 template<unsigned DIM>

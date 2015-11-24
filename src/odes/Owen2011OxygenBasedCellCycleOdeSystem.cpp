@@ -39,6 +39,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CancerCellMutationState.hpp"
 #include "QuiescentCancerCellMutationState.hpp"
 #include "WildTypeCellMutationState.hpp"
+#include "TipCellMutationState.hpp"
+#include "StalkCellMutationState.hpp"
 
 Owen2011OxygenBasedCellCycleOdeSystem::Owen2011OxygenBasedCellCycleOdeSystem(double oxygenConcentration,
         boost::shared_ptr<AbstractCellMutationState> mutation_state,
@@ -51,7 +53,8 @@ Owen2011OxygenBasedCellCycleOdeSystem::Owen2011OxygenBasedCellCycleOdeSystem(dou
 
     mpSystemInfo->SetDefaultInitialCondition(3, oxygenConcentration);
 
-    assert(pmMutationState->IsType<CancerCellMutationState>() || pmMutationState->IsType<WildTypeCellMutationState>() || pmMutationState->IsType<QuiescentCancerCellMutationState>());
+    assert(pmMutationState->IsType<CancerCellMutationState>() || pmMutationState->IsType<WildTypeCellMutationState>() || pmMutationState->IsType<QuiescentCancerCellMutationState>()
+            || pmMutationState->IsType<StalkCellMutationState>() || pmMutationState->IsType<TipCellMutationState>());
 
     /*
      % The variables are

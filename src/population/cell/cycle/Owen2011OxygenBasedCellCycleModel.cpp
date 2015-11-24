@@ -38,6 +38,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CancerCellMutationState.hpp"
 #include "QuiescentCancerCellMutationState.hpp"
 #include "ApoptoticCellProperty.hpp"
+#include "TipCellMutationState.hpp"
+#include "StalkCellMutationState.hpp"
 #include "CellPropertyRegistry.hpp"
 #include "CellLabel.hpp"
 #include "Exception.hpp"
@@ -45,6 +47,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CellCycleModelOdeHandler.hpp"
 #include "CvodeAdaptor.hpp"
 #include "RandomNumberGenerator.hpp"
+#include "Debug.hpp"
 
 #include <cxxtest/TestSuite.h>
 
@@ -60,7 +63,8 @@ Owen2011OxygenBasedCellCycleModel::Owen2011OxygenBasedCellCycleModel(boost::shar
   mLeaveQuiescenceOxygenConcentration(9.8),
   mCriticalQuiescentDuration(66.67),
   mp53ThresholdForApoptosisOfNormalCellsInHealthyMicroenvironment(0.8),
-  mp53ThresholdForApoptosisOfNormalCellsInTumourMicroenvironment(0.08)
+  mp53ThresholdForApoptosisOfNormalCellsInTumourMicroenvironment(0.08),
+  mthresholdFractionOfNormalCellNeighbours(0.8)
 {
     if (!mpOdeSolver)
     {
@@ -309,23 +313,33 @@ void Owen2011OxygenBasedCellCycleModel::UpdateQuiescentDuration()
 
 bool Owen2011OxygenBasedCellCycleModel::ReadyToDivide()
 {
-    if(!mpCell->HasApoptosisBegun() && !mpCell->IsDead())
+    if (mpCell->GetMutationState()->IsType<TipCellMutationState>() ||
+            mpCell->GetMutationState()->IsType<StalkCellMutationState>())
+    {
+        mReadyToDivide = false;
+    }
+    else
     {
 
-        UpdateCellCyclePhase();
-
-        if(mFinishedRunningOdes)
+        if(!mpCell->HasApoptosisBegun() && !mpCell->IsDead())
         {
-            mReadyToDivide = true;
+
+            UpdateCellCyclePhase();
+
+            if(mFinishedRunningOdes)
+            {
+                mReadyToDivide = true;
+            }
+            else
+            {
+                mReadyToDivide = false;
+            }
         }
         else
         {
             mReadyToDivide = false;
         }
-    }
-    else
-    {
-        mReadyToDivide = false;
+
     }
     return mReadyToDivide;
 }
@@ -354,18 +368,15 @@ void Owen2011OxygenBasedCellCycleModel::CheckAndLabelCell()
 
         double p53threshold = 0.0;
 
-        // todo need to do this properly using methods:
-        //              - std::set<unsigned> GetNeighbouringNodeIndices(CellPtr pCell) from AbstractCellPopulation
-        //              - mpCell->GetMutationState()->IsType<CancerCellMutationState>()
-        //              - mpCell->GetMutationState()->IsType<QuiescentCancerCellMutationState>()
-        //              - mpCell->GetMutationState()->IsType<WildTypeCellMutationState>()
+
+        unsigned number_of_normal_neighbours = mpCell->GetCellData()->GetItem("Number_of_normal_neighbours");
+
+        unsigned number_of_cancerous_neighbours = mpCell->GetCellData()->GetItem("Number_of_cancerous_neighbours");
+
+        double normal_neighbour_fraction = double(number_of_normal_neighbours)/double(number_of_cancerous_neighbours+number_of_normal_neighbours);
 
 
-        unsigned number_of_normal_neighbours = 1;
-
-        unsigned number_of_cancerous_neighbours = 0;
-
-        if (number_of_normal_neighbours > number_of_cancerous_neighbours)
+        if (normal_neighbour_fraction > mthresholdFractionOfNormalCellNeighbours)
         {
             p53threshold = mp53ThresholdForApoptosisOfNormalCellsInHealthyMicroenvironment;
         }
@@ -477,6 +488,11 @@ double Owen2011OxygenBasedCellCycleModel::GetP53()
     assert(mpOdeSystem != NULL);
     double p53 = mpOdeSystem->rGetStateVariables()[2];
     return p53;
+}
+
+void Owen2011OxygenBasedCellCycleModel::SetThresholdFractionOfNormalCellNeighbours(double value)
+{
+    mthresholdFractionOfNormalCellNeighbours = value;
 }
 
 void Owen2011OxygenBasedCellCycleModel::OutputCellCycleModelParameters(out_stream& rParamsFile)
