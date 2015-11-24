@@ -96,6 +96,8 @@ protected:
 
     bool IsSetupForSolve;
 
+    bool mWriteSolution;
+
 public:
 
     /**
@@ -113,6 +115,8 @@ public:
      * @param pBoundaryCondition the boundary condition
      */
     void AddBoundaryCondition(boost::shared_ptr<HybridBoundaryCondition<DIM> > pBoundaryCondition);
+
+    void SetWriteSolution(bool write=true);
 
     /**
      * Return the PDE
@@ -159,7 +163,7 @@ public:
      * Do the solve
      * @param writeSolution whether to write the solution to file
      */
-    virtual void Solve(bool writeSolution = false) = 0;
+    virtual void Solve() = 0;
 
     /**
      * Set the file handler containing the working directory

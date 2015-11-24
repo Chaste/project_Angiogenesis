@@ -67,7 +67,7 @@ public:
 
     void SetPointSolution(std::vector<double> solution);
 
-    void Solve(bool writeSolution = false)
+    void Solve()
     {
 
     }

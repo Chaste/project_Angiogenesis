@@ -257,7 +257,7 @@ void FiniteElementSolver<DIM>::SetSamplingNetworkBounds(boost::shared_ptr<CaVasc
 }
 
 template<unsigned DIM>
-void FiniteElementSolver<DIM>::Solve(bool writeSolution)
+void FiniteElementSolver<DIM>::Solve()
 {
     this->mpPde->SetUseRegularGrid(false);
     this->mpPde->SetMesh(mpMesh);
@@ -280,7 +280,7 @@ void FiniteElementSolver<DIM>::Solve(bool writeSolution)
     {
         mFeSolution[idx]= static_solution_repl[idx];
     }
-    if(writeSolution)
+    if(this->mWriteSolution)
     {
         this->Write();
     }

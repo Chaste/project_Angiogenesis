@@ -46,7 +46,8 @@ AbstractHybridSolver<DIM>::AbstractHybridSolver()
         mFilename(),
         mLabel("Default"),
         mPointSolution(),
-        IsSetupForSolve(false)
+        IsSetupForSolve(false),
+        mWriteSolution(false)
 {
 
 }
@@ -55,6 +56,12 @@ template<unsigned DIM>
 AbstractHybridSolver<DIM>::~AbstractHybridSolver()
 {
 
+}
+
+template<unsigned DIM>
+void AbstractHybridSolver<DIM>::SetWriteSolution(bool write)
+{
+    mWriteSolution = write;
 }
 
 template<unsigned DIM>

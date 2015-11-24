@@ -95,7 +95,7 @@ void KroghCylinderSolver<DIM>::SetPde(boost::shared_ptr<HybridLinearEllipticPde<
 }
 
 template<unsigned DIM>
-void KroghCylinderSolver<DIM>::Solve(bool writeSolution)
+void KroghCylinderSolver<DIM>::Solve()
 {
     if(!mpPde)
     {
@@ -193,7 +193,7 @@ void KroghCylinderSolver<DIM>::Solve(bool writeSolution)
         }
     }
 
-    if(writeSolution)
+    if(this->mWriteSolution)
     {
         Write();
     }

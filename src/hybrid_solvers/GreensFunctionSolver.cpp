@@ -87,7 +87,7 @@ void GreensFunctionSolver<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNet
 }
 
 template<unsigned DIM>
-void GreensFunctionSolver<DIM>::Solve(bool writeSolution)
+void GreensFunctionSolver<DIM>::Solve()
 {
     // Set up the sub-segment and tissue point co-ordinates
     GenerateSubSegments();
@@ -212,7 +212,7 @@ void GreensFunctionSolver<DIM>::Solve(bool writeSolution)
     tissuePointData["Sink Rate"] = mSinkRates;
     segmentPointData["Source Rate"] = mSourceRates;
     this->UpdateSolution(tissuePointData);
-    if(writeSolution)
+    if(this->mWriteSolution)
     {
         this->WriteSolution(segmentPointData);
     }

@@ -150,7 +150,7 @@ double DensityMap<DIM>::LengthOfLineInBox(c_vector<double, DIM> start_point, c_v
 }
 
 template<unsigned DIM>
-void DensityMap<DIM>::Solve(bool writeSolution)
+void DensityMap<DIM>::Solve()
 {
     unsigned number_of_points = this->mpRegularGrid->GetNumberOfPoints();
     unsigned extents_x = this->mpRegularGrid->GetExtents()[0];
@@ -193,7 +193,7 @@ void DensityMap<DIM>::Solve(bool writeSolution)
     data["VesselDensity"] = vessel_solution;
     this->UpdateSolution(data);
 
-    if (writeSolution)
+    if (this->mWriteSolution)
     {
         this->Write();
     }

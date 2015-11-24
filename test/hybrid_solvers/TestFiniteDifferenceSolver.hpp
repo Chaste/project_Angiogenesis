@@ -80,7 +80,7 @@ public:
 
         MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestFiniteDifferenceSolver/RectangleDomain", false));
         solver.SetFileHandler(p_output_file_handler);
-        solver.Solve(true);
+        solver.Solve();
     }
 
     void TestCuboidalDomain() throw(Exception)

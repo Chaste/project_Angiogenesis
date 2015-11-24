@@ -83,7 +83,7 @@ public:
 
     }
 
-    void Solve(bool writeSolution = true);
+    void Solve();
 
     void Write();
 };

@@ -120,7 +120,7 @@ void FiniteDifferenceSolver<DIM>::Update()
 }
 
 template<unsigned DIM>
-void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
+void FiniteDifferenceSolver<DIM>::Solve()
 {
     if(!this->IsSetupForSolve)
     {
@@ -239,7 +239,7 @@ void FiniteDifferenceSolver<DIM>::Solve(bool writeSolution)
     data[this->mLabel] = this->mPointSolution;
     this->UpdateSolution(data);
 
-    if (writeSolution)
+    if (this->mWriteSolution)
     {
         this->Write();
     }

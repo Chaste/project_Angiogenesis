@@ -73,7 +73,7 @@ public:
     /* Solve the pde
      * @param writeSolution whether to write the solution to file
      */
-    void Solve(bool writeSolution = false);
+    void Solve();
 
 };
 

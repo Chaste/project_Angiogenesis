@@ -228,11 +228,13 @@ void VascularTumourSolver<DIM>::Increment()
             }
             if(mOutputFrequency > 0 && num_steps % mOutputFrequency == 0)
             {
-                mHybridSolvers[idx]->Solve(true);
+                mHybridSolvers[idx]->SetWriteSolution(true);
+                mHybridSolvers[idx]->Solve();
             }
             else
             {
-                mHybridSolvers[idx]->Solve(false);
+                mHybridSolvers[idx]->SetWriteSolution(false);
+                mHybridSolvers[idx]->Solve();
             }
         }
     }

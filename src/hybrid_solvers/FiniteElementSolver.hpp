@@ -86,7 +86,7 @@ public:
 
     void SetMesh(boost::shared_ptr<HybridMesh<DIM, DIM> > pMesh);
 
-    void Solve(bool writeSolution = false);
+    void Solve();
 
     void Update();
 

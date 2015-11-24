@@ -69,7 +69,7 @@ public:
 
     }
 
-    void Solve(bool writeSolution = false);
+    void Solve();
 
 private:
 

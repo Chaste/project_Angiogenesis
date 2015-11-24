@@ -67,7 +67,7 @@ void DistanceMap<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM>
 }
 
 template<unsigned DIM>
-void DistanceMap<DIM>::Solve(bool writeSolution)
+void DistanceMap<DIM>::Solve()
 {
     unsigned number_of_points = this->mpRegularGrid->GetNumberOfPoints();
     unsigned extents_x = this->mpRegularGrid->GetExtents()[0];
@@ -113,7 +113,7 @@ void DistanceMap<DIM>::Solve(bool writeSolution)
     data["VesselDistance"] = vessel_solution;
     this->UpdateSolution(data);
 
-    if (writeSolution)
+    if (this->mWriteSolution)
     {
         this->Write();
     }

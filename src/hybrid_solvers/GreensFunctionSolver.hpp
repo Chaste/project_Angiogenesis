@@ -71,7 +71,7 @@ public:
 
     ~GreensFunctionSolver();
 
-    void Solve(bool writeSolution = false);
+    void Solve();
 
     void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
 
