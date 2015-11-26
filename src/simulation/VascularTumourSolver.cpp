@@ -50,7 +50,8 @@ VascularTumourSolver<DIM>::VascularTumourSolver() :
         mHybridSolvers(),
         mpFlowSolver(),
         mpStructuralAdaptationSolver(),
-        mpAngiogenesisSolver()
+        mpAngiogenesisSolver(),
+        mpRegressionSolver()
 {
 
 }
@@ -245,6 +246,12 @@ void VascularTumourSolver<DIM>::Increment()
         mpAngiogenesisSolver->Increment();
     }
 
+    // Do regression if the is a network and solver
+    if(this->mpNetwork && mpRegressionSolver)
+    {
+        mpRegressionSolver->Increment();
+    }
+
     // Manage vessel network output
     if(this->mpNetwork)
     {
@@ -272,6 +279,12 @@ void VascularTumourSolver<DIM>::Run()
         Increment();
         SimulationTime::Instance()->IncrementTimeOneStep();
     }
+}
+
+template<unsigned DIM>
+void VascularTumourSolver<DIM>::SetRegressionSolver(boost::shared_ptr<RegressionSolver<DIM> > pRegressionSolver)
+{
+    mpRegressionSolver = pRegressionSolver;
 }
 
 // Explicit instantiation

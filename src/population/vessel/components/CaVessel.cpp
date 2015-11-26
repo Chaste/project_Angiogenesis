@@ -36,6 +36,7 @@
 #include "SmartPointers.hpp"
 #include "Exception.hpp"
 #include "UblasIncludes.hpp"
+#include "SimulationTime.hpp"
 
 #include "CaVessel.hpp"
 
@@ -46,7 +47,10 @@ CaVessel<DIM>::CaVessel(boost::shared_ptr<CaVesselSegment<DIM> > pSegment) :
         mNodesUpToDate(false),
         mDataContainer(),
         mId(0),
-        mLabel()
+        mLabel(),
+        mUndergoingRegression(false),
+        mRemoveViaRegression(false),
+        mRegresionTime(DBL_MAX)
 {
     mSegments.push_back(pSegment);
 }
@@ -867,6 +871,54 @@ void CaVessel<DIM>::UpdateNodes()
     }
     mNodesUpToDate = true;
 }
+
+
+template<unsigned DIM>
+void CaVessel<DIM>::SetTimeUntilRegression(double time)
+{
+    assert(!mRemoveViaRegression);
+    assert(time >= 0);
+
+    if (HasRegressionTimerStarted())
+    {
+        EXCEPTION("SetTimeUntilRegression(time) called when already undergoing regression");
+    }
+
+    mUndergoingRegression = true;
+    mRegressionTime = SimulationTime::Instance()->GetTime() + time;
+}
+
+template<unsigned DIM>
+bool CaVessel<DIM>::HasRegressionTimerStarted()
+{
+    return mUndergoingRegression;
+}
+
+template<unsigned DIM>
+void CaVessel<DIM>::ResetRegressionTimer()
+{
+    mRegressionTime = DBL_MAX;
+    mUndergoingRegression = false;
+    mRemoveViaRegression = false;
+}
+
+template<unsigned DIM>
+bool CaVessel<DIM>::VesselHasRegressed()
+{
+    if (SimulationTime::Instance()->GetTime() >= mRegressionTime)
+    {
+        assert(mUndergoingRegression);
+        mRemoveViaRegression = true;
+        return mRemoveViaRegression;
+    }
+    else
+    {
+        mRemoveViaRegression = false;
+        return mRemoveViaRegression;
+    }
+}
+
+
 
 // Explicit instantiation
 template class CaVessel<2> ;

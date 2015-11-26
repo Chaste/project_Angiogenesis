@@ -1323,6 +1323,7 @@ void CaVascularNetwork<DIM>::RemoveVessel(boost::shared_ptr<CaVessel<DIM> > pVes
         if(deleteVessel)
         {
             (*it)->Remove();
+            // todo remove cells from nodes if the nodes will be removed from the network
         }
         mVessels.erase(it);
     }

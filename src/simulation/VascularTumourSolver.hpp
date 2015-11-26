@@ -46,6 +46,7 @@
 #include "FlowSolver.hpp"
 #include "AbstractCellPopulation.hpp"
 #include "AngiogenesisSolver.hpp"
+#include "RegressionSolver.hpp"
 
 /**
  * This class manages the solution of vascular tumour growth problems. It steps through time,
@@ -94,6 +95,11 @@ class VascularTumourSolver
      * The angiogenesis solver for the vessel network
      */
     boost::shared_ptr<AngiogenesisSolver<DIM> > mpAngiogenesisSolver;
+
+    /**
+     * The regression solver for the vessel network
+     */
+    boost::shared_ptr<RegressionSolver<DIM> > mpRegressionSolver;
 
 public:
 
@@ -182,6 +188,14 @@ public:
      * Run until the specified end time
      */
     void Run();
+
+    /**
+     * Set the regression solver
+     * @pRegressionSolver the regression solver for the network
+     */
+    void SetRegressionSolver(boost::shared_ptr<RegressionSolver<DIM> > pRegressionSolver);
+
+
 };
 
 #endif /* VASCULARTUMOURSOLVER_HPP_ */

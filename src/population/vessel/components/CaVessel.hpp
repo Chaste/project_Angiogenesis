@@ -97,6 +97,21 @@ private:
      */
     std::string mLabel;
 
+    /**
+     * Whether a vessel is currently undergoing regression. A vessel can be saved from this fate.
+     */
+    bool mUndergoingRegression;
+
+    /**
+     * Whether a vessel should be removed from the network. A vessel exists inside the network until they are removed.
+     */
+    bool mRemoveViaRegression;
+
+    /**
+     * When the vessel will be removed.
+     */
+    double mRegresionTime;
+
 private:
 
     /**
@@ -381,6 +396,26 @@ public:
      *  Update the data in mNodes
      */
     void UpdateNodes();
+
+    /**
+     * Set time until removal of vessel from network.
+     */
+    void SetTimeUntilRegression(double time);
+
+    /**
+     * @return whether regression timer has started.
+     */
+    bool HasRegressionTimerStarted();
+
+    /**
+     * Rescue vessel from regression.
+     */
+    void ResetRegressionTimer();
+
+    /**
+     * @return whether the vessel should regress (be removed).
+     */
+    bool VesselHasRegressed();
 
 private:
 
