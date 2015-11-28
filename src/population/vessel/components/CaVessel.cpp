@@ -50,7 +50,7 @@ CaVessel<DIM>::CaVessel(boost::shared_ptr<CaVesselSegment<DIM> > pSegment) :
         mLabel(),
         mUndergoingRegression(false),
         mRemoveViaRegression(false),
-        mRegresionTime(DBL_MAX)
+        mRegressionTime(DBL_MAX)
 {
     mSegments.push_back(pSegment);
 }
@@ -62,7 +62,10 @@ CaVessel<DIM>::CaVessel(std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > s
         mNodesUpToDate(false),
         mDataContainer(),
         mId(0),
-        mLabel()
+        mLabel(),
+        mUndergoingRegression(false),
+        mRemoveViaRegression(false),
+        mRegressionTime(DBL_MAX)
 {
     if (segments.size() > 1)
     {
@@ -97,7 +100,10 @@ CaVessel<DIM>::CaVessel(std::vector<boost::shared_ptr<VascularNode<DIM> > > node
         mNodesUpToDate(false),
         mDataContainer(),
         mId(0),
-        mLabel()
+        mLabel(),
+        mUndergoingRegression(false),
+        mRemoveViaRegression(false),
+        mRegressionTime(DBL_MAX)
 {
 
     if (nodes.size() < 2)
@@ -120,7 +126,10 @@ CaVessel<DIM>::CaVessel(boost::shared_ptr<VascularNode<DIM> > pStartNode, boost:
              mNodesUpToDate(false),
              mDataContainer(),
              mId(0),
-             mLabel()
+             mLabel(),
+             mUndergoingRegression(false),
+             mRemoveViaRegression(false),
+             mRegressionTime(DBL_MAX)
 {
     mSegments.push_back(CaVesselSegment<DIM>::Create(pStartNode, pEndNode));
 }

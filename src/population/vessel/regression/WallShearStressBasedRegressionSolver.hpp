@@ -14,7 +14,7 @@
  * This class is for simulating modifications to the vessel network due to regression.
  */
 template<unsigned DIM>
-class WallShearStressBasedRegressionSolver
+class WallShearStressBasedRegressionSolver : public RegressionSolver<DIM>
 {
 
     /**

@@ -110,7 +110,7 @@ private:
     /**
      * When the vessel will be removed.
      */
-    double mRegresionTime;
+    double mRegressionTime;
 
 private:
 
