@@ -70,8 +70,8 @@ public:
 
         // Choose the PDE
         boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
-        p_pde->SetDiffusionConstant(0.0033);
-        p_pde->SetConstantInUTerm(-2.e-6);
+        p_pde->SetIsotropicDiffusionConstant(0.0033);
+        p_pde->SetContinuumLinearInUTerm(-2.e-6);
         p_pde->SetVariableName("oxygen");
 
         // Set up and run the solver
@@ -103,8 +103,8 @@ public:
 
         // Choose the PDE
         boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
-        p_pde->SetDiffusionConstant(0.0033);
-        p_pde->SetLinearInUTerm(-2.e-7);
+        p_pde->SetIsotropicDiffusionConstant(0.0033);
+        p_pde->SetContinuumLinearInUTerm(-2.e-7);
         p_pde->SetVariableName("oxygen");
 
         // Set up and run the solver

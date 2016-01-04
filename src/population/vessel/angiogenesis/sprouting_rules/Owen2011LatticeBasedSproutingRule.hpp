@@ -33,74 +33,111 @@
 
  */
 
-#ifndef LatticeBasedSproutingRule_HPP_
-#define LatticeBasedSproutingRule_HPP_
+#ifndef Owen2011LatticeBasedSproutingRule_HPP_
+#define Owen2011LatticeBasedSproutingRule_HPP_
 
 #include <vector>
 #include <string>
 #include "VascularNode.hpp"
 #include "SmartPointers.hpp"
-#include "AbstractSproutingRule.hpp"
+#include "LatticeBasedSproutingRule.hpp"
 #include "RegularGrid.hpp"
 #include "AbstractRegularGridHybridSolver.hpp"
 
 /**
- * A simple random lattice based sprouting rule, useful for code testing.
+ * A concrete sprouting rule for lattice based simulations based on
+ * a model described in Owen et al. 2011. Default parameter values are taken
+ * from that study.
  */
 template<unsigned DIM>
-class LatticeBasedSproutingRule : public AbstractSproutingRule<DIM>
+class Owen2011LatticeBasedSproutingRule : public LatticeBasedSproutingRule<DIM>
 {
 
 protected:
 
     /**
-     * The lattice/grid for the vessel simulation
+     * A hybrid solver containing the VEGF field
      */
-    boost::shared_ptr<RegularGrid<DIM> > mpGrid;
+    boost::shared_ptr<AbstractRegularGridHybridSolver<DIM> > mpSolver;
 
     /**
-     * Cell sprouting probability
+     * Cell motility for random walks
      */
-    double mSproutingProbability;
+    double mCellMotility;
+
+    /**
+     * Cell chemotactic sensitivity
+     */
+    double mCellChemotacticParameter;
+
+    /**
+     * Cell sprouting probability in high vegf regions
+     */
+    double mMaxSproutingProbability;
+
+    /**
+     * VEGF concentration for half max sprouting probability
+     */
+    double mHalfMaxSproutingProbability;
+
+    std::vector<double> mVegfField;
 
 public:
 
     /**
      * Constructor.
      */
-    LatticeBasedSproutingRule();
+    Owen2011LatticeBasedSproutingRule();
 
     /**
      * Destructor.
      */
-    virtual ~LatticeBasedSproutingRule();
+    virtual ~Owen2011LatticeBasedSproutingRule();
 
     /**
      * Construct a new instance of the class and return a shared pointer to it.
      * @return a pointer to a new instance of the class
      */
-    static boost::shared_ptr<LatticeBasedSproutingRule<DIM> > Create();
+    static boost::shared_ptr<Owen2011LatticeBasedSproutingRule<DIM> > Create();
 
     /**
      * Calculate the direction for each node that will sprout
      * @param rNodes nodes to calculate directions for
      * @return a vector of sprout directions
      */
-    virtual std::vector<c_vector<double, DIM> > GetSproutDirections(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes);
+    std::vector<c_vector<double, DIM> > GetSproutDirections(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes);
 
     /**
-     * Set the lattice/grid for the vessel network
-     * @param pGrid the grid for the vessel network
+     * Set the cell chemotactic parameter
+     * @param cellChemotacticParameter the cell chemotactic parameter
      */
-    void SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid);
+    void SetCellChemotacticParameter(double cellChemotacticParameter);
 
     /**
-     * Set the sprouting probability
-     * @param sproutingProbability the sprouting probability
+     * Set the cell motility parameter
+     * @param cellMotility the cell motility parameter
      */
-    void SetSproutingProbability(double sproutingProbability);
+    void SetCellMotilityParameter(double cellMotility);
 
-protected:
+    /**
+     * Set the half max sprouting probability
+     * @param halfMaxSproutingProbability the half max sprouting probability
+     */
+    void SetHalfMaxSproutingProbability(double halfMaxSproutingProbability);
+
+    /**
+     * Set the hybrid solver containing the VEGF field
+     * @param pSolver the hybrid solver containing the VEGF field
+     */
+    void SetHybridSolver(boost::shared_ptr<AbstractRegularGridHybridSolver<DIM> > pSolver);
+
+    /**
+     * Set the sprouting probability in high vegf regions
+     * @param maxSproutingProbability the sprouting probability in high vegf regions
+     */
+    void SetMaxSproutingProbability(double maxSproutingProbability);
+
+private:
 
     /**
      * Get the sprouting probabilities for each lattice point in the node's neighbourhood. This
@@ -109,18 +146,8 @@ protected:
      * @param neighbourIndices the grid indices of the neighbour nodes
      * @return a vector of sprouting probabilities corresponding to each neighbour index
      */
-    virtual std::vector<double> GetNeighbourSproutingProbabilities(boost::shared_ptr<VascularNode<DIM> > pNode,
+    std::vector<double> GetNeighbourSproutingProbabilities(boost::shared_ptr<VascularNode<DIM> > pNode,
                                                            std::vector<unsigned> neighbourIndices, unsigned gridIndex);
-
-    /**
-     * Get the index of the neighbour to sprout into.
-     * This can be over-written for custom sprouting rules.
-     * @param movementProbabilities the sprouting probabilities corresponding to each neighbour index
-     * @param neighbourIndices the grid indices of the neighbour nodes
-     * @return the neighbour index to sprout into
-     */
-    virtual unsigned GetNeighbourSproutIndex(std::vector<double> movementProbabilities, std::vector<unsigned> neighbourIndices);
-
 };
 
-#endif /* LatticeBasedSproutingRule_HPP_ */
+#endif /* Owen2011LatticeBasedSproutingRule_HPP_ */

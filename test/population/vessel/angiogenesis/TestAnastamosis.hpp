@@ -37,7 +37,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TESTANASTA_HPP
 
 #include <cxxtest/TestSuite.h>
-#include "../../../../src/population/vessel/angiogenesis/sprouting_rules/OffLatticeSproutingRule.hpp"
+#include "OffLatticeSproutingRule.hpp"
 #include "OffLatticePrwGrowthDirectionModifier.hpp"
 #include "OffLatticeTipAttractionGrowthDirectionModifier.hpp"
 #include "FileFinder.hpp"
@@ -96,7 +96,7 @@ public:
         boost::shared_ptr<OffLatticePrwGrowthDirectionModifier<3> > p_grow_direction_modifier = OffLatticePrwGrowthDirectionModifier<3>::Create();
         boost::shared_ptr<OffLatticeTipAttractionGrowthDirectionModifier<3> > p_grow_direction_modifier2 = OffLatticeTipAttractionGrowthDirectionModifier<3>::Create();
         p_grow_direction_modifier2->SetNetwork(p_network);
-        boost::shared_ptr<OffLatticeRandomNormalSproutingRule<3> > p_sprouting_rule = OffLatticeRandomNormalSproutingRule<3>::Create();
+        boost::shared_ptr<OffLatticeSproutingRule<3> > p_sprouting_rule = OffLatticeSproutingRule<3>::Create();
         p_sprouting_rule->SetSproutingProbability(0.005);
 
         // Grow the vessel
@@ -107,10 +107,9 @@ public:
         angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier2);
         angiogenesis_solver.SetSproutingRule(p_sprouting_rule);
         angiogenesis_solver.SetAnastamosisRadius(4.0);
-        angiogenesis_solver.SetEndTime(40.0);
 
-        MAKE_PTR_ARGS(OutputFileHandler, p_handler, ("TestAnastamosis/"));
-        angiogenesis_solver.SetFileHandler(p_handler);
+        MAKE_PTR_ARGS(OutputFileHandler, p_handler, ("TestAnastamosis"));
+        angiogenesis_solver.SetOutputFileHandler(p_handler);
         angiogenesis_solver.Run();
     }
 

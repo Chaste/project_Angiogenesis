@@ -84,6 +84,7 @@ public:
         p_vessel_ox_boundary_condition->SetValue(40.0);
         p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_LINE);
         p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
+        p_vessel_ox_boundary_condition->SetNetwork(p_network);
 
         // Set up and run the solver
         FiniteElementSolver<3> solver;
@@ -123,6 +124,7 @@ public:
         p_vessel_ox_boundary_condition->SetValue(40.0);
         p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_VOLUME);
         p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
+        p_vessel_ox_boundary_condition->SetNetwork(p_network);
 
         // Set up and run the solver
         FiniteElementSolver<3> solver;

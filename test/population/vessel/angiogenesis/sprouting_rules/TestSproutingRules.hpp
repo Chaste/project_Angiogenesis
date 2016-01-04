@@ -10,139 +10,119 @@
 #define TESTSPROUTINGRULES_HPP
 
 #include <cxxtest/TestSuite.h>
-#include "../../../../../src/population/vessel/angiogenesis/sprouting_rules/OffLatticeSproutingRule.hpp"
-#include "OffLatticePrwGrowthDirectionModifier.hpp"
-#include "OffLatticeTipAttractionGrowthDirectionModifier.hpp"
-#include "FileFinder.hpp"
-#include "OutputFileHandler.hpp"
-#include "SmartPointers.hpp"
-#include "VasculatureGenerator.hpp"
-#include "VascularNode.hpp"
-#include "CaVesselSegment.hpp"
+#include "LatticeBasedSproutingRule.hpp"
+#include "Owen2011LatticeBasedSproutingRule.hpp"
 #include "CaVessel.hpp"
 #include "CaVascularNetwork.hpp"
-#include "Part.hpp"
-#include "FiniteDifferenceSolver.hpp"
-#include "AngiogenesisSolver.hpp"
-#include "PetscSetupAndFinalize.hpp"
-#include "CaVesselSegment.hpp"
+#include "VascularNode.hpp"
 #include "AbstractCellBasedTestSuite.hpp"
-#include "FlowSolver.hpp"
-#include "AbstractSproutingRule.hpp"
-#include "RandomNumberGenerator.hpp"
+#include "FunctionMap.hpp"
+#include "Debug.hpp"
 
 class TestSproutingRules : public AbstractCellBasedTestSuite
 {
 
 public:
 
-    void TestAbstractSprouting() throw(Exception)
+    void TestLatticeBasedSproutingRuleSimpleNetwork() throw(Exception)
     {
+        // Set up the grid
+        boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
+        double spacing = 40.0; //um
+        p_grid->SetSpacing(spacing);
+        std::vector<unsigned> extents(3, 1);
+        extents[0] = 11; // num x
+        extents[1] = 11; // num_y
+        extents[2] = 11; // num_z
+        p_grid->SetExtents(extents);
+
         // Make a network
         std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
-        for(unsigned idx=0; idx<9; idx++)
+        unsigned num_nodes = 10;
+        for(unsigned idx=0; idx<num_nodes-1; idx++)
         {
-            bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 10.0, 0.0));
+            bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*spacing +spacing, 5.0 * spacing, 5.0 * spacing));
         }
-        bottom_nodes[0]->GetFlowProperties()->SetIsInputNode(true);
-        bottom_nodes[0]->GetFlowProperties()->SetPressure(3000);
-        bottom_nodes[8]->GetFlowProperties()->SetIsOutputNode(true);
-        bottom_nodes[8]->GetFlowProperties()->SetPressure(1000);
 
-        boost::shared_ptr<CaVessel<3> > p_vessel1 = CaVessel<3>::Create(bottom_nodes);
+        boost::shared_ptr<CaVessel<3> > p_vessel = CaVessel<3>::Create(bottom_nodes);
         boost::shared_ptr<CaVascularNetwork<3> > p_network = CaVascularNetwork<3>::Create();
-        p_network->AddVessel(p_vessel1);
-        p_network->SetSegmentRadii(10.0);
-        p_network->GetVesselSegments()[0]->GetFlowProperties()->SetViscosity(1.e-9);
-        p_network->CopySegmentFlowProperties();
+        p_network->AddVessel(p_vessel);
+        p_grid->SetVesselNetwork(p_network);
 
-        boost::shared_ptr<OffLatticePrwGrowthDirectionModifier<3> > p_grow_direction_modifier = OffLatticePrwGrowthDirectionModifier<3>::Create();
-        boost::shared_ptr<AbstractSproutingRule<3> > p_sprouting_rule = AbstractSproutingRule<3>::Create();
+        // Set up a sprouting rule
+        boost::shared_ptr<LatticeBasedSproutingRule<3> > p_sprouting_rule = LatticeBasedSproutingRule<3>::Create();
         p_sprouting_rule->SetSproutingProbability(0.1);
+        p_sprouting_rule->SetGrid(p_grid);
+        p_sprouting_rule->SetVesselNetwork(p_network);
 
-        // Grow the vessel
-        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
-        AngiogenesisSolver<3> angiogenesis_solver;
-        angiogenesis_solver.SetVesselNetwork(p_network);
-        angiogenesis_solver.SetOutputDirectory("TestSproutingRules/Abstract");
-        angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
-        angiogenesis_solver.SetSproutingRule(p_sprouting_rule);
-        angiogenesis_solver.Run();
+        // Get the sprout directions
+        RandomNumberGenerator::Instance()->Reseed(522525);
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(40.0, 400);
+        std::vector<boost::shared_ptr<VascularNode<3> > > nodes = p_network->GetNodes();
+
+        // Repeat a few times
+        for (unsigned idx=0; idx<1; idx++)
+        {
+            std::vector<c_vector<double, 3> > directions = p_sprouting_rule->GetSproutDirections(nodes);
+            for (unsigned jdx=0; jdx<directions.size(); jdx++)
+            {
+                std::cout << directions[jdx] << std::endl;
+            }
+        }
     }
 
-    void TestOffLatticeSprouting() throw(Exception)
+    void TestOwen2011SproutingRuleSimpleNetwork() throw(Exception)
     {
-        // Make a network
-        std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
-        for(unsigned idx=0; idx<9; idx++)
-        {
-            bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 10.0, 0.0));
-        }
-        bottom_nodes[0]->GetFlowProperties()->SetIsInputNode(true);
-        bottom_nodes[0]->GetFlowProperties()->SetPressure(3000);
-        bottom_nodes[8]->GetFlowProperties()->SetIsOutputNode(true);
-        bottom_nodes[8]->GetFlowProperties()->SetPressure(1000);
-
-        boost::shared_ptr<CaVessel<3> > p_vessel1 = CaVessel<3>::Create(bottom_nodes);
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = CaVascularNetwork<3>::Create();
-        p_network->AddVessel(p_vessel1);
-        p_network->SetSegmentRadii(10.0);
-        p_network->GetVesselSegments()[0]->GetFlowProperties()->SetViscosity(1.e-9);
-        p_network->CopySegmentFlowProperties();
-
-        boost::shared_ptr<OffLatticePrwGrowthDirectionModifier<3> > p_grow_direction_modifier = OffLatticePrwGrowthDirectionModifier<3>::Create();
-        boost::shared_ptr<OffLatticeRandomNormalSproutingRule<3> > p_sprouting_rule = OffLatticeRandomNormalSproutingRule<3>::Create();
-        p_sprouting_rule->SetSproutingProbability(0.1);
-
-        // Grow the vessel
-        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
-        AngiogenesisSolver<3> angiogenesis_solver;
-        angiogenesis_solver.SetVesselNetwork(p_network);
-        angiogenesis_solver.SetOutputDirectory("TestSproutingRules/OffLattice");
-        angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
-        angiogenesis_solver.SetSproutingRule(p_sprouting_rule);
-        angiogenesis_solver.Run();
-    }
-
-    void TestOffLatticeSproutingWithAttraction() throw(Exception)
-    {
-        RandomNumberGenerator::Instance()->Reseed(15565);
+        // Set up the grid
+        boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
+        double spacing = 40.0; //um
+        p_grid->SetSpacing(spacing);
+        std::vector<unsigned> extents(3, 1);
+        extents[0] = 11; // num x
+        extents[1] = 11; // num_y
+        extents[2] = 11; // num_z
+        p_grid->SetExtents(extents);
 
         // Make a network
         std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
-        for(unsigned idx=0; idx<9; idx++)
+        unsigned num_nodes = 10;
+        for(unsigned idx=0; idx<num_nodes-1; idx++)
         {
-            bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*100, 10.0, 0.0));
+            bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*spacing +spacing, 5.0 * spacing, 5.0 * spacing));
         }
-        bottom_nodes[0]->GetFlowProperties()->SetIsInputNode(true);
-        bottom_nodes[0]->GetFlowProperties()->SetPressure(3000);
-        bottom_nodes[8]->GetFlowProperties()->SetIsOutputNode(true);
-        bottom_nodes[8]->GetFlowProperties()->SetPressure(1000);
 
-        boost::shared_ptr<CaVessel<3> > p_vessel1 = CaVessel<3>::Create(bottom_nodes);
+        boost::shared_ptr<CaVessel<3> > p_vessel = CaVessel<3>::Create(bottom_nodes);
         boost::shared_ptr<CaVascularNetwork<3> > p_network = CaVascularNetwork<3>::Create();
-        p_network->AddVessel(p_vessel1);
-        p_network->SetSegmentRadii(10.0);
-        p_network->GetVesselSegments()[0]->GetFlowProperties()->SetViscosity(1.e-9);
-        p_network->CopySegmentFlowProperties();
+        p_network->AddVessel(p_vessel);
+        p_grid->SetVesselNetwork(p_network);
 
-        boost::shared_ptr<OffLatticePrwGrowthDirectionModifier<3> > p_grow_direction_modifier = OffLatticePrwGrowthDirectionModifier<3>::Create();
-        boost::shared_ptr<OffLatticeTipAttractionGrowthDirectionModifier<3> > p_grow_direction_modifier2 = OffLatticeTipAttractionGrowthDirectionModifier<3>::Create();
-        p_grow_direction_modifier2->SetNetwork(p_network);
+        // Set up a vegf field
+        boost::shared_ptr<FunctionMap<3> > p_funciton_map = FunctionMap<3>::Create();
+        p_funciton_map->SetGrid(p_grid);
+        std::vector<double> vegf_field = std::vector<double>(extents[0]*extents[1]*extents[2], 0.0);
+        for(unsigned idx=0; idx<extents[0]*extents[1]*extents[2]; idx++)
+        {
+            vegf_field[idx] = p_grid->GetLocationOf1dIndex(idx)[0] / (spacing * extents[0]); // 0 to 1 nM across the grid x extents
+        }
+        p_funciton_map->SetPointSolution(vegf_field);
 
-        boost::shared_ptr<OffLatticeRandomNormalSproutingRule<3> > p_sprouting_rule = OffLatticeRandomNormalSproutingRule<3>::Create();
+        // Set up a sprouting rule
+        boost::shared_ptr<Owen2011LatticeBasedSproutingRule<3> > p_sprouting_rule = Owen2011LatticeBasedSproutingRule<3>::Create();
         p_sprouting_rule->SetSproutingProbability(0.1);
+        p_sprouting_rule->SetGrid(p_grid);
+        p_sprouting_rule->SetVesselNetwork(p_network);
+        p_sprouting_rule->SetHybridSolver(p_funciton_map);
 
-        // Grow the vessel
-        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(20, 20);
-        AngiogenesisSolver<3> angiogenesis_solver;
-        angiogenesis_solver.SetVesselNetwork(p_network);
-        angiogenesis_solver.SetOutputDirectory("TestSproutingRules/OffLatticeAttraction");
-        angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
-        angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier2);
-        angiogenesis_solver.SetSproutingRule(p_sprouting_rule);
-        angiogenesis_solver.SetAnastamosisRadius(5.0);
-        angiogenesis_solver.Run();
+        // Get the sprout directions
+        RandomNumberGenerator::Instance()->Reseed(522525);
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(40.0, 400);
+        std::vector<boost::shared_ptr<VascularNode<3> > > nodes = p_network->GetNodes();
+
+        // Repeat a few times
+        for (unsigned idx=0; idx<1000; idx++)
+        {
+            std::vector<c_vector<double, 3> > directions = p_sprouting_rule->GetSproutDirections(nodes);
+        }
     }
 };
 

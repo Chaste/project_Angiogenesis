@@ -109,8 +109,7 @@ public:
 
     virtual void SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid)
     {
-
-    }
+    };
 
 };
 

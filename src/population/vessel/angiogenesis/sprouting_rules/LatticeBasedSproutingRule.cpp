@@ -33,65 +33,19 @@
 
  */
 
-#include <stdio.h>
 #include "RandomNumberGenerator.hpp"
 #include "CaVesselSegment.hpp"
 #include "CaVessel.hpp"
+#include "Debug.hpp"
 #include "LatticeBasedSproutingRule.hpp"
 
 template<unsigned DIM>
 LatticeBasedSproutingRule<DIM>::LatticeBasedSproutingRule()
     : AbstractSproutingRule<DIM>(),
       mpGrid(),
-      mpSolver(),
-      mCellMotility(60.0), // um^2/hour
-      mCellChemotacticParameter(2.0e4 * 60.0), // um^2/hour/nM
-      mMaxSproutingProbability(0.00025 * 60.0), //hour^-1
-      mHalfMaxSproutingProbability(0.5) // nM
+      mSproutingProbability(0.00025 * 60.0) //hour^-1
 {
 
-}
-
-template<unsigned DIM>
-LatticeBasedSproutingRule<DIM>::~LatticeBasedSproutingRule()
-{
-
-}
-
-template<unsigned DIM>
-void LatticeBasedSproutingRule<DIM>::SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid)
-{
-    mpGrid = pGrid;
-}
-
-template<unsigned DIM>
-void LatticeBasedSproutingRule<DIM>::SetHybridSolver(boost::shared_ptr<AbstractRegularGridHybridSolver<DIM> > pSolver)
-{
-    mpSolver = pSolver;
-}
-
-template<unsigned DIM>
-void LatticeBasedSproutingRule<DIM>::SetCellMotilityParameter(double cellMotility)
-{
-    mCellMotility = cellMotility;
-}
-
-template<unsigned DIM>
-void LatticeBasedSproutingRule<DIM>::SetCellChemotacticParameter(double cellChemotacticParameter)
-{
-    mCellChemotacticParameter = cellChemotacticParameter;
-}
-
-template<unsigned DIM>
-void LatticeBasedSproutingRule<DIM>::SetMaxSproutingProbability(double maxSproutingProbability)
-{
-    mMaxSproutingProbability = maxSproutingProbability;
-}
-
-template<unsigned DIM>
-void LatticeBasedSproutingRule<DIM>::SetHalfMaxSproutingProbability(double halfMaxSproutingProbability)
-{
-    mHalfMaxSproutingProbability = halfMaxSproutingProbability;
 }
 
 template <unsigned DIM>
@@ -102,6 +56,84 @@ boost::shared_ptr<LatticeBasedSproutingRule<DIM> > LatticeBasedSproutingRule<DIM
 }
 
 template<unsigned DIM>
+LatticeBasedSproutingRule<DIM>::~LatticeBasedSproutingRule()
+{
+
+}
+
+template<unsigned DIM>
+std::vector<double> LatticeBasedSproutingRule<DIM>::GetNeighbourSproutingProbabilities(boost::shared_ptr<VascularNode<DIM> > pNode,
+                                                       std::vector<unsigned> neighbourIndices, unsigned gridIndex)
+{
+    std::vector<double> probability_of_moving(neighbourIndices.size(), 0.0);
+    for(unsigned jdx=0; jdx<neighbourIndices.size(); jdx++)
+    {
+        // make sure that tip cell does not try to move into a location already occupied by the vessel that it comes from
+        // i.e. that it doesn't loop back around
+        c_vector<double, DIM> neighbour_location = this->mpGrid->GetLocationOf1dIndex(neighbourIndices[jdx]);
+        bool sprout_already_attached_to_vessel_at_location = false;
+
+        for (unsigned seg_index = 0; seg_index < pNode->GetNumberOfSegments(); seg_index++)
+        {
+            if(pNode->GetVesselSegment(seg_index)->GetOppositeNode(pNode)->IsCoincident(ChastePoint<DIM>(neighbour_location)))
+            {
+                 sprout_already_attached_to_vessel_at_location = true;
+                 break;
+            }
+        }
+
+        //ensure that the new sprout would not try to cross a vessel which is oriented diagonally
+        bool vessel_crosses_line_segment = this->mpVesselNetwork->VesselCrossesLineSegment(neighbour_location, pNode->GetLocationVector());
+
+        if (!vessel_crosses_line_segment && !sprout_already_attached_to_vessel_at_location)
+        {
+            double dt = SimulationTime::Instance()->GetTimeStep();
+            probability_of_moving[jdx] = mSproutingProbability * dt;
+        }
+    }
+    return probability_of_moving;
+}
+
+template<unsigned DIM>
+unsigned LatticeBasedSproutingRule<DIM>::GetNeighbourSproutIndex(std::vector<double> movementProbabilities, std::vector<unsigned> neighbourIndices)
+{
+    // Check that the cumulative movement probability is less than one, otherwise our time-step is too large
+    std::vector<double> cumulativeProbabilityVector(movementProbabilities.size());
+    std::partial_sum(movementProbabilities.begin(), movementProbabilities.end(), cumulativeProbabilityVector.begin());
+    if (cumulativeProbabilityVector.back() > 1.0)
+    {
+        EXCEPTION("Cumulative probability of tip cell moving is greater than one (" +
+                  boost::lexical_cast<std::string>(cumulativeProbabilityVector.back()) + "). Reduce time-step accordingly.");
+    }
+
+    // Use roulette-wheel style selection to select which location the tip will move into
+    unsigned location_index = 0;
+    double cumulativeProbability = cumulativeProbabilityVector.back();
+    double random_number = RandomNumberGenerator::Instance()->ranf();
+    for (unsigned ind = 0; ind < cumulativeProbabilityVector.size(); ind++)
+    {
+        if (random_number <= cumulativeProbabilityVector[ind]/cumulativeProbability)
+        {
+            location_index = ind;
+            break;
+        }
+    }
+    return location_index;
+}
+
+template<unsigned DIM>
+void LatticeBasedSproutingRule<DIM>::SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid)
+{
+    mpGrid = pGrid;
+}
+
+template<unsigned DIM>
+void LatticeBasedSproutingRule<DIM>::SetSproutingProbability(double sproutingProbability)
+{
+    mSproutingProbability = sproutingProbability;
+}
+
+template<unsigned DIM>
 std::vector<c_vector<double, DIM> > LatticeBasedSproutingRule<DIM>::GetSproutDirections(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
 {
     if(!this->mpGrid)
@@ -109,14 +141,9 @@ std::vector<c_vector<double, DIM> > LatticeBasedSproutingRule<DIM>::GetSproutDir
         EXCEPTION("A regular grid is required for this type of sprouting rule.");
     }
 
-    if(!mpSolver)
+    if(!this->mpVesselNetwork)
     {
-        EXCEPTION("A hybrid solver is required for this type of sprouting rule.");
-    }
-
-    if(mpSolver->GetGrid() != this->mpGrid)
-    {
-        EXCEPTION("The vessel grid and hybrid solver grid must be the same for this type of sprouting rule.");
+        EXCEPTION("A vessel network is required for this type of sprouting rule.");
     }
 
     // Set up the output directions vector
@@ -127,9 +154,6 @@ std::vector<c_vector<double, DIM> > LatticeBasedSproutingRule<DIM>::GetSproutDir
 
     // Get the neighbour data from the regular grid
     std::vector<std::vector<unsigned> > neighbour_indices = this->mpGrid->GetNeighbourData();
-
-    // Get the vegf values from the hybrid solver
-    std::vector<double> vegf_values = mpSolver->GetPointSolution();
 
     // Loop over all nodes, if they sprout set sprout the direction
     for(unsigned idx = 0; idx < rNodes.size(); idx++)
@@ -164,65 +188,20 @@ std::vector<c_vector<double, DIM> > LatticeBasedSproutingRule<DIM>::GetSproutDir
         unsigned grid_index = this->mpGrid->Get1dGridIndex(x_index, y_index, z_index);
 
         // Get the probability of moving into each of the neighbour sites
-        std::vector<double> probability_of_moving(neighbour_indices[grid_index].size(), 0.0);
-        for(unsigned jdx=0; jdx<neighbour_indices[grid_index].size(); jdx++)
+        MARK;
+        std::vector<double> probability_of_moving = GetNeighbourSproutingProbabilities(rNodes[idx], neighbour_indices[grid_index], grid_index);
+
+        std::cout << neighbour_indices[grid_index].size() << std::endl;
+        MARK;
+        // Get the index of the neighbour to move into
+        double sum = std::fabs(std::accumulate(probability_of_moving.begin(),probability_of_moving.end(),0.0));
+        if(sum > 1.e-16)
         {
-            // make sure that tip cell does not try to move into a location already occupied by the vessel that it comes from
-            // i.e. that it doesn't loop back around
-            c_vector<double, DIM> neighbour_location = this->mpGrid->GetLocationOf1dIndex(neighbour_indices[grid_index][jdx]);
-            bool sprout_already_attached_to_vessel_at_location = false;
-
-            for (unsigned seg_index = 0; seg_index < rNodes[idx]->GetNumberOfSegments(); seg_index++)
-            {
-                if(rNodes[idx]->GetVesselSegment(seg_index)->GetOppositeNode(rNodes[idx])->IsCoincident(ChastePoint<DIM>(neighbour_location)))
-                {
-                     sprout_already_attached_to_vessel_at_location = true;
-                     break;
-                }
-            }
-
-            //ensure that the new sprout would not try to cross a vessel which is oriented diagonally
-            bool vessel_crosses_line_segment = this->mpVesselNetwork->VesselCrossesLineSegment(neighbour_location, rNodes[idx]->GetLocationVector());
-            if (!vessel_crosses_line_segment && !sprout_already_attached_to_vessel_at_location)
-            {
-                // Get the vegf difference
-                double vegf = vegf_values[grid_index];
-                double VEGF_diff = (vegf_values[neighbour_indices[grid_index][jdx]] - vegf);
-                double dt = SimulationTime::Instance()->GetTimeStep();
-                double dij = norm_2(rNodes[idx]->GetLocationVector() - neighbour_location);
-                probability_of_moving[idx] = ((mCellMotility * dt)/(2.0*dij*dij))*(1.0 + mCellChemotacticParameter*VEGF_diff/(2.0*mCellMotility));
-                if (probability_of_moving[jdx] < 0.0)
-                {
-                    probability_of_moving[jdx] = 0.0;
-                }
-            }
-        }
-
-        if(std::fabs(std::accumulate(probability_of_moving.begin(),probability_of_moving.end(),0.0)) > 1e-16)
-        {
-            // use roulette-wheel style selection to select which location the tip will move into
-            unsigned location_index = neighbour_indices[grid_index].size()*2;
-            std::vector<double> cumulativeProbabilityVector(probability_of_moving.size());
-            std::partial_sum(probability_of_moving.begin(), probability_of_moving.end(), cumulativeProbabilityVector.begin());
-            if (cumulativeProbabilityVector.back() > 1.0)
-            {
-                std::string message;
-                message = "Cumulative probability of tip cell moving is greater than one (" + boost::lexical_cast<std::string>(cumulativeProbabilityVector.back()) + "). Reduce time-step accordingly.";
-                EXCEPTION(message);
-            }
-
-            double random_number = RandomNumberGenerator::Instance()->ranf();
-            for (unsigned ind = 0; ind < cumulativeProbabilityVector.size(); ind++)
-            {
-                if (random_number <= cumulativeProbabilityVector[ind])
-                {
-                    location_index = ind;
-                    break;
-                }
-            }
+            unsigned location_index = GetNeighbourSproutIndex(probability_of_moving, neighbour_indices[grid_index]);
             c_vector<double, DIM> sprout_location = this->mpGrid->GetLocationOf1dIndex(neighbour_indices[grid_index][location_index]);
             directions[idx] = (sprout_location - rNodes[idx]->GetLocationVector()) / norm_2(sprout_location - rNodes[idx]->GetLocationVector());
         }
+        MARK;
     }
     return directions;
 }

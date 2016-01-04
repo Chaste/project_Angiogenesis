@@ -7,6 +7,7 @@ geometry/generators/TestMappableGridGenerator.hpp
 geometry/generators/TestVesselSurfaceGenerator.hpp
 geometry/generators/TestVoronoiGenerator.hpp
 mesh/TestHybridMesh.hpp
+mesh/TestRegularGrid.hpp
 population/cell/TestOwen2011OxygenBasedCellCycleModelWithOde.hpp
 population/cell/TestOwen2011OxygenBasedCellCycleOdeSystem.hpp
 population/vessel/components/TestVascularNode.hpp
@@ -22,11 +23,18 @@ population/vessel/flow/haematocrit/TestBetteridgeHaematocritSolver.hpp
 population/vessel/flow/calculators/TestAlarcon03MechanicalStimulusCalculator.hpp
 population/vessel/flow/calculators/TestAlarcon03MetabolicStimulusCalculator.hpp
 population/combined/TestCaBasedCellPopulationWithVessels.hpp
+population/vessel/angiogenesis/TestAnastamosis.hpp
+population/vessel/angiogenesis/growth_direction_modifiers/TestOffLatticePrwGrowthDirectionModifier.hpp
+population/vessel/flow/calculators/TestPoiseuilleImpedanceCalculator.hpp
 hybrid_solvers/maps/TestDistanceMap.hpp
 hybrid_solvers/maps/TestDensityMap.hpp
 hybrid_solvers/TestFiniteDifferenceSolver.hpp
 hybrid_solvers/TestGreensFunctionSolver.hpp
 hybrid_solvers/TestFiniteElementSolver.hpp
+hybrid_solvers/TestKroghCylinderSolver.hpp
 simulation/TestVascularTumourSimulationModifier.hpp
 simulation/TestVascularTumourSolver.hpp
 tutorials/Test2dTumourSpheroid.hpp
+tutorials/Test2dVascularTumourGrowth.hpp
+tutorials/Test3dTumourSpheroid.hpp
+tutorials/TestSnailTrail.hpp

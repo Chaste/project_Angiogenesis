@@ -76,7 +76,7 @@
 #include "CaBasedCellPopulationWithVesselsGenerator.hpp"
 #include "AngiogenesisSolver.hpp"
 #include "AngiogenesisSolverUsingCellPopulationWithVessels.hpp"
-#include "FLowSolver.hpp"
+#include "FlowSolver.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
 
@@ -423,7 +423,7 @@ public:
         //          *CVODE Error -27 in module CVODE function CVode: tout too close to t0 to start integration.
         //          CVODE failed to solve system: CV_TOO_CLOSE
         simulator.SetDt(1.5);
-        simulator.SetEndTime(200);
+        simulator.SetEndTime(40);
 
         simulator.Solve();
 

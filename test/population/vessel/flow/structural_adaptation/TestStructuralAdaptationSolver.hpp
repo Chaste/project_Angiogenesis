@@ -19,9 +19,8 @@
 #include "VasculatureData.hpp"
 #include "SimulationTime.hpp"
 #include "Alarcon03HaematocritSolver.hpp"
-
 #include "FakePetscSetup.hpp"
-#include "Debug.hpp"
+
 class TestStructuralAdaptationSolver : public CxxTest::TestSuite
 {
 
@@ -130,12 +129,12 @@ public:
     void TestHexagonalNetwork() throw(Exception)
 	{
         // Specify the network dimensions
-        double vessel_length = 82.0e-6;
+        double vessel_length = 82.0;
 
         // Generate the network
         VasculatureGenerator<2> vascular_network_generator;
-        boost::shared_ptr<CaVascularNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(800.0e-6,
-                                                                                                                        1000.0e-6, vessel_length);
+        boost::shared_ptr<CaVascularNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(800.0,
+                                                                                                                        1000.0, vessel_length);
 
         std::vector<ChastePoint<2> > points;
         points.push_back(ChastePoint<2>(0, 0));
@@ -149,7 +148,7 @@ public:
 
         boost::shared_ptr<CaVesselSegment<2> > p_segment(CaVesselSegment<2>::Create(nodes[0], nodes[1]));
 
-        double radius = 10.0e-6;
+        double radius = 10.0;
         p_segment->SetRadius(radius);
         double haematocrit = 0.45;
         p_segment->GetFlowProperties()->SetHaematocrit(haematocrit);

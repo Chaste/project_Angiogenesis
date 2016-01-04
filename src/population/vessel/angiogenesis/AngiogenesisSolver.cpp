@@ -153,7 +153,6 @@ void AngiogenesisSolver<DIM>::DoSprouting()
     // Get the candidate directions
     std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = mpNetwork->GetNodes();
     std::vector<c_vector<double, DIM> > sprout_directions = mpSproutingRule->GetSproutDirections(nodes);
-
     // Do the sprouting
     for(unsigned idx = 0; idx < nodes.size(); idx++)
     {
@@ -204,6 +203,12 @@ void AngiogenesisSolver<DIM>::UpdateNodalPositions(const std::string& speciesLab
                 {
                     do_move = false;
                 }
+            }
+
+            // If there is a lattice do not move off it
+            if(mUseLattice)
+            {
+
             }
 
             if(do_move)
@@ -280,10 +285,13 @@ void AngiogenesisSolver<DIM>::Increment()
     {
         mpVesselGrid->SetVesselNetwork(mpNetwork);
     }
+
     // Move any migrating nodes
     UpdateNodalPositions();
+
     // Check for anastamosis
     DoAnastamosis();
+
     // Do sprouting
     if(mpSproutingRule)
     {
@@ -304,7 +312,8 @@ void AngiogenesisSolver<DIM>::Run(bool writeOutput)
     {
         if(writeOutput && mpFileHandler && mpNetwork)
         {
-            mpNetwork->Write(mpFileHandler->GetOutputDirectoryFullPath() + "/vessel_network_" + boost::lexical_cast<std::string>(SimulationTime::Instance()->GetTime()) + ".vtp");
+            mpNetwork->Write(mpFileHandler->GetOutputDirectoryFullPath() + "/vessel_network_" +
+                             boost::lexical_cast<std::string>(SimulationTime::Instance()->GetTimeStepsElapsed()) + ".vtp");
         }
         Increment();
         SimulationTime::Instance()->IncrementTimeOneStep();

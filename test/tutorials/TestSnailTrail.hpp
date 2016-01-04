@@ -38,6 +38,8 @@
 
 #include <cxxtest/TestSuite.h>
 #include <vector>
+
+#include "Owen2011LatticeBasedSproutingRule.hpp"
 #include "LatticeBasedSproutingRule.hpp"
 #include "SmartPointers.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
@@ -55,6 +57,8 @@ public:
 
     void Test2dSnailTrailWithPrescribedVegf() throw (Exception)
     {
+        MAKE_PTR_ARGS(OutputFileHandler, p_handler, ("TestSnailTrailModel"));
+
         // Set up the grid
         boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
         double spacing = 40.0; //um
@@ -66,17 +70,23 @@ public:
         p_grid->SetExtents(extents);
 
         // Prescribe a linearly increasing vegf field using a function map
-        boost::shared_ptr<FunctionMap<3> > p_funciton_map = FunctionMap<3>::Create();
-        p_funciton_map->SetGrid(p_grid);
-        std::vector<double> vegf_field = std::vector<double>(extents[0]*extents[1], 0.0);
-        for(unsigned idx=0; idx<extents[0]*extents[1]; idx++)
-        {
-            vegf_field[idx] = p_grid->GetLocationOf1dIndex(idx)[0] / (spacing * extents[0]); // 0 to 1 nM across the grid x extents
-        }
-        p_funciton_map->SetPointSolution(vegf_field);
-
-        MAKE_PTR_ARGS(OutputFileHandler, p_handler, ("TestSnailTrailModel/"));
-        p_grid->Write(p_handler);
+//        boost::shared_ptr<FunctionMap<3> > p_funciton_map = FunctionMap<3>::Create();
+//        p_funciton_map->SetGrid(p_grid);
+//        std::vector<double> vegf_field = std::vector<double>(extents[0]*extents[1], 0.0);
+//        for(unsigned idx=0; idx<extents[0]*extents[1]; idx++)
+//        {
+//            vegf_field[idx] = p_grid->GetLocationOf1dIndex(idx)[0] / (spacing * extents[0]); // 0 to 1 nM across the grid x extents
+//        }
+//        p_funciton_map->SetPointSolution(vegf_field);
+//
+//        std::map<std::string, std::vector<double> > data;
+//        data["Vegf"] = vegf_field;
+//        p_grid->Write(p_handler);
+//        p_funciton_map->SetFileHandler(p_handler);
+//        p_funciton_map->SetFileName("Function.vti");
+//        p_funciton_map->Setup();
+//        p_funciton_map->UpdateSolution(data);
+//        p_funciton_map->Write();
 
         //Set up the limbal vessel
         VasculatureGenerator<3> generator;
@@ -91,7 +101,7 @@ public:
         boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(length, start_point, divisions, alignment_axis);
 
         // Set up the angiogenesis solver
-        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(40.0, 400);
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(40.0, 800);
 
         AngiogenesisSolver<3> angiogenesis_solver;
         angiogenesis_solver.SetVesselNetwork(p_network);
@@ -103,8 +113,10 @@ public:
 //        boost::shared_ptr<OffLatticeSolutionDependentGrowthDirectionModifier<3> > p_solution_dependent_modifier =
 //                boost::shared_ptr<OffLatticeSolutionDependentGrowthDirectionModifier<3> >(new OffLatticeSolutionDependentGrowthDirectionModifier<3>());
 //
+//        boost::shared_ptr<Owen2011LatticeBasedSproutingRule<3> > p_sprouting_rule = Owen2011LatticeBasedSproutingRule<3>::Create();
+//        p_sprouting_rule->SetHybridSolver(p_funciton_map); // This contains the vegf field
+
         boost::shared_ptr<LatticeBasedSproutingRule<3> > p_sprouting_rule = LatticeBasedSproutingRule<3>::Create();
-        p_sprouting_rule->SetHybridSolver(p_funciton_map); // This contains the vegf field
 
 //        angiogenesis_solver.AddGrowthDirectionModifier(p_random_walk_modifier);
 //        angiogenesis_solver.AddGrowthDirectionModifier(p_solution_dependent_modifier);

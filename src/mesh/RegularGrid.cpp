@@ -81,36 +81,36 @@ template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void RegularGrid<ELEMENT_DIM, SPACE_DIM>::CalculateNeighbourData()
 {
     mNeighbourData = std::vector<std::vector<unsigned> >(GetNumberOfPoints());
-    for(unsigned kdx=0; kdx<mExtents[2]; kdx++)
+    for (unsigned kdx = 0; kdx < mExtents[2]; kdx++)
     {
-        for(unsigned jdx=0; jdx<mExtents[1]; jdx++)
+        for (unsigned jdx = 0; jdx < mExtents[1]; jdx++)
         {
-            for(unsigned idx=0; idx<mExtents[0]; idx++)
+            for (unsigned idx = 0; idx < mExtents[0]; idx++)
             {
                 unsigned index = Get1dGridIndex(idx, jdx, kdx);
-                if(idx>0)
+                if (idx > 0)
                 {
-                    mNeighbourData[index].push_back(Get1dGridIndex(idx-1, jdx, kdx));
+                    mNeighbourData[index].push_back(Get1dGridIndex(idx - 1, jdx, kdx));
                 }
-                if(idx<mExtents[0]-1)
+                if (idx < mExtents[0] - 1)
                 {
-                    mNeighbourData[index].push_back(Get1dGridIndex(idx+1, jdx, kdx));
+                    mNeighbourData[index].push_back(Get1dGridIndex(idx + 1, jdx, kdx));
                 }
-                if(jdx>0)
+                if (jdx > 0)
                 {
-                    mNeighbourData[index].push_back(Get1dGridIndex(idx, jdx-1, kdx));
+                    mNeighbourData[index].push_back(Get1dGridIndex(idx, jdx - 1, kdx));
                 }
-                if(jdx<mExtents[1]-1)
+                if (jdx < mExtents[1] - 1)
                 {
-                    mNeighbourData[index].push_back(Get1dGridIndex(idx, jdx+1, kdx));
+                    mNeighbourData[index].push_back(Get1dGridIndex(idx, jdx + 1, kdx));
                 }
-                if(kdx>0)
+                if (kdx > 0)
                 {
-                    mNeighbourData[index].push_back(Get1dGridIndex(idx, jdx, kdx-1));
+                    mNeighbourData[index].push_back(Get1dGridIndex(idx, jdx, kdx - 1));
                 }
-                if(kdx<mExtents[2]-1)
+                if (kdx < mExtents[2] - 1)
                 {
-                    mNeighbourData[index].push_back(Get1dGridIndex(idx, jdx, kdx+1));
+                    mNeighbourData[index].push_back(Get1dGridIndex(idx, jdx, kdx + 1));
                 }
             }
         }
@@ -120,7 +120,7 @@ void RegularGrid<ELEMENT_DIM, SPACE_DIM>::CalculateNeighbourData()
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 const std::vector<std::vector<unsigned> >& RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetNeighbourData()
 {
-    if(mNeighbourData.size() ==0 or mNeighbourData.size() != GetNumberOfPoints())
+    if (mNeighbourData.size() == 0 or mNeighbourData.size() != GetNumberOfPoints())
     {
         CalculateNeighbourData();
     }
@@ -150,7 +150,7 @@ void RegularGrid<ELEMENT_DIM, SPACE_DIM>::SetUpVtkGrid()
     {
         mpVtkGrid->SetOrigin(mOrigin[0], mOrigin[1], 0.0);
     }
-    mVtkGridIsSetUp =true;
+    mVtkGridIsSetUp = true;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
@@ -340,7 +340,7 @@ std::vector<double> RegularGrid<ELEMENT_DIM, SPACE_DIM>::InterpolateGridValues(
     }
     else
     {
-        if(!mVtkGridIsSetUp)
+        if (!mVtkGridIsSetUp)
         {
             SetUpVtkGrid();
         }
@@ -381,17 +381,18 @@ std::vector<double> RegularGrid<ELEMENT_DIM, SPACE_DIM>::InterpolateGridValues(
         p_probe_filter->Update();
         vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetPolyDataOutput()->GetPointData();
 
-        unsigned num_points = p_point_data->GetArray(1)->GetNumberOfTuples();
+        unsigned num_points = p_point_data->GetArray("test")->GetNumberOfTuples();
         for (unsigned idx = 0; idx < num_points; idx++)
         {
-            sampled_values[idx] = p_point_data->GetArray(1)->GetTuple1(idx);
+            sampled_values[idx] = p_point_data->GetArray("test")->GetTuple1(idx);
         }
     }
     return sampled_values;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-const std::vector<std::vector<boost::shared_ptr<VascularNode<SPACE_DIM> > > >& RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetPointNodeMap(bool update)
+const std::vector<std::vector<boost::shared_ptr<VascularNode<SPACE_DIM> > > >& RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetPointNodeMap(
+        bool update)
 {
     if (!update)
     {
@@ -414,22 +415,22 @@ const std::vector<std::vector<boost::shared_ptr<VascularNode<SPACE_DIM> > > >& R
 
     mPointNodeMap = std::vector<std::vector<boost::shared_ptr<VascularNode<SPACE_DIM> > > >(GetNumberOfPoints());
     std::vector<boost::shared_ptr<VascularNode<SPACE_DIM> > > nodes = mpNetwork->GetNodes();
-    for(unsigned idx=0; idx<nodes.size(); idx++)
+    for (unsigned idx = 0; idx < nodes.size(); idx++)
     {
-         c_vector<double, SPACE_DIM> location = nodes[idx]->GetLocationVector();
-         unsigned x_index = round((location[0] - origin_x) / mSpacing);
-         unsigned y_index = round((location[1] - origin_y) / mSpacing);
-         unsigned z_index = 1;
-         if (SPACE_DIM == 3)
-         {
-             z_index = round((location[2] - origin_z) / mSpacing);
-         }
+        c_vector<double, SPACE_DIM> location = nodes[idx]->GetLocationVector();
+        unsigned x_index = round((location[0] - origin_x) / mSpacing);
+        unsigned y_index = round((location[1] - origin_y) / mSpacing);
+        unsigned z_index = 1;
+        if (SPACE_DIM == 3)
+        {
+            z_index = round((location[2] - origin_z) / mSpacing);
+        }
 
-         if (x_index <= mExtents[0] && y_index <= mExtents[1] && z_index <= mExtents[2])
-         {
-             unsigned grid_index = x_index + y_index * mExtents[1] + z_index * mExtents[1] + mExtents[2];
-             mPointNodeMap[grid_index].push_back(nodes[idx]);
-         }
+        if (x_index <= mExtents[0] && y_index <= mExtents[1] && z_index <= mExtents[2])
+        {
+            unsigned grid_index = x_index + y_index * mExtents[1] + z_index * mExtents[1] + mExtents[2];
+            mPointNodeMap[grid_index].push_back(nodes[idx]);
+        }
     }
     return mPointNodeMap;
 }
@@ -500,20 +501,21 @@ std::vector<std::vector<boost::shared_ptr<CaVesselSegment<SPACE_DIM> > > > Regul
     {
         for (unsigned idx = 0; idx < GetNumberOfPoints(); idx++)
         {
-			if (!useVesselSurface)
-			{
-				if (segments[jdx]->GetDistance(GetLocationOf1dIndex(idx)) < sqrt(1.0/2.0)*mSpacing)
-				{
-					mPointSegmentMap[idx].push_back(segments[jdx]);
-				}
-			}
-			else
-			{
-				if (segments[jdx]->GetDistance(GetLocationOf1dIndex(idx))< segments[jdx]->GetRadius() + sqrt(1.0/2.0)*mSpacing)
-				{
-					mPointSegmentMap[idx].push_back(segments[jdx]);
-				}
-			}
+            if (!useVesselSurface)
+            {
+                if (segments[jdx]->GetDistance(GetLocationOf1dIndex(idx)) < sqrt(1.0 / 2.0) * mSpacing)
+                {
+                    mPointSegmentMap[idx].push_back(segments[jdx]);
+                }
+            }
+            else
+            {
+                if (segments[jdx]->GetDistance(GetLocationOf1dIndex(idx))
+                        < segments[jdx]->GetRadius() + sqrt(1.0 / 2.0) * mSpacing)
+                {
+                    mPointSegmentMap[idx].push_back(segments[jdx]);
+                }
+            }
         }
     }
 
@@ -688,12 +690,12 @@ void RegularGrid<ELEMENT_DIM, SPACE_DIM>::SetVesselNetwork(boost::shared_ptr<CaV
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void RegularGrid<ELEMENT_DIM, SPACE_DIM>::Write(boost::shared_ptr<OutputFileHandler> pFileHandler)
 {
-    if(!mVtkGridIsSetUp)
+    if (!mVtkGridIsSetUp)
     {
         SetUpVtkGrid();
     }
 
-    if(mPointSolution.size() == GetNumberOfPoints())
+    if (mPointSolution.size() == GetNumberOfPoints())
     {
         vtkSmartPointer<vtkDoubleArray> pPointData = vtkSmartPointer<vtkDoubleArray>::New();
         pPointData->SetNumberOfComponents(1);

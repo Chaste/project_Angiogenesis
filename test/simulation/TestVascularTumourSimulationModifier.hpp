@@ -153,7 +153,7 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
         p_oxygen_pde->SetVariableName("oxygen");
 
         boost::shared_ptr<DiscreteSource<3> > p_cell_oxygen_sink = DiscreteSource<3>::Create();
-        p_cell_oxygen_sink->SetType(SourceType::POINT);
+        p_cell_oxygen_sink->SetType(SourceType::CELL);
         p_cell_oxygen_sink->SetSource(SourceStrength::PRESCRIBED);
         p_cell_oxygen_sink->SetValue(1.e-6);
         p_cell_oxygen_sink->SetIsLinearInSolution(true);
@@ -184,7 +184,7 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
         p_vegf_pde->SetContinuumLinearInUTerm(-1.e-7);
 
         boost::shared_ptr<DiscreteSource<3> > p_cell_vegf_source = DiscreteSource<3>::Create();
-        p_cell_vegf_source->SetType(SourceType::POINT);
+        p_cell_vegf_source->SetType(SourceType::CELL);
         p_cell_vegf_source->SetSource(SourceStrength::PRESCRIBED);
         p_cell_vegf_source->SetValue(-1.e-4);
         p_cell_vegf_source->SetIsLinearInSolution(false);

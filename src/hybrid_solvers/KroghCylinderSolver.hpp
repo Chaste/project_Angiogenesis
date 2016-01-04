@@ -73,12 +73,22 @@ public:
 
     void SetSampleLocations(std::vector<double> locations);
 
+    std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints, bool samplingStrategy = true)
+    {
+        return std::vector<double>();
+    }
+
     void Update()
     {
 
     }
 
     void UpdateCellData()
+    {
+
+    }
+
+    void Setup()
     {
 
     }

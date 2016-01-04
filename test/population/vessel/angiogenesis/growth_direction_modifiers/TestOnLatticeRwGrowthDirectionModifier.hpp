@@ -37,7 +37,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TestOnLatticeRwGrowthDirectionModifier_hpp
 
 #include <cxxtest/TestSuite.h>
-#include "../../src/angiogenesis_solvers/growth_direction_modifiers/OnLatticeRwGrowthDirectionModifier.hpp"
+#include "OnLatticeRwGrowthDirectionModifier.hpp"
 #include "FileFinder.hpp"
 #include "OutputFileHandler.hpp"
 #include "SmartPointers.hpp"

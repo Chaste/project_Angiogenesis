@@ -55,7 +55,7 @@ class TestRegularGrid : public AbstractCellBasedWithTimingsTestSuite
 
 public:
 
-    void dontTestPointPointMapGeneration()
+    void TestPointPointMapGeneration()
     {
         // Set up a grid
         boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
@@ -89,19 +89,19 @@ public:
         TS_ASSERT_EQUALS(sum, 10000);
     }
 
-    void dontTestPointCellMapGeneration()
+    void TestPointCellMapGeneration()
     {
         // Set up a grid
         boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
         std::vector<unsigned> extents(3);
-        extents[0] = 1000;
-        extents[1] = 1000;
+        extents[0] = 100;
+        extents[1] = 100;
         extents[2] = 1;
         p_grid->SetExtents(extents);
         p_grid->SetSpacing(0.333);
 
         // Set up cells
-        HoneycombMeshGenerator generator(100, 100);    // Parameters are: cells across, cells up
+        HoneycombMeshGenerator generator(10, 10);    // Parameters are: cells across, cells up
         MutableMesh<2, 2>* p_mesh = generator.GetMesh();
         std::vector<CellPtr> cells;
         MAKE_PTR(TransitCellProliferativeType, p_transit_type);
@@ -120,7 +120,7 @@ public:
         {
             sum += map[idx].size();
         }
-        TS_ASSERT_EQUALS(sum, 10000);
+        TS_ASSERT_EQUALS(sum, 100);
     }
 
     void TestInterpolateGridValues() throw (Exception)
