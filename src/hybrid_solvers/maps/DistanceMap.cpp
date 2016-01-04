@@ -35,7 +35,6 @@
 
 #include "CaVesselSegment.hpp"
 #include "ChastePoint.hpp"
-
 #include "DistanceMap.hpp"
 
 template<unsigned DIM>

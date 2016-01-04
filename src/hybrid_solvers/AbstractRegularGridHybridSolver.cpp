@@ -163,7 +163,6 @@ void AbstractRegularGridHybridSolver<DIM>::UpdateSolution(std::map<std::string, 
     {
         EXCEPTION("A VTK solution has not be set up, did you forget to call Setup prior to Solve.");
     }
-
     std::map<std::string, std::vector<double> >::iterator iter;
     for (iter = data.begin(); iter != data.end(); ++iter)
     {
@@ -171,9 +170,11 @@ void AbstractRegularGridHybridSolver<DIM>::UpdateSolution(std::map<std::string, 
         pPointData->SetNumberOfComponents(1);
         pPointData->SetNumberOfTuples(iter->second.size());
         pPointData->SetName(iter->first.c_str());
+        this->mPointSolution = std::vector<double>(iter->second.size());
         for (unsigned i = 0; i < iter->second.size(); i++)
         {
             pPointData->SetValue(i, data[iter->first][i]);
+            this->mPointSolution[i] = data[iter->first][i];
         }
         mpVtkSolution->GetPointData()->AddArray(pPointData);
     }
