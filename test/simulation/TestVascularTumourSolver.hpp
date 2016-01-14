@@ -37,7 +37,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TESTANGIOGENESISSOLVER_HPP
 
 #include <cxxtest/TestSuite.h>
-#include "AbstractGrowthDirectionModifier.hpp"
+#include "LatticeBasedMigrationRule.hpp"
 #include "FileFinder.hpp"
 #include "OutputFileHandler.hpp"
 #include "SmartPointers.hpp"
@@ -74,11 +74,10 @@ public:
         p_network->GetVessel(0)->GetEndNode()->SetIsMigrating(true);
 
         // Set up an angiogenesis solver
-        boost::shared_ptr<AbstractGrowthDirectionModifier<3> > p_grow_direction_modifier =
-                boost::shared_ptr<AbstractGrowthDirectionModifier<3> >(new AbstractGrowthDirectionModifier<3>());
+        boost::shared_ptr<LatticeBasedMigrationRule<3> > p_migration_rule = LatticeBasedMigrationRule<3>::Create();
         boost::shared_ptr<AngiogenesisSolver<3> > p_angiogenesis_solver = AngiogenesisSolver<3>::Create();
         p_angiogenesis_solver->SetVesselNetwork(p_network);
-        p_angiogenesis_solver->AddGrowthDirectionModifier(p_grow_direction_modifier);
+        p_angiogenesis_solver->SetMigrationRule(p_migration_rule);
 
         // Set up a vascular tumour solver
         VascularTumourSolver<3> vascular_tumour_solver;

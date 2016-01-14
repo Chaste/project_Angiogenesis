@@ -23,8 +23,6 @@ population/vessel/flow/haematocrit/TestBetteridgeHaematocritSolver.hpp
 population/vessel/flow/calculators/TestAlarcon03MechanicalStimulusCalculator.hpp
 population/vessel/flow/calculators/TestAlarcon03MetabolicStimulusCalculator.hpp
 population/combined/TestCaBasedCellPopulationWithVessels.hpp
-population/vessel/angiogenesis/TestAnastamosis.hpp
-population/vessel/angiogenesis/growth_direction_modifiers/TestOffLatticePrwGrowthDirectionModifier.hpp
 population/vessel/flow/calculators/TestPoiseuilleImpedanceCalculator.hpp
 hybrid_solvers/maps/TestDistanceMap.hpp
 hybrid_solvers/maps/TestDensityMap.hpp

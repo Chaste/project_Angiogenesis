@@ -75,7 +75,6 @@
 #include "CaBasedCellPopulationWithVessels.hpp"
 #include "CaBasedCellPopulationWithVesselsGenerator.hpp"
 #include "AngiogenesisSolver.hpp"
-#include "AngiogenesisSolverUsingCellPopulationWithVessels.hpp"
 #include "FlowSolver.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
@@ -142,8 +141,7 @@ class Test2dVascularTumourGrowth : public AbstractCellBasedWithTimingsTestSuite
         // VEGF release for normal cells and quiescent cancer cells:
         // normal cells release only when intracellular vegf reaches a certain value
         // quiescent cancer cells release always release vegf
-        boost::shared_ptr<CellStateDependentDiscreteSource<2> > p_normal_and_quiescent_cell_source = CellStateDependentDiscreteSource<
-                2>::Create();
+        boost::shared_ptr<CellStateDependentDiscreteSource<2> > p_normal_and_quiescent_cell_source = CellStateDependentDiscreteSource<2>::Create();
         p_normal_and_quiescent_cell_source->SetIsLinearInSolution(false); // constant vegf release rate
 
         // Set mutation specific source strengths and thresholds
@@ -163,8 +161,7 @@ class Test2dVascularTumourGrowth : public AbstractCellBasedWithTimingsTestSuite
         p_pde->AddDiscreteSource(p_normal_and_quiescent_cell_source);
 
         // VEGF release for cancer cells and tip cells, now there is no threshold so we use a different source
-        boost::shared_ptr<CellStateDependentDiscreteSource<2> > p_other_cell_sinks = CellStateDependentDiscreteSource<
-                2>::Create();
+        boost::shared_ptr<CellStateDependentDiscreteSource<2> > p_other_cell_sinks = CellStateDependentDiscreteSource<2>::Create();
         p_other_cell_sinks->SetIsLinearInSolution(true); // linear vegf uptake rate
         std::map<unsigned, double> other_cell_rates;
 
@@ -181,7 +178,7 @@ class Test2dVascularTumourGrowth : public AbstractCellBasedWithTimingsTestSuite
         p_pde->SetVariableName("VEGF");
 
         return p_pde;
-                    }
+}
 
     boost::shared_ptr<CaVascularNetwork<2> > GetHexagonalNetwork(double domain_x, double domain_y)
                 {
@@ -392,8 +389,10 @@ public:
         p_vascular_tumour_solver->AddHybridSolver(p_vegf_solver);
         p_vascular_tumour_solver->SetOutputFrequency(1);
         // add angiogenesis solver to vascular tumour solver
-        boost::shared_ptr<AngiogenesisSolverUsingCellPopulationWithVessels<2> > p_angiogenesis_solver(new AngiogenesisSolverUsingCellPopulationWithVessels<2>(cell_population));
+        boost::shared_ptr<AngiogenesisSolver<2> > p_angiogenesis_solver = AngiogenesisSolver<2>::Create();
+        p_angiogenesis_solver->SetCellPopulation(cell_population);
         p_vascular_tumour_solver->SetAngiogenesisSolver(p_angiogenesis_solver);
+
         // todo currently there is an issue with the flow calculation - some blunt-ended vessels contain flow (they shouldn't)
         boost::shared_ptr<FlowSolver<2> > flow_solver(new FlowSolver<2>());
         p_vascular_tumour_solver->SetFlowSolver(flow_solver);

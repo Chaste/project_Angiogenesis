@@ -39,7 +39,6 @@
 #include <cxxtest/TestSuite.h>
 #include <vector>
 
-#include "Owen2011LatticeBasedSproutingRule.hpp"
 #include "LatticeBasedSproutingRule.hpp"
 #include "SmartPointers.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"

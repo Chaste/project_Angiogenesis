@@ -112,6 +112,8 @@ public:
      */
     virtual void Setup();
 
+    bool HasRegularGrid();
+
     /**
      * Update the VTK solution prior to writing to file. Should be called by the Solve method in child classes.
      * @param data solution data map

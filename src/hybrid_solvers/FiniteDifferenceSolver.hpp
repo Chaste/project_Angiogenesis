@@ -38,6 +38,7 @@
 
 #include "SmartPointers.hpp"
 #include "LinearSystem.hpp"
+#include "SimplePetscNonlinearSolver.hpp"
 #include "AbstractRegularGridHybridSolver.hpp"
 
 /*
@@ -74,6 +75,10 @@ public:
      * @param writeSolution whether to write the solution to file
      */
     void Solve();
+
+private:
+
+    void DoLinearSolve();
 
 };
 

@@ -40,19 +40,17 @@
 #include "CaVesselSegment.hpp"
 #include "VascularNode.hpp"
 #include "AngiogenesisSolver.hpp"
-#include "Debug.hpp"
 
 template<unsigned DIM>
 AngiogenesisSolver<DIM>::AngiogenesisSolver() :
         mpNetwork(),
-        mGrowthVelocity(10.0),
         mNodeAnastamosisRadius(0.0),
-        mGrowthDirectionModifiers(),
+        mpMigrationRule(),
         mpSproutingRule(),
         mpBoundingDomain(),
         mpFileHandler(),
         mpVesselGrid(),
-        mUseLattice(true)
+        mpCellPopulation()
 {
 
 }
@@ -64,51 +62,10 @@ AngiogenesisSolver<DIM>::~AngiogenesisSolver()
 }
 
 template<unsigned DIM>
-void AngiogenesisSolver<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
-{
-    mpNetwork = pNetwork;
-}
-
-template<unsigned DIM>
-void AngiogenesisSolver<DIM>::SetVesselGrid(boost::shared_ptr<RegularGrid<DIM> >pVesselGrid)
-{
-    mpVesselGrid = pVesselGrid;
-    mUseLattice = true;
-}
-
-template<unsigned DIM>
 boost::shared_ptr<AngiogenesisSolver<DIM> > AngiogenesisSolver<DIM>::Create()
 {
     MAKE_PTR(AngiogenesisSolver<DIM>, pSelf);
     return pSelf;
-}
-
-template<unsigned DIM>
-void AngiogenesisSolver<DIM>::SetUseOffLattice()
-{
-    mUseLattice = false;
-}
-
-template<unsigned DIM>
-void AngiogenesisSolver<DIM>::AddGrowthDirectionModifier(boost::shared_ptr<AbstractGrowthDirectionModifier<DIM> > pModifier)
-{
-    mGrowthDirectionModifiers.push_back(pModifier);
-}
-
-template<unsigned DIM>
-c_vector<double, DIM> AngiogenesisSolver<DIM>::GetGrowthDirection(c_vector<double, DIM> currentDirection,
-                                                                          boost::shared_ptr<VascularNode<DIM> > pNode)
-{
-    c_vector<double,DIM> new_direction = currentDirection;
-
-    // Loop through the growth direction modifiers and add up the contributions
-    for(unsigned idx=0; idx<mGrowthDirectionModifiers.size(); idx++)
-    {
-        new_direction += mGrowthDirectionModifiers[idx]->GetStrength() * mGrowthDirectionModifiers[idx]->GetGrowthDirection(currentDirection, pNode);
-        new_direction /= norm_2(new_direction);
-    }
-
-    return new_direction;
 }
 
 template<unsigned DIM>
@@ -130,9 +87,15 @@ void AngiogenesisSolver<DIM>::SetBoundingDomain(boost::shared_ptr<Part<DIM> > pD
 }
 
 template<unsigned DIM>
-void AngiogenesisSolver<DIM>::SetGrowthVelocity(double velocity)
+void AngiogenesisSolver<DIM>::SetCellPopulation(boost::shared_ptr<CaBasedCellPopulationWithVessels<DIM> > cell_population)
 {
-    mGrowthVelocity = velocity;
+    mpCellPopulation = cell_population;
+}
+
+template<unsigned DIM>
+void AngiogenesisSolver<DIM>::SetMigrationRule(boost::shared_ptr<AbstractMigrationRule<DIM> > pMigrationRule)
+{
+    mpMigrationRule = pMigrationRule;
 }
 
 template<unsigned DIM>
@@ -148,76 +111,110 @@ void AngiogenesisSolver<DIM>::SetSproutingRule(boost::shared_ptr<AbstractSprouti
 }
 
 template<unsigned DIM>
-void AngiogenesisSolver<DIM>::DoSprouting()
+void AngiogenesisSolver<DIM>::SetVesselGrid(boost::shared_ptr<RegularGrid<DIM> >pVesselGrid)
 {
-    // Get the candidate directions
-    std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = mpNetwork->GetNodes();
-    std::vector<c_vector<double, DIM> > sprout_directions = mpSproutingRule->GetSproutDirections(nodes);
-    // Do the sprouting
-    for(unsigned idx = 0; idx < nodes.size(); idx++)
-    {
-        if(norm_2(sprout_directions[idx]) > 0.0)
-        {
-//            // Ensure it is not along the segment vectors
-//            bool is_along_segment_1 = std::abs(inner_prod(sprout_directions[idx],nodes[idx]->GetVesselSegments()[0]->GetUnitTangent())/
-//                    (norm_2(sprout_directions[idx])*norm_2(nodes[idx]->GetVesselSegments()[0]->GetUnitTangent()))) > 1 - 1.e-6;
-//            bool is_along_segment_2 = std::abs(inner_prod(sprout_directions[idx],nodes[idx]->GetVesselSegments()[1]->GetUnitTangent())/
-//                    (norm_2(sprout_directions[idx])*norm_2(nodes[idx]->GetVesselSegments()[1]->GetUnitTangent()))) > 1 - 1.e-6;
-
-            if(!mUseLattice)
-            {
-                mpNetwork->FormSprout(nodes[idx]->GetLocation(), ChastePoint<DIM>(nodes[idx]->GetLocationVector() +
-                                                                                  mGrowthVelocity*sprout_directions[idx]));
-            }
-            else
-            {
-                mpNetwork->FormSprout(nodes[idx]->GetLocation(), ChastePoint<DIM>(nodes[idx]->GetLocationVector() +
-                                                                                  mpVesselGrid->GetSpacing() * sprout_directions[idx]));
-            }
-        }
-    }
+    mpVesselGrid = pVesselGrid;
 }
 
 template<unsigned DIM>
-void AngiogenesisSolver<DIM>::UpdateNodalPositions(const std::string& speciesLabel)
+void AngiogenesisSolver<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
 {
-    // Move any nodes marked as migrating and located at the end of a vessel
+    mpNetwork = pNetwork;
+}
+
+template<unsigned DIM>
+void AngiogenesisSolver<DIM>::DoSprouting()
+{
+    // Get the candidate sprouts and set them as migrating
+    std::vector<boost::shared_ptr<VascularNode<DIM> > > candidate_sprouts = mpSproutingRule->GetSprouts(mpNetwork->GetNodes());
+
+    for(unsigned idx=0; idx<candidate_sprouts.size(); idx++)
+    {
+        candidate_sprouts[idx]->SetIsMigrating(true);
+    }
+
+    UpdateNodalPositions(true);
+}
+
+template<unsigned DIM>
+void AngiogenesisSolver<DIM>::UpdateNodalPositions(bool sprouting)
+{
+    // Move any nodes marked as migrating, either new sprouts or tips
     std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = mpNetwork->GetNodes();
+    std::vector<boost::shared_ptr<VascularNode<DIM> > > tips;
     for(unsigned idx = 0; idx < nodes.size(); idx++)
     {
-        if(nodes[idx]->IsMigrating() && nodes[idx]->GetNumberOfSegments() == 1)
+        if(sprouting)
         {
-            // Get the current direction vector
-            c_vector<double,DIM> direction = nodes[idx]->GetLocationVector() -
-                 nodes[idx]->GetVesselSegment(0)->GetOppositeNode(nodes[idx])->GetLocationVector();
-            direction /= norm_2(direction);
-
-            // Get the new location
-            c_vector<double,DIM> new_location = nodes[idx]->GetLocationVector() + mGrowthVelocity * GetGrowthDirection(direction, nodes[idx]);
-
-            // If there is a bounding domain do not move outside it
-            bool do_move = true;
-            if(mpBoundingDomain)
+            if(nodes[idx]->IsMigrating() && nodes[idx]->GetNumberOfSegments() == 2)
             {
-                if(!mpBoundingDomain->IsPointInPart(new_location))
+                tips.push_back(nodes[idx]);
+            }
+        }
+        else
+        {
+            if(nodes[idx]->IsMigrating() && nodes[idx]->GetNumberOfSegments() == 1)
+            {
+                tips.push_back(nodes[idx]);
+            }
+        }
+    }
+
+    // Do lattice or off lattice movement
+    if (mpVesselGrid)
+    {
+        std::vector<int> indices = mpMigrationRule->GetIndices(tips);
+
+        for(unsigned idx=0; idx<tips.size();idx++)
+        {
+            if(indices[idx]>=0)
+            {
+                if(sprouting)
                 {
-                    do_move = false;
+                    mpNetwork->FormSprout(nodes[idx]->GetLocation(), ChastePoint<DIM>(mpVesselGrid->GetLocationOf1dIndex(indices[idx])));
+                }
+                else
+                {
+                    boost::shared_ptr<VascularNode<DIM> > p_new_node = VascularNode<DIM>::Create(tips[idx]);
+                    p_new_node->SetLocation(mpVesselGrid->GetLocationOf1dIndex(indices[idx]));
+                    mpNetwork->ExtendVessel(nodes[idx]->GetVesselSegment(0)->GetVessel(), nodes[idx], p_new_node);
+                    nodes[idx]->SetIsMigrating(false);
+                    p_new_node->SetIsMigrating(true);
                 }
             }
-
-            // If there is a lattice do not move off it
-            if(mUseLattice)
+        }
+    }
+    else
+    {
+        std::vector<c_vector<double, DIM> > movement_vectors = mpMigrationRule->GetDirections(tips);
+        for(unsigned idx=0; idx<tips.size();idx++)
+        {
+            if(norm_2(movement_vectors[idx]) >0.0)
             {
+                bool do_move = true;
+                if(mpBoundingDomain)
+                {
+                    if(!mpBoundingDomain->IsPointInPart(nodes[idx]->GetLocationVector() + movement_vectors[idx]))
+                    {
+                        do_move = false;
+                    }
+                }
 
-            }
-
-            if(do_move)
-            {
-                boost::shared_ptr<VascularNode<DIM> > p_new_node = VascularNode<DIM>::Create(nodes[idx]);
-                p_new_node->SetLocation(new_location);
-                mpNetwork->ExtendVessel(nodes[idx]->GetVesselSegment(0)->GetVessel(), nodes[idx], p_new_node);
-                nodes[idx]->SetIsMigrating(false);
-                p_new_node->SetIsMigrating(true);
+                if(do_move)
+                {
+                    if(sprouting)
+                    {
+                        mpNetwork->FormSprout(nodes[idx]->GetLocation(), ChastePoint<DIM>(nodes[idx]->GetLocationVector() + movement_vectors[idx]));
+                    }
+                    else
+                    {
+                        boost::shared_ptr<VascularNode<DIM> > p_new_node = VascularNode<DIM>::Create(tips[idx]);
+                        p_new_node->SetLocation(nodes[idx]->GetLocationVector() + movement_vectors[idx]);
+                        mpNetwork->ExtendVessel(nodes[idx]->GetVesselSegment(0)->GetVessel(), nodes[idx], p_new_node);
+                        nodes[idx]->SetIsMigrating(false);
+                        p_new_node->SetIsMigrating(true);
+                    }
+                }
             }
         }
     }
@@ -281,6 +278,7 @@ void AngiogenesisSolver<DIM>::Increment()
         EXCEPTION("The angiogenesis solver needs an initial vessel network");
     }
 
+    // If doing lattice based, add the network to the lattice
     if(mpVesselGrid)
     {
         mpVesselGrid->SetVesselNetwork(mpNetwork);
@@ -296,25 +294,33 @@ void AngiogenesisSolver<DIM>::Increment()
     if(mpSproutingRule)
     {
         mpSproutingRule->SetVesselNetwork(mpNetwork);
+
         if(mpVesselGrid)
         {
             mpSproutingRule->SetGrid(mpVesselGrid);
         }
+
         DoSprouting();
         DoAnastamosis();
     }
+
+    //    mpCellPopulation->UpdateVascularCellPopulation();
 }
 
 template<unsigned DIM>
 void AngiogenesisSolver<DIM>::Run(bool writeOutput)
 {
+    // Loop for the duration of the simulation time
     while(!SimulationTime::Instance()->IsFinished())
     {
+        // Write the vessel network if appropriate
         if(writeOutput && mpFileHandler && mpNetwork)
         {
             mpNetwork->Write(mpFileHandler->GetOutputDirectoryFullPath() + "/vessel_network_" +
                              boost::lexical_cast<std::string>(SimulationTime::Instance()->GetTimeStepsElapsed()) + ".vtp");
         }
+
+        // Increment the solver and simulation time
         Increment();
         SimulationTime::Instance()->IncrementTimeOneStep();
     }

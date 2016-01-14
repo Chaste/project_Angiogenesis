@@ -41,6 +41,7 @@ AbstractHybridSolver<DIM>::AbstractHybridSolver()
         mpCellPopulation(NULL),
         mCellPopulationIsSet(false),
         mpPde(),
+        mpNonLinearPde(),
         mBoundaryConditions(),
         mpOutputFileHandler(),
         mFilename(),
@@ -103,6 +104,12 @@ template<unsigned DIM>
 void AbstractHybridSolver<DIM>::SetFileName(const std::string& rFilename)
 {
     mFilename = rFilename;
+}
+
+template<unsigned DIM>
+bool AbstractHybridSolver<DIM>::HasRegularGrid()
+{
+    return false;
 }
 
 template<unsigned DIM>

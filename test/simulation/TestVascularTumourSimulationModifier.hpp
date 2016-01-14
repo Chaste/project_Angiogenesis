@@ -37,10 +37,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TESTSPHEROIDWITHANGIOGENESIS_HPP_
 
 #include <cxxtest/TestSuite.h>
-#include "../../src/population/vessel/angiogenesis/sprouting_rules/OffLatticeSproutingRule.hpp"
-#include "OffLatticePrwGrowthDirectionModifier.hpp"
-#include "OffLatticeSolutionDependentGrowthDirectionModifier.hpp"
-#include "OffLatticeTipAttractionGrowthDirectionModifier.hpp"
+#include "OffLatticeMigrationRule.hpp"
+#include "OffLatticeSproutingRule.hpp"
 #include "VascularTumourModifier.hpp"
 #include "CheckpointArchiveTypes.hpp"
 #include "AbstractCellBasedTestSuite.hpp"

@@ -128,6 +128,19 @@ const std::vector<std::vector<unsigned> >& RegularGrid<ELEMENT_DIM, SPACE_DIM>::
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+unsigned RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetNearestGridIndex(c_vector<double, SPACE_DIM> location)
+{
+    unsigned x_index = round((location[0] - mOrigin[0]) / mSpacing);
+    unsigned y_index = round((location[1] - mOrigin[1]) / mSpacing);
+    unsigned z_index = 0;
+    if (SPACE_DIM == 3)
+    {
+        z_index = round((location[2] - mOrigin[2]) / mSpacing);
+    }
+    return Get1dGridIndex(x_index, y_index, z_index);
+}
+
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void RegularGrid<ELEMENT_DIM, SPACE_DIM>::SetUpVtkGrid()
 {
     // Set up a VTK grid

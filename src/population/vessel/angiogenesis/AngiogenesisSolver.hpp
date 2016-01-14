@@ -41,13 +41,13 @@
 #include "SmartPointers.hpp"
 #include "CaVascularNetwork.hpp"
 #include "Part.hpp"
-#include "AbstractGrowthDirectionModifier.hpp"
 #include "AbstractSproutingRule.hpp"
+#include "AbstractMigrationRule.hpp"
 #include "RegularGrid.hpp"
+#include "CaBasedCellPopulationWithVessels.hpp"
 
 /**
- * This class is for simulating modifications to the vessel network due to angiogenesis.
- * The current implementation is based on sprouting angiogenesis.
+ * This class is for simulating modifications to the vessel network due to sprouting angiogenesis.
  */
 template<unsigned DIM>
 class AngiogenesisSolver
@@ -58,19 +58,14 @@ class AngiogenesisSolver
     boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
 
     /**
-     * The growth velocity of vessels in angiogenesis simulations
-     */
-    double mGrowthVelocity;
-
-    /**
      * The radius in which anastamosis is allowed in angiogenesis simulations
      */
     double mNodeAnastamosisRadius;
 
     /**
-     * The collection of growth direction modifiers
+     * The migration rule for tip cells
      */
-    std::vector<boost::shared_ptr<AbstractGrowthDirectionModifier<DIM> > > mGrowthDirectionModifiers;
+    boost::shared_ptr<AbstractMigrationRule<DIM> > mpMigrationRule;
 
     /**
      * The sprouting rule for angiogenesis
@@ -87,9 +82,12 @@ class AngiogenesisSolver
      */
     boost::shared_ptr<OutputFileHandler> mpFileHandler;
 
+    /**
+     * The grid for lattice based angiogenesis simulations
+     */
     boost::shared_ptr<RegularGrid<DIM> > mpVesselGrid;
 
-    bool mUseLattice;
+    boost::shared_ptr<CaBasedCellPopulationWithVessels<DIM> > mpCellPopulation;
 
 public:
 
@@ -110,17 +108,27 @@ public:
     static boost::shared_ptr<AngiogenesisSolver> Create();
 
     /**
-     * Add a growth direction modifier to the collection
-     * @param pModifier a growth direction modifier
+     * Increment the solver one step in time
      */
-    void AddGrowthDirectionModifier(boost::shared_ptr<AbstractGrowthDirectionModifier<DIM> > pModifier);
+    virtual void Increment();
 
-
+    /**
+     * Has a sprouting rule been set
+     * @return bool true if a sprouting rule has been set
+     */
     bool IsSproutingRuleSet();
 
-    void SetVesselGrid(boost::shared_ptr<RegularGrid<DIM> >pVesselGrid);
+    /**
+     * Has a vessel grid been set, used to check if this is an on-lattice solve
+     * @return bool true if a vessel grid has been set
+     */
+    bool IsVesselGridSet();
 
-    void SetUseOffLattice();
+    /**
+     * Run until the specified end time
+     * @param writeOutput whether to write output
+     */
+    void Run(bool writeOutput = false);
 
     /**
      * Set the radius within which anastamosis of vessels is allowed
@@ -134,11 +142,20 @@ public:
      */
     void SetBoundingDomain(boost::shared_ptr<Part<DIM> > pDomain);
 
+
+    void SetCellPopulation(boost::shared_ptr<CaBasedCellPopulationWithVessels<DIM> > cell_population);
+
     /**
-     * Set the base growth velocity for migrating tips
-     * @param velocity the velocity of node growth
+     * Add a migration rule for tip cells
+     * @param pMigrationRule a migration rule for tip cells
      */
-    void SetGrowthVelocity(double velocity);
+    void SetMigrationRule(boost::shared_ptr<AbstractMigrationRule<DIM> > pMigrationRule);
+
+    /**
+     * Set the output file handler
+     * @param pHandler the output file handler
+     */
+    void SetOutputFileHandler(boost::shared_ptr<OutputFileHandler> pHandler);
 
     /**
      * Set the rule for managing sprouting
@@ -147,23 +164,16 @@ public:
     void SetSproutingRule(boost::shared_ptr<AbstractSproutingRule<DIM> > pSproutingRule);
 
     /**
+     * Set a vessel grid, this means that on-lattice rules will be used
+     * @return pVesselGrid the grid for the vessel network
+     */
+    void SetVesselGrid(boost::shared_ptr<RegularGrid<DIM> >pVesselGrid);
+
+    /**
      * Set the vessel network
      * @param pNetwork the vessel network
      */
     void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
-
-
-    void SetOutputFileHandler(boost::shared_ptr<OutputFileHandler> pHandler);
-
-    /**
-     * Increment one step in time
-     */
-    virtual void Increment();
-
-    /**
-     * Run until the specified end time
-     */
-    void Run(bool writeOutput = false);
 
 
 protected:
@@ -179,17 +189,9 @@ protected:
     void DoAnastamosis();
 
     /**
-     * Get the growth direction for moving tips
-     * @param currentDirection the current growth direction
-     * @param pNode the moving node on the tip
-     */
-    virtual c_vector<double, DIM> GetGrowthDirection(c_vector<double, DIM> currentDirection, boost::shared_ptr<VascularNode<DIM> > pNode);
-
-    /**
      * Update the position of all nodes
-     * @param speciesLabel the name of the species from which to sample concentration values.
      */
-    void UpdateNodalPositions(const std::string& speciesLabel = "Default");
+    void UpdateNodalPositions(bool sprouting = false);
 };
 
 #endif /* ANGIOGENESISSOLVER_HPP_ */

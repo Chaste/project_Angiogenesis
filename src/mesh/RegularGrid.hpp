@@ -145,6 +145,13 @@ public:
     unsigned Get1dGridIndex(unsigned xIndex, unsigned yIndex, unsigned zIndex);
 
     /**
+     * Get the 1-D grid index for given x,y,z indices
+     * @param location the point to get the nearest index to
+     * @return the 1-d index of the nearest grid point
+     */
+    unsigned GetNearestGridIndex(c_vector<double, SPACE_DIM> location);
+
+    /**
      * Return the grid extents in x, y, z. Always dimension 3.
      * @return the grid extents
      */

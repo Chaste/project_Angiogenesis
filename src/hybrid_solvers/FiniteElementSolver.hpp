@@ -60,6 +60,9 @@ class FiniteElementSolver : public AbstractHybridSolver<DIM>
 
     boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
     double mNetworkBounds;
+    bool mUseNewton;
+    bool mUseLinearSolveForGuess;
+    std::vector<double> mGuess;
 
 public:
 
@@ -78,6 +81,11 @@ public:
 
     std::vector<double> GetSolutionOnRegularGrid(boost::shared_ptr<RegularGrid<DIM, DIM> > pGrid, bool useVtkSampling = true);
 
+    std::vector<double> GetNodalSolution()
+    {
+        return mFeSolution;
+    }
+
     vtkSmartPointer<vtkImageData> GetVtkRegularGridSolution(boost::shared_ptr<RegularGrid<DIM, DIM> > pGrid, bool useVtkSampling = true);
 
     void SetSamplingDomainBounds(std::vector<double> domainBounds, double domainOutOfBoundsValue);
@@ -87,6 +95,20 @@ public:
     void SetMesh(boost::shared_ptr<HybridMesh<DIM, DIM> > pMesh);
 
     void Solve();
+
+    void SetGuess(std::vector<double> guess)
+    {
+        mGuess = guess;
+    }
+
+    void SetUseSimpleNetonSolver(bool useNewton = true)
+    {
+        mUseNewton = useNewton;
+    }
+    void SetUseLinearSolveForGuess(bool useLinearSolve = true)
+    {
+        mUseLinearSolveForGuess = useLinearSolve;
+    }
 
     void Update();
 

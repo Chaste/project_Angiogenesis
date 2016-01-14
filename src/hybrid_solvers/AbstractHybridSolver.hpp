@@ -43,6 +43,7 @@
 #include "AbstractCellPopulation.hpp"
 #include "HybridBoundaryCondition.hpp"
 #include "HybridLinearEllipticPde.hpp"
+#include "HybridNonLinearEllipticPde.hpp"
 
 /**
  * An abstract solver class for hybrid continuum-discrete problems.
@@ -71,6 +72,11 @@ protected:
      * The PDE to be solved (used in certain child classes)
      */
     boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > mpPde;
+
+    /**
+     * The non-linear PDE to be solved (used in certain child classes)
+     */
+    boost::shared_ptr<HybridNonLinearEllipticPde<DIM, DIM> > mpNonLinearPde;
 
     /**
      * The Hybrid boundary conditions (used with PDEs in certain child classes)
@@ -124,6 +130,11 @@ public:
      */
     boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > GetPde();
 
+    boost::shared_ptr<HybridNonLinearEllipticPde<DIM, DIM> > GetNonLinearPde()
+    {
+        return mpNonLinearPde;
+    }
+
     /**
      * Return the solver output sample at discrete points. Different sampling strategies are implemented in child classes.
      * @param samplePoints the points to be sampled at
@@ -143,6 +154,11 @@ public:
      * @param pPde the pde to be solved
      */
     void SetPde(boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > pPde);
+
+    void SetNonLinearPde(boost::shared_ptr<HybridNonLinearEllipticPde<DIM, DIM> > pPde)
+    {
+        mpNonLinearPde = pPde;
+    }
 
     void SetLabel(const std::string& label);
 
@@ -176,6 +192,8 @@ public:
      * @param filename the file name
      */
     void SetFileName(const std::string& rFilename);
+
+    virtual bool HasRegularGrid();
 
     /**
      * Operations to be performed prior to every solve

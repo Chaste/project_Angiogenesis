@@ -37,9 +37,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TESTANASTA_HPP
 
 #include <cxxtest/TestSuite.h>
+#include "../../../../src/population/vessel/angiogenesis/migration_rules/OffLatticeMigrationRule.hpp"
+#include "../../../../src/population/vessel/angiogenesis/migration_rules/OffLatticeTipAttractionGrowthDirectionModifier.hpp"
 #include "OffLatticeSproutingRule.hpp"
-#include "OffLatticePrwGrowthDirectionModifier.hpp"
-#include "OffLatticeTipAttractionGrowthDirectionModifier.hpp"
 #include "FileFinder.hpp"
 #include "OutputFileHandler.hpp"
 #include "SmartPointers.hpp"

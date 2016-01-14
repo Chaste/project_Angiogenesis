@@ -125,6 +125,12 @@ void AbstractRegularGridHybridSolver<DIM>::SetGrid(boost::shared_ptr<RegularGrid
 }
 
 template<unsigned DIM>
+bool AbstractRegularGridHybridSolver<DIM>::HasRegularGrid()
+{
+    return true;
+}
+
+template<unsigned DIM>
 void AbstractRegularGridHybridSolver<DIM>::Setup()
 {
     if(!mpRegularGrid)

@@ -35,6 +35,8 @@
 
 #include <math.h>
 #include "SimpleLinearEllipticSolver.hpp"
+#include "SimpleNonlinearEllipticSolver.hpp"
+#include "SimpleNewtonNonlinearSolver.hpp"
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the strstream deprecated warning for now (gcc4.3)
 #include <vtkDataArray.h>
 #include <vtkDoubleArray.h>
@@ -59,7 +61,10 @@ FiniteElementSolver<DIM>::FiniteElementSolver()
       mDomainBounds(),
       mDomainOutOfBoundsValue(0.0),
       mpNetwork(),
-      mNetworkBounds(0.0)
+      mNetworkBounds(0.0),
+      mUseNewton(false),
+      mUseLinearSolveForGuess(false),
+      mGuess()
 {
 
 }
@@ -259,10 +264,6 @@ void FiniteElementSolver<DIM>::SetSamplingNetworkBounds(boost::shared_ptr<CaVasc
 template<unsigned DIM>
 void FiniteElementSolver<DIM>::Solve()
 {
-    this->mpPde->SetUseRegularGrid(false);
-    this->mpPde->SetMesh(mpMesh);
-    this->mpPde->UpdateDiscreteSourceStrengths();
-
     boost::shared_ptr<BoundaryConditionsContainer<DIM, DIM, 1> > p_bcc =
             boost::shared_ptr<BoundaryConditionsContainer<DIM, DIM, 1> >(new BoundaryConditionsContainer<DIM, DIM, 1> );
 
@@ -273,13 +274,102 @@ void FiniteElementSolver<DIM>::Solve()
     }
 
     // Do the solve
-    SimpleLinearEllipticSolver<DIM, DIM> static_solver(mpMesh.get(), this->mpPde.get(), p_bcc.get());
-    ReplicatableVector static_solution_repl(static_solver.Solve());
-    mFeSolution = std::vector<double>(static_solution_repl.GetSize());
-    for(unsigned idx = 0; idx < static_solution_repl.GetSize(); idx++)
+    // Check the type of pde
+    if(this->mpPde and !this->mpNonLinearPde)
     {
-        mFeSolution[idx]= static_solution_repl[idx];
+        this->mpPde->SetUseRegularGrid(false);
+        this->mpPde->SetMesh(mpMesh);
+        this->mpPde->UpdateDiscreteSourceStrengths();
+
+        SimpleLinearEllipticSolver<DIM, DIM> static_solver(mpMesh.get(), this->mpPde.get(), p_bcc.get());
+        ReplicatableVector static_solution_repl(static_solver.Solve());
+        mFeSolution = std::vector<double>(static_solution_repl.GetSize());
+        for(unsigned idx = 0; idx < static_solution_repl.GetSize(); idx++)
+        {
+            mFeSolution[idx]= static_solution_repl[idx];
+        }
     }
+    else if(this->mpNonLinearPde)
+    {
+        this->mpNonLinearPde->SetUseRegularGrid(false);
+        this->mpNonLinearPde->SetMesh(mpMesh);
+        this->mpNonLinearPde->UpdateDiscreteSourceStrengths();
+
+        if (this->mpPde)
+        {
+            this->mpPde->SetUseRegularGrid(false);
+            this->mpPde->SetMesh(mpMesh);
+            this->mpPde->UpdateDiscreteSourceStrengths();
+
+            SimpleLinearEllipticSolver<DIM, DIM> static_solver(mpMesh.get(), this->mpPde.get(), p_bcc.get());
+            ReplicatableVector static_solution_repl(static_solver.Solve());
+
+            std::cout << "Completed Linear Solve: Starting Non-Linear Solve" << std::endl;
+            std::vector<double> solution = std::vector<double>(static_solution_repl.GetSize());
+            for(unsigned idx = 0; idx < static_solution_repl.GetSize(); idx++)
+            {
+                solution[idx]= static_solution_repl[idx];
+                if(solution[idx]<0.0)
+                {
+                    solution[idx] = 0.0;
+                }
+                if(solution[idx]<1.0)
+                {
+                    solution[idx] = solution[idx] / 1.0;
+                }
+            }
+
+            Vec initial_guess = PetscTools::CreateVec(mpMesh->GetNumNodes());
+            for(unsigned idx=0; idx<solution.size();idx++)
+            {
+                PetscVecTools::SetElement(initial_guess, idx, solution[idx]);
+            }
+            PetscVecTools::Finalise(initial_guess);
+
+            SimpleNonlinearEllipticSolver<DIM, DIM> solver(mpMesh.get(), this->mpNonLinearPde.get(), p_bcc.get());
+            SimpleNewtonNonlinearSolver newton_solver;
+            if(mUseNewton)
+            {
+                solver.SetNonlinearSolver(&newton_solver);
+                newton_solver.SetTolerance(1e-5);
+                newton_solver.SetWriteStats();
+            }
+
+            ReplicatableVector solution_repl(solver.Solve(initial_guess));
+            mFeSolution = std::vector<double>(solution_repl.GetSize());
+            for(unsigned idx = 0; idx < solution_repl.GetSize(); idx++)
+            {
+                mFeSolution[idx]= solution_repl[idx];
+            }
+            PetscTools::Destroy(initial_guess);
+
+        }
+        else
+        {
+            Vec initial_guess = PetscTools::CreateAndSetVec(mpMesh->GetNumNodes(), this->mBoundaryConditions[0]->GetValue());
+            SimpleNonlinearEllipticSolver<DIM, DIM> solver(mpMesh.get(), this->mpNonLinearPde.get(), p_bcc.get());
+            SimpleNewtonNonlinearSolver newton_solver;
+            if(mUseNewton)
+            {
+                solver.SetNonlinearSolver(&newton_solver);
+                newton_solver.SetTolerance(1e-5);
+                newton_solver.SetWriteStats();
+            }
+
+            ReplicatableVector static_solution_repl(solver.Solve(initial_guess));
+            mFeSolution = std::vector<double>(static_solution_repl.GetSize());
+            for(unsigned idx = 0; idx < static_solution_repl.GetSize(); idx++)
+            {
+                mFeSolution[idx]= static_solution_repl[idx];
+            }
+            PetscTools::Destroy(initial_guess);
+        }
+    }
+    else
+    {
+        EXCEPTION("PDE Type could not be identified, did you set a PDE?");
+    }
+
     if(this->mWriteSolution)
     {
         this->Write();
@@ -307,7 +397,14 @@ void FiniteElementSolver<DIM>::Write()
     VtkMeshWriter <DIM, DIM> mesh_writer(this->mpOutputFileHandler->GetRelativePath(), fname, false);
     if(mFeSolution.size() > 0)
     {
-        mesh_writer.AddPointData(this->mpPde->GetVariableName(), mFeSolution);
+        if(this->mpPde)
+        {
+            mesh_writer.AddPointData(this->mpPde->GetVariableName(), mFeSolution);
+        }
+        else
+        {
+            mesh_writer.AddPointData(this->mpNonLinearPde->GetVariableName(), mFeSolution);
+        }
     }
     mesh_writer.WriteFilesUsingMesh(*mpMesh);
     ReadSolution();
