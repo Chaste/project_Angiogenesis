@@ -33,53 +33,53 @@
 
  */
 
-#ifndef LatticeBasedSproutingRule_HPP_
-#define LatticeBasedSproutingRule_HPP_
+#ifndef Owen2011SproutingRule_HPP_
+#define Owen2011SproutingRule_HPP_
 
 #include <vector>
 #include <string>
 #include "VascularNode.hpp"
 #include "SmartPointers.hpp"
-#include "AbstractSproutingRule.hpp"
+#include "LatticeBasedSproutingRule.hpp"
 #include "RegularGrid.hpp"
 #include "AbstractRegularGridHybridSolver.hpp"
 
 /**
- * A simple random lattice based sprouting rule, useful for code testing.
+ * A sprouting rule based on the paper of Owen et al. 2011
  */
 template<unsigned DIM>
-class LatticeBasedSproutingRule : public AbstractSproutingRule<DIM>
+class Owen2011SproutingRule : public LatticeBasedSproutingRule<DIM>
 {
 
 protected:
 
     /**
-     * The lattice/grid for the vessel simulation
+     * The half maximum vegf
      */
-    boost::shared_ptr<RegularGrid<DIM> > mpGrid;
+    double mHalfMaxVegf;
 
     /**
-     * Tip exclusion radius
+     * The vegf field sampled at the vessel lattice sites
      */
-    double mTipExclusionRadius;
+    std::vector<double> mVegfField;
 
 public:
 
     /**
      * Constructor.
      */
-    LatticeBasedSproutingRule();
+    Owen2011SproutingRule();
 
     /**
      * Destructor.
      */
-    virtual ~LatticeBasedSproutingRule();
+    virtual ~Owen2011SproutingRule();
 
     /**
      * Construct a new instance of the class and return a shared pointer to it.
      * @return a pointer to a new instance of the class
      */
-    static boost::shared_ptr<LatticeBasedSproutingRule<DIM> > Create();
+    static boost::shared_ptr<Owen2011SproutingRule<DIM> > Create();
 
     /**
      * Overwritten method to return nodes which may sprout
@@ -89,11 +89,10 @@ public:
     virtual std::vector<boost::shared_ptr<VascularNode<DIM> > > GetSprouts(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes);
 
     /**
-     * Set the lattice/grid for the vessel network
-     * @param pGrid the grid for the vessel network
+     * Set the half max vegf
+     * @param halfMaxVegf the half max vegf
      */
-    void SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid);
-
+    void SetHalfMaxVegf(double halfMaxVegf);
 };
 
-#endif /* LatticeBasedSproutingRule_HPP_ */
+#endif /* Owen2011SproutingRule_HPP_ */

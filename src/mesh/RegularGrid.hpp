@@ -95,6 +95,9 @@ class RegularGrid
      */
     std::vector<std::vector<boost::shared_ptr<CaVesselSegment<SPACE_DIM> > > > mPointSegmentMap;
 
+    /**
+     * A field with specified value at each point in the grid
+     */
     std::vector<double> mPointSolution;
 
     /**
@@ -102,8 +105,14 @@ class RegularGrid
      */
     vtkSmartPointer<vtkImageData> mpVtkGrid;
 
+    /**
+     *  Is the VTK grid set up
+     */
     bool mVtkGridIsSetUp;
 
+    /**
+     *  A vector of neighbour indices
+     */
     std::vector<std::vector<unsigned> > mNeighbourData;
 
 public:
@@ -124,9 +133,10 @@ public:
      */
     ~RegularGrid();
 
+    /**
+     * Calculate neighbour indices for each grid point
+     */
     void CalculateNeighbourData();
-
-    const std::vector<std::vector<unsigned> >& GetNeighbourData();
 
     /**
      * Generate a grid based on the bounding box of the supplied part
@@ -150,6 +160,12 @@ public:
      * @return the 1-d index of the nearest grid point
      */
     unsigned GetNearestGridIndex(c_vector<double, SPACE_DIM> location);
+
+    /**
+     * Calculate neighbour indices for each grid point
+     * @return a vector of neighbour indices for each grid point
+     */
+    const std::vector<std::vector<unsigned> >& GetNeighbourData();
 
     /**
      * Return the grid extents in x, y, z. Always dimension 3.
@@ -226,10 +242,16 @@ public:
      */
     double GetSpacing();
 
+    /**
+     * Sample a function specified on the grid at the specified locations
+     * @param locations the sample locations
+     * @param values the known values at the grid points
+     * @param useVtk use VTK to do the sampling, faster but algorithm not clearly documented
+     * @return the grid spacing
+     */
     std::vector<double> InterpolateGridValues(std::vector<c_vector<double, SPACE_DIM> > locations,
                                               std::vector<double> values, bool useVtk = false);
 
-    //double VolumeAverageQuantity(std::vector<double> values);
     /**
      * Is the input location in the bounding box of the grid point
      * @param point the location of interest
@@ -260,15 +282,23 @@ public:
      */
     void SetCellPopulation(AbstractCellPopulation<SPACE_DIM>& rCellPopulation);
 
-    /* Set the grid extents in x, y, z
+    /**
+     * Set the grid extents in x, y, z
      * @param extents the grid extents
      */
     void SetExtents(std::vector<unsigned> extents);
 
-    /* Set the origin in x, y, z
+    /**
+     * Set the origin in x, y, z
      * @param origin the grid origin
      */
     void SetOrigin(c_vector<double, SPACE_DIM> origin);
+
+    /**
+     * Set the values of a field at all points on the grid
+     * @param pointSolution the value of the field
+     */
+    void SetPointValues(std::vector<double> pointSolution);
 
     /**
      * Set the grid spacing
@@ -276,9 +306,10 @@ public:
      */
     void SetSpacing(double spacing);
 
+    /**
+     * Set the internal vtk representation of the grid
+     */
     void SetUpVtkGrid();
-
-    void SetPointValues(std::vector<double> pointSolution);
 
     /**
      * Set the vessel network
@@ -286,6 +317,10 @@ public:
      */
     void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > pNetwork);
 
+    /**
+     * Write the grid and any field to file as a VTI file
+     * @param pFileHandler a file handler for the write location
+     */
     void Write(boost::shared_ptr<OutputFileHandler> pFileHandler);
 };
 

@@ -85,7 +85,7 @@ public:
      * @param rNodes nodes to calculate indices
      * @return a vector of grid indices to move nodes into
      */
-    std::vector<int> GetIndices(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes);
+    virtual std::vector<int> GetIndices(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes);
 
     /**
      * Set the lattice/grid for the vessel network

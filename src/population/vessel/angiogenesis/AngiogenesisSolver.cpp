@@ -41,6 +41,8 @@
 #include "VascularNode.hpp"
 #include "AngiogenesisSolver.hpp"
 
+#include "Debug.hpp"
+
 template<unsigned DIM>
 AngiogenesisSolver<DIM>::AngiogenesisSolver() :
         mpNetwork(),
@@ -177,8 +179,8 @@ void AngiogenesisSolver<DIM>::UpdateNodalPositions(bool sprouting)
                 {
                     boost::shared_ptr<VascularNode<DIM> > p_new_node = VascularNode<DIM>::Create(tips[idx]);
                     p_new_node->SetLocation(mpVesselGrid->GetLocationOf1dIndex(indices[idx]));
-                    mpNetwork->ExtendVessel(nodes[idx]->GetVesselSegment(0)->GetVessel(), nodes[idx], p_new_node);
-                    nodes[idx]->SetIsMigrating(false);
+                    mpNetwork->ExtendVessel(nodes[idx]->GetVesselSegment(0)->GetVessel(), tips[idx], p_new_node);
+                    tips[idx]->SetIsMigrating(false);
                     p_new_node->SetIsMigrating(true);
                 }
             }
@@ -209,9 +211,9 @@ void AngiogenesisSolver<DIM>::UpdateNodalPositions(bool sprouting)
                     else
                     {
                         boost::shared_ptr<VascularNode<DIM> > p_new_node = VascularNode<DIM>::Create(tips[idx]);
-                        p_new_node->SetLocation(nodes[idx]->GetLocationVector() + movement_vectors[idx]);
-                        mpNetwork->ExtendVessel(nodes[idx]->GetVesselSegment(0)->GetVessel(), nodes[idx], p_new_node);
-                        nodes[idx]->SetIsMigrating(false);
+                        p_new_node->SetLocation(tips[idx]->GetLocationVector() + movement_vectors[idx]);
+                        mpNetwork->ExtendVessel(tips[idx]->GetVesselSegment(0)->GetVessel(), tips[idx], p_new_node);
+                        tips[idx]->SetIsMigrating(false);
                         p_new_node->SetIsMigrating(true);
                     }
                 }
@@ -278,33 +280,38 @@ void AngiogenesisSolver<DIM>::Increment()
         EXCEPTION("The angiogenesis solver needs an initial vessel network");
     }
 
-    // If doing lattice based, add the network to the lattice
-    if(mpVesselGrid)
+    if(mpCellPopulation)
     {
-        mpVesselGrid->SetVesselNetwork(mpNetwork);
+            mpCellPopulation->UpdateVascularCellPopulation();
     }
-
-    // Move any migrating nodes
-    UpdateNodalPositions();
-
-    // Check for anastamosis
-    DoAnastamosis();
-
-    // Do sprouting
-    if(mpSproutingRule)
+    else
     {
-        mpSproutingRule->SetVesselNetwork(mpNetwork);
-
+        // If doing lattice based, add the network to the lattice
         if(mpVesselGrid)
         {
-            mpSproutingRule->SetGrid(mpVesselGrid);
+            mpVesselGrid->SetVesselNetwork(mpNetwork);
         }
 
-        DoSprouting();
-        DoAnastamosis();
-    }
+        // Move any migrating nodes
+        UpdateNodalPositions();
 
-    //    mpCellPopulation->UpdateVascularCellPopulation();
+        // Check for anastamosis
+        DoAnastamosis();
+
+        // Do sprouting
+        if(mpSproutingRule)
+        {
+            mpSproutingRule->SetVesselNetwork(mpNetwork);
+
+            if(mpVesselGrid)
+            {
+                mpSproutingRule->SetGrid(mpVesselGrid);
+            }
+
+            DoSprouting();
+            DoAnastamosis();
+        }
+    }
 }
 
 template<unsigned DIM>

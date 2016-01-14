@@ -44,7 +44,6 @@
 #include <vtkPolyData.h>
 #include <vtkPoints.h>
 #include <vtkSmartPointer.h>
-#include "Debug.hpp"
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 RegularGrid<ELEMENT_DIM, SPACE_DIM>::RegularGrid() :
@@ -138,32 +137,6 @@ unsigned RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetNearestGridIndex(c_vector<doubl
         z_index = round((location[2] - mOrigin[2]) / mSpacing);
     }
     return Get1dGridIndex(x_index, y_index, z_index);
-}
-
-template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void RegularGrid<ELEMENT_DIM, SPACE_DIM>::SetUpVtkGrid()
-{
-    // Set up a VTK grid
-    mpVtkGrid = vtkSmartPointer<vtkImageData>::New();
-    if (SPACE_DIM == 3)
-    {
-        mpVtkGrid->SetDimensions(mExtents[0], mExtents[1], mExtents[2]);
-    }
-    else
-    {
-        mpVtkGrid->SetDimensions(mExtents[0], mExtents[1], 1);
-    }
-    mpVtkGrid->SetSpacing(mSpacing, mSpacing, mSpacing);
-
-    if (SPACE_DIM == 3)
-    {
-        mpVtkGrid->SetOrigin(mOrigin[0], mOrigin[1], mOrigin[2]);
-    }
-    else
-    {
-        mpVtkGrid->SetOrigin(mOrigin[0], mOrigin[1], 0.0);
-    }
-    mVtkGridIsSetUp = true;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
@@ -414,7 +387,7 @@ const std::vector<std::vector<boost::shared_ptr<VascularNode<SPACE_DIM> > > >& R
 
     if (!mpNetwork)
     {
-        EXCEPTION("A vessel network has not been set. Can not create a cell point map.");
+        EXCEPTION("A vessel network has not been set. Can not create a point node map.");
     }
 
     // Loop over all nodes and associate cells with the points
@@ -692,6 +665,32 @@ template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void RegularGrid<ELEMENT_DIM, SPACE_DIM>::SetSpacing(double spacing)
 {
     mSpacing = spacing;
+}
+
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+void RegularGrid<ELEMENT_DIM, SPACE_DIM>::SetUpVtkGrid()
+{
+    // Set up a VTK grid
+    mpVtkGrid = vtkSmartPointer<vtkImageData>::New();
+    if (SPACE_DIM == 3)
+    {
+        mpVtkGrid->SetDimensions(mExtents[0], mExtents[1], mExtents[2]);
+    }
+    else
+    {
+        mpVtkGrid->SetDimensions(mExtents[0], mExtents[1], 1);
+    }
+    mpVtkGrid->SetSpacing(mSpacing, mSpacing, mSpacing);
+
+    if (SPACE_DIM == 3)
+    {
+        mpVtkGrid->SetOrigin(mOrigin[0], mOrigin[1], mOrigin[2]);
+    }
+    else
+    {
+        mpVtkGrid->SetOrigin(mOrigin[0], mOrigin[1], 0.0);
+    }
+    mVtkGridIsSetUp = true;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>

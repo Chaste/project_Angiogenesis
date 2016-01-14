@@ -41,7 +41,8 @@
 
 template<unsigned DIM>
 OffLatticeSproutingRule<DIM>::OffLatticeSproutingRule()
-    : AbstractSproutingRule<DIM>()
+    : AbstractSproutingRule<DIM>(),
+      mTipExclusionRadius(0.0)
 {
 
 }
@@ -60,80 +61,57 @@ boost::shared_ptr<OffLatticeSproutingRule<DIM> > OffLatticeSproutingRule<DIM>::C
 }
 
 template<unsigned DIM>
-std::vector<c_vector<double, DIM> > OffLatticeSproutingRule<DIM>::GetSproutDirections(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
+std::vector<boost::shared_ptr<VascularNode<DIM> > > OffLatticeSproutingRule<DIM>::GetSprouts(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
 {
-    std::vector<c_vector<double, DIM> > directions(rNodes.size(),zero_vector<double>(DIM));
+    if(!this->mpVesselNetwork)
+    {
+        EXCEPTION("A vessel network is required for this type of sprouting rule.");
+    }
+
+    // Set up the output sprouts vector
+    std::vector<boost::shared_ptr<VascularNode<DIM> > > sprouts;
+
+    // Loop over all nodes and randomly select sprouts
     for(unsigned idx = 0; idx < rNodes.size(); idx++)
     {
-        c_vector<double, DIM> sprout_direction;
-        c_vector<double, DIM> cross_product = VectorProduct(rNodes[idx]->GetVesselSegments()[0]->GetUnitTangent(),
-                                                            rNodes[idx]->GetVesselSegments()[1]->GetUnitTangent());
-        double sum = 0.0;
-        for(unsigned jdx=0; jdx<DIM; jdx++)
+        // Check we are not too close to the end of the vessel
+        if(this->mVesselEndCutoff > 0.0)
         {
-            sum += cross_product[jdx];
-        }
-        if (sum<=1.e-6)
-        {
-            // parallel segments, chose any normal to the first tangent
-            c_vector<double, DIM> normal;
-            c_vector<double, DIM> tangent = rNodes[idx]->GetVesselSegments()[0]->GetUnitTangent();
-
-            if(DIM==2 or tangent[2]==0.0)
+            if(rNodes[idx]->GetVesselSegment(0)->GetVessel()->GetClosestEndNodeDistance(rNodes[idx]->GetLocationVector())< this->mVesselEndCutoff)
             {
-                if(tangent[1] == 0.0)
-                {
-                    normal[0] = 0.0;
-                    normal[1] = 1.0;
-                }
-                else
-                {
-                    normal[0] = 1.0;
-                    normal[1] = -tangent[0] /tangent[1];
-                }
-
+                continue;
             }
-            else
+            if(rNodes[idx]->GetVesselSegment(1)->GetVessel()->GetClosestEndNodeDistance(rNodes[idx]->GetLocationVector())< this->mVesselEndCutoff)
             {
-                if(std::abs(tangent[0]) + std::abs(tangent[1]) == 0.0)
-                {
-                    normal[0] = 1.0;
-                    normal[1] = 1.0;
-                }
-                else
-                {
-                    normal[0] = 1.0;
-                    normal[1] = 1.0;
-                    normal[2] = -(tangent[0] + tangent[1])/tangent[2];
-                }
-            }
-            if(RandomNumberGenerator::Instance()->ranf()>=0.5)
-            {
-                sprout_direction = normal/norm_2(normal);
-            }
-            else
-            {
-                sprout_direction = -normal/norm_2(normal);
-            }
-        }
-        else
-        {
-            // otherwise the direction is out of the plane of the segment tangents
-            if(RandomNumberGenerator::Instance()->ranf()>=0.5)
-            {
-                sprout_direction = cross_product/norm_2(cross_product);
-            }
-            else
-            {
-                sprout_direction = -cross_product/norm_2(cross_product);
+                continue;
             }
         }
 
-        // Rotate by a random angle around the axis
-        double angle = RandomNumberGenerator::Instance()->ranf() * 2.0 * M_PI;
-        directions[idx] = RotateAboutAxis<DIM>(sprout_direction, rNodes[idx]->GetVesselSegments()[0]->GetUnitTangent(), angle);
+        // Check we are not too close to an existing candidate
+        if(mTipExclusionRadius>0.0)
+        {
+            bool too_close = false;
+            for(unsigned jdx=0; jdx<sprouts.size(); jdx++)
+            {
+                if(rNodes[idx]->GetDistance(sprouts[jdx]->GetLocationVector()) < mTipExclusionRadius)
+                {
+                    too_close = true;
+                }
+            }
+            if(too_close)
+            {
+                continue;
+            }
+        }
+
+        double prob_tip_selection = this->mSproutingProbability*SimulationTime::Instance()->GetTimeStep();
+
+        if (RandomNumberGenerator::Instance()->ranf() < prob_tip_selection)
+        {
+            sprouts.push_back(rNodes[idx]);
+        }
     }
-    return directions;
+    return sprouts;
 }
 
 // Explicit instantiation

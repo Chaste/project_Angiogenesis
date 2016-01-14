@@ -196,6 +196,83 @@ std::vector<c_vector<double, DIM> > OffLatticeMigrationRule<DIM>::GetDirections(
     return movement_vectors;
 }
 
+//template<unsigned DIM>
+//std::vector<c_vector<double, DIM> > OffLatticeSproutingRule<DIM>::GetSproutDirections(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
+//{
+//    std::vector<c_vector<double, DIM> > directions(rNodes.size(),zero_vector<double>(DIM));
+//    for(unsigned idx = 0; idx < rNodes.size(); idx++)
+//    {
+//        c_vector<double, DIM> sprout_direction;
+//        c_vector<double, DIM> cross_product = VectorProduct(rNodes[idx]->GetVesselSegments()[0]->GetUnitTangent(),
+//                                                            rNodes[idx]->GetVesselSegments()[1]->GetUnitTangent());
+//        double sum = 0.0;
+//        for(unsigned jdx=0; jdx<DIM; jdx++)
+//        {
+//            sum += cross_product[jdx];
+//        }
+//        if (sum<=1.e-6)
+//        {
+//            // parallel segments, chose any normal to the first tangent
+//            c_vector<double, DIM> normal;
+//            c_vector<double, DIM> tangent = rNodes[idx]->GetVesselSegments()[0]->GetUnitTangent();
+//
+//            if(DIM==2 or tangent[2]==0.0)
+//            {
+//                if(tangent[1] == 0.0)
+//                {
+//                    normal[0] = 0.0;
+//                    normal[1] = 1.0;
+//                }
+//                else
+//                {
+//                    normal[0] = 1.0;
+//                    normal[1] = -tangent[0] /tangent[1];
+//                }
+//
+//            }
+//            else
+//            {
+//                if(std::abs(tangent[0]) + std::abs(tangent[1]) == 0.0)
+//                {
+//                    normal[0] = 1.0;
+//                    normal[1] = 1.0;
+//                }
+//                else
+//                {
+//                    normal[0] = 1.0;
+//                    normal[1] = 1.0;
+//                    normal[2] = -(tangent[0] + tangent[1])/tangent[2];
+//                }
+//            }
+//            if(RandomNumberGenerator::Instance()->ranf()>=0.5)
+//            {
+//                sprout_direction = normal/norm_2(normal);
+//            }
+//            else
+//            {
+//                sprout_direction = -normal/norm_2(normal);
+//            }
+//        }
+//        else
+//        {
+//            // otherwise the direction is out of the plane of the segment tangents
+//            if(RandomNumberGenerator::Instance()->ranf()>=0.5)
+//            {
+//                sprout_direction = cross_product/norm_2(cross_product);
+//            }
+//            else
+//            {
+//                sprout_direction = -cross_product/norm_2(cross_product);
+//            }
+//        }
+//
+//        // Rotate by a random angle around the axis
+//        double angle = RandomNumberGenerator::Instance()->ranf() * 2.0 * M_PI;
+//        directions[idx] = RotateAboutAxis<DIM>(sprout_direction, rNodes[idx]->GetVesselSegments()[0]->GetUnitTangent(), angle);
+//    }
+//    return directions;
+//}
+
 // Explicit instantiation
 template class OffLatticeMigrationRule<2> ;
 template class OffLatticeMigrationRule<3> ;

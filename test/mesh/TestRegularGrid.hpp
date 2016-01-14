@@ -55,6 +55,75 @@ class TestRegularGrid : public AbstractCellBasedWithTimingsTestSuite
 
 public:
 
+    void TestIndexing() throw(Exception)
+    {
+        // Set up a 2d grid
+        boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
+        std::vector<unsigned> extents(3);
+        extents[0] = 5;
+        extents[1] = 7;
+        extents[2] = 1;
+        p_grid->SetExtents(extents);
+
+        TS_ASSERT_EQUALS(p_grid->Get1dGridIndex(0,0,0), 0)
+        TS_ASSERT_EQUALS(p_grid->Get1dGridIndex(3,1,0), 8)
+        TS_ASSERT_EQUALS(p_grid->Get1dGridIndex(0,3,0), 15)
+
+        // Set up a 3d grid
+        boost::shared_ptr<RegularGrid<3> > p_grid_3d = RegularGrid<3>::Create();
+        std::vector<unsigned> extents_3d(3);
+        extents_3d[0] = 5;
+        extents_3d[1] = 7;
+        extents_3d[2] = 4;
+        p_grid_3d->SetExtents(extents_3d);
+
+        TS_ASSERT_EQUALS(p_grid_3d->Get1dGridIndex(0,0,0), 0)
+        TS_ASSERT_EQUALS(p_grid_3d->Get1dGridIndex(3,1,2), 78)
+        TS_ASSERT_EQUALS(p_grid_3d->Get1dGridIndex(0,3,3), 120)
+    }
+
+    void TestNeighbourCalculation()
+    {
+        // Set up a grid
+        boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
+        std::vector<unsigned> extents(3);
+        extents[0] = 5;
+        extents[1] = 7;
+        extents[2] = 1;
+        p_grid->SetExtents(extents);
+
+        // Get neighbours
+        std::vector<std::vector<unsigned> > neighbours =  p_grid->GetNeighbourData();
+        for(unsigned idx=0; idx<2; idx++)
+        {
+            TS_ASSERT(neighbours[0][idx] == 1 or neighbours[0][idx] == 5)
+        }
+        for(unsigned idx=0; idx<4; idx++)
+        {
+            TS_ASSERT(neighbours[8][idx] == 13 or neighbours[8][idx] == 9 or neighbours[8][idx] == 3 or neighbours[8][idx] == 7)
+        }
+
+        // Set up a 3d grid
+         boost::shared_ptr<RegularGrid<3> > p_grid_3d = RegularGrid<3>::Create();
+         std::vector<unsigned> extents_3d(3);
+         extents_3d[0] = 5;
+         extents_3d[1] = 7;
+         extents_3d[2] = 4;
+         p_grid_3d->SetExtents(extents_3d);
+
+         // Get neighbours
+         std::vector<std::vector<unsigned> > neighbours_3d =  p_grid_3d->GetNeighbourData();
+         for(unsigned idx=0; idx<3; idx++)
+         {
+             TS_ASSERT(neighbours_3d[0][idx] == 1 or neighbours_3d[0][idx] == 5 or neighbours_3d[0][idx] == 35)
+         }
+         for(unsigned idx=0; idx<6; idx++)
+         {
+             TS_ASSERT(neighbours_3d[43][idx] == 8 or neighbours_3d[43][idx] == 42 or neighbours_3d[43][idx] == 44 or
+                       neighbours_3d[43][idx] == 78 or neighbours_3d[43][idx] == 38 or neighbours_3d[43][idx] == 48)
+         }
+    }
+
     void TestPointPointMapGeneration()
     {
         // Set up a grid

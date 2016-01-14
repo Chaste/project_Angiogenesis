@@ -36,43 +36,52 @@
 #include "RandomNumberGenerator.hpp"
 #include "CaVesselSegment.hpp"
 #include "CaVessel.hpp"
-#include "LatticeBasedSproutingRule.hpp"
+#include "Owen2011SproutingRule.hpp"
 
 template<unsigned DIM>
-LatticeBasedSproutingRule<DIM>::LatticeBasedSproutingRule()
-    : AbstractSproutingRule<DIM>(),
-      mpGrid(),
-      mTipExclusionRadius(0.0)
+Owen2011SproutingRule<DIM>::Owen2011SproutingRule()
+    : LatticeBasedSproutingRule<DIM>(),
+      mHalfMaxVegf(0.1),
+      mVegfField()
 {
 
 }
 
 template <unsigned DIM>
-boost::shared_ptr<LatticeBasedSproutingRule<DIM> > LatticeBasedSproutingRule<DIM>::Create()
+boost::shared_ptr<Owen2011SproutingRule<DIM> > Owen2011SproutingRule<DIM>::Create()
 {
-    MAKE_PTR(LatticeBasedSproutingRule<DIM>, pSelf);
+    MAKE_PTR(Owen2011SproutingRule<DIM>, pSelf);
     return pSelf;
 }
 
 template<unsigned DIM>
-LatticeBasedSproutingRule<DIM>::~LatticeBasedSproutingRule()
+Owen2011SproutingRule<DIM>::~Owen2011SproutingRule()
 {
 
 }
 
 template<unsigned DIM>
-void LatticeBasedSproutingRule<DIM>::SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid)
+void Owen2011SproutingRule<DIM>::SetHalfMaxVegf(double halfMaxVegf)
 {
-    mpGrid = pGrid;
+    mHalfMaxVegf = halfMaxVegf;
 }
 
 template<unsigned DIM>
-std::vector<boost::shared_ptr<VascularNode<DIM> > > LatticeBasedSproutingRule<DIM>::GetSprouts(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
+std::vector<boost::shared_ptr<VascularNode<DIM> > > Owen2011SproutingRule<DIM>::GetSprouts(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
 {
+
+    if(!this->mpGrid)
+    {
+        EXCEPTION("A regular grid is required for this type of sprouting rule.");
+    }
+
     if(!this->mpVesselNetwork)
     {
         EXCEPTION("A vessel network is required for this type of sprouting rule.");
     }
+
+    // Get the VEGF field
+    this->mVegfField = this->mpSolver->GetPointSolution();
 
     // Set up the output sprouts vector
     std::vector<boost::shared_ptr<VascularNode<DIM> > > sprouts;
@@ -94,12 +103,12 @@ std::vector<boost::shared_ptr<VascularNode<DIM> > > LatticeBasedSproutingRule<DI
         }
 
         // Check we are not too close to an existing candidate
-        if(mTipExclusionRadius>0.0)
+        if(this->mTipExclusionRadius>0.0)
         {
             bool too_close = false;
             for(unsigned jdx=0; jdx<sprouts.size(); jdx++)
             {
-                if(rNodes[idx]->GetDistance(sprouts[jdx]->GetLocationVector()) < mTipExclusionRadius)
+                if(rNodes[idx]->GetDistance(sprouts[jdx]->GetLocationVector()) < this->mTipExclusionRadius)
                 {
                     too_close = true;
                 }
@@ -110,7 +119,10 @@ std::vector<boost::shared_ptr<VascularNode<DIM> > > LatticeBasedSproutingRule<DI
             }
         }
 
-        double prob_tip_selection = this->mSproutingProbability*SimulationTime::Instance()->GetTimeStep();
+        // Get the grid index of the node
+        unsigned grid_index = this->mpGrid->GetNearestGridIndex(rNodes[idx]->GetLocationVector());
+        double vegf_conc = this->mVegfField[grid_index];
+        double prob_tip_selection = this->mSproutingProbability*SimulationTime::Instance()->GetTimeStep()*vegf_conc/(vegf_conc + mHalfMaxVegf);
 
         if (RandomNumberGenerator::Instance()->ranf() < prob_tip_selection)
         {
@@ -121,5 +133,5 @@ std::vector<boost::shared_ptr<VascularNode<DIM> > > LatticeBasedSproutingRule<DI
 }
 
 // Explicit instantiation
-template class LatticeBasedSproutingRule<2> ;
-template class LatticeBasedSproutingRule<3> ;
+template class Owen2011SproutingRule<2> ;
+template class Owen2011SproutingRule<3> ;

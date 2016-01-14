@@ -43,9 +43,17 @@
 #include "VascularNode.hpp"
 #include "SmartPointers.hpp"
 
+/**
+ * A simple random lattice free sprouting rule, useful for code testing.
+ */
 template<unsigned DIM>
 class OffLatticeSproutingRule : public AbstractSproutingRule<DIM>
 {
+
+    /**
+     * Tip exclusion radius
+     */
+    double mTipExclusionRadius;
 
 public:
 
@@ -59,14 +67,18 @@ public:
      */
     virtual ~OffLatticeSproutingRule();
 
+    /**
+     * Construct a new instance of the class and return a shared pointer to it.
+     * @return a pointer to a new instance of the class
+     */
     static boost::shared_ptr<OffLatticeSproutingRule<DIM> > Create();
 
     /**
-     * Calculate direction for each node that will sprout
-     * @param rNodes nodes to calculate directions for
-     * @return a vector of bools which true for nodes that will sprout
+     * Overwritten method to return nodes which may sprout
+     * @param rNodes nodes to check for sprouting
+     * @return a vector of nodes which may sprout
      */
-    virtual std::vector<c_vector<double, DIM> > GetSproutDirections(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes);
+    virtual std::vector<boost::shared_ptr<VascularNode<DIM> > > GetSprouts(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes);
 
 };
 

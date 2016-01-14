@@ -42,6 +42,7 @@
 #include "VascularNode.hpp"
 #include "SmartPointers.hpp"
 #include "RegularGrid.hpp"
+#include "AbstractHybridSolver.hpp"
 
 /**
  * Abstract class for implementing sprouting rules in angiogenesis solver.
@@ -52,6 +53,11 @@ class AbstractSproutingRule
 {
 
 protected:
+
+    /**
+     * A hybrid solver containing a solution field of interest
+     */
+    boost::shared_ptr<AbstractHybridSolver<DIM> > mpSolver;
 
     /**
      * The probability that a sprout will form per unit time
@@ -79,6 +85,12 @@ public:
      * Destructor.
      */
     virtual ~AbstractSproutingRule();
+
+    /**
+     * Set the hybrid solver containing the VEGF field
+     * @param pSolver the hybrid solver containing the VEGF field
+     */
+    void SetHybridSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pSolver);
 
     /**
      * Set the vessel network

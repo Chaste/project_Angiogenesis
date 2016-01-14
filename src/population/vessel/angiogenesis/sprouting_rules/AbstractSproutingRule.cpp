@@ -40,7 +40,8 @@
 
 template<unsigned DIM>
 AbstractSproutingRule<DIM>::AbstractSproutingRule()
-    : mSproutingProbability(0.1),
+    :mpSolver(),
+     mSproutingProbability(0.00025 * 60.0),
       mpVesselNetwork(),
       mVesselEndCutoff(0.0)
 {
@@ -52,6 +53,13 @@ AbstractSproutingRule<DIM>::~AbstractSproutingRule()
 {
 
 }
+
+template<unsigned DIM>
+void AbstractSproutingRule<DIM>::SetHybridSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pSolver)
+{
+    mpSolver = pSolver;
+}
+
 
 template<unsigned DIM>
 void AbstractSproutingRule<DIM>::SetSproutingProbability(double probability)

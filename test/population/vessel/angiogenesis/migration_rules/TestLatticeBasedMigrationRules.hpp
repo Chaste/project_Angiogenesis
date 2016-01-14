@@ -33,11 +33,11 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#ifndef TestOnLatticeRwGrowthDirectionModifier_hpp
-#define TestOnLatticeRwGrowthDirectionModifier_hpp
+#ifndef TestLatticeBasedMigrationRules_hpp
+#define TestLatticeBasedMigrationRules_hpp
 
 #include <cxxtest/TestSuite.h>
-#include "../../../../../src/population/vessel/angiogenesis/migration_rules/LatticeBasedMigrationRule.hpp"
+#include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "FileFinder.hpp"
 #include "OutputFileHandler.hpp"
 #include "SmartPointers.hpp"
@@ -47,264 +47,177 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CaVessel.hpp"
 #include "CaVascularNetwork.hpp"
 #include "Part.hpp"
-#include "FiniteDifferenceSolver.hpp"
 #include "AngiogenesisSolver.hpp"
-#include "PetscSetupAndFinalize.hpp"
 #include "CaVesselSegment.hpp"
-#include "AbstractCellBasedTestSuite.hpp"
+#include "LatticeBasedMigrationRule.hpp"
+#include "FunctionMap.hpp"
+#include "Owen2011MigrationRule.hpp"
 
-class TestOnLatticeRwGrowthDirectionModifier : public AbstractCellBasedTestSuite
+#include "PetscSetupAndFinalize.hpp"
+
+class TestLatticeBasedMigrationRules : public AbstractCellBasedWithTimingsTestSuite
 {
 
 public:
 
-    void TestSingleVesselGrowth() throw(Exception)
+    void TestSingleVessel() throw(Exception)
     {
-        // Make a network
-        boost::shared_ptr<VascularNode<3> > p_node1 = VascularNode<3>::Create(0.0, 0.0, 0.0);
-        boost::shared_ptr<VascularNode<3> > p_node2 = VascularNode<3>::Create(100.0, 0.0, 0.0);
+        // Set the grid to move on
+        boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
+        double spacing = 100.0; //um
+        p_grid->SetSpacing(spacing);
+        std::vector<unsigned> extents(3, 1);
+        extents[0] = 7; // num x
+        extents[1] = 5; // num_y
+        extents[2] = 1; // num_z
+        p_grid->SetExtents(extents);
+
+        // Make a vessel
+        boost::shared_ptr<VascularNode<2> > p_node1 = VascularNode<2>::Create(0.0, 2.0*spacing);
+        boost::shared_ptr<VascularNode<2> > p_node2 = VascularNode<2>::Create(spacing, 2.0*spacing);
         p_node2->SetIsMigrating(true);
-        boost::shared_ptr<CaVessel<3> > p_vessel1 = CaVessel<3>::Create(CaVesselSegment<3>::Create(p_node1, p_node2));
+        boost::shared_ptr<CaVessel<2> > p_vessel = CaVessel<2>::Create(p_node1, p_node2);
+        boost::shared_ptr<CaVascularNetwork<2> > p_network = CaVascularNetwork<2>::Create();
+        p_network->AddVessel(p_vessel);
+        p_grid->SetVesselNetwork(p_network);
 
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = boost::shared_ptr<CaVascularNetwork<3> >(new CaVascularNetwork<3>());
-        p_network->AddVessel(p_vessel1);
-        // Set the one of the nodes to migrate
-        p_network->GetVessel(0)->GetEndNode()->SetIsMigrating(true);
+        // Set up the migration rule
+        boost::shared_ptr<LatticeBasedMigrationRule<2> > p_migration_rule = LatticeBasedMigrationRule<2>::Create();
+        p_migration_rule->SetGrid(p_grid);
+        p_migration_rule->SetMovementProbability(0.1);
+        p_migration_rule->SetNetwork(p_network);
 
-        boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> > p_grow_direction_modifier =
-                boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> >(new OnLatticeRwGrowthDirectionModifier<3>());
+        // Test that we move into the correct locations and that sometimes, but not always, we don't move
+        RandomNumberGenerator::Instance()->Reseed(522525);
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(1.0, 1);
 
-        // Grow the vessel
-        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
-        AngiogenesisSolver<3> angiogenesis_solver;
-        angiogenesis_solver.SetVesselNetwork(p_network);
-        angiogenesis_solver.SetOutputDirectory("TestOnLatticeRwGrowthDirectionModifier/SingleVesselGrowth/");
-        angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
-        angiogenesis_solver.Run();
+        unsigned not_moved = 0;
+        for(unsigned idx=0; idx<100; idx++)
+        {
+            std::vector<int> indices = p_migration_rule->GetIndices(std::vector<boost::shared_ptr<VascularNode<2> > > (1, p_node2));
+            if (indices[0] == -1)
+            {
+                not_moved++;
+            }
+            else
+            {
+                TS_ASSERT(indices[0] == 16 or indices[0] == 22 or indices[0] == 8)
+                std::cout << indices[0];
+            }
+        }
+        TS_ASSERT(not_moved>0)
+        TS_ASSERT(not_moved<100)
     }
 
-    void TestMultiVessel() throw(Exception)
+    void TestOwen2011SingleVessel() throw(Exception)
     {
-        // Make a network
-        std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
-        for(unsigned idx=0; idx<10; idx++)
+        // Set the grid to move on
+        boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
+        double spacing = 100.0; //um
+        p_grid->SetSpacing(spacing);
+        std::vector<unsigned> extents(3, 1);
+        extents[0] = 7; // num x
+        extents[1] = 5; // num_y
+        extents[2] = 1; // num_z
+        p_grid->SetExtents(extents);
+
+        // Make a vessel
+        boost::shared_ptr<VascularNode<2> > p_node1 = VascularNode<2>::Create(0.0, 2.0*spacing);
+        boost::shared_ptr<VascularNode<2> > p_node2 = VascularNode<2>::Create(spacing, 2.0*spacing);
+        p_node2->SetIsMigrating(true);
+        boost::shared_ptr<CaVessel<2> > p_vessel = CaVessel<2>::Create(p_node1, p_node2);
+        boost::shared_ptr<CaVascularNetwork<2> > p_network = CaVascularNetwork<2>::Create();
+        p_network->AddVessel(p_vessel);
+        p_grid->SetVesselNetwork(p_network);
+
+        // Set up a vegf field
+        boost::shared_ptr<FunctionMap<2> > p_funciton_map = FunctionMap<2>::Create();
+        p_funciton_map->SetGrid(p_grid);
+        std::vector<double> vegf_field = std::vector<double>(extents[0]*extents[1], 0.0);
+        double max_vegf = 0.2; //nM
+        for(unsigned idx=0; idx<p_grid->GetNumberOfPoints(); idx++)
         {
-            bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 0.0, 0.0));
+            vegf_field[idx] = max_vegf * p_grid->GetLocationOf1dIndex(idx)[0] / (float(extents[0]) * spacing);
         }
+        p_funciton_map->SetPointSolution(vegf_field);
 
-        std::vector<boost::shared_ptr<VascularNode<3> > > top_nodes;
-        for(unsigned idx=0; idx<10; idx++)
+        // Set up the migration rule
+        boost::shared_ptr<Owen2011MigrationRule<2> > p_migration_rule = Owen2011MigrationRule<2>::Create();
+        p_migration_rule->SetGrid(p_grid);
+        p_migration_rule->SetMovementProbability(0.1);
+        p_migration_rule->SetNetwork(p_network);
+        p_migration_rule->SetHybridSolver(p_funciton_map);
+
+        // Test that we move into the correct locations and that sometimes, but not always, we don't move.
+        // Also check that we mostly move in the direction of the vegf gradient, but not always
+        RandomNumberGenerator::Instance()->Reseed(522525);
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(1.0, 1);
+
+        unsigned not_moved = 0;
+        unsigned num_right = 0;
+        for(unsigned idx=0; idx<100; idx++)
         {
-            top_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 100.0, 0.0));
+            std::vector<int> indices = p_migration_rule->GetIndices(std::vector<boost::shared_ptr<VascularNode<2> > > (1, p_node2));
+            if (indices[0] == -1)
+            {
+                not_moved++;
+            }
+            else
+            {
+                TS_ASSERT(indices[0] == 16 or indices[0] == 22 or indices[0] == 8)
+                if(indices[0] == 16)
+                {
+                    num_right ++;
+                }
+            }
         }
-
-        boost::shared_ptr<CaVessel<3> > p_vessel1 = CaVessel<3>::Create(bottom_nodes);
-        boost::shared_ptr<CaVessel<3> > p_vessel2 = CaVessel<3>::Create(top_nodes);
-
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = CaVascularNetwork<3>::Create();
-        p_network->AddVessel(p_vessel1);
-        p_network->AddVessel(p_vessel2);
-        p_network->FormSprout(ChastePoint<3>(20.0, 0.0, 0.0), ChastePoint<3>(20.0, 10.0, 0.0));
-        p_network->FormSprout(ChastePoint<3>(70.0, 100.0, 0.0), ChastePoint<3>(70.0, 90.0, 0.0));
-
-        boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> > p_grow_direction_modifier =
-                boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> >(new OnLatticeRwGrowthDirectionModifier<3>());
-
-        // Grow the vessel
-        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
-        AngiogenesisSolver<3> angiogenesis_solver;
-        angiogenesis_solver.SetVesselNetwork(p_network);
-        angiogenesis_solver.SetOutputDirectory("TestOnLatticeRwGrowthDirectionModifier/Multisegment/");
-        angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
-        angiogenesis_solver.Run();
+        TS_ASSERT(not_moved>0)
+        TS_ASSERT(not_moved<100)
+        TS_ASSERT(num_right>0)
+        TS_ASSERT(num_right<100)
     }
 
-    void TestMultiSprout() throw(Exception)
-    {
-        // Make a network
-        std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
-        for(unsigned idx=0; idx<10; idx++)
-        {
-            bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 0.0, 0.0));
-        }
-
-        boost::shared_ptr<CaVessel<3> > p_vessel1 = CaVessel<3>::Create(bottom_nodes);
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = CaVascularNetwork<3>::Create();
-        p_network->AddVessel(p_vessel1);
-
-        std::vector<boost::shared_ptr<VascularNode<3> > > top_nodes;
-        for(unsigned idx=1; idx<9; idx++)
-        {
-            p_network->FormSprout(ChastePoint<3>(double(idx)*10, 0.0, 0.0), ChastePoint<3>(double(idx)*10, 10.0, 0.0));
-        }
-
-        boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> > p_grow_direction_modifier =
-                boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> >(new OnLatticeRwGrowthDirectionModifier<3>());
-
-        // Grow the vessel
-        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
-        AngiogenesisSolver<3> angiogenesis_solver;
-        angiogenesis_solver.SetVesselNetwork(p_network);
-        angiogenesis_solver.SetOutputDirectory("TestOnLatticeRwGrowthDirectionModifier/MultiSprout/");
-        angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
-        angiogenesis_solver.Run();
-    }
-
-    void TestMultiSproutWithPde() throw(Exception)
-    {
-        // Make a network
-        std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
-        for(unsigned idx=0; idx<11; idx++)
-        {
-            bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 10.0, 0.0));
-        }
-
-        std::vector<boost::shared_ptr<VascularNode<3> > > top_nodes;
-        for(unsigned idx=0; idx<11; idx++)
-        {
-            top_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 90.0, 0.0));
-        }
-
-        boost::shared_ptr<CaVessel<3> > p_vessel1 = CaVessel<3>::Create(bottom_nodes);
-        boost::shared_ptr<CaVessel<3> > p_vessel2 = CaVessel<3>::Create(top_nodes);
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = CaVascularNetwork<3>::Create();
-        p_network->AddVessel(p_vessel1);
-        p_network->AddVessel(p_vessel2);
-
-        for(unsigned idx=1; idx<10; idx++)
-        {
-            p_network->FormSprout(ChastePoint<3>(double(idx)*10, 10.0, 0.0), ChastePoint<3>(double(idx)*10, 20.0, 0.0));
-        }
-
-        // Set up the PDE domain
-        boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
-        p_domain->AddCuboid(100, 100, 10);
-
-        // Choose the PDE
-        boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
-        p_pde->SetDiffusionConstant(0.0033);
-        p_pde->SetLinearInUTerm(-2.e-7);
-
-        // Set up the boundary condition
-        boost::shared_ptr<DirichletBoundaryCondition<3> > p_vessel_ox_boundary_condition = DirichletBoundaryCondition<3>::Create();
-        p_vessel_ox_boundary_condition->SetValue(40.0);
-        p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_LINE);
-        p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
-        p_vessel_ox_boundary_condition->SetVesselNetwork(p_network);
-
-        // Set up and run the solver
-        boost::shared_ptr<FiniteDifferenceSolver<3> > p_solver = FiniteDifferenceSolver<3>::Create();
-        p_solver->SetGridFromPart(p_domain, 10.0);
-        p_solver->SetPde(p_pde);
-
-        boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> > p_grow_direction_modifier =
-                boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> >(new OnLatticeRwGrowthDirectionModifier<3>());
-
-        // Grow the vessel
-        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
-        AngiogenesisSolver<3> angiogenesis_solver;
-        angiogenesis_solver.SetVesselNetwork(p_network);
-        angiogenesis_solver.SetOutputDirectory("TestOnLatticeRwGrowthDirectionModifier/MultiSproutPde/");
-        angiogenesis_solver.AddPdeSolver(p_solver);
-        angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
-        angiogenesis_solver.Run();
-    }
-
-    void TestMultiSproutWithFlow() throw(Exception)
-    {
-        // Make a network
-        std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
-        for(unsigned idx=0; idx<11; idx++)
-        {
-            bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 10.0, 0.0));
-        }
-        bottom_nodes[0]->GetFlowProperties()->SetIsInputNode(true);
-        bottom_nodes[0]->GetFlowProperties()->SetPressure(3000);
-        bottom_nodes[10]->GetFlowProperties()->SetIsOutputNode(true);
-        bottom_nodes[10]->GetFlowProperties()->SetPressure(1000);
-
-        std::vector<boost::shared_ptr<VascularNode<3> > > top_nodes;
-        for(unsigned idx=0; idx<11; idx++)
-        {
-            top_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 90.0, 0.0));
-        }
-        top_nodes[10]->GetFlowProperties()->SetIsInputNode(true);
-        top_nodes[10]->GetFlowProperties()->SetPressure(3000);
-        top_nodes[0]->GetFlowProperties()->SetIsOutputNode(true);
-        top_nodes[0]->GetFlowProperties()->SetPressure(1000);
-
-        boost::shared_ptr<CaVessel<3> > p_vessel1 = CaVessel<3>::Create(bottom_nodes);
-        boost::shared_ptr<CaVessel<3> > p_vessel2 = CaVessel<3>::Create(top_nodes);
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = CaVascularNetwork<3>::Create();
-        p_network->AddVessel(p_vessel1);
-        p_network->AddVessel(p_vessel2);
-        p_network->SetSegmentRadii(10.0);
-
-        for(unsigned idx=1; idx<10; idx++)
-        {
-            p_network->FormSprout(ChastePoint<3>(double(idx)*10, 10.0, 0.0), ChastePoint<3>(double(idx)*10, 20.0, 0.0));
-        }
-
-        p_network->UpdateSegments();
-        std::vector<boost::shared_ptr<CaVesselSegment<3> > > segments = p_network->GetVesselSegments();
-        for(unsigned idx=0; idx<segments.size(); idx++)
-        {
-            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);
-        }
-
-        boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> > p_grow_direction_modifier =
-                boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> >(new OnLatticeRwGrowthDirectionModifier<3>());
-
-        // Grow the vessel
-        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
-        AngiogenesisSolver<3> angiogenesis_solver;
-        angiogenesis_solver.SetVesselNetwork(p_network);
-        angiogenesis_solver.SetOutputDirectory("TestOnLatticeRwGrowthDirectionModifier/MultiSproutFlow/");
-        angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
-        angiogenesis_solver.Run();
-    }
-
-    void TestSproutingWithFlow() throw(Exception)
-    {
-        // Make a network
-        std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
-        for(unsigned idx=0; idx<9; idx++)
-        {
-            bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 10.0, 0.0));
-        }
-        bottom_nodes[0]->GetFlowProperties()->SetIsInputNode(true);
-        bottom_nodes[0]->GetFlowProperties()->SetPressure(3000);
-        bottom_nodes[8]->GetFlowProperties()->SetIsOutputNode(true);
-        bottom_nodes[8]->GetFlowProperties()->SetPressure(1000);
-
-        boost::shared_ptr<CaVessel<3> > p_vessel1 = CaVessel<3>::Create(bottom_nodes);
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = CaVascularNetwork<3>::Create();
-        p_network->AddVessel(p_vessel1);
-        p_network->SetSegmentRadii(10.0);
-
-        for(unsigned idx=1; idx<6; idx+=2)
-        {
-            p_network->FormSprout(ChastePoint<3>(double(idx)*10, 10.0, 0.0), ChastePoint<3>(double(idx)*10, 20.0, 0.0));
-        }
-
-        p_network->UpdateSegments();
-        std::vector<boost::shared_ptr<CaVesselSegment<3> > > segments = p_network->GetVesselSegments();
-        for(unsigned idx=0; idx<segments.size(); idx++)
-        {
-            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);
-        }
-
-        boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> > p_grow_direction_modifier =
-                boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> >(new OnLatticeRwGrowthDirectionModifier<3>());
-
-        // Grow the vessel
-        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
-        AngiogenesisSolver<3> angiogenesis_solver;
-        angiogenesis_solver.SetVesselNetwork(p_network);
-        angiogenesis_solver.SetOutputDirectory("TestOnLatticeRwGrowthDirectionModifier/SproutingFlow/");
-        angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
-        angiogenesis_solver.Run();
-    }
+//    void DontTestSproutingWithFlow() throw(Exception)
+//    {
+//        // Make a network
+//        std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
+//        for(unsigned idx=0; idx<9; idx++)
+//        {
+//            bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 10.0, 0.0));
+//        }
+//        bottom_nodes[0]->GetFlowProperties()->SetIsInputNode(true);
+//        bottom_nodes[0]->GetFlowProperties()->SetPressure(3000);
+//        bottom_nodes[8]->GetFlowProperties()->SetIsOutputNode(true);
+//        bottom_nodes[8]->GetFlowProperties()->SetPressure(1000);
+//
+//        boost::shared_ptr<CaVessel<3> > p_vessel1 = CaVessel<3>::Create(bottom_nodes);
+//        boost::shared_ptr<CaVascularNetwork<3> > p_network = CaVascularNetwork<3>::Create();
+//        p_network->AddVessel(p_vessel1);
+//        p_network->SetSegmentRadii(10.0);
+//
+//        for(unsigned idx=1; idx<6; idx+=2)
+//        {
+//            p_network->FormSprout(ChastePoint<3>(double(idx)*10, 10.0, 0.0), ChastePoint<3>(double(idx)*10, 20.0, 0.0));
+//        }
+//
+//        p_network->UpdateSegments();
+//        std::vector<boost::shared_ptr<CaVesselSegment<3> > > segments = p_network->GetVesselSegments();
+//        for(unsigned idx=0; idx<segments.size(); idx++)
+//        {
+//            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);
+//        }
+//
+//        boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> > p_grow_direction_modifier =
+//                boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> >(new OnLatticeRwGrowthDirectionModifier<3>());
+//
+//        // Grow the vessel
+//        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
+//        AngiogenesisSolver<3> angiogenesis_solver;
+//        angiogenesis_solver.SetVesselNetwork(p_network);
+//        angiogenesis_solver.SetOutputDirectory("TestOnLatticeRwGrowthDirectionModifier/SproutingFlow/");
+//        angiogenesis_solver.AddGrowthDirectionModifier(p_grow_direction_modifier);
+//        angiogenesis_solver.Run();
+//    }
 };
 
-#endif
+#endif // TestLatticeBasedMigrationRules_hpp

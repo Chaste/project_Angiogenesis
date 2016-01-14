@@ -87,6 +87,9 @@ class AngiogenesisSolver
      */
     boost::shared_ptr<RegularGrid<DIM> > mpVesselGrid;
 
+    /**
+     * The cell population for discrete cell angiogenesis models
+     */
     boost::shared_ptr<CaBasedCellPopulationWithVessels<DIM> > mpCellPopulation;
 
 public:
@@ -142,8 +145,11 @@ public:
      */
     void SetBoundingDomain(boost::shared_ptr<Part<DIM> > pDomain);
 
-
-    void SetCellPopulation(boost::shared_ptr<CaBasedCellPopulationWithVessels<DIM> > cell_population);
+    /**
+     * Set a cell population for discrete cell solves
+     * @param pCellPopulation the cell population for discrete cell solves
+     */
+    void SetCellPopulation(boost::shared_ptr<CaBasedCellPopulationWithVessels<DIM> > pCellPopulation);
 
     /**
      * Add a migration rule for tip cells
@@ -165,7 +171,7 @@ public:
 
     /**
      * Set a vessel grid, this means that on-lattice rules will be used
-     * @return pVesselGrid the grid for the vessel network
+     * @param pVesselGrid the grid for the vessel network
      */
     void SetVesselGrid(boost::shared_ptr<RegularGrid<DIM> >pVesselGrid);
 
@@ -174,7 +180,6 @@ public:
      * @param pNetwork the vessel network
      */
     void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
-
 
 protected:
 
@@ -190,6 +195,7 @@ protected:
 
     /**
      * Update the position of all nodes
+     * @param sprouting whether to do sprouting during this call
      */
     void UpdateNodalPositions(bool sprouting = false);
 };

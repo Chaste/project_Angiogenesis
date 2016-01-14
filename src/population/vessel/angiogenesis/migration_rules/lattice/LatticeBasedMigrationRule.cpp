@@ -68,6 +68,7 @@ std::vector<double> LatticeBasedMigrationRule<DIM>::GetNeighbourMovementProbabil
     {
         // Make sure that tip cell does not try to move into a location already occupied by the vessel that it comes from
         c_vector<double, DIM> neighbour_location = this->mpGrid->GetLocationOf1dIndex(neighbourIndices[idx]);
+
         bool already_attached = false;
         for (unsigned seg_index = 0; seg_index < pNode->GetNumberOfSegments(); seg_index++)
         {
@@ -79,6 +80,7 @@ std::vector<double> LatticeBasedMigrationRule<DIM>::GetNeighbourMovementProbabil
         }
 
         // Also ensure that the new location would not try to cross a vessel which is oriented diagonally
+        // TODO: Very slow, bottleneck
         if(already_attached or this->mpVesselNetwork->VesselCrossesLineSegment(neighbour_location, pNode->GetLocationVector()))
         {
             continue;
@@ -99,6 +101,7 @@ int LatticeBasedMigrationRule<DIM>::GetNeighbourMovementIndex(std::vector<double
     // Check that the cumulative movement probability is less than one, otherwise our time-step is too large
     std::vector<double> cumulativeProbabilityVector(movementProbabilities.size());
     std::partial_sum(movementProbabilities.begin(), movementProbabilities.end(), cumulativeProbabilityVector.begin());
+
     if (cumulativeProbabilityVector.back() > 1.0)
     {
         EXCEPTION("Cumulative probability of tip cell moving is greater than one (" +
@@ -108,12 +111,17 @@ int LatticeBasedMigrationRule<DIM>::GetNeighbourMovementIndex(std::vector<double
     // Use roulette-wheel style selection to select which location the tip will move into
     double cumulativeProbability = cumulativeProbabilityVector.back();
     double random_number = RandomNumberGenerator::Instance()->ranf();
-    for (unsigned ind = 0; ind < cumulativeProbabilityVector.size(); ind++)
+
+    // If we move, choose a node to go to
+    if(random_number < cumulativeProbability)
     {
-        if (random_number <= cumulativeProbabilityVector[ind]/cumulativeProbability)
+        for (unsigned ind = 0; ind < cumulativeProbabilityVector.size(); ind++)
         {
-            location_index = ind;
-            break;
+            if (random_number <= cumulativeProbabilityVector[ind])
+            {
+                location_index = neighbourIndices[ind];
+                break;
+            }
         }
     }
     return location_index;
@@ -157,7 +165,7 @@ std::vector<int> LatticeBasedMigrationRule<DIM>::GetIndices(const std::vector<bo
     for(unsigned idx = 0; idx < rNodes.size(); idx++)
     {
         // Make sure we are dealing with tips
-        if(rNodes[idx]->GetNumberOfSegments()!=2)
+        if(rNodes[idx]->GetNumberOfSegments()!=1)
         {
             continue;
         }

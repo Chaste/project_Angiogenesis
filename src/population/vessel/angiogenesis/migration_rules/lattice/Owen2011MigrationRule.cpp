@@ -75,6 +75,21 @@ void Owen2011MigrationRule<DIM>::SetCellMotilityParameter(double cellMotility)
 }
 
 template<unsigned DIM>
+std::vector<int> Owen2011MigrationRule<DIM>::GetIndices(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
+{
+    if(!this->mpSolver)
+    {
+        EXCEPTION("A hybrid solver is required for this type of sprouting rule.");
+    }
+
+    // Get the vegf values from the hybrid solver
+    mVegfField = this->mpSolver->GetPointSolution();
+
+    // Use the base class for the rest
+    return LatticeBasedMigrationRule<DIM>::GetIndices(rNodes);
+}
+
+template<unsigned DIM>
 std::vector<double> Owen2011MigrationRule<DIM>::GetNeighbourMovementProbabilities(boost::shared_ptr<VascularNode<DIM> > pNode,
                                                        std::vector<unsigned> neighbourIndices, unsigned gridIndex)
 {
@@ -111,21 +126,6 @@ std::vector<double> Owen2011MigrationRule<DIM>::GetNeighbourMovementProbabilitie
         }
     }
     return probability_of_moving;
-}
-
-template<unsigned DIM>
-std::vector<int> Owen2011MigrationRule<DIM>::GetIndices(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
-{
-    if(!this->mpSolver)
-    {
-        EXCEPTION("A hybrid solver is required for this type of sprouting rule.");
-    }
-
-    // Get the vegf values from the hybrid solver
-    mVegfField = this->mpSolver->GetPointSolution();
-
-    // Use the base class for the rest
-    return LatticeBasedMigrationRule<DIM>::GetIndices(rNodes);
 }
 
 // Explicit instantiation

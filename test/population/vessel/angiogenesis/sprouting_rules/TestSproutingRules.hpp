@@ -10,118 +10,104 @@
 #define TESTSPROUTINGRULES_HPP
 
 #include <cxxtest/TestSuite.h>
-#include "LatticeBasedSproutingRule.hpp"
-#include "Owen2011LatticeBasedSproutingRule.hpp"
+#include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "CaVessel.hpp"
 #include "CaVascularNetwork.hpp"
 #include "VascularNode.hpp"
-#include "AbstractCellBasedTestSuite.hpp"
 #include "FunctionMap.hpp"
-#include "Debug.hpp"
+#include "LatticeBasedSproutingRule.hpp"
+#include "Owen2011SproutingRule.hpp"
 
-class TestSproutingRules : public AbstractCellBasedTestSuite
+#include "PetscSetupAndFinalize.hpp"
+
+class TestSproutingRules : public AbstractCellBasedWithTimingsTestSuite
 {
 
 public:
 
     void TestLatticeBasedSproutingRuleSimpleNetwork() throw(Exception)
     {
-        // Set up the grid
-        boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
-        double spacing = 40.0; //um
-        p_grid->SetSpacing(spacing);
-        std::vector<unsigned> extents(3, 1);
-        extents[0] = 11; // num x
-        extents[1] = 11; // num_y
-        extents[2] = 11; // num_z
-        p_grid->SetExtents(extents);
-
         // Make a network
         std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
-        unsigned num_nodes = 10;
+        unsigned num_nodes = 100;
+        double spacing = 1.0;
         for(unsigned idx=0; idx<num_nodes-1; idx++)
         {
-            bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*spacing +spacing, 5.0 * spacing, 5.0 * spacing));
+            bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*spacing, 0.0, 0.0));
         }
 
         boost::shared_ptr<CaVessel<3> > p_vessel = CaVessel<3>::Create(bottom_nodes);
         boost::shared_ptr<CaVascularNetwork<3> > p_network = CaVascularNetwork<3>::Create();
         p_network->AddVessel(p_vessel);
-        p_grid->SetVesselNetwork(p_network);
 
         // Set up a sprouting rule
         boost::shared_ptr<LatticeBasedSproutingRule<3> > p_sprouting_rule = LatticeBasedSproutingRule<3>::Create();
-        p_sprouting_rule->SetSproutingProbability(0.1);
-        p_sprouting_rule->SetGrid(p_grid);
+        p_sprouting_rule->SetSproutingProbability(0.2);
         p_sprouting_rule->SetVesselNetwork(p_network);
 
-        // Get the sprout directions
+        // Test that we get some, but not all, sprouts
         RandomNumberGenerator::Instance()->Reseed(522525);
-        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(40.0, 400);
         std::vector<boost::shared_ptr<VascularNode<3> > > nodes = p_network->GetNodes();
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(1.0, 1);
 
-        // Repeat a few times
-        for (unsigned idx=0; idx<1; idx++)
+        for(unsigned idx=0; idx<5; idx++)
         {
-            std::vector<c_vector<double, 3> > directions = p_sprouting_rule->GetSproutDirections(nodes);
-            for (unsigned jdx=0; jdx<directions.size(); jdx++)
-            {
-                std::cout << directions[jdx] << std::endl;
-            }
+            unsigned num_sprouts = p_sprouting_rule->GetSprouts(nodes).size();
+            unsigned num_nodes = bottom_nodes.size();
+            TS_ASSERT(num_sprouts>0)
+            TS_ASSERT(num_sprouts<num_nodes)
         }
     }
 
     void TestOwen2011SproutingRuleSimpleNetwork() throw(Exception)
     {
         // Set up the grid
-        boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
+        boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
         double spacing = 40.0; //um
         p_grid->SetSpacing(spacing);
         std::vector<unsigned> extents(3, 1);
-        extents[0] = 11; // num x
+        extents[0] = 101; // num x
         extents[1] = 11; // num_y
-        extents[2] = 11; // num_z
+        extents[2] = 1; // num_z
         p_grid->SetExtents(extents);
 
         // Make a network
-        std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
-        unsigned num_nodes = 10;
+        std::vector<boost::shared_ptr<VascularNode<2> > > bottom_nodes;
+        unsigned num_nodes = 100;
         for(unsigned idx=0; idx<num_nodes-1; idx++)
         {
-            bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*spacing +spacing, 5.0 * spacing, 5.0 * spacing));
+            bottom_nodes.push_back(VascularNode<2>::Create(double(idx)*spacing +spacing, 5.0 * spacing));
         }
 
-        boost::shared_ptr<CaVessel<3> > p_vessel = CaVessel<3>::Create(bottom_nodes);
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = CaVascularNetwork<3>::Create();
+        boost::shared_ptr<CaVessel<2> > p_vessel = CaVessel<2>::Create(bottom_nodes);
+        boost::shared_ptr<CaVascularNetwork<2> > p_network = CaVascularNetwork<2>::Create();
         p_network->AddVessel(p_vessel);
         p_grid->SetVesselNetwork(p_network);
 
-        // Set up a vegf field
-        boost::shared_ptr<FunctionMap<3> > p_funciton_map = FunctionMap<3>::Create();
+        // Set up a vegf field, 0.15 nM
+        boost::shared_ptr<FunctionMap<2> > p_funciton_map = FunctionMap<2>::Create();
         p_funciton_map->SetGrid(p_grid);
-        std::vector<double> vegf_field = std::vector<double>(extents[0]*extents[1]*extents[2], 0.0);
-        for(unsigned idx=0; idx<extents[0]*extents[1]*extents[2]; idx++)
-        {
-            vegf_field[idx] = p_grid->GetLocationOf1dIndex(idx)[0] / (spacing * extents[0]); // 0 to 1 nM across the grid x extents
-        }
+        std::vector<double> vegf_field = std::vector<double>(extents[0]*extents[1], 0.15);
         p_funciton_map->SetPointSolution(vegf_field);
 
         // Set up a sprouting rule
-        boost::shared_ptr<Owen2011LatticeBasedSproutingRule<3> > p_sprouting_rule = Owen2011LatticeBasedSproutingRule<3>::Create();
-        p_sprouting_rule->SetSproutingProbability(0.1);
+        boost::shared_ptr<Owen2011SproutingRule<2> > p_sprouting_rule = Owen2011SproutingRule<2>::Create();
+        p_sprouting_rule->SetSproutingProbability(0.2);
         p_sprouting_rule->SetGrid(p_grid);
         p_sprouting_rule->SetVesselNetwork(p_network);
         p_sprouting_rule->SetHybridSolver(p_funciton_map);
 
-        // Get the sprout directions
+        // Test that we get some, but not all, sprouts
         RandomNumberGenerator::Instance()->Reseed(522525);
-        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(40.0, 400);
-        std::vector<boost::shared_ptr<VascularNode<3> > > nodes = p_network->GetNodes();
+        std::vector<boost::shared_ptr<VascularNode<2> > > nodes = p_network->GetNodes();
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(1.0, 1);
 
-        // Repeat a few times
-        for (unsigned idx=0; idx<1000; idx++)
+        for(unsigned idx=0; idx<5; idx++)
         {
-            std::vector<c_vector<double, 3> > directions = p_sprouting_rule->GetSproutDirections(nodes);
+            unsigned num_sprouts = p_sprouting_rule->GetSprouts(nodes).size();
+            unsigned num_nodes = bottom_nodes.size();
+            TS_ASSERT(num_sprouts>0)
+            TS_ASSERT(num_sprouts<num_nodes)
         }
     }
 };
