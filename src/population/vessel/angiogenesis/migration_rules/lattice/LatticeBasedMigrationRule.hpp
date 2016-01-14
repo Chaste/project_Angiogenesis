@@ -33,22 +33,20 @@
 
  */
 
-#ifndef LatticeBasedSproutingRule_HPP_
-#define LatticeBasedSproutingRule_HPP_
+#ifndef LatticeBasedMigrationRule_HPP_
+#define LatticeBasedMigrationRule_HPP_
 
 #include <vector>
 #include <string>
+#include "AbstractMigrationRule.hpp"
 #include "VascularNode.hpp"
 #include "SmartPointers.hpp"
-#include "AbstractSproutingRule.hpp"
-#include "RegularGrid.hpp"
-#include "AbstractRegularGridHybridSolver.hpp"
 
 /**
- * A simple random lattice based sprouting rule, useful for code testing.
+ * A simple random direction lattice based migration rule. Not physical, but useful for code testing.
  */
 template<unsigned DIM>
-class LatticeBasedSproutingRule : public AbstractSproutingRule<DIM>
+class LatticeBasedMigrationRule : public AbstractMigrationRule<DIM>
 {
 
 protected:
@@ -59,39 +57,35 @@ protected:
     boost::shared_ptr<RegularGrid<DIM> > mpGrid;
 
     /**
-     * Cell sprouting probability
+     * Cell movement probability
      */
-    double mSproutingProbability;
-
-    /**
-     * Tip exclusion radius
-     */
-    double mTipExclusionRadius;
+    double mMovementProbability;
 
 public:
 
     /**
      * Constructor.
      */
-    LatticeBasedSproutingRule();
+    LatticeBasedMigrationRule();
 
     /**
      * Destructor.
      */
-    virtual ~LatticeBasedSproutingRule();
+    virtual ~LatticeBasedMigrationRule();
 
     /**
      * Construct a new instance of the class and return a shared pointer to it.
      * @return a pointer to a new instance of the class
      */
-    static boost::shared_ptr<LatticeBasedSproutingRule<DIM> > Create();
+    static boost::shared_ptr<LatticeBasedMigrationRule<DIM> > Create();
 
     /**
-     * Overwritten method to return nodes which may sprout
-     * @param rNodes nodes to check for sprouting
-     * @return a vector of nodes which may sprout
+     * Calculate the grid index that each migrating node will move into. Set to -1 if the
+     * node does not move.
+     * @param rNodes nodes to calculate indices
+     * @return a vector of grid indices to move nodes into
      */
-    virtual std::vector<boost::shared_ptr<VascularNode<DIM> > > GetSprouts(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes);
+    std::vector<int> GetIndices(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes);
 
     /**
      * Set the lattice/grid for the vessel network
@@ -100,10 +94,32 @@ public:
     void SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid);
 
     /**
-     * Set the sprouting probability
-     * @param sproutingProbability the sprouting probability
+     * Set the movement probability
+     * @param movementProbability the movement probability
      */
-    void SetSproutingProbability(double sproutingProbability);
+    void SetMovementProbability(double movementProbability);
+
+protected:
+
+    /**
+     * Get the probabilities for movement into each lattice point in the node's neighbourhood. This
+     * can be over-written for custom movement rules.
+     * @param pNode the sprouting node
+     * @param neighbourIndices the grid indices of the neighbour nodes
+     * @return a vector of movement probabilities corresponding to each neighbour index
+     */
+    virtual std::vector<double> GetNeighbourMovementProbabilities(boost::shared_ptr<VascularNode<DIM> > pNode,
+                                                           std::vector<unsigned> neighbourIndices, unsigned gridIndex);
+
+    /**
+     * Get the index of the neighbour to move into.
+     * This can be over-written for custom movement rules.
+     * @param movementProbabilities the movement probabilities corresponding to each neighbour index
+     * @param neighbourIndices the grid indices of the neighbour nodes
+     * @return the neighbour index to move into
+     */
+    virtual int GetNeighbourMovementIndex(std::vector<double> movementProbabilities,
+                                               std::vector<unsigned> neighbourIndices);
 };
 
-#endif /* LatticeBasedSproutingRule_HPP_ */
+#endif /* LatticeBasedMigrationRule_HPP_ */

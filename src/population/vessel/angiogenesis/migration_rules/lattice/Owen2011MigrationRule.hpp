@@ -33,77 +33,91 @@
 
  */
 
-#ifndef LatticeBasedSproutingRule_HPP_
-#define LatticeBasedSproutingRule_HPP_
+#ifndef Owen2011MigrationRule_HPP_
+#define Owen2011MigrationRule_HPP_
 
 #include <vector>
 #include <string>
 #include "VascularNode.hpp"
 #include "SmartPointers.hpp"
-#include "AbstractSproutingRule.hpp"
+#include "LatticeBasedMigrationRule.hpp"
 #include "RegularGrid.hpp"
-#include "AbstractRegularGridHybridSolver.hpp"
 
 /**
- * A simple random lattice based sprouting rule, useful for code testing.
+ * A concrete migration rule for lattice based simulations based on
+ * a model described in Owen et al. 2011. Default parameter values are taken
+ * from that study.
  */
 template<unsigned DIM>
-class LatticeBasedSproutingRule : public AbstractSproutingRule<DIM>
+class Owen2011MigrationRule : public LatticeBasedMigrationRule<DIM>
 {
 
 protected:
 
     /**
-     * The lattice/grid for the vessel simulation
+     * Cell motility for random walks
      */
-    boost::shared_ptr<RegularGrid<DIM> > mpGrid;
+    double mCellMotility;
 
     /**
-     * Cell sprouting probability
+     * Cell chemotactic sensitivity
      */
-    double mSproutingProbability;
+    double mCellChemotacticParameter;
 
     /**
-     * Tip exclusion radius
+     * Vegf field sampled on the vessel lattice
      */
-    double mTipExclusionRadius;
+    std::vector<double> mVegfField;
 
 public:
 
     /**
      * Constructor.
      */
-    LatticeBasedSproutingRule();
+    Owen2011MigrationRule();
 
     /**
      * Destructor.
      */
-    virtual ~LatticeBasedSproutingRule();
+    virtual ~Owen2011MigrationRule();
 
     /**
      * Construct a new instance of the class and return a shared pointer to it.
      * @return a pointer to a new instance of the class
      */
-    static boost::shared_ptr<LatticeBasedSproutingRule<DIM> > Create();
+    static boost::shared_ptr<Owen2011MigrationRule<DIM> > Create();
 
     /**
-     * Overwritten method to return nodes which may sprout
-     * @param rNodes nodes to check for sprouting
-     * @return a vector of nodes which may sprout
+     * Calculate the grid index that each migrating node will move into. Set to -1 if the
+     * node does not move.
+     * @param rNodes nodes to calculate indices
+     * @return a vector of grid indices to move nodes into
      */
-    virtual std::vector<boost::shared_ptr<VascularNode<DIM> > > GetSprouts(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes);
+    std::vector<int> GetIndices(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes);
 
     /**
-     * Set the lattice/grid for the vessel network
-     * @param pGrid the grid for the vessel network
+     * Set the cell chemotactic parameter
+     * @param cellChemotacticParameter the cell chemotactic parameter
      */
-    void SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid);
+    void SetCellChemotacticParameter(double cellChemotacticParameter);
 
     /**
-     * Set the sprouting probability
-     * @param sproutingProbability the sprouting probability
+     * Set the cell motility parameter
+     * @param cellMotility the cell motility parameter
      */
-    void SetSproutingProbability(double sproutingProbability);
+    void SetCellMotilityParameter(double cellMotility);
+
+private:
+
+    /**
+     * Get the probabilities for movement into each lattice point in the node's neighbourhood. This
+     * can be over-written for custom movement rules.
+     * @param pNode the sprouting node
+     * @param neighbourIndices the grid indices of the neighbour nodes
+     * @return a vector of movement probabilities corresponding to each neighbour index
+     */
+    std::vector<double> GetNeighbourMovementProbabilities(boost::shared_ptr<VascularNode<DIM> > pNode,
+                                                           std::vector<unsigned> neighbourIndices, unsigned gridIndex);
 };
 
-#endif /* LatticeBasedSproutingRule_HPP_ */
+#endif /* Owen2011MigrationRule_HPP_ */

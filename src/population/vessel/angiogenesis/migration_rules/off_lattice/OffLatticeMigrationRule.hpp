@@ -33,88 +33,81 @@
 
  */
 
-#ifndef ABSTRACTSPROUTINGRULE_HPP_
-#define ABSTRACTSPROUTINGRULE_HPP_
+#ifndef OffLatticeMigrationRule_HPP_
+#define OffLatticeMigrationRule_HPP_
 
 #include <vector>
 #include <string>
-#include "CaVascularNetwork.hpp"
+#include "AbstractMigrationRule.hpp"
 #include "VascularNode.hpp"
 #include "SmartPointers.hpp"
-#include "RegularGrid.hpp"
 
 /**
- * Abstract class for implementing sprouting rules in angiogenesis solver.
- * Child classes implement GetSprouts() which returns a vector of potential sprouting nodes
+ * An off-lattice migration rule for tip cells
  */
 template<unsigned DIM>
-class AbstractSproutingRule
+class OffLatticeMigrationRule : public AbstractMigrationRule<DIM>
 {
-
-protected:
+    /**
+     * Global direction vectors, x (1,0,0)
+     */
+    c_vector<double, DIM> mGlobalX;
 
     /**
-     * The probability that a sprout will form per unit time
+     * Global direction vectors, y (0,1,0)
      */
-    double mSproutingProbability;
+    c_vector<double, DIM> mGlobalY;
 
     /**
-     * Vessel network, useful if sprouting depends on neighbouring nodes
+     * Global direction vectors, z (0,0,1)
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > mpVesselNetwork;
+    c_vector<double, DIM> mGlobalZ;
 
     /**
-     * How far from vessel ends can sprouts form
+     * Mean angle between current and new directions about global axes
      */
-    double mVesselEndCutoff;
+    std::vector<double> mMeanAngles;
+
+    /**
+     * Deviation in angle between current and new directions about global axes
+     */
+    std::vector<double> mSdvAngles;
+
+    /**
+     * Tip cell velocity
+     */
+    double mVelocity;
+
+    /**
+     * Length of probe into solution
+     */
+    double mProbeLength;
 
 public:
 
     /**
      * Constructor.
      */
-    AbstractSproutingRule();
+    OffLatticeMigrationRule();
 
     /**
      * Destructor.
      */
-    virtual ~AbstractSproutingRule();
+    virtual ~OffLatticeMigrationRule();
+
+    /*
+     * Construct a new instance of the class and return a shared pointer to it.
+     * @return pointer to a new class instance
+     */
+    static boost::shared_ptr<OffLatticeMigrationRule<DIM> > Create();
 
     /**
-     * Set the vessel network
-     * @param pVesselNetwork pointer to a new method for the class
+     * Return the movement vector (new_location - oriringal_location) for the input nodes, if they can't move set it to the zero vector
+     * @param rNodes nodes to calculate indices
+     * @return a vector of movement vectors
      */
-    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pVesselNetwork);
+    std::vector<c_vector<double, DIM> > GetDirections(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes);
 
-    /**
-     * Set the sprouting probability
-     * @param probability probability of sprouting per unit time
-     */
-    void SetSproutingProbability(double probability);
-
-    /**
-     * Set the minimum distance to a vessel end at which sprouting can occur
-     * @param probability probability of sprouting per unit time
-     */
-    void SetVesselEndCutoff(double cutoff);
-
-    /**
-     * Return the nodes which may form sprouts
-     * @param rNodes nodes to check for sprouting
-     * @return a vector of nodes which may sprout
-     */
-    virtual std::vector<boost::shared_ptr<VascularNode<DIM> > > GetSprouts(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
-    {
-        return std::vector<boost::shared_ptr<VascularNode<DIM> > >();
-    }
-
-    /**
-     * Set a grid for the vessel network, implemented in some, but not all, child classes.
-     */
-    virtual void SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid)
-    {
-
-    }
 };
 
-#endif /* ABSTRACTSPROUTINGRULE_HPP_ */
+#endif /* OffLatticeMigrationRule_HPP_ */

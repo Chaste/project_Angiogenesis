@@ -1,0 +1,201 @@
+/*
+
+ Copyright (c) 2005-2015, University of Oxford.
+ All rights reserved.
+
+ University of Oxford means the Chancellor, Masters and Scholars of the
+ University of Oxford, having an administrative office at Wellington
+ Square, Oxford OX1 2JD, UK.
+
+ This file is part of Chaste.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ * Redistributions of source code must retain the above copyright notice,
+ this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice,
+ this list of conditions and the following disclaimer in the documentation
+ and/or other materials provided with the distribution.
+ * Neither the name of the University of Oxford nor the names of its
+ contributors may be used to endorse or promote products derived from this
+ software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+ */
+
+#include "GeometryTools.hpp"
+#include "OffLatticeMigrationRule.hpp"
+#include "RandomNumberGenerator.hpp"
+
+template<unsigned DIM>
+OffLatticeMigrationRule<DIM>::OffLatticeMigrationRule()
+    : AbstractMigrationRule<DIM>(),
+      mGlobalX(unit_vector<double>(DIM,0)),
+      mGlobalY(unit_vector<double>(DIM,0)),
+      mGlobalZ(zero_vector<double>(DIM)),
+      mMeanAngles(std::vector<double>(DIM, 0.0)),
+      mSdvAngles(std::vector<double>(DIM, M_PI/18.0)),
+      mVelocity(20.0), // um/hr
+      mProbeLength(5.0)
+{
+    if(DIM==3)
+    {
+        mGlobalZ = unit_vector<double>(DIM,2);
+    }
+}
+
+template <unsigned DIM>
+boost::shared_ptr<OffLatticeMigrationRule<DIM> > OffLatticeMigrationRule<DIM>::Create()
+{
+    MAKE_PTR(OffLatticeMigrationRule<DIM>, pSelf);
+    return pSelf;
+}
+
+template<unsigned DIM>
+OffLatticeMigrationRule<DIM>::~OffLatticeMigrationRule()
+{
+
+}
+
+template<unsigned DIM>
+std::vector<c_vector<double, DIM> > OffLatticeMigrationRule<DIM>::GetDirections(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
+{
+    std::vector<c_vector<double, DIM> > movement_vectors(rNodes.size(), zero_vector<double>(DIM));
+    for(unsigned idx=0; idx<rNodes.size(); idx++)
+    {
+        double angle_x = RandomNumberGenerator::Instance()->NormalRandomDeviate(mMeanAngles[0], mSdvAngles[0]);
+        double angle_y = RandomNumberGenerator::Instance()->NormalRandomDeviate(mMeanAngles[1], mSdvAngles[1]);
+        double angle_z = 0.0;
+        if(DIM==3)
+        {
+            angle_z = RandomNumberGenerator::Instance()->NormalRandomDeviate(mMeanAngles[2], mSdvAngles[2]);
+        }
+        c_vector<double, DIM> currentDirection  =
+                rNodes[idx]->GetVesselSegment(0)->GetOppositeNode(rNodes[idx])->GetLocationVector() - rNodes[idx]->GetLocationVector();
+        currentDirection /= norm_2(currentDirection);
+
+        c_vector<double, DIM> new_direction_z = RotateAboutAxis<DIM>(currentDirection, mGlobalZ, angle_z);
+        c_vector<double, DIM> new_direction_y = RotateAboutAxis<DIM>(new_direction_z, mGlobalY, angle_y);
+        c_vector<double, DIM> new_direction = RotateAboutAxis<DIM>(new_direction_y, mGlobalX, angle_x);
+        new_direction /= norm_2(new_direction);
+
+        // Solution dependent contribution
+        if(this->mpSolver)
+        {
+            // Make points
+            std::vector<c_vector<double, DIM> > probe_locations;
+            probe_locations.push_back(rNodes[idx]->GetLocationVector());
+            probe_locations.push_back(probe_locations[0] + mProbeLength * unit_vector<double>(DIM,0));
+            probe_locations.push_back(probe_locations[0] - mProbeLength * unit_vector<double>(DIM,0));
+            probe_locations.push_back(probe_locations[0] + mProbeLength * unit_vector<double>(DIM,1));
+            probe_locations.push_back(probe_locations[0] - mProbeLength * unit_vector<double>(DIM,1));
+            if(DIM==3)
+            {
+                probe_locations.push_back(probe_locations[0] + mProbeLength * unit_vector<double>(DIM,2));
+                probe_locations.push_back(probe_locations[0] - mProbeLength * unit_vector<double>(DIM,2));
+            }
+
+            // Get the solution
+            std::vector<double> solutions = this->mpSolver->GetSolutionAtPoints(probe_locations);
+
+            // Get the gradients
+            std::vector<double> gradients;
+            for(unsigned idx=1; idx<solutions.size();idx++)
+            {
+                gradients.push_back((solutions[idx] - solutions[0]) / mProbeLength);
+            }
+
+            // Get the index of the max gradient
+            double max_grad = 0.0;
+            int index = -1;
+
+            for(unsigned idx = 0; idx<gradients.size(); idx++)
+            {
+                if(gradients[idx]>max_grad)
+                {
+                    max_grad = gradients[idx];
+                    index = idx;
+                }
+            }
+
+            if(index == 0)
+            {
+                new_direction += unit_vector<double>(DIM,0);
+            }
+            else if(index == 1)
+            {
+                new_direction += -unit_vector<double>(DIM,0);
+            }
+            else if(index == 2)
+            {
+                new_direction += unit_vector<double>(DIM,1);
+            }
+            else if(index == 3)
+            {
+                new_direction += -unit_vector<double>(DIM,1);
+            }
+            else if(index == 4)
+            {
+                new_direction += unit_vector<double>(DIM,2);
+            }
+            else if(index == 5)
+            {
+                new_direction += -unit_vector<double>(DIM,2);
+            }
+            else
+            {
+                EXCEPTION("Unexpected index while obtaining solution dependent direction vectors.");
+            }
+        }
+        new_direction /= norm_2(new_direction);
+
+        // Get the closest node in the search cone
+        std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = this->mpVesselNetwork->GetNodes();
+
+        double min_distance = 1.e12;
+        c_vector<double, DIM> min_direction = zero_vector<double>(DIM);
+        for(unsigned jdx=0; jdx<nodes.size(); idx++)
+        {
+            if(IsPointInCone<3>(nodes[jdx]->GetLocationVector(), rNodes[idx]->GetLocationVector(), rNodes[idx]->GetLocationVector() + currentDirection * 100.0, M_PI/3.0))
+            {
+                double distance = norm_2(rNodes[idx]->GetLocationVector() - nodes[jdx]->GetLocationVector());
+                if(distance < min_distance)
+                {
+                    min_distance = distance;
+                    min_direction = nodes[jdx]->GetLocationVector() - rNodes[idx]->GetLocationVector();
+                    min_direction /= norm_2(min_direction);
+                }
+            }
+        }
+
+        double strength;
+        double crictical_distance = 100.0;
+        if(min_distance >= crictical_distance)
+        {
+            strength = 0.0;
+        }
+        else
+        {
+            strength = 2.0 *  (1.0 - (min_distance * min_distance) / (crictical_distance * crictical_distance));
+        }
+
+        new_direction += strength * min_direction;
+        new_direction /= norm_2(new_direction);
+        movement_vectors[idx] = new_direction * mVelocity;
+    }
+    return movement_vectors;
+}
+
+// Explicit instantiation
+template class OffLatticeMigrationRule<2> ;
+template class OffLatticeMigrationRule<3> ;
