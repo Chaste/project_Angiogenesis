@@ -129,9 +129,9 @@ public:
         // Set up a grid
         boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
         std::vector<unsigned> extents(3);
-        extents[0] = 100;
-        extents[1] = 100;
-        extents[2] = 100;
+        extents[0] = 101;
+        extents[1] = 101;
+        extents[2] = 101;
         p_grid->SetExtents(extents);
 
         // Set up points
@@ -163,8 +163,8 @@ public:
         // Set up a grid
         boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
         std::vector<unsigned> extents(3);
-        extents[0] = 100;
-        extents[1] = 100;
+        extents[0] = 101;
+        extents[1] = 101;
         extents[2] = 1;
         p_grid->SetExtents(extents);
         p_grid->SetSpacing(0.333);
@@ -198,9 +198,9 @@ public:
         RandomNumberGenerator::Instance()->Reseed(1000);
         boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
         std::vector<unsigned> extents(3);
-        extents[0] = 100;
-        extents[1] = 100;
-        extents[2] = 100;
+        extents[0] = 101;
+        extents[1] = 101;
+        extents[2] = 101;
         p_grid->SetExtents(extents);
         double spacing = 0.33;
         p_grid->SetSpacing(spacing);
@@ -256,9 +256,9 @@ public:
         RandomNumberGenerator::Instance()->Reseed(1000);
         boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
         std::vector<unsigned> extents(3);
-        extents[0] = 100;
-        extents[1] = 100;
-        extents[2] = 100;
+        extents[0] = 101;
+        extents[1] = 101;
+        extents[2] = 101;
         p_grid->SetExtents(extents);
         double spacing = 0.33;
         p_grid->SetSpacing(spacing);

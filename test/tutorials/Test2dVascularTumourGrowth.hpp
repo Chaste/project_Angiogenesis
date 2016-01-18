@@ -250,9 +250,6 @@ public:
 
     void TestOnLattice2dVascularTumourGrowth() throw (Exception)
     {
-        MARK;
-        // todo the simulation clearly goes wrong when domain is not square ... likely to be a problem with how interpolation is being done and indices being mixed up
-        // Set up simulation domain
         double domain_x = 42.0;
         double domain_y = 66.0;
         boost::shared_ptr<Part<2> > p_domain = Part<2>::Create();
@@ -260,7 +257,7 @@ public:
 
         // Create the initial vessel network: hexagonally tesselated vascular network
         boost::shared_ptr<CaVascularNetwork<2> > p_network = GetHexagonalNetwork(domain_x, domain_y);
-        MARK;
+
         // Create a lattice for the cell population
         double spacing = 1.0;
         unsigned num_x = unsigned(p_domain->GetBoundingBox()[1] / spacing);
@@ -289,7 +286,7 @@ public:
                 location_indices.push_back(ind);
             }
         }
-        MARK;
+
         // mutate all cells inside circle to make them cancerous
         MAKE_PTR(CancerCellMutationState, p_cancerous_state);
 
@@ -306,7 +303,7 @@ public:
                 }
             }
         }
-        MARK;
+
         // update all cells in population to prescribe an initial oxygen concentration and apoptosis time
         std::list<CellPtr> cells = cell_population->rGetCells();
         std::list<CellPtr>::iterator it;
@@ -327,7 +324,7 @@ public:
         cell_population->AddCellWriter<CellMutationStatesWriter>();
         cell_population->AddCellWriter<CellProliferativeTypesWriter>();
         cell_population->AddCellWriter<CellProliferativePhasesWriter>();
-        MARK;
+
         // set volume fractions occupied by each cell
         boost::shared_ptr<WildTypeCellMutationState> wild_mutation_state(new WildTypeCellMutationState);
         boost::shared_ptr<CancerCellMutationState> cancer_mutation_state(new CancerCellMutationState);
@@ -339,7 +336,7 @@ public:
         cell_population->SetVolumeFraction(quiescent_cancer_mutation_state, 0.6);
         cell_population->SetVolumeFraction(stalk_mutation_state, 0.4);
         cell_population->SetVolumeFraction(tip_mutation_state, 0.4);
-        MARK;
+
         // Create a grid to solve PDEs on
         boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
         p_grid->SetSpacing(1.0);
@@ -354,7 +351,7 @@ public:
         p_oxygen_solver->SetGrid(p_grid);
         p_oxygen_solver->SetPde(GetOxygenPde());
         p_oxygen_solver->SetLabel("oxygen");
-        MARK;
+
         // Create the vegf pde solver
         boost::shared_ptr<FiniteDifferenceSolver<2> > p_vegf_solver = FiniteDifferenceSolver<2>::Create();
         p_vegf_solver->SetGrid(p_grid);
@@ -372,10 +369,11 @@ public:
         // add angiogenesis solver to vascular tumour solver
         boost::shared_ptr<AngiogenesisSolver<2> > p_angiogenesis_solver = AngiogenesisSolver<2>::Create();
         p_angiogenesis_solver->SetCellPopulation(cell_population);
+        p_angiogenesis_solver->SetVesselNetwork(p_network);
         p_vascular_tumour_solver->SetAngiogenesisSolver(p_angiogenesis_solver);
-        MARK;
+
         // todo currently there is an issue with the flow calculation - some blunt-ended vessels contain flow (they shouldn't)
-        boost::shared_ptr<FlowSolver<2> > flow_solver(new FlowSolver<2>());
+        boost::shared_ptr<FlowSolver<2> > flow_solver = FlowSolver<2>::Create();
         p_vascular_tumour_solver->SetFlowSolver(flow_solver);
 
         OnLatticeSimulation<2> simulator(*(cell_population.get()));
@@ -389,10 +387,8 @@ public:
         // Create a Cell Concentration tracking modifier and add it to the simulation
         MAKE_PTR(Owen2011TrackingModifier<2>, p_modifier);
         simulator.AddSimulationModifier(p_modifier);
-        MARK;
-        /*
-         * Create cell killer to remove apoptotic cell from simulation
-         */
+
+        //Create cell killer to remove apoptotic cell from simulation
         boost::shared_ptr<ApoptoticCellKiller<2> > apoptotic_cell_killer(new ApoptoticCellKiller<2>(cell_population.get()));
         simulator.AddCellKiller(apoptotic_cell_killer);
 
@@ -402,11 +398,9 @@ public:
         // todo this seems to break simulations if dt is set to 1 - causes a CVode error:
         //          *CVODE Error -27 in module CVODE function CVode: tout too close to t0 to start integration.
         //          CVODE failed to solve system: CV_TOO_CLOSE
-        simulator.SetDt(1.5);
+        simulator.SetDt(0.5);
         simulator.SetEndTime(40);
-        MARK;
         simulator.Solve();
-        MARK;
 
     }
 };

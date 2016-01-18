@@ -39,7 +39,8 @@
 #include <cxxtest/TestSuite.h>
 #include <vector>
 
-#include "LatticeBasedSproutingRule.hpp"
+#include "Owen2011SproutingRule.hpp"
+#include "Owen2011MigrationRule.hpp"
 #include "SmartPointers.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "RegularGrid.hpp"
@@ -47,6 +48,8 @@
 #include "CaVascularNetwork.hpp"
 #include "AngiogenesisSolver.hpp"
 #include "FunctionMap.hpp"
+#include "FlowSolver.hpp"
+#include "VascularTumourSolver.hpp"
 #include "PetscSetupAndFinalize.hpp"
 
 class TestSnailTrail : public AbstractCellBasedWithTimingsTestSuite
@@ -69,23 +72,23 @@ public:
         p_grid->SetExtents(extents);
 
         // Prescribe a linearly increasing vegf field using a function map
-//        boost::shared_ptr<FunctionMap<3> > p_funciton_map = FunctionMap<3>::Create();
-//        p_funciton_map->SetGrid(p_grid);
-//        std::vector<double> vegf_field = std::vector<double>(extents[0]*extents[1], 0.0);
-//        for(unsigned idx=0; idx<extents[0]*extents[1]; idx++)
-//        {
-//            vegf_field[idx] = p_grid->GetLocationOf1dIndex(idx)[0] / (spacing * extents[0]); // 0 to 1 nM across the grid x extents
-//        }
-//        p_funciton_map->SetPointSolution(vegf_field);
-//
-//        std::map<std::string, std::vector<double> > data;
-//        data["Vegf"] = vegf_field;
-//        p_grid->Write(p_handler);
-//        p_funciton_map->SetFileHandler(p_handler);
-//        p_funciton_map->SetFileName("Function.vti");
-//        p_funciton_map->Setup();
-//        p_funciton_map->UpdateSolution(data);
-//        p_funciton_map->Write();
+        boost::shared_ptr<FunctionMap<3> > p_funciton_map = FunctionMap<3>::Create();
+        p_funciton_map->SetGrid(p_grid);
+        std::vector<double> vegf_field = std::vector<double>(extents[0] * extents[1], 0.0);
+        for (unsigned idx = 0; idx < extents[0] * extents[1]; idx++)
+        {
+            vegf_field[idx] = 0.2*p_grid->GetLocationOf1dIndex(idx)[0] / (spacing * extents[0]);
+        }
+        p_funciton_map->SetPointSolution(vegf_field);
+
+        std::map<std::string, std::vector<double> > data;
+        data["Vegf"] = vegf_field;
+        p_grid->Write(p_handler);
+        p_funciton_map->SetFileHandler(p_handler);
+        p_funciton_map->SetFileName("Function.vti");
+        p_funciton_map->Setup();
+        p_funciton_map->UpdateSolution(data);
+        p_funciton_map->Write();
 
         //Set up the limbal vessel
         VasculatureGenerator<3> generator;
@@ -94,34 +97,121 @@ public:
         start_point[1] = 0.0;
         start_point[2] = 0.0;
 
-        double length = spacing*(extents[1]-1); // full domain in y direction
+        double length = spacing * (extents[1] - 1); // full domain in y direction
         unsigned divisions = extents[1] - 2; // divide the vessel to coincide with grid
         unsigned alignment_axis = 1; // pointing y direction
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(length, start_point, divisions, alignment_axis);
+        boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(length, start_point,
+                                                                                            divisions, alignment_axis);
 
-        // Set up the angiogenesis solver
-        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(40.0, 800);
+        boost::shared_ptr<Owen2011MigrationRule<3> > p_migration_rule = Owen2011MigrationRule<3>::Create();
+        p_migration_rule->SetGrid(p_grid);
+        p_migration_rule->SetHybridSolver(p_funciton_map); // This contains the vegf field
+        p_migration_rule->SetCellMotilityParameter(100.0);
+        p_migration_rule->SetCellChemotacticParameter(80000.0);
+        p_migration_rule->SetNetwork(p_network);
+
+        boost::shared_ptr<Owen2011SproutingRule<3> > p_sprouting_rule = Owen2011SproutingRule<3>::Create();
+        p_sprouting_rule->SetHybridSolver(p_funciton_map); // This contains the vegf field
+        p_sprouting_rule->SetSproutingProbability(0.5);
+        p_sprouting_rule->SetGrid(p_grid);
+        p_sprouting_rule->SetVesselNetwork(p_network);
 
         AngiogenesisSolver<3> angiogenesis_solver;
         angiogenesis_solver.SetVesselNetwork(p_network);
         angiogenesis_solver.SetVesselGrid(p_grid);
-
-//        boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> > p_random_walk_modifier =
-//                boost::shared_ptr<OnLatticeRwGrowthDirectionModifier<3> >(new OnLatticeRwGrowthDirectionModifier<3>());
-//
-//        boost::shared_ptr<OffLatticeSolutionDependentGrowthDirectionModifier<3> > p_solution_dependent_modifier =
-//                boost::shared_ptr<OffLatticeSolutionDependentGrowthDirectionModifier<3> >(new OffLatticeSolutionDependentGrowthDirectionModifier<3>());
-//
-//        boost::shared_ptr<Owen2011LatticeBasedSproutingRule<3> > p_sprouting_rule = Owen2011LatticeBasedSproutingRule<3>::Create();
-//        p_sprouting_rule->SetHybridSolver(p_funciton_map); // This contains the vegf field
-
-        boost::shared_ptr<LatticeBasedSproutingRule<3> > p_sprouting_rule = LatticeBasedSproutingRule<3>::Create();
-
-//        angiogenesis_solver.AddGrowthDirectionModifier(p_random_walk_modifier);
-//        angiogenesis_solver.AddGrowthDirectionModifier(p_solution_dependent_modifier);
+        angiogenesis_solver.SetMigrationRule(p_migration_rule);
         angiogenesis_solver.SetSproutingRule(p_sprouting_rule);
         angiogenesis_solver.SetOutputFileHandler(p_handler);
+
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(100.0, 100);
         angiogenesis_solver.Run(true);
+    }
+
+    void DontTest2dSnailTrailWithPrescribedVegfAndFlow() throw (Exception)
+    {
+        MAKE_PTR_ARGS(OutputFileHandler, p_handler, ("TestSnailTrailModel/Flow"));
+
+        // Set up the grid
+        boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
+        double spacing = 40.0; //um
+        p_grid->SetSpacing(spacing);
+
+        std::vector<unsigned> extents(3, 1);
+        extents[0] = 25; // num x
+        extents[1] = 25; // num_y
+        p_grid->SetExtents(extents);
+
+        // Prescribe a linearly increasing vegf field using a function map
+        boost::shared_ptr<FunctionMap<3> > p_funciton_map = FunctionMap<3>::Create();
+        p_funciton_map->SetGrid(p_grid);
+        std::vector<double> vegf_field = std::vector<double>(extents[0] * extents[1], 0.0);
+        for (unsigned idx = 0; idx < extents[0] * extents[1]; idx++)
+        {
+            vegf_field[idx] = 0.2 + p_grid->GetLocationOf1dIndex(idx)[0] / (spacing * extents[0]); // 0.1 to 1.1 nM across the grid x extents
+        }
+        p_funciton_map->SetPointSolution(vegf_field);
+
+        std::map<std::string, std::vector<double> > data;
+        data["Vegf"] = vegf_field;
+        p_grid->Write(p_handler);
+        p_funciton_map->SetFileHandler(p_handler);
+        p_funciton_map->SetFileName("Function.vti");
+        p_funciton_map->Setup();
+        p_funciton_map->UpdateSolution(data);
+        p_funciton_map->Write();
+
+        //Set up the limbal vessel
+        VasculatureGenerator<3> generator;
+        c_vector<double, 3> start_point;
+        start_point[0] = 2.0 * spacing; // two lattice points to the right
+        start_point[1] = 0.0;
+        start_point[2] = 0.0;
+
+        double length = spacing * (extents[1] - 1); // full domain in y direction
+        unsigned divisions = extents[1] - 2; // divide the vessel to coincide with grid
+        unsigned alignment_axis = 1; // pointing y direction
+        boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(length, start_point,
+                                                                                            divisions, alignment_axis);
+
+        p_network->SetNodeRadii(10.0);
+        p_network->SetSegmentRadii(10.0);
+        p_network->GetVesselSegments()[0]->GetFlowProperties()->SetViscosity(1.e-9);
+        p_network->GetVessels()[0]->GetStartNode()->GetFlowProperties()->SetIsInputNode(true);
+        p_network->GetVessels()[0]->GetStartNode()->GetFlowProperties()->SetPressure(0.005);
+        p_network->GetVessels()[0]->GetEndNode()->GetFlowProperties()->SetIsOutputNode(true);
+        p_network->GetVessels()[0]->GetEndNode()->GetFlowProperties()->SetPressure(0.003);
+
+        boost::shared_ptr<Owen2011MigrationRule<3> > p_migration_rule = Owen2011MigrationRule<3>::Create();
+        p_migration_rule->SetGrid(p_grid);
+        p_migration_rule->SetCellMotilityParameter(0.001);
+        p_migration_rule->SetNetwork(p_network);
+        p_migration_rule->SetHybridSolver(p_funciton_map); // This contains the vegf field
+
+        boost::shared_ptr<Owen2011SproutingRule<3> > p_sprouting_rule = Owen2011SproutingRule<3>::Create();
+        p_sprouting_rule->SetHybridSolver(p_funciton_map); // This contains the vegf field
+        p_sprouting_rule->SetSproutingProbability(1.0);
+        p_sprouting_rule->SetGrid(p_grid);
+        p_sprouting_rule->SetVesselNetwork(p_network);
+
+        boost::shared_ptr<AngiogenesisSolver<3> > p_angiogenesis_solver = AngiogenesisSolver<3>::Create();
+        p_angiogenesis_solver->SetVesselNetwork(p_network);
+        p_angiogenesis_solver->SetVesselGrid(p_grid);
+        p_angiogenesis_solver->SetMigrationRule(p_migration_rule);
+        p_angiogenesis_solver->SetSproutingRule(p_sprouting_rule);
+        p_angiogenesis_solver->SetOutputFileHandler(p_handler);
+        p_angiogenesis_solver->SetVesselGrid(p_grid);
+
+        boost::shared_ptr<FlowSolver<3> > p_flow_solver = FlowSolver<3>::Create();
+
+        boost::shared_ptr<VascularTumourSolver<3> > p_vascular_tumour_solver = VascularTumourSolver<3>::Create();
+        p_vascular_tumour_solver->SetVesselNetwork(p_network);
+        p_vascular_tumour_solver->SetOutputFrequency(1);
+        p_vascular_tumour_solver->SetAngiogenesisSolver(p_angiogenesis_solver);
+        p_vascular_tumour_solver->SetFlowSolver(p_flow_solver);
+        p_vascular_tumour_solver->SetOutputFileHandler(p_handler);
+
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(100.0, 200);
+        p_vascular_tumour_solver->Run();
     }
 };
 

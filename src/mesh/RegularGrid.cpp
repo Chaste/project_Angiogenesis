@@ -193,7 +193,7 @@ std::vector<std::vector<unsigned> > RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetPoin
     {
         unsigned x_index = round((inputPoints[idx][0] - origin_x) / mSpacing);
         unsigned y_index = round((inputPoints[idx][1] - origin_y) / mSpacing);
-        unsigned z_index = 1;
+        unsigned z_index = 0;
         if (SPACE_DIM == 3)
         {
             z_index = round((inputPoints[idx][2] - origin_z) / mSpacing);
@@ -201,7 +201,7 @@ std::vector<std::vector<unsigned> > RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetPoin
 
         if (x_index <= mExtents[0] && y_index <= mExtents[1] && z_index <= mExtents[2])
         {
-            unsigned grid_index = x_index + y_index * mExtents[1] + z_index * mExtents[1] + mExtents[2];
+            unsigned grid_index = x_index + y_index * mExtents[0] + z_index * mExtents[0] * mExtents[1];
             point_point_map[grid_index].push_back(idx);
         }
     }
@@ -401,12 +401,13 @@ const std::vector<std::vector<boost::shared_ptr<VascularNode<SPACE_DIM> > > >& R
 
     mPointNodeMap = std::vector<std::vector<boost::shared_ptr<VascularNode<SPACE_DIM> > > >(GetNumberOfPoints());
     std::vector<boost::shared_ptr<VascularNode<SPACE_DIM> > > nodes = mpNetwork->GetNodes();
+
     for (unsigned idx = 0; idx < nodes.size(); idx++)
     {
         c_vector<double, SPACE_DIM> location = nodes[idx]->GetLocationVector();
         unsigned x_index = round((location[0] - origin_x) / mSpacing);
         unsigned y_index = round((location[1] - origin_y) / mSpacing);
-        unsigned z_index = 1;
+        unsigned z_index = 0;
         if (SPACE_DIM == 3)
         {
             z_index = round((location[2] - origin_z) / mSpacing);
@@ -414,7 +415,7 @@ const std::vector<std::vector<boost::shared_ptr<VascularNode<SPACE_DIM> > > >& R
 
         if (x_index <= mExtents[0] && y_index <= mExtents[1] && z_index <= mExtents[2])
         {
-            unsigned grid_index = x_index + y_index * mExtents[1] + z_index * mExtents[1] + mExtents[2];
+            unsigned grid_index = x_index + y_index * mExtents[0] + z_index * mExtents[0] * mExtents[1];
             mPointNodeMap[grid_index].push_back(nodes[idx]);
         }
     }
@@ -450,7 +451,7 @@ const std::vector<std::vector<CellPtr> >& RegularGrid<ELEMENT_DIM, SPACE_DIM>::G
         c_vector<double, SPACE_DIM> location = mpCellPopulation->GetLocationOfCellCentre(*cell_iter);
         unsigned x_index = round((location[0] - origin_x) / mSpacing);
         unsigned y_index = round((location[1] - origin_y) / mSpacing);
-        unsigned z_index = 1;
+        unsigned z_index = 0;
         if (SPACE_DIM == 3)
         {
             z_index = round((location[2] - origin_z) / mSpacing);
@@ -458,7 +459,7 @@ const std::vector<std::vector<CellPtr> >& RegularGrid<ELEMENT_DIM, SPACE_DIM>::G
 
         if (x_index <= mExtents[0] && y_index <= mExtents[1] && z_index <= mExtents[2])
         {
-            unsigned grid_index = x_index + y_index * mExtents[1] + z_index * mExtents[1] + mExtents[2];
+            unsigned grid_index = x_index + y_index * mExtents[0] + z_index * mExtents[0] * mExtents[1];
             mPointCellMap[grid_index].push_back(*cell_iter);
         }
 

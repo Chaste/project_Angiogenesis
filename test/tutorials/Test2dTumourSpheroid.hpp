@@ -177,7 +177,7 @@ class Test2dTumourSpheroid : public AbstractCellBasedWithTimingsTestSuite
 
 public:
 
-    void DontTestOffLattice2dTumourSpheroid() throw (Exception)
+    void TestOffLattice2dTumourSpheroid() throw (Exception)
     {
         // Set up a mesh to define cells on
         HoneycombMeshGenerator generator(20, 20, 0); // X, Y, Z

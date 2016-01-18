@@ -85,7 +85,7 @@ public:
         p_migration_rule->SetNetwork(p_network);
 
         // Grow the vessel
-        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(100, 100);
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(30, 30);
         AngiogenesisSolver<2> angiogenesis_solver;
         angiogenesis_solver.SetVesselNetwork(p_network);
         angiogenesis_solver.SetMigrationRule(p_migration_rule);

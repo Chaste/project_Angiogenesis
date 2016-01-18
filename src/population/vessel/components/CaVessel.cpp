@@ -236,7 +236,7 @@ void CaVessel<DIM>::AddSegment(boost::shared_ptr<CaVesselSegment<DIM> > pSegment
         }
         else
         {
-            EXCEPTION("Input vessel segment does not coincide with any end of the vessel.");
+            EXCEPTION("Input vessel segment does not coincide with any end of the multi-segment vessel.");
         }
     }
 

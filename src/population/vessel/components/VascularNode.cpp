@@ -374,13 +374,6 @@ void VascularNode<DIM>::SetId(unsigned id)
 template<unsigned DIM>
 void VascularNode<DIM>::SetIsMigrating(bool isMigrating)
 {
-    if (isMigrating)
-    {
-        if (GetNumberOfSegments() > 1)
-        {
-            EXCEPTION("A node should not migrate if its connectivity > 1");
-        }
-    }
     mIsMigrating = isMigrating;
 }
 

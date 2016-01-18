@@ -173,15 +173,25 @@ void AngiogenesisSolver<DIM>::UpdateNodalPositions(bool sprouting)
             {
                 if(sprouting)
                 {
-                    mpNetwork->FormSprout(nodes[idx]->GetLocation(), ChastePoint<DIM>(mpVesselGrid->GetLocationOf1dIndex(indices[idx])));
+                    mpNetwork->FormSprout(tips[idx]->GetLocation(), ChastePoint<DIM>(mpVesselGrid->GetLocationOf1dIndex(indices[idx])));
+                    tips[idx]->SetIsMigrating(false);
+                    mpNetwork->UpdateAll();
                 }
                 else
                 {
                     boost::shared_ptr<VascularNode<DIM> > p_new_node = VascularNode<DIM>::Create(tips[idx]);
                     p_new_node->SetLocation(mpVesselGrid->GetLocationOf1dIndex(indices[idx]));
-                    mpNetwork->ExtendVessel(nodes[idx]->GetVesselSegment(0)->GetVessel(), tips[idx], p_new_node);
+                    mpNetwork->ExtendVessel(tips[idx]->GetVesselSegment(0)->GetVessel(), tips[idx], p_new_node);
                     tips[idx]->SetIsMigrating(false);
                     p_new_node->SetIsMigrating(true);
+                    mpNetwork->UpdateAll();
+                }
+            }
+            else
+            {
+                if(sprouting && nodes[idx]->GetNumberOfSegments() == 2)
+                {
+                    tips[idx]->SetIsMigrating(false);
                 }
             }
         }
@@ -196,7 +206,7 @@ void AngiogenesisSolver<DIM>::UpdateNodalPositions(bool sprouting)
                 bool do_move = true;
                 if(mpBoundingDomain)
                 {
-                    if(!mpBoundingDomain->IsPointInPart(nodes[idx]->GetLocationVector() + movement_vectors[idx]))
+                    if(!mpBoundingDomain->IsPointInPart(tips[idx]->GetLocationVector() + movement_vectors[idx]))
                     {
                         do_move = false;
                     }
@@ -206,7 +216,7 @@ void AngiogenesisSolver<DIM>::UpdateNodalPositions(bool sprouting)
                 {
                     if(sprouting)
                     {
-                        mpNetwork->FormSprout(nodes[idx]->GetLocation(), ChastePoint<DIM>(nodes[idx]->GetLocationVector() + movement_vectors[idx]));
+                        mpNetwork->FormSprout(tips[idx]->GetLocation(), ChastePoint<DIM>(tips[idx]->GetLocationVector() + movement_vectors[idx]));
                     }
                     else
                     {
@@ -226,6 +236,7 @@ void AngiogenesisSolver<DIM>::UpdateNodalPositions(bool sprouting)
 template<unsigned DIM>
 void AngiogenesisSolver<DIM>::DoAnastamosis()
 {
+    mpNetwork->UpdateAll();
     std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = mpNetwork->GetNodes();
 
     for(unsigned idx = 0; idx < nodes.size(); idx++)
@@ -233,29 +244,26 @@ void AngiogenesisSolver<DIM>::DoAnastamosis()
         // If this is currently a tip
         if(nodes[idx]->IsMigrating() && nodes[idx]->GetNumberOfSegments() == 1)
         {
-            // Get the nearest segment and check if it is close enough to the node for a merge
-            std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> segment_pair = mpNetwork->GetNearestSegment(nodes[idx], false);
 
-            if(segment_pair.second <= mNodeAnastamosisRadius && nodes[idx]->GetVesselSegment(0)->GetLength() > segment_pair.second)
+            if(mpVesselGrid)
             {
-                // If there is a non-zero anastamosis radius move the tip onto the segment
-                c_vector<double, DIM> original_location = nodes[idx]->GetLocationVector();
-                if(mNodeAnastamosisRadius > 0.0)
-                {
-                    c_vector<double, DIM> divide_location = segment_pair.first->GetPointProjection(original_location, true);
-                    nodes[idx]->SetLocation(divide_location);
-                }
-                boost::shared_ptr<VascularNode<DIM> > p_merge_node = mpNetwork->DivideVessel(segment_pair.first->GetVessel(),
-                                                                                             nodes[idx]->GetLocation());
+                std::vector<std::vector<boost::shared_ptr<VascularNode<DIM> > > > point_node_map = mpVesselGrid->GetPointNodeMap();
+                unsigned grid_index = mpVesselGrid->GetNearestGridIndex(nodes[idx]->GetLocationVector());
 
-                // Replace the node at the end of the migrating tip with the merge node
-                if((nodes[idx]->GetVesselSegment(0)->GetNode(0) == p_merge_node) ||
-                        (nodes[idx]->GetVesselSegment(0)->GetNode(1) == p_merge_node))
+                if(point_node_map[grid_index].size()>=2)
                 {
-                    nodes[idx]->SetLocation(original_location);
-                }
-                else
-                {
+                    boost::shared_ptr<VascularNode<DIM> > p_merge_node = VascularNode<DIM>::Create(nodes[idx]);
+
+                    if(point_node_map[grid_index][0] == nodes[idx])
+                    {
+                        p_merge_node = mpNetwork->DivideVessel(point_node_map[grid_index][1]->GetVesselSegment(0)->GetVessel(), nodes[idx]->GetLocation());
+                    }
+                    else
+                    {
+                        p_merge_node = mpNetwork->DivideVessel(point_node_map[grid_index][0]->GetVesselSegment(0)->GetVessel(), nodes[idx]->GetLocation());
+                    }
+
+                    // Replace the tip node with the merge node
                     p_merge_node->SetIsMigrating(false);
                     if(nodes[idx]->GetVesselSegment(0)->GetNode(0) == nodes[idx])
                     {
@@ -265,8 +273,48 @@ void AngiogenesisSolver<DIM>::DoAnastamosis()
                     {
                         nodes[idx]->GetVesselSegment(0)->ReplaceNode(1, p_merge_node);
                     }
+
+                    mpNetwork->UpdateAll();
                 }
-                mpNetwork->UpdateAll();
+
+            }
+            else
+            {
+                // Get the nearest segment and check if it is close enough to the node for a merge
+                std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> segment_pair = mpNetwork->GetNearestSegment(nodes[idx], false);
+
+                if(segment_pair.second <= mNodeAnastamosisRadius && nodes[idx]->GetVesselSegment(0)->GetLength() > segment_pair.second)
+                {
+                    // If there is a non-zero anastamosis radius move the tip onto the segment
+                    c_vector<double, DIM> original_location = nodes[idx]->GetLocationVector();
+                    if(mNodeAnastamosisRadius > 0.0)
+                    {
+                        c_vector<double, DIM> divide_location = segment_pair.first->GetPointProjection(original_location, true);
+                        nodes[idx]->SetLocation(divide_location);
+                    }
+                    boost::shared_ptr<VascularNode<DIM> > p_merge_node = mpNetwork->DivideVessel(segment_pair.first->GetVessel(),
+                                                                                                 nodes[idx]->GetLocation());
+
+                    // Replace the node at the end of the migrating tip with the merge node
+                    if((nodes[idx]->GetVesselSegment(0)->GetNode(0) == p_merge_node) ||
+                            (nodes[idx]->GetVesselSegment(0)->GetNode(1) == p_merge_node))
+                    {
+                        nodes[idx]->SetLocation(original_location);
+                    }
+                    else
+                    {
+                        p_merge_node->SetIsMigrating(false);
+                        if(nodes[idx]->GetVesselSegment(0)->GetNode(0) == nodes[idx])
+                        {
+                            nodes[idx]->GetVesselSegment(0)->ReplaceNode(0, p_merge_node);
+                        }
+                        else
+                        {
+                            nodes[idx]->GetVesselSegment(0)->ReplaceNode(1, p_merge_node);
+                        }
+                    }
+                    mpNetwork->UpdateAll();
+                }
             }
         }
     }

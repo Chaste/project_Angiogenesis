@@ -1698,6 +1698,7 @@ void CaVascularNetwork<DIM>::UpdateVesselNodes()
     typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator it;
     for(it = mVessels.begin(); it != mVessels.end(); it++)
     {
+        (*it)->UpdateNodes();
         boost::shared_ptr<VascularNode<DIM> > vessel_node1 = (*it)->GetStartNode();
         nodes.insert(vessel_node1);
         boost::shared_ptr<VascularNode<DIM> > vessel_node2 = (*it)->GetEndNode();

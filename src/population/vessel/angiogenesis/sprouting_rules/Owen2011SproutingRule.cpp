@@ -89,6 +89,11 @@ std::vector<boost::shared_ptr<VascularNode<DIM> > > Owen2011SproutingRule<DIM>::
     // Loop over all nodes and randomly select sprouts
     for(unsigned idx = 0; idx < rNodes.size(); idx++)
     {
+        if(rNodes[idx]->GetNumberOfSegments() != 2)
+        {
+            continue;
+        }
+
         // Check we are not too close to the end of the vessel
         if(this->mVesselEndCutoff > 0.0)
         {

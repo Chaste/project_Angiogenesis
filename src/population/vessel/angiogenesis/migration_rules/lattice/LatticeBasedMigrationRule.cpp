@@ -81,7 +81,12 @@ std::vector<double> LatticeBasedMigrationRule<DIM>::GetNeighbourMovementProbabil
 
         // Also ensure that the new location would not try to cross a vessel which is oriented diagonally
         // TODO: Very slow, bottleneck
-        if(already_attached or this->mpVesselNetwork->VesselCrossesLineSegment(neighbour_location, pNode->GetLocationVector()))
+//        if(already_attached or this->mpVesselNetwork->VesselCrossesLineSegment(neighbour_location, pNode->GetLocationVector()))
+//        {
+//            continue;
+//        }
+
+        if(already_attached)
         {
             continue;
         }
@@ -164,12 +169,6 @@ std::vector<int> LatticeBasedMigrationRule<DIM>::GetIndices(const std::vector<bo
     // Loop over all nodes, if they can move set the index
     for(unsigned idx = 0; idx < rNodes.size(); idx++)
     {
-        // Make sure we are dealing with tips
-        if(rNodes[idx]->GetNumberOfSegments()!=1)
-        {
-            continue;
-        }
-
         // Get the grid index of the node
         unsigned grid_index = this->mpGrid->GetNearestGridIndex(rNodes[idx]->GetLocationVector());
 

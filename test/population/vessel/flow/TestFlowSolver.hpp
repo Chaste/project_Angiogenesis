@@ -576,6 +576,88 @@ public:
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("SproutingFlow.vtp");
         p_network->Write(output_filename);
     }
+
+    void TestFlowThroughHexagonalNetworkWithSprouting() throw (Exception)
+    {
+        // Specify the network dimensions
+        double vessel_length = 80.0;
+
+        // Generate the network
+        VasculatureGenerator<2> vascular_network_generator;
+        boost::shared_ptr<CaVascularNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(
+                1000, 1000, vessel_length);
+
+        // Make some nodes
+        std::vector<ChastePoint<2> > points;
+        points.push_back(ChastePoint<2>(0, 0, 0)); // input
+        points.push_back(ChastePoint<2>(0, 1.0, 0)); // input
+
+        std::vector<NodePtr2> nodes;
+        for (unsigned i = 0; i < points.size(); i++)
+        {
+            nodes.push_back(NodePtr2(VascularNode<2>::Create(points[i])));
+        }
+
+        SegmentPtr2 p_segment1(CaVesselSegment<2>::Create(nodes[0], nodes[1]));
+
+        double impedance = 1.e14;
+        p_segment1->GetFlowProperties()->SetImpedance(impedance);
+        vascular_network->SetSegmentProperties(p_segment1);
+
+        std::vector<std::pair<double, double> > extents = vascular_network->GetExtents();
+        double y_middle = (extents[1].first + extents[1].second) / 2.0;
+
+        std::vector<boost::shared_ptr<CaVessel<2> > >::iterator vessel_iterator;
+
+        std::vector<boost::shared_ptr<CaVessel<2> > > vessels = vascular_network->GetVessels();
+
+        for (vessel_iterator = vessels.begin(); vessel_iterator != vessels.end(); vessel_iterator++)
+        {
+            if ((*vessel_iterator)->GetStartNode()->GetNumberOfSegments() == 1)
+            {
+                if ((*vessel_iterator)->GetStartNode()->GetLocation()[1] > y_middle)
+                {
+                    (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetIsInputNode(true);
+                    (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetPressure(3393);
+                }
+            }
+            if ((*vessel_iterator)->GetEndNode()->GetNumberOfSegments() == 1)
+            {
+                if ((*vessel_iterator)->GetEndNode()->GetLocation()[1] > y_middle)
+                {
+                    (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetIsInputNode(true);
+                    (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetPressure(3393);
+                }
+            }
+            if ((*vessel_iterator)->GetStartNode()->GetNumberOfSegments() == 1)
+            {
+                if ((*vessel_iterator)->GetStartNode()->GetLocation()[1] <= y_middle)
+                {
+                    (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetIsOutputNode(true);
+                    (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetPressure(1993);
+                }
+            }
+            if ((*vessel_iterator)->GetEndNode()->GetNumberOfSegments() == 1)
+            {
+                if ((*vessel_iterator)->GetEndNode()->GetLocation()[1] <= y_middle)
+                {
+                    (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetIsOutputNode(true);
+                    (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetPressure(1993);
+                }
+            }
+
+        }
+
+        FlowSolver<2> solver;
+        solver.SetVesselNetwork(vascular_network);
+        solver.SetUp();
+        solver.Solve();
+
+        // Write the network to file
+        OutputFileHandler output_file_handler("TestFlowSolver", false);
+        std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("HexagonalVesselNetwork.vtp");
+        vascular_network->Write(output_filename);
+    }
 };
 
 #endif /*TESTFlowSolver_HPP_*/

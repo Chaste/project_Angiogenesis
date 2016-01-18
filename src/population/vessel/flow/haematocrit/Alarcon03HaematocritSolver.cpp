@@ -142,8 +142,8 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<CaVascularNetw
     LinearSystem linearSystem(lhsVectorSize, pre_allocation_value);
     if(lhsVectorSize > 6)
     {
-        PetscOptionsSetValue("-pc_factor_mat_solver_package", "umfpack");
-        linearSystem.SetPcType("lu");
+//        PetscOptionsSetValue("-pc_factor_mat_solver_package", "umfpack");
+        linearSystem.SetPcType("hypre");
         linearSystem.SetKspType("preonly");
     }
 

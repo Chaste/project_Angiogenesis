@@ -148,8 +148,8 @@ void BetteridgeHaematocritSolver<DIM>::Calculate(boost::shared_ptr<CaVascularNet
         LinearSystem linearSystem(number_of_vessels, pre_allocation_value);
         if(number_of_vessels > 6)
         {
-            PetscOptionsSetValue("-pc_factor_mat_solver_package", "umfpack");
-            linearSystem.SetPcType("lu");
+//            PetscOptionsSetValue("-pc_factor_mat_solver_package", "umfpack");
+            linearSystem.SetPcType("hypre");
             linearSystem.SetKspType("preonly");
         }
 
