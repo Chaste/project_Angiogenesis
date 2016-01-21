@@ -37,8 +37,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define AbstractHaematocritSolver_hpp
 
 #include <boost/shared_ptr.hpp>
-
-#include "../../../vessel/components/CaVascularNetwork.hpp"
+#include "CaVascularNetwork.hpp"
 
 template<unsigned DIM>
 class AbstractHaematocritSolver
