@@ -357,6 +357,7 @@ void FiniteElementSolver<DIM>::Solve()
             }
 
             ReplicatableVector static_solution_repl(solver.Solve(initial_guess));
+
             mFeSolution = std::vector<double>(static_solution_repl.GetSize());
             for(unsigned idx = 0; idx < static_solution_repl.GetSize(); idx++)
             {

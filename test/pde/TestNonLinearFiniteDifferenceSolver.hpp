@@ -40,7 +40,7 @@
 #include <vector>
 #include <string>
 #include <boost/lexical_cast.hpp>
-#include "FiniteElementSolver.hpp"
+#include "FiniteDifferenceSolver.hpp"
 #include "UblasIncludes.hpp"
 #include "Part.hpp"
 #include "Vertex.hpp"
@@ -56,7 +56,7 @@
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "Debug.hpp"
 
-class TestNonLinearFiniteElementSolver : public AbstractCellBasedWithTimingsTestSuite
+class TestNonLinearFiniteDifferenceSolver : public AbstractCellBasedWithTimingsTestSuite
 {
 public:
 
@@ -65,33 +65,34 @@ public:
         // Set up the mesh
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
         p_domain->AddCuboid(4.0, 4.0, 4.0);
-        boost::shared_ptr<HybridMesh<3, 3> > p_mesh = HybridMesh<3, 3>::Create();
-        p_mesh->GenerateFromPart(p_domain, 0.1);
+
+        boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
+        p_grid->GenerateFromPart(p_domain, 0.5);
 
         // Choose the PDE
-        boost::shared_ptr<HybridLinearEllipticPde<3> > p_linear_pde = HybridLinearEllipticPde<3>::Create();
-        p_linear_pde->SetIsotropicDiffusionConstant(1.0);
-        p_linear_pde->SetContinuumLinearInUTerm(-2.0);
+//        boost::shared_ptr<HybridLinearEllipticPde<3> > p_linear_pde = HybridLinearEllipticPde<3>::Create();
+//        p_linear_pde->SetIsotropicDiffusionConstant(1.0);
+//        p_linear_pde->SetContinuumLinearInUTerm(-2.0);
 
         boost::shared_ptr<HybridNonLinearEllipticPde<3> > p_non_linear_pde = HybridNonLinearEllipticPde<3>::Create();
         p_non_linear_pde->SetIsotropicDiffusionConstant(1.0);
         p_non_linear_pde->SetContinuumConstantInUTerm(-2.0);
+        p_non_linear_pde->SetThreshold(0.0625);
 
         // Choose the Boundary conditions
         boost::shared_ptr<HybridBoundaryCondition<3> > p_outer_boundary_condition = HybridBoundaryCondition<3>::Create();
         p_outer_boundary_condition->SetValue(1.0);
 
-        FiniteElementSolver<3> solver;
-        solver.SetMesh(p_mesh);
-        solver.SetPde(p_linear_pde);
+        FiniteDifferenceSolver<3> solver;
+        solver.SetGrid(p_grid);
+//        solver.SetPde(p_linear_pde);
         solver.SetNonLinearPde(p_non_linear_pde);
         solver.AddBoundaryCondition(p_outer_boundary_condition);
 
-        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestNonLinearFiniteElementSolver/Box", false));
+        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestNonLinearFiniteDifferenceSolver/Box", false));
         solver.SetFileHandler(p_output_file_handler);
-        solver.SetFileName("output_nl_t");
+        solver.SetFileName("output_nl_fd.vti");
         solver.SetWriteSolution(true);
-        solver.SetUseSimpleNetonSolver(true);
         solver.Solve();
     }
 };

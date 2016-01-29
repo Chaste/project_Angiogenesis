@@ -76,6 +76,11 @@ public:
      */
     void Solve();
 
+    boost::shared_ptr<std::vector<std::pair<bool, double> > > GetRGBoundaryConditions()
+        {
+            return mpBoundaryConditions;
+        }
+
 private:
 
     void DoLinearSolve();

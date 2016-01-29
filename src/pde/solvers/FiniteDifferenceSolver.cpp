@@ -316,116 +316,122 @@ void FiniteDifferenceSolver<DIM>::Solve()
 template<unsigned DIM>
 PetscErrorCode HyrbidFiniteDifference_ComputeResidual(SNES snes, Vec solution_guess, Vec residual, void* pContext)
 {
-//    FiniteDifferenceSolver<DIM>* solver = (FiniteDifferenceSolver<DIM>*) pContext;
-//
-//    ReplicatableVector solution_guess_replicated;
-//    solution_guess_replicated.ReplicatePetscVector(solution_guess);
-//
-//    unsigned number_of_points = solver->GetNumberOfPoints();
-//    unsigned extents_x = solver->GetExtents()[0];
-//    unsigned extents_y = solver->GetExtents()[1];
-//    unsigned extents_z = solver->GetExtents()[2];
-//    double spacing = solver->GetSpacing();
-//    double diffusion_term =solver->GetNonLinearPde()->ComputeIsotropicDiffusionTerm() / (spacing * spacing);
-//
-//    // Get the residual vector
-//    PetscVecTools::Zero(residualVector);
-//    for (unsigned i = 0; i < extents_z; i++) // Z
-//    {
-//        for (unsigned j = 0; j < extents_y; j++) // Y
-//        {
-//            for (unsigned k = 0; k < extents_x; k++) // X
-//            {
-//                unsigned grid_index = solver->GetGrid()->Get1dGridIndex(k, j, i);
-//                double grid_guess = PetscVecTools::GetElement(solution_guess, grid_index);
-//                double threshold = solver->GetNonLinearPde()->GetThreshold();
-//                double constant_term = solver->GetNonLinearPde()->ComputeConstantInUCoeffInSourceTerm(grid_index);
-//
-//                c_vector<double, DIM> location = solver->GetGrid()->GetLocation(k ,j, i);
-//                if (grid_guess > threshold)
-//                {
-//                    PetscVecTools::AddToElement(residualVector, grid_index, (1.0/(spacing*spacing)) *
-//                                                (- 6.0 * diffusion_term*grid_guess + constant_term));
-//                }
-//                else
-//                {
-//                    PetscVecTools::AddToElement(residualVector, grid_index, (1.0/(spacing*spacing)) *
-//                                                (- 6.0 * diffusion_term*grid_guess + grid_guess*constant_term/threshold));
-//                }
-//
-//                // Assume no flux on domain boundaries by default
-//                // No flux at x bottom
-//                if (k > 0)
-//                {
-//                    linear_system.AddToMatrixElement(grid_index, grid_index - 1, diffusion_term);
-//                }
-//                else
-//                {
-//                    linear_system.AddToMatrixElement(grid_index, grid_index, diffusion_term);
-//                }
-//
-//                // No flux at x top
-//                if (k < extents_x - 1)
-//                {
-//                    linear_system.AddToMatrixElement(grid_index, grid_index + 1, diffusion_term);
-//                }
-//                else
-//                {
-//                    linear_system.AddToMatrixElement(grid_index, grid_index, diffusion_term);
-//                }
-//
-//                // No flux at y bottom
-//                if (j > 0)
-//                {
-//                    linear_system.AddToMatrixElement(grid_index, grid_index - extents_x, diffusion_term);
-//                }
-//                else
-//                {
-//                    linear_system.AddToMatrixElement(grid_index, grid_index, diffusion_term);
-//                }
-//
-//                // No flux at y top
-//                if (j < extents_y - 1)
-//                {
-//                    linear_system.AddToMatrixElement(grid_index, grid_index + extents_x, diffusion_term);
-//                }
-//                else
-//                {
-//                    linear_system.AddToMatrixElement(grid_index, grid_index, diffusion_term);
-//                }
-//
-//                // No flux at z bottom
-//                if (i > 0)
-//                {
-//                    linear_system.AddToMatrixElement(grid_index, grid_index - extents_x * extents_y, diffusion_term);
-//                }
-//                else
-//                {
-//                    linear_system.AddToMatrixElement(grid_index, grid_index, diffusion_term);
-//                }
-//
-//                // No flux at z top
-//                if (i < extents_z - 1)
-//                {
-//                    linear_system.AddToMatrixElement(grid_index, grid_index + extents_x * extents_y, diffusion_term);
-//                }
-//                else
-//                {
-//                    linear_system.AddToMatrixElement(grid_index, grid_index, diffusion_term);
-//                }
-//                linear_system.SetRhsVectorElement(grid_index, -this->mpPde->ComputeConstantInUSourceTerm(grid_index));
-//            }
-//        }
-//    }
-//
-//    ReplicatableVector solution_guess_replicated;
-//    solution_guess_replicated.ReplicatePetscVector(solution_guess);
-//    x = solution_guess_replicated[0];
-//    y = solution_guess_replicated[1];
-//
-//    PetscVecTools::SetElement(residual,0,x*x+y*y-1);
-//    PetscVecTools::SetElement(residual,1,x-y);
-//    PetscVecTools::Finalise(residual);
+    FiniteDifferenceSolver<DIM>* solver = (FiniteDifferenceSolver<DIM>*) pContext;
+
+    unsigned extents_x = solver->GetGrid()->GetExtents()[0];
+    unsigned extents_y = solver->GetGrid()->GetExtents()[1];
+    unsigned extents_z = solver->GetGrid()->GetExtents()[2];
+    double spacing = solver->GetGrid()->GetSpacing();
+    double diffusion_term = solver->GetNonLinearPde()->ComputeIsotropicDiffusionTerm() / (spacing * spacing);
+
+    // Get the residual vector
+    PetscVecTools::Zero(residual);
+    for (unsigned i = 0; i < extents_z; i++) // Z
+    {
+        for (unsigned j = 0; j < extents_y; j++) // Y
+        {
+            for (unsigned k = 0; k < extents_x; k++) // X
+            {
+                unsigned grid_index = solver->GetGrid()->Get1dGridIndex(k, j, i);
+                double grid_guess = PetscVecTools::GetElement(solution_guess, grid_index);
+                double threshold = solver->GetNonLinearPde()->GetThreshold();
+                double constant_term = solver->GetNonLinearPde()->ComputeConstantInUSourceTerm(grid_index);
+
+                c_vector<double, DIM> location = solver->GetGrid()->GetLocation(k ,j, i);
+                if (grid_guess > threshold)
+                {
+                    PetscVecTools::AddToElement(residual, grid_index, grid_guess * (- 6.0 * diffusion_term )+ constant_term);
+                }
+                else
+                {
+                    PetscVecTools::AddToElement(residual, grid_index, grid_guess * (- 6.0 * diffusion_term) + constant_term*grid_guess/threshold);
+                }
+
+                // Assume no flux on domain boundaries by default
+                // No flux at x bottom
+                if (k > 0)
+                {
+                    double neighbour_guess = PetscVecTools::GetElement(solution_guess, grid_index - 1);
+                    PetscVecTools::AddToElement(residual, grid_index, neighbour_guess * diffusion_term);
+                }
+                else
+                {
+                    PetscVecTools::AddToElement(residual, grid_index, diffusion_term * grid_guess);
+                }
+
+                // No flux at x top
+                if (k < extents_x - 1)
+                {
+                    double neighbour_guess = PetscVecTools::GetElement(solution_guess, grid_index + 1);
+                    PetscVecTools::AddToElement(residual, grid_index, diffusion_term * neighbour_guess);
+                }
+                else
+                {
+                    PetscVecTools::AddToElement(residual, grid_index, diffusion_term * grid_guess);
+                }
+
+                // No flux at y bottom
+                if (j > 0)
+                {
+                    double neighbour_guess = PetscVecTools::GetElement(solution_guess, grid_index - extents_x);
+                    PetscVecTools::AddToElement(residual, grid_index, diffusion_term* neighbour_guess);
+                }
+                else
+                {
+                    PetscVecTools::AddToElement(residual, grid_index, diffusion_term * grid_guess);
+                }
+
+                // No flux at y top
+                if (j < extents_y - 1)
+                {
+                    double neighbour_guess = PetscVecTools::GetElement(solution_guess, grid_index + extents_x);
+                    PetscVecTools::AddToElement(residual, grid_index, diffusion_term* neighbour_guess);
+                }
+                else
+                {
+                    PetscVecTools::AddToElement(residual, grid_index, diffusion_term * grid_guess);
+                }
+
+                // No flux at z bottom
+                if (i > 0)
+                {
+                    double neighbour_guess = PetscVecTools::GetElement(solution_guess, grid_index - extents_x * extents_y);
+                    PetscVecTools::AddToElement(residual, grid_index, diffusion_term*neighbour_guess);
+                }
+                else
+                {
+                    PetscVecTools::AddToElement(residual, grid_index, diffusion_term * grid_guess);
+                }
+
+                // No flux at z top
+                if (i < extents_z - 1)
+                {
+                    double neighbour_guess = PetscVecTools::GetElement(solution_guess, grid_index + extents_x * extents_y);
+                    PetscVecTools::AddToElement(residual, grid_index, diffusion_term * neighbour_guess);
+                }
+                else
+                {
+                    PetscVecTools::AddToElement(residual, grid_index, diffusion_term * grid_guess);
+                }
+            }
+        }
+    }
+
+
+    PetscVecTools::Finalise(residual);
+
+    // Dirichlet Boundary conditions
+    std::vector<unsigned> bc_indices;
+    for(unsigned idx=0; idx<solver->GetGrid()->GetNumberOfPoints(); idx++)
+    {
+        if((*(solver->GetRGBoundaryConditions()))[idx].first)
+        {
+            PetscVecTools::SetElement(residual, idx, 0.0);
+        }
+    }
+
+    PetscVecTools::Finalise(residual);
+
     return 0;
 }
 
@@ -434,17 +440,113 @@ PetscErrorCode HyrbidFiniteDifference_ComputeJacobian(SNES snes, Vec input, Mat*
 {
     Mat jacobian = *pJacobian;
 
-    double x, y;
+    FiniteDifferenceSolver<DIM>* solver = (FiniteDifferenceSolver<DIM>*) pContext;
+    PetscMatTools::Zero(jacobian);
+    PetscMatTools::SwitchWriteMode(jacobian);
 
-    ReplicatableVector input_replicated;
-    input_replicated.ReplicatePetscVector(input);
-    x = input_replicated[0];
-    y = input_replicated[1];
+    unsigned extents_x = solver->GetGrid()->GetExtents()[0];
+    unsigned extents_y = solver->GetGrid()->GetExtents()[1];
+    unsigned extents_z = solver->GetGrid()->GetExtents()[2];
+    double spacing = solver->GetGrid()->GetSpacing();
+    double diffusion_term = solver->GetNonLinearPde()->ComputeIsotropicDiffusionTerm() / (spacing * spacing);
 
-    PetscMatTools::SetElement(jacobian, 0 , 0 , 2.0*x );
-    PetscMatTools::SetElement(jacobian, 0 , 1 , 2.0*y);
-    PetscMatTools::SetElement(jacobian, 1 , 0 , 1.0);
-    PetscMatTools::SetElement(jacobian, 1 , 1 , -1.0);
+    // Get the residual vector
+    for (unsigned i = 0; i < extents_z; i++) // Z
+    {
+        for (unsigned j = 0; j < extents_y; j++) // Y
+        {
+            for (unsigned k = 0; k < extents_x; k++) // X
+            {
+                unsigned grid_index = solver->GetGrid()->Get1dGridIndex(k, j, i);
+                double grid_guess = PetscVecTools::GetElement(input, grid_index);
+                double threshold = solver->GetNonLinearPde()->GetThreshold();
+                double constant_term = solver->GetNonLinearPde()->ComputeConstantInUSourceTerm(grid_index);
+
+                c_vector<double, DIM> location = solver->GetGrid()->GetLocation(k ,j, i);
+                if (grid_guess > threshold)
+                {
+                    PetscMatTools::AddToElement(jacobian, grid_index, grid_index, - 6.0 * diffusion_term);
+                }
+                else
+                {
+                    PetscMatTools::AddToElement(jacobian, grid_index, grid_index, - 6.0 * diffusion_term + constant_term/threshold);
+                }
+
+                // Assume no flux on domain boundaries by default
+                // No flux at x bottom
+                if (k > 0)
+                {
+                    PetscMatTools::AddToElement(jacobian, grid_index, grid_index - 1, diffusion_term);
+                }
+                else
+                {
+                    PetscMatTools::AddToElement(jacobian, grid_index, grid_index, diffusion_term);
+                }
+
+                // No flux at x top
+                if (k < extents_x - 1)
+                {
+                    PetscMatTools::AddToElement(jacobian, grid_index, grid_index + 1, diffusion_term);
+                }
+                else
+                {
+                    PetscMatTools::AddToElement(jacobian, grid_index, grid_index, diffusion_term);
+                }
+
+                // No flux at y bottom
+                if (j > 0)
+                {
+                    PetscMatTools::AddToElement(jacobian, grid_index, grid_index - extents_x, diffusion_term);
+                }
+                else
+                {
+                    PetscMatTools::AddToElement(jacobian, grid_index, grid_index, diffusion_term);
+                }
+
+                // No flux at y top
+                if (j < extents_y - 1)
+                {
+                    PetscMatTools::AddToElement(jacobian, grid_index, grid_index + extents_x, diffusion_term);
+                }
+                else
+                {
+                    PetscMatTools::AddToElement(jacobian, grid_index, grid_index, diffusion_term);
+                }
+
+                // No flux at z bottom
+                if (i > 0)
+                {
+                    PetscMatTools::AddToElement(jacobian, grid_index, grid_index - extents_x * extents_y, diffusion_term);
+                }
+                else
+                {
+                    PetscMatTools::AddToElement(jacobian, grid_index,grid_index, diffusion_term);
+                }
+
+                // No flux at z top
+                if (i < extents_z - 1)
+                {
+                    PetscMatTools::AddToElement(jacobian, grid_index, grid_index + extents_x * extents_y, diffusion_term);
+                }
+                else
+                {
+                    PetscMatTools::AddToElement(jacobian, grid_index, grid_index, diffusion_term);
+                }
+            }
+        }
+    }
+
+    // Apply the boundary conditions
+    std::vector<unsigned> bc_indices;
+    for(unsigned idx=0; idx<solver->GetGrid()->GetNumberOfPoints(); idx++)
+    {
+        if((*(solver->GetRGBoundaryConditions()))[idx].first)
+        {
+            bc_indices.push_back(idx);
+        }
+    }
+    PetscMatTools::ZeroRowsWithValueOnDiagonal(jacobian, bc_indices, 1.0);
+
     PetscMatTools::Finalise(jacobian);
 
     return 0;

@@ -147,26 +147,43 @@ public:
 
     double ComputeNonlinearSourceTerm(const ChastePoint<SPACE_DIM>& rX, double u)
     {
-        if (u>mThreshold)
-        {
-            return mConstantInUTerm;
-        }
-        else
-        {
-            return mConstantInUTerm * (u/mThreshold);
-        }
-    }
-
-    double ComputeNonlinearSourceTermPrime(const ChastePoint<SPACE_DIM>& rX, double u)
-    {
-        if (u>mThreshold)
+//        if (u>mThreshold)
+//        {
+//            return mConstantInUTerm;
+//        }
+//        else
+//        {
+//            return mConstantInUTerm * (u/mThreshold);
+//        }
+        if(u<0.0)
         {
             return 0.0;
         }
         else
         {
-            return mConstantInUTerm/mThreshold;
+            return mConstantInUTerm * u / (0.0625 + u);
         }
+    }
+
+    double ComputeNonlinearSourceTermPrime(const ChastePoint<SPACE_DIM>& rX, double u)
+    {
+//        if (u>mThreshold)
+//        {
+//            return 0.0;
+//        }
+//        else
+//        {
+//            return mConstantInUTerm/mThreshold;
+//        }
+        if(u<0.0)
+        {
+            return mConstantInUTerm * 0.0625/((0.0625 + 0.0)*(0.0625 + 0.0));
+        }
+        else
+        {
+            return mConstantInUTerm * 0.0625/((0.0625 + u)*(0.0625 + u));
+        }
+
     }
 
     c_matrix<double, SPACE_DIM, SPACE_DIM> ComputeDiffusionTermPrime(const ChastePoint<SPACE_DIM>& rX, double u)
