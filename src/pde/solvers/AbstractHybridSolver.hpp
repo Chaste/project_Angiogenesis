@@ -141,7 +141,10 @@ public:
      * @param samplingStrategy use the default sampling strategy
      * @return a vector of the point values
      */
-    virtual std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints, bool samplingStrategy = true) = 0;
+    virtual std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints, bool samplingStrategy = true)
+    {
+            return std::vector<double> (samplePoints.size(), 0.0);
+    }
 
     /**
      * Set the cell population

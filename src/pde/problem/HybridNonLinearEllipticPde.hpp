@@ -161,7 +161,7 @@ public:
         }
         else
         {
-            return mConstantInUTerm * u / (0.0625 + u);
+            return mConstantInUTerm * u / (mThreshold + u);
         }
     }
 
@@ -177,11 +177,53 @@ public:
 //        }
         if(u<0.0)
         {
-            return mConstantInUTerm * 0.0625/((0.0625 + 0.0)*(0.0625 + 0.0));
+            return mConstantInUTerm * mThreshold/((mThreshold+ 0.0)*(mThreshold + 0.0));
         }
         else
         {
-            return mConstantInUTerm * 0.0625/((0.0625 + u)*(0.0625 + u));
+            return mConstantInUTerm * mThreshold/((mThreshold + u)*(mThreshold + u));
+        }
+
+    }
+
+    double ComputeNonlinearSourceTerm(unsigned gridIndex, double u)
+    {
+//        if (u>mThreshold)
+//        {
+//            return mConstantInUTerm;
+//        }
+//        else
+//        {
+//            return mConstantInUTerm * (u/mThreshold);
+//        }
+
+        if(u<0.0)
+        {
+            return mDiscreteConstantSourceStrengths[gridIndex];
+        }
+        else
+        {
+            return mConstantInUTerm * u / (mThreshold + u) + mDiscreteConstantSourceStrengths[gridIndex] + mDiscreteLinearSourceStrengths[gridIndex]*u;
+        }
+    }
+
+    double ComputeNonlinearSourceTermPrime(unsigned gridIndex, double u)
+    {
+//        if (u>mThreshold)
+//        {
+//            return 0.0;
+//        }
+//        else
+//        {
+//            return mConstantInUTerm/mThreshold;
+//        }
+        if(u<0.0)
+        {
+            return mConstantInUTerm * mThreshold/((mThreshold + 0.0)*(mThreshold + 0.0)) + mDiscreteLinearSourceStrengths[gridIndex];
+        }
+        else
+        {
+            return mConstantInUTerm * mThreshold/((mThreshold + u)*(mThreshold + u)) + mDiscreteLinearSourceStrengths[gridIndex];
         }
 
     }

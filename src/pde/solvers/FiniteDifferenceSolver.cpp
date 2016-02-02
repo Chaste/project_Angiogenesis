@@ -285,13 +285,12 @@ void FiniteDifferenceSolver<DIM>::Solve()
     {
         // Set up initial Guess
         unsigned number_of_points = this->mpRegularGrid->GetNumberOfPoints();
-        Vec initial_guess=PetscTools::CreateAndSetVec(number_of_points, this->mBoundaryConditions[0]->GetValue());
+        Vec initial_guess=PetscTools::CreateAndSetVec(number_of_points, 1.0);
 
         SimplePetscNonlinearSolver solver_petsc;
         int length = 7;
         Vec answer_petsc = solver_petsc.Solve(&HyrbidFiniteDifference_ComputeResidual<DIM>,
                                               &HyrbidFiniteDifference_ComputeJacobian<DIM>, initial_guess, length, this);
-
 
         ReplicatableVector soln_repl(answer_petsc);
 
@@ -334,18 +333,10 @@ PetscErrorCode HyrbidFiniteDifference_ComputeResidual(SNES snes, Vec solution_gu
             {
                 unsigned grid_index = solver->GetGrid()->Get1dGridIndex(k, j, i);
                 double grid_guess = PetscVecTools::GetElement(solution_guess, grid_index);
-                double threshold = solver->GetNonLinearPde()->GetThreshold();
-                double constant_term = solver->GetNonLinearPde()->ComputeConstantInUSourceTerm(grid_index);
 
                 c_vector<double, DIM> location = solver->GetGrid()->GetLocation(k ,j, i);
-                if (grid_guess > threshold)
-                {
-                    PetscVecTools::AddToElement(residual, grid_index, grid_guess * (- 6.0 * diffusion_term )+ constant_term);
-                }
-                else
-                {
-                    PetscVecTools::AddToElement(residual, grid_index, grid_guess * (- 6.0 * diffusion_term) + constant_term*grid_guess/threshold);
-                }
+                PetscVecTools::AddToElement(residual, grid_index, grid_guess * (- 6.0 * diffusion_term) +
+                                                solver->GetNonLinearPde()->ComputeNonlinearSourceTerm(grid_index, grid_guess));
 
                 // Assume no flux on domain boundaries by default
                 // No flux at x bottom
@@ -459,18 +450,10 @@ PetscErrorCode HyrbidFiniteDifference_ComputeJacobian(SNES snes, Vec input, Mat*
             {
                 unsigned grid_index = solver->GetGrid()->Get1dGridIndex(k, j, i);
                 double grid_guess = PetscVecTools::GetElement(input, grid_index);
-                double threshold = solver->GetNonLinearPde()->GetThreshold();
-                double constant_term = solver->GetNonLinearPde()->ComputeConstantInUSourceTerm(grid_index);
 
                 c_vector<double, DIM> location = solver->GetGrid()->GetLocation(k ,j, i);
-                if (grid_guess > threshold)
-                {
-                    PetscMatTools::AddToElement(jacobian, grid_index, grid_index, - 6.0 * diffusion_term);
-                }
-                else
-                {
-                    PetscMatTools::AddToElement(jacobian, grid_index, grid_index, - 6.0 * diffusion_term + constant_term/threshold);
-                }
+                PetscMatTools::AddToElement(jacobian, grid_index, grid_index, - 6.0 * diffusion_term +
+                                            solver->GetNonLinearPde()->ComputeNonlinearSourceTermPrime(grid_index, grid_guess));
 
                 // Assume no flux on domain boundaries by default
                 // No flux at x bottom
@@ -548,7 +531,6 @@ PetscErrorCode HyrbidFiniteDifference_ComputeJacobian(SNES snes, Vec input, Mat*
     PetscMatTools::ZeroRowsWithValueOnDiagonal(jacobian, bc_indices, 1.0);
 
     PetscMatTools::Finalise(jacobian);
-
     return 0;
 }
 
