@@ -421,7 +421,7 @@ void CaBasedCellPopulationWithVessels<DIM>::DoMigration()
                     if (cumulativeProbabilityVector.back() > 1.0)
                     {
                         std::string message;
-                        message = "Cumulative probability of tip cell moving is greater than one (" + boost::lexical_cast<std::string>(cumulativeProbabilityVector.back()) + "). Reduce time-step accordingly.";
+                        message = "Cumulative probability of tip cell moving is greater than one.";
                         EXCEPTION(message);
                     }
 

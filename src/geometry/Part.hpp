@@ -97,6 +97,10 @@ public:
                                          c_vector<double, DIM> centre = zero_vector<double>(DIM),
                                          unsigned numSegments = 24);
 
+    void AddCylinder(double radius = 0.25, double depth = 1.0,
+                                         c_vector<double, DIM> centre = zero_vector<double>(DIM),
+                                         unsigned numSegments = 24);
+
     /* Add a cuboid to the part.
      * @param sizeX the dimension in x
      * @param sizeY the dimension in y

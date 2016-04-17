@@ -120,6 +120,12 @@ public:
      */
     void UpdateSolution(std::map<std::string, std::vector<double> >& data);
 
+    /**
+     * Update the VTK solution prior to writing to file. Should be called by the Solve method in child classes.
+     * @param data solution data map
+     */
+    void UpdateVtkBaseSolution(std::vector<double> data);
+
     virtual void UpdateCellData();
 
     /**

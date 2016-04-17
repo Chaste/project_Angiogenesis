@@ -41,6 +41,7 @@
 #include "ChastePoint.hpp"
 #include "TetrahedralMesh.hpp"
 #include "Part.hpp"
+#include "Cell.hpp"
 
 // Jonathan Shewchuk's triangle and Hang Si's tetgen. Tetgen 1.5 is used in place of 1.4.2 used in Chaste/mesh.
 // This allows more robust meshing of parts with floating segments. Note that the Tetgen 1.5 license is

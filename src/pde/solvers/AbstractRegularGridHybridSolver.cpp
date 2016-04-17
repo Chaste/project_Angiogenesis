@@ -163,6 +163,25 @@ void AbstractRegularGridHybridSolver<DIM>::Setup()
 }
 
 template<unsigned DIM>
+void AbstractRegularGridHybridSolver<DIM>::UpdateVtkBaseSolution(std::vector<double> data)
+{
+    if(!mpVtkSolution)
+    {
+        EXCEPTION("A VTK solution has not be set up, did you forget to call Setup prior to Solve.");
+    }
+
+    vtkSmartPointer<vtkDoubleArray> pPointData = vtkSmartPointer<vtkDoubleArray>::New();
+    pPointData->SetNumberOfComponents(1);
+    pPointData->SetNumberOfTuples(data.size());
+    pPointData->SetName("Base");
+    for (unsigned i = 0; i < data.size(); i++)
+    {
+        pPointData->SetValue(i, data[i]);
+    }
+    mpVtkSolution->GetPointData()->AddArray(pPointData);
+}
+
+template<unsigned DIM>
 void AbstractRegularGridHybridSolver<DIM>::UpdateSolution(std::map<std::string, std::vector<double> >& data)
 {
     if(!mpVtkSolution)

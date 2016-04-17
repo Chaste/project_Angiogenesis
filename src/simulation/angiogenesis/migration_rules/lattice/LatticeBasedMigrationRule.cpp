@@ -109,8 +109,7 @@ int LatticeBasedMigrationRule<DIM>::GetNeighbourMovementIndex(std::vector<double
 
     if (cumulativeProbabilityVector.back() > 1.0)
     {
-        EXCEPTION("Cumulative probability of tip cell moving is greater than one (" +
-                  boost::lexical_cast<std::string>(cumulativeProbabilityVector.back()) + "). Reduce time-step accordingly.");
+        EXCEPTION("Cumulative probability of tip cell moving is greater than one");
     }
 
     // Use roulette-wheel style selection to select which location the tip will move into

@@ -96,6 +96,13 @@ boost::shared_ptr<Polygon> Part<DIM>::AddCircle(double radius, c_vector<double, 
 }
 
 template<unsigned DIM>
+void Part<DIM>::AddCylinder(double radius, double depth, c_vector<double, DIM> centre, unsigned numSegments)
+{
+    boost::shared_ptr<Polygon> p_circle = AddCircle(radius, centre, numSegments);
+    Extrude(p_circle, depth);
+}
+
+template<unsigned DIM>
 void Part<DIM>::AddCuboid(double sizeX, double sizeY, double sizeZ, c_vector<double, DIM> origin)
 {
     boost::shared_ptr<Polygon> p_rectangle = AddRectangle(sizeX, sizeY, origin);

@@ -289,16 +289,16 @@ void FiniteDifferenceSolver<DIM>::Solve()
 
         SimplePetscNonlinearSolver solver_petsc;
         int length = 7;
-        Vec answer_petsc = solver_petsc.Solve(&HyrbidFiniteDifference_ComputeResidual<DIM>,
-                                              &HyrbidFiniteDifference_ComputeJacobian<DIM>, initial_guess, length, this);
+        //Vec answer_petsc = solver_petsc.Solve(&HyrbidFiniteDifference_ComputeResidual<DIM>,
+      //                                        &HyrbidFiniteDifference_ComputeJacobian<DIM>, initial_guess, length, this);
 
-        ReplicatableVector soln_repl(answer_petsc);
+        //ReplicatableVector soln_repl(answer_petsc);
 
         // Populate the solution vector
         this->mPointSolution = std::vector<double>(number_of_points, 0.0);
         for (unsigned row = 0; row < number_of_points; row++)
         {
-            this->mPointSolution[row] = soln_repl[row];
+            //this->mPointSolution[row] = soln_repl[row];
         }
 
         std::map<std::string, std::vector<double> > data;

@@ -69,7 +69,7 @@ GreensFunctionSolver<DIM>::GreensFunctionSolver()
       mGvv(),
       mGvt(),
       mGtv(),
-      mpNetwork()
+      mSubsegmentCutoff(1.0)
 {
 
 }
@@ -78,12 +78,6 @@ template<unsigned DIM>
 GreensFunctionSolver<DIM>::~GreensFunctionSolver()
 {
 
-}
-
-template<unsigned DIM>
-void GreensFunctionSolver<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
-{
-    mpNetwork = pNetwork;
 }
 
 template<unsigned DIM>
@@ -98,9 +92,9 @@ void GreensFunctionSolver<DIM>::Solve()
 
     // Get the sink rates
     unsigned number_of_sinks = mSinkCoordinates.size();
-    double sink_rate_per_volume = this->mpPde->ComputeConstantInUSourceTerm();
+    double sink_rate = this->mpPde->ComputeConstantInUSourceTerm();
     double sink_volume = pow(this->mpRegularGrid->GetSpacing(), 3);
-    mSinkRates = std::vector<double>(number_of_sinks, sink_rate_per_volume * sink_volume);
+    mSinkRates = std::vector<double>(number_of_sinks, sink_rate * sink_volume);
     double total_sink_rate = std::accumulate(mSinkRates.begin(), mSinkRates.end(), 0.0);
 
     // Get the sink substance demand on each vessel subsegment
@@ -115,7 +109,7 @@ void GreensFunctionSolver<DIM>::Solve()
         }
     }
 
-    mSegmentConcentration = std::vector<double>(number_of_subsegments, 40.0);
+    mSegmentConcentration = std::vector<double>(number_of_subsegments, 1.0);
     mTissueConcentration = std::vector<double>(number_of_sinks, 0.0);
 
     // Solve for the subsegment source rates required to meet the sink substance demand
@@ -133,6 +127,7 @@ void GreensFunctionSolver<DIM>::Solve()
         {
             linear_system.SetRhsVectorElement(i, mSegmentConcentration[i] - sink_demand_per_subsegment[i]);
         }
+
         linear_system.SetRhsVectorElement(number_of_subsegments, -total_sink_rate);
 
         // Set up Linear system matrix
@@ -208,6 +203,14 @@ void GreensFunctionSolver<DIM>::Solve()
     std::map<std::string, std::vector<double> > segmentPointData;
     std::map<std::string, std::vector<double> > tissuePointData;
     tissuePointData[this->mpPde->GetVariableName()] = mTissueConcentration;
+
+    this->mPointSolution = std::vector<double>(mTissueConcentration.size(), 0.0);
+    for(unsigned idx=0; idx<mTissueConcentration.size(); idx++)
+    {
+        this->mPointSolution[idx] = mTissueConcentration[idx];
+    }
+
+
     segmentPointData[this->mpPde->GetVariableName()] = mSegmentConcentration;
     tissuePointData["Sink Rate"] = mSinkRates;
     segmentPointData["Source Rate"] = mSourceRates;
@@ -222,7 +225,7 @@ template<unsigned DIM>
 void GreensFunctionSolver<DIM>::GenerateSubSegments()
 {
     // Set up the sub-segment points and map to original segments
-    double max_subsegment_length = 20.0;
+    double max_subsegment_length = mSubsegmentCutoff;
 
     std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels = this->mpNetwork->GetVessels();
     typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator vessel_iter;

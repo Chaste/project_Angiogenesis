@@ -63,7 +63,7 @@ class GreensFunctionSolver : public AbstractRegularGridHybridSolver<DIM>
     boost::shared_ptr<boost::multi_array<double, 2> > mGvv;
     boost::shared_ptr<boost::multi_array<double, 2> > mGvt;
     boost::shared_ptr<boost::multi_array<double, 2> > mGtv;
-    boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
+    double mSubsegmentCutoff;
 
 public:
 
@@ -73,7 +73,10 @@ public:
 
     void Solve();
 
-    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
+    void SetSubSegmentCutoff(double value)
+    {
+        mSubsegmentCutoff = value;
+    }
 
     void Update()
     {

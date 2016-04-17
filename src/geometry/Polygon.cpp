@@ -147,6 +147,28 @@ double Polygon::GetDistance(c_vector<double, 3> location)
     return distance;
 }
 
+double Polygon::GetDistanceToEdges(c_vector<double, 3> location)
+{
+    double point[3];
+    for (unsigned idx = 0; idx < 3; idx++)
+    {
+        point[idx] = location[idx];
+    }
+
+    vtkSmartPointer<vtkPolygon> p_polygon = GetVtkPolygon();
+
+    double bounds[6];
+    double closest[6];
+    p_polygon->GetPoints()->GetBounds(bounds);
+
+    double distance = p_polygon->DistanceToPolygon(
+            point, p_polygon->GetPoints()->GetNumberOfPoints(),
+            static_cast<double*>(p_polygon->GetPoints()->GetData()->GetVoidPointer(0)), bounds, closest);
+
+    return distance;
+
+}
+
 vtkSmartPointer<vtkPlane> Polygon::GetPlane()
 {
     vtkSmartPointer<vtkPlane> p_plane = vtkSmartPointer<vtkPlane>::New();

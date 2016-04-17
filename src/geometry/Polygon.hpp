@@ -116,6 +116,8 @@ public:
      */
     double GetDistance(c_vector<double, 3> location);
 
+    double GetDistanceToEdges(c_vector<double, 3> location);
+
     /* Return the polygon's plane
      * @return a vtk plane on the polygon's plane
      */
