@@ -51,6 +51,7 @@ class AbstractMigrationRule
 {
 
 protected:
+
     /**
      * A hybrid solver containing a solution field of interest
      */
@@ -60,6 +61,8 @@ protected:
      * The vessel network
      */
     boost::shared_ptr<CaVascularNetwork<DIM> > mpVesselNetwork;
+
+    bool mIsSprouting;
 
 public:
 
@@ -78,6 +81,8 @@ public:
      * @return a shared pointer to the class instance
      */
     static boost::shared_ptr<AbstractMigrationRule<DIM> > Create();
+
+    virtual void SetIsSprouting(bool isSprouting = true);
 
     /**
      * Set the hybrid solver containing the VEGF field

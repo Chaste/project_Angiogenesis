@@ -130,7 +130,7 @@ public:
 
         // Try adding a disconnected segment
         TS_ASSERT_THROWS_THIS(pVessel1->AddSegment(segments[3]),
-                              "Input vessel segment does not coincide with any end of the vessel.");
+                              "Input vessel segment does not coincide with any end of the multi-segment vessel.");
 
         // Remove the segments from the ends
         pVessel1->RemoveSegments(SegmentLocation::Start);

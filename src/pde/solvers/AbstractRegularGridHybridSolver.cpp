@@ -99,10 +99,22 @@ std::vector<double> AbstractRegularGridHybridSolver<DIM>::GetSolutionAtPoints(st
     p_probe_filter->SetSource(mpVtkSolution);
     p_probe_filter->Update();
     vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetOutput()->GetPointData();
-    unsigned num_points = p_point_data->GetArray(this->mpPde->GetVariableName().c_str())->GetNumberOfTuples();
-    for(unsigned idx=0; idx<num_points; idx++)
+
+    if(this->mpPde)
     {
-        sampled_solution[idx] = p_point_data->GetArray(this->mpPde->GetVariableName().c_str())->GetTuple1(idx);
+        unsigned num_points = p_point_data->GetArray(this->mpPde->GetVariableName().c_str())->GetNumberOfTuples();
+        for(unsigned idx=0; idx<num_points; idx++)
+        {
+            sampled_solution[idx] = p_point_data->GetArray(this->mpPde->GetVariableName().c_str())->GetTuple1(idx);
+        }
+    }
+    else
+    {
+        unsigned num_points = p_point_data->GetArray("Base")->GetNumberOfTuples();
+        for(unsigned idx=0; idx<num_points; idx++)
+        {
+            sampled_solution[idx] = p_point_data->GetArray("Base")->GetTuple1(idx);
+        }
     }
     return sampled_solution;
 }

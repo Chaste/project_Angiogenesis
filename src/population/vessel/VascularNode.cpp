@@ -47,6 +47,7 @@ VascularNode<DIM>::VascularNode(const ChastePoint<DIM>& rLocation) :
         mpCell(CellPtr()),
         mDataContainer(),
         mId(0),
+        mTempId(0),
         mLabel(),
         mVesselSegments(std::vector<boost::weak_ptr<CaVesselSegment<DIM> > >()),
         mRadius(0.0),
@@ -219,6 +220,12 @@ unsigned VascularNode<DIM>::GetId() const
 }
 
 template<unsigned DIM>
+unsigned VascularNode<DIM>::GetTempId() const
+{
+    return mTempId;
+}
+
+template<unsigned DIM>
 const std::string& VascularNode<DIM>::rGetLabel() const
 {
     return mLabel;
@@ -369,6 +376,12 @@ template<unsigned DIM>
 void VascularNode<DIM>::SetId(unsigned id)
 {
     mId = id;
+}
+
+template<unsigned DIM>
+void VascularNode<DIM>::SetTempId(unsigned id)
+{
+    mTempId = id;
 }
 
 template<unsigned DIM>

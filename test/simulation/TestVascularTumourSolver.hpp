@@ -53,6 +53,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CaVesselSegment.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "HybridBoundaryCondition.hpp"
+#include "SimulationTime.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
 
@@ -83,6 +84,7 @@ public:
         VascularTumourSolver<3> vascular_tumour_solver;
         vascular_tumour_solver.SetVesselNetwork(p_network);
 
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10.0, 10);
         MAKE_PTR_ARGS(OutputFileHandler, p_file_handler, ("TestVascularTumourSolver/SingleVesselGrowth/"));
         vascular_tumour_solver.SetOutputFileHandler(p_file_handler);
         vascular_tumour_solver.SetEndTime(10.0);

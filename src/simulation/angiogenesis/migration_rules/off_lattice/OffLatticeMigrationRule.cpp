@@ -36,6 +36,7 @@
 #include "GeometryTools.hpp"
 #include "OffLatticeMigrationRule.hpp"
 #include "RandomNumberGenerator.hpp"
+#include "Debug.hpp"
 
 template<unsigned DIM>
 OffLatticeMigrationRule<DIM>::OffLatticeMigrationRule()
@@ -46,7 +47,10 @@ OffLatticeMigrationRule<DIM>::OffLatticeMigrationRule()
       mMeanAngles(std::vector<double>(DIM, 0.0)),
       mSdvAngles(std::vector<double>(DIM, M_PI/18.0)),
       mVelocity(20.0), // um/hr
-      mProbeLength(5.0)
+      mChemotacticStrength(1.0),
+      mAttractionStrength(1.0),
+      mProbeLength(5.0),
+      mIsSprouting(false)
 {
     if(DIM==3)
     {
@@ -68,210 +72,237 @@ OffLatticeMigrationRule<DIM>::~OffLatticeMigrationRule()
 }
 
 template<unsigned DIM>
+void OffLatticeMigrationRule<DIM>::SetSproutingVelocity(double velocity)
+{
+    mVelocity = velocity;
+}
+
+template<unsigned DIM>
+void OffLatticeMigrationRule<DIM>::SetChemotacticStrength(double strength)
+{
+    mChemotacticStrength = strength;
+}
+
+template<unsigned DIM>
+void OffLatticeMigrationRule<DIM>::SetAttractionStrength(double strength)
+{
+    mAttractionStrength = strength;
+}
+
+template<unsigned DIM>
+void OffLatticeMigrationRule<DIM>::SetIsSprouting(bool isSprouting)
+{
+    this->mIsSprouting = isSprouting;
+}
+
+template<unsigned DIM>
 std::vector<c_vector<double, DIM> > OffLatticeMigrationRule<DIM>::GetDirections(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
 {
-    std::vector<c_vector<double, DIM> > movement_vectors(rNodes.size(), zero_vector<double>(DIM));
-    for(unsigned idx=0; idx<rNodes.size(); idx++)
+    if (this->mIsSprouting)
     {
-        double angle_x = RandomNumberGenerator::Instance()->NormalRandomDeviate(mMeanAngles[0], mSdvAngles[0]);
-        double angle_y = RandomNumberGenerator::Instance()->NormalRandomDeviate(mMeanAngles[1], mSdvAngles[1]);
-        double angle_z = 0.0;
-        if(DIM==3)
+        return GetDirectionsForSprouts(rNodes);
+    }
+    else
+    {
+        std::vector<c_vector<double, DIM> > movement_vectors(rNodes.size(), zero_vector<double>(DIM));
+        for(unsigned idx=0; idx<rNodes.size(); idx++)
         {
-            angle_z = RandomNumberGenerator::Instance()->NormalRandomDeviate(mMeanAngles[2], mSdvAngles[2]);
-        }
-        c_vector<double, DIM> currentDirection  =
-                rNodes[idx]->GetVesselSegment(0)->GetOppositeNode(rNodes[idx])->GetLocationVector() - rNodes[idx]->GetLocationVector();
-        currentDirection /= norm_2(currentDirection);
 
-        c_vector<double, DIM> new_direction_z = RotateAboutAxis<DIM>(currentDirection, mGlobalZ, angle_z);
-        c_vector<double, DIM> new_direction_y = RotateAboutAxis<DIM>(new_direction_z, mGlobalY, angle_y);
-        c_vector<double, DIM> new_direction = RotateAboutAxis<DIM>(new_direction_y, mGlobalX, angle_x);
-        new_direction /= norm_2(new_direction);
-
-        // Solution dependent contribution
-        if(this->mpSolver)
-        {
-            // Make points
-            std::vector<c_vector<double, DIM> > probe_locations;
-            probe_locations.push_back(rNodes[idx]->GetLocationVector());
-            probe_locations.push_back(probe_locations[0] + mProbeLength * unit_vector<double>(DIM,0));
-            probe_locations.push_back(probe_locations[0] - mProbeLength * unit_vector<double>(DIM,0));
-            probe_locations.push_back(probe_locations[0] + mProbeLength * unit_vector<double>(DIM,1));
-            probe_locations.push_back(probe_locations[0] - mProbeLength * unit_vector<double>(DIM,1));
+            double angle_x = RandomNumberGenerator::Instance()->NormalRandomDeviate(mMeanAngles[0], mSdvAngles[0]);
+            double angle_y = RandomNumberGenerator::Instance()->NormalRandomDeviate(mMeanAngles[1], mSdvAngles[1]);
+            double angle_z = 0.0;
             if(DIM==3)
             {
-                probe_locations.push_back(probe_locations[0] + mProbeLength * unit_vector<double>(DIM,2));
-                probe_locations.push_back(probe_locations[0] - mProbeLength * unit_vector<double>(DIM,2));
+                angle_z = RandomNumberGenerator::Instance()->NormalRandomDeviate(mMeanAngles[2], mSdvAngles[2]);
             }
+            c_vector<double, DIM> currentDirection  =
+                    -rNodes[idx]->GetVesselSegment(0)->GetOppositeNode(rNodes[idx])->GetLocationVector() + rNodes[idx]->GetLocationVector();
+            currentDirection /= norm_2(currentDirection);
 
-            // Get the solution
-            std::vector<double> solutions = this->mpSolver->GetSolutionAtPoints(probe_locations);
+            c_vector<double, DIM> new_direction_z = RotateAboutAxis<DIM>(currentDirection, mGlobalZ, angle_z);
+            c_vector<double, DIM> new_direction_y = RotateAboutAxis<DIM>(new_direction_z, mGlobalY, angle_y);
+            c_vector<double, DIM> new_direction = RotateAboutAxis<DIM>(new_direction_y, mGlobalX, angle_x);
+            new_direction /= norm_2(new_direction);
 
-            // Get the gradients
-            std::vector<double> gradients;
-            for(unsigned idx=1; idx<solutions.size();idx++)
+            // Solution dependent contribution
+            if(this->mpSolver)
             {
-                gradients.push_back((solutions[idx] - solutions[0]) / mProbeLength);
-            }
-
-            // Get the index of the max gradient
-            double max_grad = 0.0;
-            int index = -1;
-
-            for(unsigned idx = 0; idx<gradients.size(); idx++)
-            {
-                if(gradients[idx]>max_grad)
+                // Make points
+                std::vector<c_vector<double, DIM> > probe_locations;
+                probe_locations.push_back(rNodes[idx]->GetLocationVector());
+                probe_locations.push_back(probe_locations[0] + mProbeLength * unit_vector<double>(DIM,0));
+                probe_locations.push_back(probe_locations[0] - mProbeLength * unit_vector<double>(DIM,0));
+                probe_locations.push_back(probe_locations[0] + mProbeLength * unit_vector<double>(DIM,1));
+                probe_locations.push_back(probe_locations[0] - mProbeLength * unit_vector<double>(DIM,1));
+                if(DIM==3)
                 {
-                    max_grad = gradients[idx];
-                    index = idx;
+                    probe_locations.push_back(probe_locations[0] + mProbeLength * unit_vector<double>(DIM,2));
+                    probe_locations.push_back(probe_locations[0] - mProbeLength * unit_vector<double>(DIM,2));
+                }
+
+                // Get the solution
+                std::vector<double> solutions = this->mpSolver->GetSolutionAtPoints(probe_locations);
+
+                // Get the gradients
+                std::vector<double> gradients;
+                for(unsigned idx=1; idx<solutions.size();idx++)
+                {
+                    gradients.push_back((solutions[idx] - solutions[0]) / mProbeLength);
+                }
+
+                // Get the index of the max gradient
+                double max_grad = 0.0;
+                int index = -1;
+
+                for(unsigned idx = 0; idx<gradients.size(); idx++)
+                {
+                    if(gradients[idx]>max_grad)
+                    {
+                        max_grad = gradients[idx];
+                        index = idx;
+                    }
+                }
+
+                if(index == 0)
+                {
+                    new_direction += mChemotacticStrength* unit_vector<double>(DIM,0);
+                }
+                else if(index == 1)
+                {
+                    new_direction += mChemotacticStrength*-unit_vector<double>(DIM,0);
+                }
+                else if(index == 2)
+                {
+                    new_direction += mChemotacticStrength*unit_vector<double>(DIM,1);
+                }
+                else if(index == 3)
+                {
+                    new_direction += mChemotacticStrength*-unit_vector<double>(DIM,1);
+                }
+                else if(index == 4)
+                {
+                    new_direction += mChemotacticStrength*unit_vector<double>(DIM,2);
+                }
+                else if(index == 5)
+                {
+                    new_direction += mChemotacticStrength*-unit_vector<double>(DIM,2);
                 }
             }
 
-            if(index == 0)
+            new_direction /= norm_2(new_direction);
+
+            // Get the closest node in the search cone
+            std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = this->mpVesselNetwork->GetNodes();
+
+            double min_distance = 1.e12;
+            c_vector<double, DIM> min_direction = zero_vector<double>(DIM);
+            for(unsigned jdx=0; jdx<nodes.size(); jdx++)
             {
-                new_direction += unit_vector<double>(DIM,0);
+                if(IsPointInCone<DIM>(nodes[jdx]->GetLocationVector(), rNodes[idx]->GetLocationVector(), rNodes[idx]->GetLocationVector() + currentDirection * 100.0, M_PI/3.0))
+                {
+                    double distance = norm_2(rNodes[idx]->GetLocationVector() - nodes[jdx]->GetLocationVector());
+                    if(distance < min_distance)
+                    {
+                        min_distance = distance;
+                        min_direction = nodes[jdx]->GetLocationVector() - rNodes[idx]->GetLocationVector();
+                        min_direction /= norm_2(min_direction);
+                    }
+                }
             }
-            else if(index == 1)
+
+            double strength;
+            double crictical_distance = 100.0;
+            if(min_distance >= crictical_distance)
             {
-                new_direction += -unit_vector<double>(DIM,0);
-            }
-            else if(index == 2)
-            {
-                new_direction += unit_vector<double>(DIM,1);
-            }
-            else if(index == 3)
-            {
-                new_direction += -unit_vector<double>(DIM,1);
-            }
-            else if(index == 4)
-            {
-                new_direction += unit_vector<double>(DIM,2);
-            }
-            else if(index == 5)
-            {
-                new_direction += -unit_vector<double>(DIM,2);
+                strength = 0.0;
             }
             else
             {
-                EXCEPTION("Unexpected index while obtaining solution dependent direction vectors.");
+                strength = mAttractionStrength *  (1.0 - (min_distance * min_distance) / (crictical_distance * crictical_distance));
             }
+            new_direction += strength * min_direction;
+            new_direction /= norm_2(new_direction);
+            movement_vectors[idx] = new_direction * mVelocity;
         }
-        new_direction /= norm_2(new_direction);
+        return movement_vectors;
+    }
+}
 
-        // Get the closest node in the search cone
-        std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = this->mpVesselNetwork->GetNodes();
-
-        double min_distance = 1.e12;
-        c_vector<double, DIM> min_direction = zero_vector<double>(DIM);
-        for(unsigned jdx=0; jdx<nodes.size(); idx++)
+template<unsigned DIM>
+std::vector<c_vector<double, DIM> > OffLatticeMigrationRule<DIM>::GetDirectionsForSprouts(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
+{
+    std::vector<c_vector<double, DIM> > movement_vectors(rNodes.size(), zero_vector<double>(DIM));
+    for(unsigned idx = 0; idx < rNodes.size(); idx++)
+    {
+        c_vector<double, DIM> sprout_direction;
+        c_vector<double, DIM> cross_product = VectorProduct(rNodes[idx]->GetVesselSegments()[0]->GetUnitTangent(),
+                                                            rNodes[idx]->GetVesselSegments()[1]->GetUnitTangent());
+        double sum = 0.0;
+        for(unsigned jdx=0; jdx<DIM; jdx++)
         {
-            if(IsPointInCone<3>(nodes[jdx]->GetLocationVector(), rNodes[idx]->GetLocationVector(), rNodes[idx]->GetLocationVector() + currentDirection * 100.0, M_PI/3.0))
+            sum += cross_product[jdx];
+        }
+        if (sum<=1.e-6)
+        {
+            // parallel segments, chose any normal to the first tangent
+            c_vector<double, DIM> normal;
+            c_vector<double, DIM> tangent = rNodes[idx]->GetVesselSegments()[0]->GetUnitTangent();
+
+            if(DIM==2 or tangent[2]==0.0)
             {
-                double distance = norm_2(rNodes[idx]->GetLocationVector() - nodes[jdx]->GetLocationVector());
-                if(distance < min_distance)
+                if(tangent[1] == 0.0)
                 {
-                    min_distance = distance;
-                    min_direction = nodes[jdx]->GetLocationVector() - rNodes[idx]->GetLocationVector();
-                    min_direction /= norm_2(min_direction);
+                    normal[0] = 0.0;
+                    normal[1] = 1.0;
+                }
+                else
+                {
+                    normal[0] = 1.0;
+                    normal[1] = -tangent[0] /tangent[1];
                 }
             }
-        }
-
-        double strength;
-        double crictical_distance = 100.0;
-        if(min_distance >= crictical_distance)
-        {
-            strength = 0.0;
+            else
+            {
+                if(std::abs(tangent[0]) + std::abs(tangent[1]) == 0.0)
+                {
+                    normal[0] = 1.0;
+                    normal[1] = 1.0;
+                }
+                else
+                {
+                    normal[0] = 1.0;
+                    normal[1] = 1.0;
+                    normal[2] = -(tangent[0] + tangent[1])/tangent[2];
+                }
+            }
+            if(RandomNumberGenerator::Instance()->ranf()>=0.5)
+            {
+                sprout_direction = normal/norm_2(normal);
+            }
+            else
+            {
+                sprout_direction = -normal/norm_2(normal);
+            }
         }
         else
         {
-            strength = 2.0 *  (1.0 - (min_distance * min_distance) / (crictical_distance * crictical_distance));
+            // otherwise the direction is out of the plane of the segment tangents
+            if(RandomNumberGenerator::Instance()->ranf()>=0.5)
+            {
+                sprout_direction = cross_product/norm_2(cross_product);
+            }
+            else
+            {
+                sprout_direction = -cross_product/norm_2(cross_product);
+            }
         }
-
-        new_direction += strength * min_direction;
+        double angle = RandomNumberGenerator::Instance()->NormalRandomDeviate(mMeanAngles[0], mSdvAngles[0]);
+        c_vector<double, DIM> new_direction = RotateAboutAxis<DIM>(sprout_direction, rNodes[idx]->GetVesselSegments()[0]->GetUnitTangent(), angle);
         new_direction /= norm_2(new_direction);
         movement_vectors[idx] = new_direction * mVelocity;
     }
     return movement_vectors;
 }
-
-//template<unsigned DIM>
-//std::vector<c_vector<double, DIM> > OffLatticeSproutingRule<DIM>::GetSproutDirections(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
-//{
-//    std::vector<c_vector<double, DIM> > directions(rNodes.size(),zero_vector<double>(DIM));
-//    for(unsigned idx = 0; idx < rNodes.size(); idx++)
-//    {
-//        c_vector<double, DIM> sprout_direction;
-//        c_vector<double, DIM> cross_product = VectorProduct(rNodes[idx]->GetVesselSegments()[0]->GetUnitTangent(),
-//                                                            rNodes[idx]->GetVesselSegments()[1]->GetUnitTangent());
-//        double sum = 0.0;
-//        for(unsigned jdx=0; jdx<DIM; jdx++)
-//        {
-//            sum += cross_product[jdx];
-//        }
-//        if (sum<=1.e-6)
-//        {
-//            // parallel segments, chose any normal to the first tangent
-//            c_vector<double, DIM> normal;
-//            c_vector<double, DIM> tangent = rNodes[idx]->GetVesselSegments()[0]->GetUnitTangent();
-//
-//            if(DIM==2 or tangent[2]==0.0)
-//            {
-//                if(tangent[1] == 0.0)
-//                {
-//                    normal[0] = 0.0;
-//                    normal[1] = 1.0;
-//                }
-//                else
-//                {
-//                    normal[0] = 1.0;
-//                    normal[1] = -tangent[0] /tangent[1];
-//                }
-//
-//            }
-//            else
-//            {
-//                if(std::abs(tangent[0]) + std::abs(tangent[1]) == 0.0)
-//                {
-//                    normal[0] = 1.0;
-//                    normal[1] = 1.0;
-//                }
-//                else
-//                {
-//                    normal[0] = 1.0;
-//                    normal[1] = 1.0;
-//                    normal[2] = -(tangent[0] + tangent[1])/tangent[2];
-//                }
-//            }
-//            if(RandomNumberGenerator::Instance()->ranf()>=0.5)
-//            {
-//                sprout_direction = normal/norm_2(normal);
-//            }
-//            else
-//            {
-//                sprout_direction = -normal/norm_2(normal);
-//            }
-//        }
-//        else
-//        {
-//            // otherwise the direction is out of the plane of the segment tangents
-//            if(RandomNumberGenerator::Instance()->ranf()>=0.5)
-//            {
-//                sprout_direction = cross_product/norm_2(cross_product);
-//            }
-//            else
-//            {
-//                sprout_direction = -cross_product/norm_2(cross_product);
-//            }
-//        }
-//
-//        // Rotate by a random angle around the axis
-//        double angle = RandomNumberGenerator::Instance()->ranf() * 2.0 * M_PI;
-//        directions[idx] = RotateAboutAxis<DIM>(sprout_direction, rNodes[idx]->GetVesselSegments()[0]->GetUnitTangent(), angle);
-//    }
-//    return directions;
-//}
 
 // Explicit instantiation
 template class OffLatticeMigrationRule<2> ;

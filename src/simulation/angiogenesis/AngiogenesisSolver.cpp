@@ -46,7 +46,7 @@
 template<unsigned DIM>
 AngiogenesisSolver<DIM>::AngiogenesisSolver() :
         mpNetwork(),
-        mNodeAnastamosisRadius(0.0),
+        mNodeAnastamosisRadius(5.0),
         mpMigrationRule(),
         mpSproutingRule(),
         mpBoundingDomain(),
@@ -127,6 +127,7 @@ void AngiogenesisSolver<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwo
 template<unsigned DIM>
 void AngiogenesisSolver<DIM>::DoSprouting()
 {
+
     // Get the candidate sprouts and set them as migrating
     std::vector<boost::shared_ptr<VascularNode<DIM> > > candidate_sprouts = mpSproutingRule->GetSprouts(mpNetwork->GetNodes());
 
@@ -136,11 +137,13 @@ void AngiogenesisSolver<DIM>::DoSprouting()
     }
 
     UpdateNodalPositions(true);
+
 }
 
 template<unsigned DIM>
 void AngiogenesisSolver<DIM>::UpdateNodalPositions(bool sprouting)
 {
+
     // Move any nodes marked as migrating, either new sprouts or tips
     std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = mpNetwork->GetNodes();
     std::vector<boost::shared_ptr<VascularNode<DIM> > > tips;
@@ -198,10 +201,13 @@ void AngiogenesisSolver<DIM>::UpdateNodalPositions(bool sprouting)
     }
     else
     {
+
+        mpMigrationRule->SetIsSprouting(sprouting);
         std::vector<c_vector<double, DIM> > movement_vectors = mpMigrationRule->GetDirections(tips);
+
         for(unsigned idx=0; idx<tips.size();idx++)
         {
-            if(norm_2(movement_vectors[idx]) >0.0)
+            if(norm_2(movement_vectors[idx])>0.0)
             {
                 bool do_move = true;
                 if(mpBoundingDomain)
@@ -217,6 +223,8 @@ void AngiogenesisSolver<DIM>::UpdateNodalPositions(bool sprouting)
                     if(sprouting)
                     {
                         mpNetwork->FormSprout(tips[idx]->GetLocation(), ChastePoint<DIM>(tips[idx]->GetLocationVector() + movement_vectors[idx]));
+                        tips[idx]->SetIsMigrating(false);
+                        mpNetwork->UpdateAll();
                     }
                     else
                     {
@@ -228,8 +236,16 @@ void AngiogenesisSolver<DIM>::UpdateNodalPositions(bool sprouting)
                     }
                 }
             }
+            else
+            {
+                if(sprouting && nodes[idx]->GetNumberOfSegments() == 2)
+                {
+                    tips[idx]->SetIsMigrating(false);
+                }
+            }
         }
     }
+
     mpNetwork->UpdateAll();
 }
 

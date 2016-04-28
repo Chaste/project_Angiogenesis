@@ -48,9 +48,10 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CvodeAdaptor.hpp"
 #include "RandomNumberGenerator.hpp"
 #include "Debug.hpp"
+#include "AbstractPhaseBasedCellCycleModel.hpp"
 
 Owen2011OxygenBasedCellCycleModel::Owen2011OxygenBasedCellCycleModel(boost::shared_ptr<AbstractCellCycleModelOdeSolver> pOdeSolver)
-: AbstractOdeBasedCellCycleModel(SimulationTime::Instance()->GetTime(), pOdeSolver),
+: AbstractOdeBasedPhaseBasedCellCycleModel(SimulationTime::Instance()->GetTime(), pOdeSolver),
   sOnset(0.4),
   g2Onset(0.6),
   mOnset(0.9),
@@ -225,9 +226,9 @@ AbstractCellCycleModel* Owen2011OxygenBasedCellCycleModel::CreateCellCycleModel(
     p_model->SetSDuration(mSDuration);
     p_model->SetG2Duration(mG2Duration);
     p_model->SetMDuration(mMDuration);
-    p_model->SetDivideTime(mDivideTime);
-    p_model->SetFinishedRunningOdes(mFinishedRunningOdes);
-    p_model->SetG2PhaseStartTime(mG2PhaseStartTime);
+    //p_model->SetDivideTime(mDivideTime);
+    //p_model->SetFinishedRunningOdes(mFinishedRunningOdes);
+    //p_model->SetG2PhaseStartTime(mG2PhaseStartTime);
     p_model->SetLastTime(mLastTime);
     p_model->SetEnterQuiescenceOxygenConcentration(mEnterQuiescenceOxygenConcentration);
     p_model->SetLeaveQuiescenceOxygenConcentration(mLeaveQuiescenceOxygenConcentration);
@@ -500,7 +501,7 @@ void Owen2011OxygenBasedCellCycleModel::OutputCellCycleModelParameters(out_strea
     *rParamsFile << "\t\t\t<CriticalQuiescentDuration>" << mCriticalQuiescentDuration << "</CriticalQuiescentDuration>\n";
 
     // Call method on direct parent class
-    AbstractOdeBasedCellCycleModel::OutputCellCycleModelParameters(rParamsFile);
+    AbstractOdeBasedPhaseBasedCellCycleModel::OutputCellCycleModelParameters(rParamsFile);
 }
 
 // Serialization for Boost >= 1.36

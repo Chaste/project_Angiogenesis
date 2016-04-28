@@ -38,7 +38,8 @@
 template<unsigned DIM>
 AbstractMigrationRule<DIM>::AbstractMigrationRule()
      :mpSolver(),
-      mpVesselNetwork()
+      mpVesselNetwork(),
+      mIsSprouting(false)
 {
 
 }
@@ -47,6 +48,12 @@ template<unsigned DIM>
 AbstractMigrationRule<DIM>::~AbstractMigrationRule()
 {
 
+}
+
+template<unsigned DIM>
+void AbstractMigrationRule<DIM>::SetIsSprouting(bool isSprouting)
+{
+    mIsSprouting = isSprouting;
 }
 
 template<unsigned DIM>

@@ -41,7 +41,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <vector>
 
-#include "AbstractOdeBasedCellCycleModel.hpp"
+#include "AbstractOdeBasedPhaseBasedCellCycleModel.hpp"
 #include "AbstractCellMutationState.hpp"
 #include "CancerCellMutationState.hpp"
 //#include "Owen2011OxygenBasedCellCycleOdeSystem.hpp"
@@ -49,7 +49,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /**
  * Oxygen-dependent ODE-based cell-cycle model. Published by Owen et al. 2011
  */
-class Owen2011OxygenBasedCellCycleModel : public AbstractOdeBasedCellCycleModel
+class Owen2011OxygenBasedCellCycleModel : public AbstractOdeBasedPhaseBasedCellCycleModel
 {
     /**
      * Cell cycle time at which S phase begins
@@ -79,7 +79,7 @@ private:
     template<class Archive>
     void serialize(Archive & archive, const unsigned int version)
     {
-        archive & boost::serialization::base_object<AbstractOdeBasedCellCycleModel>(*this);
+        archive & boost::serialization::base_object<AbstractOdeBasedPhaseBasedCellCycleModel>(*this);
         archive & mCurrentQuiescentDuration;
         archive & mCurrentQuiescenceOnsetTime;
         archive & mEnterQuiescenceOxygenConcentration;

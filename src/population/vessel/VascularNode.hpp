@@ -90,6 +90,8 @@ private:
      */
     unsigned mId;
 
+    unsigned mTempId;
+
     /**
      * Label tag, can be useful for identifying input and output nodes.
      */
@@ -284,6 +286,8 @@ public:
      */
     unsigned GetId() const;
 
+    unsigned GetTempId() const;
+
     /**
      * Return a const reference to the Label
      *
@@ -420,7 +424,10 @@ public:
      *
      * @param id the id for the node
      */
+
     void SetId(unsigned id);
+
+    void SetTempId(unsigned id);
 
     /**
      * Assign the Label

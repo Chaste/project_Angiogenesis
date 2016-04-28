@@ -74,6 +74,16 @@ void VascularTumourModifier<DIM>::SetupSolve(AbstractCellPopulation<DIM,DIM>& rC
         EXCEPTION("A VascularTumourSolver is required for this modifier.");
     }
 
+    rCellPopulation.Update();
+
+    for (typename AbstractCellPopulation<DIM>::Iterator cell_iter = rCellPopulation.Begin();
+         cell_iter != rCellPopulation.End();
+         ++cell_iter)
+    {
+        // Store the cell's volume in CellData
+        cell_iter->GetCellData()->SetItem("oxygen", 0.0);
+    }
+
     // Update the cell data
     UpdateCellData(rCellPopulation);
 }

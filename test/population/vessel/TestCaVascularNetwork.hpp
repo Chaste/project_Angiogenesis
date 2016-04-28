@@ -348,6 +348,7 @@ public:
         ChastePoint<2> sproutTipLocation(1,1);
         boost::shared_ptr<CaVessel<2> > newSprout = p_vessel_network->FormSprout(sproutBaseLocation, sproutTipLocation);
 
+        p_vessel_network->UpdateAll(true);
         // test number of vessels and nodes in network
         TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfNodes(),4u);
         TS_ASSERT_EQUALS(p_vessel_network->GetNumberOfVessels(),3u);

@@ -169,7 +169,6 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
         p_oxygen_solver->SetGrid(p_grid);
         p_oxygen_solver->SetPde(p_oxygen_pde);
         p_oxygen_solver->AddBoundaryCondition(p_vessel_ox_boundary_condition);
-        p_oxygen_solver->Setup();
         return p_oxygen_solver;
     }
 
@@ -194,7 +193,6 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
         boost::shared_ptr<FiniteDifferenceSolver<3> > p_vegf_solver = FiniteDifferenceSolver<3>::Create();
         p_vegf_solver->SetGrid(p_grid);
         p_vegf_solver->SetPde(p_vegf_pde);
-        p_vegf_solver->Setup();
         return p_vegf_solver;
     }
 
@@ -231,9 +229,15 @@ public:
 
         // Create the oxygen pde solver
         boost::shared_ptr<FiniteDifferenceSolver<3> > p_oxygen_solver = GetOxygenSolver(p_domain, p_network);
+        p_oxygen_solver->GetGrid()->SetVesselNetwork(p_network);
+        p_oxygen_solver->GetGrid()->SetCellPopulation(cell_population);
+        p_oxygen_solver->Setup();
 
         // Create the vegf pde solver
         boost::shared_ptr<FiniteDifferenceSolver<3> > p_vegf_solver = GetVegfSolver(p_domain, p_network);
+        p_vegf_solver->GetGrid()->SetVesselNetwork(p_network);
+        p_vegf_solver->GetGrid()->SetCellPopulation(cell_population);
+        p_vegf_solver->Setup();
 
         // Create the angiogenesis solver
         boost::shared_ptr<VascularTumourSolver<3> > p_vascular_tumour_solver = VascularTumourSolver<3>::Create();
@@ -243,6 +247,10 @@ public:
 
         boost::shared_ptr<VascularTumourModifier<3> > p_simulation_modifier = boost::shared_ptr<VascularTumourModifier<3> >(new VascularTumourModifier<3>);
         p_simulation_modifier->SetVascularTumourSolver(p_vascular_tumour_solver);
+
+        std::vector<std::string> update_labels = std::vector<std::string>();
+        update_labels.push_back("oxygen");
+        p_simulation_modifier->SetCellDataUpdateLabels(update_labels);
 
         OnLatticeSimulation<3> simulator(cell_population);
         simulator.SetOutputDirectory("TestAngiogenesisSimulationModifier/CaBased");
@@ -287,9 +295,15 @@ public:
 
         // Create the oxygen pde solver
         boost::shared_ptr<FiniteDifferenceSolver<3> > p_oxygen_solver = GetOxygenSolver(p_domain, p_network);
+        p_oxygen_solver->GetGrid()->SetVesselNetwork(p_network);
+        p_oxygen_solver->GetGrid()->SetCellPopulation(cell_population);
+        p_oxygen_solver->Setup();
 
         // Create the vegf pde solver
         boost::shared_ptr<FiniteDifferenceSolver<3> > p_vegf_solver = GetVegfSolver(p_domain, p_network);
+        p_vegf_solver->GetGrid()->SetVesselNetwork(p_network);
+        p_vegf_solver->GetGrid()->SetCellPopulation(cell_population);
+        p_vegf_solver->Setup();
 
         // Create the angiogenesis solver
         boost::shared_ptr<VascularTumourSolver<3> > p_vascular_tumour_solver = VascularTumourSolver<3>::Create();
@@ -299,6 +313,11 @@ public:
 
         boost::shared_ptr<VascularTumourModifier<3> > p_simulation_modifier = boost::shared_ptr<VascularTumourModifier<3> >(new VascularTumourModifier<3>);
         p_simulation_modifier->SetVascularTumourSolver(p_vascular_tumour_solver);
+
+        std::vector<std::string> update_labels = std::vector<std::string>();
+        update_labels.push_back("oxygen");
+
+        p_simulation_modifier->SetCellDataUpdateLabels(update_labels);
 
         OffLatticeSimulation<3> simulator(cell_population);
         simulator.SetOutputDirectory("TestAngiogenesisSimulationModifier/NodeBased");
