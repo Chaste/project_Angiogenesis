@@ -285,12 +285,12 @@ void FiniteDifferenceSolver<DIM>::Solve()
     {
         // Set up initial Guess
         unsigned number_of_points = this->mpRegularGrid->GetNumberOfPoints();
-        Vec initial_guess=PetscTools::CreateAndSetVec(number_of_points, 1.0);
+        //Vec initial_guess=PetscTools::CreateAndSetVec(number_of_points, 1.0);
 
-        SimplePetscNonlinearSolver solver_petsc;
-        int length = 7;
+        //SimplePetscNonlinearSolver solver_petsc;
+        //int length = 7;
         //Vec answer_petsc = solver_petsc.Solve(&HyrbidFiniteDifference_ComputeResidual<DIM>,
-      //                                        &HyrbidFiniteDifference_ComputeJacobian<DIM>, initial_guess, length, this);
+         //                                     &HyrbidFiniteDifference_ComputeJacobian<DIM>, initial_guess, length, this);
 
         //ReplicatableVector soln_repl(answer_petsc);
 
@@ -298,7 +298,7 @@ void FiniteDifferenceSolver<DIM>::Solve()
         this->mPointSolution = std::vector<double>(number_of_points, 0.0);
         for (unsigned row = 0; row < number_of_points; row++)
         {
-            //this->mPointSolution[row] = soln_repl[row];
+           // this->mPointSolution[row] = soln_repl[row];
         }
 
         std::map<std::string, std::vector<double> > data;

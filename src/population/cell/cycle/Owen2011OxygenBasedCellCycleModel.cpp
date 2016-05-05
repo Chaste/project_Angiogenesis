@@ -241,7 +241,7 @@ AbstractCellCycleModel* Owen2011OxygenBasedCellCycleModel::CreateCellCycleModel(
      */
     assert(mpOdeSystem);
     // note should the second argument here not be a flag ...
-   // p_model->SetOdeSystem(new Owen2011OxygenBasedCellCycleOdeSystem(mpCell->GetCellData()->GetItem("oxygen"), //mpCell->GetMutationState()));
+    p_model->SetOdeSystem(new Owen2011OxygenBasedCellCycleOdeSystem(mpCell->GetCellData()->GetItem("oxygen"), mpCell->GetMutationState()));
 
     p_model->SetStateVariables(mpOdeSystem->rGetStateVariables());
 
@@ -260,7 +260,7 @@ void Owen2011OxygenBasedCellCycleModel::Initialise()
     assert(mpOdeSystem == NULL);
     assert(mpCell != NULL);
 
-    //mpOdeSystem = new Owen2011OxygenBasedCellCycleOdeSystem(mpCell->GetCellData()->GetItem("oxygen"), mpCell->GetMutationState());
+    mpOdeSystem = new Owen2011OxygenBasedCellCycleOdeSystem(mpCell->GetCellData()->GetItem("oxygen"), mpCell->GetMutationState());
 
     mpCell->SetBirthTime(SimulationTime::Instance()->GetTime());
 
@@ -278,7 +278,7 @@ void Owen2011OxygenBasedCellCycleModel::AdjustOdeParameters(double currentTime)
     mpOdeSystem->rGetStateVariables()[3] = mpCell->GetCellData()->GetItem("oxygen");
 
     // Use the cell's current mutation status as another input
-    //static_cast<Owen2011OxygenBasedCellCycleOdeSystem*>(mpOdeSystem)->SetMutationState(mpCell->GetMutationState());
+    static_cast<Owen2011OxygenBasedCellCycleOdeSystem*>(mpOdeSystem)->SetMutationState(mpCell->GetMutationState());
 }
 
 void Owen2011OxygenBasedCellCycleModel::UpdateQuiescentDuration()
@@ -438,7 +438,7 @@ void Owen2011OxygenBasedCellCycleModel::SetCurrentQuiescenceOnsetTime(double cur
     mCurrentQuiescenceOnsetTime = currentQuiescenceOnsetTime;
 }
 
-double Owen2011OxygenBasedCellCycleModel::GetSDuration()
+double Owen2011OxygenBasedCellCycleModel::GetSDuration() const
 {
     /**
      * This cell cycle model  pretends it is running ODEs in just G1,
@@ -448,7 +448,7 @@ double Owen2011OxygenBasedCellCycleModel::GetSDuration()
     return 0.0;
 }
 
-double Owen2011OxygenBasedCellCycleModel::GetG2Duration()
+double Owen2011OxygenBasedCellCycleModel::GetG2Duration() const
 {
     /**
      * This cell cycle model  pretends it is running ODEs in just G1,
@@ -458,7 +458,7 @@ double Owen2011OxygenBasedCellCycleModel::GetG2Duration()
     return 0.0;
 }
 
-double Owen2011OxygenBasedCellCycleModel::GetMDuration()
+double Owen2011OxygenBasedCellCycleModel::GetMDuration() const
 {
     /**
      * This cell cycle model  pretends it is running ODEs in just G1,
@@ -505,7 +505,7 @@ void Owen2011OxygenBasedCellCycleModel::OutputCellCycleModelParameters(out_strea
 }
 
 // Serialization for Boost >= 1.36
-//#include "SerializationExportWrapperForCpp.hpp"
-//CHASTE_CLASS_EXPORT(Owen2011OxygenBasedCellCycleModel)
-//#include "CellCycleModelOdeSolverExportWrapper.hpp"
-//EXPORT_CELL_CYCLE_MODEL_ODE_SOLVER(Owen2011OxygenBasedCellCycleModel)
+#include "SerializationExportWrapperForCpp.hpp"
+CHASTE_CLASS_EXPORT(Owen2011OxygenBasedCellCycleModel)
+#include "CellCycleModelOdeSolverExportWrapper.hpp"
+EXPORT_CELL_CYCLE_MODEL_ODE_SOLVER(Owen2011OxygenBasedCellCycleModel)

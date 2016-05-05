@@ -130,15 +130,15 @@ public:
         PottsMesh<2>* p_mesh = generator.GetMesh();
         p_mesh->Scale(spacing, spacing);
 
-        VasculatureGenerator<2> network_generator;
+        VasculatureGenerator<2> generator;
         c_vector<double, 2> start_point;
         start_point[0] = 20.0;
         start_point[1] = 0.0;
 
-        double length = spacing * num_y; // full domain in y direction
-        unsigned divisions = num_y - 1; // divide the vessel to coincide with grid
+        double length = spacing * (num_y - 1); // full domain in y direction
+        unsigned divisions = num_y - 2; // divide the vessel to coincide with grid
         unsigned alignment_axis = 1; // pointing y direction
-        boost::shared_ptr<CaVascularNetwork<2> > p_network = network_generator.GenerateSingleVessel(length, start_point,
+        boost::shared_ptr<CaVascularNetwork<2> > p_network = generator.GenerateSingleVessel(length, start_point,
                                                                                             divisions, alignment_axis);
 
         // Get initital tumour cell region
@@ -207,9 +207,9 @@ public:
         p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
 
         // Add a dirichlet boundary condition for oxygen on the outer walls of the domain
-//        boost::shared_ptr<HybridBoundaryCondition<2> > p_domain_ox_boundary_condition = HybridBoundaryCondition<2>::Create();
-//        p_domain_ox_boundary_condition->SetValue(oxygen_concentration);
-//        p_oxygen_solver->AddBoundaryCondition(p_domain_ox_boundary_condition);
+        boost::shared_ptr<HybridBoundaryCondition<2> > p_domain_ox_boundary_condition = HybridBoundaryCondition<2>::Create();
+        p_domain_ox_boundary_condition->SetValue(oxygen_concentration);
+        p_oxygen_solver->AddBoundaryCondition(p_domain_ox_boundary_condition);
         p_oxygen_solver->AddBoundaryCondition(p_vessel_ox_boundary_condition);
 
         // Create the vascular tumour solver, which manages all pde solves

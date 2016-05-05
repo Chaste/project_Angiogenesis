@@ -44,7 +44,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "AbstractOdeBasedPhaseBasedCellCycleModel.hpp"
 #include "AbstractCellMutationState.hpp"
 #include "CancerCellMutationState.hpp"
-//#include "Owen2011OxygenBasedCellCycleOdeSystem.hpp"
+#include "Owen2011OxygenBasedCellCycleOdeSystem.hpp"
 
 /**
  * Oxygen-dependent ODE-based cell-cycle model. Published by Owen et al. 2011
@@ -284,17 +284,17 @@ public:
     /**
      * Get the duration of the cell's S phase.
      */
-    double GetSDuration();
+    double GetSDuration() const;
 
     /**
      * Get the duration of the cell's G2 phase.
      */
-    double GetG2Duration();
+    double GetG2Duration() const;
 
     /**
      * Get the duration of the cell's M phase.
      */
-    double GetMDuration();
+    double GetMDuration() const;
 
     /**
      * Get the value of phi.

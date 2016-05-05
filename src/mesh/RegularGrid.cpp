@@ -647,6 +647,12 @@ void RegularGrid<ELEMENT_DIM, SPACE_DIM>::SetCellPopulation(AbstractCellPopulati
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+void RegularGrid<ELEMENT_DIM, SPACE_DIM>::SetCaBasedPopulation(boost::shared_ptr<CaBasedCellPopulation<SPACE_DIM> > pPopulation)
+{
+    mpCellPopulation = pPopulation.get();
+}
+
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void RegularGrid<ELEMENT_DIM, SPACE_DIM>::SetExtents(std::vector<unsigned> extents)
 {
     if (extents.size() < 3)

@@ -46,7 +46,7 @@
 #include "MutableMesh.hpp"
 #include "CellsGenerator.hpp"
 #include "TransitCellProliferativeType.hpp"
-#include "StochasticDurationCellCycleModel.hpp"
+#include "UniformlyDistributedCellCycleModel.hpp"
 #include "MeshBasedCellPopulation.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 
@@ -174,7 +174,7 @@ public:
         MutableMesh<2, 2>* p_mesh = generator.GetMesh();
         std::vector<CellPtr> cells;
         MAKE_PTR(TransitCellProliferativeType, p_transit_type);
-        CellsGenerator<StochasticDurationCellCycleModel, 2> cells_generator;
+        CellsGenerator<UniformlyDistributedCellCycleModel, 2> cells_generator;
         cells_generator.GenerateBasicRandom(cells, p_mesh->GetNumNodes(), p_transit_type);
 
         MeshBasedCellPopulation<2> cell_population(*p_mesh, cells);

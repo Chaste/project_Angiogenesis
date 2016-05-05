@@ -20,7 +20,7 @@
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "DifferentiatedCellProliferativeType.hpp"
 #include "CaBasedCellPopulationWithVesselsGenerator.hpp"
-#include "StochasticDurationCellCycleModel.hpp"
+#include "UniformlyDistributedCellCycleModel.hpp"
 #include "CellLabelWriter.hpp"
 #include "CellMutationStatesWriter.hpp"
 #include "NodeLocationWriter.hpp"

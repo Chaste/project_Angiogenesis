@@ -46,6 +46,7 @@
 #include "CaVesselSegment.hpp"
 #include "VascularNode.hpp"
 #include "AbstractCellPopulation.hpp"
+#include "CaBasedCellPopulation.hpp"
 #include "Part.hpp"
 
 /**
@@ -281,6 +282,8 @@ public:
      * @param rCellPopulation a reference to the cell population
      */
     void SetCellPopulation(AbstractCellPopulation<SPACE_DIM>& rCellPopulation);
+
+    void SetCaBasedPopulation(boost::shared_ptr<CaBasedCellPopulation<SPACE_DIM> > pPopulation);
 
     /**
      * Set the grid extents in x, y, z
