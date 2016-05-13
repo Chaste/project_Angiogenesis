@@ -81,6 +81,12 @@ GreensFunctionSolver<DIM>::~GreensFunctionSolver()
 }
 
 template<unsigned DIM>
+void GreensFunctionSolver<DIM>::SetSubSegmentCutoff(double value)
+{
+    mSubsegmentCutoff = value;
+}
+
+template<unsigned DIM>
 void GreensFunctionSolver<DIM>::Solve()
 {
     // Set up the sub-segment and tissue point co-ordinates
@@ -201,20 +207,14 @@ void GreensFunctionSolver<DIM>::Solve()
     }
 
     std::map<std::string, std::vector<double> > segmentPointData;
-    std::map<std::string, std::vector<double> > tissuePointData;
-    tissuePointData[this->mpPde->GetVariableName()] = mTissueConcentration;
-
     this->mPointSolution = std::vector<double>(mTissueConcentration.size(), 0.0);
     for(unsigned idx=0; idx<mTissueConcentration.size(); idx++)
     {
         this->mPointSolution[idx] = mTissueConcentration[idx];
     }
 
-
-    segmentPointData[this->mpPde->GetVariableName()] = mSegmentConcentration;
-    tissuePointData["Sink Rate"] = mSinkRates;
-    segmentPointData["Source Rate"] = mSourceRates;
-    this->UpdateSolution(tissuePointData);
+    segmentPointData[this->mLabel] = mSegmentConcentration;
+    this->UpdateSolution(mTissueConcentration);
     if(this->mWriteSolution)
     {
         this->WriteSolution(segmentPointData);

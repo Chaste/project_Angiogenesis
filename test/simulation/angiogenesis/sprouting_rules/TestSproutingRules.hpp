@@ -88,7 +88,7 @@ public:
         boost::shared_ptr<FunctionMap<2> > p_funciton_map = FunctionMap<2>::Create();
         p_funciton_map->SetGrid(p_grid);
         std::vector<double> vegf_field = std::vector<double>(extents[0]*extents[1], 0.15);
-        p_funciton_map->SetPointSolution(vegf_field);
+        p_funciton_map->UpdateSolution(vegf_field);
 
         // Set up a sprouting rule
         boost::shared_ptr<Owen2011SproutingRule<2> > p_sprouting_rule = Owen2011SproutingRule<2>::Create();

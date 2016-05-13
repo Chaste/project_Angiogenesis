@@ -42,8 +42,7 @@
 
 template<unsigned DIM>
 DensityMap<DIM>::DensityMap()
-    :   AbstractRegularGridHybridSolver<DIM>(),
-        mpNetwork()
+    :   AbstractRegularGridHybridSolver<DIM>()
 {
 
 }
@@ -59,12 +58,6 @@ template<unsigned DIM>
 DensityMap<DIM>::~DensityMap()
 {
 
-}
-
-template<unsigned DIM>
-void DensityMap<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
-{
-    mpNetwork = pNetwork;
 }
 
 template<unsigned DIM>
@@ -152,6 +145,11 @@ double DensityMap<DIM>::LengthOfLineInBox(c_vector<double, DIM> start_point, c_v
 template<unsigned DIM>
 void DensityMap<DIM>::Solve()
 {
+    if(!this->mpVtkSolution)
+    {
+        this->Setup();
+    }
+
     unsigned number_of_points = this->mpRegularGrid->GetNumberOfPoints();
     unsigned extents_x = this->mpRegularGrid->GetExtents()[0];
     unsigned extents_y = this->mpRegularGrid->GetExtents()[1];
@@ -162,10 +160,7 @@ void DensityMap<DIM>::Solve()
     std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments;
     if (this->mpNetwork)
     {
-        if(this->mpNetwork)
-        {
-            segments = this->mpNetwork->GetVesselSegments();
-        }
+        segments = this->mpNetwork->GetVesselSegments();
         for (unsigned i = 0; i < extents_z; i++) // Z
         {
             for (unsigned j = 0; j < extents_y; j++) // Y
@@ -175,23 +170,19 @@ void DensityMap<DIM>::Solve()
                     unsigned grid_index = this->mpRegularGrid->Get1dGridIndex(k, j, i);
                     c_vector<double, DIM> location = this->mpRegularGrid->GetLocation(k ,j, i);
 
-                    if(this->mpNetwork)
+                    for (unsigned idx = 0; idx <  segments.size(); idx++)
                     {
-                        for (unsigned idx = 0; idx <  segments.size(); idx++)
-                        {
-                            vessel_solution[grid_index] += LengthOfLineInBox(segments[idx]->GetNode(0)->GetLocationVector(),
-                                                                             segments[idx]->GetNode(1)->GetLocationVector(),
-                                                                             location, spacing);
-                        }
-                        vessel_solution[grid_index] /= (std::pow(spacing,3));
+                        vessel_solution[grid_index] += LengthOfLineInBox(segments[idx]->GetNode(0)->GetLocationVector(),
+                                                                         segments[idx]->GetNode(1)->GetLocationVector(),
+                                                                         location, spacing);
                     }
+                    vessel_solution[grid_index] /= (std::pow(spacing,3));
                 }
             }
         }
     }
-    std::map<std::string, std::vector<double> > data;
-    data["VesselDensity"] = vessel_solution;
-    this->UpdateSolution(data);
+
+    this->UpdateSolution(vessel_solution);
 
     if (this->mWriteSolution)
     {

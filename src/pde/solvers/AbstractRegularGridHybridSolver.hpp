@@ -67,6 +67,12 @@ protected:
      */
     boost::shared_ptr<RegularGrid<DIM> > mpRegularGrid;
 
+    /**
+     * The solution at the grid points
+     */
+    std::vector<double> mPointSolution;
+
+
 public:
 
     /**
@@ -86,20 +92,24 @@ public:
     boost::shared_ptr<RegularGrid<DIM> > GetGrid();
 
     /**
-     * Over-ridden method to return the solver output sample at discrete points.
-     * Different sampling strategies can be implemented in child classes. This method uses a VTK probe filter
-     * for sampling.
+     * Return the solver output sampled at discrete points.
      * @param samplePoints the points to be sampled at
      * @param samplingStrategy use the default sampling strategy
      * @return a vector of the point values
      */
-    virtual std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints, bool samplingStrategy = true);
+    virtual std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints);
+
+    virtual std::vector<double> GetSolutionAtGridPoints(boost::shared_ptr<RegularGrid<DIM> > pGrid);
 
     /**
-     * Return the solution as vtk image data, uses the sampling method specified in GetSolutionAtPoints.
-     * @return the solution as vtk image data using the mGrid as a reference for the structured grid parameters
+     * Return the solution as vtk image data
      */
     vtkSmartPointer<vtkImageData> GetVtkSolution();
+
+    /**
+     * Return the solution on the grid points
+     */
+    std::vector<double> GetPointSolution();
 
     /**
      * Set the structured grid
@@ -108,28 +118,32 @@ public:
     void SetGrid(boost::shared_ptr<RegularGrid<DIM> > pRegularGrid);
 
     /**
-     * Over-ridden Setup method. Sets up a VTK structured grid for results writing.
+     * Overridden Setup method.
      */
     virtual void Setup();
 
-    bool HasRegularGrid();
+    /**
+     * Update the solution manually
+     */
+    virtual void UpdateSolution(std::vector<double>& data);
 
     /**
-     * Update the VTK solution prior to writing to file. Should be called by the Solve method in child classes.
-     * @param data solution data map
+     * Update the cell data as passed in
      */
-    void UpdateSolution(std::map<std::string, std::vector<double> >& data);
-
-    /**
-     * Update the VTK solution prior to writing to file. Should be called by the Solve method in child classes.
-     * @param data solution data map
-     */
-    void UpdateVtkBaseSolution(std::vector<double> data);
-
     virtual void UpdateCellData();
 
     /**
-     * Over-ridden Write method. Writes the solution to file using a VTK structured grid.
+     * Overridden Update method.
+     */
+    virtual void Update();
+
+    /**
+     * Overridden Update method.
+     */
+    virtual void Solve() = 0;
+
+    /**
+     * Overridden Write method. Writes the solution to file using a VTK structured grid.
      */
     void Write();
 };

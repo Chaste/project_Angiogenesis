@@ -141,7 +141,7 @@ public:
         {
             vegf_field[idx] = max_vegf * p_grid->GetLocationOf1dIndex(idx)[0] / (float(extents[0]) * spacing);
         }
-        p_funciton_map->SetPointSolution(vegf_field);
+        p_funciton_map->UpdateSolution(vegf_field);
 
         // Set up the migration rule
         boost::shared_ptr<Owen2011MigrationRule<2> > p_migration_rule = Owen2011MigrationRule<2>::Create();

@@ -217,16 +217,16 @@ void VascularTumourSolver<DIM>::Increment()
             mHybridSolvers[idx]->SetFileName("/" + mHybridSolvers[idx]->GetLabel() +"_solution_" + boost::lexical_cast<std::string>(num_steps)+".vti");
 
             // Transfer PDE solutions for coupled problems
-            if(idx>0)
-            {
-                for(unsigned jdx=0; jdx<mHybridSolvers[idx]->GetPde()->GetDiscreteSources().size(); jdx++)
-                {
-                    if(mHybridSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->GetType()==SourceType::SOLUTION)
-                    {
-                        mHybridSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->SetSolution(mHybridSolvers[idx-1]->GetPointSolution());
-                    }
-                }
-            }
+//            if(idx>0 and mHybridSolvers[idx]->GetPde())
+//            {
+//                for(unsigned jdx=0; jdx<mHybridSolvers[idx]->GetPde()->GetDiscreteSources().size(); jdx++)
+//                {
+//                    if(mHybridSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->GetType()==SourceType::SOLUTION)
+//                    {
+//                        mHybridSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->SetSolution(mHybridSolvers[idx-1]->GetSolutionAtGridPoints());
+//                    }
+//                }
+//            }
             if(mOutputFrequency > 0 && num_steps % mOutputFrequency == 0)
             {
                 mHybridSolvers[idx]->SetWriteSolution(true);

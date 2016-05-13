@@ -41,15 +41,19 @@
 #include "FiniteDifferenceSolver.hpp"
 #include "SimplePetscNonlinearSolver.hpp"
 
+// Nonlinear solve methods
 template<unsigned DIM>
 PetscErrorCode HyrbidFiniteDifference_ComputeResidual(SNES snes, Vec solution_guess, Vec residual, void* pContext);
 
 template<unsigned DIM>
-PetscErrorCode HyrbidFiniteDifference_ComputeJacobian(SNES snes, Vec input, Mat* pJacobian, Mat* pPreconditioner, MatStructure* pMatStructure, void* pContext);
+PetscErrorCode HyrbidFiniteDifference_ComputeJacobian(SNES snes, Vec input, Mat jacobian, Mat preconditioner, void* pContext);
 
 template<unsigned DIM>
 FiniteDifferenceSolver<DIM>::FiniteDifferenceSolver()
-    :   AbstractRegularGridHybridSolver<DIM>()
+    :   AbstractRegularGridHybridSolver<DIM>(),
+        mpBoundaryConditions(),
+        mUpdateBoundaryConditionsEachSolve(true),
+        mBoundaryConditionsSet(false)
 {
 
 }
@@ -65,6 +69,18 @@ template<unsigned DIM>
 FiniteDifferenceSolver<DIM>::~FiniteDifferenceSolver()
 {
 
+}
+
+template<unsigned DIM>
+boost::shared_ptr<std::vector<std::pair<bool, double> > > FiniteDifferenceSolver<DIM>::GetRGBoundaryConditions()
+{
+    return mpBoundaryConditions;
+}
+
+template<unsigned DIM>
+void FiniteDifferenceSolver<DIM>::UpdateBoundaryConditionsEachSolve(bool doUpdate)
+{
+    mUpdateBoundaryConditionsEachSolve = doUpdate;
 }
 
 template<unsigned DIM>
@@ -100,7 +116,7 @@ void FiniteDifferenceSolver<DIM>::Setup()
         this->mpNonLinearPde->SetRegularGrid(this->mpRegularGrid);
     }
 
-    // Set up the boundary conditions
+    // Set up the boundary conditions. Use a different description from normal hybrid BCs for efficiency.
     mpBoundaryConditions = boost::shared_ptr<std::vector<std::pair<bool, double> > > (new std::vector<std::pair<bool, double> >(this->mpRegularGrid->GetNumberOfPoints()));
     for(unsigned idx=0; idx<this->mpRegularGrid->GetNumberOfPoints(); idx++)
     {
@@ -134,9 +150,13 @@ void FiniteDifferenceSolver<DIM>::Update()
     }
 
     // Update the boundary conditions
-    for(unsigned bound_index=0; bound_index<this->mBoundaryConditions.size(); bound_index++)
+    if(mUpdateBoundaryConditionsEachSolve or !mBoundaryConditionsSet)
     {
-        this->mBoundaryConditions[bound_index]->UpdateRegularGridBoundaryConditions(mpBoundaryConditions);
+        for(unsigned bound_index=0; bound_index<this->mBoundaryConditions.size(); bound_index++)
+        {
+            this->mBoundaryConditions[bound_index]->UpdateRegularGridBoundaryConditions(mpBoundaryConditions);
+        }
+        mBoundaryConditionsSet = true;
     }
 }
 
@@ -259,9 +279,7 @@ void FiniteDifferenceSolver<DIM>::DoLinearSolve()
         this->mPointSolution[row] = soln_repl[row];
     }
 
-    std::map<std::string, std::vector<double> > data;
-    data[this->mLabel] = this->mPointSolution;
-    this->UpdateSolution(data);
+    this->UpdateSolution(this->mPointSolution);
 
     if (this->mWriteSolution)
     {
@@ -285,25 +303,23 @@ void FiniteDifferenceSolver<DIM>::Solve()
     {
         // Set up initial Guess
         unsigned number_of_points = this->mpRegularGrid->GetNumberOfPoints();
-        //Vec initial_guess=PetscTools::CreateAndSetVec(number_of_points, 1.0);
+        Vec initial_guess=PetscTools::CreateAndSetVec(number_of_points, 1.0);
 
-        //SimplePetscNonlinearSolver solver_petsc;
-        //int length = 7;
-        //Vec answer_petsc = solver_petsc.Solve(&HyrbidFiniteDifference_ComputeResidual<DIM>,
-         //                                     &HyrbidFiniteDifference_ComputeJacobian<DIM>, initial_guess, length, this);
+        SimplePetscNonlinearSolver solver_petsc;
+        int length = 7;
+        Vec answer_petsc = solver_petsc.Solve(&HyrbidFiniteDifference_ComputeResidual<DIM>,
+                                              &HyrbidFiniteDifference_ComputeJacobian<DIM>, initial_guess, length, this);
 
-        //ReplicatableVector soln_repl(answer_petsc);
+        ReplicatableVector soln_repl(answer_petsc);
 
         // Populate the solution vector
         this->mPointSolution = std::vector<double>(number_of_points, 0.0);
         for (unsigned row = 0; row < number_of_points; row++)
         {
-           // this->mPointSolution[row] = soln_repl[row];
+           this->mPointSolution[row] = soln_repl[row];
         }
 
-        std::map<std::string, std::vector<double> > data;
-        data[this->mLabel] = this->mPointSolution;
-        this->UpdateSolution(data);
+        this->UpdateSolution(this->mPointSolution);
 
         if (this->mWriteSolution)
         {
@@ -427,10 +443,8 @@ PetscErrorCode HyrbidFiniteDifference_ComputeResidual(SNES snes, Vec solution_gu
 }
 
 template<unsigned DIM>
-PetscErrorCode HyrbidFiniteDifference_ComputeJacobian(SNES snes, Vec input, Mat* pJacobian, Mat* pPreconditioner, MatStructure* pMatStructure, void* pContext)
+PetscErrorCode HyrbidFiniteDifference_ComputeJacobian(SNES snes, Vec input, Mat jacobian, Mat preconditioner, void* pContext)
 {
-    Mat jacobian = *pJacobian;
-
     FiniteDifferenceSolver<DIM>* solver = (FiniteDifferenceSolver<DIM>*) pContext;
     PetscMatTools::Zero(jacobian);
     PetscMatTools::SwitchWriteMode(jacobian);

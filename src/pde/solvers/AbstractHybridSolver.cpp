@@ -40,15 +40,14 @@ AbstractHybridSolver<DIM>::AbstractHybridSolver()
     :   mpNetwork(),
         mpCellPopulation(NULL),
         mCellPopulationIsSet(false),
-        mpPde(),
-        mpNonLinearPde(),
-        mBoundaryConditions(),
         mpOutputFileHandler(),
         mFilename(),
         mLabel("Default"),
-        mPointSolution(),
         IsSetupForSolve(false),
-        mWriteSolution(false)
+        mWriteSolution(false),
+        mpPde(),
+        mpNonLinearPde(),
+        mBoundaryConditions()
 {
 
 }
@@ -60,15 +59,15 @@ AbstractHybridSolver<DIM>::~AbstractHybridSolver()
 }
 
 template<unsigned DIM>
-void AbstractHybridSolver<DIM>::SetWriteSolution(bool write)
-{
-    mWriteSolution = write;
-}
-
-template<unsigned DIM>
 void AbstractHybridSolver<DIM>::AddBoundaryCondition(boost::shared_ptr<HybridBoundaryCondition<DIM> > pBoundaryCondition)
 {
     mBoundaryConditions.push_back(pBoundaryCondition);
+}
+
+template<unsigned DIM>
+const std::string& AbstractHybridSolver<DIM>::GetLabel()
+{
+    return mLabel;
 }
 
 template<unsigned DIM>
@@ -82,16 +81,21 @@ boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > AbstractHybridSolver<DIM>:
 }
 
 template<unsigned DIM>
+boost::shared_ptr<HybridNonLinearEllipticPde<DIM, DIM> > AbstractHybridSolver<DIM>::GetNonLinearPde()
+{
+    if(!mpNonLinearPde)
+    {
+        EXCEPTION("A nonlinear pde has not been set.");
+    }
+    return mpNonLinearPde;
+}
+
+
+template<unsigned DIM>
 void AbstractHybridSolver<DIM>::SetCellPopulation(AbstractCellPopulation<DIM>& rCellPopulation)
 {
     mpCellPopulation = &rCellPopulation;
     mCellPopulationIsSet = true;
-}
-
-template<unsigned DIM>
-std::vector<double> AbstractHybridSolver<DIM>::GetPointSolution()
-{
-    return mPointSolution;
 }
 
 template<unsigned DIM>
@@ -107,21 +111,9 @@ void AbstractHybridSolver<DIM>::SetFileName(const std::string& rFilename)
 }
 
 template<unsigned DIM>
-bool AbstractHybridSolver<DIM>::HasRegularGrid()
-{
-    return false;
-}
-
-template<unsigned DIM>
 void AbstractHybridSolver<DIM>::SetLabel(const std::string& label)
 {
     mLabel = label;
-}
-
-template<unsigned DIM>
-const std::string& AbstractHybridSolver<DIM>::GetLabel()
-{
-    return mLabel;
 }
 
 template<unsigned DIM>
@@ -131,9 +123,28 @@ void AbstractHybridSolver<DIM>::SetPde(boost::shared_ptr<HybridLinearEllipticPde
 }
 
 template<unsigned DIM>
+void AbstractHybridSolver<DIM>::SetNonLinearPde(boost::shared_ptr<HybridNonLinearEllipticPde<DIM, DIM> > pPde)
+{
+    mpNonLinearPde = pPde;
+}
+
+template<unsigned DIM>
+bool AbstractHybridSolver<DIM>::CellPopulationIsSet()
+{
+    return mCellPopulationIsSet;
+}
+
+
+template<unsigned DIM>
 void AbstractHybridSolver<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
 {
     mpNetwork = pNetwork;
+}
+
+template<unsigned DIM>
+void AbstractHybridSolver<DIM>::SetWriteSolution(bool write)
+{
+    mWriteSolution = write;
 }
 
 // Explicit instantiation

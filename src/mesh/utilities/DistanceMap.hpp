@@ -42,7 +42,6 @@
 template<unsigned DIM>
 class DistanceMap : public AbstractRegularGridHybridSolver<DIM>
 {
-    boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
 
 public:
 
@@ -53,19 +52,7 @@ public:
      */
     static boost::shared_ptr<DistanceMap<DIM> > Create();
 
-    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
-
     ~DistanceMap();
-
-    void Update()
-    {
-
-    }
-
-    void UpdateCellData()
-    {
-
-    }
 
     void Solve();
 

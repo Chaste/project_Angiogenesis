@@ -72,22 +72,18 @@ public:
         p_grid->SetExtents(extents);
 
         // Prescribe a linearly increasing vegf field using a function map
-        boost::shared_ptr<FunctionMap<3> > p_funciton_map = FunctionMap<3>::Create();
-        p_funciton_map->SetGrid(p_grid);
         std::vector<double> vegf_field = std::vector<double>(extents[0] * extents[1], 0.0);
         for (unsigned idx = 0; idx < extents[0] * extents[1]; idx++)
         {
             vegf_field[idx] = 0.2*p_grid->GetLocationOf1dIndex(idx)[0] / (spacing * extents[0]);
         }
-        p_funciton_map->SetPointSolution(vegf_field);
 
-        std::map<std::string, std::vector<double> > data;
-        data["Vegf"] = vegf_field;
-        p_grid->Write(p_handler);
+        boost::shared_ptr<FunctionMap<3> > p_funciton_map = FunctionMap<3>::Create();
+        p_funciton_map->SetGrid(p_grid);
         p_funciton_map->SetFileHandler(p_handler);
         p_funciton_map->SetFileName("Function.vti");
         p_funciton_map->Setup();
-        p_funciton_map->UpdateSolution(data);
+        p_funciton_map->UpdateSolution(vegf_field);
         p_funciton_map->Write();
 
         //Set up the limbal vessel
@@ -150,15 +146,12 @@ public:
         {
             vegf_field[idx] = 0.2*p_grid->GetLocationOf1dIndex(idx)[0] / (spacing * extents[0]);
         }
-        p_funciton_map->SetPointSolution(vegf_field);
 
-        std::map<std::string, std::vector<double> > data;
-        data["Vegf"] = vegf_field;
         p_grid->Write(p_handler);
         p_funciton_map->SetFileHandler(p_handler);
         p_funciton_map->SetFileName("Function.vti");
         p_funciton_map->Setup();
-        p_funciton_map->UpdateSolution(data);
+        p_funciton_map->UpdateSolution(vegf_field);
         p_funciton_map->Write();
 
         //Set up the limbal vessel
@@ -220,15 +213,11 @@ public:
         {
             vegf_field[idx] = 0.2 + p_grid->GetLocationOf1dIndex(idx)[0] / (spacing * extents[0]); // 0.1 to 1.1 nM across the grid x extents
         }
-        p_funciton_map->SetPointSolution(vegf_field);
 
-        std::map<std::string, std::vector<double> > data;
-        data["Vegf"] = vegf_field;
-        p_grid->Write(p_handler);
         p_funciton_map->SetFileHandler(p_handler);
         p_funciton_map->SetFileName("Function.vti");
         p_funciton_map->Setup();
-        p_funciton_map->UpdateSolution(data);
+        p_funciton_map->UpdateSolution(vegf_field);
         p_funciton_map->Write();
 
         //Set up the limbal vessel

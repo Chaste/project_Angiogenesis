@@ -52,25 +52,9 @@ public:
      */
     static boost::shared_ptr<FunctionMap<DIM> > Create();
 
-
     ~FunctionMap();
 
-    void Update()
-    {
-
-    }
-
-    void UpdateCellData()
-    {
-
-    }
-
-    void SetPointSolution(std::vector<double> solution);
-
-    void Solve()
-    {
-
-    }
+    void Solve();
 
 };
 

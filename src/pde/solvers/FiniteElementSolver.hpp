@@ -51,23 +51,34 @@ class FiniteElementSolver : public AbstractHybridSolver<DIM>
 {
     using AbstractHybridSolver<DIM>::Solve;
 
+    // Keep the nodal solution
     std::vector<double> mFeSolution;
+
+    // The solution in the form of a vtk grid
     vtkSmartPointer<vtkUnstructuredGrid> mFeVtkSolution;
+
+    // The finite element mesh
     boost::shared_ptr<HybridMesh<DIM, DIM> > mpMesh;
 
-    std::vector<double> mDomainBounds;
-    double mDomainOutOfBoundsValue;
-
-    boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
-    double mNetworkBounds;
+    // Use the Chaste newton solver
     bool mUseNewton;
+
+    // Use the linear solve as a guess
     bool mUseLinearSolveForGuess;
+
+    // An initial solution guess
     std::vector<double> mGuess;
 
 public:
 
+    /*
+     * Constructor
+     */
     FiniteElementSolver();
 
+    /*
+     * Destructor
+     */
     ~FiniteElementSolver();
 
     /*
@@ -75,48 +86,34 @@ public:
      */
     static boost::shared_ptr<FiniteElementSolver<DIM> > Create();
 
-    std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints, bool useVtkSampling = true);
+    /*
+     * Overridden solution at points
+     */
+    std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints);
 
     std::vector<double> GetSolutionAtPointsUsingVtk(std::vector<c_vector<double, DIM> > samplePoints);
 
-    std::vector<double> GetSolutionOnRegularGrid(boost::shared_ptr<RegularGrid<DIM, DIM> > pGrid, bool useVtkSampling = true);
+    std::vector<double> GetSolutionAtGridPoints(boost::shared_ptr<RegularGrid<DIM, DIM> > pGrid);
 
-    std::vector<double> GetNodalSolution()
-    {
-        return mFeSolution;
-    }
+    std::vector<double> GetNodalSolution();
 
-    vtkSmartPointer<vtkImageData> GetVtkRegularGridSolution(boost::shared_ptr<RegularGrid<DIM, DIM> > pGrid, bool useVtkSampling = true);
+    void ReadSolution();
 
-    void SetSamplingDomainBounds(std::vector<double> domainBounds, double domainOutOfBoundsValue);
-
-    void SetSamplingNetworkBounds(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork, double networkBounds);
+    void Setup();
 
     void SetMesh(boost::shared_ptr<HybridMesh<DIM, DIM> > pMesh);
 
     void Solve();
 
-    void SetGuess(std::vector<double> guess)
-    {
-        mGuess = guess;
-    }
+    void SetGuess(std::vector<double> guess);
 
-    void SetUseSimpleNetonSolver(bool useNewton = true)
-    {
-        mUseNewton = useNewton;
-    }
-    void SetUseLinearSolveForGuess(bool useLinearSolve = true)
-    {
-        mUseLinearSolveForGuess = useLinearSolve;
-    }
+    void SetUseSimpleNetonSolver(bool useNewton = true);
+
+    void SetUseLinearSolveForGuess(bool useLinearSolve = true);
 
     void Update();
 
     void UpdateCellData();
-
-    void Setup();
-    
-	void ReadSolution();
 
 private:
 

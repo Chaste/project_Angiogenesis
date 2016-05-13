@@ -40,8 +40,7 @@
 template<unsigned DIM>
 DistanceMap<DIM>::DistanceMap()
 
-    :   AbstractRegularGridHybridSolver<DIM>(),
-        mpNetwork()
+    :   AbstractRegularGridHybridSolver<DIM>()
 {
 
 }
@@ -60,14 +59,13 @@ DistanceMap<DIM>::~DistanceMap()
 }
 
 template<unsigned DIM>
-void DistanceMap<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
-{
-    mpNetwork = pNetwork;
-}
-
-template<unsigned DIM>
 void DistanceMap<DIM>::Solve()
 {
+    if(!this->mpVtkSolution)
+    {
+        this->Setup();
+    }
+
     unsigned number_of_points = this->mpRegularGrid->GetNumberOfPoints();
     unsigned extents_x = this->mpRegularGrid->GetExtents()[0];
     unsigned extents_y = this->mpRegularGrid->GetExtents()[1];
@@ -78,10 +76,7 @@ void DistanceMap<DIM>::Solve()
     if (this->mpNetwork)
     {
         std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments;
-        if(this->mpNetwork)
-        {
-            segments = this->mpNetwork->GetVesselSegments();
-        }
+        segments = this->mpNetwork->GetVesselSegments();
         for (unsigned i = 0; i < extents_z; i++) // Z
         {
             for (unsigned j = 0; j < extents_y; j++) // Y
@@ -90,27 +85,22 @@ void DistanceMap<DIM>::Solve()
                 {
                     unsigned grid_index = this->mpRegularGrid->Get1dGridIndex(k, j, i);
                     c_vector<double, DIM> location = this->mpRegularGrid->GetLocation(k ,j, i);
-                    if(this->mpNetwork)
+                    double min_distance = 1.e6;
+                    for (unsigned idx = 0; idx <  segments.size(); idx++)
                     {
-                        double min_distance = 1.e6;
-                        for (unsigned idx = 0; idx <  segments.size(); idx++)
+                        double seg_dist = segments[idx]->GetDistance(location);
+                        if(seg_dist < min_distance)
                         {
-                            double seg_dist = segments[idx]->GetDistance(location);
-                            if(seg_dist < min_distance)
-                            {
-                                min_distance = seg_dist;
-                            }
+                            min_distance = seg_dist;
                         }
-                        vessel_solution[grid_index] = min_distance;
                     }
+                    vessel_solution[grid_index] = min_distance;
                 }
             }
         }
     }
 
-    std::map<std::string, std::vector<double> > data;
-    data["VesselDistance"] = vessel_solution;
-    this->UpdateSolution(data);
+    this->UpdateSolution(vessel_solution);
 
     if (this->mWriteSolution)
     {

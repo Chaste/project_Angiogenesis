@@ -73,20 +73,7 @@ public:
 
     void Solve();
 
-    void SetSubSegmentCutoff(double value)
-    {
-        mSubsegmentCutoff = value;
-    }
-
-    void Update()
-    {
-
-    }
-
-    void UpdateCellData()
-    {
-
-    }
+    void SetSubSegmentCutoff(double value);
 
 private:
 

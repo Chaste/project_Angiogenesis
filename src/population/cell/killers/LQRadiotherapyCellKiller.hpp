@@ -65,12 +65,29 @@ class LQRadiotherapyCellKiller : public AbstractCellKiller<DIM>
 	/**
 	 * Dose of Radiation injected
 	 */
-	double doseInjected;
+	double mDose;
 
 	/**
 	 * Time at which radiotherapy is used
 	 */
-	double timeOfRadiation;
+	std::vector<double> mRadiationTimes;
+
+
+    double mOerAlphaMax;
+
+    double mOerAlphaMin;
+
+    double mOerBetaMax;
+
+    double mOerBetaMin;
+
+    double mKOer;
+
+    double mAlphaMax;
+
+    double mBetaMax;
+
+    bool mUseOer;
 
 private:
 
@@ -111,7 +128,7 @@ public:
 	/**
 	 * Sets timeOfRadiation, the time at which radiation occurs
 	 */
-	void SetTimeOfRadiation(double t);
+	void SetTimeOfRadiation(std::vector<double> t);
 
 	/**
 	 * Sets cancerousLinearRadiosensitivity and cancerousQuadraticRadiosensitivity to specified concentration.
@@ -132,6 +149,22 @@ public:
 	double GetCancerousLinearRadiosensitivity();
 	double GetCancerousQuadraticRadiosensitivity();
 	double GetDoseInjected();
+
+	 void SetOerAlphaMax(double value);
+
+    void SetOerAlphaMin(double value);
+
+    void SetOerBetaMax(double value);
+
+    void SetOerBetaMin(double value);
+
+    void SetOerConstant(double value);
+
+    void SetAlphaMax(double value);
+
+    void SetBetaMax(double value);
+
+    void UseOer(bool useOer);
 
 	/**
 	 * Overridden method to test a given cell for apoptosis.

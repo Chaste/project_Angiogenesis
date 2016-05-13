@@ -50,7 +50,13 @@ template<unsigned DIM>
 class FiniteDifferenceSolver : public AbstractRegularGridHybridSolver<DIM>
 {
 
+    /* Description of boundary conditions for this grid
+     */
     boost::shared_ptr<std::vector<std::pair<bool, double> > > mpBoundaryConditions;
+
+    bool mUpdateBoundaryConditionsEachSolve;
+
+    bool mBoundaryConditionsSet;
 
 public:
 
@@ -65,24 +71,31 @@ public:
 
     /* Destructor
      */
-    ~FiniteDifferenceSolver();
+    virtual ~FiniteDifferenceSolver();
 
+    /* Get the boundary conditions in the finite difference representation
+     */
+    boost::shared_ptr<std::vector<std::pair<bool, double> > > GetRGBoundaryConditions();
+
+    /* Overridden solve method
+     */
+    virtual void Solve();
+
+    /* Overridden setup method
+     */
     void Setup();
 
+    /* Overridden update method
+     */
     void Update();
 
-    /* Solve the pde
-     * @param writeSolution whether to write the solution to file
-     */
-    void Solve();
+    void UpdateBoundaryConditionsEachSolve(bool doUpdate);
 
-    boost::shared_ptr<std::vector<std::pair<bool, double> > > GetRGBoundaryConditions()
-        {
-            return mpBoundaryConditions;
-        }
 
 private:
 
+    /* Solver for linear pdes
+     */
     void DoLinearSolve();
 
 };

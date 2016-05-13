@@ -41,14 +41,18 @@
 #include "OutputFileHandler.hpp"
 #include "CaVascularNetwork.hpp"
 #include "AbstractCellPopulation.hpp"
-#include "HybridBoundaryCondition.hpp"
 #include "HybridLinearEllipticPde.hpp"
 #include "HybridNonLinearEllipticPde.hpp"
+#include "HybridBoundaryCondition.hpp"
+#include "RegularGrid.hpp"
 
 /**
- * An abstract solver class for hybrid continuum-discrete problems.
- * Concrete classes can solve PDEs or perform other computations based on interpolation
- * of discrete entities (points, lines) onto structured or unstructured grids.
+ * An abstract solver class for hybrid continuum-discrete field problems.
+ * The class is used by the VascularTumourSolver to provide a concentration field for a single,
+ * labelled quantity for cells and/or vessels.
+ * It is responsible for updating the values of data fields in cells
+ * and vessels on each call and optionally writing the solution to file.
+ * Methods can also be over-ridden by Python classes for use with external solvers.
  */
 template<unsigned DIM>
 class AbstractHybridSolver
@@ -57,34 +61,22 @@ class AbstractHybridSolver
 protected:
 
     /**
-     * The vessel network
+     * The vessel network.
      */
     boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
 
     /**
-     * The cell population. This memory pointed to is not managed in this class.
+     * The cell population. IMPORTANT: The memory pointed to is not managed in this class.
      */
     AbstractCellPopulation<DIM>* mpCellPopulation;
 
+    /**
+     * Has a cell population been set. Avoids querying NULL pointer.
+     */
     bool mCellPopulationIsSet;
 
     /**
-     * The PDE to be solved (used in certain child classes)
-     */
-    boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > mpPde;
-
-    /**
-     * The non-linear PDE to be solved (used in certain child classes)
-     */
-    boost::shared_ptr<HybridNonLinearEllipticPde<DIM, DIM> > mpNonLinearPde;
-
-    /**
-     * The Hybrid boundary conditions (used with PDEs in certain child classes)
-     */
-    std::vector<boost::shared_ptr<HybridBoundaryCondition<DIM> > > mBoundaryConditions;
-
-    /**
-     *  File handler containing output directory information
+     *  File handler containing the output directory
      */
     boost::shared_ptr<OutputFileHandler> mpOutputFileHandler;
 
@@ -98,11 +90,30 @@ protected:
      */
     std::string mLabel;
 
-    std::vector<double> mPointSolution;
-
+    /**
+     *  Has the Setup function been called.
+     */
     bool IsSetupForSolve;
 
+    /**
+     *  Should the solution be writtento file
+     */
     bool mWriteSolution;
+
+    /**
+     * The PDE to be solved, optional
+     */
+    boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > mpPde;
+
+    /**
+     * The non-linear PDE to be solved, optional
+     */
+    boost::shared_ptr<HybridNonLinearEllipticPde<DIM, DIM> > mpNonLinearPde;
+
+    /**
+     * The Hybrid boundary conditions, optional
+     */
+    std::vector<boost::shared_ptr<HybridBoundaryCondition<DIM> > > mBoundaryConditions;
 
 public:
 
@@ -122,7 +133,11 @@ public:
      */
     void AddBoundaryCondition(boost::shared_ptr<HybridBoundaryCondition<DIM> > pBoundaryCondition);
 
-    void SetWriteSolution(bool write=true);
+    /**
+     * Return the name of the field being solved for
+     * @return a reference to the field name
+     */
+    const std::string& GetLabel();
 
     /**
      * Return the PDE
@@ -130,59 +145,31 @@ public:
      */
     boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > GetPde();
 
-    boost::shared_ptr<HybridNonLinearEllipticPde<DIM, DIM> > GetNonLinearPde()
-    {
-        return mpNonLinearPde;
-    }
+    /**
+     * Return the nonlinear PDE
+     * @return the hybrid nonlinear elliptic pde
+     */
+    boost::shared_ptr<HybridNonLinearEllipticPde<DIM, DIM> > GetNonLinearPde();
 
     /**
-     * Return the solver output sample at discrete points. Different sampling strategies are implemented in child classes.
-     * @param samplePoints the points to be sampled at
-     * @param samplingStrategy use the default sampling strategy
-     * @return a vector of the point values
+     * Return the value of the field at the requested points
+     * @return the value of the field ordered according to input point order
      */
-    virtual std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints, bool samplingStrategy = true)
-    {
-            return std::vector<double> (samplePoints.size(), 0.0);
-    }
+    virtual std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints) = 0;
+
+    /**
+     * Return the value of the field at all points on the supplied grid
+     * @return the value of the field ordered according to input point order
+     */
+    virtual std::vector<double> GetSolutionAtGridPoints(boost::shared_ptr<RegularGrid<DIM> > pGrid) = 0;
+
+    bool CellPopulationIsSet();
 
     /**
      * Set the cell population
      * @param rCellPopulation a reference to the cell population
      */
     void SetCellPopulation(AbstractCellPopulation<DIM>& rCellPopulation);
-
-    /**
-     *  Set the PDE to be solved in certain child classes
-     * @param pPde the pde to be solved
-     */
-    void SetPde(boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > pPde);
-
-    void SetNonLinearPde(boost::shared_ptr<HybridNonLinearEllipticPde<DIM, DIM> > pPde)
-    {
-        mpNonLinearPde = pPde;
-    }
-
-    void SetLabel(const std::string& label);
-
-    const std::string& GetLabel();
-
-    /**
-     * Operations to be performed prior to the first solve
-     */
-    virtual void Setup() = 0;
-
-    /**
-     * Set the vessel network
-     * @param pNetwork the vessel network
-     */
-    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
-
-    /**
-     * Do the solve
-     * @param writeSolution whether to write the solution to file
-     */
-    virtual void Solve() = 0;
 
     /**
      * Set the file handler containing the working directory
@@ -196,16 +183,56 @@ public:
      */
     void SetFileName(const std::string& rFilename);
 
-    virtual bool HasRegularGrid();
+    /**
+     * Set the name of the field being solved for
+     * @param rLabel a reference to the field name
+     */
+    void SetLabel(const std::string& rLabel);
+
+    /**
+     *  Set the PDE to be solved
+     * @param pPde the pde to be solved
+     */
+    void SetPde(boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > pPde);
+
+    /**
+     *  Set the nonlinear PDE to be solved
+     * @param pPde the pde to be solved
+     */
+    void SetNonLinearPde(boost::shared_ptr<HybridNonLinearEllipticPde<DIM, DIM> > pPde);
+
+    /**
+     * Operations to be performed prior to the first solve
+     */
+    virtual void Setup() = 0;
+
+    /**
+     * Set the vessel network
+     * @param pNetwork the vessel network
+     */
+    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
+
+    /**
+     * Set whether to write the solution to file on next solve
+     * @param write write the solution
+     */
+    void SetWriteSolution(bool write=true);
+
+    /**
+     * Do the solve
+     */
+    virtual void Solve() = 0;
 
     /**
      * Operations to be performed prior to every solve
      */
     virtual void Update() = 0;
 
+    /**
+     * Set the cell data to the values in the field
+     */
     virtual void UpdateCellData() = 0;
 
-    std::vector<double> GetPointSolution();
     /**
      * Write the solution to file
      */

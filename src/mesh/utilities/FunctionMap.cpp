@@ -56,10 +56,11 @@ FunctionMap<DIM>::~FunctionMap()
 {
 
 }
+
 template<unsigned DIM>
-void FunctionMap<DIM>::SetPointSolution(std::vector<double> solution)
+void FunctionMap<DIM>::Solve()
 {
-    this->mPointSolution = solution;
+
 }
 
 // Explicit instantiation

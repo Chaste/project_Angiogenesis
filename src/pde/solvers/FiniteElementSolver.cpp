@@ -58,10 +58,6 @@ FiniteElementSolver<DIM>::FiniteElementSolver()
       mFeSolution(),
       mFeVtkSolution(),
       mpMesh(),
-      mDomainBounds(),
-      mDomainOutOfBoundsValue(0.0),
-      mpNetwork(),
-      mNetworkBounds(0.0),
       mUseNewton(false),
       mUseLinearSolveForGuess(false),
       mGuess()
@@ -110,13 +106,13 @@ void FiniteElementSolver<DIM>::ReadSolution()
 }
 
 template<unsigned DIM>
-std::vector<double> FiniteElementSolver<DIM>::GetSolutionOnRegularGrid(boost::shared_ptr<RegularGrid<DIM, DIM> > pGrid, bool useVtkSampling)
+std::vector<double> FiniteElementSolver<DIM>::GetSolutionAtGridPoints(boost::shared_ptr<RegularGrid<DIM, DIM> > pGrid)
 {
-    return GetSolutionAtPoints(pGrid->GetLocations(), useVtkSampling);
+    return GetSolutionAtPoints(pGrid->GetLocations());
 }
 
 template<unsigned DIM>
-std::vector<double> FiniteElementSolver<DIM>::GetSolutionAtPointsUsingVtk(std::vector<c_vector<double, DIM> > samplePoints)
+std::vector<double> FiniteElementSolver<DIM>::GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints)
 {
     if(!mFeVtkSolution)
     {
@@ -146,99 +142,13 @@ std::vector<double> FiniteElementSolver<DIM>::GetSolutionAtPointsUsingVtk(std::v
     p_probe_filter->Update();
 
     vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetOutput()->GetPointData();
-    unsigned num_points = p_point_data->GetArray(this->mpPde->GetVariableName().c_str())->GetNumberOfTuples();
+    unsigned num_points = p_point_data->GetArray(this->mLabel.c_str())->GetNumberOfTuples();
     std::vector<double> results(num_points);
     for(unsigned idx=0; idx<num_points; idx++)
     {
-        results[idx] = p_point_data->GetArray(this->mpPde->GetVariableName().c_str())->GetTuple1(idx);
+        results[idx] = p_point_data->GetArray(this->mLabel.c_str())->GetTuple1(idx);
     }
     return results;
-}
-
-template<unsigned DIM>
-vtkSmartPointer<vtkImageData> FiniteElementSolver<DIM>::GetVtkRegularGridSolution(boost::shared_ptr<RegularGrid<DIM, DIM> > pGrid, bool useVtkSampling)
-{
-    vtkSmartPointer<vtkImageData> p_vtk_grid = vtkSmartPointer<vtkImageData>::New();
-    p_vtk_grid->SetSpacing(pGrid->GetSpacing(), pGrid->GetSpacing(), pGrid->GetSpacing());
-    std::vector<unsigned> extents = pGrid->GetExtents();
-    if(DIM==3)
-    {
-        p_vtk_grid->SetDimensions(extents[0], extents[1], extents[2]);
-    }
-    else
-    {
-        p_vtk_grid->SetDimensions(extents[0], extents[1], 1);
-    }
-
-    c_vector<double, DIM> orign = pGrid->GetOrigin();
-    if(DIM==3)
-    {
-        p_vtk_grid->SetOrigin(orign[0], orign[1], orign[2]);
-    }
-    else
-    {
-        p_vtk_grid->SetOrigin(orign[0], orign[1], 0.0);
-    }
-
-    std::vector<double> result = GetSolutionOnRegularGrid(pGrid);
-
-    vtkSmartPointer<vtkDoubleArray> pPointData = vtkSmartPointer<vtkDoubleArray>::New();
-    pPointData->SetNumberOfComponents(1);
-    pPointData->SetNumberOfTuples(result.size());
-    pPointData->SetName(this->mpPde->GetVariableName().c_str());
-    for (unsigned i = 0; i < result.size(); i++)
-    {
-        pPointData->SetValue(i, result[i]);
-    }
-    p_vtk_grid->GetPointData()->AddArray(pPointData);
-    return p_vtk_grid;
-}
-
-template<unsigned DIM>
-std::vector<double> FiniteElementSolver<DIM>::GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints, bool useVtkSampling)
-{
-    if(useVtkSampling)
-    {
-        return GetSolutionAtPointsUsingVtk(samplePoints);
-    }
-    else
-    {
-        std::vector<double> sampled_solution(samplePoints.size(), 0.0);
-        double tolerance = 1.e-3;
-
-        for(unsigned idx=0; idx<samplePoints.size(); idx++)
-        {
-            double solution_at_point = 0.0;
-
-            if(mDomainBounds.size() > 0)
-            {
-                // TODO fill in
-            }
-            if(mNetworkBounds)
-            {
-                std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
-                for (unsigned jdx = 0; jdx <  segments.size(); jdx++)
-                {
-                    if (segments[jdx]->GetDistance(samplePoints[idx]) <= segments[jdx]->GetRadius() + tolerance)
-                    {
-                        sampled_solution[idx] = mNetworkBounds;
-                        continue;
-                    }
-                }
-            }
-
-            unsigned elem_index = mpMesh->GetContainingElementIndex(ChastePoint<DIM>(samplePoints[idx]));
-            Element<DIM,DIM>* p_containing_element = mpMesh->GetElement(elem_index);
-            c_vector<double,DIM+1> weights = p_containing_element->CalculateInterpolationWeights(samplePoints[idx]);
-            for (unsigned i=0; i<DIM+1; i++)
-            {
-                double nodal_value = mFeSolution[p_containing_element->GetNodeGlobalIndex(i)];
-                solution_at_point += nodal_value * weights(i);
-            }
-            sampled_solution[idx] = solution_at_point;
-        }
-        return sampled_solution;
-    }
 }
 
 template<unsigned DIM>
@@ -248,17 +158,27 @@ void FiniteElementSolver<DIM>::SetMesh(boost::shared_ptr<HybridMesh<DIM, DIM> > 
 }
 
 template<unsigned DIM>
-void FiniteElementSolver<DIM>::SetSamplingDomainBounds(std::vector<double> domainBounds, double domainOutOfBoundsValue)
+std::vector<double> FiniteElementSolver<DIM>::GetNodalSolution()
 {
-    mDomainBounds = domainBounds;
-    mDomainOutOfBoundsValue = domainOutOfBoundsValue;
+    return mFeSolution;
 }
 
 template<unsigned DIM>
-void FiniteElementSolver<DIM>::SetSamplingNetworkBounds(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork, double networkBounds)
+void FiniteElementSolver<DIM>::SetGuess(std::vector<double> guess)
 {
-    mpNetwork = pNetwork;
-    mNetworkBounds = networkBounds;
+    mGuess = guess;
+}
+
+template<unsigned DIM>
+void FiniteElementSolver<DIM>::SetUseSimpleNetonSolver(bool useNewton)
+{
+    mUseNewton = useNewton;
+}
+
+template<unsigned DIM>
+void FiniteElementSolver<DIM>::SetUseLinearSolveForGuess(bool useLinearSolve)
+{
+    mUseLinearSolveForGuess = useLinearSolve;
 }
 
 template<unsigned DIM>
@@ -381,31 +301,20 @@ template<unsigned DIM>
 void FiniteElementSolver<DIM>::Write()
 {
     // Write the output
-    std::string fname;
-    if(!this->mFilename.empty())
+    if(this->mFilename.empty())
     {
-        fname = this->mFilename;
-    }
-    else
-    {
-        fname = "solution";
+        this->mFilename = "solution";
     }
 
     if(!this->mpOutputFileHandler)
     {
         EXCEPTION("Output file handler not set");
     }
-    VtkMeshWriter <DIM, DIM> mesh_writer(this->mpOutputFileHandler->GetRelativePath(), fname, false);
+
+    VtkMeshWriter <DIM, DIM> mesh_writer(this->mpOutputFileHandler->GetRelativePath(), this->mFilename, false);
     if(mFeSolution.size() > 0)
     {
-        if(this->mpPde)
-        {
-            mesh_writer.AddPointData(this->mpPde->GetVariableName(), mFeSolution);
-        }
-        else
-        {
-            mesh_writer.AddPointData(this->mpNonLinearPde->GetVariableName(), mFeSolution);
-        }
+        mesh_writer.AddPointData(this->mLabel, mFeSolution);
     }
     mesh_writer.WriteFilesUsingMesh(*mpMesh);
     ReadSolution();

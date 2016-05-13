@@ -88,7 +88,7 @@ public:
      * Set the hybrid solver containing the VEGF field
      * @param pSolver the hybrid solver containing the VEGF field
      */
-    void SetHybridSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pSolver);
+    virtual void SetHybridSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pSolver);
 
     void SetNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
 

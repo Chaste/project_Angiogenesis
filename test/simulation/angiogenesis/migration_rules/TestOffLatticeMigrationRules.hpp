@@ -57,16 +57,12 @@ public:
         {
             vegf_field[idx] = 0.2*p_grid->GetLocationOf1dIndex(idx)[0] / (spacing * extents[0]);
         }
-        p_funciton_map->SetPointSolution(vegf_field);
 
-        std::map<std::string, std::vector<double> > data;
-        data["Vegf"] = vegf_field;
         p_grid->Write(p_handler);
         p_funciton_map->SetFileHandler(p_handler);
         p_funciton_map->SetFileName("Function.vti");
         p_funciton_map->Setup();
-        p_funciton_map->UpdateSolution(data);
-        p_funciton_map->UpdateVtkBaseSolution(vegf_field);
+        p_funciton_map->UpdateSolution(vegf_field);
         p_funciton_map->Write();
 
         //Set up the limbal vessel

@@ -38,6 +38,7 @@
 #include "CaVessel.hpp"
 #include "Debug.hpp"
 #include "Owen2011MigrationRule.hpp"
+#include "AbstractRegularGridHybridSolver.hpp"
 
 template<unsigned DIM>
 Owen2011MigrationRule<DIM>::Owen2011MigrationRule()
@@ -82,8 +83,7 @@ std::vector<int> Owen2011MigrationRule<DIM>::GetIndices(const std::vector<boost:
         EXCEPTION("A hybrid solver is required for this type of sprouting rule.");
     }
 
-    // Get the vegf values from the hybrid solver
-    mVegfField = this->mpSolver->GetPointSolution();
+    mVegfField = this->mpSolver->GetSolutionAtGridPoints(this->mpGrid);
 
     // Use the base class for the rest
     return LatticeBasedMigrationRule<DIM>::GetIndices(rNodes);

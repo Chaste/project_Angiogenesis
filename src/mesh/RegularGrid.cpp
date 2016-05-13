@@ -57,7 +57,8 @@ RegularGrid<ELEMENT_DIM, SPACE_DIM>::RegularGrid() :
         mPointSegmentMap(),
         mpVtkGrid(),
         mVtkGridIsSetUp(false),
-        mNeighbourData()
+        mNeighbourData(),
+        mHasCellPopulation(false)
 {
 
 }

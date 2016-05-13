@@ -34,11 +34,26 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include "LQRadiotherapyCellKiller.hpp"
+#include "CancerCellMutationState.hpp"
+#include "StalkCellMutationState.hpp"
 
 template<unsigned DIM>
 LQRadiotherapyCellKiller<DIM>::LQRadiotherapyCellKiller(AbstractCellPopulation<DIM>* pCellPopulation)
-: AbstractCellKiller<DIM>(pCellPopulation), cancerousLinearRadiosensitivity(0.3),
-  cancerousQuadraticRadiosensitivity(0.03), normalLinearRadiosensitivity(0.15), normalQuadraticRadiosensitivity(0.05), doseInjected(0)
+: AbstractCellKiller<DIM>(pCellPopulation),
+  cancerousLinearRadiosensitivity(0.3),
+  cancerousQuadraticRadiosensitivity(0.03),
+  normalLinearRadiosensitivity(0.15),
+  normalQuadraticRadiosensitivity(0.05),
+  mDose(2.0),
+  mRadiationTimes(),
+  mOerAlphaMax(1.75),
+  mOerAlphaMin(1.0),
+  mOerBetaMax(3.25),
+  mOerBetaMin(1.0),
+  mKOer(3.28),
+  mAlphaMax(0.3),
+  mBetaMax(0.03),
+  mUseOer(false)
   {
 
   }
@@ -47,15 +62,61 @@ LQRadiotherapyCellKiller<DIM>::LQRadiotherapyCellKiller(AbstractCellPopulation<D
 template<unsigned DIM>
 void LQRadiotherapyCellKiller<DIM>::SetDoseInjected(double d)
 {
-	doseInjected = d;
-	assert(doseInjected>=0);
+    mDose = d;
 }
 
 template<unsigned DIM>
-void LQRadiotherapyCellKiller<DIM>::SetTimeOfRadiation(double t)
+void LQRadiotherapyCellKiller<DIM>::SetTimeOfRadiation(std::vector<double> t)
 {
-	timeOfRadiation = t;
-	assert(timeOfRadiation>=0);
+    mRadiationTimes = t;
+}
+
+template<unsigned DIM>
+void LQRadiotherapyCellKiller<DIM>::SetOerAlphaMax(double value)
+{
+    mOerAlphaMax = value;
+}
+
+template<unsigned DIM>
+void LQRadiotherapyCellKiller<DIM>::SetOerAlphaMin(double value)
+{
+    mOerAlphaMin = value;
+}
+
+template<unsigned DIM>
+void LQRadiotherapyCellKiller<DIM>::SetOerBetaMax(double value)
+{
+    mOerBetaMax = value;
+}
+
+template<unsigned DIM>
+void LQRadiotherapyCellKiller<DIM>::SetOerBetaMin(double value)
+{
+    mOerBetaMin = value;
+}
+
+template<unsigned DIM>
+void LQRadiotherapyCellKiller<DIM>::SetOerConstant(double value)
+{
+    mKOer = value;
+}
+
+template<unsigned DIM>
+void LQRadiotherapyCellKiller<DIM>::SetAlphaMax(double value)
+{
+    mAlphaMax = value;
+}
+
+template<unsigned DIM>
+void LQRadiotherapyCellKiller<DIM>::SetBetaMax(double value)
+{
+    mBetaMax = value;
+}
+
+template<unsigned DIM>
+void LQRadiotherapyCellKiller<DIM>::UseOer(bool useOer)
+{
+    mUseOer = useOer;
 }
 
 
@@ -64,7 +125,6 @@ void LQRadiotherapyCellKiller<DIM>::SetCancerousRadiosensitivity(double alpha, d
 {
 	cancerousLinearRadiosensitivity = alpha;
 	cancerousQuadraticRadiosensitivity = beta;
-	assert((cancerousLinearRadiosensitivity > 0) && (cancerousQuadraticRadiosensitivity > 0));
 }
 
 template<unsigned DIM>
@@ -72,7 +132,6 @@ void LQRadiotherapyCellKiller<DIM>::SetNormalRadiosensitivity(double alpha, doub
 {
 	normalLinearRadiosensitivity = alpha;
 	normalQuadraticRadiosensitivity = beta;
-	assert((normalLinearRadiosensitivity > 0) && (normalQuadraticRadiosensitivity > 0));
 }
 
 template<unsigned DIM>
@@ -102,22 +161,46 @@ double LQRadiotherapyCellKiller<DIM>::GetCancerousQuadraticRadiosensitivity()
 template<unsigned DIM>
 double LQRadiotherapyCellKiller<DIM>::GetDoseInjected()
 {
-	return doseInjected;
+	return mDose;
 }
 
 template<unsigned DIM>
 void LQRadiotherapyCellKiller<DIM>::CheckAndLabelSingleCellForApoptosis(CellPtr pCell)
 {
-	if (SimulationTime::Instance()->GetTime() == timeOfRadiation)
-	{
-		double death_prob = (1 - exp(-normalLinearRadiosensitivity*doseInjected -normalQuadraticRadiosensitivity*doseInjected*doseInjected));
+    if(!pCell->GetMutationState()->IsType<StalkCellMutationState>())
+    {
+        for(unsigned idx=0; idx<mRadiationTimes.size(); idx++)
+        {
+            if (SimulationTime::Instance()->GetTime() == mRadiationTimes[idx])
+            {
+                // Model radiation hit
+                if (mUseOer)
+                {
+                    double oxygen = pCell->GetCellData()->GetItem("oxygen");
+                    double oer_alpha = (mOerAlphaMax - mOerAlphaMin)*mKOer/(oxygen + mKOer) + mOerAlphaMin;
+                    double oer_beta = (mOerBetaMax - mOerBetaMin)*mKOer/(oxygen + mKOer) + mOerBetaMin;
+                    double alpha = mAlphaMax/oer_alpha;
+                    double beta = mBetaMax/(oer_beta*oer_beta);
+                    double death_prob = (1.0 - exp(-alpha*mDose -beta*mDose*mDose));
 
-		if (!pCell->HasApoptosisBegun() &&
-				RandomNumberGenerator::Instance()->ranf() < death_prob)
-		{
-			pCell->StartApoptosis();
-		}
-	}
+                    if (!pCell->HasApoptosisBegun() && RandomNumberGenerator::Instance()->ranf() < death_prob)
+                    {
+                        pCell->StartApoptosis();
+                    }
+                }
+                else
+                {
+                    double death_prob = (1.0 - exp(-cancerousLinearRadiosensitivity*mDose -cancerousQuadraticRadiosensitivity*mDose*mDose));
+
+                    if (!pCell->HasApoptosisBegun() && RandomNumberGenerator::Instance()->ranf() < death_prob)
+                    {
+                        pCell->StartApoptosis();
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 template<unsigned DIM>

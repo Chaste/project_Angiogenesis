@@ -81,7 +81,7 @@ std::vector<boost::shared_ptr<VascularNode<DIM> > > Owen2011SproutingRule<DIM>::
     }
 
     // Get the VEGF field
-    this->mVegfField = this->mpSolver->GetPointSolution();
+    this->mVegfField = this->mpSolver->GetSolutionAtGridPoints(this->mpGrid);
 
     // Set up the output sprouts vector
     std::vector<boost::shared_ptr<VascularNode<DIM> > > sprouts;

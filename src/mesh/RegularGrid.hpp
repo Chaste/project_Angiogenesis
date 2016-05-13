@@ -116,6 +116,11 @@ class RegularGrid
      */
     std::vector<std::vector<unsigned> > mNeighbourData;
 
+    /**
+     *  Has a cell population
+     */
+    bool mHasCellPopulation;
+
 public:
 
     /**
