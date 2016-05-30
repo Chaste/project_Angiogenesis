@@ -39,8 +39,8 @@
 #include <vector>
 #include <string>
 
-#include "CaVascularNetwork.hpp"
-#include "CaVessel.hpp"
+#include "VascularNetwork.hpp"
+#include "Vessel.hpp"
 #include "VascularNode.hpp"
 #include "Part.hpp"
 #include "UblasVectorInclude.hpp"
@@ -86,7 +86,7 @@ public:
      * @param useBbox Whether to use the domain bounding box or the exact shape, the former is faster
      * @param seeds User provided seed locations for the vessel locations, used with CUSTOM distribution type
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateParrallelNetwork(boost::shared_ptr<Part<DIM> > domain,
+    boost::shared_ptr<VascularNetwork<DIM> > GenerateParrallelNetwork(boost::shared_ptr<Part<DIM> > domain,
                                                                         double targetDensity,
                                                                         VesselDistribution::Value distrbutionType,
                                                                         double exclusionDistance = 0.0,
@@ -102,7 +102,7 @@ public:
      * @param useBbox Whether to use the domain bounding box or the exact shape, the former is faster
      * @param seeds User provided seed locations for the vessel locations, used with CUSTOM distribution type
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > Generate3dNetwork(boost::shared_ptr<Part<DIM> > domain,
+    boost::shared_ptr<VascularNetwork<DIM> > Generate3dNetwork(boost::shared_ptr<Part<DIM> > domain,
                                                                         std::vector<double> targetDensity,
                                                                         VesselDistribution::Value distrbutionType,
                                                                         double exclusionDistance = 0.0,
@@ -113,30 +113,30 @@ public:
     /*
      * Creates a hexagonal network corresponding to that of Alarcon et al. (2006)
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateHexagonalNetwork(double width, double height,
+    boost::shared_ptr<VascularNetwork<DIM> > GenerateHexagonalNetwork(double width, double height,
                                                                         double vesselLength);
     /*
      * Creates a hexagonal repeating unit
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateHexagonalUnit(double vesselLength = 100.0);
+    boost::shared_ptr<VascularNetwork<DIM> > GenerateHexagonalUnit(double vesselLength = 100.0);
 
     /*
      * Creates a simple diverging and converging network
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateDivergeAndConvergeNetwork(c_vector<double, DIM> start_location,
+    boost::shared_ptr<VascularNetwork<DIM> > GenerateDivergeAndConvergeNetwork(c_vector<double, DIM> start_location,
                                                                                        c_vector<double, DIM> end_location,
                                                                                        double segmentLength = 20.0);
 
     /*
      * Creates a bifurcation repeating unit
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateBifurcationUnit(double vesselLength= 100.0,
+    boost::shared_ptr<VascularNetwork<DIM> > GenerateBifurcationUnit(double vesselLength= 100.0,
                                                                        c_vector<double, DIM> startPosition = zero_vector<double>(DIM));
 
     /*
      * Creates a single vessel
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateSingleVessel(double vesselLength= 100.0,
+    boost::shared_ptr<VascularNetwork<DIM> > GenerateSingleVessel(double vesselLength= 100.0,
                                                                     c_vector<double, DIM> startPosition = zero_vector<double>(DIM),
                                                                     unsigned divisions = 0,
                                                                     unsigned axis = 2);
@@ -144,14 +144,14 @@ public:
     /*
      * Creates an oval shaped network with one inlet and one outlet
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateOvalNetwork(double scale_factor = 200.0,
+    boost::shared_ptr<VascularNetwork<DIM> > GenerateOvalNetwork(double scale_factor = 200.0,
                                                                      unsigned num_increments =40,
                                                                      double a_param = 0.5,
                                                                      double b_param = 1.0);
     /*
      * Generate a network on the edges of a Part
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateFromPart(boost::shared_ptr<Part<DIM> > part);
+    boost::shared_ptr<VascularNetwork<DIM> > GenerateFromPart(boost::shared_ptr<Part<DIM> > part);
 
 #ifdef CHASTE_VTK
     /*
@@ -160,18 +160,18 @@ public:
      * @param filename name of file in which vascular network is described.
      * @return a pointer to the generated vascular network.
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateNetworkFromVtkFile(const std::string& rFilename);
+    boost::shared_ptr<VascularNetwork<DIM> > GenerateNetworkFromVtkFile(const std::string& rFilename);
 #endif // CHASTE_VTK
 
     /*
      * Creates a vessel network based on a voronoi tesselation in the provided cube.
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > GenerateVoronoiNetwork(double cubeX = 100.0, double cubeY = 100.0, double cubeZ = 100.0, unsigned numPoints = 400);
+    boost::shared_ptr<VascularNetwork<DIM> > GenerateVoronoiNetwork(double cubeX = 100.0, double cubeY = 100.0, double cubeZ = 100.0, unsigned numPoints = 400);
 
     /*
      * Pattern Unit. Coincident nodes are automatically merged in this method.
      */
-    void PatternUnitByTranslation(boost::shared_ptr<CaVascularNetwork<DIM> > pInputUnit, std::vector<unsigned> numberOfUnits);
+    void PatternUnitByTranslation(boost::shared_ptr<VascularNetwork<DIM> > pInputUnit, std::vector<unsigned> numberOfUnits);
 
 };
 

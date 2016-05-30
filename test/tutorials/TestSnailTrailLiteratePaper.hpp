@@ -33,9 +33,13 @@
 
  */
 
-#ifndef TESTSNAILTRAIL_HPP_
-#define TESTSNAILTRAIL_HPP_
+#ifndef TESTSNAILTRAILLITERATEPAPER_HPP_
+#define TESTSNAILTRAILLITERATEPAPER_HPP_
 
+/* = Introduction =
+ * This tutorial is designed to introduce
+ *
+ */
 #include <cxxtest/TestSuite.h>
 #include <vector>
 
@@ -45,14 +49,16 @@
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "RegularGrid.hpp"
 #include "VasculatureGenerator.hpp"
-#include "CaVascularNetwork.hpp"
+#include "VascularNetwork.hpp"
 #include "AngiogenesisSolver.hpp"
 #include "FunctionMap.hpp"
 #include "FlowSolver.hpp"
 #include "VascularTumourSolver.hpp"
 #include "PetscSetupAndFinalize.hpp"
 
-class TestSnailTrail : public AbstractCellBasedWithTimingsTestSuite
+
+
+class TestSnailTrailLiteratePaper : public AbstractCellBasedWithTimingsTestSuite
 {
 
 public:
@@ -96,7 +102,7 @@ public:
         double length = spacing * (extents[1] - 1); // full domain in y direction
         unsigned divisions = extents[1] - 2; // divide the vessel to coincide with grid
         unsigned alignment_axis = 1; // pointing y direction
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(length, start_point,
+        boost::shared_ptr<VascularNetwork<3> > p_network = generator.GenerateSingleVessel(length, start_point,
                                                                                             divisions, alignment_axis);
 
         boost::shared_ptr<Owen2011MigrationRule<3> > p_migration_rule = Owen2011MigrationRule<3>::Create();
@@ -164,7 +170,7 @@ public:
         double length = spacing * (extents[1] - 1); // full domain in y direction
         unsigned divisions = extents[1] - 2; // divide the vessel to coincide with grid
         unsigned alignment_axis = 1; // pointing y direction
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(length, start_point,
+        boost::shared_ptr<VascularNetwork<3> > p_network = generator.GenerateSingleVessel(length, start_point,
                                                                                             divisions, alignment_axis);
 
         boost::shared_ptr<Owen2011MigrationRule<3> > p_migration_rule = Owen2011MigrationRule<3>::Create();
@@ -230,7 +236,7 @@ public:
         double length = spacing * (extents[1] - 1); // full domain in y direction
         unsigned divisions = extents[1] - 2; // divide the vessel to coincide with grid
         unsigned alignment_axis = 1; // pointing y direction
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(length, start_point,
+        boost::shared_ptr<VascularNetwork<3> > p_network = generator.GenerateSingleVessel(length, start_point,
                                                                                             divisions, alignment_axis);
 
         p_network->SetNodeRadii(10.0);
@@ -262,7 +268,7 @@ public:
         p_angiogenesis_solver->SetVesselGrid(p_grid);
 
         boost::shared_ptr<FlowSolver<3> > p_flow_solver = FlowSolver<3>::Create();
-        std::vector<boost::shared_ptr<CaVesselSegment<3> > > segments = p_network->GetVesselSegments();
+        std::vector<boost::shared_ptr<VesselSegment<3> > > segments = p_network->GetVesselSegments();
         for(unsigned idx=0; idx<segments.size(); idx++)
         {
             segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);
@@ -280,4 +286,4 @@ public:
     }
 };
 
-#endif /*TESTSNAILTRAIL_HPP_*/
+#endif /*TESTSNAILTRAILLITERATEPAPER_HPP_*/

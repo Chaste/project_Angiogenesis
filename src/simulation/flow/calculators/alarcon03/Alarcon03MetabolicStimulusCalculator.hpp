@@ -37,7 +37,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _Alarcon03MetabolicStimulusCalculator_hpp
 
 #include <boost/shared_ptr.hpp>
-#include "CaVascularNetwork.hpp"
+#include "VascularNetwork.hpp"
 
 template<unsigned DIM>
 class Alarcon03MetabolicStimulusCalculator
@@ -72,7 +72,7 @@ public:
     void SetMaxStimulus(double maxStimulus);
 
     // method for performing the calculation
-    void Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
+    void Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork);
 
 };
 

@@ -45,7 +45,6 @@
 /*
  * Generate a voronoi tesselation in the bounding box of a given part using tetgen. 3D only.
  */
-
 template<unsigned DIM>
 class VoronoiGenerator
 {

@@ -469,7 +469,7 @@ const std::vector<std::vector<CellPtr> >& RegularGrid<ELEMENT_DIM, SPACE_DIM>::G
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-std::vector<std::vector<boost::shared_ptr<CaVesselSegment<SPACE_DIM> > > > RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetPointSegmentMap(
+std::vector<std::vector<boost::shared_ptr<VesselSegment<SPACE_DIM> > > > RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetPointSegmentMap(
         bool update, bool useVesselSurface)
 {
     if (!update)
@@ -483,8 +483,8 @@ std::vector<std::vector<boost::shared_ptr<CaVesselSegment<SPACE_DIM> > > > Regul
     }
 
     // Loop over all points and segments and associate segments with the points
-    mPointSegmentMap = std::vector<std::vector<boost::shared_ptr<CaVesselSegment<SPACE_DIM> > > >(GetNumberOfPoints());
-    std::vector<boost::shared_ptr<CaVesselSegment<SPACE_DIM> > > segments = mpNetwork->GetVesselSegments();
+    mPointSegmentMap = std::vector<std::vector<boost::shared_ptr<VesselSegment<SPACE_DIM> > > >(GetNumberOfPoints());
+    std::vector<boost::shared_ptr<VesselSegment<SPACE_DIM> > > segments = mpNetwork->GetVesselSegments();
     for (unsigned jdx = 0; jdx < segments.size(); jdx++)
     {
         for (unsigned idx = 0; idx < GetNumberOfPoints(); idx++)
@@ -702,7 +702,7 @@ void RegularGrid<ELEMENT_DIM, SPACE_DIM>::SetUpVtkGrid()
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void RegularGrid<ELEMENT_DIM, SPACE_DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > pNetwork)
+void RegularGrid<ELEMENT_DIM, SPACE_DIM>::SetVesselNetwork(boost::shared_ptr<VascularNetwork<SPACE_DIM> > pNetwork)
 {
     mpNetwork = pNetwork;
 }

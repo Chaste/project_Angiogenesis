@@ -37,7 +37,7 @@
 #define _BetteridgeHaematocritSolver_hpp
 
 #include <boost/shared_ptr.hpp>
-#include "CaVascularNetwork.hpp"
+#include "VascularNetwork.hpp"
 #include "AbstractHaematocritSolver.hpp"
 
 /*// TODO This solver is incomplete. PETSc has issues with the ordering in the
@@ -71,7 +71,7 @@ public:
     void SetHaematocrit(double haematocrit);
 
     // method for performing the Calculation
-    void Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
+    void Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork);
 
 };
 

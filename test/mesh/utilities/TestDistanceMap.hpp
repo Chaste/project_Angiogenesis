@@ -41,7 +41,7 @@
 #include <string>
 #include "Part.hpp"
 #include "DistanceMap.hpp"
-#include "CaVascularNetwork.hpp"
+#include "VascularNetwork.hpp"
 #include "VasculatureGenerator.hpp"
 #include "SmartPointers.hpp"
 #include "OutputFileHandler.hpp"
@@ -59,7 +59,7 @@ public:
         VasculatureGenerator<3> generator;
         c_vector<double,3> start_position = zero_vector<double>(3);
         start_position[2] = vessel_length;
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateBifurcationUnit(vessel_length, start_position);
+        boost::shared_ptr<VascularNetwork<3> > p_network = generator.GenerateBifurcationUnit(vessel_length, start_position);
 
         // Set up the tissue domain
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();

@@ -33,8 +33,8 @@
 
  */
 
-#ifndef CAVESSELSEGMENT_HPP_
-#define CAVESSELSEGMENT_HPP_
+#ifndef VesselSegment_HPP_
+#define VesselSegment_HPP_
 
 #include <vector>
 #include <string>
@@ -48,7 +48,7 @@
  *  Forward declaration to allow vessels to manage adding and removing themselves from segments.
  */
 template<unsigned DIM>
-class CaVessel;
+class Vessel;
 
 template<unsigned DIM>
 class VascularNode;
@@ -61,12 +61,12 @@ class VascularNode;
  * instead managed by the VascularNetwork class. Segments must always have two nodes.
  */
 template<unsigned DIM>
-class CaVesselSegment : public boost::enable_shared_from_this<CaVesselSegment<DIM> >
+class VesselSegment : public boost::enable_shared_from_this<VesselSegment<DIM> >
 {
     /**
      * Allow vessels to manage adding and removing themselves from segments.
      */
-    friend class CaVessel<DIM> ;
+    friend class Vessel<DIM> ;
 
 private:
 
@@ -93,7 +93,7 @@ private:
     /**
      * Weak pointer to the vessel owning this segment
      */
-    boost::weak_ptr<CaVessel<DIM> > mVessel;
+    boost::weak_ptr<Vessel<DIM> > mVessel;
 
     /**
      * Radius of the vessel at this segment
@@ -114,7 +114,7 @@ private:
      * @param pNode1 the first node in the segment
      * @param pNode2 the second node in the segment
      */
-    CaVesselSegment(boost::shared_ptr<VascularNode<DIM> > pNode1, boost::shared_ptr<VascularNode<DIM> > pNode2);
+    VesselSegment(boost::shared_ptr<VascularNode<DIM> > pNode1, boost::shared_ptr<VascularNode<DIM> > pNode2);
 
 public:
 
@@ -124,7 +124,7 @@ public:
      *
      * @param rSegment the segment to be copied
      */
-    CaVesselSegment(const CaVesselSegment<DIM>& rSegment);
+    VesselSegment(const VesselSegment<DIM>& rSegment);
 
     /**
      * Construct a new instance of the class and return a shared pointer to it. Also manage the association of segments to nodes by
@@ -134,7 +134,7 @@ public:
      * @param pNode2 the second node in the segment
      * @return a pointer to the newly created segment
      */
-    static boost::shared_ptr<CaVesselSegment<DIM> > Create(boost::shared_ptr<VascularNode<DIM> > pNode1,
+    static boost::shared_ptr<VesselSegment<DIM> > Create(boost::shared_ptr<VascularNode<DIM> > pNode1,
                                                            boost::shared_ptr<VascularNode<DIM> > pNode2);
 
     /**
@@ -144,19 +144,19 @@ public:
      * @param pSegment the segment to be copied
      * @return a pointer to the newly created segment
      */
-    static boost::shared_ptr<CaVesselSegment<DIM> > Create(boost::shared_ptr<CaVesselSegment<DIM> > pSegment);
+    static boost::shared_ptr<VesselSegment<DIM> > Create(boost::shared_ptr<VesselSegment<DIM> > pSegment);
 
     /*
      * Destructor
      */
-    ~CaVesselSegment();
+    ~VesselSegment();
 
     /**
      * Copy a selection of member data and VasculatureData from the input segment. Convenient alternative to the copy constructor as nodes aren't
      * copied.
      * @param pTargetSegment the segment from which data is to be copied
      */
-    void CopyDataFromExistingSegment(const boost::shared_ptr<CaVesselSegment<DIM> > pTargetSegment);
+    void CopyDataFromExistingSegment(const boost::shared_ptr<VesselSegment<DIM> > pTargetSegment);
 
     /**
      * Return the segment data for the input key. An attempt is made
@@ -296,7 +296,7 @@ public:
      *
      * @return the vessel attached to the segment
      */
-    boost::shared_ptr<CaVessel<DIM> > GetVessel() const;
+    boost::shared_ptr<Vessel<DIM> > GetVessel() const;
 
     /**
      * Return true if the segment has data corresponding to the input key.
@@ -319,7 +319,7 @@ public:
      * @param pOtherSegment the segment to check connectivity with
      * @return whether the segment is connected to the input segment
      */
-    bool IsConnectedTo(boost::shared_ptr<CaVesselSegment<DIM> > pOtherSegment) const;
+    bool IsConnectedTo(boost::shared_ptr<VesselSegment<DIM> > pOtherSegment) const;
 
     /**
      * Replace the node at the specified index with the passed in node.
@@ -386,14 +386,14 @@ private:
      *
      * @return a shared pointer to the segment
      */
-    boost::shared_ptr<CaVesselSegment<DIM> > Shared();
+    boost::shared_ptr<VesselSegment<DIM> > Shared();
 
     /**
      * Add an adjoining Vessel to the segment.
      *
      * @param pVessel a vessel to be added to the segment
      */
-    void AddVessel(boost::shared_ptr<CaVessel<DIM> > pVessel);
+    void AddVessel(boost::shared_ptr<Vessel<DIM> > pVessel);
 
     /**
      * Remove an adjoining vessel from the segment.
@@ -401,4 +401,4 @@ private:
     void RemoveVessel();
 };
 
-#endif /* CAVESSELSEGMENT_HPP_ */
+#endif /* VesselSegment_HPP_ */

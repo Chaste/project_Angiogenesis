@@ -70,7 +70,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "HybridBoundaryCondition.hpp"
 #include "DiscreteSource.hpp"
 #include "CellLabelWriter.hpp"
-#include "CaVessel.hpp"
+#include "Vessel.hpp"
 #include "VascularNode.hpp"
 #include "GeometryTools.hpp"
 #include "RandomNumberGenerator.hpp"
@@ -90,21 +90,21 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
         return p_domain;
     }
 
-    boost::shared_ptr<CaVascularNetwork<3> > GetVesselNetwork()
+    boost::shared_ptr<VascularNetwork<3> > GetVesselNetwork()
     {
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = CaVascularNetwork<3>::Create();
+        boost::shared_ptr<VascularNetwork<3> > p_network = VascularNetwork<3>::Create();
         std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
         for(unsigned idx=0; idx<81; idx++)
         {
             bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 50.0, 100.0));
         }
-        boost::shared_ptr<CaVessel<3> > p_vessel_1 = CaVessel<3>::Create(bottom_nodes);
+        boost::shared_ptr<Vessel<3> > p_vessel_1 = Vessel<3>::Create(bottom_nodes);
         std::vector<boost::shared_ptr<VascularNode<3> > > top_nodes;
         for(unsigned idx=0; idx<81; idx++)
         {
             top_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 750.0, 100.0));
         }
-        boost::shared_ptr<CaVessel<3> > p_vessel_2 = CaVessel<3>::Create(top_nodes);
+        boost::shared_ptr<Vessel<3> > p_vessel_2 = Vessel<3>::Create(top_nodes);
 
         // Set up flow properties
         p_network->AddVessel(p_vessel_1);
@@ -121,7 +121,7 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
 
         p_network->UpdateSegments();
         p_network->SetSegmentRadii(10.0);
-        std::vector<boost::shared_ptr<CaVesselSegment<3> > > segments = p_network->GetVesselSegments();
+        std::vector<boost::shared_ptr<VesselSegment<3> > > segments = p_network->GetVesselSegments();
         for(unsigned idx=0; idx<segments.size(); idx++)
         {
             segments[idx]->GetFlowProperties()->SetViscosity(1.e-9);
@@ -144,7 +144,7 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
     }
 
     boost::shared_ptr<FiniteDifferenceSolver<3> > GetOxygenSolver(boost::shared_ptr<Part<3> > p_domain,
-                                                                  boost::shared_ptr<CaVascularNetwork<3> > p_network)
+                                                                  boost::shared_ptr<VascularNetwork<3> > p_network)
     {
         boost::shared_ptr<HybridLinearEllipticPde<3> > p_oxygen_pde = HybridLinearEllipticPde<3>::Create();
         p_oxygen_pde->SetIsotropicDiffusionConstant(0.0033);
@@ -173,7 +173,7 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
     }
 
     boost::shared_ptr<FiniteDifferenceSolver<3> > GetVegfSolver(boost::shared_ptr<Part<3> > p_domain,
-                                                                  boost::shared_ptr<CaVascularNetwork<3> > p_network)
+                                                                  boost::shared_ptr<VascularNetwork<3> > p_network)
     {
         boost::shared_ptr<HybridLinearEllipticPde<3> > p_vegf_pde = HybridLinearEllipticPde<3>::Create();
         p_vegf_pde->SetIsotropicDiffusionConstant(0.0033);
@@ -225,7 +225,7 @@ public:
         cell_population.AddCellWriter<CellLabelWriter>();
 
         // Create the vessel network
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = GetVesselNetwork();
+        boost::shared_ptr<VascularNetwork<3> > p_network = GetVesselNetwork();
 
         // Create the oxygen pde solver
         boost::shared_ptr<FiniteDifferenceSolver<3> > p_oxygen_solver = GetOxygenSolver(p_domain, p_network);
@@ -291,7 +291,7 @@ public:
         cell_population.AddCellWriter<CellLabelWriter>();
 
         // Create the vessel network
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = GetVesselNetwork();
+        boost::shared_ptr<VascularNetwork<3> > p_network = GetVesselNetwork();
 
         // Create the oxygen pde solver
         boost::shared_ptr<FiniteDifferenceSolver<3> > p_oxygen_solver = GetOxygenSolver(p_domain, p_network);

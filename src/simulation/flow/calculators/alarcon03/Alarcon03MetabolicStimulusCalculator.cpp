@@ -101,10 +101,10 @@ void Alarcon03MetabolicStimulusCalculator<DIM>::SetMaxStimulus(double maxStimulu
 }
 
 template<unsigned DIM>
-void Alarcon03MetabolicStimulusCalculator<DIM>::Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork)
+void Alarcon03MetabolicStimulusCalculator<DIM>::Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork)
 {
 
-	std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
+	std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
 	for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
 	{
 

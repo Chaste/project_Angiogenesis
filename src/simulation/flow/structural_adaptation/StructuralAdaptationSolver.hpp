@@ -37,7 +37,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define SIMPLESTRCUTURALADAPATATIONSOLVER_HPP
 
 #include "SmartPointers.hpp"
-#include "CaVascularNetwork.hpp"
+#include "VascularNetwork.hpp"
 #include "Alarcon03MechanicalStimulusCalculator.hpp"
 #include "Alarcon03MetabolicStimulusCalculator.hpp"
 #include "Alarcon03RadiusCalculator.hpp"

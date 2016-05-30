@@ -57,7 +57,7 @@ CaBasedCellPopulationWithVesselsGenerator<DIM>::~CaBasedCellPopulationWithVessel
 
 template<unsigned DIM>
 boost::shared_ptr<CaBasedCellPopulationWithVessels<DIM> > CaBasedCellPopulationWithVesselsGenerator<DIM>::CreateCellPopulation(PottsMesh<DIM>& rMesh,
-                                                                                                                               boost::shared_ptr<CaVascularNetwork<DIM> > pVascularNetwork)
+                                                                                                                               boost::shared_ptr<VascularNetwork<DIM> > pVascularNetwork)
 {
     // create endothelial cell population
     std::vector<unsigned> location_indices;
@@ -79,14 +79,14 @@ boost::shared_ptr<CaBasedCellPopulationWithVessels<DIM> > CaBasedCellPopulationW
     // create normal cell population
     for (unsigned index=0; index < rMesh.GetNumNodes(); index++)
     {
-        std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> segment_distance_pair =
+        std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> segment_distance_pair =
                 pVascularNetwork->GetNearestSegment(rMesh.GetNode(index)->rGetLocation());
 
         if (segment_distance_pair.second < 1e-6 || pVascularNetwork->GetDistanceToNearestNode(rMesh.GetNode(index)->rGetLocation()) < 1e-6)
         {
             if (pVascularNetwork->GetDistanceToNearestNode(rMesh.GetNode(index)->rGetLocation()) >= 1e-3)
             {
-                boost::shared_ptr<CaVessel<DIM> > pVessel = segment_distance_pair.first->GetVessel();
+                boost::shared_ptr<Vessel<DIM> > pVessel = segment_distance_pair.first->GetVessel();
                 pVessel->DivideSegment(rMesh.GetNode(index)->GetPoint());
                 pVessel->UpdateNodes();
             }

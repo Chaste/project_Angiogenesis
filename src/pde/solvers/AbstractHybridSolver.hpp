@@ -39,7 +39,7 @@
 #include <vector>
 #include <string>
 #include "OutputFileHandler.hpp"
-#include "CaVascularNetwork.hpp"
+#include "VascularNetwork.hpp"
 #include "AbstractCellPopulation.hpp"
 #include "HybridLinearEllipticPde.hpp"
 #include "HybridNonLinearEllipticPde.hpp"
@@ -63,7 +63,7 @@ protected:
     /**
      * The vessel network.
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
+    boost::shared_ptr<VascularNetwork<DIM> > mpNetwork;
 
     /**
      * The cell population. IMPORTANT: The memory pointed to is not managed in this class.
@@ -210,7 +210,7 @@ public:
      * Set the vessel network
      * @param pNetwork the vessel network
      */
-    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
+    void SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork);
 
     /**
      * Set whether to write the solution to file on next solve

@@ -49,10 +49,10 @@ class TestPoiseuilleImpedanceCalculator : public CxxTest::TestSuite
 
     typedef boost::shared_ptr<VascularNode<2> > NodePtr2;
     typedef boost::shared_ptr<VascularNode<3> > NodePtr3;
-    typedef boost::shared_ptr<CaVesselSegment<2> > SegmentPtr2;
-    typedef boost::shared_ptr<CaVesselSegment<3> > SegmentPtr3;
-    typedef boost::shared_ptr<CaVessel<2> > VesselPtr2;
-    typedef boost::shared_ptr<CaVessel<3> > VesselPtr3;
+    typedef boost::shared_ptr<VesselSegment<2> > SegmentPtr2;
+    typedef boost::shared_ptr<VesselSegment<3> > SegmentPtr3;
+    typedef boost::shared_ptr<Vessel<2> > VesselPtr2;
+    typedef boost::shared_ptr<Vessel<3> > VesselPtr3;
 
 public:
 
@@ -70,11 +70,11 @@ public:
             nodes.push_back(NodePtr3(VascularNode<3>::Create(points[i])));
         }
 
-        SegmentPtr3 p_segment(CaVesselSegment<3>::Create(nodes[0], nodes[1]));
-        VesselPtr3 p_vessel(CaVessel<3>::Create(p_segment));
+        SegmentPtr3 p_segment(VesselSegment<3>::Create(nodes[0], nodes[1]));
+        VesselPtr3 p_vessel(Vessel<3>::Create(p_segment));
 
         // Generate the network
-        boost::shared_ptr<CaVascularNetwork<3> > p_vascular_network(new CaVascularNetwork<3>());
+        boost::shared_ptr<VascularNetwork<3> > p_vascular_network(new VascularNetwork<3>());
 
         p_vascular_network->AddVessel(p_vessel);
         double viscosity = 2e-3;

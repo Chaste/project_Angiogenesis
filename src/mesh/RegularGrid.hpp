@@ -42,8 +42,8 @@
 #include <vtkSmartPointer.h>
 #include "UblasIncludes.hpp"
 #include "SmartPointers.hpp"
-#include "CaVascularNetwork.hpp"
-#include "CaVesselSegment.hpp"
+#include "VascularNetwork.hpp"
+#include "VesselSegment.hpp"
 #include "VascularNode.hpp"
 #include "AbstractCellPopulation.hpp"
 #include "CaBasedCellPopulation.hpp"
@@ -74,7 +74,7 @@ class RegularGrid
     /**
      * The vessel network
      */
-    boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > mpNetwork;
+    boost::shared_ptr<VascularNetwork<SPACE_DIM> > mpNetwork;
 
     /**
      * The cell population. This memory pointed to is not managed in this class.
@@ -94,7 +94,7 @@ class RegularGrid
     /**
      * A map of vessel segments corresponding to a point on the grid
      */
-    std::vector<std::vector<boost::shared_ptr<CaVesselSegment<SPACE_DIM> > > > mPointSegmentMap;
+    std::vector<std::vector<boost::shared_ptr<VesselSegment<SPACE_DIM> > > > mPointSegmentMap;
 
     /**
      * A field with specified value at each point in the grid
@@ -239,7 +239,7 @@ public:
      * @bool update update the map
      * @return the point segment map
      */
-    std::vector<std::vector<boost::shared_ptr<CaVesselSegment<SPACE_DIM> > > > GetPointSegmentMap(
+    std::vector<std::vector<boost::shared_ptr<VesselSegment<SPACE_DIM> > > > GetPointSegmentMap(
             bool update = true, bool useVesselSurface = false);
 
     /**
@@ -323,7 +323,7 @@ public:
      * Set the vessel network
      * @param pNetwork the vessel network
      */
-    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<SPACE_DIM> > pNetwork);
+    void SetVesselNetwork(boost::shared_ptr<VascularNetwork<SPACE_DIM> > pNetwork);
 
     /**
      * Write the grid and any field to file as a VTI file

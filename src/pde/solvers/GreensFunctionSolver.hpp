@@ -42,7 +42,7 @@
 #include <boost/multi_array.hpp>
 #include "ChastePoint.hpp"
 #include "SmartPointers.hpp"
-#include "CaVesselSegment.hpp"
+#include "VesselSegment.hpp"
 #include "Part.hpp"
 #include "AbstractRegularGridHybridSolver.hpp"
 
@@ -58,7 +58,7 @@ class GreensFunctionSolver : public AbstractRegularGridHybridSolver<DIM>
     std::vector<double> mSourceRates;
     std::vector<double> mSegmentConcentration;
     std::vector<double> mTissueConcentration;
-    std::map<unsigned, boost::shared_ptr<CaVesselSegment<DIM> > > mSegmentPointMap;
+    std::map<unsigned, boost::shared_ptr<VesselSegment<DIM> > > mSegmentPointMap;
     boost::shared_ptr<boost::multi_array<double, 2> > mGtt;
     boost::shared_ptr<boost::multi_array<double, 2> > mGvv;
     boost::shared_ptr<boost::multi_array<double, 2> > mGvt;

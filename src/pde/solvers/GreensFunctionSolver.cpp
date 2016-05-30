@@ -43,8 +43,8 @@
 #include <vtkImageData.h>
 #include <vtkSmartPointer.h>
 #include <boost/lexical_cast.hpp>
-#include "CaVessel.hpp"
-#include "CaVesselSegment.hpp"
+#include "Vessel.hpp"
+#include "VesselSegment.hpp"
 #include "ChastePoint.hpp"
 #include "LinearSystem.hpp"
 #include "ReplicatableVector.hpp"
@@ -227,16 +227,16 @@ void GreensFunctionSolver<DIM>::GenerateSubSegments()
     // Set up the sub-segment points and map to original segments
     double max_subsegment_length = mSubsegmentCutoff;
 
-    std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels = this->mpNetwork->GetVessels();
-    typename std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator vessel_iter;
-    typename std::vector<boost::shared_ptr<CaVesselSegment<DIM> > >::iterator segment_iter;
+    std::vector<boost::shared_ptr<Vessel<DIM> > > vessels = this->mpNetwork->GetVessels();
+    typename std::vector<boost::shared_ptr<Vessel<DIM> > >::iterator vessel_iter;
+    typename std::vector<boost::shared_ptr<VesselSegment<DIM> > >::iterator segment_iter;
 
     // Iterate over all segments and store midpoints and lengths of subsegment regions for
     // the greens functions calculation. Create a map of subsegment index to the parent segment
     // for later use.
     for (vessel_iter = vessels.begin(); vessel_iter != vessels.end(); vessel_iter++)
     {
-        std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = (*vessel_iter)->GetSegments();
+        std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = (*vessel_iter)->GetSegments();
         for (segment_iter = segments.begin(); segment_iter != segments.end(); segment_iter++)
         {
             double segment_length = (*segment_iter)->GetLength();

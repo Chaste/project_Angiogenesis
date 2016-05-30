@@ -18,14 +18,14 @@
 #include "FunctionMap.hpp"
 #include "VasculatureGenerator.hpp"
 #include "VascularNode.hpp"
-#include "CaVesselSegment.hpp"
-#include "CaVessel.hpp"
-#include "CaVascularNetwork.hpp"
+#include "VesselSegment.hpp"
+#include "Vessel.hpp"
+#include "VascularNetwork.hpp"
 #include "Part.hpp"
 #include "FiniteDifferenceSolver.hpp"
 #include "AngiogenesisSolver.hpp"
 #include "PetscSetupAndFinalize.hpp"
-#include "CaVesselSegment.hpp"
+#include "VesselSegment.hpp"
 #include "AbstractCellBasedTestSuite.hpp"
 #include "FlowSolver.hpp"
 
@@ -75,7 +75,7 @@ public:
         double length = spacing * (extents[1] - 3); // full domain in y direction
         unsigned divisions = extents[1] - 2; // divide the vessel to coincide with grid
         unsigned alignment_axis = 1; // pointing y direction
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(length, start_point,
+        boost::shared_ptr<VascularNetwork<3> > p_network = generator.GenerateSingleVessel(length, start_point,
                                                                                             divisions, alignment_axis);
 
         boost::shared_ptr<OffLatticeMigrationRule<3> > p_migration_rule = OffLatticeMigrationRule<3>::Create();

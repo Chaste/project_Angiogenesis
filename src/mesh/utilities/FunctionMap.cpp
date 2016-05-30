@@ -33,8 +33,6 @@
 
  */
 
-#include "CaVesselSegment.hpp"
-#include "ChastePoint.hpp"
 #include "FunctionMap.hpp"
 
 template<unsigned DIM>

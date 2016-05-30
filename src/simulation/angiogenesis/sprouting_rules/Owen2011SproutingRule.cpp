@@ -34,8 +34,8 @@
  */
 
 #include "RandomNumberGenerator.hpp"
-#include "CaVesselSegment.hpp"
-#include "CaVessel.hpp"
+#include "VesselSegment.hpp"
+#include "Vessel.hpp"
 #include "Owen2011SproutingRule.hpp"
 
 template<unsigned DIM>

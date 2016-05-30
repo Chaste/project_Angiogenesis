@@ -46,15 +46,15 @@
 #include "OutputFileHandler.hpp"
 #include "VasculatureGenerator.hpp"
 #include "VascularNode.hpp"
-#include "CaVesselSegment.hpp"
-#include "CaVessel.hpp"
-#include "CaVascularNetwork.hpp"
+#include "VesselSegment.hpp"
+#include "Vessel.hpp"
+#include "VascularNetwork.hpp"
 
 class TestHybridMesh : public CxxTest::TestSuite
 {
 private:
 
-    boost::shared_ptr<CaVascularNetwork<3> > SetUpNetwork()
+    boost::shared_ptr<VascularNetwork<3> > SetUpNetwork()
     {
         double vessel_length = 100;
         double radius = 10.0;
@@ -74,16 +74,16 @@ private:
             }
         }
 
-        std::vector<boost::shared_ptr<CaVessel<3> > > vessels;
+        std::vector<boost::shared_ptr<Vessel<3> > > vessels;
         for(unsigned idx = 0; idx<start_nodes.size(); idx++)
         {
             start_nodes[idx]->SetRadius(radius);
             end_nodes[idx]->SetRadius(radius);
-            vessels.push_back(CaVessel<3>::Create(CaVesselSegment<3>::Create(start_nodes[idx], end_nodes[idx])));
+            vessels.push_back(Vessel<3>::Create(VesselSegment<3>::Create(start_nodes[idx], end_nodes[idx])));
             vessels[idx]->GetSegment(0)->SetRadius(radius);
         }
 
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = CaVascularNetwork<3>::Create();
+        boost::shared_ptr<VascularNetwork<3> > p_network = VascularNetwork<3>::Create();
         p_network->AddVessels(vessels);
         return p_network;
     }
@@ -120,7 +120,7 @@ public:
     {
         double vessel_length = 100.0;
         VasculatureGenerator<3> generator;
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length);
+        boost::shared_ptr<VascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length);
         p_network->GetVessels()[0]->GetStartNode()->SetRadius(5.0);
         p_network->GetVessels()[0]->GetEndNode()->SetRadius(5.0);
 
@@ -140,7 +140,7 @@ public:
     {
         double vessel_length = 100.0;
         VasculatureGenerator<3> generator;
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length);
+        boost::shared_ptr<VascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length);
         p_network->GetVessels()[0]->GetStartNode()->SetRadius(5.0);
         p_network->GetVessels()[0]->GetEndNode()->SetRadius(5.0);
 
@@ -163,7 +163,7 @@ public:
         c_vector<double,3> centre = zero_vector<double>(3);
         centre[0] = vessel_length/2.0;
         centre[1] = vessel_length/2.0;
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre);
+        boost::shared_ptr<VascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre);
         p_network->GetVessels()[0]->GetStartNode()->SetRadius(5.0);
         p_network->GetVessels()[0]->GetEndNode()->SetRadius(5.0);
 
@@ -184,7 +184,7 @@ public:
         c_vector<double,3> centre = zero_vector<double>(3);
         centre[0] = vessel_length/2.0;
         centre[1] = vessel_length/2.0;
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre);
+        boost::shared_ptr<VascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre);
         p_network->GetVessels()[0]->GetStartNode()->SetRadius(10.0);
         p_network->GetVessels()[0]->GetEndNode()->SetRadius(10.0);
 
@@ -205,7 +205,7 @@ public:
         c_vector<double,3> centre = zero_vector<double>(3);
         centre[0] = vessel_length/2.0;
         centre[1] = vessel_length/2.0;
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre);
+        boost::shared_ptr<VascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre);
         p_network->GetVessels()[0]->GetStartNode()->SetRadius(10.0);
         p_network->GetVessels()[0]->GetEndNode()->SetRadius(10.0);
 

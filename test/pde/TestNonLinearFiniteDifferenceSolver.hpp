@@ -46,7 +46,7 @@
 #include "Vertex.hpp"
 #include "HybridLinearEllipticPde.hpp"
 #include "HybridNonLinearEllipticPde.hpp"
-#include "CaVascularNetwork.hpp"
+#include "VascularNetwork.hpp"
 #include "VasculatureGenerator.hpp"
 #include "SmartPointers.hpp"
 #include "VasculatureData.hpp"

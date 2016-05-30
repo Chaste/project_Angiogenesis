@@ -33,7 +33,7 @@
 
  */
 
-#include "CaVesselSegment.hpp"
+#include "VesselSegment.hpp"
 #include "ChastePoint.hpp"
 #include "DistanceMap.hpp"
 
@@ -75,7 +75,7 @@ void DistanceMap<DIM>::Solve()
 
     if (this->mpNetwork)
     {
-        std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments;
+        std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments;
         segments = this->mpNetwork->GetVesselSegments();
         for (unsigned i = 0; i < extents_z; i++) // Z
         {

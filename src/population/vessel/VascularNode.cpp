@@ -37,7 +37,7 @@
 #include "UblasIncludes.hpp"
 #include "Exception.hpp"
 #include "SmartPointers.hpp"
-#include "CaVesselSegment.hpp"
+#include "VesselSegment.hpp"
 
 #include "VascularNode.hpp"
 
@@ -49,7 +49,7 @@ VascularNode<DIM>::VascularNode(const ChastePoint<DIM>& rLocation) :
         mId(0),
         mTempId(0),
         mLabel(),
-        mVesselSegments(std::vector<boost::weak_ptr<CaVesselSegment<DIM> > >()),
+        mVesselSegments(std::vector<boost::weak_ptr<VesselSegment<DIM> > >()),
         mRadius(0.0),
         mpNodeFlowProperties(boost::shared_ptr<NodeFlowProperties>(new NodeFlowProperties())),
         mIsMigrating(false)
@@ -63,7 +63,7 @@ VascularNode<DIM>::VascularNode(double v1, double v2, double v3) :
         mDataContainer(),
         mId(0),
         mLabel(),
-        mVesselSegments(std::vector<boost::weak_ptr<CaVesselSegment<DIM> > >()),
+        mVesselSegments(std::vector<boost::weak_ptr<VesselSegment<DIM> > >()),
         mRadius(1.0),
         mpNodeFlowProperties(boost::shared_ptr<NodeFlowProperties>(new NodeFlowProperties())),
         mIsMigrating(false)
@@ -77,7 +77,7 @@ VascularNode<DIM>::VascularNode(c_vector<double, DIM> location) :
         mDataContainer(),
         mId(0),
         mLabel(),
-        mVesselSegments(std::vector<boost::weak_ptr<CaVesselSegment<DIM> > >()),
+        mVesselSegments(std::vector<boost::weak_ptr<VesselSegment<DIM> > >()),
         mRadius(1.0),
         mpNodeFlowProperties(boost::shared_ptr<NodeFlowProperties>(new NodeFlowProperties())),
         mIsMigrating(false)
@@ -92,7 +92,7 @@ VascularNode<DIM>::VascularNode(const VascularNode<DIM>& rExistingNode) :
         mDataContainer(),
         mId(0),
         mLabel(),
-        mVesselSegments(std::vector<boost::weak_ptr<CaVesselSegment<DIM> > >()),
+        mVesselSegments(std::vector<boost::weak_ptr<VesselSegment<DIM> > >()),
         mRadius(rExistingNode.GetRadius()),
         mpNodeFlowProperties(boost::shared_ptr<NodeFlowProperties>()),
         mIsMigrating()
@@ -148,7 +148,7 @@ boost::shared_ptr<VascularNode<DIM> > VascularNode<DIM>::Create(boost::shared_pt
 }
 
 template<unsigned DIM>
-void VascularNode<DIM>::AddSegment(boost::shared_ptr<CaVesselSegment<DIM> > pVesselSegment)
+void VascularNode<DIM>::AddSegment(boost::shared_ptr<VesselSegment<DIM> > pVesselSegment)
 {
     // Vessel segments can only be attached to a node once.
     for (unsigned idx = 0; idx < mVesselSegments.size(); idx++)
@@ -158,7 +158,7 @@ void VascularNode<DIM>::AddSegment(boost::shared_ptr<CaVesselSegment<DIM> > pVes
             EXCEPTION("This segment is already attached to this node.");
         }
     }
-    mVesselSegments.push_back(boost::weak_ptr<CaVesselSegment<DIM> >(pVesselSegment));
+    mVesselSegments.push_back(boost::weak_ptr<VesselSegment<DIM> >(pVesselSegment));
 }
 
 template<unsigned DIM>
@@ -268,7 +268,7 @@ std::map<std::string, double> VascularNode<DIM>::GetVtkData() const
 }
 
 template<unsigned DIM>
-boost::shared_ptr<CaVesselSegment<DIM> > VascularNode<DIM>::GetVesselSegment(unsigned index) const
+boost::shared_ptr<VesselSegment<DIM> > VascularNode<DIM>::GetVesselSegment(unsigned index) const
 {
     if (index >= mVesselSegments.size())
     {
@@ -278,9 +278,9 @@ boost::shared_ptr<CaVesselSegment<DIM> > VascularNode<DIM>::GetVesselSegment(uns
 }
 
 template<unsigned DIM>
-std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > VascularNode<DIM>::GetVesselSegments() const
+std::vector<boost::shared_ptr<VesselSegment<DIM> > > VascularNode<DIM>::GetVesselSegments() const
 {
-    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments(mVesselSegments.size());
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments(mVesselSegments.size());
     for(unsigned idx=0; idx<segments.size(); idx++)
     {
         segments[idx] = mVesselSegments[idx].lock();
@@ -301,7 +301,7 @@ bool VascularNode<DIM>::HasDataKey(const std::string& rKey) const
 }
 
 template<unsigned DIM>
-bool VascularNode<DIM>::IsAttachedTo(const boost::shared_ptr<CaVesselSegment<DIM> > pSegment) const
+bool VascularNode<DIM>::IsAttachedTo(const boost::shared_ptr<VesselSegment<DIM> > pSegment) const
 {
     bool is_attached = false;
     if (pSegment->GetNode(0) == this->shared_from_this() || pSegment->GetNode(1) == this->shared_from_this())
@@ -336,7 +336,7 @@ void VascularNode<DIM>::RemoveCell()
 }
 
 template<unsigned DIM>
-void VascularNode<DIM>::RemoveSegment(boost::shared_ptr<CaVesselSegment<DIM> > pVesselSegment)
+void VascularNode<DIM>::RemoveSegment(boost::shared_ptr<VesselSegment<DIM> > pVesselSegment)
 {
     for (unsigned idx = 0; idx < mVesselSegments.size(); idx++)
     {

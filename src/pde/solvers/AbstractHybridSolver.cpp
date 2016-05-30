@@ -136,7 +136,7 @@ bool AbstractHybridSolver<DIM>::CellPopulationIsSet()
 
 
 template<unsigned DIM>
-void AbstractHybridSolver<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
+void AbstractHybridSolver<DIM>::SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork)
 {
     mpNetwork = pNetwork;
 }

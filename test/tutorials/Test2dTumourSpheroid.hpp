@@ -138,7 +138,7 @@ public:
 //        double length = spacing * num_y; // full domain in y direction
 //        unsigned divisions = num_y - 1; // divide the vessel to coincide with grid
 //        unsigned alignment_axis = 1; // pointing y direction
-//        boost::shared_ptr<CaVascularNetwork<2> > p_network = network_generator.GenerateSingleVessel(length, start_point,
+//        boost::shared_ptr<VascularNetwork<2> > p_network = network_generator.GenerateSingleVessel(length, start_point,
 //                                                                                            divisions, alignment_axis);
 //
 //        // Get initital tumour cell region

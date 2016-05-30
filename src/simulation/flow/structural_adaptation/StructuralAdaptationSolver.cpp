@@ -117,7 +117,7 @@ void StructuralAdaptationSolver<DIM>::Iterate()
     if(SimulationTime::Instance()->GetTimeStepsElapsed()==0)
     {
         // todo This should not be 'hard-coded': start
-        std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = this->mpVesselNetwork->GetVesselSegments();
+        std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = this->mpVesselNetwork->GetVesselSegments();
         for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
         {
             segments[segment_index]->GetFlowProperties()->SetShrinkingStimulus(1.79);

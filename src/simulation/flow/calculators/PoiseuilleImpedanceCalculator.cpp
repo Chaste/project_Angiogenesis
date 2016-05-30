@@ -34,7 +34,7 @@
  */
 
 #include "PoiseuilleImpedanceCalculator.hpp"
-#include "CaVesselSegment.hpp"
+#include "VesselSegment.hpp"
 #include "VasculatureData.hpp"
 #include "LinearSystem.hpp"
 #include "Exception.hpp"
@@ -55,9 +55,9 @@ PoiseuilleImpedanceCalculator<DIM>::~PoiseuilleImpedanceCalculator()
 }
 
 template<unsigned DIM>
-void PoiseuilleImpedanceCalculator<DIM>::Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork)
+void PoiseuilleImpedanceCalculator<DIM>::Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork)
 {
-    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
     for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
     {
         double length = segments[segment_index]->GetLength();

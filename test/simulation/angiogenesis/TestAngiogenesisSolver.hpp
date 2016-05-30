@@ -44,8 +44,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "LatticeBasedMigrationRule.hpp"
 #include "LatticeBasedSproutingRule.hpp"
 #include "VascularNode.hpp"
-#include "CaVessel.hpp"
-#include "CaVascularNetwork.hpp"
+#include "Vessel.hpp"
+#include "VascularNetwork.hpp"
 #include "AngiogenesisSolver.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
@@ -73,8 +73,8 @@ public:
         boost::shared_ptr<VascularNode<2> > p_node1 = VascularNode<2>::Create(0.0, 2.0*spacing);
         boost::shared_ptr<VascularNode<2> > p_node2 = VascularNode<2>::Create(spacing, 2.0*spacing);
         p_node2->SetIsMigrating(true);
-        boost::shared_ptr<CaVessel<2> > p_vessel = CaVessel<2>::Create(p_node1, p_node2);
-        boost::shared_ptr<CaVascularNetwork<2> > p_network = CaVascularNetwork<2>::Create();
+        boost::shared_ptr<Vessel<2> > p_vessel = Vessel<2>::Create(p_node1, p_node2);
+        boost::shared_ptr<VascularNetwork<2> > p_network = VascularNetwork<2>::Create();
         p_network->AddVessel(p_vessel);
         p_grid->SetVesselNetwork(p_network);
 

@@ -44,7 +44,7 @@
 #include "HybridLinearEllipticPde.hpp"
 #include "HybridNonLinearEllipticPde.hpp"
 #include "FiniteDifferenceSolver.hpp"
-#include "CaVascularNetwork.hpp"
+#include "VascularNetwork.hpp"
 #include "VasculatureGenerator.hpp"
 #include "OutputFileHandler.hpp"
 #include "RegularGrid.hpp"
@@ -62,7 +62,7 @@ public:
         // Set up the vessel network
         double vessel_length = 100;
         VasculatureGenerator<3> generator;
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length);
+        boost::shared_ptr<VascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length);
 
         // Set up the grid
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
@@ -114,7 +114,7 @@ public:
         // Set up the vessel network
         double vessel_length = 100;
         VasculatureGenerator<3> generator;
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length);
+        boost::shared_ptr<VascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length);
 
         // Set up the grid
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();

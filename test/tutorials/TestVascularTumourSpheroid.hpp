@@ -72,7 +72,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "HybridBoundaryCondition.hpp"
 #include "DiscreteSource.hpp"
 #include "CellLabelWriter.hpp"
-#include "CaVessel.hpp"
+#include "Vessel.hpp"
 #include "VascularNode.hpp"
 #include "GeometryTools.hpp"
 #include "RandomNumberGenerator.hpp"
@@ -116,7 +116,7 @@ public:
             cell_population.AddCellWriter<CellLabelWriter>();
 
             // Create the vessel network
-            boost::shared_ptr<CaVascularNetwork<3> > p_network = GetVesselNetwork();
+            boost::shared_ptr<VascularNetwork<3> > p_network = GetVesselNetwork();
 
             // Create the oxygen pde solver
             boost::shared_ptr<FiniteDifferenceSolver<3> > p_oxygen_solver = GetOxygenSolver(p_domain, p_network);

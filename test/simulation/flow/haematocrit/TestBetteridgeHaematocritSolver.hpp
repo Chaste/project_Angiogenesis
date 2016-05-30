@@ -34,7 +34,7 @@ public:
 
         // Generate the network
         VasculatureGenerator<2> vascular_network_generator;
-        boost::shared_ptr<CaVascularNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(800.0,
+        boost::shared_ptr<VascularNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(800.0,
                                                                                                                         1000.0,
                                                                                                                         vessel_length);
 
@@ -47,7 +47,7 @@ public:
             nodes.push_back(boost::shared_ptr<VascularNode<2> > (VascularNode<2>::Create(points[i])));
         }
 
-        boost::shared_ptr<CaVesselSegment<2> > p_segment(CaVesselSegment<2>::Create(nodes[0], nodes[1]));
+        boost::shared_ptr<VesselSegment<2> > p_segment(VesselSegment<2>::Create(nodes[0], nodes[1]));
 
         double radius = 10.0;
         p_segment->SetRadius(radius);
@@ -59,9 +59,9 @@ public:
         double y_middle = (extents[1].first + extents[1].second) /2.0;
         double x_middle = (extents[0].first + extents[0].second) /2.0;
 
-        std::vector<boost::shared_ptr<CaVessel<2> > >::iterator vessel_iterator;
+        std::vector<boost::shared_ptr<Vessel<2> > >::iterator vessel_iterator;
 
-        std::vector<boost::shared_ptr<CaVessel<2> > > vessels = vascular_network->GetVessels();
+        std::vector<boost::shared_ptr<Vessel<2> > > vessels = vascular_network->GetVessels();
 
         for (vessel_iterator = vessels.begin(); vessel_iterator != vessels.end(); vessel_iterator++)
         {
@@ -111,7 +111,7 @@ public:
             }
         }
 
-        std::vector<boost::shared_ptr<CaVesselSegment<2> > > segments = vascular_network->GetVesselSegments();
+        std::vector<boost::shared_ptr<VesselSegment<2> > > segments = vascular_network->GetVesselSegments();
         for(unsigned idx=0; idx<segments.size(); idx++)
         {
             segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);

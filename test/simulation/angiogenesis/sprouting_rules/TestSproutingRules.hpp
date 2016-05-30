@@ -11,8 +11,8 @@
 
 #include <cxxtest/TestSuite.h>
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
-#include "CaVessel.hpp"
-#include "CaVascularNetwork.hpp"
+#include "Vessel.hpp"
+#include "VascularNetwork.hpp"
 #include "VascularNode.hpp"
 #include "FunctionMap.hpp"
 #include "LatticeBasedSproutingRule.hpp"
@@ -36,8 +36,8 @@ public:
             bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*spacing, 0.0, 0.0));
         }
 
-        boost::shared_ptr<CaVessel<3> > p_vessel = CaVessel<3>::Create(bottom_nodes);
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = CaVascularNetwork<3>::Create();
+        boost::shared_ptr<Vessel<3> > p_vessel = Vessel<3>::Create(bottom_nodes);
+        boost::shared_ptr<VascularNetwork<3> > p_network = VascularNetwork<3>::Create();
         p_network->AddVessel(p_vessel);
 
         // Set up a sprouting rule
@@ -79,8 +79,8 @@ public:
             bottom_nodes.push_back(VascularNode<2>::Create(double(idx)*spacing +spacing, 5.0 * spacing));
         }
 
-        boost::shared_ptr<CaVessel<2> > p_vessel = CaVessel<2>::Create(bottom_nodes);
-        boost::shared_ptr<CaVascularNetwork<2> > p_network = CaVascularNetwork<2>::Create();
+        boost::shared_ptr<Vessel<2> > p_vessel = Vessel<2>::Create(bottom_nodes);
+        boost::shared_ptr<VascularNetwork<2> > p_network = VascularNetwork<2>::Create();
         p_network->AddVessel(p_vessel);
         p_grid->SetVesselNetwork(p_network);
 

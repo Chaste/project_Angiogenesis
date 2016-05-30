@@ -42,7 +42,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "AbstractCaUpdateRule.hpp"
 #include "StalkCellMutationState.hpp"
 #include "TipCellMutationState.hpp"
-#include "CaVascularNetwork.hpp"
+#include "VascularNetwork.hpp"
 #include "FiniteDifferenceSolver.hpp"
 
 template<unsigned DIM>
@@ -55,7 +55,7 @@ class CaBasedCellPopulationWithVessels : public CaBasedCellPopulation<DIM>
 
 private:
 
-    boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
+    boost::shared_ptr<VascularNetwork<DIM> > mpNetwork;
 
     std::vector<boost::shared_ptr<Cell> > mTipCells;
 
@@ -180,7 +180,7 @@ public:
      *
      * @param pNetwork
      */
-    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> >pNetwork);
+    void SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> >pNetwork);
 
     /**
      * Select a cell to take on tip cell mutation

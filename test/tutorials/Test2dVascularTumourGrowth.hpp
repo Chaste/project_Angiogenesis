@@ -71,7 +71,7 @@
 #include "ApoptoticCellKiller.hpp"
 
 #include "VasculatureGenerator.hpp"
-#include "CaVascularNetwork.hpp"
+#include "VascularNetwork.hpp"
 #include "CaBasedCellPopulationWithVessels.hpp"
 #include "CaBasedCellPopulationWithVesselsGenerator.hpp"
 #include "AngiogenesisSolver.hpp"
@@ -172,15 +172,15 @@ class Test2dVascularTumourGrowth : public AbstractCellBasedWithTimingsTestSuite
         return p_pde;
     }
 
-    boost::shared_ptr<CaVascularNetwork<2> > GetHexagonalNetwork(double domain_x, double domain_y)
+    boost::shared_ptr<VascularNetwork<2> > GetHexagonalNetwork(double domain_x, double domain_y)
     {
         VasculatureGenerator<2> network_generator;
-        boost::shared_ptr<CaVascularNetwork<2> > p_network = network_generator.GenerateHexagonalNetwork(domain_x, domain_y, 7);
+        boost::shared_ptr<VascularNetwork<2> > p_network = network_generator.GenerateHexagonalNetwork(domain_x, domain_y, 7);
 
         std::vector<boost::shared_ptr<VascularNode<2> > > nodes;
         nodes.push_back(VascularNode<2>::Create(0, 0));
         nodes.push_back(VascularNode<2>::Create(1, 0));
-        boost::shared_ptr<CaVesselSegment<2> > p_segment(CaVesselSegment<2>::Create(nodes[0], nodes[1]));
+        boost::shared_ptr<VesselSegment<2> > p_segment(VesselSegment<2>::Create(nodes[0], nodes[1]));
 
         double initial_vessel_radius = 10.0e-6;
         p_segment->SetRadius(initial_vessel_radius);
@@ -194,8 +194,8 @@ class Test2dVascularTumourGrowth : public AbstractCellBasedWithTimingsTestSuite
         double y_middle = (network_extents[1].first + network_extents[1].second) / 2.0;
         double x_middle = (network_extents[0].first + network_extents[0].second) / 2.0;
 
-        std::vector<boost::shared_ptr<CaVessel<2> > >::iterator vessel_iterator;
-        std::vector<boost::shared_ptr<CaVessel<2> > > vessels = p_network->GetVessels();
+        std::vector<boost::shared_ptr<Vessel<2> > >::iterator vessel_iterator;
+        std::vector<boost::shared_ptr<Vessel<2> > > vessels = p_network->GetVessels();
         for (vessel_iterator = vessels.begin(); vessel_iterator != vessels.end(); vessel_iterator++)
         {
             if ((*vessel_iterator)->GetStartNode()->GetNumberOfSegments() == 1)
@@ -256,7 +256,7 @@ public:
         p_domain->AddRectangle(domain_x, domain_y);
 
         // Create the initial vessel network: hexagonally tesselated vascular network
-        boost::shared_ptr<CaVascularNetwork<2> > p_network = GetHexagonalNetwork(domain_x, domain_y);
+        boost::shared_ptr<VascularNetwork<2> > p_network = GetHexagonalNetwork(domain_x, domain_y);
 
         // Create a lattice for the cell population
         double spacing = 1.0;

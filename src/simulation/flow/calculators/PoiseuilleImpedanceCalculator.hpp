@@ -37,7 +37,7 @@
 #define PoiseuilleImpedanceCalculator_HPP_
 
 #include <boost/shared_ptr.hpp>
-#include "CaVascularNetwork.hpp"
+#include "VascularNetwork.hpp"
 
 template<unsigned DIM>
 class PoiseuilleImpedanceCalculator
@@ -65,7 +65,7 @@ public:
      * 	VascularData entries "Radius" and "Viscosity" must be previously set on each segment before this
      * 	calculation can be implemented.
      */
-    void Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
+    void Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork);
 
 };
 

@@ -38,7 +38,7 @@
 
 #include "SmartPointers.hpp"
 #include "CaBasedCellPopulationWithVessels.hpp"
-#include "CaVascularNetwork.hpp"
+#include "VascularNetwork.hpp"
 
 /**
  * Class which sets up an on lattice cell population consisting of
@@ -73,7 +73,7 @@ public:
      * @return a pointer to the cell population
      */
     boost::shared_ptr<CaBasedCellPopulationWithVessels<DIM> > CreateCellPopulation(PottsMesh<DIM>& rMesh,
-                                                                                   boost::shared_ptr<CaVascularNetwork<DIM> > pVascularNetwork);
+                                                                                   boost::shared_ptr<VascularNetwork<DIM> > pVascularNetwork);
 
     /**
      * Whether to include a normal cell population around the endothelial cell population.

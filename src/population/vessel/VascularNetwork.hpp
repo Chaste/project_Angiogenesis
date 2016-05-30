@@ -33,8 +33,8 @@
 
  */
 
-#ifndef CAVASCULARNETWORK_HPP_
-#define CAVASCULARNETWORK_HPP_
+#ifndef VascularNetwork_HPP_
+#define VascularNetwork_HPP_
 
 #include <vector>
 #include <set>
@@ -44,8 +44,8 @@
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
 #endif // CHASTE_VTK
-#include "CaVessel.hpp"
-#include "CaVesselSegment.hpp"
+#include "Vessel.hpp"
+#include "VesselSegment.hpp"
 #include "VascularNode.hpp"
 #include "VasculatureData.hpp"
 #include "UblasIncludes.hpp"
@@ -54,7 +54,7 @@
  A vessel network is a collection of vessels
  */
 template<unsigned DIM>
-class CaVascularNetwork : public boost::enable_shared_from_this<CaVascularNetwork<DIM> >
+class VascularNetwork : public boost::enable_shared_from_this<VascularNetwork<DIM> >
 {
 
 private:
@@ -62,12 +62,12 @@ private:
     /**
      Container for Vessels in the VesselNetwork.
      */
-    std::vector<boost::shared_ptr<CaVessel<DIM> > > mVessels;
+    std::vector<boost::shared_ptr<Vessel<DIM> > > mVessels;
 
     /**
      Container for vessel segments in the VesselNetwork.
      */
-    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > mSegments;
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > mSegments;
 
     /**
      *  Is the data in mSegments up to date.
@@ -104,32 +104,32 @@ public:
     /*
      * Constructor
      */
-    CaVascularNetwork();
+    VascularNetwork();
 
     /*
      * Construct a new instance of the class and return a shared pointer to it.
      */
-    static boost::shared_ptr<CaVascularNetwork<DIM> > Create();
+    static boost::shared_ptr<VascularNetwork<DIM> > Create();
 
     /*
      * Destructor
      */
-    ~CaVascularNetwork();
+    ~VascularNetwork();
 
     /**
      Adds a vessel to the VesselNetwork.
      */
-    void AddVessel(boost::shared_ptr<CaVessel<DIM> > pVessel);
+    void AddVessel(boost::shared_ptr<Vessel<DIM> > pVessel);
 
     /**
      Adds a collection of vessels to the VesselNetwork
      */
-    void AddVessels(std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels);
+    void AddVessels(std::vector<boost::shared_ptr<Vessel<DIM> > > vessels);
 
     /**
      Make a copy of all vessels, but with new nodes and segments in each copy. Return the new vessels.
      */
-    std::vector<boost::shared_ptr<CaVessel<DIM> > > CopyVessels();
+    std::vector<boost::shared_ptr<Vessel<DIM> > > CopyVessels();
 
     /**
      Copy flow properties from the specified segment to all other segments
@@ -139,26 +139,26 @@ public:
     /**
      Make a copy of the selected vessels, but with new nodes and segments in each copy. Return the new vessels.
      */
-    std::vector<boost::shared_ptr<CaVessel<DIM> > > CopyVessels(std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels);
+    std::vector<boost::shared_ptr<Vessel<DIM> > > CopyVessels(std::vector<boost::shared_ptr<Vessel<DIM> > > vessels);
 
     /*
      * Divides a vessel into two at the specified location.
      */
-    boost::shared_ptr<VascularNode<DIM> > DivideVessel(boost::shared_ptr<CaVessel<DIM> > pVessel, ChastePoint<DIM> location);
+    boost::shared_ptr<VascularNode<DIM> > DivideVessel(boost::shared_ptr<Vessel<DIM> > pVessel, ChastePoint<DIM> location);
 
     /*
      * Add a new node to the end of the vessel
      * @param pEndNode the node that the new segment will start on, should already be on the end of the vessel
      * @param pNewNode the new node to be added to the end of the vessel
      */
-    void ExtendVessel(boost::shared_ptr<CaVessel<DIM> > pVessel,
+    void ExtendVessel(boost::shared_ptr<Vessel<DIM> > pVessel,
                       boost::shared_ptr<VascularNode<DIM> > pEndNode,
                       boost::shared_ptr<VascularNode<DIM> > pNewNode);
 
     /*
      * Forms a sprout at the specified locations.
      */
-    boost::shared_ptr<CaVessel<DIM> > FormSprout(ChastePoint<DIM> sproutBaseLocation, ChastePoint<DIM> sproutTipLocation);
+    boost::shared_ptr<Vessel<DIM> > FormSprout(ChastePoint<DIM> sproutBaseLocation, ChastePoint<DIM> sproutTipLocation);
 
     /**
      Get distance to nearest node
@@ -183,22 +183,22 @@ public:
     /**
      Get the segment nearest to the specified segment and the distance to it
      */
-    std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> GetNearestSegment(boost::shared_ptr<CaVesselSegment<DIM> > pSegment);
+    std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> GetNearestSegment(boost::shared_ptr<VesselSegment<DIM> > pSegment);
 
     /**
      Get the segment nearest to the specified node and the distance to it
      */
-    std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> GetNearestSegment(boost::shared_ptr<VascularNode<DIM> > pNode, bool sameVessel = true);
+    std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> GetNearestSegment(boost::shared_ptr<VascularNode<DIM> > pNode, bool sameVessel = true);
 
     /**
      Get the segment nearest to the specified location and the distance to it
      */
-    std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> GetNearestSegment(const ChastePoint<DIM>& rLocation);
+    std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> GetNearestSegment(const ChastePoint<DIM>& rLocation);
 
     /**
      Get the segment nearest to the specified location and the distance to it
      */
-    std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> GetNearestSegment(c_vector<double, DIM> location);
+    std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> GetNearestSegment(c_vector<double, DIM> location);
 
     /**
      Get the intercapillary distance using a 2d measure
@@ -208,12 +208,12 @@ public:
     /**
      Get the segment nearest to the specified location
      */
-    boost::shared_ptr<CaVessel<DIM> > GetNearestVessel(const ChastePoint<DIM>& rLocation);
+    boost::shared_ptr<Vessel<DIM> > GetNearestVessel(const ChastePoint<DIM>& rLocation);
 
     /**
      Get the segment nearest to the specified location
      */
-    boost::shared_ptr<CaVessel<DIM> > GetNearestVessel(c_vector<double, DIM> location);
+    boost::shared_ptr<Vessel<DIM> > GetNearestVessel(c_vector<double, DIM> location);
 
     /**
      Get the number of nodes near to a specified point
@@ -293,7 +293,7 @@ public:
     /**
      Return the vessel with the specified index in the network
      */
-    boost::shared_ptr<CaVessel<DIM> > GetVessel(unsigned index);
+    boost::shared_ptr<Vessel<DIM> > GetVessel(unsigned index);
 
     /**
      Return the only the nodes at the ends of vessels in the network
@@ -303,22 +303,22 @@ public:
     /**
      Return the Index of the specified vessel
      */
-    unsigned GetVesselIndex(boost::shared_ptr<CaVessel<DIM> > pVessel);
+    unsigned GetVesselIndex(boost::shared_ptr<Vessel<DIM> > pVessel);
 
     /**
      Return the Index of the specified vessel segment
      */
-    unsigned GetVesselSegmentIndex(boost::shared_ptr<CaVesselSegment<DIM> > pVesselSegment);
+    unsigned GetVesselSegmentIndex(boost::shared_ptr<VesselSegment<DIM> > pVesselSegment);
 
     /**
      Return the vessel segments in the network
      */
-    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > GetVesselSegments();
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > GetVesselSegments();
 
     /**
      Return the vessels in the network
      */
-    std::vector<boost::shared_ptr<CaVessel<DIM> > > GetVessels();
+    std::vector<boost::shared_ptr<Vessel<DIM> > > GetVessels();
 
     /**
      Return the indices of each node attached to a node
@@ -367,7 +367,7 @@ public:
      Merge nodes with the same spatial location. Useful for
      tidying up networks read from file.
      */
-    void MergeCoincidentNodes(std::vector<boost::shared_ptr<CaVessel<DIM> > > pVessels, double tolerance = 0.0);
+    void MergeCoincidentNodes(std::vector<boost::shared_ptr<Vessel<DIM> > > pVessels, double tolerance = 0.0);
 
     /**
      Merge nodes with the same spatial location. Useful for
@@ -378,7 +378,7 @@ public:
     /*
      * Removes a vessel from the network
      */
-    void RemoveVessel(boost::shared_ptr<CaVessel<DIM> > pVessel, bool deleteVessel = false);
+    void RemoveVessel(boost::shared_ptr<Vessel<DIM> > pVessel, bool deleteVessel = false);
 
     /**
      Remove short vessels from the network
@@ -398,7 +398,7 @@ public:
     /**
      Set the properties of the segments in the network based on those of the prototype
      */
-    void SetSegmentProperties(boost::shared_ptr<CaVesselSegment<DIM> > prototype);
+    void SetSegmentProperties(boost::shared_ptr<VesselSegment<DIM> > prototype);
 
     /**
      Apply the input data to all vessel segments in the network
@@ -423,7 +423,7 @@ public:
     /*
      * Translate specific vessels along the provided vector
      */
-    void Translate(const c_vector<double, DIM>& rTranslationVector, std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels);
+    void Translate(const c_vector<double, DIM>& rTranslationVector, std::vector<boost::shared_ptr<Vessel<DIM> > > vessels);
 
     /*
      * Update the network node collection
@@ -467,4 +467,4 @@ public:
 
 };
 
-#endif /* CAVASCULARNETWORK_HPP_ */
+#endif /* VascularNetwork_HPP_ */

@@ -43,12 +43,12 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SmartPointers.hpp"
 #include "VasculatureGenerator.hpp"
 #include "VascularNode.hpp"
-#include "CaVesselSegment.hpp"
-#include "CaVessel.hpp"
-#include "CaVascularNetwork.hpp"
+#include "VesselSegment.hpp"
+#include "Vessel.hpp"
+#include "VascularNetwork.hpp"
 #include "Part.hpp"
 #include "AngiogenesisSolver.hpp"
-#include "CaVesselSegment.hpp"
+#include "VesselSegment.hpp"
 #include "LatticeBasedMigrationRule.hpp"
 #include "FunctionMap.hpp"
 #include "Owen2011MigrationRule.hpp"
@@ -78,8 +78,8 @@ public:
         boost::shared_ptr<VascularNode<2> > p_node1 = VascularNode<2>::Create(0.0, 2.0*spacing);
         boost::shared_ptr<VascularNode<2> > p_node2 = VascularNode<2>::Create(spacing, 2.0*spacing);
         p_node2->SetIsMigrating(true);
-        boost::shared_ptr<CaVessel<2> > p_vessel = CaVessel<2>::Create(p_node1, p_node2);
-        boost::shared_ptr<CaVascularNetwork<2> > p_network = CaVascularNetwork<2>::Create();
+        boost::shared_ptr<Vessel<2> > p_vessel = Vessel<2>::Create(p_node1, p_node2);
+        boost::shared_ptr<VascularNetwork<2> > p_network = VascularNetwork<2>::Create();
         p_network->AddVessel(p_vessel);
         p_grid->SetVesselNetwork(p_network);
 
@@ -127,8 +127,8 @@ public:
         boost::shared_ptr<VascularNode<2> > p_node1 = VascularNode<2>::Create(0.0, 2.0*spacing);
         boost::shared_ptr<VascularNode<2> > p_node2 = VascularNode<2>::Create(spacing, 2.0*spacing);
         p_node2->SetIsMigrating(true);
-        boost::shared_ptr<CaVessel<2> > p_vessel = CaVessel<2>::Create(p_node1, p_node2);
-        boost::shared_ptr<CaVascularNetwork<2> > p_network = CaVascularNetwork<2>::Create();
+        boost::shared_ptr<Vessel<2> > p_vessel = Vessel<2>::Create(p_node1, p_node2);
+        boost::shared_ptr<VascularNetwork<2> > p_network = VascularNetwork<2>::Create();
         p_network->AddVessel(p_vessel);
         p_grid->SetVesselNetwork(p_network);
 
@@ -200,11 +200,11 @@ public:
         boost::shared_ptr<VascularNode<2> > p_node5 = VascularNode<2>::Create(4.0*spacing, 2.0*spacing);
 
         p_node3->SetIsMigrating(true);
-        boost::shared_ptr<CaVessel<2> > p_vessel1 = CaVessel<2>::Create(p_node1, p_node2);
-        boost::shared_ptr<CaVessel<2> > p_vessel2 = CaVessel<2>::Create(p_node2, p_node3);
-        boost::shared_ptr<CaVessel<2> > p_vessel3 = CaVessel<2>::Create(p_node3, p_node4);
-        boost::shared_ptr<CaVessel<2> > p_vessel4 = CaVessel<2>::Create(p_node4, p_node5);
-        boost::shared_ptr<CaVascularNetwork<2> > p_network = CaVascularNetwork<2>::Create();
+        boost::shared_ptr<Vessel<2> > p_vessel1 = Vessel<2>::Create(p_node1, p_node2);
+        boost::shared_ptr<Vessel<2> > p_vessel2 = Vessel<2>::Create(p_node2, p_node3);
+        boost::shared_ptr<Vessel<2> > p_vessel3 = Vessel<2>::Create(p_node3, p_node4);
+        boost::shared_ptr<Vessel<2> > p_vessel4 = Vessel<2>::Create(p_node4, p_node5);
+        boost::shared_ptr<VascularNetwork<2> > p_network = VascularNetwork<2>::Create();
         p_network->AddVessel(p_vessel1);
         p_network->AddVessel(p_vessel2);
         p_network->AddVessel(p_vessel3);
@@ -217,7 +217,7 @@ public:
         p_node5->GetFlowProperties()->SetPressure(1000);
 
         p_network->SetSegmentRadii(10.0);
-        std::vector<boost::shared_ptr<CaVesselSegment<2> > > segments = p_network->GetVesselSegments();
+        std::vector<boost::shared_ptr<VesselSegment<2> > > segments = p_network->GetVesselSegments();
         for(unsigned idx=0; idx<segments.size(); idx++)
         {
             segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);

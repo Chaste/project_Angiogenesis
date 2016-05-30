@@ -35,7 +35,7 @@
 
 #include "DiscreteSource.hpp"
 #include "AbstractCellPopulation.hpp"
-#include "CaVascularNetwork.hpp"
+#include "VascularNetwork.hpp"
 #include "GeometryTools.hpp"
 
 template<unsigned DIM>
@@ -108,7 +108,7 @@ template<unsigned DIM>
 std::vector<double> DiscreteSource<DIM>::GetVesselRegularGridValues()
 {
     std::vector<double> values(mpRegularGrid->GetNumberOfPoints(), 0.0);
-    std::vector<std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > > point_segment_map = mpRegularGrid->GetPointSegmentMap();
+    std::vector<std::vector<boost::shared_ptr<VesselSegment<DIM> > > > point_segment_map = mpRegularGrid->GetPointSegmentMap();
     for(unsigned idx=0; idx<point_segment_map.size(); idx++)
     {
         for (unsigned jdx = 0; jdx < point_segment_map[idx].size(); jdx++)

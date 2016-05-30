@@ -43,8 +43,8 @@
 #include <boost/random.hpp>
 #include <boost/generator_iterator.hpp>
 #include "VascularNode.hpp"
-#include "CaVesselSegment.hpp"
-#include "CaVessel.hpp"
+#include "VesselSegment.hpp"
+#include "Vessel.hpp"
 #include "VesselSurfaceGenerator.hpp"
 
 #include "Part.hpp"
@@ -168,7 +168,7 @@ boost::shared_ptr<Polygon> Part<DIM>::AddRectangle(double sizeX, double sizeY, c
 }
 
 template<unsigned DIM>
-void Part<DIM>::AddVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pVesselNetwork, bool surface)
+void Part<DIM>::AddVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pVesselNetwork, bool surface)
 {
     if (!surface)
     {
@@ -192,10 +192,10 @@ void Part<DIM>::AddVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pVes
         }
 
         // Create polygons and facets for each vessel
-        std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels = pVesselNetwork->GetVessels();
+        std::vector<boost::shared_ptr<Vessel<DIM> > > vessels = pVesselNetwork->GetVessels();
         for (unsigned idx = 0; idx < vessels.size(); idx++)
         {
-            std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = vessels[idx]->GetSegments();
+            std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = vessels[idx]->GetSegments();
             std::vector<boost::shared_ptr<Vertex> > segment_vertices;
             for (unsigned jdx = 0; jdx < segments.size(); jdx++)
             {

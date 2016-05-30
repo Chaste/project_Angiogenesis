@@ -35,8 +35,7 @@
 
 #include "Facet.hpp"
 #include "HybridBoundaryCondition.hpp"
-#include "CaVesselSegment.hpp"
-#include "Debug.hpp"
+#include "VesselSegment.hpp"
 
 template<unsigned DIM>
 HybridBoundaryCondition<DIM>::HybridBoundaryCondition()
@@ -60,7 +59,7 @@ HybridBoundaryCondition<DIM>::~HybridBoundaryCondition()
 }
 
 template<unsigned DIM>
-void HybridBoundaryCondition<DIM>::SetNetwork(boost::shared_ptr<CaVascularNetwork <DIM> > pNetwork)
+void HybridBoundaryCondition<DIM>::SetNetwork(boost::shared_ptr<VascularNetwork <DIM> > pNetwork)
 {
 	mpNetwork = pNetwork;
 }
@@ -182,7 +181,7 @@ std::pair<bool, double> HybridBoundaryCondition<DIM>::GetValue(c_vector<double,D
         }
         else
         {
-            std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
+            std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
             for (unsigned jdx = 0; jdx <  segments.size(); jdx++)
             {
                 if (segments[jdx]->GetDistance(location) <= tolerance)
@@ -208,7 +207,7 @@ std::pair<bool, double> HybridBoundaryCondition<DIM>::GetValue(c_vector<double,D
         }
         else
         {
-            std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
+            std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
             for (unsigned jdx = 0; jdx <  segments.size(); jdx++)
             {
                 if (segments[jdx]->GetDistance(location) <= segments[jdx]->GetRadius() + tolerance)
@@ -321,7 +320,7 @@ void HybridBoundaryCondition<DIM>::UpdateRegularGridFacetBoundaryConditions(boos
 template<unsigned DIM>
 void HybridBoundaryCondition<DIM>::UpdateRegularGridSegmentBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions)
 {
-    std::vector<std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > > point_segment_map = mpRegularGrid->GetPointSegmentMap(true, !(mType == BoundaryConditionType::VESSEL_LINE));
+    std::vector<std::vector<boost::shared_ptr<VesselSegment<DIM> > > > point_segment_map = mpRegularGrid->GetPointSegmentMap(true, !(mType == BoundaryConditionType::VESSEL_LINE));
     for(unsigned idx=0; idx<point_segment_map.size(); idx++)
     {
         if(point_segment_map[idx].size()>0)

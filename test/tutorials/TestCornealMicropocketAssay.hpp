@@ -79,7 +79,7 @@
 //        p_mesh->GenerateFromPart(p_part, 1.e6);
 //
 //        // Make the vessel network
-//        boost::shared_ptr<CaVascularNetwork<3> > p_network = CaVascularNetwork<3>::Create();
+//        boost::shared_ptr<VascularNetwork<3> > p_network = VascularNetwork<3>::Create();
 //
 //        std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
 //        double node_spacing = 10.0;

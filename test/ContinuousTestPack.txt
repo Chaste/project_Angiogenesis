@@ -13,9 +13,9 @@ mesh/utilities/TestDensityMap.hpp
 population/cell/TestOwen2011OxygenBasedCellCycleModelWithOde.hpp
 population/cell/TestOwen2011OxygenBasedCellCycleOdeSystem.hpp
 population/vessel/TestVascularNode.hpp
-population/vessel/TestCaVesselSegment.hpp
-population/vessel/TestCaVessel.hpp
-population/vessel/TestCaVascularNetwork.hpp
+population/vessel/TestVesselSegment.hpp
+population/vessel/TestVessel.hpp
+population/vessel/TestVascularNetwork.hpp
 population/vessel/properties/TestVasculatureData.hpp
 population/vessel/generators/TestVasculatureGenerator.hpp
 population/combined/TestCaBasedCellPopulationWithVessels.hpp
@@ -38,6 +38,6 @@ simulation/TestVascularTumourSimulationModifier.hpp
 simulation/TestVascularTumourSolver.hpp
 tutorials/Test2dTumourSpheroid.hpp
 tutorials/Test2dVascularTumourGrowth.hpp
-tutorials/Test2dVascularTumourGrowthIm.hpp
 tutorials/Test3dTumourSpheroid.hpp
-tutorials/TestSnailTrail.hpp
+tutorials/TestSnailTrailLiteratePaper.hpp
+tutorials/TestBuildVesselNetworkLiteratePaper.hpp

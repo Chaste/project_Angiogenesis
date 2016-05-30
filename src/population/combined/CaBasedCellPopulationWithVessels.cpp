@@ -99,7 +99,7 @@ CaBasedCellPopulationWithVessels<DIM>::~CaBasedCellPopulationWithVessels()
 }
 
 template<unsigned DIM>
-void CaBasedCellPopulationWithVessels<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
+void CaBasedCellPopulationWithVessels<DIM>::SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork)
 {
     mpNetwork = pNetwork;
 }
@@ -244,7 +244,7 @@ void CaBasedCellPopulationWithVessels<DIM>::DoSprouting(std::vector<boost::share
                      * Note: the 'tip_location' here is a tip cell already located on the vessel, as decided by
                      * a sprouting rule. This actually creates the sprout, which moves to the candidate_location.
                      */
-                    boost::shared_ptr<CaVessel<DIM> > p_vessel = mpNetwork->FormSprout(tip_location, candidate_location);
+                    boost::shared_ptr<Vessel<DIM> > p_vessel = mpNetwork->FormSprout(tip_location, candidate_location);
                     boost::shared_ptr<VascularNode<DIM> > p_new_node = p_vessel->GetNodeAtOppositeEnd(p_node);
 
                     // Check for anastamosis
@@ -452,7 +452,7 @@ void CaBasedCellPopulationWithVessels<DIM>::DoMigration()
                          * Note: the 'tip_location' here is a tip cell already located on the vessel, as decided by
                          * a sprouting rule. This actually creates the sprout, which moves to the candidate_location.
                          */
-                        boost::shared_ptr<CaVessel<DIM> > p_vessel = mpNetwork->FormSprout(tip_location, candidate_location);
+                        boost::shared_ptr<Vessel<DIM> > p_vessel = mpNetwork->FormSprout(tip_location, candidate_location);
                         boost::shared_ptr<VascularNode<DIM> > p_new_node = p_vessel->GetNodeAtOppositeEnd(p_node);
 
                         // Check for anastamosis

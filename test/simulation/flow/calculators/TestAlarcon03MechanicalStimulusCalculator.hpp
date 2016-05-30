@@ -12,7 +12,7 @@
 #include <cxxtest/TestSuite.h>
 #include <boost/shared_ptr.hpp>
 #include <math.h>
-#include "CaVascularNetwork.hpp"
+#include "VascularNetwork.hpp"
 #include "Alarcon03MechanicalStimulusCalculator.hpp"
 
 class TestAlarcon03MechanicalStimulusCalculator : public CxxTest::TestSuite
@@ -30,8 +30,8 @@ public:
         nodes[0]->GetFlowProperties()->SetPressure(pressure);
         nodes[1]->GetFlowProperties()->SetPressure(pressure);
 
-        boost::shared_ptr<CaVessel<3> > p_vessel(CaVessel<3>::Create(CaVesselSegment<3>::Create(nodes[0], nodes[1])));
-        boost::shared_ptr<CaVascularNetwork<3> > p_vascular_network = CaVascularNetwork<3>::Create();
+        boost::shared_ptr<Vessel<3> > p_vessel(Vessel<3>::Create(VesselSegment<3>::Create(nodes[0], nodes[1])));
+        boost::shared_ptr<VascularNetwork<3> > p_vascular_network = VascularNetwork<3>::Create();
         p_vascular_network->AddVessel(p_vessel);
         double wall_shear_stress = 25.0;
         p_vessel->GetSegments()[0]->GetFlowProperties()->SetWallShearStress(wall_shear_stress);
@@ -56,8 +56,8 @@ public:
         nodes[0]->GetFlowProperties()->SetPressure(pressure);
         nodes[1]->GetFlowProperties()->SetPressure(pressure);
 
-        boost::shared_ptr<CaVessel<3> > p_vessel(CaVessel<3>::Create(CaVesselSegment<3>::Create(nodes[0], nodes[1])));
-        boost::shared_ptr<CaVascularNetwork<3> > p_vascular_network = CaVascularNetwork<3>::Create();
+        boost::shared_ptr<Vessel<3> > p_vessel(Vessel<3>::Create(VesselSegment<3>::Create(nodes[0], nodes[1])));
+        boost::shared_ptr<VascularNetwork<3> > p_vascular_network = VascularNetwork<3>::Create();
         p_vascular_network->AddVessel(p_vessel);
         double wall_shear_stress = 25.0;
         p_vessel->GetSegments()[0]->GetFlowProperties()->SetWallShearStress(wall_shear_stress);

@@ -42,7 +42,7 @@
 #include <vtkPolyData.h>
 #include "SmartPointers.hpp"
 #include "UblasVectorInclude.hpp"
-#include "CaVascularNetwork.hpp"
+#include "VascularNetwork.hpp"
 #include "Polygon.hpp"
 
 /**
@@ -55,7 +55,7 @@ class VesselSurfaceGenerator
     /**
      * The vessel network for which the surface will be generated.
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > mpVesselNetwork;
+    boost::shared_ptr<VascularNetwork<DIM> > mpVesselNetwork;
 
     /**
      * A VTK representation of the surface.
@@ -68,7 +68,7 @@ public:
      * Constructor
      * @param pVesselNetwork the vessel network to generate the surface on
      */
-    VesselSurfaceGenerator(boost::shared_ptr<CaVascularNetwork<DIM> > pVesselNetwork);
+    VesselSurfaceGenerator(boost::shared_ptr<VascularNetwork<DIM> > pVesselNetwork);
 
     /**
      * Destructor

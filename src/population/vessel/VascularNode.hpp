@@ -51,7 +51,7 @@
  *  Forward declaration to allow segments to manage adding and removing themselves from nodes.
  */
 template<unsigned DIM>
-class CaVesselSegment;
+class VesselSegment;
 
 /**
  * This is a class for vascular nodes.
@@ -66,7 +66,7 @@ class VascularNode : public boost::enable_shared_from_this<VascularNode<DIM> >
     /**
      * Allow segments to manage adding and removing themselves from nodes.
      */
-    friend class CaVesselSegment<DIM> ;
+    friend class VesselSegment<DIM> ;
 
 private:
 
@@ -86,10 +86,13 @@ private:
     VasculatureData mDataContainer;
 
     /**
-     * Id tag, can be useful for storing segment-node relationships in the VesselNetwork class.
+     * Id tag, used for storing segment-node relationships in the VesselNetwork class.
      */
     unsigned mId;
 
+    /**
+     * Temporary Id tag, available to the user for tagging nodes as they like
+     */
     unsigned mTempId;
 
     /**
@@ -100,7 +103,7 @@ private:
     /**
      * Collection of pointers to Vessel Segments connected to this node.
      */
-    std::vector<boost::weak_ptr<CaVesselSegment<DIM> > > mVesselSegments;
+    std::vector<boost::weak_ptr<VesselSegment<DIM> > > mVesselSegments;
 
     /**
      * Radius of the vessel at this node
@@ -286,6 +289,11 @@ public:
      */
     unsigned GetId() const;
 
+    /**
+     * Return the node temp Id
+     *
+     * @return the node id
+     */
     unsigned GetTempId() const;
 
     /**
@@ -336,14 +344,14 @@ public:
      * @param index the index of the vessel segment in the node's segment vector
      * @return a pointer to the segment for the input index
      */
-    boost::shared_ptr<CaVesselSegment<DIM> > GetVesselSegment(unsigned index) const;
+    boost::shared_ptr<VesselSegment<DIM> > GetVesselSegment(unsigned index) const;
 
     /**
      * Return a vector of pointers to the attached vessel segments.
      *
      * @return a vector of pointers to the attached vessel segments
      */
-    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > GetVesselSegments() const;
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > GetVesselSegments() const;
 
     /**
      * Return true if there is an associated Cell.
@@ -366,7 +374,7 @@ public:
      * @param pSegment a pointer to the segment to query
      * @return whether the input segment is attached to the node
      */
-    bool IsAttachedTo(const boost::shared_ptr<CaVesselSegment<DIM> > pSegment) const;
+    bool IsAttachedTo(const boost::shared_ptr<VesselSegment<DIM> > pSegment) const;
 
     /**
      * Return true if the node is coincident with the input location
@@ -424,9 +432,13 @@ public:
      *
      * @param id the id for the node
      */
-
     void SetId(unsigned id);
 
+    /**
+     * Assign the temp id
+     *
+     * @param id the id for the node
+     */
     void SetTempId(unsigned id);
 
     /**
@@ -479,14 +491,14 @@ private:
      *
      *  @param pVesselSegment the segment to be added
      */
-    void AddSegment(boost::shared_ptr<CaVesselSegment<DIM> > pVesselSegment);
+    void AddSegment(boost::shared_ptr<VesselSegment<DIM> > pVesselSegment);
 
     /**
      * Remove a vessel segment from the node. Private because node-segment connectivity needs to be managed.
      *
      *  @param pVesselSegment the segment to be removed
      */
-    void RemoveSegment(boost::shared_ptr<CaVesselSegment<DIM> > pVesselSegment);
+    void RemoveSegment(boost::shared_ptr<VesselSegment<DIM> > pVesselSegment);
 };
 
 #endif /* VASCULARNODE_HPP_ */

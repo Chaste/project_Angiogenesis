@@ -35,8 +35,8 @@
 
 #include "AbstractSproutingRule.hpp"
 #include "RandomNumberGenerator.hpp"
-#include "CaVesselSegment.hpp"
-#include "CaVessel.hpp"
+#include "VesselSegment.hpp"
+#include "Vessel.hpp"
 
 template<unsigned DIM>
 AbstractSproutingRule<DIM>::AbstractSproutingRule()
@@ -74,7 +74,7 @@ void AbstractSproutingRule<DIM>::SetVesselEndCutoff(double cutoff)
 }
 
 template<unsigned DIM>
-void AbstractSproutingRule<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pVesselNetwork)
+void AbstractSproutingRule<DIM>::SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pVesselNetwork)
 {
     mpVesselNetwork = pVesselNetwork;
 }

@@ -33,18 +33,18 @@
 
  */
 
-#ifndef TESTCAVESSEL_HPP_
-#define TESTCAVESSEL__HPP_
+#ifndef TESTVessel_HPP_
+#define TESTVessel__HPP_
 
 #include <cxxtest/TestSuite.h>
 #include "SmartPointers.hpp"
 #include "VascularNode.hpp"
-#include "CaVesselSegment.hpp"
-#include "CaVessel.hpp"
+#include "VesselSegment.hpp"
+#include "Vessel.hpp"
 #include "ChastePoint.hpp"
 #include "VasculatureData.hpp"
 
-class TestCaVessel : public CxxTest::TestSuite
+class TestVessel : public CxxTest::TestSuite
 {
 public:
 
@@ -57,26 +57,26 @@ public:
         }
 
         // Make some segments
-        std::vector<boost::shared_ptr<CaVesselSegment<2> > > segments;
+        std::vector<boost::shared_ptr<VesselSegment<2> > > segments;
         for (unsigned idx = 0; idx < 3; idx++)
         {
-            segments.push_back(CaVesselSegment<2>::Create(nodes[idx], nodes[idx+1]));
+            segments.push_back(VesselSegment<2>::Create(nodes[idx], nodes[idx+1]));
         }
-        segments.push_back(CaVesselSegment<2>::Create(nodes[4], nodes[5]));
+        segments.push_back(VesselSegment<2>::Create(nodes[4], nodes[5]));
 
         // Make some vessels
-        boost::shared_ptr<CaVessel<2> > pVessel1 = CaVessel<2>::Create(segments[0]);
+        boost::shared_ptr<Vessel<2> > pVessel1 = Vessel<2>::Create(segments[0]);
 
-        std::vector<boost::shared_ptr<CaVesselSegment<2> > > good_segments;
+        std::vector<boost::shared_ptr<VesselSegment<2> > > good_segments;
         good_segments.push_back(segments[1]);
         good_segments.push_back(segments[2]);
 
-        boost::shared_ptr<CaVessel<2> > pVessel2 = CaVessel<2>::Create(good_segments);
+        boost::shared_ptr<Vessel<2> > pVessel2 = Vessel<2>::Create(good_segments);
 
-        std::vector<boost::shared_ptr<CaVesselSegment<2> > > bad_segments = good_segments;
+        std::vector<boost::shared_ptr<VesselSegment<2> > > bad_segments = good_segments;
         bad_segments.push_back(segments[3]);
-        TS_ASSERT_THROWS_THIS(CaVessel<2>::Create(bad_segments), "Input vessel segments are not attached in the correct order.");
-        boost::shared_ptr<CaVessel<2> > pVessel3 = CaVessel<2>::Create(nodes);
+        TS_ASSERT_THROWS_THIS(Vessel<2>::Create(bad_segments), "Input vessel segments are not attached in the correct order.");
+        boost::shared_ptr<Vessel<2> > pVessel3 = Vessel<2>::Create(nodes);
 
         // Check that locations are correct
         TS_ASSERT(pVessel1->GetStartNode()->IsCoincident(nodes[0]));
@@ -113,15 +113,15 @@ public:
         }
 
         // Make some segments
-        std::vector<boost::shared_ptr<CaVesselSegment<2> > > segments;
+        std::vector<boost::shared_ptr<VesselSegment<2> > > segments;
         for (unsigned idx = 0; idx < 3; idx++)
         {
-            segments.push_back(CaVesselSegment<2>::Create(nodes[idx], nodes[idx+1]));
+            segments.push_back(VesselSegment<2>::Create(nodes[idx], nodes[idx+1]));
         }
-        segments.push_back(CaVesselSegment<2>::Create(nodes[4], nodes[5]));
+        segments.push_back(VesselSegment<2>::Create(nodes[4], nodes[5]));
 
         // Make a vessel
-        boost::shared_ptr<CaVessel<2> > pVessel1 = CaVessel<2>::Create(segments[1]);
+        boost::shared_ptr<Vessel<2> > pVessel1 = Vessel<2>::Create(segments[1]);
 
         // Try adding a segment to the start and end
         pVessel1->AddSegment(segments[0]);
@@ -138,17 +138,17 @@ public:
         TS_ASSERT_EQUALS(pVessel1->GetNumberOfSegments(), 1u);
 
         // Vector version of adding segments
-        std::vector<boost::shared_ptr<CaVesselSegment<2> > > good_segments;
+        std::vector<boost::shared_ptr<VesselSegment<2> > > good_segments;
         good_segments.push_back(segments[1]);
         good_segments.push_back(segments[2]);
 
-        std::vector<boost::shared_ptr<CaVesselSegment<2> > > bad_segments = good_segments;
+        std::vector<boost::shared_ptr<VesselSegment<2> > > bad_segments = good_segments;
         bad_segments.push_back(segments[3]);
-        boost::shared_ptr<CaVessel<2> > pVessel2 = CaVessel<2>::Create(segments[0]);
+        boost::shared_ptr<Vessel<2> > pVessel2 = Vessel<2>::Create(segments[0]);
         pVessel2->AddSegments(good_segments);
         TS_ASSERT_EQUALS(pVessel2->GetNumberOfSegments(), 3u);
 
-        boost::shared_ptr<CaVessel<2> > pVessel3 = CaVessel<2>::Create(segments[0]);
+        boost::shared_ptr<Vessel<2> > pVessel3 = Vessel<2>::Create(segments[0]);
         TS_ASSERT_THROWS_THIS(pVessel3->AddSegments(bad_segments),
                               "Input vessel segments are not attached in the correct order.");
     }
@@ -156,11 +156,11 @@ public:
     void TestAccessingData() throw (Exception)
     {
         // Make a segment
-        boost::shared_ptr<CaVesselSegment<3> > pSegment1 = CaVesselSegment<3>::Create(VascularNode<3>::Create(1.0, 2.0, 6.0),
+        boost::shared_ptr<VesselSegment<3> > pSegment1 = VesselSegment<3>::Create(VascularNode<3>::Create(1.0, 2.0, 6.0),
                                                                                       VascularNode<3>::Create(3.0, 4.0, 7.0));
 
         // Make a vessel
-        boost::shared_ptr<CaVessel<3> > pVessel1 = CaVessel<3>::Create(pSegment1);
+        boost::shared_ptr<Vessel<3> > pVessel1 = Vessel<3>::Create(pSegment1);
 
         // Set some data
         double radius = 5.5;
@@ -191,10 +191,10 @@ public:
         // Make a segment
         boost::shared_ptr<VascularNode<3> > p_node1 = VascularNode<3>::Create(0.0);
         boost::shared_ptr<VascularNode<3> > p_node2 = VascularNode<3>::Create(1.0);
-        boost::shared_ptr<CaVesselSegment<3> > pSegment1 = CaVesselSegment<3>::Create(p_node1, p_node2);
+        boost::shared_ptr<VesselSegment<3> > pSegment1 = VesselSegment<3>::Create(p_node1, p_node2);
 
         // Make a vessel
-        boost::shared_ptr<CaVessel<3> > pVessel1 = CaVessel<3>::Create(pSegment1);
+        boost::shared_ptr<Vessel<3> > pVessel1 = Vessel<3>::Create(pSegment1);
 
         // Delete the vessel
         pVessel1->Remove();
@@ -203,4 +203,4 @@ public:
     }
 };
 
-#endif /*TESTCAVESSEL_HPP_*/
+#endif /*TESTVessel_HPP_*/

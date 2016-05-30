@@ -36,7 +36,7 @@
 #include "Alarcon03HaematocritSolver.hpp"
 #include "LinearSystem.hpp"
 #include "VascularNode.hpp"
-#include "CaVessel.hpp"
+#include "Vessel.hpp"
 #include "Exception.hpp"
 #include "ReplicatableVector.hpp"
 
@@ -77,7 +77,7 @@ void Alarcon03HaematocritSolver<DIM>::SetHaematocrit(double haematocrit)
 }
 
 template<unsigned DIM>
-void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork)
+void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork)
 {
 
     // create extra data tables to aid with formation of coefficient matrix for haematocrit calculation
@@ -90,7 +90,7 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<CaVascularNetw
     {
         for (unsigned j = 0; j < nodes[i]->GetNumberOfSegments(); j++)
         {
-            boost::shared_ptr<CaVessel<DIM> > p_vessel = nodes[i]->GetVesselSegment(j)->GetVessel();
+            boost::shared_ptr<Vessel<DIM> > p_vessel = nodes[i]->GetVesselSegment(j)->GetVessel();
             unsigned vessel_index = vascularNetwork->GetVesselIndex(p_vessel);
             double flow_rate = p_vessel->GetFlowRate();
             if (nodes[i] == p_vessel->GetStartNode())

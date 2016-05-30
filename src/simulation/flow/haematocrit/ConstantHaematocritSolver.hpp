@@ -38,7 +38,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <boost/shared_ptr.hpp>
 
-#include "CaVascularNetwork.hpp"
+#include "VascularNetwork.hpp"
 #include "AbstractHaematocritSolver.hpp"
 
 template<unsigned DIM>
@@ -60,7 +60,7 @@ public:
     virtual ~ConstantHaematocritSolver();
 
     // method for performing the Solver
-    void Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
+    void Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork);
 
     void SetHaematocrit(double haematocrit);
 

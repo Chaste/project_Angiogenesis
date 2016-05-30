@@ -38,7 +38,7 @@
 
 #include <vector>
 #include <string>
-#include "CaVascularNetwork.hpp"
+#include "VascularNetwork.hpp"
 #include "VascularNode.hpp"
 #include "SmartPointers.hpp"
 #include "RegularGrid.hpp"
@@ -67,7 +67,7 @@ protected:
     /**
      * Vessel network, useful if sprouting depends on neighbouring nodes
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > mpVesselNetwork;
+    boost::shared_ptr<VascularNetwork<DIM> > mpVesselNetwork;
 
     /**
      * How far from vessel ends can sprouts form
@@ -96,7 +96,7 @@ public:
      * Set the vessel network
      * @param pVesselNetwork pointer to a new method for the class
      */
-    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pVesselNetwork);
+    void SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pVesselNetwork);
 
     /**
      * Set the sprouting probability

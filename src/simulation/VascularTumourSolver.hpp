@@ -41,7 +41,7 @@
 
 #include "StructuralAdaptationSolver.hpp"
 #include "SmartPointers.hpp"
-#include "CaVascularNetwork.hpp"
+#include "VascularNetwork.hpp"
 #include "AbstractHybridSolver.hpp"
 #include "FlowSolver.hpp"
 #include "AbstractCellPopulation.hpp"
@@ -59,7 +59,7 @@ class VascularTumourSolver
     /**
      * The vessel network
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
+    boost::shared_ptr<VascularNetwork<DIM> > mpNetwork;
 
     /**
      * The end time for solves if used in standalone
@@ -177,7 +177,7 @@ public:
      * Set the vessel network
      * @param pNetwork the vessel network
      */
-    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
+    void SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork);
 
     /**
      * Increment one step in time

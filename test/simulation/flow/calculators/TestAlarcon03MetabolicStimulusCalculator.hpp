@@ -13,7 +13,7 @@
 #include <math.h>
 #include <boost/shared_ptr.hpp>
 #include "Alarcon03MetabolicStimulusCalculator.hpp"
-#include "CaVascularNetwork.hpp"
+#include "VascularNetwork.hpp"
 
 class TestAlarcon03MetabolicStimulusCalculator : public CxxTest::TestSuite
 {
@@ -31,8 +31,8 @@ public:
 
         double flow_rate = 10.0;
         double haematocrit_level = 0.45;
-        boost::shared_ptr<CaVessel<3> > p_vessel(CaVessel<3>::Create(CaVesselSegment<3>::Create(nodes[0], nodes[1])));
-        boost::shared_ptr<CaVascularNetwork<3> > p_vascular_network = CaVascularNetwork<3>::Create();
+        boost::shared_ptr<Vessel<3> > p_vessel(Vessel<3>::Create(VesselSegment<3>::Create(nodes[0], nodes[1])));
+        boost::shared_ptr<VascularNetwork<3> > p_vascular_network = VascularNetwork<3>::Create();
         p_vascular_network->AddVessel(p_vessel);
         p_vessel->GetSegments()[0]->GetFlowProperties()->SetFlowRate(flow_rate);
         p_vessel->GetSegments()[0]->GetFlowProperties()->SetHaematocrit(haematocrit_level);

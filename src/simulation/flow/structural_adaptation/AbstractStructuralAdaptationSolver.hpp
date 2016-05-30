@@ -39,7 +39,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string>
 #include <vector>
 #include "SmartPointers.hpp"
-#include "CaVascularNetwork.hpp"
+#include "VascularNetwork.hpp"
 
 /**
  * This is an abstract implementation of a structural adaptation solver. It iterates
@@ -84,7 +84,7 @@ protected:
     /**
      * The vessel network
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > mpVesselNetwork;
+    boost::shared_ptr<VascularNetwork<DIM> > mpVesselNetwork;
 
 public:
 
@@ -164,7 +164,7 @@ public:
      *  Set the vessel network
      *  @param pNetwork pointer to the vessel network
      */
-    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
+    void SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork);
 
     /**
      *  Method used to implement a structural adaptation algorithm on a vessel network.

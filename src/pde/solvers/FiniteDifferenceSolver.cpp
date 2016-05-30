@@ -35,8 +35,7 @@
 
 #include "LinearSystem.hpp"
 #include "ReplicatableVector.hpp"
-#include "CaVesselSegment.hpp"
-#include "CaVascularNetwork.hpp"
+#include "VesselSegment.hpp"
 #include "HybridLinearEllipticPde.hpp"
 #include "FiniteDifferenceSolver.hpp"
 #include "SimplePetscNonlinearSolver.hpp"

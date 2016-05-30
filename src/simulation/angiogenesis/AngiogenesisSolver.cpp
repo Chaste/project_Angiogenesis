@@ -37,7 +37,7 @@
 #include "UblasIncludes.hpp"
 #include "RandomNumberGenerator.hpp"
 #include "VascularNode.hpp"
-#include "CaVesselSegment.hpp"
+#include "VesselSegment.hpp"
 #include "VascularNode.hpp"
 #include "AngiogenesisSolver.hpp"
 
@@ -119,7 +119,7 @@ void AngiogenesisSolver<DIM>::SetVesselGrid(boost::shared_ptr<RegularGrid<DIM> >
 }
 
 template<unsigned DIM>
-void AngiogenesisSolver<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
+void AngiogenesisSolver<DIM>::SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork)
 {
     mpNetwork = pNetwork;
 }
@@ -297,7 +297,7 @@ void AngiogenesisSolver<DIM>::DoAnastamosis()
             else
             {
                 // Get the nearest segment and check if it is close enough to the node for a merge
-                std::pair<boost::shared_ptr<CaVesselSegment<DIM> >, double> segment_pair = mpNetwork->GetNearestSegment(nodes[idx], false);
+                std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> segment_pair = mpNetwork->GetNearestSegment(nodes[idx], false);
 
                 if(segment_pair.second <= mNodeAnastamosisRadius && nodes[idx]->GetVesselSegment(0)->GetLength() > segment_pair.second)
                 {

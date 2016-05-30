@@ -33,13 +33,13 @@
 
  */
 
-#ifndef CAVESSEL_HPP_
-#define CAVESSEL_HPP_
+#ifndef Vessel_HPP_
+#define Vessel_HPP_
 
 #include <vector>
 #include <map>
 #include <boost/enable_shared_from_this.hpp>
-#include "CaVesselSegment.hpp"
+#include "VesselSegment.hpp"
 #include "VascularNode.hpp"
 #include "VasculatureData.hpp"
 #include "ChastePoint.hpp"
@@ -63,14 +63,14 @@ struct SegmentLocation
  * segments as required.
  */
 template<unsigned DIM>
-class CaVessel : public boost::enable_shared_from_this<CaVessel<DIM> >
+class Vessel : public boost::enable_shared_from_this<Vessel<DIM> >
 {
 private:
 
     /**
      *  Vessel segments
      */
-    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > mSegments;
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > mSegments;
 
     /**
      *  Nodes
@@ -119,70 +119,70 @@ private:
 
      The vessel should always have at least one segment.
      */
-    CaVessel(boost::shared_ptr<CaVesselSegment<DIM> > pSegment);
+    Vessel(boost::shared_ptr<VesselSegment<DIM> > pSegment);
 
     /**
      Alternate Constructor.
 
      The vessel should always have at least one segment. This is useful for initializing with many segments at once.
      */
-    CaVessel(std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments);
+    Vessel(std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments);
 
     /**
      Alternate Constructor.
 
      Initialize with a vector of nodes. The nodes are joined by segments in order. The ends are not closed.
      */
-    CaVessel(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes);
+    Vessel(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes);
 
     /**
      Alternate Constructor.
 
      Initialize with two nodes.
      */
-    CaVessel(boost::shared_ptr<VascularNode<DIM> > pStartNode, boost::shared_ptr<VascularNode<DIM> > pEndNode);
+    Vessel(boost::shared_ptr<VascularNode<DIM> > pStartNode, boost::shared_ptr<VascularNode<DIM> > pEndNode);
 
 public:
 
     /*
      * Construct a new instance of the class and return a shared pointer to it.
      */
-    static boost::shared_ptr<CaVessel<DIM> > Create(boost::shared_ptr<CaVesselSegment<DIM> > pSegment);
+    static boost::shared_ptr<Vessel<DIM> > Create(boost::shared_ptr<VesselSegment<DIM> > pSegment);
 
     /*
      * Construct a new instance of the class and return a shared pointer to it.
      */
-    static boost::shared_ptr<CaVessel<DIM> > Create(std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments);
+    static boost::shared_ptr<Vessel<DIM> > Create(std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments);
 
     /*
      * Construct a new instance of the class and return a shared pointer to it.
      */
-    static boost::shared_ptr<CaVessel<DIM> > Create(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes);
+    static boost::shared_ptr<Vessel<DIM> > Create(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes);
 
     /*
      * Construct a new instance of the class and return a shared pointer to it.
      */
-    static boost::shared_ptr<CaVessel<DIM> > Create(boost::shared_ptr<VascularNode<DIM> > pStartNode, boost::shared_ptr<VascularNode<DIM> > pEndNode);
+    static boost::shared_ptr<Vessel<DIM> > Create(boost::shared_ptr<VascularNode<DIM> > pStartNode, boost::shared_ptr<VascularNode<DIM> > pEndNode);
 
     /**
      Destructor.
      */
-    ~CaVessel();
+    ~Vessel();
 
     /**
      Add a single segment to either end of the vessel
      */
-    void AddSegment(boost::shared_ptr<CaVesselSegment<DIM> > pSegment);
+    void AddSegment(boost::shared_ptr<VesselSegment<DIM> > pSegment);
 
     /**
      Add a collection of segments to either end of the vessel
      */
-    void AddSegments(std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > pSegments);
+    void AddSegments(std::vector<boost::shared_ptr<VesselSegment<DIM> > > pSegments);
 
     /*
      * Copy the member data and VasculatureData from the input vessel.
      */
-    void CopyDataFromExistingVessel(boost::shared_ptr<CaVessel<DIM> > pTargetVessel);
+    void CopyDataFromExistingVessel(boost::shared_ptr<Vessel<DIM> > pTargetVessel);
 
     /**
      Divide the vessel at the specified location
@@ -224,7 +224,7 @@ public:
     /**
      @return vector of vessels connected to this one
      */
-    std::vector<boost::shared_ptr<CaVessel<DIM> > > GetConnectedVessels();
+    std::vector<boost::shared_ptr<Vessel<DIM> > > GetConnectedVessels();
 
     /**
      @return shared pointer to the second node of the last segment
@@ -310,12 +310,12 @@ public:
     /**
      @return mVesselSegmentLocations[index]
      */
-    boost::shared_ptr<CaVesselSegment<DIM> > GetSegment(unsigned index);
+    boost::shared_ptr<VesselSegment<DIM> > GetSegment(unsigned index);
 
     /**
      @return mVesselSegments
      */
-    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > GetSegments();
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > GetSegments();
 
     /**
      @return shared pointer to the first node of the first segment
@@ -339,7 +339,7 @@ public:
     /**
      *  Return whether the vessel is connected to another vessel.
      */
-    bool IsConnectedTo(boost::shared_ptr<CaVessel<DIM> > pOtherVessel);
+    bool IsConnectedTo(boost::shared_ptr<Vessel<DIM> > pOtherVessel);
 
     /**
      Remove the vessel from all its segments
@@ -420,9 +420,9 @@ public:
 private:
 
     /**
-     @return boost::shared_ptr<CaVessel<DIM> >
+     @return boost::shared_ptr<Vessel<DIM> >
      */
-    boost::shared_ptr<CaVessel<DIM> > Shared();
+    boost::shared_ptr<Vessel<DIM> > Shared();
 };
 
-#endif /* CAVESSEL_HPP_ */
+#endif /* Vessel_HPP_ */

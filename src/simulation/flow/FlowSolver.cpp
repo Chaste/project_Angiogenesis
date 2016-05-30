@@ -37,7 +37,7 @@
 #include "Exception.hpp"
 #include "ReplicatableVector.hpp"
 #include "PetscTools.hpp"
-#include "CaVesselSegment.hpp"
+#include "VesselSegment.hpp"
 #include "FlowSolver.hpp"
 
 template<unsigned DIM>
@@ -130,7 +130,7 @@ void FlowSolver<DIM>::SetUseDirectSolver(bool useDirectSolver)
 }
 
 template<unsigned DIM>
-void FlowSolver<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pVascularNetwork)
+void FlowSolver<DIM>::SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pVascularNetwork)
 {
     mpVesselNetwork = pVascularNetwork;
 }
@@ -237,7 +237,7 @@ void FlowSolver<DIM>::Solve()
             flow_rate = 0.0;
         }
 
-        std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = mVessels[vessel_index]->GetSegments();
+        std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = mVessels[vessel_index]->GetSegments();
         double pressure = start_node_pressure;
         for (unsigned segment_index = 0; segment_index < segments.size() - 1; segment_index++)
         {

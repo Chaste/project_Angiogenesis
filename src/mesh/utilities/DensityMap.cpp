@@ -35,7 +35,7 @@
 
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning for now (gcc4.3)
 #include <vtkBox.h>
-#include "CaVesselSegment.hpp"
+#include "VesselSegment.hpp"
 #include "ChastePoint.hpp"
 
 #include "DensityMap.hpp"
@@ -157,7 +157,7 @@ void DensityMap<DIM>::Solve()
     double spacing = this->mpRegularGrid->GetSpacing();
 
     std::vector<double> vessel_solution(number_of_points, 0.0);
-    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments;
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments;
     if (this->mpNetwork)
     {
         segments = this->mpNetwork->GetVesselSegments();

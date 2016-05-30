@@ -38,9 +38,9 @@
 #include <vtkPolygon.h>
 #include <stdlib.h>
 #include "Exception.hpp"
-#include "CaVessel.hpp"
+#include "Vessel.hpp"
 #include "VascularNode.hpp"
-#include "CaVesselSegment.hpp"
+#include "VesselSegment.hpp"
 #include "UblasCustomFunctions.hpp"
 #include "UblasIncludes.hpp"
 #include "Vertex.hpp"
@@ -49,7 +49,7 @@
 #include "VesselSurfaceGenerator.hpp"
 
 template<unsigned DIM>
-VesselSurfaceGenerator<DIM>::VesselSurfaceGenerator(boost::shared_ptr<CaVascularNetwork<DIM> > pVesselNetwork) :
+VesselSurfaceGenerator<DIM>::VesselSurfaceGenerator(boost::shared_ptr<VascularNetwork<DIM> > pVesselNetwork) :
         mpVesselNetwork(pVesselNetwork), mpSurface(vtkSmartPointer<vtkPolyData>::New())
 {
 }
@@ -63,7 +63,7 @@ template<unsigned DIM>
 std::vector<c_vector<double, DIM> > VesselSurfaceGenerator<DIM>::GetHoles()
 {
     std::vector<c_vector<double, DIM> > hole_locations;
-    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = mpVesselNetwork->GetVesselSegments();
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = mpVesselNetwork->GetVesselSegments();
     for (unsigned idx = 0; idx < segments.size(); idx++)
     {
         hole_locations.push_back(segments[idx]->GetMidPoint());
@@ -84,7 +84,7 @@ std::vector<std::vector<boost::shared_ptr<Polygon> > > VesselSurfaceGenerator<DI
 
     // Generate a surface for each segment
     std::vector<std::vector<boost::shared_ptr<Polygon> > > segment_polygons;
-    std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments = mpVesselNetwork->GetVesselSegments();
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = mpVesselNetwork->GetVesselSegments();
 
     for (unsigned idx = 0; idx < segments.size(); idx++)
     {
@@ -120,7 +120,7 @@ std::vector<std::vector<boost::shared_ptr<Polygon> > > VesselSurfaceGenerator<DI
         }
         else
         {
-            std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > node_segments = p_start_node->GetVesselSegments();
+            std::vector<boost::shared_ptr<VesselSegment<DIM> > > node_segments = p_start_node->GetVesselSegments();
             for (unsigned jdx = 0; jdx < node_segments.size(); jdx++)
             {
                 if (node_segments[jdx] != segments[idx])
@@ -154,7 +154,7 @@ std::vector<std::vector<boost::shared_ptr<Polygon> > > VesselSurfaceGenerator<DI
         }
         else
         {
-            std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > node_segments = p_end_node->GetVesselSegments();
+            std::vector<boost::shared_ptr<VesselSegment<DIM> > > node_segments = p_end_node->GetVesselSegments();
             for (unsigned jdx = 0; jdx < node_segments.size(); jdx++)
             {
                 if (node_segments[jdx] != segments[idx])

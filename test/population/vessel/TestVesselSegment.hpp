@@ -42,8 +42,8 @@
 #include "SmartPointers.hpp"
 #include "VasculatureData.hpp"
 #include "ChastePoint.hpp"
-#include "CaVesselSegment.hpp"
-#include "CaVessel.hpp"
+#include "VesselSegment.hpp"
+#include "Vessel.hpp"
 
 class TestVesselSegment : public CxxTest::TestSuite
 {
@@ -57,11 +57,11 @@ public:
         nodes.push_back(VascularNode<2>::Create(3.0, 4.0));
 
         // Check for an exception if the segment is defined with the same nodes
-        TS_ASSERT_THROWS_THIS(CaVesselSegment<2>::Create(nodes[0], nodes[0]),
+        TS_ASSERT_THROWS_THIS(VesselSegment<2>::Create(nodes[0], nodes[0]),
                               "Attempted to assign the same node to both ends of a vessel segment.");
 
         // Make a segment
-        boost::shared_ptr<CaVesselSegment<2> > p_segment = CaVesselSegment<2>::Create(nodes[0], nodes[1]);
+        boost::shared_ptr<VesselSegment<2> > p_segment = VesselSegment<2>::Create(nodes[0], nodes[1]);
 
         // Check the locations
         TS_ASSERT(p_segment->GetNodes().first->IsCoincident(nodes[0]));
@@ -86,7 +86,7 @@ public:
 
     void TestSimpleGetAndSetMethods() throw (Exception)
     {
-        boost::shared_ptr<CaVesselSegment<3> > pSegment = CaVesselSegment<3>::Create(VascularNode<3>::Create(),
+        boost::shared_ptr<VesselSegment<3> > pSegment = VesselSegment<3>::Create(VascularNode<3>::Create(),
                                                                                       VascularNode<3>::Create(1.0));
 
         // Test simple Getters and Setters
@@ -107,7 +107,7 @@ public:
 
     void TestAccessingData() throw (Exception)
     {
-        boost::shared_ptr<CaVesselSegment<3> > p_segment = CaVesselSegment<3>::Create(VascularNode<3>::Create(),
+        boost::shared_ptr<VesselSegment<3> > p_segment = VesselSegment<3>::Create(VascularNode<3>::Create(),
                                                                                       VascularNode<3>::Create(1.0));
 
         // Set some data
@@ -145,8 +145,8 @@ public:
         nodes_3d.push_back(VascularNode<3>::Create(3.0, 4.0, 5.0));
         nodes_3d.push_back(VascularNode<3>::Create(6.0, 7.0, 8.0));
 
-        boost::shared_ptr<CaVesselSegment<2> > p_segment1 = CaVesselSegment<2>::Create(nodes[0], nodes[1]);
-        boost::shared_ptr<CaVesselSegment<3> > p_segment2 = CaVesselSegment<3>::Create(nodes_3d[0], nodes_3d[1]);
+        boost::shared_ptr<VesselSegment<2> > p_segment1 = VesselSegment<2>::Create(nodes[0], nodes[1]);
+        boost::shared_ptr<VesselSegment<3> > p_segment2 = VesselSegment<3>::Create(nodes_3d[0], nodes_3d[1]);
 
         TS_ASSERT_DELTA(p_segment1->GetLength(), std::sqrt(8.0), 1.e-6);
         TS_ASSERT_DELTA(p_segment2->GetLength(), std::sqrt(27.0), 1.e-6);
@@ -187,25 +187,25 @@ public:
         nodes.push_back(VascularNode<2>::Create(5.0, 6.0));
 
         // Make some vessel segments
-        boost::shared_ptr<CaVesselSegment<2> > pSegment = CaVesselSegment<2>::Create(nodes[0], nodes[1]);
-        boost::shared_ptr<CaVesselSegment<2> > pSegment2 = CaVesselSegment<2>::Create(nodes[1], nodes[2]);
+        boost::shared_ptr<VesselSegment<2> > pSegment = VesselSegment<2>::Create(nodes[0], nodes[1]);
+        boost::shared_ptr<VesselSegment<2> > pSegment2 = VesselSegment<2>::Create(nodes[1], nodes[2]);
 
-        TS_ASSERT_THROWS_THIS(boost::shared_ptr<CaVessel<2> > vessel = pSegment->GetVessel(),
+        TS_ASSERT_THROWS_THIS(boost::shared_ptr<Vessel<2> > vessel = pSegment->GetVessel(),
                               "A vessel has been requested but this segment doesn't have one.");
 
         // Make a vessel and check that it has been suitably added to the segment
-        boost::shared_ptr<CaVessel<2> > pVessel = CaVessel<2>::Create(pSegment);
+        boost::shared_ptr<Vessel<2> > pVessel = Vessel<2>::Create(pSegment);
         TS_ASSERT(pSegment->GetNode(0)->IsCoincident(pSegment->GetVessel()->GetSegment(0)->GetNode(0)));
 
         // Add a different vessel
-        boost::shared_ptr<CaVessel<2> > pVessel2 = CaVessel<2>::Create(pSegment);
+        boost::shared_ptr<Vessel<2> > pVessel2 = Vessel<2>::Create(pSegment);
         TS_ASSERT(pSegment->GetNode(0)->IsCoincident(pSegment->GetVessel()->GetSegment(0)->GetNode(0)));
 
         // Try removing a segment from the vessel
         pVessel->AddSegment(pSegment2);
         pVessel->RemoveSegments(SegmentLocation::Start);
         TS_ASSERT_THROWS_THIS(pVessel->RemoveSegments(SegmentLocation::End), "Vessel must have at least one segment.");
-        TS_ASSERT_THROWS_THIS(boost::shared_ptr<CaVessel<2> > vessel = pSegment->GetVessel(),
+        TS_ASSERT_THROWS_THIS(boost::shared_ptr<Vessel<2> > vessel = pSegment->GetVessel(),
                               "A vessel has been requested but this segment doesn't have one.");
     }
 
@@ -214,7 +214,7 @@ public:
         // Make a segment
         boost::shared_ptr<VascularNode<3> > p_node1 = VascularNode<3>::Create(0.0);
         boost::shared_ptr<VascularNode<3> > p_node2 = VascularNode<3>::Create(1.0);
-        boost::shared_ptr<CaVesselSegment<3> > pSegment1 = CaVesselSegment<3>::Create(p_node1, p_node2);
+        boost::shared_ptr<VesselSegment<3> > pSegment1 = VesselSegment<3>::Create(p_node1, p_node2);
 
         // Delete the segment
         pSegment1->Remove();

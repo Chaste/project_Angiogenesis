@@ -36,7 +36,7 @@
 #include "BetteridgeHaematocritSolver.hpp"
 #include "LinearSystem.hpp"
 #include "VascularNode.hpp"
-#include "CaVessel.hpp"
+#include "Vessel.hpp"
 #include "Exception.hpp"
 #include "ReplicatableVector.hpp"
 
@@ -77,7 +77,7 @@ void BetteridgeHaematocritSolver<DIM>::SetHaematocrit(double haematocrit)
 }
 
 template<unsigned DIM>
-void BetteridgeHaematocritSolver<DIM>::Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork)
+void BetteridgeHaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork)
 {
 
     double tolerance = 1e-3;
@@ -97,7 +97,7 @@ void BetteridgeHaematocritSolver<DIM>::Calculate(boost::shared_ptr<CaVascularNet
         {
             for (unsigned j = 0; j < nodes[i]->GetNumberOfSegments(); j++)
             {
-                boost::shared_ptr<CaVessel<DIM> > p_vessel = nodes[i]->GetVesselSegment(j)->GetVessel();
+                boost::shared_ptr<Vessel<DIM> > p_vessel = nodes[i]->GetVesselSegment(j)->GetVessel();
                 unsigned vessel_index = vascularNetwork->GetVesselIndex(p_vessel);
                 double flow_rate = p_vessel->GetFlowRate();
                 if (nodes[i] == p_vessel->GetStartNode())

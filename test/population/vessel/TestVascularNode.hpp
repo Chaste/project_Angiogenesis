@@ -43,7 +43,7 @@
 #include "FixedDurationGenerationBasedCellCycleModel.hpp"
 #include "UblasIncludes.hpp"
 #include "SmartPointers.hpp"
-#include "CaVesselSegment.hpp"
+#include "VesselSegment.hpp"
 #include "VascularNode.hpp"
 #include "VasculatureData.hpp"
 #include "NodeFlowProperties.hpp"
@@ -177,8 +177,8 @@ public:
         boost::shared_ptr<VascularNode<2> > p_node_3 = VascularNode<2>::Create(2);
 
         // Make some vessel segments
-        boost::shared_ptr<CaVesselSegment<2> > p_segment1 = CaVesselSegment<2>::Create(p_node_1, p_node_2);
-        boost::shared_ptr<CaVesselSegment<2> > p_segment2 = CaVesselSegment<2>::Create(p_node_2, p_node_3);
+        boost::shared_ptr<VesselSegment<2> > p_segment1 = VesselSegment<2>::Create(p_node_1, p_node_2);
+        boost::shared_ptr<VesselSegment<2> > p_segment2 = VesselSegment<2>::Create(p_node_2, p_node_3);
 
         // Check that the vessel segments have been suitably added to the nodes.
         TS_ASSERT(p_node_1->IsAttachedTo(p_segment1));

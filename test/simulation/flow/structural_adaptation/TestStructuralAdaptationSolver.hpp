@@ -40,21 +40,21 @@ public:
         nodes[7]->GetFlowProperties()->SetPressure(1993);
 
         double haematocrit = 0.45;
-        std::vector<boost::shared_ptr<CaVesselSegment<2> > > segments;
+        std::vector<boost::shared_ptr<VesselSegment<2> > > segments;
         for(unsigned idx=0; idx<7; idx++)
         {
-            segments.push_back(CaVesselSegment<2>::Create(nodes[idx], nodes[idx+1]));
+            segments.push_back(VesselSegment<2>::Create(nodes[idx], nodes[idx+1]));
             segments[idx]->GetFlowProperties()->SetHaematocrit(haematocrit);
             segments[idx]->SetRadius(10.0);
         }
 
-        std::vector<boost::shared_ptr<CaVessel<2> > > vessels;
+        std::vector<boost::shared_ptr<Vessel<2> > > vessels;
         for(unsigned idx=0; idx<7; idx++)
         {
-            vessels.push_back(CaVessel<2>::Create(segments[idx]));
+            vessels.push_back(Vessel<2>::Create(segments[idx]));
         }
 
-        boost::shared_ptr<CaVascularNetwork<2> > p_network = CaVascularNetwork<2>::Create();
+        boost::shared_ptr<VascularNetwork<2> > p_network = VascularNetwork<2>::Create();
         p_network->AddVessels(vessels);
 
         SimulationTime* p_simulation_time = SimulationTime::Instance();
@@ -86,16 +86,16 @@ public:
     {
         boost::shared_ptr<VascularNode<2> > p_node1 = VascularNode<2>::Create(0.0, 0.0);
         boost::shared_ptr<VascularNode<2> > p_node2 = VascularNode<2>::Create(80.0e-6, 0.0);
-        boost::shared_ptr<CaVesselSegment<2> > p_segment1(CaVesselSegment<2>::Create(p_node1, p_node2));
+        boost::shared_ptr<VesselSegment<2> > p_segment1(VesselSegment<2>::Create(p_node1, p_node2));
 
         p_node1->GetFlowProperties()->SetIsInputNode(true);
         p_node1->GetFlowProperties()->SetPressure(3322);
         p_node2->GetFlowProperties()->SetIsOutputNode(true);
         p_node2->GetFlowProperties()->SetPressure(1993);
 
-        boost::shared_ptr<CaVessel<2> > p_vessel1(CaVessel<2>::Create(p_segment1));
+        boost::shared_ptr<Vessel<2> > p_vessel1(Vessel<2>::Create(p_segment1));
 
-        boost::shared_ptr<CaVascularNetwork<2> > p_network = boost::shared_ptr<CaVascularNetwork<2> >(new CaVascularNetwork<2>);
+        boost::shared_ptr<VascularNetwork<2> > p_network = boost::shared_ptr<VascularNetwork<2> >(new VascularNetwork<2>);
         p_network->AddVessel(p_vessel1);
 
         double radius = 10.0e-6;
@@ -133,7 +133,7 @@ public:
 
         // Generate the network
         VasculatureGenerator<2> vascular_network_generator;
-        boost::shared_ptr<CaVascularNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(800.0,
+        boost::shared_ptr<VascularNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(800.0,
                                                                                                                         1000.0, vessel_length);
 
         std::vector<ChastePoint<2> > points;
@@ -146,7 +146,7 @@ public:
             nodes.push_back(boost::shared_ptr<VascularNode<2> > (VascularNode<2>::Create(points[i])));
         }
 
-        boost::shared_ptr<CaVesselSegment<2> > p_segment(CaVesselSegment<2>::Create(nodes[0], nodes[1]));
+        boost::shared_ptr<VesselSegment<2> > p_segment(VesselSegment<2>::Create(nodes[0], nodes[1]));
 
         double radius = 10.0;
         p_segment->SetRadius(radius);
@@ -158,9 +158,9 @@ public:
         double y_middle = (extents[1].first + extents[1].second) /2.0;
         double x_middle = (extents[0].first + extents[0].second) /2.0;
 
-        std::vector<boost::shared_ptr<CaVessel<2> > >::iterator vessel_iterator;
+        std::vector<boost::shared_ptr<Vessel<2> > >::iterator vessel_iterator;
 
-        std::vector<boost::shared_ptr<CaVessel<2> > > vessels = vascular_network->GetVessels();
+        std::vector<boost::shared_ptr<Vessel<2> > > vessels = vascular_network->GetVessels();
 
         for (vessel_iterator = vessels.begin(); vessel_iterator != vessels.end(); vessel_iterator++)
         {

@@ -37,7 +37,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _Alarcon03MechanicalStimulusCalculator_hpp
 
 #include <boost/shared_ptr.hpp>
-#include "CaVascularNetwork.hpp"
+#include "VascularNetwork.hpp"
 
 template<unsigned DIM>
 class Alarcon03MechanicalStimulusCalculator
@@ -78,7 +78,7 @@ public:
         This Calculator has been changed from the original found in Pries1998 in order to better fit experimental data.
         See original paper and relevant test for comparison.
      */
-    void Calculate(boost::shared_ptr<CaVascularNetwork<DIM> > vascularNetwork);
+    void Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork);
 
 };
 

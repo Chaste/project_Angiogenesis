@@ -60,7 +60,7 @@ protected:
     /**
      * The vessel network
      */
-    boost::shared_ptr<CaVascularNetwork<DIM> > mpVesselNetwork;
+    boost::shared_ptr<VascularNetwork<DIM> > mpVesselNetwork;
 
     bool mIsSprouting;
 
@@ -90,7 +90,7 @@ public:
      */
     virtual void SetHybridSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pSolver);
 
-    void SetNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
+    void SetNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork);
 
     virtual std::vector<c_vector<double, DIM> > GetDirections(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
     {

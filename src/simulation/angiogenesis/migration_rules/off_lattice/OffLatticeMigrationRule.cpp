@@ -36,7 +36,6 @@
 #include "GeometryTools.hpp"
 #include "OffLatticeMigrationRule.hpp"
 #include "RandomNumberGenerator.hpp"
-#include "Debug.hpp"
 
 template<unsigned DIM>
 OffLatticeMigrationRule<DIM>::OffLatticeMigrationRule()

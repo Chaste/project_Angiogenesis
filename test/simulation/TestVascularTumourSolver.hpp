@@ -43,14 +43,13 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SmartPointers.hpp"
 #include "VasculatureGenerator.hpp"
 #include "VascularNode.hpp"
-#include "CaVesselSegment.hpp"
-#include "CaVessel.hpp"
-#include "CaVascularNetwork.hpp"
+#include "VesselSegment.hpp"
+#include "Vessel.hpp"
+#include "VascularNetwork.hpp"
 #include "Part.hpp"
 #include "FiniteDifferenceSolver.hpp"
 #include "AngiogenesisSolver.hpp"
 #include "VascularTumourSolver.hpp"
-#include "CaVesselSegment.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "HybridBoundaryCondition.hpp"
 #include "SimulationTime.hpp"
@@ -69,8 +68,8 @@ public:
         boost::shared_ptr<VascularNode<3> > p_node1 = VascularNode<3>::Create(0.0, 0.0, 0.0);
         boost::shared_ptr<VascularNode<3> > p_node2 = VascularNode<3>::Create(100.0, 0.0, 0.0);
         p_node2->SetIsMigrating(true);
-        boost::shared_ptr<CaVessel<3> > p_vessel1 = CaVessel<3>::Create(CaVesselSegment<3>::Create(p_node1, p_node2));
-        boost::shared_ptr<CaVascularNetwork<3> > p_network = boost::shared_ptr<CaVascularNetwork<3> >(new CaVascularNetwork<3>());
+        boost::shared_ptr<Vessel<3> > p_vessel1 = Vessel<3>::Create(VesselSegment<3>::Create(p_node1, p_node2));
+        boost::shared_ptr<VascularNetwork<3> > p_network = boost::shared_ptr<VascularNetwork<3> >(new VascularNetwork<3>());
         p_network->AddVessel(p_vessel1);
         p_network->GetVessel(0)->GetEndNode()->SetIsMigrating(true);
 
