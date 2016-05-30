@@ -38,5 +38,6 @@ simulation/TestVascularTumourSimulationModifier.hpp
 simulation/TestVascularTumourSolver.hpp
 tutorials/Test2dTumourSpheroid.hpp
 tutorials/Test2dVascularTumourGrowth.hpp
+tutorials/Test2dVascularTumourGrowthIm.hpp
 tutorials/Test3dTumourSpheroid.hpp
 tutorials/TestSnailTrail.hpp

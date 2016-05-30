@@ -115,7 +115,7 @@ class Test2dVascularTumourGrowth : public AbstractCellBasedWithTimingsTestSuite
         double segment_length = 1.0;
         double segment_surface_area = 2 * M_PI * segment_radius * segment_length;
         double permeability = 20000.0;
-        double inter_vessel_O2_level = 20.0;
+        double inter_vessel_O2_level = 5.0;
         state_specific_rates2[p_stalk_state->GetColour()] = segment_surface_area * permeability * inter_vessel_O2_level / pow(segment_length, 3.0);
         state_specific_rates2[p_tip_state->GetColour()] = segment_surface_area * permeability * inter_vessel_O2_level / pow(segment_length, 3.0);
         p_cell_source->SetStateRateMap(state_specific_rates2);
@@ -250,8 +250,8 @@ public:
 
     void TestOnLattice2dVascularTumourGrowth() throw (Exception)
     {
-        double domain_x = 42.0;
-        double domain_y = 66.0;
+        double domain_x = 41.0;
+        double domain_y = 61.0;
         boost::shared_ptr<Part<2> > p_domain = Part<2>::Create();
         p_domain->AddRectangle(domain_x, domain_y);
 
@@ -373,6 +373,7 @@ public:
         p_vascular_tumour_solver->SetAngiogenesisSolver(p_angiogenesis_solver);
 
         // todo currently there is an issue with the flow calculation - some blunt-ended vessels contain flow (they shouldn't)
+        // this is an angiogenesis issue, sprouts take properties (including flow props) from parent vessels
         boost::shared_ptr<FlowSolver<2> > flow_solver = FlowSolver<2>::Create();
         p_vascular_tumour_solver->SetFlowSolver(flow_solver);
 
@@ -392,14 +393,14 @@ public:
         boost::shared_ptr<ApoptoticCellKiller<2> > apoptotic_cell_killer(new ApoptoticCellKiller<2>(cell_population.get()));
         simulator.AddCellKiller(apoptotic_cell_killer);
 
-        std::string resultsDirectoryName = "Test2dVascularTumourGrowth/OnLattice";
+        std::string resultsDirectoryName = "Test2dVascularTumourGrowth/OnLatticeLarge";
         simulator.SetOutputDirectory(resultsDirectoryName);
-        simulator.SetSamplingTimestepMultiple(1);
+        simulator.SetSamplingTimestepMultiple(5);
         // todo this seems to break simulations if dt is set to 1 - causes a CVode error:
         //          *CVODE Error -27 in module CVODE function CVode: tout too close to t0 to start integration.
         //          CVODE failed to solve system: CV_TOO_CLOSE
         simulator.SetDt(0.5);
-        simulator.SetEndTime(40);
+        simulator.SetEndTime(200);
         simulator.Solve();
 
     }

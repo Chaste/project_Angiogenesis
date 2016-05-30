@@ -56,14 +56,13 @@
 
 \begin{document}
 
-\title{A flexible and extensible modelling framework for the simulation of vascular tumour growth: an extension to the Chaste open source C++ library for computational physiology and biology}
-
+\title{A Modelling Framework for Vascular Tumour Growth: An Extension to the Chaste Open Source C++ Library}
 
 \author[1,2]{Anthony J Connor}
-\author[1]{James Grogan}
-\author[2]{Joe Pitt-Francis}
+\author[1]{James A Grogan}
 \author[1]{Philip K Maini}
 \author[1,2]{Helen M Byrne}
+\author[2]{Joe Pitt-Francis}
  
 \affil[1]{Wolfson Centre for Mathematical Biology, Mathematical Institute, University of Oxford, Oxford, \mbox{OX2 6GG}, UK.}
 \affil[2]{Department of Computer Science, University of Oxford, Oxford, \mbox{OX1 3QD}, UK.}
@@ -73,7 +72,7 @@
 \maketitle
 
 \begin{abstract}
-Chaste — Cancer, Heart And Soft Tissue Environment — is an open source C++ library for the computational simulation of mathematical models developed for physiology and biology. Code development has been driven by two initial applications: cardiac electrophysiology and cancer development. ... \NOTE{This is to be completed ...}
+Chaste -- Cancer, Heart And Soft Tissue Environment -- is an open source C++ library for the computational simulation of mathematical models developed for physiology and biology. Code development has been driven by three applications: cardiac electrophysiology, cancer and developmental biology. The latter two applications have lead to the previous development of discrete cell modelling functionality, including cell cycling described by ordinary differential equations and chemical transport described by partial differential equations. An extension for simulating vascular tumour growth has been developed, including models of off- and on-lattice angiogenesis, blood flow and structural adaptation and solute transport in vessels. These new developments extend the ability of Chaste to multi-scale modelling of the growth and treatment of vascularized tissues, with particular focus on tumours. The software is available as an open source (Berkeley Software Distribution license) Chaste extension project, written in C++, but with Python bindings for rapid model building and exploration. Code functionality and design is over-viewed and example applications, including simulation of a well known 'snail-trail' problem and a three-dimensional, off-lattice corneal micro-pocket assay problem, are demonstrated.
 
 \smallskip
 \noindent \textbf{Keywords:} Chaste - agent-based simulation - multi-scale model - vascular tumour growth - on-lattice model - off-lattice model
@@ -97,50 +96,22 @@ Chaste — Cancer, Heart And Soft Tissue Environment — is an open source C++ l
 \setcounter{tocdepth}{3}
 \tableofcontents
 
-
 \newpage
-
 \doublespacing
 
-
-%###############################################################
-%###############################################################
-%####                                                                                                            #####
-%####   ######  ###### ###### ######   ######  ######    ###    ##      #####
-%####   ##          ##         ##             ##           ##      ##    ##    ####  ##      #####
-%####   ######  #####   ##             ##           ##      ##    ##    ## ## ##      #####
-%####           ##  ##         ##             ##           ##      ##    ##    ##  ####      #####
-%####   ######  ###### ######     ##       ######  ######    ##    ###      #####
-%####                                                                                                            #####
-%###############################################################
-%###############################################################
 \section{Introduction}
 \label{sec:introduction}
 
-\begin{itemize}
- \item Purpose of software, what is missing in current VT software.
- \item Aims of the present release. 
- \item Background/Chaste Overview. 
- \item Paper Structure. 
-\end{itemize}
+There now exists a range of open-source frameworks for agent based and multi-scale modelling of soft tissues, including Chaste [], OpenCMISS [] and CompuCell3D []. These software do not yet have functionality for modelling tissue with growing vasculature, as is of interest when modelling many tumours. Although there are many mathematical models of vascular tumour growth [][][], with an increasing number being released in the form of bespoke, open source software [][], a well documented and tested framework in which a range of models can be quickly built and predictions cross-compared does not yet exist.
 
-Multi-scale models of vascular tumour growth are usually comprised of several interacting sub-models, which include the effects of blood flow, cell cycling, nutrient transport and angiogenesis []. There are many ways to formulate the sub-models, incorporating different biophysical details []. It is of interest to determine how overall predictions of vascular tumour growth depend on the choice and combination of sub-models. To perform such an investigation, it is necessary to design models and software that allow the overall vascular tumour growth model to be constructed in a flexible, modular fashion. 
+The benefits of flexible and extensible software development in discrete soft tissue modelling are well known []. Modularity is of particular consequence for multi-scale models of vascular tumour growth. These models are usually comprised of several interacting sub-models, which include the effects of blood flow, cell cycling, nutrient transport and angiogenesis []. There are many ways to formulate the sub-models, incorporating different biophysical details [] and many questions remain regarding the sensitivity of overall model predictions to the chosen combination of sub-models []. Indeed, it has been noted that cross-comparing the predictions of the many different models of vascular tumour growth is an important, and challenging, step for the field of tumour modelling as a whole [].
 
-In the present study, a new  framework for modelling vascular tumour growth is presented, based on the Chaste (Cancer, Heart and Soft Tissue Environment) open source software library []. The framework allows for on- and off-lattice modelling of tumour growth and angiogensis, incorporates models of blood flow, haematocrit transport and structural adaptation and includes tools for the construction and analysis of vessel networks and complex tissue domains in two and three spatial dimensions. 
+The aim of the current project is to develop a modular framework for constructing and cross-comparing models of vascular tumour growth. A balance of performance, necessary when solving coupled problems over multiple size-scales, and the ability to readily construct models when exploring large model spaces, is achieved by using C++ code with Python bindings. Python binding of the code has three further, significant, advantages: i) users can quickly modify much of the functionality of a model in Python, without the need for recompilation, through Python-C++ inheritance and 'modifier' patterns, ii) external finite element solvers such as FEniCS and Abaqus can be readily incorporated, allowing challenging multi-physics and mechanics problems to be solved as sub-models of the tumour growth model, iii) use of different mark-up languages to describe models, for example SBML for the cell cycle, is straight-forward thanks to the availability of many Python tools []. The project is closely integrated with the Chaste C++ library for discrete cell modelling, sharing a new CMAKE based build-system, testing and documentation practices [] and has a subset of the dependencies, namely VTK for input, output and geometry calculations, PETSc and Boost uBLAS for vector and matrix operations and CVODE for solving systems of ordinary differential equations.
 
+Thanks to the aforementioned developments, and integration with Chaste, the models of vascular tumour growth included in this release, and presented as sample applications, represent the state-of-the-art in the field. Presented applications range from well known snail-trail models [], allowing comparison with results of previous studies, through to three dimensional off-lattice angiogenesis models on complex geometries with mechanical interaction between discrete cells.
 
+The structure of the report is now over-viewed. In Section 2 code design and implementation details are introduced. The general design of Chaste is briefly summarized, however the reader should refer to [] for further details. In Section 3 sample applications, including typical angiogenesis and vascular tumour growth problems are demonstrated, solved with a variety of solution techniques. While the focus is on cell centred based vascular tumour growth, it is noted that the framework is widely applicable to vascular tissues, and can be used with other functionality in Chaste, including vertex and Cellular Potts type simulations. In Section 4 code availability, future directions and other potential applications are discussed.
 
-%###############################################################
-%###############################################################
-%####                                                                                                            #####
-%####   ######  ###### ###### ######   ######  ######    ###    ##      #####
-%####   ##          ##         ##             ##           ##      ##    ##    ####  ##      #####
-%####   ######  #####   ##             ##           ##      ##    ##    ## ## ##      #####
-%####           ##  ##         ##             ##           ##      ##    ##    ##  ####      #####
-%####   ######  ###### ######     ##       ######  ######    ##    ###      #####
-%####                                                                                                            #####
-%###############################################################
-%###############################################################
 \section{Design and implementation}
 \label{sec:design and implementation}
 
@@ -150,31 +121,9 @@ In the present study, a new  framework for modelling vascular tumour growth is p
   \item Code chart.
 \end{itemize}
 
-%###############################################################
-%###############################################################
-%####                                                                                                            #####
-%####   ######  ###### ###### ######   ######  ######    ###    ##      #####
-%####   ##          ##         ##             ##           ##      ##    ##    ####  ##      #####
-%####   ######  #####   ##             ##           ##      ##    ##    ## ## ##      #####
-%####           ##  ##         ##             ##           ##      ##    ##    ##  ####      #####
-%####   ######  ###### ######     ##       ######  ######    ##    ###      #####
-%####                                                                                                            #####
-%###############################################################
-%###############################################################
 \section{Results and exemplar simulations}
 \label{sec:results}
 
-%###########################################################################################
-%###########################################################################################
-%####                                                                                                                                                                    #####
-%####    ######  ##    ##  ######                ######  ###### ###### ######   ######  ######    ###    ##     #####
-%####    ##          ##    ##  ##    ##                ##          ##         ##             ##           ##      ##    ##    ####  ##     #####
-%####    ######  ##    ##  #####    ######  ######  #####   ##             ##           ##      ##    ##    ## ## ##     #####
-%####            ##  ##    ##  ##    ##                        ##  ##         ##             ##           ##      ##    ##    ##  ####     #####
-%####    ######  ######  ######                ######  ###### ######     ##       ######  ######    ##    ###     #####
-%####                                                                                                                                                                    #####
-%###########################################################################################
-%###########################################################################################
 \subsection{Avascular tumour spheroid growth}
 \label{sec:avascular tumour spheroid growth}
 
@@ -187,18 +136,6 @@ In the present study, a new  framework for modelling vascular tumour growth is p
 \label{sec:off-lattice avascular tumour spheroid growth}
 
 
-
-%###########################################################################################
-%###########################################################################################
-%####                                                                                                                                                                    #####
-%####    ######  ##    ##  ######                ######  ###### ###### ######   ######  ######    ###    ##     #####
-%####    ##          ##    ##  ##    ##                ##          ##         ##             ##           ##      ##    ##    ####  ##     #####
-%####    ######  ##    ##  #####    ######  ######  #####   ##             ##           ##      ##    ##    ## ## ##     #####
-%####            ##  ##    ##  ##    ##                        ##  ##         ##             ##           ##      ##    ##    ##  ####     #####
-%####    ######  ######  ######                ######  ###### ######     ##       ######  ######    ##    ###     #####
-%####                                                                                                                                                                    #####
-%###########################################################################################
-%###########################################################################################
 \subsection{Vascular tumour growth}
 \label{sec:vascular tumour growth}
 
@@ -211,50 +148,15 @@ In the present study, a new  framework for modelling vascular tumour growth is p
 \label{sec:off-lattice vascular tumour growth}
 
 
-
-%###########################################################################################
-%###########################################################################################
-%####                                                                                                                                                                    #####
-%####    ######  ##    ##  ######                ######  ###### ###### ######   ######  ######    ###    ##     #####
-%####    ##          ##    ##  ##    ##                ##          ##         ##             ##           ##      ##    ##    ####  ##     #####
-%####    ######  ##    ##  #####    ######  ######  #####   ##             ##           ##      ##    ##    ## ## ##     #####
-%####            ##  ##    ##  ##    ##                        ##  ##         ##             ##           ##      ##    ##    ##  ####     #####
-%####    ######  ######  ######                ######  ###### ######     ##       ######  ######    ##    ###     #####
-%####                                                                                                                                                                    #####
-%###########################################################################################
-%###########################################################################################
 \subsection{An off-lattice model of corneal angiogenesis on a complex domain}
 \label{sec:an off-lattice model of corneal angiogenesis on a complex domain}
 
 
-
-%###########################################################################################
-%###########################################################################################
-%####                                                                                                                                                                    #####
-%####    ######  ##    ##  ######                ######  ###### ###### ######   ######  ######    ###    ##     #####
-%####    ##          ##    ##  ##    ##                ##          ##         ##             ##           ##      ##    ##    ####  ##     #####
-%####    ######  ##    ##  #####    ######  ######  #####   ##             ##           ##      ##    ##    ## ## ##     #####
-%####            ##  ##    ##  ##    ##                        ##  ##         ##             ##           ##      ##    ##    ##  ####     #####
-%####    ######  ######  ######                ######  ###### ######     ##       ######  ######    ##    ###     #####
-%####                                                                                                                                                                    #####
-%###########################################################################################
-%###########################################################################################
 \subsection{Modularity}
 \label{sec:modularity}
 
 Modularity and how it helps with validation and verification.
 
-%###############################################################
-%###############################################################
-%####                                                                                                            #####
-%####   ######  ###### ###### ######   ######  ######    ###    ##      #####
-%####   ##          ##         ##             ##           ##      ##    ##    ####  ##      #####
-%####   ######  #####   ##             ##           ##      ##    ##    ## ## ##      #####
-%####           ##  ##         ##             ##           ##      ##    ##    ##  ####      #####
-%####   ######  ###### ######     ##       ######  ######    ##    ###      #####
-%####                                                                                                            #####
-%###############################################################
-%###############################################################
 \section{Discussion and future work}
 \label{sec:discussion and future work}
 

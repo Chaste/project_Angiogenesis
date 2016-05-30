@@ -59,15 +59,15 @@ template<unsigned DIM>
 void BetteridgeHaematocritSolver<DIM>::SetTHR(double THR)
 {
     mTHR = THR;
-    assert(mTHR > 1);
+    assert(mTHR > 1.0);
 }
 
 template<unsigned DIM>
 void BetteridgeHaematocritSolver<DIM>::SetAlpha(double Alpha)
 {
     mAlpha = Alpha;
-    assert(mAlpha < 1);
-    assert(mAlpha > 0);
+    assert(mAlpha < 1.0);
+    assert(mAlpha > 0.0);
 }
 
 template<unsigned DIM>
