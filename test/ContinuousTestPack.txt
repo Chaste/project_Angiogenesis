@@ -41,3 +41,4 @@ tutorials/Test2dVascularTumourGrowth.hpp
 tutorials/Test3dTumourSpheroid.hpp
 tutorials/TestSnailTrailLiteratePaper.hpp
 tutorials/TestBuildVesselNetworkLiteratePaper.hpp
+tutorials/TestBloodFlowLiteratePaper.hpp

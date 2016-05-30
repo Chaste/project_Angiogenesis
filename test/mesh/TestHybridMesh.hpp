@@ -90,19 +90,6 @@ private:
 
 public:
 
-    void dontTestMeshComposite2DPart() // Big memory problem, run at own risk!
-    {
-        boost::shared_ptr<Part<2> > p_part = Part<2>::Create();
-        p_part->AddRectangle();
-        p_part->AddCircle();
-
-        boost::shared_ptr<HybridMesh<2> > p_mesh = HybridMesh<2>::Create();
-        p_mesh->GenerateFromPart(p_part);
-
-        VtkMeshWriter<2,2> mesh_writer("TestHybridMesh", "Composite2dMesh");
-        mesh_writer.WriteFilesUsingMesh(*p_mesh);
-    }
-
     void TestMeshCylinder()
     {
         boost::shared_ptr<Part<3> > p_part = Part<3>::Create();

@@ -158,6 +158,7 @@ public:
      * Generates a vessel network from a vtk file.
      *
      * @param filename name of file in which vascular network is described.
+     * @param cleanPoints merge coincident points using vtk clean polydata
      * @return a pointer to the generated vascular network.
      */
     boost::shared_ptr<VascularNetwork<DIM> > GenerateNetworkFromVtkFile(const std::string& rFilename);

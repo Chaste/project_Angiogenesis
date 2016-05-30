@@ -70,10 +70,6 @@ public:
         p_grid->GenerateFromPart(p_domain, 0.5);
 
         // Choose the PDE
-//        boost::shared_ptr<HybridLinearEllipticPde<3> > p_linear_pde = HybridLinearEllipticPde<3>::Create();
-//        p_linear_pde->SetIsotropicDiffusionConstant(1.0);
-//        p_linear_pde->SetContinuumLinearInUTerm(-2.0);
-
         boost::shared_ptr<HybridNonLinearEllipticPde<3> > p_non_linear_pde = HybridNonLinearEllipticPde<3>::Create();
         p_non_linear_pde->SetIsotropicDiffusionConstant(1.0);
         p_non_linear_pde->SetContinuumConstantInUTerm(-2.0);
@@ -85,7 +81,6 @@ public:
 
         FiniteDifferenceSolver<3> solver;
         solver.SetGrid(p_grid);
-//        solver.SetPde(p_linear_pde);
         solver.SetNonLinearPde(p_non_linear_pde);
         solver.AddBoundaryCondition(p_outer_boundary_condition);
 

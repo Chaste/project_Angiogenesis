@@ -59,7 +59,6 @@
  * pointer MACROS.
  */
 #include "SmartPointers.hpp"
-
 /*
  * These headers contain the building-blocks of the vessel networks; nodes, segments, vessels and the network itself
  */
@@ -67,12 +66,10 @@
 #include "VesselSegment.hpp"
 #include "Vessel.hpp"
 #include "VascularNetwork.hpp"
-
 /*
  * Tools for generating vessel networks
  */
 #include "VasculatureGenerator.hpp"
-
 /*
  * We need to include this when running in serial
  */
@@ -161,7 +158,7 @@ public:
          * length.
          */
         VasculatureGenerator<3> network_generator = VasculatureGenerator<3>();
-        double target_width = 400.0;
+        double target_width = 600.0;
         double target_height = 800.0;
         double length = 100.0;
         boost::shared_ptr<VascularNetwork<3> > p_network = network_generator.GenerateHexagonalNetwork(target_width, target_height, length);
@@ -175,7 +172,7 @@ public:
         p_network->Write(p_handler->GetOutputDirectoryFullPath() + "hexagonal_network.vtp");
 
         /*
-         * We use out generator to read the network back in from the VTK file
+         * We use out generator to read the network back in from the VTK file.
          */
         boost::shared_ptr<VascularNetwork<3> > p_network_from_file =
                 network_generator.GenerateNetworkFromVtkFile(p_handler->GetOutputDirectoryFullPath() + "hexagonal_network.vtp");
@@ -188,4 +185,4 @@ public:
     }
 };
 
-#endif /*TESTSNAILTRAILLITERATEPAPER_HPP_*/
+#endif /*TESTBUILDVESSELNETWORKLITERATEPAPER_HPP_*/

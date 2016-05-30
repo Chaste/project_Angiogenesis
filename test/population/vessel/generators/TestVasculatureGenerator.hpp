@@ -156,7 +156,7 @@ public:
         p_network3->Write(output_filename5);
     }
 
-    void dontTest3dNetworks() throw (Exception)
+    void Test3dNetworks() throw (Exception)
     {
         boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
         p_part->AddCuboid(2000.0, 2000.0, 2000.0);

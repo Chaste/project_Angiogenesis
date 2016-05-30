@@ -65,12 +65,14 @@ VascularNetwork<DIM>::VascularNetwork()
   mVesselNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > >()),
   mVesselNodesUpToDate(false),
   mDataContainer()
-  {
-  }
+{
+
+}
 
 template <unsigned DIM>
 VascularNetwork<DIM>::~VascularNetwork()
 {
+
 }
 
 template <unsigned DIM>
@@ -1365,6 +1367,7 @@ template <unsigned DIM>
 vtkSmartPointer<vtkPolyData> VascularNetwork<DIM>::GetVtk()
 {
     UpdateVesselIds();
+
     // Set up the vessel and node data arrays.
     std::vector<vtkSmartPointer<vtkDoubleArray> > pVesselInfoVector;
     std::map<std::string, boost::any >::iterator map_iterator;
@@ -1391,17 +1394,16 @@ vtkSmartPointer<vtkPolyData> VascularNetwork<DIM>::GetVtk()
         pVesselInfo->SetNumberOfComponents(1);
         pVesselInfo->SetNumberOfTuples(mVessels.size());
         pVesselInfo->SetName((*vessel_map_iterator).first.c_str());
-
         pVesselInfoVector.push_back(pVesselInfo);
     }
 
     // Set up node info arrays
     std::vector<vtkSmartPointer<vtkDoubleArray> > pNodeInfoVector;
-    unsigned numberOfNodes = 0;
-    typename std::vector<boost::shared_ptr<Vessel<DIM> > >::iterator it2;
-    for(it2 = mVessels.begin(); it2 < mVessels.end(); it2++)
+    unsigned numberOfNodes = this->GetNumberOfNodes();
+
+    if (mVessels.size()==0)
     {
-        numberOfNodes += (*it2)->GetNumberOfNodes();
+        EXCEPTION("Attempting to write a network with no vessels");
     }
 
     std::map<std::string, boost::any>::iterator generic_node_map_iterator;
@@ -1438,7 +1440,58 @@ vtkSmartPointer<vtkPolyData> VascularNetwork<DIM>::GetVtk()
     vtkSmartPointer<vtkCellArray> pLines = vtkSmartPointer<vtkCellArray>::New();
 
     unsigned vessel_index=0;
-    unsigned node_index = 0;
+
+    // Do the nodes
+    std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = this->GetNodes();
+    for(unsigned idx=0; idx<nodes.size(); idx++)
+    {
+        nodes[idx]->SetTempId(idx);
+        if(DIM == 2)
+        {
+            pPoints->InsertNextPoint(nodes[idx]->GetLocationVector()[0], nodes[idx]->GetLocationVector()[1], 0.0);
+        }
+        else
+        {
+            pPoints->InsertNextPoint(nodes[idx]->GetLocationVector()[0], nodes[idx]->GetLocationVector()[1], nodes[idx]->GetLocationVector()[2]);
+        }
+
+        std::map<std::string, double> vtk_node_data = nodes[idx]->GetVtkData();
+        std::map<std::string, boost::any> generic_node_data = nodes[idx]->rGetDataContainer().GetMap();
+
+        // Add the node data
+        for(unsigned jdx=0; jdx < pNodeInfoVector.size(); jdx++)
+        {
+            // Get the key
+            std::string key = pNodeInfoVector[jdx]->GetName();
+
+            // If it is in the vtk data use it
+            if(vtk_node_data.count(key) == 1)
+            {
+                pNodeInfoVector[jdx]->SetValue(idx, vtk_node_data[key]);
+            }
+            // Otherwise check the generic data
+            else if(generic_node_data.count(key) == 1)
+            {
+                if(generic_node_data[key].type() == typeid(double))
+                {
+                    double cast_value = boost::any_cast<double>(generic_node_data[key]);
+                    pNodeInfoVector[jdx]->SetValue(idx, cast_value);
+                }
+                else if(generic_node_data[key].type() == typeid(unsigned))
+                {
+                    double cast_value = double(boost::any_cast<unsigned>(generic_node_data[key]));
+                    pNodeInfoVector[jdx]->SetValue(idx, cast_value);
+                }
+                else if(generic_node_data[key].type() == typeid(bool))
+                {
+                    double cast_value = double(boost::any_cast<bool>(generic_node_data[key]));
+                    pNodeInfoVector[jdx]->SetValue(idx, cast_value);
+                }
+            }
+        }
+    }
+
+    // Do the vessels
     typename std::vector<boost::shared_ptr<Vessel<DIM> > >::iterator it;
     for(it = mVessels.begin(); it < mVessels.end(); it++)
     {
@@ -1447,104 +1500,12 @@ vtkSmartPointer<vtkPolyData> VascularNetwork<DIM>::GetVtk()
 
         for(unsigned i = 0; i < segments.size(); i++)
         {
-            // Add the point for each node
-            ChastePoint<DIM> location = segments[i]->GetNode(0)->GetLocation();
-            vtkIdType pointId;
-            if(DIM == 2)
-            {
-                pointId = pPoints->InsertNextPoint(location[0], location[1], 0.0);
-            }
-            else
-            {
-                pointId = pPoints->InsertNextPoint(location[0], location[1], location[2]);
-            }
-
-            std::map<std::string, double> vtk_node_data = segments[i]->GetNode(0)->GetVtkData();
-            std::map<std::string, boost::any> generic_node_data = segments[i]->GetNode(0)->rGetDataContainer().GetMap();
-            // Add the node data
-            for(unsigned idx=0; idx < pNodeInfoVector.size(); idx++)
-            {
-                // Get the key
-                std::string key = pNodeInfoVector[idx]->GetName();
-
-                // If it is in the vtk data use it
-                if(vtk_node_data.count(key) == 1)
-                {
-                    pNodeInfoVector[idx]->SetValue(node_index, vtk_node_data[key]);
-                }
-                // Otherwise check the generic data
-                else if(generic_node_data.count(key) == 1)
-                {
-                    if(generic_node_data[key].type() == typeid(double))
-                    {
-                        double cast_value = boost::any_cast<double>(generic_node_data[key]);
-                        pNodeInfoVector[idx]->SetValue(node_index, cast_value);
-                    }
-                    else if(generic_node_data[key].type() == typeid(unsigned))
-                    {
-                        double cast_value = double(boost::any_cast<unsigned>(generic_node_data[key]));
-                        pNodeInfoVector[idx]->SetValue(node_index, cast_value);
-                    }
-                    else if(generic_node_data[key].type() == typeid(bool))
-                    {
-                        double cast_value = double(boost::any_cast<bool>(generic_node_data[key]));
-                        pNodeInfoVector[idx]->SetValue(node_index, cast_value);
-                    }
-                }
-            }
-            node_index++;
-            pLine->GetPointIds()->InsertId(i, pointId);
+            pLine->GetPointIds()->InsertId(i, segments[i]->GetNode(0)->GetTempId());
 
             // Do an extra insert for the last node in the segment
             if (i == segments.size() - 1)
             {
-                // Add the point for each node
-                ChastePoint<DIM> location = segments[i]->GetNode(1)->GetLocation();
-                vtkIdType pointId2;
-                if(DIM == 2)
-                {
-                    pointId2 = pPoints->InsertNextPoint(location[0], location[1], 0.0);
-                }
-                else
-                {
-                    pointId2 = pPoints->InsertNextPoint(location[0], location[1], location[2]);
-                }
-
-                std::map<std::string, double> vtk_node_data = segments[i]->GetNode(1)->GetVtkData();
-                std::map<std::string, boost::any> generic_node_data = segments[i]->GetNode(1)->rGetDataContainer().GetMap();
-                // Add the node data
-                for(unsigned idx=0; idx < pNodeInfoVector.size(); idx++)
-                {
-                    // Get the key
-                    std::string key = pNodeInfoVector[idx]->GetName();
-
-                    // If it is in the vtk data use it
-                    if(vtk_node_data.count(key) == 1)
-                    {
-                        pNodeInfoVector[idx]->SetValue(node_index, vtk_node_data[key]);
-                    }
-                    // Otherwise check the generic data
-                    else if(generic_node_data.count(key) == 1)
-                    {
-                        if(generic_node_data[key].type() == typeid(double))
-                        {
-                            double cast_value = boost::any_cast<double>(generic_node_data[key]);
-                            pNodeInfoVector[idx]->SetValue(node_index, cast_value);
-                        }
-                        else if(generic_node_data[key].type() == typeid(unsigned))
-                        {
-                            double cast_value = double(boost::any_cast<unsigned>(generic_node_data[key]));
-                            pNodeInfoVector[idx]->SetValue(node_index, cast_value);
-                        }
-                        else if(generic_node_data[key].type() == typeid(bool))
-                        {
-                            double cast_value = double(boost::any_cast<bool>(generic_node_data[key]));
-                            pNodeInfoVector[idx]->SetValue(node_index, cast_value);
-                        }
-                    }
-                }
-                node_index++;
-                pLine->GetPointIds()->InsertId(i + 1, pointId2);
+                pLine->GetPointIds()->InsertId(i + 1, segments[i]->GetNode(1)->GetTempId());
             }
         }
         pLines->InsertNextCell(pLine);
@@ -1552,7 +1513,7 @@ vtkSmartPointer<vtkPolyData> VascularNetwork<DIM>::GetVtk()
         // Add the vessel data
         std::map<std::string, double> vtk_vessel_data = (*it)->GetVtkData();
         std::map<std::string, boost::any> generic_vessel_data = (*it)->rGetDataContainer().GetMap();
-        // Add the node data
+
         for(unsigned idx=0; idx < pVesselInfoVector.size(); idx++)
         {
             // Get the key
