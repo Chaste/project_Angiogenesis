@@ -34,3 +34,5 @@ list(APPEND ProjectAngiogenesis_INCLUDE_DIRS ${PREFIX}/src/simulation/angiogenes
 list(APPEND ProjectAngiogenesis_INCLUDE_DIRS ${PREFIX}/src/simulation/angiogenesis/migration_rules/off_lattice)
 list(APPEND ProjectAngiogenesis_INCLUDE_DIRS ${PREFIX}/src/simulation/angiogenesis/regression)
 list(APPEND ProjectAngiogenesis_INCLUDE_DIRS ${PREFIX}/src/simulation/angiogenesis/sprouting_rules)
+list(APPEND ProjectAngiogenesis_INCLUDE_DIRS ${PREFIX}/src/simulation/wrappers)
+list(APPEND ProjectAngiogenesis_INCLUDE_DIRS ${PREFIX}/src/wrapper)

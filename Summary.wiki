@@ -9,4 +9,6 @@ The easiest way to do this is using an Ubuntu machine (or an Ubuntu virtual mach
 Note that Chaste is only supported on Linux/Unix systems, so users of Windows or Mac OS X will need to follow the virtual machine route.
 For manual installation of each dependency, on any version of Linux, see DeveloperInstallGuide.
 
+
+
 This page links to a set of tutorials for using the software described in the paper, including the examples in the paper itself.
