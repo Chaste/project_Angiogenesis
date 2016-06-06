@@ -38,7 +38,8 @@
 
 /* = Introduction =
  * This tutorial is designed to introduce the C++ interface for modelling vessel networks. An equivalent Python tutorial
- * is here: . It is advised that you at least read [wiki:UserTutorials/WritingTests the Chaste tutorial on writing tests] before proceeding with this one.
+ * is [wiki:PaperTutorials/Angiogenesis/PythonBuildVesselNetwork here]. It is advised that you at least read [wiki:UserTutorials/WritingTests
+ * the Chaste tutorial on writing tests] before proceeding with this one.
  *
  * This tutorial covers:
  * * Building a network from a collection of nodes, segments and vessels
@@ -55,7 +56,7 @@
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 /*
  * Boost shared pointers are used extensively in this component. This header contains some useful
- * pointer MACROS.
+ * pointer MACROs.
  */
 #include "SmartPointers.hpp"
 /*
@@ -74,7 +75,7 @@
  */
 #include "FakePetscSetup.hpp"
 /*
- * Tutorials are developed as a series of unit tests using the CxxTest framework. We make a single test class, which inherits from
+ * Tutorials are developed as a series of unit tests using the `CxxTest` framework. We make a single test class, which inherits from
  * `AbstractCellBasedWithTimingsTestSuite`. `AbstractCellBasedWithTimingsTestSuite` adds some useful functionality to the default
  * `CxxTest::TestSuite` class, including setting up timers and initializing random number generators.
  */
@@ -82,7 +83,7 @@ class TestBuildVesselNetworkLiteratePaper : public AbstractCellBasedWithTimingsT
 {
 public:
     /*
-     * = Test 1 - Building a vessel network manually, writing it to file and visualizing it=
+     * = Test 1 - Building a vessel network manually, writing it to file and visualizing it =
      *
      * In the first test we will build a vessel network from its constituent components; nodes, segments and vessels. We will do some
      * simple tests to make sure the network has been formed as expected. Then we write the network to file and visualize it in Paraview.
@@ -129,14 +130,14 @@ public:
 
         /*
          * Next we write out network to file. We use the Chaste `OutputFileHandler` functionality to management the output location
-         * and the pointer MACRO `MAKE_PTR_ARGS` to quickly make a smart pointer. Networks are written using VTKs PolyData format,
+         * and the pointer MACRO `MAKE_PTR_ARGS` to quickly make a smart pointer. Networks are written using VTK's PolyData format,
          * which should have a .vtp extension.
          */
         MAKE_PTR_ARGS(OutputFileHandler, p_handler, ("TestBuildVesselNetworkLiteratePaper"));
         p_network->Write(p_handler->GetOutputDirectoryFullPath() + "bifurcating_network.vtp");
 
         /*
-         * Now we can visualize then network in Paraview. See the tutorial x, to get started. To view the network import the file
+         * Now we can visualize then network in Paraview. See the tutorial [wiki:UserTutorials/VisualizingWithParaview here], to get started. To view the network import the file
          * `TestBuildVesselNetworkLiteratePaper\bifurcating_network.vtp` into Paraview. For a nicer rendering you can do `Filters->Alphabetical->Tube`.
          */
     }
@@ -150,7 +151,7 @@ public:
     void TestBuildNetworkFromGeneratorAndReadFromFile() throw (Exception)
     {
         /*
-         * We create a hexagonal network in 3D space using a generator. We specify the target network wifht and height and the desired vessel
+         * We create a hexagonal network in 3D space using a generator. We specify the target network width and height and the desired vessel
          * length.
          */
         VasculatureGenerator<3> network_generator = VasculatureGenerator<3>();
@@ -168,7 +169,7 @@ public:
         p_network->Write(p_handler->GetOutputDirectoryFullPath() + "hexagonal_network.vtp");
 
         /*
-         * We use out generator to read the network back in from the VTK file.
+         * We use our generator to read the network back in from the VTK file.
          */
         boost::shared_ptr<VascularNetwork<3> > p_network_from_file =
                 network_generator.GenerateNetworkFromVtkFile(p_handler->GetOutputDirectoryFullPath() + "hexagonal_network.vtp");
