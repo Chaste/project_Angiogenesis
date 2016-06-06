@@ -1,7 +1,7 @@
 import logging
 import wx
 import wx.lib.newevent
-import casie.gui.panels.base
+import chaste.gui.panels.base
 
 # create event type
 wxLogEvent, EVT_WX_LOG_EVENT = wx.lib.newevent.NewEvent()
@@ -44,7 +44,7 @@ class wxLogHandler(logging.Handler):
         except:
             self.handleError(record)
 
-class Panel(casie.gui.panels.base.Panel):
+class Panel(chaste.gui.panels.base.Panel):
     
     ''' A wx panel with some useful methods for getting TopLevelParent attributes.
     '''
@@ -54,7 +54,7 @@ class Panel(casie.gui.panels.base.Panel):
         ''' Set up the panel, add the controls, bind the events
         '''
         
-        casie.gui.panels.base.Panel.__init__(self, parent)
+        chaste.gui.panels.base.Panel.__init__(self, parent)
         self.setup_event_handler()
         
     def setup_event_handler(self):

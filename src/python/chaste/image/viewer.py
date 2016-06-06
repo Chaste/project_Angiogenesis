@@ -1,12 +1,12 @@
 import logging
 import wx
 
-import casie.gui.properties
+import chaste.gui.properties
 
-if casie.gui.properties._have_wx:
-    import casie.gui.panels.base
+if chaste.gui.properties._have_wx:
+    import chaste.gui.panels.base
     
-    class ImageViewer2dPanel(casie.gui.panels.base.Panel):
+    class ImageViewer2dPanel(chaste.gui.panels.base.Panel):
         
         ''' 
         Default panel
@@ -22,7 +22,7 @@ if casie.gui.properties._have_wx:
             Set up the panel, add the controls
             '''
             
-            casie.gui.panels.base.Panel.__init__(self, parent)
+            chaste.gui.panels.base.Panel.__init__(self, parent)
             self.name = "ImageViewer2d"
             
         def add_controls(self):

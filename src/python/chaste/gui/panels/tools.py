@@ -1,10 +1,10 @@
 import wx
 
-import casie.gui.properties
-import casie.gui.panels.base
-import casie.utility.recursion
+import chaste.gui.properties
+import chaste.gui.panels.base
+import chaste.utility.recursion
 
-class Panel(casie.gui.panels.base.Panel):
+class Panel(chaste.gui.panels.base.Panel):
     
     ''' Panel for holding controller specific configuration option panels
     '''
@@ -15,10 +15,10 @@ class Panel(casie.gui.panels.base.Panel):
         Set up the panel. Do all control and sizing here.
         '''
         
-        casie.gui.panels.base.Panel.__init__(self, parent)
+        chaste.gui.panels.base.Panel.__init__(self, parent)
         
         self.panels = []
-        self.panels.append(casie.gui.panels.base.Panel(self))
+        self.panels.append(chaste.gui.panels.base.Panel(self))
         self.active_panel = self.panels[0]
         
         self.hbox = wx.BoxSizer()
@@ -33,9 +33,9 @@ class Panel(casie.gui.panels.base.Panel):
         Add a hidden panel for each tool in the registry
         '''
         
-        for eachTool in casie.gui.properties._tools:
+        for eachTool in chaste.gui.properties._tools:
             class_name = eachTool[1] + "Panel"
-            new_panel_class = casie.utility.recursion.get_class(class_name) 
+            new_panel_class = chaste.utility.recursion.get_class(class_name) 
             new_panel = new_panel_class(self)
             new_panel.Hide()
             self.panels.append(new_panel)

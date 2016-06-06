@@ -6,7 +6,7 @@ import wx
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 
-import casie.gui.controller.connector
+import chaste.gui.controller.connector
 
 
 class Panel(wx.Panel):
@@ -102,7 +102,7 @@ class Panel(wx.Panel):
         for eachControllerGlyph in self.controller_glyphs:     
             if event.artist == eachControllerGlyph.output_port:
                 if self.free_connector is None:
-                    self.free_connector = casie.gui.controller.connector.Glyph()
+                    self.free_connector = chaste.gui.controller.connector.Glyph()
                     self.free_connector.attach_to_axes(self.ax)
                     self.free_connector.set_start_controller_glyph(eachControllerGlyph)
                     self.re_draw() 

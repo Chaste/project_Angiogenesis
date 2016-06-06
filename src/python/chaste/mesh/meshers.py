@@ -7,18 +7,18 @@ import dolfin as df
 import numpy as np
 from meshpy.triangle import MeshInfo, build
 
-import casie.utility.rwc
-import casie.geometry.labelling
-import casie.geometry.converters
-import casie.plot.two.glyphs
-import casie.gui.properties
-import casie.population.vessel
-import casie.mesh.centrelines
+import chaste.utility.rwc
+import chaste.geometry.labelling
+import chaste.geometry.converters.other
+import chaste.plot.two.glyphs
+import chaste.gui.properties
+import chaste.population.vessel
+import chaste.mesh.centrelines
    
-if casie.gui.properties._have_wx:
-    import casie.gui.panels.base
+if chaste.gui.properties._have_wx:
+    import chaste.gui.panels.base
  
-    class Mesh2dPanel(casie.gui.panels.base.Panel):
+    class Mesh2dPanel(chaste.gui.panels.base.Panel):
      
         ''' 
         Default panel
@@ -34,7 +34,7 @@ if casie.gui.properties._have_wx:
             Set up the panel, add the controls
             '''
             
-            casie.gui.panels.base.Panel.__init__(self, parent)
+            chaste.gui.panels.base.Panel.__init__(self, parent)
             self.name = "Mesh2d"
             self.surface = None
             self.domain = None
@@ -132,15 +132,15 @@ if casie.gui.properties._have_wx:
         def on_load_file(self, event = None):
             
             self.file_name = self.get_file_name()
-            self.surface = casie.utility.rwc.read_vtk_surface(self.file_name, True, True)
+            self.surface = chaste.utility.rwc.read_vtk_surface(self.file_name, True, True)
             
-            bound_extractor = casie.geometry.labelling.BoundaryExtractor2d()
+            bound_extractor = chaste.geometry.labelling.BoundaryExtractor2d()
             bound_extractor.labels = [1,2]
             bound_extractor.surface = self.surface
             bound_extractor.update()
             self.boundary_edges = bound_extractor.get_output()
             
-            glyph = casie.plot.two.glyphs.VtkLinesGlyph(self.surface, color = "red")
+            glyph = chaste.plot.two.glyphs.VtkLinesGlyph(self.surface, color = "red")
             self.canvas = self.GetTopLevelParent().get_2d_canvas(show = False)
             self.canvas.add_glyph(glyph, self.domain is None)
              
@@ -151,17 +151,17 @@ if casie.gui.properties._have_wx:
         def on_load_domain_file(self, event = None):
             
             self.file_name = self.get_file_name()
-            self.domain = casie.utility.rwc.read_vtk_surface(self.file_name)
-            self.lines = casie.geometry.converters.vtkpolygon_to_lines(self.domain)
+            self.domain = chaste.utility.rwc.read_vtk_surface(self.file_name)
+            self.lines = chaste.geometry.other.vtkpolygon_to_lines(self.domain)
         
-            glyph = casie.plot.two.glyphs.VtkLinesGlyph(self.lines, color="blue")
+            glyph = chaste.plot.two.glyphs.VtkLinesGlyph(self.lines, color="blue")
             self.canvas = self.GetTopLevelParent().get_2d_canvas(show = False)
             self.canvas.add_glyph(glyph, True)
             
             if not self.canvas_set:
                 self.setup_canvas()
                 
-            conv = casie.geometry.converters.VtkToTri()
+            conv = chaste.geometry.other.VtkToTri()
             points, edges = conv.generate(self.lines)
             myedges = []
             for eachEdge in edges:
@@ -173,9 +173,9 @@ if casie.gui.properties._have_wx:
         def on_load_centreline_file(self, event = None):
             
             self.file_name = self.get_file_name()
-            self.centres = casie.utility.rwc.read_vtk_surface(self.file_name, True, True)
+            self.centres = chaste.utility.rwc.read_vtk_surface(self.file_name, True, True)
             self.network = self.centres
-            glyph = casie.plot.two.glyphs.VtkLinesGlyph(self.centres, color="green")
+            glyph = chaste.plot.two.glyphs.VtkLinesGlyph(self.centres, color="green")
             self.canvas = self.GetTopLevelParent().get_2d_canvas(show = False)
             self.canvas.add_glyph(glyph, self.domain is None)
             
@@ -217,7 +217,7 @@ if casie.gui.properties._have_wx:
             
             if converter.new_network is not None:
                 file_mod = os.path.splitext(self.file_name)[0] + "_new_network.vtp"
-                casie.utility.rwc.write_vtk_surface(file_mod, converter.new_network)
+                chaste.utility.rwc.write_vtk_surface(file_mod, converter.new_network)
             
             file_mod = os.path.splitext(self.file_name)[0] + "_mesh.pvd"
             path = str(file_mod)
@@ -335,7 +335,7 @@ if casie.gui.properties._have_wx:
             self.tool.update()
             self.mesh = self.tool.get_output()
             
-            glyph = casie.plot.two.glyphs.MeshGlyph([self.mesh.points, self.mesh.elements], False)
+            glyph = chaste.plot.two.glyphs.MeshGlyph([self.mesh.points, self.mesh.elements], False)
             self.canvas.add_glyph(glyph, clear = False)
             
             logging.info("Generate Mesh")
@@ -413,7 +413,7 @@ class Mesher2d():
 #                     edges.append((eachVessel.start_node.id, eachVessel.end_node.id))
 #             
 #             else:
-#                 converter = casie.geometry.converters.NetworkToGeometry(self.network, dimension = 2)
+#                 converter = chaste.geometry.converters.other.NetworkToGeometry(self.network, dimension = 2)
 #                 network_edges = converter.generate()
 #                 
 #                 points, edges = self.vtk_to_points(network_edges, points, edges)
@@ -509,7 +509,7 @@ class DolfinConverter2d():
                 for eachEdge in eachRegion:
                     start_points.append((np.array(eachEdge[0]) + np.array(eachEdge[1]))/2.0)
             
-            centre_tool = casie.mesh.centrelines.Extract2d(dolfin_mesh, boundaries, 3)
+            centre_tool = chaste.mesh.centrelines.Extract2d(dolfin_mesh, boundaries, 3)
             centre_tool.seed_points = start_points
             centre_mesh, new_network = centre_tool.generate()
             self.new_network = new_network
@@ -636,7 +636,7 @@ class OnVesselCentre(df.SubDomain):
     def set_network(self, network, tol = 1.e-3):
         self.network = network
         self.tol = tol
-        vtk_to_tri = casie.geometry.converters.VtkToTri()
+        vtk_to_tri = chaste.geometry.other.VtkToTri()
         points, edges = vtk_to_tri.generate(self.network)
         self.points = points
         self.edges = edges

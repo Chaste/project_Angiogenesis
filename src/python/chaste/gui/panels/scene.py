@@ -2,12 +2,12 @@ import wx
 
 import matplotlib
 matplotlib.use("wxAgg")
-import casie.gui.panels.base
-import casie.gui.sub_panels.canvas2d
-import casie.gui.sub_panels.canvas3d
-import casie.gui.sub_panels.model_builder_canvas
+import chaste.gui.panels.base
+import chaste.gui.sub_panels.canvas2d
+import chaste.gui.sub_panels.canvas3d
+import chaste.gui.sub_panels.model_builder_canvas
 
-class Panel(casie.gui.panels.base.Panel):
+class Panel(chaste.gui.panels.base.Panel):
     
     ''' 
     Panel for displaying 2d and 3d canvases and their options controls
@@ -25,7 +25,7 @@ class Panel(casie.gui.panels.base.Panel):
         Set up the panel, add the controls, bind the events
         '''
         
-        casie.gui.panels.base.Panel.__init__(self, parent)
+        chaste.gui.panels.base.Panel.__init__(self, parent)
         
     def add_controls(self):
         
@@ -33,9 +33,9 @@ class Panel(casie.gui.panels.base.Panel):
         Add wx controls to the panel
         '''  
         
-        self.canvas2d = casie.gui.sub_panels.canvas2d.Panel(self)
-        self.canvas3d = casie.gui.sub_panels.canvas3d.Panel(self)
-        self.mbcanvas = casie.gui.sub_panels.model_builder_canvas.Panel(self)
+        self.canvas2d = chaste.gui.sub_panels.canvas2d.Panel(self)
+        self.canvas3d = chaste.gui.sub_panels.canvas3d.Panel(self)
+        self.mbcanvas = chaste.gui.sub_panels.model_builder_canvas.Panel(self)
         self.canvas3d.Hide()
         self.mbcanvas.Hide()
         

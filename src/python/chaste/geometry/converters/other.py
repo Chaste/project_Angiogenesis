@@ -5,7 +5,7 @@ Single vessel network
 import numpy as np
 import vtk
 from vtk.util import numpy_support
-import casie.population.vessel
+import chaste.population.vessel
 
 class PartToGeometry():
     
@@ -36,15 +36,22 @@ class PartToGeometry():
 
 class NetworkToGeometry():
     
-    def __init__(self, network, dimension = 3):
+    def __init__(self):
         
         self.Base = __import__("FreeCAD.Base")
         self.Part = __import__("Part")
         
+        self.network = None
+        self.dimension = 3
+        self.geometry = None
+        
+    def set_network(self, network):
         self.network = network
+        
+    def set_dimension(self, dimension):
         self.dimension = dimension
         
-    def generate(self):
+    def update(self):
         
         # make a cylinder for each vessel
         vessels = self.network.vessels
@@ -85,7 +92,12 @@ class NetworkToGeometry():
         
             cylinder = clean.GetOutput()
             
-        return cylinder
+        self.geometry = cylinder
+            
+        return self.geometry
+    
+    def get_output(self):
+        return self.geometry
     
 class NetworkToVtk():
     
@@ -201,21 +213,21 @@ class VtkToNetwork():
         
         nodes = [] 
         for i in range(vtk_numPoints):
-            nodes.append(casie.population.vessel.VascularNode(vtk_points.GetPoint(i)))
+            nodes.append(chaste.population.vessel.VascularNode(vtk_points.GetPoint(i)))
         
         numCells = self.polydata.GetNumberOfLines()  
         cellArray = self.polydata.GetLines()
         cellArray.InitTraversal()
         segList = vtk.vtkIdList()
         
-        network = casie.population.vessel.VascularNetwork()
+        network = chaste.population.vessel.VascularNetwork()
         for i in range(numCells): 
             cellArray.GetNextCell(segList)
             point_indices = []
             for j in range(0, segList.GetNumberOfIds()):
                 seg_id = segList.GetId(j)
                 point_indices.append(int(seg_id))
-            vessel = casie.population.vessel.Vessel([nodes[point_indices[0]], nodes[point_indices[1]]])
+            vessel = chaste.population.vessel.Vessel([nodes[point_indices[0]], nodes[point_indices[1]]])
             network.addVessel(vessel)   
         network.UpdateAll(False)
         

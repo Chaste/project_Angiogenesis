@@ -4,7 +4,7 @@
 
 import matplotlib.patches
 
-import casie.geometry.converters
+import chaste.geometry.converters.other
 
 class VertexGlyph():
     
@@ -101,7 +101,7 @@ class VtkLinesGlyph():
     
     def __init__(self, surface, color="green"):
         
-        converter = casie.geometry.converters.VtkToTri()
+        converter = chaste.geometry.other.VtkToTri()
         boundary = converter.generate(surface)
         
         node_locations = boundary[0]

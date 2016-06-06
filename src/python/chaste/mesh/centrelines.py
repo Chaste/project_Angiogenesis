@@ -1,7 +1,7 @@
 from dolfin import *
 import vtk
 import numpy as np
-import casie.population.vessel
+import chaste.population.vessel
     
 class Extract2d():
     

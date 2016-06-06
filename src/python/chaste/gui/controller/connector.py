@@ -1,4 +1,4 @@
-import casie.gui
+import chaste.gui
 import matplotlib.lines
 
 class Connector():

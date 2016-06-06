@@ -1,10 +1,10 @@
 import logging
 import wx
 
-import casie.gui.properties
-import casie.gui.panels.base
+import chaste.gui.properties
+import chaste.gui.panels.base
 
-class Panel(casie.gui.panels.base.Panel):
+class Panel(chaste.gui.panels.base.Panel):
     
     ''' 
     wx Panel for session management functionality
@@ -16,7 +16,7 @@ class Panel(casie.gui.panels.base.Panel):
         Set up the panel, add the controls, bind the events
         '''
         
-        casie.gui.panels.base.Panel.__init__(self, parent)
+        chaste.gui.panels.base.Panel.__init__(self, parent)
         
     def add_controls(self):
         
@@ -29,7 +29,7 @@ class Panel(casie.gui.panels.base.Panel):
         self.change_wd_button = wx.Button(parent = self, label="Change")
         
         self.active_tool = wx.StaticText(parent = self, label="Choose Tool: ")
-        tools = [x[0] for x in casie.gui.properties._tools]
+        tools = [x[0] for x in chaste.gui.properties._tools]
         tools.insert(0, "None")
         self.tool_choices = wx.ComboBox(parent = self, choices = tools)
         self.tool_choices.SetStringSelection(tools[0]) 

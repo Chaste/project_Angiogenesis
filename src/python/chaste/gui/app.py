@@ -1,20 +1,20 @@
-''' The Casie GUI app and main frame.
+''' The chaste GUI app and main frame.
 
 '''
 
 import os
 import logging
 import wx
-import casie.gui.properties
-import casie.gui.menus
-import casie.gui.panels.logger
-import casie.gui.panels.session
-import casie.gui.panels.scene
-import casie.gui.panels.tools
+import chaste.gui.properties
+import chaste.gui.menus
+import chaste.gui.panels.logger
+import chaste.gui.panels.session
+import chaste.gui.panels.scene
+import chaste.gui.panels.tools
 
 class App(wx.App):
     
-    ''' The Casie GUI app. Inherits from a wx App.
+    ''' The chaste GUI app. Inherits from a wx App.
     
     Attributes
     ----------
@@ -29,7 +29,7 @@ class App(wx.App):
         '''
         
         wx.App.__init__(self, redirect=False)
-        self.frame = Frame(None, "Casie: Cancer Simulation Environment")
+        self.frame = Frame(None, "chaste: Cancer Simulation Environment")
         
     def launch(self):
         
@@ -62,7 +62,7 @@ class Frame(wx.Frame):
         ''' 
         
         wx.Frame.__init__(self, parent, title=title)
-        self.SetBackgroundColour(casie.gui.properties._colors["background"]) 
+        self.SetBackgroundColour(chaste.gui.properties._colors["background"]) 
         self.work_dir = os.getcwd()
         self.create_menus()
         self.create_panels()
@@ -74,7 +74,7 @@ class Frame(wx.Frame):
         Create the main menu bar for the GUI and bind events.
         '''      
         
-        self.menu_bar = casie.gui.menus.MainMenuBar()
+        self.menu_bar = chaste.gui.menus.MainMenuBar()
         self.SetMenuBar(self.menu_bar)
         self.Bind(wx.EVT_MENU, self.exit, self.menu_bar.file_menu.exit)
     
@@ -85,10 +85,10 @@ class Frame(wx.Frame):
         ''' 
         
         self.panel = wx.Panel(self, wx.ID_ANY)
-        self.panel.session = casie.gui.panels.session.Panel(self.panel)
-        self.panel.tools = casie.gui.panels.tools.Panel(self.panel)
-        self.panel.scene = casie.gui.panels.scene.Panel(self.panel)
-        self.panel.logging = casie.gui.panels.logger.Panel(self.panel)
+        self.panel.session = chaste.gui.panels.session.Panel(self.panel)
+        self.panel.tools = chaste.gui.panels.tools.Panel(self.panel)
+        self.panel.scene = chaste.gui.panels.scene.Panel(self.panel)
+        self.panel.logging = chaste.gui.panels.logger.Panel(self.panel)
         
         left_vbox = wx.BoxSizer(wx.VERTICAL)
         left_vbox.Add(self.panel.session, 1, wx.EXPAND)

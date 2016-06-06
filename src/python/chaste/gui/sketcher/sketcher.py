@@ -2,7 +2,7 @@ import wx
 import matplotlib.lines
 import matplotlib.patches
 
-import casie.gui.panels.base
+import chaste.gui.panels.base
 
 class Sketch():
     
@@ -82,11 +82,11 @@ class Sketch():
             
     def convert_to_part(self):
         
-        part = casie.geometry.part.Part()
+        part = chaste.geometry.part.Part()
         
         points = []
         for eachPoint in self.points:
-            points.append(casie.geometry.part.Point(eachPoint.center))
+            points.append(chaste.geometry.part.Point(eachPoint.center))
         part.points.extend(points)
         
         edges = []
@@ -97,7 +97,7 @@ class Sketch():
                     point1 = idx
                 elif line_data[0][1] == eachPoint.location[0] and line_data[1][1] == eachPoint.location[1]:
                     point2 = idx
-            edges.append(casie.geometry.part.Edge(points[point1], points[point2]))
+            edges.append(chaste.geometry.part.Edge(points[point1], points[point2]))
         part.edges.extend(edges)   
         
         return part
@@ -122,7 +122,7 @@ class Sketch():
         for eachLine in self.lines:
             self.ax.add_line(eachLine)      
     
-class Panel(casie.gui.panels.base.Panel):
+class Panel(chaste.gui.panels.base.Panel):
     
     ''' Panel for holding the configuration options and canvas panels
     '''
@@ -132,7 +132,7 @@ class Panel(casie.gui.panels.base.Panel):
         ''' Set up the panel, add the controls, bind the events
         '''
         
-        casie.gui.panels.base.Panel.__init__(self, parent)
+        chaste.gui.panels.base.Panel.__init__(self, parent)
         self.active_sketch = None
     
     def add_controls(self):

@@ -1,8 +1,8 @@
 import numpy as np
 import vtk
 
-import casie.geometry.converters
-import casie.geometry.labelling
+import chaste.geometry.converters.other
+import chaste.geometry.labelling
 
 class FlowExtension2d():
     
@@ -21,7 +21,7 @@ class FlowExtension2d():
         # create a new vtk object
         self.extended_surface = vtk.vtkPolyData() 
         
-        converter = casie.geometry.converters.VtkToTri()
+        converter = chaste.geometry.other.VtkToTri()
         old_points, old_edges = converter.generate(self.open_surface)
         
         bounds = self.open_surface.GetBounds()
@@ -125,7 +125,7 @@ class FlowExtension2d():
                 cellArray.InsertNextCell(line) 
                 
         # re_label the boundaries
-        marker = casie.geometry.labelling.BoundaryMarker2d()
+        marker = chaste.geometry.labelling.BoundaryMarker2d()
         marker.surface = self.extended_surface
         marker.inlet_points = self.new_inlet_points
         marker.outlet_points = self.new_outlet_points

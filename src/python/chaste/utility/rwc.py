@@ -72,6 +72,10 @@ def write_vtk_surface(filename, surface):
         writer.SetInputData(surface)
     writer.Write() 
     
+def write_geometry(filename, geometry):
+    
+    geometry.exportStep(filename)
+    
 def dump_pickle(filename, data):
     with open(filename, 'wb') as handle:
         pickle.dump(data, handle)

@@ -57,25 +57,22 @@ class TestPythonBuildVesselNetworkLiteratePaper(unittest.TestCase):
     ## In the first test we will build a vessel network from its constituent components; nodes, segments and vessels. We will do some
     ## simple tests to make sure the network has been formed as expected. Then we write the network to file and visualize it in Paraview.
     
-    def TestBuildNetworkManually(self):
+    def test_BuildNetworkManually(self):
         ## First we make some nodes, which are point features from which vessels can be constructed. They are initialized with a location.
         ## All vessel network components are created using special factory methods which return shared pointers, rather than being created
         ## directly through their constructors. Vessel network components are templated over spatial dimension, and can be 2D or 3D. We will
         ## create a Y shaped network. Later we will learn how to build up networks in a more efficient manner.
         
         length = 100.0
-        n1 = vessel.VascularNode(0.0, 0.0)
-        n2 = vessel.VascularNode(length, 0.0)
-        n3 = vessel.VascularNode(2.0 * length, length)
-        n4 = vessel.VascularNode(2.0 * length, -length)
+        n1 = vessel.VascularNode(0.0, 0.0 ,0.0)
+        n2 = vessel.VascularNode(length, 0.0, 0.0)
+        n3 = vessel.VascularNode(2.0 * length, length, 0.0)
+        n4 = vessel.VascularNode(2.0 * length, -length, 0.0)
         ## Next we make vessel segments and vessels. Vessel segments are straight-line features which contain a vascular node at each end. Vessels
         ## can be constructed from multiple vessel segments, but in this case each vessel just has a single segment.
-        s1 = vessel.VesselSegment(n1, n2)
-        v1 = vessel.Vessel(s1)
-        s2 = vessel.VesselSegment(n2, n3)
-        v2 = vessel.Vessel(s2)
-        s3 = vessel.VesselSegment(n3, n4)
-        v3 = vessel.Vessel(s3)
+        v1 = vessel.Vessel([n1 ,n2])
+        v2 = vessel.Vessel([n2, n3])
+        v3 = vessel.Vessel([n3, n4])
         ## Now we can add our vessels to a vessel network.
         network = vessel.VascularNetwork()
         network.AddVessel(v1)
@@ -86,7 +83,10 @@ class TestPythonBuildVesselNetworkLiteratePaper(unittest.TestCase):
         self.assertEqual(network.GetNumberOfVessels(), 3)
         ## Next we write out network to file. We use the Chaste `OutputFileHandler` functionality to management the output location
         ## Networks are written using VTKs PolyData format, which should have a .vtp extension.
-        file_handler = chaste.core.OutputFileHandler("TestPythonBuildVesselNetworkLiteratePaper")
+        file_handler = chaste.core.OutputFileHandler("TestPythonBuildVesselNetworkLiteratePaper", True)
         network.Write(file_handler.GetOutputDirectoryFullPath() + "bifurcating_network.vtp")
         ## Now we can visualize then network in Paraview. See the tutorial [wiki:UserTutorials/VisualizingWithParaview here], to get started. To view the network import the file
         ## `TestPythonBuildVesselNetworkLiteratePaper\bifurcating_network.vtp` into Paraview. For a nicer rendering you can do `Filters->Alphabetical->Tube`.
+        
+if __name__ == '__main__':
+    unittest.main()

@@ -3,9 +3,9 @@
 
 import wx
 
-import casie.gui.panels.base
+import chaste.gui.panels.base
 
-class ModelBuilderPanel(casie.gui.panels.base.Panel):
+class ModelBuilderPanel(chaste.gui.panels.base.Panel):
         
     def __init__(self, parent):
         
@@ -13,7 +13,7 @@ class ModelBuilderPanel(casie.gui.panels.base.Panel):
         Set up the panel, add the controls
         '''
         
-        casie.gui.panels.base.Panel.__init__(self, parent)
+        chaste.gui.panels.base.Panel.__init__(self, parent)
         self.name = "ModelBuilder"
         
     def add_controls(self):

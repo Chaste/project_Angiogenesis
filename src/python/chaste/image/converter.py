@@ -5,14 +5,14 @@ import wx
 import numpy as np
 from vmtk import vmtkscripts
 
-import casie.gui.properties
-import casie.plot.two.glyphs
-import casie.utility.rwc
+import chaste.gui.properties
+import chaste.plot.two.glyphs
+import chaste.utility.rwc
 
-if casie.gui.properties._have_wx:
-    import casie.gui.panels.base
+if chaste.gui.properties._have_wx:
+    import chaste.gui.panels.base
     
-    class SurfaceFromImage2dPanel(casie.gui.panels.base.Panel):
+    class SurfaceFromImage2dPanel(chaste.gui.panels.base.Panel):
         
         ''' 
         Default panel
@@ -28,7 +28,7 @@ if casie.gui.properties._have_wx:
             Set up the panel, add the controls
             '''
             
-            casie.gui.panels.base.Panel.__init__(self, parent)
+            chaste.gui.panels.base.Panel.__init__(self, parent)
             self.name = "SurfaceFromImage2d"
             
         def add_controls(self):
@@ -83,17 +83,17 @@ if casie.gui.properties._have_wx:
         def on_save_file(self, event = None):
             
             file_mod = os.path.splitext(self.file_name)[0] + "_surface.vtp"
-            casie.utility.rwc.write_vtk_surface(file_mod, self.surface)
+            chaste.utility.rwc.write_vtk_surface(file_mod, self.surface)
             
             file_mod = os.path.splitext(self.file_name)[0] + "_boundaries.vtp"
-            casie.utility.rwc.write_vtk_surface(file_mod, self.boundaries)
+            chaste.utility.rwc.write_vtk_surface(file_mod, self.boundaries)
             
             logging.info("Saved Surface File to : " + str(file_mod))
             
         def setup_tool(self):
             
             self.tool = SurfaceFromImage2d()
-            image = casie.utility.rwc.tiff_to_vti(self.file_name)
+            image = chaste.utility.rwc.tiff_to_vti(self.file_name)
             self.tool.set_image(image)
             
         def run_tool(self):
@@ -102,7 +102,7 @@ if casie.gui.properties._have_wx:
             self.surface = self.tool.get_output(surface = True)
             self.boundaries = self.tool.get_output(surface = False)
             
-            glyph = casie.plot.two.glyphs.VtkLinesGlyph(self.boundaries)
+            glyph = chaste.plot.two.glyphs.VtkLinesGlyph(self.boundaries)
             self.canvas.add_glyph(glyph, clear = False)
             
             logging.info("Extracted Surfaces")

@@ -7,7 +7,7 @@ import matplotlib.pyplot as mpp
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 
-import casie.gui.sketcher.sketcher
+import chaste.gui.sketcher.sketcher
 
 class Panel(wx.Panel):
  
@@ -116,6 +116,6 @@ class Panel(wx.Panel):
     def start_temp_sketch(self, panel):
         
         # Set up the temp sketch
-        self.temp_sketch = casie.gui.sketcher.sketcher.Sketch(self.figure.ax, sketch_type = "Temp")
+        self.temp_sketch = chaste.gui.sketcher.sketcher.Sketch(self.figure.ax, sketch_type = "Temp")
         self.temp_sketch.panel = panel
         self.re_draw()
