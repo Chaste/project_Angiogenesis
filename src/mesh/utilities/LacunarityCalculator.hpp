@@ -43,7 +43,7 @@ template<unsigned DIM>
 class LacunarityCalculator : public AbstractRegularGridHybridSolver<DIM>
 {
 
-    boost::shared_ptr<CaVascularNetwork<DIM> > mpNetwork;
+    boost::shared_ptr<VascularNetwork<DIM> > mpNetwork;
 
 
 public:
@@ -55,7 +55,7 @@ public:
      */
     static boost::shared_ptr<LacunarityCalculator<DIM> > Create();
 
-    void SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork);
+    void SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork);
 
     ~LacunarityCalculator();
 

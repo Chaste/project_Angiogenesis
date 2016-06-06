@@ -1,14 +1,36 @@
-= Chaste: an open source C++ library for computational physiology and biology =
+= Angiogenesis Project =
 
-Welcome to the Chaste wiki.
+The Angiogenesis project is a Chaste add-on with functionality for modelling blood vessels. It consists of a
+C++ framework and a closely related Python framework.
 
-This section contains pages generated automatically from the source code accompanying the paper "A flexible and extensible modelling framework for the simulation of vascular tumour growth: an extension to the Chaste open source C++ library for computational physiology and biology".
+Code details are included in this  "[./paper/chaste_angiogenesis.pdf paper]".
 
-Before running these examples you will need to [wiki:InstallGuides/InstallGuide install Chaste's dependencies] and the [http://www.cs.ox.ac.uk/chaste/download.html source code for version 3.4].
+= Installation =
+This project uses the new [wiki:ChasteGuides/CmakeBuildGuide CMake build system]. First [wiki:InstallGuides/InstallGuide install Chaste's dependencies] and the [http://www.cs.ox.ac.uk/chaste/download.html source code for version 3.4].
 The easiest way to do this is using an Ubuntu machine (or an Ubuntu virtual machine) as discussed on InstallGuides/UbuntuPackage.
 Note that Chaste is only supported on Linux/Unix systems, so users of Windows or Mac OS X will need to follow the virtual machine route.
 For manual installation of each dependency, on any version of Linux, see DeveloperInstallGuide.
 
+Then follow the [wiki:ChasteGuides/CmakeBuildGuide new CMake build system guide]. Two small changes are needed
+to the file CMakeLists.txt in the Chaste source directory before building the Python interface. First an extra boos python library is needed: 
+
+find_package(Boost COMPONENTS filesystem system serialization python REQUIRED)
+
+In addition the project needs to be linked with a Python library, e.g.:
+
+list(APPEND Chaste_LINK_LIBRARIES "path-to-lib/libpython2.7.so").
+
+Check out the project source code following [wiki:InstallGuides/CheckoutUserProject.html] 
+
+Set up the Python targets by doing make project_Angiogenesis. To actually build the shared libraries each
+needs to be constructed using the make command and moved to the correct location in the module. A convenience
+script is included in: 
+
+From the build directory do:
 
 
-This page links to a set of tutorials for using the software described in the paper, including the examples in the paper itself.
+== Usage ==
+For the C++ framework source and test code are in the src and test folders respectively. Tests can be build using the CMake framework. Tutorials are listed on this page.
+
+For the python framework the module is located in src/python and should be added to the PYTHONPATH. It
+can then be used by doing: import chaste. Tutorials are included here:

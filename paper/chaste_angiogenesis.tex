@@ -56,7 +56,7 @@
 
 \begin{document}
 
-\title{A Modelling Framework for Vascular Tumour Growth: An Extension to the Chaste Open Source C++ Library}
+\title{A Modelling Framework for Vascular Tumour Growth: \\An Extension to the Chaste Open Source C++ Library}
 
 \author[1,2]{Anthony J Connor}
 \author[1]{James A Grogan}
@@ -112,14 +112,55 @@ Thanks to the aforementioned developments, and integration with Chaste, the mode
 
 The structure of the report is now over-viewed. In Section 2 code design and implementation details are introduced. The general design of Chaste is briefly summarized, however the reader should refer to [] for further details. In Section 3 sample applications, including typical angiogenesis and vascular tumour growth problems are demonstrated, solved with a variety of solution techniques. While the focus is on cell centred based vascular tumour growth, it is noted that the framework is widely applicable to vascular tissues, and can be used with other functionality in Chaste, including vertex and Cellular Potts type simulations. In Section 4 code availability, future directions and other potential applications are discussed.
 
-\section{Design and implementation}
+\section{Design and Implementation}
 \label{sec:design and implementation}
 
+Chaste is a C++ library with code that can be used to build a range of models in the area of computational biology. The code is over-viewed in detail in several publications [][][]. In brief, the core components are:
+
 \begin{itemize}
- \item Describe how the cell based simulation classes are implemented so that they are extensible and easily customisable. In particular we should aim to describe how the template method pattern and strategy pattern are employed within the Solve method (the modifiers are essentially glorified strategies).
- \item Emphasise composability of simulations. 
-  \item Code chart.
+ \item global - basic mathematics, check-pointing and time stepping
+ \item io - reading and writing of various file formats, including HDF5
+ \item mesh - handling linear and quadratic meshes, including reading and writing
+ \item linalg - linear algebra, including PETSc and uBLAS wrappers
+ \item ode - ODE system solvers, including CVODE interface
+ \item pde - PDE solvers using the finite element method
+ \item continuum mechanics - non-linear elasticity problems
 \end{itemize}
+
+Beyond the core components further code is specialized for discrete cell problems and cardiac electro-physiology problems. The code for modelling discrete cell problems is further divided into []:
+
+\begin{itemize}
+ \item cell - cell description, cell cycle models and mutation state definitions
+ \item population - collections of cells described using cellular automaton, mesh based, node based, vertex based and cellular potts frameworks
+ \item simulation - tissue growth using lattice and off lattice approaches
+ \item writers - solution output to ascii and VTK files
+\end{itemize}
+
+Chaste can be extended by add-on user projects, which can share the same dependencies and build and test frameworks []. The vascular tumour growth functionality is implemented as such an add-on project, but with additional functionality implemented through Python bindings. As such the code is divided into a C++ framework, which follows a similar design to cell-based Chaste framework [] and a Python package, which encompasses most of the C++ functionality, but with easier integration with other solvers and libraries. 
+
+The primary C++ components are:
+
+\begin{itemize}
+ \item vessel - vessel network reading, writing, analysis and management
+ \item geometry - simple geometric descriptions and operations
+ \item mesh - finite element meshing and regular grid tools
+ \item pde - extensions to core PDE solvers with finite difference and semi-analytical methods
+ \item simulation - solvers for flow, angiogenesis and structural adaptation. Modifiers for integration with cell based Chaste.
+\end{itemize}
+
+The code heavily uses Chaste core functionality, but is only loosely integrated with cell-based functionality through a 'simulation modifier' pattern. This pattern allows loose coupling during simulations between discrete representations of vessels and cells, through the solution of PDEs in which either agent can be a discrete sinks or sources or through simple models of mechanical contact. The new framework is developed with Python binding in mind. This leads to extensive use of shared pointers and factory constructor methods and reduction in the use of templating relative to the remainder of the Chaste code. Unrelated to Python binding, there is also limited parallelism and checkpointing functionality at present.
+
+The Python framework is available as a standard Python package []. Due to fundamental differences between C++ and Python in regard to templating and memory management it does not encompass all of the functionality of the C++ framework. In particular all simulations assume a spatial dimension of 3 (i.e. 3D) and some extra wrappers are needed to generate meshes, cell populations and simulation instances. Extra functionality is implemented in Python, giving the following additional components:
+
+\begin{itemize}
+ \item geometry - CAD operations and centreline extraction
+ \item image - image processing and segmentation
+ \item interface - interfaces with external finite element solvers
+ \item plot - two dimensional and three dimensional post-processing and visualization
+ \item gui - graphical user interface for model pre-processing steps
+\end{itemize}
+
+Both C++ and Python components are subject to unit-testing are documented and are accompanied with a collection of tutorials. Functionality with application in the solution of vascular tumour growth problems is demonstrated in the next section.
 
 \section{Results and exemplar simulations}
 \label{sec:results}
@@ -151,11 +192,6 @@ The structure of the report is now over-viewed. In Section 2 code design and imp
 \subsection{An off-lattice model of corneal angiogenesis on a complex domain}
 \label{sec:an off-lattice model of corneal angiogenesis on a complex domain}
 
-
-\subsection{Modularity}
-\label{sec:modularity}
-
-Modularity and how it helps with validation and verification.
 
 \section{Discussion and future work}
 \label{sec:discussion and future work}

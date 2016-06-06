@@ -53,7 +53,6 @@
  */
 #include <cxxtest/TestSuite.h>
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
-
 /*
  * Boost shared pointers are used extensively in this component. This header contains some useful
  * pointer MACROS.
@@ -74,7 +73,6 @@
  * We need to include this when running in serial
  */
 #include "FakePetscSetup.hpp"
-
 /*
  * Tutorials are developed as a series of unit tests using the CxxTest framework. We make a single test class, which inherits from
  * `AbstractCellBasedWithTimingsTestSuite`. `AbstractCellBasedWithTimingsTestSuite` adds some useful functionality to the default
@@ -82,9 +80,7 @@
  */
 class TestBuildVesselNetworkLiteratePaper : public AbstractCellBasedWithTimingsTestSuite
 {
-
 public:
-
     /*
      * = Test 1 - Building a vessel network manually, writing it to file and visualizing it=
      *

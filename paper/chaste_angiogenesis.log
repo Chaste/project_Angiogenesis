@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2015.2.14)  30 MAY 2016 11:24
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2015.2.14)  6 JUN 2016 09:23
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -733,16 +733,19 @@ LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
 \openout4 = `chaste_angiogenesis.toc'.
 
  [2] [3] [4]
-(./chaste_angiogenesis.aux)
+[5] [6] (./chaste_angiogenesis.aux)
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
 Package logreq Info: Writing requests to 'chaste_angiogenesis.run.xml'.
 \openout1 = `chaste_angiogenesis.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 10347 strings out of 493304
- 160921 string characters out of 6139871
- 345866 words of memory out of 5000000
- 13642 multiletter control sequences out of 15000+600000
+ 10346 strings out of 493304
+ 160905 string characters out of 6139871
+ 346866 words of memory out of 5000000
+ 13641 multiletter control sequences out of 15000+600000
  12216 words of font info for 48 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
  42i,7n,40p,1382b,660s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -755,10 +758,10 @@ fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/t
 ype1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
 lic/amsfonts/cm/cmr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsf
 onts/cm/cmsy10.pfb>
-Output written on chaste_angiogenesis.pdf (4 pages, 130229 bytes).
+Output written on chaste_angiogenesis.pdf (6 pages, 134049 bytes).
 PDF statistics:
- 53 PDF objects out of 1000 (max. 8388607)
- 37 compressed objects within 1 object stream
+ 59 PDF objects out of 1000 (max. 8388607)
+ 41 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -33,7 +33,7 @@
 
  */
 
-#include "CaVesselSegment.hpp"
+#include "VesselSegment.hpp"
 #include "ChastePoint.hpp"
 #include "GeometryTools.hpp"
 #include "Debug.hpp"
@@ -41,9 +41,8 @@
 #include "LacunarityCalculator.hpp"
 
 template<unsigned DIM>
-LacunarityCalculator<DIM>::LacunarityCalculator()
-    :   AbstractRegularGridHybridSolver<DIM>(),
-        mpNetwork()
+LacunarityCalculator<DIM>::LacunarityCalculator() :
+        AbstractRegularGridHybridSolver<DIM>(), mpNetwork()
 {
 
 }
@@ -62,7 +61,7 @@ LacunarityCalculator<DIM>::~LacunarityCalculator()
 }
 
 template<unsigned DIM>
-void LacunarityCalculator<DIM>::SetVesselNetwork(boost::shared_ptr<CaVascularNetwork<DIM> > pNetwork)
+void LacunarityCalculator<DIM>::SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork)
 {
     mpNetwork = pNetwork;
 }
@@ -72,8 +71,8 @@ void LacunarityCalculator<DIM>::Solve()
 {
     unsigned extents_x = this->mpRegularGrid->GetExtents()[0];
 
-	std::vector<boost::shared_ptr<CaVesselSegment<DIM> > > segments;
-	segments = this->mpNetwork->GetVesselSegments();
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments;
+    segments = this->mpNetwork->GetVesselSegments();
 
     // Get the box widths
     std::vector<unsigned> width_factors;
@@ -83,52 +82,53 @@ void LacunarityCalculator<DIM>::Solve()
     width_factors.push_back(8);
     width_factors.push_back(16);
 
-    std::ofstream output_file((this->mpOutputFileHandler->GetOutputDirectoryFullPath()+"output.dat").c_str());
+    std::ofstream output_file((this->mpOutputFileHandler->GetOutputDirectoryFullPath() + "output.dat").c_str());
     if (output_file.is_open())
     {
         output_file << "Lacunarity, Box\n";
 
     }
 
-    for(unsigned width_index=0; width_index<width_factors.size(); width_index++)
+    for (unsigned width_index = 0; width_index < width_factors.size(); width_index++)
     {
-    	double box_size = double(extents_x-1)/double(width_factors[width_index]) * this->mpRegularGrid->GetSpacing();
-    	double q1 = 0.0;
-    	double q2 = 0.0;
+        double box_size = double(extents_x - 1) / double(width_factors[width_index])
+                * this->mpRegularGrid->GetSpacing();
+        double q1 = 0.0;
+        double q2 = 0.0;
 
-    	unsigned z_extent = width_factors[width_index];
-    	z_extent = 1;
+        unsigned z_extent = width_factors[width_index];
+        z_extent = 1;
 
-    	for(unsigned kdx=0;kdx<z_extent;kdx++)
-    	{
-        	for(unsigned jdx=0;jdx<width_factors[width_index];jdx++)
-        	{
-            	for(unsigned idx=0;idx<width_factors[width_index];idx++)
-            	{
-            		c_vector<double, DIM> box_location;
-            		box_location[0] = double(idx) * box_size + box_size/2.0;
-            		box_location[1] = double(jdx) * box_size + box_size/2.0;
-            		box_location[2] = double(kdx) * box_size + box_size/2.0;
+        for (unsigned kdx = 0; kdx < z_extent; kdx++)
+        {
+            for (unsigned jdx = 0; jdx < width_factors[width_index]; jdx++)
+            {
+                for (unsigned idx = 0; idx < width_factors[width_index]; idx++)
+                {
+                    c_vector<double, DIM> box_location;
+                    box_location[0] = double(idx) * box_size + box_size / 2.0;
+                    box_location[1] = double(jdx) * box_size + box_size / 2.0;
+                    box_location[2] = double(kdx) * box_size + box_size / 2.0;
 
-            		double vessel_length = 0.0;
-                    for (unsigned seg_index = 0; seg_index <  segments.size(); seg_index++)
+                    double vessel_length = 0.0;
+                    for (unsigned seg_index = 0; seg_index < segments.size(); seg_index++)
                     {
-                    	vessel_length += LengthOfLineInBox<DIM>(segments[seg_index]->GetNode(0)->GetLocationVector(),
-                    			segments[seg_index]->GetNode(1)->GetLocationVector(),
-                    			box_location, box_size);
+                        vessel_length += LengthOfLineInBox<DIM>(segments[seg_index]->GetNode(0)->GetLocationVector(),
+                                                                segments[seg_index]->GetNode(1)->GetLocationVector(),
+                                                                box_location, box_size);
                     }
                     q1 += vessel_length;
                     q2 += vessel_length * vessel_length;
 
-            	}
-        	}
-    	}
-    	unsigned num_boxes = width_factors[width_index]*width_factors[width_index]*z_extent;
-    	double lacunarity = double(num_boxes) * q2 / (q1*q1);
+                }
+            }
+        }
+        unsigned num_boxes = width_factors[width_index] * width_factors[width_index] * z_extent;
+        double lacunarity = double(num_boxes) * q2 / (q1 * q1);
 
         if (output_file.is_open())
         {
-            output_file << lacunarity << ", " << box_size <<" \n";
+            output_file << lacunarity << ", " << box_size << " \n";
         }
     }
     output_file.close();
