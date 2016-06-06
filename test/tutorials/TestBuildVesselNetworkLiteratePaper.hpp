@@ -38,7 +38,7 @@
 
 /* = Introduction =
  * This tutorial is designed to introduce the C++ interface for modelling vessel networks. An equivalent Python tutorial
- * is here: . It is advised that you at least read Chaste getting started tutorial before proceeding with this one.
+ * is here: . It is advised that you at least read [wiki:UserTutorials/WritingTests the Chaste tutorial on writing tests] before proceeding with this one.
  *
  * This tutorial covers:
  * * Building a network from a collection of nodes, segments and vessels
