@@ -1,11 +1,18 @@
 import vtk
-import vtk_tools.converter
 from IPython.display import Image
+
+import chaste.geometry.glyphs
+import chaste.mesh.glyphs
+import chaste.population.cell.glyphs
+import chaste.population.vessel.glyphs
+import chaste.interfaces.vtk_tools.vtk_tools
+import chaste.utility.readwrite
 
 class Scene():
     def __init__(self):
         self.renderer = vtk.vtkRenderer()
         self.renderer.SetBackground(1.0, 1.0, 1.0)
+        self.filename = None
         
     def add_axes(self, polydata):
         axes = vtk.vtkCubeAxesActor2D()
@@ -22,18 +29,42 @@ class Scene():
         axes.SetAxisLabelTextProperty(tprop)
         self.renderer.AddViewProp(axes)
         
-    def add_part(self, part, withAxes = True, dimension = 3):
-        polydata = part.GetVtk(True)
-        mapper = vtk.vtkPolyDataMapper()
-        mapper.SetInput(polydata)
-        actor = vtk.vtkActor()
-        actor.GetProperty().SetColor(0,0,1) # (R,G,B)
-        actor.SetMapper(mapper)
-        self.renderer.AddActor(actor) 
+    def add_image(self, image):
+        threshold = 200.0
+        volume_mapper = vtk.vtkVolumeRayCastMapper()
+        volume_mapper.SetInput(image.GetOutput() )
+        composite_function = vtk.vtkVolumeRayCastCompositeFunction()
+        volume_mapper.SetVolumeRayCastFunction( composite_function )
+        
+        color_transfer_func = vtk.vtkColorTransferFunction()
+        color_transfer_func.AddRGBPoint( 0, 0.0, 1.0, 0.0 )
+        color_transfer_func.AddRGBPoint( threshold-1, 0.0, 1.0, 0.0 )
+        color_transfer_func.AddRGBPoint( threshold, 1.0, 0.0, 0.0 )
+        color_transfer_func.AddRGBPoint( 255.0, 1.0, 0.0, 0.0 )
+        
+        opacity_transfer_func = vtk.vtkPiecewiseFunction()
+        opacity_transfer_func.AddPoint( 0, 0.0 )
+        opacity_transfer_func.AddPoint( threshold-1.0, 0.0 )
+        opacity_transfer_func.AddPoint( threshold, 1.0 )
+        opacity_transfer_func.AddPoint( 255.0, 1.0 )
+        
+        volume_properties = vtk.vtkVolumeProperty()
+        volume_properties.SetColor( color_transfer_func )
+        volume_properties.SetScalarOpacity( opacity_transfer_func )
+        
+        volume = vtk.vtkVolume()
+        volume.SetMapper( volume_mapper )
+        volume.SetProperty( volume_properties )
+        self.renderer.AddVolume( volume )
+        
+    def add_part(self, part):
+        glyph = chaste.geometry.glyphs.PartGlyph3d(part)
+        self.renderer.AddActor(glyph.actor) 
         
     def add_points(self, points):
-        converter = vtk_tools.converter.PointConverter()
-        polydata = converter.convert(points)
+        converter = chaste.interfaces.vtk_tools.vtk_tools.LocationsToVtkPoints()
+        converter.input = points
+        polydata = converter.update()
         
         # Each point is a sphere
         sphere = vtk.vtkSphereSource()
@@ -60,64 +91,20 @@ class Scene():
         self.renderer.AddActor(actor)
         
     def add_cells(self, cell_population):
-        converter = vtk_tools.converter.CellConverter()
-        polydata = converter.convert(cell_population)
+        glyphs = chaste.population.cell.glyphs.CellGlyph3d()
+        self.renderer.AddActor(glyphs.actor)
         
-        # Each point is a sphere
-        sphere = vtk.vtkSphereSource()
-        sphere.SetRadius(1.0)
-        sphere.SetPhiResolution(16)
-        sphere.SetThetaResolution(16)
-         
-        # make the glyphs
-        glyph = vtk.vtkGlyph3D()
-        glyph.SetInput(polydata)
-        glyph.SetSource(sphere.GetOutput())
-        glyph.ClampingOff()
-        glyph.SetScaleModeToScaleByScalar()
-        glyph.SetScaleFactor(1.0) 
-         
-        mapper = vtk.vtkPolyDataMapper()
-        mapper.SetInput(glyph.GetOutput())
-        mapper.ScalarVisibilityOn()
-        
-        actor = vtk.vtkActor()
-        actor.GetProperty().SetColor(0,1,0) # (R,G,B)
-        actor.SetMapper(mapper)
-        
-        self.renderer.AddActor(actor)
+    def add_network(self, network):
+        glyph = chaste.population.vessel.glyphs.VesselGlyph3d(network)
+        self.renderer.AddActor(glyph.actors[0])
+        self.renderer.AddActor(glyph.actors[1])
                     
-    def add_mesh(self, mesh, dimension = 3):
-        converter = vtk_tools.converter.MeshConverter()
-        mesh_vtk = converter.convert(mesh, dimension)
+    def add_mesh(self, mesh):
         
-        geo_filter = vtk.vtkGeometryFilter()
-        geo_filter.SetInput(mesh_vtk)
+        glyph = chaste.mesh.glyphs.MeshGlyph3d(mesh)
         
-        extract_edges = vtk.vtkExtractEdges()
-        extract_edges.SetInput(mesh_vtk)
-        
-        tube_filter = vtk.vtkTubeFilter()
-        tube_filter.SetInput(extract_edges.GetOutput())
-        tube_filter.SetRadius(0.02)
-        
-        mapper = vtk.vtkPolyDataMapper()
-        mapper.SetInput(geo_filter.GetOutput())
-        #mapper.ScalarVisibilityOn()
-        actor = vtk.vtkActor()
-        actor.SetMapper(mapper)
-        actor.GetProperty().SetColor(1,0,0) # (R,G,B)
-        
-        mapper2 = vtk.vtkPolyDataMapper()
-        mapper2.SetInput(tube_filter.GetOutput())
-        #mapper2.ScalarVisibilityOn()
-        actor2 = vtk.vtkActor()
-        actor2.SetMapper(mapper2)
-        actor.GetProperty().SetColor(1,1,1) # (R,G,B
-        
-        self.renderer.AddActor(actor) 
-        self.renderer.AddActor(actor2)  
-        return actor, actor2
+        self.renderer.AddActor(glyph.actors[0]) 
+        self.renderer.AddActor(glyph.actors[1])  
     
     def add(self, component):
         if "list" in component.__class__.__name__:
@@ -166,6 +153,12 @@ class Scene():
             writer = vtk.vtkPNGWriter()
             writer.SetWriteToMemory(1)
             writer.SetInputConnection(windowToImageFilter.GetOutputPort())
-            writer.Write()
-            data = str(buffer(writer.GetResult()))
-            return Image(data)            
+            if self.filename is not None:
+                writer.SetWriteToMemory(0)
+                chaste.utility.readwrite.dir_maker(self.filename)
+                writer.SetFileName(self.filename)
+                writer.Write()
+            else:
+                writer.Write()
+                data = str(buffer(writer.GetResult()))
+                return Image(data)            

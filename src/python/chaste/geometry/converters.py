@@ -1,4 +1,4 @@
-import chaste.utility.standalone_bases as bases
+import chaste.utility.bases as bases
 
 class ChastePartToCadShell(bases.SimpleIOBase):
     

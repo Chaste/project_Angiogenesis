@@ -3,11 +3,10 @@ import os
 import wx
 import dolfin as df
 
-import chaste.utility.rwc
+import chaste.utility.readwrite
 import chaste.geometry.labelling
 import chaste.mesh.meshers
-import chaste.interfaces.converters.other
-import chaste.interfaces.converters.mesh
+import chaste.mesh.converters
 import chaste.plot.two.glyphs
    
 import chaste.gui.panels.base
@@ -126,7 +125,7 @@ class Mesh2dPanel(chaste.gui.panels.base.Panel):
     def on_load_file(self, event = None):
         
         self.file_name = self.get_file_name()
-        self.surface = chaste.utility.rwc.read_vtk_surface(self.file_name, True, True)
+        self.surface = chaste.utility.readwrite.read_vtk_surface(self.file_name, True, True)
         
         bound_extractor = chaste.geometry.labelling.BoundaryExtractor2d()
         bound_extractor.labels = [1,2]
@@ -145,7 +144,7 @@ class Mesh2dPanel(chaste.gui.panels.base.Panel):
     def on_load_domain_file(self, event = None):
         
         self.file_name = self.get_file_name()
-        self.domain = chaste.utility.rwc.read_vtk_surface(self.file_name)
+        self.domain = chaste.utility.readwrite.read_vtk_surface(self.file_name)
         self.lines = chaste.interfaces.converters.other.vtkpolygon_to_lines(self.domain)
     
         glyph = chaste.plot.two.glyphs.VtkLinesGlyph(self.lines, color="blue")
@@ -155,7 +154,7 @@ class Mesh2dPanel(chaste.gui.panels.base.Panel):
         if not self.canvas_set:
             self.setup_canvas()
             
-        conv = chaste.interfaces.converters.mesh.VtkToTri()
+        conv = chaste.mesh.converters.VtkToTri()
         points, edges = conv.generate(self.lines)
         myedges = []
         for eachEdge in edges:
@@ -167,7 +166,7 @@ class Mesh2dPanel(chaste.gui.panels.base.Panel):
     def on_load_centreline_file(self, event = None):
         
         self.file_name = self.get_file_name()
-        self.centres = chaste.utility.rwc.read_vtk_surface(self.file_name, True, True)
+        self.centres = chaste.utility.readwrite.read_vtk_surface(self.file_name, True, True)
         self.network = self.centres
         glyph = chaste.plot.two.glyphs.VtkLinesGlyph(self.centres, color="green")
         self.canvas = self.GetTopLevelParent().get_2d_canvas(show = False)
@@ -211,7 +210,7 @@ class Mesh2dPanel(chaste.gui.panels.base.Panel):
         
         if converter.new_network is not None:
             file_mod = os.path.splitext(self.file_name)[0] + "_new_network.vtp"
-            chaste.utility.rwc.write_vtk_surface(file_mod, converter.new_network)
+            chaste.utility.readwrite.write(converter.new_network, file_mod)
         
         file_mod = os.path.splitext(self.file_name)[0] + "_mesh.pvd"
         path = str(file_mod)
@@ -310,7 +309,7 @@ class Mesh2dPanel(chaste.gui.panels.base.Panel):
         
     def setup_tool(self):
         
-        self.tool = Mesher2d()
+        self.tool = chaste.mesh.meshers.Mesher2d()
         if self.surface is not None:
             self.tool.set_vtk_surface(self.surface)
         if self.domain is not None:

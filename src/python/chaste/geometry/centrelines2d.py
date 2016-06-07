@@ -4,7 +4,8 @@ from vmtk import vmtkscripts, pypes
 from scipy.spatial import Voronoi
 from scipy.sparse import csr_matrix
 import scipy.sparse.csgraph
-import chaste.geometry.converters.other
+import chaste.geometry.converters
+import chaste.interfaces.vtk_tools.vtk_tools
 
 class Centrelines2d():
     
@@ -20,7 +21,7 @@ class Centrelines2d():
     def update(self):
         
         # Convert from vtk format to tri plc format
-        vtk_to_tri = chaste.geometry.other.VtkToTri()
+        vtk_to_tri = chaste.geometry.converters.VtkToTri()
         points, edges = vtk_to_tri.generate(self.surface)
         
         # Get the voronoi diagram of the input points
@@ -82,7 +83,7 @@ class Centrelines2d():
                 sparse_edges.append([eachLabel, eachNeighbour])
                 
         # Use VTK to remove duplicate points
-        tri_to_vtk = chaste.geometry.other.TriToVtk([verts, sparse_edges])
+        tri_to_vtk = chaste.geometry.converters.TriToVtk([verts, sparse_edges])
         polyData = tri_to_vtk.generate()
         
         clean = vtk.vtkCleanPolyData()
@@ -91,7 +92,7 @@ class Centrelines2d():
         
         # Remove duplicate edges
         centre = clean.GetOutput()
-        vtk_to_tri = chaste.geometry.other.VtkToTri()
+        vtk_to_tri = chaste.geometry.converters.VtkToTri()
         points, edges = vtk_to_tri.generate(centre)
         unique_edges = []
 
@@ -147,7 +148,7 @@ class Centrelines2d():
         
         pruned = self.prune(polygon)
         pruned = self.prune(pruned)
-        polybound = chaste.geometry.other.vtk_network_lines_to_polylines(pruned)
+        polybound = chaste.interfaces.vtk_tools.vtk_tools.vtk_lines_to_polylines(pruned)
         
         smoother = vmtkscripts.vmtkCenterlineResampling()
         smoother.Centerlines = polybound

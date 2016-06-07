@@ -42,7 +42,7 @@ def read(filename):
     _, extension = os.path.splitext(filename)
     
     vtk_extensions = [".vtp", ".vtu", ".vti", ".tiff", ".tif"]
-    vtk_readers = ["vtkXMLPolyData", "vtkXMLUnstructuredGrid", "vtkXMLImageData", "vtkTIFFReader", "vtkTIFFReader"]
+    vtk_readers = ["vtkXMLPolyData", "vtkXMLUnstructuredGrid", "vtkXMLImageData", "vtkTIFF", "vtkTIFF"]
     
     if extension.upper() in (name.upper() for name in vtk_extensions):
         reader = chaste.utility.recursion.get_class("vtk." + vtk_readers[vtk_extensions.index(extension)] + "Reader")()

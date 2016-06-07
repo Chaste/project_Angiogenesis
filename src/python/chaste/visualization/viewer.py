@@ -1,7 +1,4 @@
-import casie.plot.two.scene
-import casie.plot.two.glyphs
-
-import code.geometry.converters
+import chaste.visualization.mpl_scene
 
 class Mesh2d():
     
@@ -12,14 +9,14 @@ class Mesh2d():
         
     def show(self):
         
-        self.scene = casie.plot.two.scene.Scene()
+        self.scene = chaste.visualization.two.scene.Scene()
         
         if self.chaste_format:
-            mesh_glyph = casie.plot.two.glyphs.MeshGlyph(self.mesh, self.chaste_format)
+            mesh_glyph = chaste.visualization.two.glyphs.MeshGlyph(self.mesh, self.chaste_format)
         elif self.tri_format:
-            mesh_glyph = casie.plot.two.glyphs.MeshGlyph([self.mesh.points, self.mesh.elements], self.chaste_format)
+            mesh_glyph = chaste.visualization.two.glyphs.MeshGlyph([self.mesh.points, self.mesh.elements], self.chaste_format)
         else:
-            mesh_glyph = casie.plot.two.glyphs.MeshGlyph(self.mesh, self.chaste_format)
+            mesh_glyph = chaste.visualization.two.glyphs.MeshGlyph(self.mesh, self.chaste_format)
         self.scene.add_glyph(mesh_glyph)
         
         return self.scene.fig
@@ -32,7 +29,7 @@ class Image2d():
         
     def show(self):
         
-        self.scene = casie.plot.two.scene.Scene()
+        self.scene = chaste.visualization.two.scene.Scene()
 
         self.scene.add_tiff(self.path)
         
@@ -46,12 +43,12 @@ class PolyData2d():
         
     def show(self):
         
-        self.scene = casie.plot.two.scene.Scene()
+        self.scene = chaste.visualization.two.scene.Scene()
         
         converter = code.geometry.converters.VtkToTri(self.polydata)
         mesh = converter.generate()
         
-        mesh_glyph = casie.plot.two.glyphs.MeshGlyph(mesh, False)
+        mesh_glyph = chaste.visualization.two.glyphs.MeshGlyph(mesh, False)
 
         self.scene.add_glyph(mesh_glyph)
         

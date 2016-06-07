@@ -1,6 +1,7 @@
 import numpy as np
 import vtk
-import chaste.geometry.converters.other
+import chaste.geometry.converters
+import chaste.mesh.converters
 
 class BoundaryMarker2d():
     
@@ -53,9 +54,9 @@ class BoundaryMarker2d():
         can be optionally specified.
         """
         
-        converter = chaste.geometry.other.VtkToTri()
-        points, edges = converter.generate(self.surface)
-        print len(points), len(edges)
+        converter = chaste.mesh.converters.VtkToTriMesh()
+        converter.input = self.surface
+        points, edges = converter.update()
         
         # build point edge connectivity
         connectivity = []
@@ -67,8 +68,6 @@ class BoundaryMarker2d():
             cell_markers.append(0)
             connectivity[eachEdge[0]].append(idx)
             connectivity[eachEdge[1]].append(idx)
-            
-        print len(connectivity)
         
         inlet_pt_ids = []
         total_ids = []
@@ -96,7 +95,6 @@ class BoundaryMarker2d():
         boundary_points = np.zeros(len(points))
         
         for idx, eachStartPoint in enumerate(total_ids):
-            
             if eachStartPoint in inlet_pt_ids:
                 bound_label = 1
             else:
@@ -113,7 +111,6 @@ class BoundaryMarker2d():
                 opposite2 = edges[cell_2][1]
             else:
                 opposite2 = edges[cell_2][0]
-                
             dir1 = self.unit_vector(np.array(points[eachStartPoint]) - np.array(points[opposite1]))
             dir2 = self.unit_vector(np.array(points[eachStartPoint]) - np.array(points[opposite2]))
             input_angle = self.angle_between(dir1, dir2)

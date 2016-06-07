@@ -1,7 +1,7 @@
 import vtk
 import dolfin as df
 import numpy as np
-import chaste.utility.standalone_bases as bases
+import chaste.utility.bases as bases
 
 class TriMeshToVtk(bases.SimpleIOBase):
     

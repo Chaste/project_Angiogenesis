@@ -1,6 +1,6 @@
 from meshpy.triangle import MeshInfo, build
 import chaste.utility.bases as bases
-import chaste.interfaces.converters.mesh as converters
+import chaste.mesh.converters as converters
 
 class ChasteGeometryMesher2d(bases.SimpleIOBase):
     

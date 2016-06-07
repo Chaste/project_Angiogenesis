@@ -6,8 +6,8 @@ import numpy as np
 from vmtk import vmtkscripts
 
 import chaste.gui.properties
-import chaste.plot.two.glyphs
-import chaste.utility.rwc
+import chaste.utility.readwrite
+import chaste.interfaces.vtk_tools.glyphs
 
 if chaste.gui.properties._have_wx:
     import chaste.gui.panels.base
@@ -83,17 +83,17 @@ if chaste.gui.properties._have_wx:
         def on_save_file(self, event = None):
             
             file_mod = os.path.splitext(self.file_name)[0] + "_surface.vtp"
-            chaste.utility.rwc.write_vtk_surface(file_mod, self.surface)
+            chaste.utility.readwrite.write(self.surface, file_mod)
             
             file_mod = os.path.splitext(self.file_name)[0] + "_boundaries.vtp"
-            chaste.utility.rwc.write_vtk_surface(file_mod, self.boundaries)
+            chaste.utility.readwrite.write(self.boundaries, file_mod)
             
             logging.info("Saved Surface File to : " + str(file_mod))
             
         def setup_tool(self):
             
             self.tool = SurfaceFromImage2d()
-            image = chaste.utility.rwc.tiff_to_vti(self.file_name)
+            image = chaste.utility.readwrite.read(self.file_name)
             self.tool.set_image(image)
             
         def run_tool(self):
@@ -102,7 +102,7 @@ if chaste.gui.properties._have_wx:
             self.surface = self.tool.get_output(surface = True)
             self.boundaries = self.tool.get_output(surface = False)
             
-            glyph = chaste.visualization.two.glyphs.VtkLinesGlyph(self.boundaries)
+            glyph = chaste.interfaces.vtk_tools.glyphs.VtkLinesGlyph(self.boundaries)
             self.canvas.add_glyph(glyph, clear = False)
             
             logging.info("Extracted Surfaces")
@@ -322,3 +322,25 @@ class SurfaceFromImage2d():
             return self.surface
         else:
             return self.boundaries
+        
+from vtk.util import numpy_support
+import chaste.utility.bases as bases
+
+class VtkImageDataToNumpy(bases.SimpleIOBase):
+    
+    def __init__(self):
+        super(VtkImageDataToNumpy, self).__init__()
+        self.spacing = None
+        self.origin = None
+        self.dims = None
+    
+    def update(self):
+        self.spacing = self.input.GetSpacing()
+        self.dims = self.input.GetDimensions()
+        self.origin = self.input.GetOrigin()
+        vtk_data = self.input.GetPointData().GetScalars()
+         
+        self.output  = numpy_support.vtk_to_numpy(vtk_data)
+        self.output  = self.output.reshape(self.dims[0], self.dims[1], self.dims[2])
+        self.output  = self.output.transpose(2,1,0)
+        return self.output

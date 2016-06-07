@@ -2,9 +2,9 @@ import os
 import logging
 import wx
 import chaste.geometry.labelling
-import chaste.plot.two.glyphs
-import chaste.utility.rwc
+import chaste.utility.readwrite
 import chaste.gui.panels.base
+import chaste.interfaces.vtk_tools.glyphs
 
 class BoundaryMarker2dPanel(chaste.gui.panels.base.Panel):
     
@@ -80,9 +80,9 @@ class BoundaryMarker2dPanel(chaste.gui.panels.base.Panel):
     def on_load_file(self, event = None):
         
         self.file_name = self.get_file_name()
-        self.surface = chaste.utility.rwc.read_vtk_surface(self.file_name, True, triangulate=True)
+        self.surface = chaste.utility.readwrite.read_vtk_surface(self.file_name, True, triangulate=True)
  
-        glyph = chaste.visualization.two.glyphs.VtkLinesGlyph(self.surface)
+        glyph = chaste.interfaces.vtk_tools.glyphs.VtkLinesGlyph(self.surface)
         
         self.canvas = self.GetTopLevelParent().get_2d_canvas(show = False)
         self.canvas.add_glyph(glyph, True)
@@ -94,8 +94,8 @@ class BoundaryMarker2dPanel(chaste.gui.panels.base.Panel):
         
         file_mod_1 = os.path.splitext(self.file_name)[0] + "_labelled.vtp"
         file_mod_2 = os.path.splitext(self.file_name)[0] + "_open.vtp"
-        chaste.utility.rwc.write_vtk_surface(file_mod_1, self.tool.get_output())
-        chaste.utility.rwc.write_vtk_surface(file_mod_2, self.tool.open_surface)
+        chaste.utility.readwrite.write(self.tool.get_output(), file_mod_1)
+        chaste.utility.readwrite.write(self.tool.open_surface, file_mod_2)
         logging.info("Saved Boundary File to : " + str(file_mod_1))
         logging.info("Saved Boundary File to : " + str(file_mod_2))
 
