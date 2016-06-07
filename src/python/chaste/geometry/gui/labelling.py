@@ -82,7 +82,7 @@ class BoundaryMarker2dPanel(chaste.gui.panels.base.Panel):
         self.file_name = self.get_file_name()
         self.surface = chaste.utility.rwc.read_vtk_surface(self.file_name, True, triangulate=True)
  
-        glyph = chaste.plot.two.glyphs.VtkLinesGlyph(self.surface)
+        glyph = chaste.visualization.two.glyphs.VtkLinesGlyph(self.surface)
         
         self.canvas = self.GetTopLevelParent().get_2d_canvas(show = False)
         self.canvas.add_glyph(glyph, True)

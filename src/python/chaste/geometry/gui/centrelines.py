@@ -4,7 +4,7 @@ import wx
 import chaste.utility
 import chaste.plot.two.glyphs
 import chaste.gui.panels.base
-import chaste.geometry.centrelines
+import chaste.geometry.centrelines2d
 
 class Centrelines2dPanel(chaste.gui.panels.base.Panel):
     
@@ -68,7 +68,7 @@ class Centrelines2dPanel(chaste.gui.panels.base.Panel):
         self.file_name = self.get_file_name()
         self.surface = chaste.utility.rwc.read_vtk_surface(self.file_name)
  
-        glyph = chaste.plot.two.glyphs.VtkLinesGlyph(self.surface)
+        glyph = chaste.visualization.two.glyphs.VtkLinesGlyph(self.surface)
         
         self.canvas = self.GetTopLevelParent().get_2d_canvas(show = False)
         self.canvas.add_glyph(glyph, True)
@@ -87,7 +87,7 @@ class Centrelines2dPanel(chaste.gui.panels.base.Panel):
         
     def setup_tool(self):
         
-        self.tool = chaste.geometry.centrelines.Centrelines2d()
+        self.tool = chaste.geometry.centrelines2d.Centrelines2d()
         
     def run_tool(self):
         
@@ -95,7 +95,7 @@ class Centrelines2dPanel(chaste.gui.panels.base.Panel):
         self.tool.update()
         self.network = self.tool.get_output()
         
-        glyph = chaste.plot.two.glyphs.VesselNetworkGlyph(self.network)
+        glyph = chaste.visualization.two.glyphs.VesselNetworkGlyph(self.network)
         self.canvas.add_glyph(glyph, clear = False)
         
         logging.info("Extracted Centreline")

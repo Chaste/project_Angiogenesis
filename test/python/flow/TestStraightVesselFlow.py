@@ -4,7 +4,7 @@ Test 1d flow
 
 import unittest
 import chaste.population.vessel as vessel
-import chaste.geometry.converters
+import chaste.interfaces.converters.network
 import chaste.simulation.setup
 import chaste.simulation
 
@@ -52,10 +52,8 @@ class TestStraightVesselFlow(unittest.TestCase):
         file_handler = chaste.simulation.setup.setup("/home/grogan/test/TestStraightVesselFlow/TwoD/")
         
         # Generate a 2d geometry
-        converter = chaste.geometry.converters.NetworkToGeometry()
-        converter.set_network(network)
-        converter.set_dimension(2)
-        
+        converter = chaste.interfaces.converters.network.NetworkToPlanarBoundaries()
+        converter.input = network
         vtk_geometry = converter.update()
         # 
         

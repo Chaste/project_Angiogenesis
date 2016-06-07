@@ -268,21 +268,121 @@ class Centrelines2d():
     def get_output(self):
         return self.network
     
-class Centrelines3d():
+"""
+Convert meshes between Tri/Tetgen and Dolfin formats
+"""
+
+from dolfin import *
+import numpy as np
+import chaste.population.vessel
     
-    def __init__(self, surface_file, work_dir):
-        
-        self.surface_file = surface_file
-        self.work_dir = work_dir
+class Extract2d():
+    
+    def __init__(self, mesh, boundary_markers, boundary_label):
+        self.mesh = mesh
+        self.boundary_markers = boundary_markers
+        self.boundary_label = boundary_label
         
     def generate(self):
-
-        myArguments = "vmtkcenterlines -ifile " + self.surface_file + " --seedselector openprofiles -endpoints 1 --pipe vmtkbranchextractor --pipe vmtkcenterlinemerge -ofile " + self.work_dir + "/lines.vtp"
-        myPype = pypes.PypeRun(myArguments) 
         
-    def generate_extensions(self):
+        # Get the centreline mesh
+        facet_count = 0
+        centre_facets = []
+        unique_verts = []
+        vert_coords = []
         
-        myArguments = "vmtksurfacereader -ifile " + self.surface_file + " --pipe vmtkcenterlines -seedselector openprofiles --pipe vmtkflowextensions -adaptivelength 1 -extensionratio 5 -normalestimationratio 1 -boundarypoints 20 -interactive 0 --pipe vmtksurfacewriter -ofile " + self.work_dir + "/extended.vtp"
-        myPype = pypes.PypeRun(myArguments) 
-   
+        for eachFacet in facets(self.mesh):
+            if self.boundary_markers[facet_count] == self.boundary_label:
+                v0 = Vertex(self.mesh, eachFacet.entities(0)[0])
+                v1 = Vertex(self.mesh, eachFacet.entities(0)[1])
+                centre_facets.append((v0, v1))
+                
+                if v0.index() not in unique_verts:
+                    unique_verts.append(v0.index())
+                    vert_coords.append(v0)
+                if v1.index() not in unique_verts:
+                    unique_verts.append(v1.index())
+                    vert_coords.append(v1)   
+            facet_count += 1      
+            
+        # construct the points 
+        editor = MeshEditor()
+        centre_mesh = Mesh()
         
+        editor.open(centre_mesh, 1, 2)
+        editor.init_vertices(len(unique_verts))
+        editor.init_cells(len(centre_facets))
+        
+        nodes = []
+        network = chaste.population.vessel.VascularNetwork()
+        for idx, eachPoint in enumerate(vert_coords):
+            editor.add_vertex(idx, np.array((eachPoint.x(0), eachPoint.x(1)), dtype=np.float))
+            nodes.append(chaste.population.vessel.VascularNode(np.array((eachPoint.x(0), eachPoint.x(1), 0.0))))
+        for idx, eachFacet in enumerate(centre_facets):
+            id1 = unique_verts.index(eachFacet[0].index())
+            id2 = unique_verts.index(eachFacet[1].index())
+            editor.add_cell(idx, np.array((id1, id2), dtype=np.uintp))
+            network.addVessel(chaste.population.vessel.Vessel([nodes[id1], nodes[id2]]))
+            
+        # Add extensions
+        editor.close()
+        centre_mesh.init()
+        centre_mesh.order()
+        
+        return centre_mesh, network
+    
+class Extract3d():
+    
+    def __init__(self, mesh, edge_markers, edge_label):
+        self.mesh = mesh
+        self.edge_markers = edge_markers
+        self.edge_label = edge_label
+        
+    def generate(self):
+        
+        # Get the centreline mesh
+        edge_count = 0
+        centre_edges = []
+        unique_verts = []
+        vert_coords = []
+        
+        for eachEdge in edges(self.mesh):
+            if self.edge_markers[edge_count] == self.edge_label:
+                v0 = Vertex(self.mesh, eachEdge.entities(0)[0])
+                v1 = Vertex(self.mesh, eachEdge.entities(0)[1])
+                centre_edges.append((v0, v1))
+                
+                if v0.index() not in unique_verts:
+                    unique_verts.append(v0.index())
+                    vert_coords.append(v0)
+                if v1.index() not in unique_verts:
+                    unique_verts.append(v1.index())
+                    vert_coords.append(v1)   
+            edge_count += 1      
+            
+        # construct the points 
+        editor = MeshEditor()
+        centre_mesh = Mesh()
+        
+        editor.open(centre_mesh, 1, 3)
+        editor.init_vertices(len(unique_verts))
+        editor.init_cells(len(centre_edges))
+        
+        nodes = []
+        network = chaste.population.vessel.VascularNetwork()
+        
+        for idx, eachPoint in enumerate(vert_coords):
+            editor.add_vertex(idx, np.array((eachPoint.x(0), eachPoint.x(1), eachPoint.x(2)), dtype=np.float))
+            nodes.append(chaste.population.vessel.VascularNode(np.array((eachPoint.x(0), eachPoint.x(1), eachPoint.x(2)))))
+        for idx, eachEdge in enumerate(centre_edges):
+            id1 = unique_verts.index(eachEdge[0].index())
+            id2 = unique_verts.index(eachEdge[1].index())
+            editor.add_cell(idx, np.array((id1, id2), dtype=np.uintp))
+            network.addVessel(chaste.population.vessel.Vessel([nodes[id1], nodes[id2]]))
+            
+        # Add extensions
+        editor.close()
+        centre_mesh.init()
+        centre_mesh.order()
+        
+        return centre_mesh, network

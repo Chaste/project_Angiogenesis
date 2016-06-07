@@ -313,3 +313,236 @@ class BoundaryExtractor2d():
     def get_output(self):
         
         return self.boundary_edges
+    
+"""
+Convert meshes between Tri/Tetgen and Dolfin formats
+"""
+
+import numpy as np
+import dolfin as df
+import vtk
+
+try:
+   import cPickle as pickle
+except:
+   import pickle
+    
+class DolfinConverter3d():
+    
+    def __init__(self):
+        pass
+        
+    def generate(self, mesh, regions_set = False):
+        editor = df.MeshEditor()
+        dolfin_mesh = df.Mesh()
+        
+        node_locations = mesh.GetNodeLocations()
+        connectivity = mesh.GetConnectivity()
+        
+        editor.open(dolfin_mesh, 3, 3)
+        editor.init_vertices(len(node_locations))
+        editor.init_cells(len(connectivity))
+        
+        for i, p in enumerate(node_locations):
+            editor.add_vertex(i, np.array(p))
+        
+        for i, t in enumerate(connectivity):
+            editor.add_cell(i, np.array(t, dtype=np.uintp))
+        editor.close()
+        dolfin_mesh.init()
+        return dolfin_mesh
+    
+    def generate_from_file(self, path, element_label_path, regions_set = False):
+        mesh = df.Mesh(path)
+        mesh.init() # establish connectivities
+        
+        with open(element_label_path, 'rb') as handle:
+            data  = pickle.load(handle)
+        element_labels = data
+        
+        # set up the vessel and tissue domains
+        numcells = len(mesh.cells())
+        mesh_func = df.MeshFunction("size_t", mesh, 3)
+        mesh_func.set_all(0)
+        for idx in range(numcells):
+            mesh_func[idx] = int(element_labels[idx])
+            
+        return mesh, mesh_func
+    
+class Marker3d():
+    
+    def __init__(self, mesh, domains=None, domain_labels=None, boundarys=None, boundary_labels = None):
+        self.mesh = mesh
+        self.domains = domains
+        self.domain_labels = domain_labels
+        self.boundarys = boundarys
+        self.boundary_labels = boundary_labels
+        
+    def generate(self):
+        
+        # Mark the domains
+        mesh_func = df.MeshFunction("size_t", self.mesh, 3)
+        
+#         if len(self.element_labels)>0:
+#             num_cells = len(self.mesh.cells())
+#             for idx in range(num_cells):
+#                 mesh_func[idx] = int(self.element_labels[idx])
+    
+        # Set up facet markers
+        boundaries = df.FacetFunction("size_t", self.mesh)
+        boundaries.set_all(0)
+        
+        if self.boundarys is not None:
+            for idx, eachBoundary in enumerate(self.boundarys):
+                eachBoundary.mark(boundaries, self.boundary_labels[idx])
+                
+        edges = df.EdgeFunction("size_t", self.mesh)
+        edges.set_all(0)
+
+        return mesh_func, boundaries, edges
+    
+class BoundaryExtract():
+    
+    def __init__(self):
+
+        pass
+    
+    def generate_lines(self, file_path, label):
+        
+        reader = vtk.vtkXMLUnstructuredGridReader()
+        reader.SetFileName(file_path)
+        reader.Update()
+        
+        threshold = vtk.vtkThreshold()
+        threshold.SetInputConnection(reader.GetOutputPort())
+        threshold.ThresholdBetween(label, label)
+        threshold.Update()
+        
+        connectivity = vtk.vtkConnectivityFilter()
+        connectivity.SetInputConnection(threshold.GetOutputPort())
+        connectivity.SetExtractionModeToAllRegions()
+        connectivity.ColorRegionsOn()
+        connectivity.Update()
+        
+        surface = vtk.vtkGeometryFilter()
+        surface.SetInputConnection(connectivity.GetOutputPort())
+        surface.Update()
+        
+        points = surface.GetOutput().GetPoints()
+        num_points = surface.GetOutput().GetNumberOfPoints()   
+        point_label_array = surface.GetOutput().GetPointData().GetArray("RegionId")
+        point_locs = []
+        point_connectivity = []
+        point_labels = []
+        
+        for i in range(num_points):
+            point_locs.append([points.GetPoint(i)[0], points.GetPoint(i)[1]])
+            point_connectivity.append(0)
+            point_labels.append(int(point_label_array.GetTuple1(i)))
+                   
+        numCells = surface.GetOutput().GetNumberOfLines()  
+        cellArray = surface.GetOutput().GetLines()
+        cellArray.InitTraversal()
+        segList = vtk.vtkIdList()
+            
+        for i in range(numCells): 
+            cellArray.GetNextCell(segList)
+            for j in range(0, segList.GetNumberOfIds()):
+                seg_id = segList.GetId(j)
+                point_connectivity[int(seg_id)] += 1
+                
+        # Get point ids
+        point_set = list(set(point_labels))
+        region_points = []
+        for eachRegion in point_set:
+            my_points = []
+            for idx, eachPoint in enumerate(point_labels):
+                if eachPoint == eachRegion:
+                    if point_connectivity[idx] == 1:
+                        my_points.append(point_locs[idx])
+            region_points.append(my_points)
+            
+        return region_points
+    
+class BoundaryExtract3d():
+    
+    def __init__(self):
+
+        self.surface = None
+        self.regions = None
+        self.labels = None
+    
+    def update(self):
+        
+        self.regions = []
+        for eachLabel in self.labels :
+            threshold = vtk.vtkThreshold()
+            threshold.SetInput(self.surface)
+            threshold.SetInputArrayToProcess(0, 0, 0, "vtkDataObject::FIELD_ASSOCIATION_CELLS", "CellEntityIds")
+            threshold.ThresholdBetween(eachLabel, eachLabel)
+            threshold.Update()
+        
+            surface = vtk.vtkGeometryFilter()
+            surface.SetInputConnection(threshold.GetOutputPort())
+            surface.Update()
+            
+            # Triangulate
+            triangle = vtk.vtkTriangleFilter()
+            triangle.SetInputConnection(surface.GetOutputPort())
+            triangle.Update()
+        
+            su = vtk.vtkLinearSubdivisionFilter()
+            su.SetInputConnection(triangle.GetOutputPort())
+            su.SetNumberOfSubdivisions(3)
+            su.Update()
+            
+            self.regions.append(su.GetOutput())
+            
+    def get_output(self):
+        
+        return self.regions
+    
+class FaceBoundary(df.SubDomain):
+    
+    def set_label(self, label, boundaries, tol = 1.e-3):
+        self.label = label
+        self.tol = tol
+        self.boundary = boundaries[label]
+        self.locator = vtk.vtkKdTreePointLocator()
+        self.locator.SetDataSet(self.boundary)
+        self.points = self.boundary.GetPoints()    
+        
+    def inside(self, x, on_boundary):
+        
+        inside = False
+        
+        if len(x) == 2:
+            position = np.array((x[0], x[1], 0.0))
+        else:
+            position = np.array(x)
+            
+        closest_id = self.locator.FindClosestPoint(position)
+        dist = np.linalg.norm(np.array(self.points.GetPoint(closest_id)) - position)
+        
+        return dist <= self.tol
+        
+def write_meshes(mesh, domain_markers, boundary_markers, output_directory, prefix):
+     
+    # Save meshes and domains to VTK and XML files
+    file = df.File(output_directory + "/" + prefix + "_mesh.pvd")
+    file << mesh
+      
+    file = df.File(output_directory + "/" + prefix + "_domains.pvd")
+    file << domain_markers
+      
+    file = df.File(output_directory + "/" + prefix + "_boundaries.pvd")
+    file << boundary_markers
+      
+    file = df.File(output_directory + "/" + prefix + "_mesh.xml")
+    file << mesh
+      
+    file = df.File(output_directory + "/" + prefix + "_domains.xml")
+    file << domain_markers
+      
+    file = df.File(output_directory + "/" + prefix + "_boundaries.xml")
+    file << boundary_markers 

@@ -102,7 +102,7 @@ if chaste.gui.properties._have_wx:
             self.surface = self.tool.get_output(surface = True)
             self.boundaries = self.tool.get_output(surface = False)
             
-            glyph = chaste.plot.two.glyphs.VtkLinesGlyph(self.boundaries)
+            glyph = chaste.visualization.two.glyphs.VtkLinesGlyph(self.boundaries)
             self.canvas.add_glyph(glyph, clear = False)
             
             logging.info("Extracted Surfaces")
