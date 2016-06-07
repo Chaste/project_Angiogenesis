@@ -1,5 +1,5 @@
 from meshpy.triangle import MeshInfo, build
-import chaste.utility.standalone_bases as bases
+import chaste.utility.bases as bases
 import chaste.interfaces.converters.mesh as converters
 
 class ChasteGeometryMesher2d(bases.SimpleIOBase):

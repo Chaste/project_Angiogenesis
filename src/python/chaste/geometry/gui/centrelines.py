@@ -66,7 +66,7 @@ class Centrelines2dPanel(chaste.gui.panels.base.Panel):
     def on_load_file(self, event = None):
         
         self.file_name = self.get_file_name()
-        self.surface = chaste.utility.rwc.read_vtk_surface(self.file_name)
+        self.surface = chaste.utility.input_output.read_vtk_surface(self.file_name)
  
         glyph = chaste.visualization.two.glyphs.VtkLinesGlyph(self.surface)
         

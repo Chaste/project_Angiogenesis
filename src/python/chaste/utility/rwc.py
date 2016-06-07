@@ -5,7 +5,7 @@ except:
    import pickle
 import pandas
 import vtk
-from vmtk import pypes
+import chaste.utility.recursion
 
 def dir_maker(file_path):
     if not os.path.exists(os.path.dirname(file_path)):
@@ -15,17 +15,48 @@ def dir_maker(file_path):
             if exc.errno != errno.EEXIST:
                 raise
 
-def read_csv(filename, headers = None):
-    if headers is None:
-        return pandas.read_csv(filename, [], header=0)
-    else:
-        return pandas.read_csv(filename, headers, header=0)
+def write(feature, filename):
     
-def tiff_to_vti(filename):
-    myArguments = 'vmtkimagereader -ifile ' + filename
-    my_pype = pypes.PypeRun(myArguments)
+    dir_maker(filename)
+    
+    if "vtk" in feature.__class__.__name__:
+        writer = chaste.utility.recursion.get_class("vtk.vtkXML" + feature.__class__.__name__[3:] + "Writer")()
+        writer.SetFileName(filename)
+        if vtk.VTK_MAJOR_VERSION <= 5:
+            writer.SetInput(feature)
+        else:
+            writer.SetInputData(feature)
+        writer.Write() 
+        return
+    
+    if "Shell" in feature.__class__.__name__:
+        feature.exportStep(filename)
+        return
+    
+def write_pickle(filename, data):
+    with open(filename, 'wb') as handle:
+        pickle.dump(data, handle)
         
-    return my_pype.GetScriptObject('vmtkimagereader','0').Image
+def read(filename):
+    
+    _, extension = os.path.splitext(filename)
+    
+    vtk_extensions = [".vtp", ".vtu", ".vti", ".tiff", ".tif"]
+    vtk_readers = ["vtkXMLPolyData", "vtkXMLUnstructuredGrid", "vtkXMLImageData", "vtkTIFFReader", "vtkTIFFReader"]
+    
+    if extension.upper() in (name.upper() for name in vtk_extensions):
+        reader = chaste.utility.recursion.get_class("vtk." + vtk_readers[vtk_extensions.index(extension)] + "Reader")()
+        reader.SetFileName(filename)
+        reader.Update()
+        return reader.GetOutput()
+    
+    if extension.upper() == ".CSV":
+        return pandas.read_csv(filename, [], header=0)
+    
+def read_pickle(filename):
+    with open(filename, 'rb') as handle:
+        data  = pickle.load(handle)
+    return data
     
 def read_vtk_surface(filename, clean = True, triangulate = True):
     reader = vtk.vtkXMLPolyDataReader()
@@ -47,41 +78,3 @@ def read_vtk_surface(filename, clean = True, triangulate = True):
         current = clean
         
     return current.GetOutput()
-
-def read_vtk_image(filename):
-    
-    reader = vtk.vtkXMLImageDataReader()
-    reader.SetFileName(filename)
-    reader.Update()
-    return reader.GetOutput()
-
-def read_vtk_unstructured(filename):
-    
-    reader = vtk.vtkXMLUnstructuredGridReader()
-    reader.SetFileName(filename)
-    reader.Update()
-    return reader.GetOutput()
-
-def write_vtk_surface(filename, surface):
-    
-    writer = vtk.vtkXMLPolyDataWriter()
-    writer.SetFileName(filename)
-    if vtk.VTK_MAJOR_VERSION <= 5:
-        writer.SetInput(surface)
-    else:
-        writer.SetInputData(surface)
-    writer.Write() 
-    
-def write_geometry(filename, geometry):
-    
-    geometry.exportStep(filename)
-    
-def dump_pickle(filename, data):
-    with open(filename, 'wb') as handle:
-        pickle.dump(data, handle)
-        
-def load_pickle(filename):
-    with open(filename, 'rb') as handle:
-        data  = pickle.load(handle)
-    return data
-    
