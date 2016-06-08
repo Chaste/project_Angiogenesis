@@ -15,6 +15,6 @@ _colors = {"background": (0, 0, 0, 1.0),
 _tools = [("ModelBuilder", "chaste.gui.model_builder.ModelBuilder"),
           ("BoundaryMarker2d", "chaste.geometry.gui.labelling.BoundaryMarker2d"), 
           ("Centrelines2d", "chaste.geometry.gui.centrelines.Centrelines2d"),
-          ("SurfaceFromImage2d", "chaste.image.converters.SurfaceFromImage2d"),
-          ("ImageViewer2d", "chaste.image.viewer.ImageViewer2d")]
+          ("VtkImageToPolyData2d", "chaste.image.gui.image_to_surface.VtkImageToPolyData2d"),
+          ("ImageViewer2d", "chaste.image.gui.viewer.ImageViewer2d")]
 #          ("Mesh2d", "chaste.mesh.gui.meshers.Mesh2d")]

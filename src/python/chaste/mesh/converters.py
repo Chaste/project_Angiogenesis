@@ -114,6 +114,48 @@ class ChasteMeshToVtkUnstructured(bases.SimpleIOBase):
             self.output.InsertNextCell(vtkElement.GetCellType(), vtkElement.GetPointIds())
         return self.output
     
+class DolfinConverter3d():
+    
+    def __init__(self):
+        pass
+        
+    def generate(self, mesh, regions_set = False):
+        editor = df.MeshEditor()
+        dolfin_mesh = df.Mesh()
+        
+        node_locations = mesh.GetNodeLocations()
+        connectivity = mesh.GetConnectivity()
+        
+        editor.open(dolfin_mesh, 3, 3)
+        editor.init_vertices(len(node_locations))
+        editor.init_cells(len(connectivity))
+        
+        for i, p in enumerate(node_locations):
+            editor.add_vertex(i, np.array(p))
+        
+        for i, t in enumerate(connectivity):
+            editor.add_cell(i, np.array(t, dtype=np.uintp))
+        editor.close()
+        dolfin_mesh.init()
+        return dolfin_mesh
+    
+    def generate_from_file(self, path, element_label_path, regions_set = False):
+        mesh = df.Mesh(path)
+        mesh.init() # establish connectivities
+        
+        with open(element_label_path, 'rb') as handle:
+            data  = pickle.load(handle)
+        element_labels = data
+        
+        # set up the vessel and tissue domains
+        numcells = len(mesh.cells())
+        mesh_func = df.MeshFunction("size_t", mesh, 3)
+        mesh_func.set_all(0)
+        for idx in range(numcells):
+            mesh_func[idx] = int(element_labels[idx])
+            
+        return mesh, mesh_func
+    
 class TriMeshToDolfin(bases.SimpleIOBase):
     
     def __init__(self):

@@ -1,7 +1,7 @@
 import os 
 import logging
 import wx
-import chaste.geometry.labelling
+import chaste.geometry.boundary_markers
 import chaste.utility.readwrite
 import chaste.gui.panels.base
 import chaste.interfaces.vtk_tools.glyphs
@@ -106,7 +106,7 @@ class BoundaryMarker2dPanel(chaste.gui.panels.base.Panel):
         
     def setup_tool(self):
         
-        self.tool = chaste.geometry.labelling.BoundaryMarker2d()
+        self.tool = chaste.geometry.boundary_markers.BoundaryMarker2d()
         
     def run_tool(self):
         

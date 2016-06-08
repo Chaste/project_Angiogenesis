@@ -1,20 +1,16 @@
-import os
 import logging
+import os
 import wx
-import chaste.utility
-import chaste.population.vessel.glyphs
-import chaste.gui.panels.base
-import chaste.geometry.centreline_calculators2d
-import chaste.interfaces.vtk_tools.glyphs
 
-class Centrelines2dPanel(chaste.gui.panels.base.Panel):
+import chaste.utility.readwrite
+import chaste.interfaces.vtk_tools.glyphs
+import chaste.gui.panels.base
+import chaste.image.image_to_surface
+
+class VtkImageToPolyData2dPanel(chaste.gui.panels.base.Panel):
     
     ''' 
     Default panel
-    
-    Attributes
-    ----------
-    
     '''  
     
     def __init__(self, parent):
@@ -24,7 +20,7 @@ class Centrelines2dPanel(chaste.gui.panels.base.Panel):
         '''
         
         chaste.gui.panels.base.Panel.__init__(self, parent)
-        self.name = "Centrelines2d"
+        self.name = "VtkImageToPolyData2d"
         
     def add_controls(self):
         
@@ -35,7 +31,7 @@ class Centrelines2dPanel(chaste.gui.panels.base.Panel):
         self.select_input_file = wx.Button(parent = self, label="Load Surface File")
         self.file_label = wx.StaticText(parent = self, label="Input File: ")
         self.file_text = wx.StaticText(parent = self, label = "None")
-        self.save_input_file = wx.Button(parent = self, label="Save File")
+        self.save_input_file = wx.Button(parent = self, label="Save Boundary File")
 
     def size_controls(self):
         
@@ -67,36 +63,36 @@ class Centrelines2dPanel(chaste.gui.panels.base.Panel):
     def on_load_file(self, event = None):
         
         self.file_name = self.get_file_name()
-        self.surface = chaste.utility.readwrite.read_vtk_surface(self.file_name)
- 
-        glyph = chaste.interfaces.vtk_tools.glyphs.VtkLinesGlyph(self.surface)
-        
-        self.canvas = self.GetTopLevelParent().get_2d_canvas(show = False)
-        self.canvas.add_glyph(glyph, True)
+        self.canvas = self.GetTopLevelParent().get_2d_canvas(show = True)
+        self.canvas.add_tiff(self.file_name)
          
-        logging.info("Loaded Boundary File: " + str(self.file_name))
+        logging.info("Loaded Image File: " + str(self.file_name))
         
         self.setup_tool()
         self.run_tool()
         
     def on_save_file(self, event = None):
         
-        file_mod = os.path.splitext(self.file_name)[0] + "_centres.vtp"
-        self.network.write(str(file_mod))
+        file_mod = os.path.splitext(self.file_name)[0] + "_surface.vtp"
+        chaste.utility.readwrite.write(self.surface, file_mod)
         
-        logging.info("Saved Centreline File to : " + str(file_mod))
+        file_mod = os.path.splitext(self.file_name)[0] + "_boundaries.vtp"
+        chaste.utility.readwrite.write(self.boundaries, file_mod)
+        
+        logging.info("Saved Surface File to : " + str(file_mod))
         
     def setup_tool(self):
         
-        self.tool = chaste.geometry.centreline_calculators2d.Centrelines2d()
+        self.tool = chaste.image.image_to_surface.VtkImageToPolyData2d()
+        self.tool.input = chaste.utility.readwrite.read(self.file_name)
         
     def run_tool(self):
         
-        self.tool.set_surface(self.surface)
         self.tool.update()
-        self.network = self.tool.get_output()
+        self.surface = self.tool.surface
+        self.boundaries = self.tool.output
         
-        glyph = chaste.population.vessel.glyphs.VesselNetworkGlyph(self.network)
+        glyph = chaste.interfaces.vtk_tools.glyphs.VtkLinesGlyph(self.boundaries)
         self.canvas.add_glyph(glyph, clear = False)
         
-        logging.info("Extracted Centreline")
+        logging.info("Extracted Surfaces")

@@ -2,7 +2,7 @@ import numpy as np
 import vtk
 
 import chaste.geometry.converters.other
-import chaste.geometry.labelling
+import chaste.geometry.boundary_markers
 
 class FlowExtension2d():
     
@@ -125,7 +125,7 @@ class FlowExtension2d():
                 cellArray.InsertNextCell(line) 
                 
         # re_label the boundaries
-        marker = chaste.geometry.labelling.BoundaryMarker2d()
+        marker = chaste.geometry.boundary_markers.BoundaryMarker2d()
         marker.surface = self.extended_surface
         marker.inlet_points = self.new_inlet_points
         marker.outlet_points = self.new_outlet_points

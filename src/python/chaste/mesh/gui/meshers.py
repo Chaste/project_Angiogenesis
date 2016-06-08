@@ -4,8 +4,8 @@ import wx
 import dolfin as df
 
 import chaste.utility.readwrite
-import chaste.geometry.labelling
-import chaste.mesh.meshers
+import chaste.geometry.boundary_markers
+import chaste.mesh.meshing2d
 import chaste.mesh.converters
 import chaste.plot.two.glyphs
    
@@ -127,7 +127,7 @@ class Mesh2dPanel(chaste.gui.panels.base.Panel):
         self.file_name = self.get_file_name()
         self.surface = chaste.utility.readwrite.read_vtk_surface(self.file_name, True, True)
         
-        bound_extractor = chaste.geometry.labelling.BoundaryExtractor2d()
+        bound_extractor = chaste.geometry.boundary_markers.BoundaryExtractor2d()
         bound_extractor.labels = [1,2]
         bound_extractor.surface = self.surface
         bound_extractor.update()
@@ -201,7 +201,7 @@ class Mesh2dPanel(chaste.gui.panels.base.Panel):
         
     def on_save_file(self, event = None):
         
-        converter = chaste.mesh.meshers.DolfinConverter2d()
+        converter = chaste.mesh.meshing2d.DolfinConverter2d()
         converter.boundary_edges = self.boundary_edges
         converter.domain_edges = self.domain_edges
         converter.network = self.network
@@ -309,7 +309,7 @@ class Mesh2dPanel(chaste.gui.panels.base.Panel):
         
     def setup_tool(self):
         
-        self.tool = chaste.mesh.meshers.Mesher2d()
+        self.tool = chaste.mesh.meshing2d.Mesher2d()
         if self.surface is not None:
             self.tool.set_vtk_surface(self.surface)
         if self.domain is not None:

@@ -1,6 +1,6 @@
 import vtk
 import chaste.population.vessel
-import chaste.utility.standalone_bases as bases
+import chaste.utility.bases as bases
 
 class NetworkToPlanarBoundaries(bases.SimpleIOBase):
     

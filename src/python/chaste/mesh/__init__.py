@@ -7,4 +7,4 @@
 """
 
 from _mesh import *
-from tools import *
+from chaste.mesh.numpy_tools import *
