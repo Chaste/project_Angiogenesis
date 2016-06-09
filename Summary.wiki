@@ -3,14 +3,20 @@
 The Angiogenesis project is a Chaste add-on with functionality for modelling blood vessels. It is written in C++ and Python.
 
 = Installation =
-The project can be used directly as a C++ library or else as a Python package, following the generation of bindings. 
-
+The project can be used directly as a C++ library or else as a Python package.
 First, Chaste dependencies need to be built from source following the [wiki:InstallGuides/InstallGuide Chaste Install Guide]. 
-
 The project only supports the development version of Chaste, the source can be obtained following instructions [wiki:ChasteGuides/AccessCodeRepository here].
 
-The project uses the new CMake build system for Chaste, details are [wiki:ChasteGuides/CmakeBuildGuide here]. Prior to starting the build 
-two small changes are needed to the file `CMakeLists.txt` in the Chaste source directory to allow for Python binding generation.
+The C++ libraries can be built using either the standard Chaste Scons build system, see [wiki:ChasteGuides/DeveloperBuildGuide Chaste Developer Build Guide] and 
+[wiki:InstallGuides/CheckoutUserProject Chaste User Project Build Guide] or the [wiki:ChasteGuides/CmakeBuildGuide new CMake build system]. For the latter the steps prior to 
+building in the [wiki:InstallGuides/CheckoutUserProject Chaste User Project Build Guide] still need to be followed.
+
+The Python package can only be built using the CMake build system. The [wiki:ChasteGuides/CmakeBuildGuide CMake build guide] user project instructions can be used after the following steps are taken:
+* Install Boost Python. This can be done by adding `python` to the list of libraries to be built when following the Boost build instructions [wiki:InstallGuides/InstallGuide here].
+* Find the Python shared library `libpython2.x.so` on your system. A likely place is `usr/lib`/. If you are using a virtual environement, for example with `pyenv` you may need to 
+take extra steps to ensure a shared library is built when building Python.
+* The Python modules need to be linked with the Boost Python and system Python libraries. To do this some changes to the `CMakeLists.txt` in the Chaste source directory 
+are needed. 
 
 Find the line:
 {{{
@@ -23,24 +29,19 @@ and change it to:
 find_package(Boost COMPONENTS filesystem system serialization python REQUIRED)
 }}}
 
-
 Add the following on the next line:
 
 {{{
 list(APPEND Chaste_LINK_LIBRARIES "path-to-lib/libpython2.x.so").
 }}}
 
-where `path-to-lib/libpython2.x.so` is the path to your Python library (often it is something like `/usr/lib/libpython2.x.so`).
+where `path-to-lib/libpython2.x.so` is the path to your Python shared library.
 
-Check out the source code for the project `Angiogenesis` following [wiki:InstallGuides/CheckoutUserProject this guide], including the instructions for creating a
-symbolic link to the Chaste source folder. Now, follow the instructions for building with CMake [wiki:ChasteGuides/CmakeBuildGuide here]. Once configured, the 
-Angiogenesis library, all unit tests and the build targets for the Python bindings can be built by doing:
+The [wiki:ChasteGuides/CmakeBuildGuide CMake build guide] can now be followed as normal. Specifically, the Angiogenesis library, all unit tests and the build targets for the Python bindings can be built by doing:
 
 {{{
 make project_Angiogenesis
 }}}
-
-If you are only interested in using the C++ version you can now move to the next Section on Usage.
 
 The Python package `chaste` is located in `Chaste/projects/Angiogenesis/src/python`. To use most of the functionality it is neccessary to build bindings for the C++ code
 and move the resulting Python modules to the correct locations in the package. To do so go to the Chaste source directory and do:
