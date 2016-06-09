@@ -62,11 +62,6 @@ class VascularTumourSolver
     boost::shared_ptr<VascularNetwork<DIM> > mpNetwork;
 
     /**
-     * The end time for solves if used in standalone
-     */
-    double mEndTime;
-
-    /**
      * The frequency of file based output
      */
     unsigned mOutputFrequency;
@@ -132,16 +127,20 @@ public:
     std::vector<boost::shared_ptr<AbstractHybridSolver<DIM> > > GetHybridSolvers();
 
     /**
+     * Increment one step in time
+     */
+    void Increment();
+
+    /**
+     * Run until the specified end time
+     */
+    void Run();
+
+    /**
      * Set the angiogenesis solver for the network
      * @param pAngiogenesisSolver the solver for structural adaptation
      */
     void SetAngiogenesisSolver(boost::shared_ptr<AngiogenesisSolver<DIM> > pAngiogenesisSolver);
-
-    /**
-     * Set the simulation end time
-     * @param time the simulation end time
-     */
-    void SetEndTime(double time);
 
     /**
      * Set the flow solver for the network
@@ -167,11 +166,17 @@ public:
      */
     void SetStructuralAdaptationSolver(boost::shared_ptr<StructuralAdaptationSolver<DIM> > pStructuralAdaptationSolver);
 
+    /**
+     * This is called by the VascularTumourModifier to set up the simulation
+     * @param rCellPopulation the cell population
+     * @param rDirectory the output directory for writing to
+     */
     void SetupFromModifier(AbstractCellPopulation<DIM,DIM>& rCellPopulation, const std::string& rDirectory);
 
+    /**
+     * This should be called before running in standalone mode
+     */
     void Setup();
-
-    void UpdateCellData(std::vector<std::string> labels);
 
     /**
      * Set the vessel network
@@ -180,21 +185,16 @@ public:
     void SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork);
 
     /**
-     * Increment one step in time
-     */
-    void Increment();
-
-    /**
-     * Run until the specified end time
-     */
-    void Run();
-
-    /**
      * Set the regression solver
      * @pRegressionSolver the regression solver for the network
      */
     void SetRegressionSolver(boost::shared_ptr<RegressionSolver<DIM> > pRegressionSolver);
 
+    /**
+     * Update the cell data with any PDE solutions corresponding to the supplied labels
+     * @param labels labels corresponding to cell data that is to be updated
+     */
+    void UpdateCellData(std::vector<std::string> labels);
 
 };
 

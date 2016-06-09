@@ -39,14 +39,14 @@
 template<unsigned DIM>
 StructuralAdaptationSolver<DIM>::StructuralAdaptationSolver() :
         AbstractStructuralAdaptationSolver<DIM>(),
-        mpHaematocritCalculator(new ConstantHaematocritSolver<DIM>()),
-        mpFlowSolver(new FlowSolver<DIM>()),
-        mpRadiusCalculator(new Alarcon03RadiusCalculator<DIM>()),
-        mpMetabolicStimulusCalculator(new Alarcon03MetabolicStimulusCalculator<DIM>()),
-        mpImpedanceCalculator(new PoiseuilleImpedanceCalculator<DIM>()),
-        mpMechanicalStimulusCalculator(new Alarcon03MechanicalStimulusCalculator<DIM>()),
-        mpViscosityCalculator(new Alarcon03ViscosityCalculator<DIM>()),
-        mpWallShearStressCalculator(new Alarcon03WallShearStressCalculator<DIM>())
+        mpHaematocritCalculator(new ConstantHaematocritSolver<DIM>),
+        mpFlowSolver(new FlowSolver<DIM> ),
+        mpRadiusCalculator(new Alarcon03RadiusCalculator<DIM> ),
+        mpMetabolicStimulusCalculator(new Alarcon03MetabolicStimulusCalculator<DIM> ),
+        mpImpedanceCalculator(new PoiseuilleImpedanceCalculator<DIM> ),
+        mpMechanicalStimulusCalculator(new Alarcon03MechanicalStimulusCalculator<DIM> ),
+        mpViscosityCalculator(new Alarcon03ViscosityCalculator<DIM> ),
+        mpWallShearStressCalculator(new Alarcon03WallShearStressCalculator<DIM> )
 {
 
 }
@@ -55,6 +55,13 @@ template<unsigned DIM>
 StructuralAdaptationSolver<DIM>::~StructuralAdaptationSolver()
 {
 
+}
+
+template<unsigned DIM>
+boost::shared_ptr<StructuralAdaptationSolver<DIM> > StructuralAdaptationSolver<DIM>::Create()
+{
+    MAKE_PTR(StructuralAdaptationSolver<DIM>, pSelf);
+    return pSelf;
 }
 
 template<unsigned DIM>

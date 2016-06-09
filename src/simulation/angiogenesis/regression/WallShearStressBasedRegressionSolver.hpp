@@ -72,6 +72,12 @@ public:
     virtual ~WallShearStressBasedRegressionSolver();
 
     /**
+     * Factor constructor. Construct a new instance of the class and return a shared pointer to it.
+     * @return a pointer to a new instance of the class.
+     */
+    static boost::shared_ptr<WallShearStressBasedRegressionSolver<DIM> > Create();
+
+    /**
      *  Setter for mMaxTimeWithLowWss parameter.
      *  @param time the max time for low WSS
      */

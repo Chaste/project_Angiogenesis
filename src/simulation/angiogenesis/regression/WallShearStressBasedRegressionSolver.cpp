@@ -52,6 +52,13 @@ WallShearStressBasedRegressionSolver<DIM>::~WallShearStressBasedRegressionSolver
 }
 
 template<unsigned DIM>
+boost::shared_ptr<WallShearStressBasedRegressionSolver<DIM> > WallShearStressBasedRegressionSolver<DIM>::Create()
+{
+    MAKE_PTR(WallShearStressBasedRegressionSolver<DIM>, pSelf);
+    return pSelf;
+}
+
+template<unsigned DIM>
 void WallShearStressBasedRegressionSolver<DIM>::SetMaximumTimeWithLowWallShearStress(double time)
 {
     assert(time > 0);

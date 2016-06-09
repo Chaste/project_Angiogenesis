@@ -576,6 +576,12 @@ std::map<std::string, double> Vessel<DIM>::GetVtkData() const
     vtk_data["Vessel Flow Rate"] = GetFlowRate();
     vtk_data["Vessel Absolute Flow Rate"] = std::abs(GetFlowRate());
     vtk_data["Vessel Viscosity"] = GetViscosity();
+    double wss = 0.0;
+    for (unsigned i = 0; i < mSegments.size(); i++)
+    {
+        wss += mSegments[i]->GetFlowProperties()->GetWallShearStress();
+    }
+    vtk_data["Vessel Wall Shear Stress"] = wss/double(mSegments.size());
     return vtk_data;
 }
 

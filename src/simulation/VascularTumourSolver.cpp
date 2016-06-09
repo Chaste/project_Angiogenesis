@@ -43,7 +43,6 @@
 template<unsigned DIM>
 VascularTumourSolver<DIM>::VascularTumourSolver() :
         mpNetwork(),
-        mEndTime(10.0),
         mOutputFrequency(1),
         mpOutputFileHandler(),
         mHybridSolvers(),
@@ -62,16 +61,16 @@ VascularTumourSolver<DIM>::~VascularTumourSolver()
 }
 
 template<unsigned DIM>
-void VascularTumourSolver<DIM>::SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork)
-{
-    mpNetwork = pNetwork;
-}
-
-template<unsigned DIM>
 boost::shared_ptr<VascularTumourSolver<DIM> > VascularTumourSolver<DIM>::Create()
 {
     MAKE_PTR(VascularTumourSolver<DIM>, pSelf);
     return pSelf;
+}
+
+template<unsigned DIM>
+void VascularTumourSolver<DIM>::SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork)
+{
+    mpNetwork = pNetwork;
 }
 
 template<unsigned DIM>
@@ -85,110 +84,6 @@ std::vector<boost::shared_ptr<AbstractHybridSolver<DIM> > > VascularTumourSolver
 {
     return mHybridSolvers;
 }
-
-template<unsigned DIM>
-void VascularTumourSolver<DIM>::SetAngiogenesisSolver(boost::shared_ptr<AngiogenesisSolver<DIM> > pAngiogenesisSolver)
-{
-    mpAngiogenesisSolver = pAngiogenesisSolver;
-}
-
-template<unsigned DIM>
-void VascularTumourSolver<DIM>::SetEndTime(double time)
-{
-    mEndTime = time;
-}
-
-template<unsigned DIM>
-void VascularTumourSolver<DIM>::SetFlowSolver(boost::shared_ptr<FlowSolver<DIM> > pFlowSolver)
-{
-    mpFlowSolver = pFlowSolver;
-}
-
-template<unsigned DIM>
-void VascularTumourSolver<DIM>::SetOutputFileHandler(boost::shared_ptr<OutputFileHandler> pFileHandler)
-{
-    mpOutputFileHandler = pFileHandler;
-}
-
-template<unsigned DIM>
-void VascularTumourSolver<DIM>::SetOutputFrequency(unsigned frequency)
-{
-    mOutputFrequency = frequency;
-}
-
-template<unsigned DIM>
-void VascularTumourSolver<DIM>::SetupFromModifier(AbstractCellPopulation<DIM,DIM>& rCellPopulation, const std::string& rDirectory)
-{
-    // Set up an output file handler
-    mpOutputFileHandler = boost::shared_ptr<OutputFileHandler>(new OutputFileHandler(rDirectory));
-
-    // Set up all the hybrid solvers
-    for(unsigned idx=0; idx<mHybridSolvers.size(); idx++)
-    {
-        mHybridSolvers[idx]->SetCellPopulation(rCellPopulation);
-    }
-
-    Setup();
-}
-
-template<unsigned DIM>
-void VascularTumourSolver<DIM>::Setup()
-{
-    // Set up all the hybrid solvers
-    for(unsigned idx=0; idx<mHybridSolvers.size(); idx++)
-    {
-        mHybridSolvers[idx]->SetFileHandler(mpOutputFileHandler);
-        if(mpNetwork)
-        {
-            mHybridSolvers[idx]->SetVesselNetwork(mpNetwork);
-        }
-        mHybridSolvers[idx]->Setup();
-    }
-
-    // Set up the flow and structural adaptation solvers
-    if(mpStructuralAdaptationSolver)
-    {
-        EXCEPTION("Structural Adaptation is not implemented in this solver yet.");
-    }
-    else if(mpFlowSolver)
-    {
-        PoiseuilleImpedanceCalculator<DIM> impedance_calculator;
-        impedance_calculator.Calculate(mpNetwork);
-        mpFlowSolver->SetVesselNetwork(mpNetwork);
-        mpFlowSolver->SetUp();
-    }
-}
-
-template<unsigned DIM>
-void VascularTumourSolver<DIM>::SetStructuralAdaptationSolver(boost::shared_ptr<StructuralAdaptationSolver<DIM> > pStructuralAdaptationSolver)
-{
-    mpStructuralAdaptationSolver = pStructuralAdaptationSolver;
-}
-
-template<unsigned DIM>
-void VascularTumourSolver<DIM>::UpdateCellData(std::vector<std::string> labels)
-{
-    if(labels.size()==0)
-    {
-        //update everything
-        for(unsigned jdx=0; jdx<mHybridSolvers.size(); jdx++)
-        {
-            mHybridSolvers[jdx]->UpdateCellData();
-        }
-    }
-
-    for(unsigned idx=0; idx<labels.size(); idx++)
-    {
-        for(unsigned jdx=0; jdx<mHybridSolvers.size(); jdx++)
-        {
-            if(labels[idx]==mHybridSolvers[idx]->GetPde()->GetVariableName())
-            {
-                mHybridSolvers[jdx]->UpdateCellData();
-            }
-        }
-    }
-}
-
 template<unsigned DIM>
 void VascularTumourSolver<DIM>::Increment()
 {
@@ -197,7 +92,7 @@ void VascularTumourSolver<DIM>::Increment()
     // If there is a structural adaptation or flow problem solve it
     if(mpStructuralAdaptationSolver)
     {
-        EXCEPTION("Structural Adaptation is not implemented in this solver yet.");
+        mpStructuralAdaptationSolver->Solve();
     }
     else if(mpFlowSolver)
     {
@@ -272,11 +167,112 @@ void VascularTumourSolver<DIM>::Run()
     }
 
     Setup();
-
-    while(SimulationTime::Instance()->GetTime() < mEndTime)
+    while(!SimulationTime::Instance()->IsFinished())
     {
         Increment();
         SimulationTime::Instance()->IncrementTimeOneStep();
+    }
+}
+
+template<unsigned DIM>
+void VascularTumourSolver<DIM>::SetAngiogenesisSolver(boost::shared_ptr<AngiogenesisSolver<DIM> > pAngiogenesisSolver)
+{
+    mpAngiogenesisSolver = pAngiogenesisSolver;
+}
+
+template<unsigned DIM>
+void VascularTumourSolver<DIM>::SetFlowSolver(boost::shared_ptr<FlowSolver<DIM> > pFlowSolver)
+{
+    mpFlowSolver = pFlowSolver;
+}
+
+template<unsigned DIM>
+void VascularTumourSolver<DIM>::SetOutputFileHandler(boost::shared_ptr<OutputFileHandler> pFileHandler)
+{
+    mpOutputFileHandler = pFileHandler;
+}
+
+template<unsigned DIM>
+void VascularTumourSolver<DIM>::SetOutputFrequency(unsigned frequency)
+{
+    mOutputFrequency = frequency;
+}
+
+template<unsigned DIM>
+void VascularTumourSolver<DIM>::SetupFromModifier(AbstractCellPopulation<DIM,DIM>& rCellPopulation, const std::string& rDirectory)
+{
+    // Set up an output file handler
+    mpOutputFileHandler = boost::shared_ptr<OutputFileHandler>(new OutputFileHandler(rDirectory));
+
+    // Set up all the hybrid solvers
+    for(unsigned idx=0; idx<mHybridSolvers.size(); idx++)
+    {
+        mHybridSolvers[idx]->SetCellPopulation(rCellPopulation);
+    }
+
+    Setup();
+}
+
+template<unsigned DIM>
+void VascularTumourSolver<DIM>::Setup()
+{
+    // Set up all the hybrid solvers
+    for(unsigned idx=0; idx<mHybridSolvers.size(); idx++)
+    {
+        mHybridSolvers[idx]->SetFileHandler(mpOutputFileHandler);
+        if(mpNetwork)
+        {
+            mHybridSolvers[idx]->SetVesselNetwork(mpNetwork);
+        }
+        mHybridSolvers[idx]->Setup();
+    }
+
+    // Set up the flow and structural adaptation solvers
+    if(mpStructuralAdaptationSolver)
+    {
+        mpStructuralAdaptationSolver->SetVesselNetwork(mpNetwork);
+    }
+    else if(mpFlowSolver)
+    {
+        PoiseuilleImpedanceCalculator<DIM> impedance_calculator;
+        impedance_calculator.Calculate(mpNetwork);
+        mpFlowSolver->SetVesselNetwork(mpNetwork);
+        mpFlowSolver->SetUp();
+    }
+
+    if(mpRegressionSolver)
+    {
+        mpRegressionSolver->SetVesselNetwork(mpNetwork);
+    }
+}
+
+template<unsigned DIM>
+void VascularTumourSolver<DIM>::SetStructuralAdaptationSolver(boost::shared_ptr<StructuralAdaptationSolver<DIM> > pStructuralAdaptationSolver)
+{
+    mpStructuralAdaptationSolver = pStructuralAdaptationSolver;
+}
+
+template<unsigned DIM>
+void VascularTumourSolver<DIM>::UpdateCellData(std::vector<std::string> labels)
+{
+    if(labels.size()==0)
+    {
+        //update everything
+        for(unsigned jdx=0; jdx<mHybridSolvers.size(); jdx++)
+        {
+            mHybridSolvers[jdx]->UpdateCellData();
+        }
+    }
+
+    for(unsigned idx=0; idx<labels.size(); idx++)
+    {
+        for(unsigned jdx=0; jdx<mHybridSolvers.size(); jdx++)
+        {
+            if(labels[idx]==mHybridSolvers[idx]->GetPde()->GetVariableName())
+            {
+                mHybridSolvers[jdx]->UpdateCellData();
+            }
+        }
     }
 }
 

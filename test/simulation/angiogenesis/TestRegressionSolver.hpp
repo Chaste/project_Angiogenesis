@@ -43,6 +43,12 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "VascularNetwork.hpp"
 #include "WallShearStressBasedRegressionSolver.hpp"
 #include "AngiogenesisSolver.hpp"
+#include "SimulationTime.hpp"
+#include "VasculatureGenerator.hpp"
+#include "StructuralAdaptationSolver.hpp"
+#include "FlowSolver.hpp"
+#include "VascularTumourSolver.hpp"
+#include "OutputFileHandler.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
 
@@ -69,16 +75,109 @@ public:
         WallShearStressBasedRegressionSolver<2> regression_solver = WallShearStressBasedRegressionSolver<2>();
         regression_solver.SetVesselNetwork(p_network);
         regression_solver.SetLowWallShearStressThreshold(wss_threshold);
-        regression_solver.SetMaximumTimeWithLowWallShearStress(5);
+        regression_solver.SetMaximumTimeWithLowWallShearStress(3);
 
         // Run the solver for six 'increments'
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
         for(unsigned idx=0 ; idx<6; idx++)
         {
             regression_solver.Increment();
             TS_ASSERT(p_network->GetVessel(0)->HasRegressionTimerStarted());
+            SimulationTime::Instance()->IncrementTimeOneStep();
+        }
+        TS_ASSERT(p_network->GetVessel(0)->VesselHasRegressed());
+        TS_ASSERT_EQUALS(p_network->GetNumberOfVessels(), 0);
+    }
+
+    void TestMultiVesselRegression() throw(Exception)
+    {
+        // Set up a hexagonal vessel network
+        // Specify the network dimensions
+        double vessel_length = 80.0;
+
+        // Generate the network
+        VasculatureGenerator<2> p_network_generator;
+        boost::shared_ptr<VascularNetwork<2> > p_network = p_network_generator.GenerateHexagonalNetwork(
+                1000, 1000, vessel_length);
+
+        // Make some nodes
+        std::vector<ChastePoint<2> > points;
+        points.push_back(ChastePoint<2>(0, 0, 0)); // input
+        points.push_back(ChastePoint<2>(0, 1.0, 0)); // input
+
+        std::vector<boost::shared_ptr<VascularNode<2> > > nodes;
+        for (unsigned i = 0; i < points.size(); i++)
+        {
+            nodes.push_back(boost::shared_ptr<VascularNode<2> > (VascularNode<2>::Create(points[i])));
+        }
+        boost::shared_ptr<VesselSegment<2> > p_segment1 = VesselSegment<2>::Create(nodes[0], nodes[1]);
+
+        double impedance = 1.e14;
+        p_segment1->GetFlowProperties()->SetImpedance(impedance);
+        p_network->SetSegmentProperties(p_segment1);
+        std::vector<std::pair<double, double> > extents = p_network->GetExtents();
+        double y_middle = (extents[1].first + extents[1].second) / 2.0;
+        std::vector<boost::shared_ptr<Vessel<2> > >::iterator vessel_iterator;
+        std::vector<boost::shared_ptr<Vessel<2> > > vessels = p_network->GetVessels();
+        for (vessel_iterator = vessels.begin(); vessel_iterator != vessels.end(); vessel_iterator++)
+        {
+            if ((*vessel_iterator)->GetStartNode()->GetNumberOfSegments() == 1)
+            {
+                if ((*vessel_iterator)->GetStartNode()->GetLocation()[1] > y_middle)
+                {
+                    (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetIsInputNode(true);
+                    (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetPressure(3393);
+                }
+            }
+            if ((*vessel_iterator)->GetEndNode()->GetNumberOfSegments() == 1)
+            {
+                if ((*vessel_iterator)->GetEndNode()->GetLocation()[1] > y_middle)
+                {
+                    (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetIsInputNode(true);
+                    (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetPressure(3393);
+                }
+            }
+            if ((*vessel_iterator)->GetStartNode()->GetNumberOfSegments() == 1)
+            {
+                if ((*vessel_iterator)->GetStartNode()->GetLocation()[1] <= y_middle)
+                {
+                    (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetIsOutputNode(true);
+                    (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetPressure(1993);
+                }
+            }
+            if ((*vessel_iterator)->GetEndNode()->GetNumberOfSegments() == 1)
+            {
+                if ((*vessel_iterator)->GetEndNode()->GetLocation()[1] <= y_middle)
+                {
+                    (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetIsOutputNode(true);
+                    (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetPressure(1993);
+                }
+            }
         }
 
-        TS_ASSERT_EQUALS(p_network->GetNumberOfVessels(), 0);
+        // Set up a structural adaptation solver
+        boost::shared_ptr<StructuralAdaptationSolver<2> > p_adaptation_solver = StructuralAdaptationSolver<2>::Create();
+        p_adaptation_solver->SetTolerance(0.0001);
+        p_adaptation_solver->SetTimeIncrement(0.001);
+        p_adaptation_solver->SetMaxIterations(10000);
+
+        // Set up a regression solver
+        double wss_threshold = 2.5e-5;
+        boost::shared_ptr<WallShearStressBasedRegressionSolver<2> > p_regression_solver =
+                WallShearStressBasedRegressionSolver<2>::Create();
+        p_regression_solver->SetLowWallShearStressThreshold(wss_threshold);
+        p_regression_solver->SetMaximumTimeWithLowWallShearStress(3);
+
+        // Set up a vascular tumour solver
+        MAKE_PTR_ARGS(OutputFileHandler, p_handler, ("TestMultiVesselRegression"));
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
+
+        VascularTumourSolver<2> vt_solver = VascularTumourSolver<2>();
+        vt_solver.SetOutputFileHandler(p_handler);
+        vt_solver.SetStructuralAdaptationSolver(p_adaptation_solver);
+        vt_solver.SetVesselNetwork(p_network);
+        vt_solver.SetRegressionSolver(p_regression_solver);
+        vt_solver.Run();
     }
 };
 
