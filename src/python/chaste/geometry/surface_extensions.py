@@ -1,17 +1,17 @@
 import numpy as np
 import vtk
+import chaste.utility.bases as bases
 
-import chaste.geometry.converters.other
+import chaste.mesh.converters
 import chaste.geometry.boundary_markers
 
-class FlowExtension2d():
+class SurfaceExtension2d(bases.SimpleIOBase):
     
     def __init__(self):
+        super(SurfaceExtension2d, self).__init__()
         
         self.length_factor = 1.5
         self.division_length = 4.0
-        self.open_surface = None
-        self.extended_surface = None
         self.reference_surface = None
         self.edges = None
         self.midpoints = None
@@ -19,12 +19,25 @@ class FlowExtension2d():
     def update(self):
         
         # create a new vtk object
-        self.extended_surface = vtk.vtkPolyData() 
+        self.output = vtk.vtkPolyData() 
+
+        # open the input surface
+        threshold = vtk.vtkThreshold()
+        threshold.SetInput(self.input)
+        threshold.SetInputArrayToProcess(0, 0, 0, "vtkDataObject::FIELD_ASSOCIATION_POINTS", "InteriorLabel")
+        threshold.ThresholdBetween(0, 0)
+        threshold.Update()
+        polysurface = vtk.vtkGeometryFilter()
+        polysurface.SetInputConnection(threshold.GetOutputPort())
+        polysurface.Update()
+        open_surface = polysurface.GetOutput()
         
-        converter = chaste.geometry.other.VtkToTri()
-        old_points, old_edges = converter.generate(self.open_surface)
+        # convert to tri mesh format, easier to work with
+        converter = chaste.mesh.converters.VtkToTriMesh()
+        converter.input = open_surface
+        old_points, old_edges = converter.update()
         
-        bounds = self.open_surface.GetBounds()
+        bounds = open_surface.GetBounds()
         mid_x = (bounds[1] - bounds[0])/2.0 + bounds[0]
         mid_y = (bounds[3] - bounds[2])/2.0 + bounds[2]
         
@@ -41,16 +54,16 @@ class FlowExtension2d():
             line.GetPointIds().InsertId(1, pointId2)
             new_vtk_lines.InsertNextCell(line)
                 
-        self.extended_surface.SetPoints(new_vtk_points)
-        self.extended_surface.SetLines(new_vtk_lines)
+        self.output.SetPoints(new_vtk_points)
+        self.output.SetLines(new_vtk_lines)
         
         locator = vtk.vtkCellLocator()
         locator.SetDataSet(self.reference_surface)
         locator.BuildLocator()
  
         self.midpoints = []
-        self.new_inlet_points= []
-        self.new_outlet_points= []
+        new_boundary_points = []
+        new_boundary_labels = []
         
         for region_index, eachBoundaryLabel in enumerate(self.edges):
             for eachBoundary in eachBoundaryLabel:
@@ -77,23 +90,20 @@ class FlowExtension2d():
                     line_1_points.append(p1)
                     line_2_points.append(p2)
                     if idx == num_points -1:
-                        if region_index + 1 == 1:
-                            self.new_inlet_points.append((p1 + p2)/2.0)
-                        if region_index + 1 == 2:
-                            self.new_outlet_points.append((p1 + p2)/2.0)
-                        self.midpoints.append((p1 + p2)/2.0)
+                        new_boundary_points.append((p1 + p2)/2.0)
+                        new_boundary_labels.append(region_index)
                 
                 # Get the vtk ids of the start and end points
                 locator = vtk.vtkKdTreePointLocator()
-                locator.SetDataSet(self.extended_surface)
+                locator.SetDataSet(self.output)
                 probe_loc = np.array((edge_start_point[0], edge_start_point[1], 0.0))
                 pt_id_1 = locator.FindClosestPoint(probe_loc)
                 probe_loc = np.array((edge_end_point[0], edge_end_point[1], 0.0))
                 pt_id_2 = locator.FindClosestPoint(probe_loc)
                 
-                vtk_numPoints = self.extended_surface.GetNumberOfPoints()    
-                vtk_points = self.extended_surface.GetPoints()  
-                cellArray = self.extended_surface.GetLines()
+                vtk_numPoints = self.output.GetNumberOfPoints()    
+                vtk_points = self.output.GetPoints()  
+                cellArray = self.output.GetLines()
                 
                 for idx, eachPoint in enumerate(line_1_points):
                     loc = np.array((eachPoint[0], eachPoint[1], 0.0))
@@ -126,12 +136,9 @@ class FlowExtension2d():
                 
         # re_label the boundaries
         marker = chaste.geometry.boundary_markers.BoundaryMarker2d()
-        marker.surface = self.extended_surface
-        marker.inlet_points = self.new_inlet_points
-        marker.outlet_points = self.new_outlet_points
+        marker.input = self.output
+        marker.seed_points = new_boundary_points
+        marker.labels = new_boundary_labels
         marker.update()
-        self.extended_surface = marker.get_output()
-                 
-    def get_output(self):
-        return self.extended_surface
+        self.output = marker.output
         

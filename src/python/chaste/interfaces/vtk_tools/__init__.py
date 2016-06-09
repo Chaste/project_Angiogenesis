@@ -6,3 +6,5 @@
 
 
 """
+
+import vtk_tools

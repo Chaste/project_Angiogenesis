@@ -5,7 +5,7 @@ import wx
 import chaste.utility.readwrite
 import chaste.interfaces.vtk_tools.glyphs
 import chaste.gui.panels.base
-import chaste.image.image_to_surface
+import chaste.image.image_to_surface2d
 
 class VtkImageToPolyData2dPanel(chaste.gui.panels.base.Panel):
     
@@ -83,7 +83,7 @@ class VtkImageToPolyData2dPanel(chaste.gui.panels.base.Panel):
         
     def setup_tool(self):
         
-        self.tool = chaste.image.image_to_surface.VtkImageToPolyData2d()
+        self.tool = chaste.image.image_to_surface2d.VtkImageToPolyData2d()
         self.tool.input = chaste.utility.readwrite.read(self.file_name)
         
     def run_tool(self):

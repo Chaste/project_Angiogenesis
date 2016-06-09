@@ -10,6 +10,7 @@ class BoundaryMarker2d(bases.SimpleIOBase):
         self.boundary_edges = None
         self.seed_points = None
         self.feature_angle = (10.0 /180.0)*np.pi
+        self.labels = range(1,11)
     
     def unit_vector(self, vector):
         return vector / np.linalg.norm(vector)
@@ -44,11 +45,14 @@ class BoundaryMarker2d(bases.SimpleIOBase):
         can be optionally specified.
         """
         
-        converter = chaste.mesh.converters.VtkToTriMesh()
-        converter.input = self.input
-        points, edges = converter.update()
+        triangle = vtk.vtkTriangleFilter()
+        triangle.SetInput(self.input)
+        triangle.Update()
+        line_boundary = triangle.GetOutput()
         
-        print points, edges
+        converter = chaste.mesh.converters.VtkToTriMesh()
+        converter.input = line_boundary
+        points, edges = converter.update()
         
         # build point edge connectivity
         connectivity = []
@@ -75,6 +79,12 @@ class BoundaryMarker2d(bases.SimpleIOBase):
         boundary_points = np.zeros(len(points))
         
         for idx, eachStartPoint in enumerate(seed_neighbour_ids):
+            
+            if idx<len(self.labels):
+                this_label = self.labels[idx]
+            else:
+                this_label = len(self.labels)
+            
             cell_1 = connectivity[eachStartPoint][0]
             cell_2 = connectivity[eachStartPoint][1]
             
@@ -92,11 +102,11 @@ class BoundaryMarker2d(bases.SimpleIOBase):
             input_angle = self.angle_between(dir1, dir2)
             
             if abs(input_angle-np.pi)<=self.feature_angle:
-                cell_markers[cell_1] = idx
-                cell_markers[cell_2] = idx
+                cell_markers[cell_1] = this_label
+                cell_markers[cell_2] = this_label
                 
                 interior_points[eachStartPoint] = 1
-                boundary_points[eachStartPoint] = idx
+                boundary_points[eachStartPoint] = this_label
                 input_point = opposite1
                 previous_point = eachStartPoint
                 previous_dir = dir1
@@ -108,14 +118,14 @@ class BoundaryMarker2d(bases.SimpleIOBase):
                     new_angle = self.angle_between(previous_dir, opposite_dir)
                     
                     if abs(new_angle-np.pi)<=self.feature_angle or abs(new_angle)<=self.feature_angle:
-                        cell_markers[opposite_cell] = idx
+                        cell_markers[opposite_cell] = this_label
                         previous_point = input_point
                         input_point = opposite
                         previous_dir = opposite_dir
                         interior_points[previous_point] = 1
-                        boundary_points[previous_point] = idx
+                        boundary_points[previous_point] = this_label
                     else:
-                        boundary_points[input_point] = idx
+                        boundary_points[input_point] = this_label
                         edge_found = True
                         right_point = input_point 
                         break
@@ -131,22 +141,22 @@ class BoundaryMarker2d(bases.SimpleIOBase):
                     new_angle = self.angle_between(previous_dir, opposite_dir)
                     
                     if abs(new_angle-np.pi)<=self.feature_angle or abs(new_angle)<=self.feature_angle:
-                        cell_markers[opposite_cell] = idx
+                        cell_markers[opposite_cell] = this_label
                         previous_point = input_point
                         input_point = opposite
                         previous_dir = opposite_dir
                         interior_points[previous_point] = 1
-                        boundary_points[previous_point] = idx
+                        boundary_points[previous_point] = this_label
                     else:
                         edge_found = True
                         left_point = input_point
-                        boundary_points[input_point] = idx
+                        boundary_points[input_point] = this_label
                         break  
                     
-                self.boundary_edges.append([(left_point, right_point), idx]) 
+                self.boundary_edges.append([(left_point, right_point), this_label]) 
             else:
                 interior_points[eachStartPoint] = 1
-                boundary_points[eachStartPoint] = idx
+                boundary_points[eachStartPoint] = this_label
                 
                 # Get the left and right cell centres
                 mid1 = (np.array(points[eachStartPoint]) + np.array(points[opposite1]))/2.0
@@ -154,19 +164,18 @@ class BoundaryMarker2d(bases.SimpleIOBase):
                 dist1 = np.linalg.norm(np.array(self.seed_points[idx]) - mid1)
                 dist2 = np.linalg.norm(np.array(self.seed_points[idx]) - mid2)
                 if dist1 < dist2:
-                    cell_markers[cell_1] = idx
+                    cell_markers[cell_1] = this_label
                     left_point = opposite1
                     right_point = eachStartPoint
-                    boundary_points[opposite1] = idx
+                    boundary_points[opposite1] = this_label
                 else:
-                    cell_markers[cell_2] = idx
+                    cell_markers[cell_2] = this_label
                     left_point = opposite2
                     right_point = eachStartPoint
-                    boundary_points[opposite2] = idx
-                
+                    boundary_points[opposite2] = this_label
                 left_point = opposite2
                 right_point = opposite1 
-                self.boundary_edges.append([(left_point, right_point), idx]) 
+                self.boundary_edges.append([(left_point, right_point), this_label]) 
             
         # Mark the vtk_data using cell markers
         boundary_label = vtk.vtkFloatArray()
@@ -184,32 +193,18 @@ class BoundaryMarker2d(bases.SimpleIOBase):
         for idx, eachEdge in enumerate(edges):
             boundary_label.InsertNextTupleValue((float(cell_markers[idx]),))  
             
-        for idx in range(interior_points):
+        for idx in range(len(interior_points)):
             interior_label.InsertNextTupleValue((float(interior_points[idx]),))  
             
-        for idx in range(boundary_points):
+        for idx in range(len(boundary_points)):
             boundary_point_label.InsertNextTupleValue((float(boundary_points[idx]),))  
         
-        self.input.GetCellData().AddArray(boundary_label) 
-        self.input.GetPointData().SetScalars(interior_label) 
-        self.input.GetPointData().AddArray(boundary_point_label) 
-        self.get_open_surface()
         
-        self.output = self.input
-        
-    def get_open_surface(self):
-        
-        threshold = vtk.vtkThreshold()
-        threshold.SetInput(self.input)
-        threshold.SetInputArrayToProcess(0, 0, 0, "vtkDataObject::FIELD_ASSOCIATION_POINTS", "InteriorLabel")
-        threshold.ThresholdBetween(0, 0)
-        threshold.Update()
-            
-        polysurface = vtk.vtkGeometryFilter()
-        polysurface.SetInputConnection(threshold.GetOutputPort())
-        polysurface.Update()
-        self.open_surface = polysurface.GetOutput()
-    
+        line_boundary.GetCellData().AddArray(boundary_label) 
+        line_boundary.GetPointData().SetScalars(interior_label) 
+        line_boundary.GetPointData().AddArray(boundary_point_label) 
+        self.output = line_boundary
+
 class BoundaryMarker3d():
     
     def __init__(self, mesh, domains=None, domain_labels=None, boundarys=None, boundary_labels = None):
