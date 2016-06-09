@@ -41,10 +41,10 @@
 #include "ReplicatableVector.hpp"
 
 template<unsigned DIM>
-Alarcon03HaematocritSolver<DIM>::Alarcon03HaematocritSolver(double haematocrit) : AbstractHaematocritSolver<DIM>(),
+Alarcon03HaematocritSolver<DIM>::Alarcon03HaematocritSolver() : AbstractHaematocritSolver<DIM>(),
     mTHR(2.5),
     mAlpha(0.5),
-    mHaematocrit(haematocrit)
+    mHaematocrit(0.45)
 {
 
 }
@@ -79,7 +79,6 @@ void Alarcon03HaematocritSolver<DIM>::SetHaematocrit(double haematocrit)
 template<unsigned DIM>
 void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork)
 {
-
     // create extra data tables to aid with formation of coefficient matrix for haematocrit calculation
     std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = vascularNetwork->GetVesselEndNodes();
     std::vector< std::vector<unsigned> > VesselsFlowingOutOfNode(nodes.size());
@@ -129,20 +128,18 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwor
     // Set up the system
     unsigned number_of_vessels = vascularNetwork->GetNumberOfVessels();
     PetscInt lhsVectorSize = vascularNetwork->GetNumberOfVessels();
-    unsigned pre_allocation_value;
+    unsigned pre_allocation_value = 3;
     if(number_of_vessels < 3)
     {
         pre_allocation_value  = number_of_vessels;
-    }
-    else
-    {
-        pre_allocation_value = 3;
     }
 
     LinearSystem linearSystem(lhsVectorSize, pre_allocation_value);
     if(lhsVectorSize > 6)
     {
-//        PetscOptionsSetValue("-pc_factor_mat_solver_package", "umfpack");
+        #ifndef PETSC_HAVE_HYPRE
+        EXCEPTION("The haematocrit solvers require Hypre with PETSc.");
+        #endif //PETSC_HAVE_HYPRE
         linearSystem.SetPcType("hypre");
         linearSystem.SetKspType("preonly");
     }
@@ -252,10 +249,7 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwor
     }
 
     Vec solution = PetscTools::CreateVec(number_of_vessels);
-     // Does an initial guess do anything with a direct solver?
     linearSystem.AssembleFinalLinearSystem();
-    //linearSystem.DisplayMatrix();
-    //linearSystem.DisplayRhs();
     solution = linearSystem.Solve();
 
     // deal with minor rounding errors in calculation

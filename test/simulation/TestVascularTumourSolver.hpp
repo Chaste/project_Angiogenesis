@@ -86,7 +86,6 @@ public:
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10.0, 10);
         MAKE_PTR_ARGS(OutputFileHandler, p_file_handler, ("TestVascularTumourSolver/SingleVesselGrowth/"));
         vascular_tumour_solver.SetOutputFileHandler(p_file_handler);
-        vascular_tumour_solver.SetEndTime(10.0);
         vascular_tumour_solver.Run();
     }
 };

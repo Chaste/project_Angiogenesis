@@ -57,7 +57,7 @@ private:
 public:
 
     // constructor
-    Alarcon03HaematocritSolver(double haematocrit = 0.45);
+    Alarcon03HaematocritSolver();
 
     /**
      *  destructor.

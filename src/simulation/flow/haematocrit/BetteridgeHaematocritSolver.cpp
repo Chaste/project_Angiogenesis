@@ -148,7 +148,9 @@ void BetteridgeHaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwo
         LinearSystem linearSystem(number_of_vessels, pre_allocation_value);
         if(number_of_vessels > 6)
         {
-//            PetscOptionsSetValue("-pc_factor_mat_solver_package", "umfpack");
+            #ifndef PETSC_HAVE_HYPRE
+            EXCEPTION("The haematocrit solvers require Hypre with PETSc.");
+            #endif //PETSC_HAVE_HYPRE
             linearSystem.SetPcType("hypre");
             linearSystem.SetKspType("preonly");
         }
