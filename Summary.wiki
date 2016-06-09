@@ -8,15 +8,12 @@ First, Chaste dependencies need to be built from source following the [wiki:Inst
 The project only supports the development version of Chaste, the source can be obtained following instructions [wiki:ChasteGuides/AccessCodeRepository here].
 
 The C++ libraries can be built using either the standard Chaste Scons build system, see [wiki:ChasteGuides/DeveloperBuildGuide Chaste Developer Build Guide] and 
-[wiki:InstallGuides/CheckoutUserProject Chaste User Project Build Guide] or the [wiki:ChasteGuides/CmakeBuildGuide new CMake build system]. For the latter the steps prior to 
-building in the [wiki:InstallGuides/CheckoutUserProject Chaste User Project Build Guide] still need to be followed.
+[wiki:InstallGuides/CheckoutUserProject Chaste User Project Build Guide] or the [wiki:ChasteGuides/CmakeBuildGuide new CMake build system]. For the latter, the steps [wiki:InstallGuides/CheckoutUserProject here] up to the point of building still need to be followed.
 
 The Python package can only be built using the CMake build system. The [wiki:ChasteGuides/CmakeBuildGuide CMake build guide] user project instructions can be used after the following steps are taken:
 * Install Boost Python. This can be done by adding `python` to the list of libraries to be built when following the Boost build instructions [wiki:InstallGuides/InstallGuide here].
-* Find the Python shared library `libpython2.x.so` on your system. A likely place is `usr/lib`/. If you are using a virtual environement, for example with `pyenv` you may need to 
-take extra steps to ensure a shared library is built when building Python.
-* The Python modules need to be linked with the Boost Python and system Python libraries. To do this some changes to the `CMakeLists.txt` in the Chaste source directory 
-are needed. 
+* Find the Python shared library `libpython2.x.so` on your system. A likely place is `usr/lib`/. If you are using a virtual environement, for example with `pyenv`, you may need to take extra steps to ensure a shared library is built when building Python.
+* The Python modules need to be linked with the Boost Python and system Python libraries. To do this some changes to the `CMakeLists.txt` in the Chaste source directory are needed. 
 
 Find the line:
 {{{

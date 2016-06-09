@@ -36,10 +36,10 @@
 #ifndef TESTBUILDVESSELNETWORKLITERATEPAPER_HPP_
 #define TESTBUILDVESSELNETWORKLITERATEPAPER_HPP_
 
-/* = Introduction =
+/* = Building A Vessel Network Tutorial =
  * This tutorial is designed to introduce the C++ interface for modelling vessel networks. An equivalent Python tutorial
- * is [wiki:PaperTutorials/Angiogenesis/PythonBuildVesselNetwork here]. It is advised that you at least read [wiki:UserTutorials/WritingTests
- * the Chaste tutorial on writing tests] before proceeding with this one.
+ * is [wiki:PaperTutorials/Angiogenesis/PythonBuildVesselNetwork here]. It is advised that you at least read [wiki:UserTutorials/WritingTests the Chaste tutorial on writing tests]
+ * before proceeding with this one.
  *
  * This tutorial covers:
  * * Building a network from a collection of nodes, segments and vessels
@@ -60,7 +60,7 @@
  */
 #include "SmartPointers.hpp"
 /*
- * These headers contain the building-blocks of the vessel networks; nodes, segments, vessels and the network itself
+ * These headers contain the building-blocks of the vessel networks; nodes, segments, vessels and the network itself.
  */
 #include "VascularNode.hpp"
 #include "VesselSegment.hpp"
@@ -100,9 +100,8 @@ public:
         double length = 100.0;
         boost::shared_ptr<VascularNode<2> > p_node_1 = VascularNode<2>::Create(0.0, 0.0);
         boost::shared_ptr<VascularNode<2> > p_node_2 = VascularNode<2>::Create(length, 0.0);
-        boost::shared_ptr<VascularNode<2> > p_node_3 = VascularNode<2>::Create(2.0 * length, length);
+        boost::shared_ptr<VascularNode<2> > p_node_3 = VascularNode<2>::Create(2.0*length, length);
         boost::shared_ptr<VascularNode<2> > p_node_4 = VascularNode<2>::Create(2.0*length, -length);
-
         /*
          * Next we make vessel segments and vessels. Vessel segments are straight-line features which contain a vascular node at each end. Vessels
          * can be constructed from multiple vessel segments, but in this case each vessel just has a single segment.
@@ -113,7 +112,6 @@ public:
         boost::shared_ptr<Vessel<2> > p_vessel_2 = Vessel<2>::Create(p_segment_2);
         boost::shared_ptr<VesselSegment<2> > p_segment_3 = VesselSegment<2>::Create(p_node_2, p_node_4);
         boost::shared_ptr<Vessel<2> > p_vessel_3 = Vessel<2>::Create(p_segment_3);
-
         /*
          * Now we can add our vessels to a vessel network.
          */
@@ -121,26 +119,23 @@ public:
         p_network->AddVessel(p_vessel_1);
         p_network->AddVessel(p_vessel_2);
         p_network->AddVessel(p_vessel_3);
-
         /*
          * We use our test framework to make sure that the network has been created correctly by checking the number of vessels and nodes
          */
         TS_ASSERT_EQUALS(p_network->GetNumberOfNodes(), 4u);
         TS_ASSERT_EQUALS(p_network->GetNumberOfVessels(), 3u);
-
         /*
-         * Next we write out network to file. We use the Chaste `OutputFileHandler` functionality to management the output location
+         * Next we write our network to file. We use the Chaste `OutputFileHandler` functionality to manage the output location
          * and the pointer MACRO `MAKE_PTR_ARGS` to quickly make a smart pointer. Networks are written using VTK's PolyData format,
          * which should have a .vtp extension.
          */
         MAKE_PTR_ARGS(OutputFileHandler, p_handler, ("TestBuildVesselNetworkLiteratePaper"));
         p_network->Write(p_handler->GetOutputDirectoryFullPath() + "bifurcating_network.vtp");
-
-        /*
-         * Now we can visualize then network in Paraview. See the tutorial [wiki:UserTutorials/VisualizingWithParaview here], to get started. To view the network import the file
-         * `TestBuildVesselNetworkLiteratePaper\bifurcating_network.vtp` into Paraview. For a nicer rendering you can do `Filters->Alphabetical->Tube`.
-         */
     }
+    /*
+     * Now we can visualize then network in Paraview. See the tutorial [wiki:UserTutorials/VisualizingWithParaview here], to get started. To view the network import the file
+     * `TestBuildVesselNetworkLiteratePaper\bifurcating_network.vtp` into Paraview. For a nicer rendering you can do `Filters->Alphabetical->Tube`.
+     */
 
     /*
      * = Test 2 - Building a vessel network using a generator and reading from file =
@@ -159,7 +154,6 @@ public:
         double target_height = 800.0;
         double length = 100.0;
         boost::shared_ptr<VascularNetwork<3> > p_network = network_generator.GenerateHexagonalNetwork(target_width, target_height, length);
-
         /*
          * Get the number of nodes and vessels for testing later, and write the network to file as before.
          */
@@ -167,19 +161,20 @@ public:
         unsigned number_of_vessels = p_network->GetNumberOfVessels();
         MAKE_PTR_ARGS(OutputFileHandler, p_handler, ("TestBuildVesselNetworkLiteratePaper"));
         p_network->Write(p_handler->GetOutputDirectoryFullPath() + "hexagonal_network.vtp");
-
         /*
          * We use our generator to read the network back in from the VTK file.
          */
         boost::shared_ptr<VascularNetwork<3> > p_network_from_file =
                 network_generator.GenerateNetworkFromVtkFile(p_handler->GetOutputDirectoryFullPath() + "hexagonal_network.vtp");
-
         /*
          * Finally we check that the network has been correctly read back in using our unit test framework
          */
         TS_ASSERT_EQUALS(p_network_from_file->GetNumberOfNodes(), number_of_nodes);
         TS_ASSERT_EQUALS(p_network_from_file->GetNumberOfVessels(), number_of_vessels);
     }
+    /*
+     * It is suggested that the tutorial [wiki:PaperTutorials/Angiogenesis/BloodFlow on flow modelling] is covered next.
+     */
 };
 
 #endif /*TESTBUILDVESSELNETWORKLITERATEPAPER_HPP_*/

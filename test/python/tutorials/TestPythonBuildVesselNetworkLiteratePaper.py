@@ -34,9 +34,8 @@
 #define TRIGGER_WIKI
 
 ## = Introduction =
-## This tutorial is designed to introduce the C++ interface for modelling vessel networks. An equivalent Python tutorial
-## is [wiki:PaperTutorials/Angiogenesis/PythonBuildVesselNetwork here]. It is advised that you at least read [wiki:UserTutorials/WritingTests
-## the Chaste tutorial on writing tests] before proceeding with this one.
+## This tutorial is designed to introduce the Python interface for modelling vessel networks. An equivalent C++ tutorial
+## is [wiki:PaperTutorials/Angiogenesis/BuildVesselNetwork here]. 
 ##
 ## This tutorial covers:
 ## * Building a network from a collection of nodes, segments and vessels

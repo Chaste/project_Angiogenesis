@@ -36,9 +36,9 @@
 #ifndef TESTBLOODFLOWLITERATEPAPER_HPP_
 #define TESTBLOODFLOWLITERATEPAPER_HPP_
 
-/* = Introduction =
+/*  = Modelling Blood Flow Tutorial =
  * This tutorial demonstrates functionality for modelling blood flow, structural adaptation and vessel
- * regression using the C++ framework. An equivalent Python version is here: .
+ * regression using the C++ framework.
  *
  * This tutorial covers:
  * * Running a minimal Poiseuille flow simulation and looking at results
@@ -71,9 +71,7 @@
 
 class TestBloodFlowLiteratePaper : public AbstractCellBasedWithTimingsTestSuite
 {
-
 public:
-
     /*
      * = Test 1 - Simulating 1d flow in a bifurcating network=
      *
@@ -90,7 +88,7 @@ public:
         std::vector<boost::shared_ptr<VascularNode<2> > > nodes;
         nodes.push_back(VascularNode<2>::Create(0.0, 0.0));
         nodes.push_back(VascularNode<2>::Create(length, 0.0));
-        nodes.push_back(VascularNode<2>::Create(2.0 * length, length));
+        nodes.push_back(VascularNode<2>::Create(2.0*length, length));
         nodes.push_back(VascularNode<2>::Create(2.0*length, -length));
         std::vector<boost::shared_ptr<Vessel<2> > > vessels;
         vessels.push_back(Vessel<2>::Create(nodes[0], nodes[1]));
@@ -98,10 +96,9 @@ public:
         vessels.push_back(Vessel<2>::Create(nodes[1], nodes[3]));
         boost::shared_ptr<VascularNetwork<2> > p_network = VascularNetwork<2>::Create();
         p_network->AddVessels(vessels);
-
         /*
          * We specify which nodes will be the inlets and outlets of the network for the flow problem. This information, as well
-         * as all other info related to the flow problem is contained in a `NodeFlowProperties` instance. Then we set the inlet and
+         * as all other info related to the flow problem, is contained in a `NodeFlowProperties` instance. Then we set the inlet and
          * outlet pressures in Pa. Finally, we specify the radius and viscosity of each segment.
          * This is used in the calculation of the impedance of the vessel in the flow problem.
          */
@@ -117,14 +114,12 @@ public:
         {
             segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);
         }
-
         /*
          * We use a calculator to work out the impedance of each vessel based on assumptions of Poiseuille flow and cylindrical vessels. This
          * updates the value of the impedance in the vessel.
          */
         PoiseuilleImpedanceCalculator<2> impedance_calculator = PoiseuilleImpedanceCalculator<2>();
         impedance_calculator.Calculate(p_network);
-
         /*
          * Now we can solve for the flow rates in each vessel based on the inlet and outlet pressures and impedances. The solver
          * updates the value of pressures and flow rates in each vessel and node in the network.
@@ -132,7 +127,6 @@ public:
         FlowSolver<2> flow_solver = FlowSolver<2>();
         flow_solver.SetVesselNetwork(p_network);
         flow_solver.Solve();
-
         /*
          * We can check to see if the final solution is reasonable
          */
@@ -140,14 +134,12 @@ public:
 //        TS_ASSERT_EQUALS(p_network->GetNumberOfVessels(), 3u);
 
         /*
-         * Next we write out network, including updated flow data, to file. We use the Chaste `OutputFileHandler` functionality to management the output location
-         * and the pointer MACRO `MAKE_PTR_ARGS` to quickly make a smart pointer.
+         * Next we write out the network, including updated flow data, to file.
          */
         MAKE_PTR_ARGS(OutputFileHandler, p_handler, ("TestBloodFlowLiteratePaper"));
         p_network->Write(p_handler->GetOutputDirectoryFullPath() + "bifurcating_network_results.vtp");
-
         /*
-         * Now we can visualize the results in Paraview. See the tutorial x, to get started. To view the network import the file
+         * Now we can visualize the results in Paraview. See [wiki:UserTutorials/VisualizingWithParaview here] to get started. To view the network import the file
          * `TestBloodFlowLiteratePaper\bifurcating_network.vtp` into Paraview. For a nicer rendering you can do `Filters->Alphabetical->Tube`.
          */
     }
