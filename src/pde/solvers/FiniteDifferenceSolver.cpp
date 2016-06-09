@@ -448,6 +448,7 @@ PetscErrorCode HyrbidFiniteDifference_ComputeResidual(SNES snes, Vec solution_gu
 #if ( PETSC_VERSION_MAJOR==3 && PETSC_VERSION_MINOR>=5 )
 template<unsigned DIM>
 PetscErrorCode HyrbidFiniteDifference_ComputeJacobian(SNES snes, Vec input, Mat jacobian, Mat preconditioner, void* pContext)
+{
 #else
 template<unsigned DIM>
 PetscErrorCode HyrbidFiniteDifference_ComputeJacobian(SNES snes, Vec input, Mat* pJacobian, Mat* pPreconditioner, MatStructure* pMatStructure, void* pContext)

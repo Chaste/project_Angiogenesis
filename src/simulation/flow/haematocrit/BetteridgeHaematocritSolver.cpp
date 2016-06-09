@@ -77,7 +77,7 @@ void BetteridgeHaematocritSolver<DIM>::SetHaematocrit(double haematocrit)
 }
 
 template<unsigned DIM>
-void BetteridgeHaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork)
+void BetteridgeHaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwork<DIM> > pNetwork)
 {
 
     double tolerance = 1e-3;
@@ -85,218 +85,158 @@ void BetteridgeHaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwo
     double residual = DBL_MAX;
     int iterations = 0;
 
+
+    std::vector<boost::shared_ptr<Vessel<DIM> > > vessels = pNetwork->GetVessels();
+    for(unsigned idx=0; idx<vessels.size(); idx++)
+    {
+        vessels[idx]->SetId(idx);
+    }
+
     while(residual > tolerance && iterations < max_iterations)
     {
         // create extra data tables to aid with formation of coefficient matrix for haematocrit calculation
-        std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = vascularNetwork->GetVesselEndNodes();
-        std::vector< std::vector<unsigned> > VesselsFlowingOutOfNode(nodes.size());
-        std::vector< std::vector<unsigned> > VesselsFlowingIntoNode(nodes.size());
-        std::vector< std::vector<unsigned> > VesselsAttachedToNodeWithZeroFlow(nodes.size());
 
-        for (unsigned i = 0; i < nodes.size(); i++)
+        // Set up the linear system
+        PetscInt lhsVectorSize = vessels.size();
+        unsigned max_vessels_per_branch = 5;
+        if(vessels.size() < max_vessels_per_branch)
         {
-            for (unsigned j = 0; j < nodes[i]->GetNumberOfSegments(); j++)
-            {
-                boost::shared_ptr<Vessel<DIM> > p_vessel = nodes[i]->GetVesselSegment(j)->GetVessel();
-                unsigned vessel_index = vascularNetwork->GetVesselIndex(p_vessel);
-                double flow_rate = p_vessel->GetFlowRate();
-                if (nodes[i] == p_vessel->GetStartNode())
-                {
-                    if (flow_rate < 0)
-                    {
-                        VesselsFlowingIntoNode[i].push_back(vessel_index);
-                    }
-                    else if (flow_rate > 0)
-                    {
-                        VesselsFlowingOutOfNode[i].push_back(vessel_index);
-                    }
-                    else
-                    {
-                        VesselsAttachedToNodeWithZeroFlow[i].push_back(vessel_index);
-                    }
-                }
-                else
-                {
-                    if (flow_rate > 0)
-                    {
-                        VesselsFlowingIntoNode[i].push_back(vessel_index);
-                    }
-                    else if (flow_rate < 0)
-                    {
-                        VesselsFlowingOutOfNode[i].push_back(vessel_index);
-                    }
-                    else
-                    {
-                        VesselsAttachedToNodeWithZeroFlow[i].push_back(vessel_index);
-                    }
-                }
-            }
+            max_vessels_per_branch  = unsigned(lhsVectorSize);
         }
-
-        // Set up the system
-        unsigned number_of_vessels = vascularNetwork->GetNumberOfVessels();
-        unsigned pre_allocation_value;
-        if(number_of_vessels < 3)
+        LinearSystem linearSystem(lhsVectorSize, max_vessels_per_branch);
+        if(lhsVectorSize > 6)
         {
-            pre_allocation_value  = number_of_vessels;
-        }
-        else
-        {
-            pre_allocation_value = 3;
-        }
-
-        LinearSystem linearSystem(number_of_vessels, pre_allocation_value);
-        if(number_of_vessels > 6)
-        {
+            linearSystem.SetPcType("lu");
             #ifndef PETSC_HAVE_HYPRE
-            EXCEPTION("The haematocrit solvers require Hypre with PETSc.");
-            #endif //PETSC_HAVE_HYPRE
             linearSystem.SetPcType("hypre");
+            #endif //PETSC_HAVE_HYPRE
             linearSystem.SetKspType("preonly");
         }
 
-        // Set the haematocrit of input vessels to the arterial level
-        unsigned number_of_vessel_nodes = nodes.size();
-        unsigned equation_number = 0;
-        for (unsigned idx = 0; idx < number_of_vessel_nodes; idx++)
+        for(unsigned idx=0; idx<vessels.size(); idx++)
         {
-            if (nodes[idx]->GetFlowProperties()->IsInputNode())
+            // Always have a diagonal entry for system, this sets zero haematocrit by default
+            linearSystem.SetMatrixElement(idx, idx, 1);
+            if(vessels[idx]->GetStartNode()->GetFlowProperties()->IsInputNode() or vessels[idx]->GetEndNode()->GetFlowProperties()->IsInputNode())
             {
-                for (unsigned jdx = 0; jdx < nodes[idx]->GetNumberOfSegments(); jdx++)
-                {
-                    linearSystem.AddToMatrixElement(equation_number, vascularNetwork->GetVesselIndex(nodes[idx]->GetVesselSegment(jdx)->GetVessel()), 1);
-                    linearSystem.SetRhsVectorElement(equation_number, mHaematocrit);
-                    equation_number++;
-                }
+                linearSystem.SetRhsVectorElement(idx, mHaematocrit);
             }
-        }
-
-        // Haematocrit conservation equations
-        for (unsigned i = 0; i < number_of_vessel_nodes; i++)
-        {
-            unsigned number_of_inflow_vessels = VesselsFlowingIntoNode[i].size();
-            unsigned number_of_outflow_vessels = VesselsFlowingOutOfNode[i].size();
-            unsigned number_of_no_flow_vessels = VesselsAttachedToNodeWithZeroFlow[i].size();
-
-            if (number_of_inflow_vessels + number_of_outflow_vessels + number_of_no_flow_vessels > 3)
+            // Set rhs to zero, it should already be zero but this explicitly captures the no flow case
+            else if(vessels[idx]->GetFlowRate()==0.0)
             {
-                EXCEPTION("The maximum number of coincident vessels at a node is 3.");
+                linearSystem.SetRhsVectorElement(idx, 0.0);
             }
-            else if (number_of_inflow_vessels + number_of_outflow_vessels == 2)
+            else
             {
-                if(!(number_of_inflow_vessels == 1 && number_of_outflow_vessels == 1))
+                // Identify inflow node
+                boost::shared_ptr<VascularNode<DIM> > p_inflow_node;
+                double flow_rate= vessels[idx]->GetFlowRate();
+                if(vessels[idx]->GetFlowRate()>0)
                 {
-                    EXCEPTION("Nodes with two conincident vessels must have one inflow and one outflow vessel.");
+                    p_inflow_node = vessels[idx]->GetStartNode();
                 }
-                // output haematocrit equals input haematocrit
-                linearSystem.AddToMatrixElement(equation_number, VesselsFlowingIntoNode[i][0],
-                                                fabs(vascularNetwork->GetVessel(VesselsFlowingIntoNode[i][0])->GetFlowRate()));
-                linearSystem.AddToMatrixElement(equation_number, VesselsFlowingOutOfNode[i][0],
-                                                -fabs(vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][0])->GetFlowRate()));
-                equation_number++;
-            }
-            else if (VesselsFlowingIntoNode[i].size() + VesselsFlowingOutOfNode[i].size() == 3)
-            {
-                if (VesselsFlowingIntoNode[i].size() == 2)
+                else
                 {
-                    // output haematocrit equals sum of input haematocrits
-                    linearSystem.AddToMatrixElement(equation_number, VesselsFlowingIntoNode[i][0],
-                                                    fabs(vascularNetwork->GetVessel(VesselsFlowingIntoNode[i][0])->GetFlowRate()));
-                    linearSystem.AddToMatrixElement(equation_number, VesselsFlowingIntoNode[i][1],
-                                                    fabs(vascularNetwork->GetVessel(VesselsFlowingIntoNode[i][1])->GetFlowRate()));
-                    linearSystem.AddToMatrixElement(equation_number, VesselsFlowingOutOfNode[i][0],
-                                                    -fabs(vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][0])->GetFlowRate()));
-                    equation_number++;
+                    p_inflow_node = vessels[idx]->GetEndNode();
                 }
-                else if (VesselsFlowingIntoNode[i].size() == 1)
+
+                // Identify number of inflow and outflow vessels
+                if(p_inflow_node->GetNumberOfSegments()>1)
                 {
-                    // bifurcation
-                    linearSystem.AddToMatrixElement(equation_number, VesselsFlowingIntoNode[i][0],
-                                                    fabs(vascularNetwork->GetVessel(VesselsFlowingIntoNode[i][0])->GetFlowRate()));
-                    linearSystem.AddToMatrixElement(equation_number, VesselsFlowingOutOfNode[i][0],
-                                                    -fabs(vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][0])->GetFlowRate()));
-                    linearSystem.AddToMatrixElement(equation_number, VesselsFlowingOutOfNode[i][1],
-                                                    -fabs(vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][1])->GetFlowRate()));
-                    equation_number++;
-
-                    double radius0 = vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][0])->GetRadius();
-                    double radius1 = vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][1])->GetRadius();
-                    double out_flow_velocity0 = fabs(vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][0])->GetFlowRate())/(M_PI * radius0 * radius0);
-                    double out_flow_velocity1 = fabs(vascularNetwork->GetVessel(VesselsFlowingOutOfNode[i][1])->GetFlowRate())/(M_PI * radius1 * radius1);
-                    double haematocrit_in = vascularNetwork->GetVessel(VesselsFlowingIntoNode[i][0])->GetHaematocrit();
-
-                    if(out_flow_velocity0 == 0.0 || out_flow_velocity1 == 0.0)
+                    std::vector<boost::shared_ptr<Vessel<DIM> > > parent_vessels;
+                    std::vector<boost::shared_ptr<Vessel<DIM> > > competitor_vessels;
+                    for(unsigned jdx=0; jdx<p_inflow_node->GetVesselSegments().size(); jdx++)
                     {
-                        EXCEPTION("Zero flow veloctiy in branch.");
+                        // if not this vessel
+                        if(p_inflow_node->GetVesselSegment(jdx)->GetVessel()!=vessels[idx])
+                        {
+                            double inflow_rate = p_inflow_node->GetVesselSegment(jdx)->GetVessel()->GetFlowRate();
+                            if(p_inflow_node->GetVesselSegment(jdx)->GetVessel()->GetEndNode()==p_inflow_node)
+                            {
+                                if(inflow_rate>0)
+                                {
+                                    parent_vessels.push_back(p_inflow_node->GetVesselSegment(jdx)->GetVessel());
+                                }
+                                else if(inflow_rate<0)
+                                {
+                                    competitor_vessels.push_back(p_inflow_node->GetVesselSegment(jdx)->GetVessel());
+                                }
+                            }
+                            if(p_inflow_node->GetVesselSegment(jdx)->GetVessel()->GetStartNode()==p_inflow_node)
+                            {
+                                if(inflow_rate>0)
+                                {
+                                    competitor_vessels.push_back(p_inflow_node->GetVesselSegment(jdx)->GetVessel());
+                                }
+                                else if(inflow_rate<0)
+                                {
+                                    parent_vessels.push_back(p_inflow_node->GetVesselSegment(jdx)->GetVessel());
+                                }
+                            }
+                        }
                     }
 
-                    if (out_flow_velocity0 >= out_flow_velocity1)
+                    // If there are no competitor vessels the haematocrit is just the sum of the parent values
+                    if(competitor_vessels.size()==0 or fabs(competitor_vessels[0]->GetFlowRate())==0.0)
                     {
-                        linearSystem.AddToMatrixElement(equation_number, VesselsFlowingOutOfNode[i][0], 1);
-                        linearSystem.AddToMatrixElement(equation_number, VesselsFlowingOutOfNode[i][1],
-                                                        - (1 + (1.0-haematocrit_in)*((out_flow_velocity0/out_flow_velocity1)-1)));
+                        for(unsigned jdx=0; jdx<parent_vessels.size();jdx++)
+                        {
+                            linearSystem.SetMatrixElement(idx, parent_vessels[jdx]->GetId(), -fabs(parent_vessels[0]->GetFlowRate())/fabs(flow_rate));
+                        }
                     }
                     else
                     {
-                        linearSystem.AddToMatrixElement(equation_number, VesselsFlowingOutOfNode[i][1], 1);
-                        linearSystem.AddToMatrixElement(equation_number, VesselsFlowingOutOfNode[i][0],
-                                                        -(1 + (1.0-haematocrit_in)*((out_flow_velocity1/out_flow_velocity0)-1)));
+                        if(competitor_vessels.size()>1 or parent_vessels.size()>1)
+                        {
+                            EXCEPTION("This solver can only work with branches with connectivity 3");
+                        }
+
+                        // There is a bifurcation, apply a haematocrit splitting rule
+                        double my_radius = vessels[idx]->GetRadius();
+                        double competitor_radius = competitor_vessels[0]->GetRadius();
+                        double my_velocity = fabs(flow_rate)/(M_PI * my_radius * my_radius);
+                        double competitor_velocity = fabs(competitor_vessels[0]->GetFlowRate())/(M_PI * competitor_radius * competitor_radius);
+                        double alpha = 1.0 - parent_vessels[0]->GetHaematocrit();
+                        double flow_ratio_pm = fabs(parent_vessels[0]->GetFlowRate())/fabs(flow_rate);
+                        double flow_ratio_cm = fabs(competitor_vessels[0]->GetFlowRate())/fabs(flow_rate);
+                        double term = flow_ratio_pm/(1.0+flow_ratio_cm*alpha*(my_velocity/competitor_velocity-1) + 1);
+                        linearSystem.SetMatrixElement(idx, parent_vessels[0]->GetId(), -term);
                     }
-                    equation_number++;
                 }
             }
         }
-        // zero flow vessels have zero haematocrit
-        linearSystem.AssembleIntermediateLinearSystem();
-        for (unsigned idx = 0; idx < number_of_vessels; idx++)
-        {
-            if (vascularNetwork->GetVessel(idx)->GetFlowRate() == 0)
-            {
-                linearSystem.AddToMatrixElement(equation_number, idx, 1.0);
-                equation_number++;
-            }
-        }
 
-        Vec solution = PetscTools::CreateVec(number_of_vessels);
-         // Does an initial guess do anything with a direct solver?
+        Vec solution = PetscTools::CreateVec(vessels.size());
         linearSystem.AssembleFinalLinearSystem();
-        //linearSystem.DisplayMatrix();
-        //linearSystem.DisplayRhs();
         solution = linearSystem.Solve();
 
-        // deal with minor rounding errors in calculation
         ReplicatableVector a(solution);
-        for (unsigned i = 0; i < number_of_vessels; i++)
-        {
-            if (a[i] < pow(10.0,-15))
-            {
-                a[i] = 0;
-            }
-        }
 
         // Get the residual
         residual = 0;
-        for (unsigned i = 0; i < number_of_vessels; i++)
+        for (unsigned i = 0; i < vessels.size(); i++)
         {
-            if(vascularNetwork->GetVessel(i)->GetHaematocrit() - double(a[i]) > residual)
+            if(vessels[i]->GetHaematocrit() - a[i] > residual)
             {
-                residual = vascularNetwork->GetVessel(i)->GetHaematocrit() - double(a[i]);
+                residual = vessels[i]->GetHaematocrit() - a[i];
             }
         }
 
         // assign haematocrit levels to vessels
-        for (unsigned i = 0; i < number_of_vessels; i++)
+        for (unsigned idx = 0; idx < vessels.size(); idx++)
         {
-            for (unsigned jdx = 0; jdx < vascularNetwork->GetVessel(i)->GetNumberOfSegments(); jdx++)
+            for (unsigned jdx = 0; jdx < vessels[idx]->GetNumberOfSegments(); jdx++)
             {
-                vascularNetwork->GetVessel(i)->GetSegment(jdx)->GetFlowProperties()->SetHaematocrit(double(a[i]));
+                vessels[idx]->GetSegment(jdx)->GetFlowProperties()->SetHaematocrit(a[idx]);
             }
         }
+
         iterations++;
         if(iterations == max_iterations)
         {
             EXCEPTION("Haematocrit calculation failed to converge.");
         }
+
         PetscTools::Destroy(solution);
     }
 }
