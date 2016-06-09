@@ -5,9 +5,9 @@ and storage formats
 
 import unittest
 import chaste.population.vessel as vessel
-import chaste.interfaces.converters.network as converters
+import chaste.population.vessel.converters as converters
 import chaste.simulation.setup
-import chaste.utility.rwc
+import chaste.utility.readwrite
 
 class TestNetworkToPlanarBoundaries(unittest.TestCase):
     
@@ -34,7 +34,7 @@ class TestNetworkToPlanarBoundaries(unittest.TestCase):
         converter.input = network
         converter.update()
         vtk_surface = converter.output
-        chaste.utility.rwc.write_vtk_surface(file_handler.GetOutputDirectoryFullPath() + "/vtk_surface.vtp", vtk_surface)
+        chaste.utility.readwrite.write(vtk_surface, file_handler.GetOutputDirectoryFullPath() + "/vtk_surface.vtp")
         
 class TestNetworkTo3dCad(unittest.TestCase):
     
@@ -61,7 +61,7 @@ class TestNetworkTo3dCad(unittest.TestCase):
         converter.input = network
         converter.update()
         geometry = converter.output
-        chaste.utility.rwc.write_geometry(file_handler.GetOutputDirectoryFullPath() + "/geometry.stp", geometry)
+        chaste.utility.readwrite.write(geometry, file_handler.GetOutputDirectoryFullPath() + "/geometry.stp")
         
 class TestNetworkToVtkLines(unittest.TestCase):
     
@@ -88,7 +88,7 @@ class TestNetworkToVtkLines(unittest.TestCase):
         converter.input = network
         converter.update()
         geometry = converter.output
-        chaste.utility.rwc.write_vtk_surface(file_handler.GetOutputDirectoryFullPath() + "/lines.vtp", geometry)
+        chaste.utility.readwrite.write(geometry, file_handler.GetOutputDirectoryFullPath() + "/lines.vtp")
         # 
 if __name__ == '__main__':
     unittest.main()

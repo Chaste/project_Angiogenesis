@@ -21,7 +21,8 @@ and change it to:
 
 {{{
 find_package(Boost COMPONENTS filesystem system serialization python REQUIRED)
-}}}.
+}}}
+
 
 Add the following on the next line:
 

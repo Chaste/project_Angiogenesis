@@ -29,3 +29,6 @@ class TestVertex(unittest.TestCase):
         # Rotate the vertex and check the location
         rotation_axis = (0.0, 0.0, 1.0)
         vertex.RotateAboutAxis(rotation_axis, math.pi)
+        
+if __name__ == '__main__':
+    unittest.main()

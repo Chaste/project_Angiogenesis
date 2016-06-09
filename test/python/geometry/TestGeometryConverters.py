@@ -5,9 +5,9 @@ and storage formats
 
 import unittest
 import chaste.geometry
-import chaste.interfaces.converters.geometry as converters
+import chaste.geometry.converters as converters
 import chaste.simulation.setup
-import chaste.utility.rwc
+import chaste.utility.readwrite
 
 class TestChastePartToCadShell(unittest.TestCase):
     
@@ -23,7 +23,7 @@ class TestChastePartToCadShell(unittest.TestCase):
         cad_shell = converter.output
         
         chaste_part.Write(file_handler.GetOutputDirectoryFullPath() + "/chaste_geometry.vtp")
-        chaste.utility.rwc.write_geometry(file_handler.GetOutputDirectoryFullPath() + "/cad_geometry.stp", cad_shell)
+        chaste.utility.readwrite.write(cad_shell, file_handler.GetOutputDirectoryFullPath() + "/cad_geometry.stp", )
         # 
 if __name__ == '__main__':
     unittest.main()

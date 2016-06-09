@@ -1,14 +1,11 @@
-''' The Casie GUI app and main frame.
+''' The chaste GUI app and main frame.
 
 '''
 
 import wx
-import casie.gui.properties
-casie.gui.properties._is_gui_session = True
-
-import casie.gui.sub_panels.scene2d_canvas
-import casie.geometry
-import casie.mesh
+import chaste.gui.sub_panels.canvas2d
+import chaste.geometry
+import chaste.mesh
 
 class Frame(wx.Frame):
     
@@ -31,17 +28,19 @@ class Frame(wx.Frame):
         ''' 
         
         self.panel = wx.Panel(self, wx.ID_ANY)
-        self.panel.choice = casie.gui.sub_panels.scene2d_canvas.Panel(self.panel, with_sketcher = False)
+        self.panel.choice = chaste.gui.sub_panels.canvas2d.Panel(self.panel)
         
-        #square = casie.geometry.Part()
+        #square = chaste.geometry.Part()
         #square.AddCuboid(100., 100., 1.0)
-        #mesh = casie.mesh.HybridMesh()
+        #mesh = chaste.mesh.HybridMesh()
         #mesh.GenerateFromPart(square)
         #self.panel.choice.add_figure(mesh.get_fig())
 
         hbox = wx.BoxSizer()
         hbox.Add(self.panel.choice, 1, wx.EXPAND, 1)
         self.panel.SetSizer(hbox) 
+        
+        wx.FutureCall(3, self.Destroy())
                 
 if __name__ == "__main__":
 

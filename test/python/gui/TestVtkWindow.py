@@ -1,12 +1,11 @@
-''' The Casie GUI app and main frame.
+''' The chaste GUI app and main frame.
 
 '''
 
 import wx
 import vtk
-
-import casie.gui.sub_panels.scene3d_canvas
-import casie.geometry
+import chaste.gui.sub_panels.canvas3d
+import chaste.geometry
 
 class Frame(wx.Frame):
     
@@ -30,9 +29,9 @@ class Frame(wx.Frame):
         ''' 
         
         self.panel = wx.Panel(self, wx.ID_ANY)
-        self.panel.choice = casie.gui.sub_panels.scene3d_canvas.Panel(self.panel)
+        self.panel.choice = chaste.gui.sub_panels.canvas3d.Panel(self.panel)
         
-        #domain = casie.geometry.Part()
+        #domain = chaste.geometry.Part()
         #domain.AddCuboid(100.0, 100.0, 1.0)
         
         #polyd = domain.GetVtk()
@@ -47,6 +46,8 @@ class Frame(wx.Frame):
         hbox = wx.BoxSizer()
         hbox.Add(self.panel.choice, 1, wx.EXPAND, 1)
         self.panel.SetSizer(hbox) 
+        
+        wx.FutureCall(3, self.Destroy())
                 
 if __name__ == "__main__":
 

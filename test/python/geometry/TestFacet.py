@@ -35,3 +35,6 @@ class TestFacet(unittest.TestCase):
         facet.Translate(translation_vector)
         rotation_axis = (0.0, 0.0, 1.0)
         facet.RotateAboutAxis(rotation_axis, math.pi)
+        
+if __name__ == '__main__':
+    unittest.main()

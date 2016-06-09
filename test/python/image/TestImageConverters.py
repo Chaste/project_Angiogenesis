@@ -5,10 +5,10 @@ and storage formats
 
 import unittest
 import numpy as np
-import chaste.interfaces.converters.image as converters
+import chaste.image.converters as converters
 import chaste.mesh
 import chaste.simulation.setup
-import chaste.utility.rwc
+import chaste.utility.readwrite
 import scipy.misc
 
 class TestVtkImageDataToNumpy(unittest.TestCase):
@@ -31,7 +31,7 @@ class TestVtkImageDataToNumpy(unittest.TestCase):
         grid.SetPointValues(values)
         grid.Write(file_handler)
         
-        grid = chaste.utility.rwc.read_vtk_image(file_handler.GetOutputDirectoryFullPath() + "/grid.vti")
+        grid = chaste.utility.readwrite.read(file_handler.GetOutputDirectoryFullPath() + "/grid.vti")
         converter = converters.VtkImageDataToNumpy()
         converter.input = grid
         converter.update()

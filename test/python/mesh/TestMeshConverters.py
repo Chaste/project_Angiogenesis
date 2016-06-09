@@ -4,11 +4,11 @@ and storage formats
 """
 
 import unittest
-import chaste.interfaces.converters.mesh as converters
+import chaste.mesh.converters as converters
 import chaste.mesh.meshers
 import chaste.geometry
 import chaste.simulation.setup
-import chaste.utility.rwc
+import chaste.utility.readwrite
 
 class TestTriMeshToVtk(unittest.TestCase):
     
@@ -29,7 +29,7 @@ class TestTriMeshToVtk(unittest.TestCase):
 #         converter.input = my_mesh
 #         converter.update()
 #         vtk_surface = converter.output
-#         chaste.utility.rwc.write_vtk_surface(file_handler.GetOutputDirectoryFullPath() + "/vtk_surface.vtp", vtk_surface)
+#         chaste.utility.readwrite.write_vtk_surface(file_handler.GetOutputDirectoryFullPath() + "/vtk_surface.vtp", vtk_surface)
         # 
 if __name__ == '__main__':
     unittest.main()
