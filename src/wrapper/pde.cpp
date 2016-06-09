@@ -33,6 +33,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
+#ifdef CHASTE_ANGIOGENESIS_PYTHON
 #include <vector>
 #include <boost/python.hpp>
 #include <boost/python/module.hpp>
@@ -200,3 +201,4 @@ BOOST_PYTHON_MODULE(_pde)
         .def("SetThreshold", &HybridNonLinearEllipticPde<3>::SetThreshold)
     ;
 }
+#endif // CHASTE_ANGIOGENESIS_PYTHON

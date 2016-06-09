@@ -1,8 +1,36 @@
 /*
- * RegressionSolver.cpp
- *
- *  Created on: Nov 26, 2015
- *      Author: anthonyconnor
+
+ Copyright (c) 2005-2015, University of Oxford.
+ All rights reserved.
+
+ University of Oxford means the Chancellor, Masters and Scholars of the
+ University of Oxford, having an administrative office at Wellington
+ Square, Oxford OX1 2JD, UK.
+
+ This file is part of Chaste.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ * Redistributions of source code must retain the above copyright notice,
+ this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice,
+ this list of conditions and the following disclaimer in the documentation
+ and/or other materials provided with the distribution.
+ * Neither the name of the University of Oxford nor the names of its
+ contributors may be used to endorse or promote products derived from this
+ software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
  */
 
 #include "WallShearStressBasedRegressionSolver.hpp"
@@ -11,8 +39,8 @@
 template<unsigned DIM>
 WallShearStressBasedRegressionSolver<DIM>::WallShearStressBasedRegressionSolver() :
     RegressionSolver<DIM>(),
-    mthresholdWSSLevel(9),
-    mmaxTimeWithLowWallShearStress(60)
+    mThresholdWss(9),
+    mMaxTimeWithLowWss(60)
 {
 
 }
@@ -27,62 +55,51 @@ template<unsigned DIM>
 void WallShearStressBasedRegressionSolver<DIM>::SetMaximumTimeWithLowWallShearStress(double time)
 {
     assert(time > 0);
-    mmaxTimeWithLowWallShearStress = time;
+    mMaxTimeWithLowWss = time;
 }
 
 template<unsigned DIM>
 void WallShearStressBasedRegressionSolver<DIM>::SetLowWallShearStressThreshold(double threshold)
 {
     assert(threshold >= 0);
-    mthresholdWSSLevel = threshold;
+    mThresholdWss = threshold;
 }
 
 template<unsigned DIM>
 void WallShearStressBasedRegressionSolver<DIM>::Increment()
 {
+    if(!this->mpNetwork)
+    {
+        EXCEPTION("The regression solver needs an initial vessel network");
+    }
 
-//    if(!this->mpNetwork)
-//    {
-//        EXCEPTION("The regression solver needs an initial vessel network");
-//    }
-//
-//    std::vector<boost::shared_ptr<CaVessel<DIM> > > vessels = mpNetwork->GetVessels();
-//    unsigned numberOfVessels = vessels.size();
-//
-//    for(std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator v_it = vessels.begin(); v_it != vessels.end(); v_it++)
-//    {
-//        assert(v_it->GetSegment(0)->GetFlowProperties()->GetWallShearStress() >= 0);
-//
-//        // if wall shear stress of vessel is below threshold then start regression timer unless it has already been started
-//        if (v_it->GetSegment(0)->GetFlowProperties()->GetWallShearStress() < mthresholdWSSLevel)
-//        {
-//
-//            if (!(v_it->HasRegressionTimerStarted()) && !(v_it->VesselHasRegressed()))
-//            {
-//                // increment time that the vessel has had low wall shear stress
-//                v_it->SetTimeUntilRegression(mmaxTimeWithLowWallShearStress);
-//            }
-//
-//        }
-//        else // otherwise rescue vessel
-//        {
-//            // wall shear stress above threshold so vessel is not regressing
-//            v_it->ResetRegressionTimer();
-//        }
-//    }
-//
-//    assert(vessels.size() == numberOfVessels);
-//
-//    // iterate through all vessels and if regression flag is true then remove from the network
-//    for(std::vector<boost::shared_ptr<CaVessel<DIM> > >::iterator v_it = vessels.begin(); v_it != vessels.end(); v_it++)
-//    {
-//        if (v_it->VesselHasRegressed())
-//        {
-//            mpNetwork->RemoveVessel(*v_it, true); // should this flag be true ... method needs better documentation
-//            assert(vessels.size() == numberOfVessels); // sanity checking
-//        }
-//    }
+    std::vector<boost::shared_ptr<Vessel<DIM> > > vessels = this->mpNetwork->GetVessels();
+    for(unsigned idx=0;idx<vessels.size(); idx++)
+    {
+        // if wall shear stress of vessel is below threshold then start regression timer, unless it has already been started
+        if (vessels[idx]->GetSegment(0)->GetFlowProperties()->GetWallShearStress() < mThresholdWss)
+        {
+            if (!(vessels[idx]->HasRegressionTimerStarted()) && !(vessels[idx]->VesselHasRegressed()))
+            {
+                // increment time that the vessel has had low wall shear stress
+                vessels[idx]->SetTimeUntilRegression(mMaxTimeWithLowWss);
+            }
+        }
+        else // otherwise rescue vessel
+        {
+            // wall shear stress above threshold so vessel is not regressing
+            vessels[idx]->ResetRegressionTimer();
+        }
+    }
 
+    // iterate through all vessels and if regression flag is true then remove from the network
+    for(unsigned idx=0;idx<vessels.size(); idx++)
+    {
+        if (vessels[idx]->VesselHasRegressed())
+        {
+            this->mpNetwork->RemoveVessel(vessels[idx], true);
+        }
+    }
 }
 
 // Explicit instantiation

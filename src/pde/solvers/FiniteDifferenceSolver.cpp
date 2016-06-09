@@ -43,9 +43,13 @@
 // Nonlinear solve methods
 template<unsigned DIM>
 PetscErrorCode HyrbidFiniteDifference_ComputeResidual(SNES snes, Vec solution_guess, Vec residual, void* pContext);
-
+#if ( PETSC_VERSION_MAJOR==3 && PETSC_VERSION_MINOR>=5 )
 template<unsigned DIM>
 PetscErrorCode HyrbidFiniteDifference_ComputeJacobian(SNES snes, Vec input, Mat jacobian, Mat preconditioner, void* pContext);
+#else
+template<unsigned DIM>
+PetscErrorCode HyrbidFiniteDifference_ComputeJacobian(SNES snes,Vec input,Mat* pJacobian ,Mat* pPreconditioner,MatStructure* pMatStructure ,void* pContext);
+#endif
 
 template<unsigned DIM>
 FiniteDifferenceSolver<DIM>::FiniteDifferenceSolver()
@@ -441,9 +445,15 @@ PetscErrorCode HyrbidFiniteDifference_ComputeResidual(SNES snes, Vec solution_gu
     return 0;
 }
 
+#if ( PETSC_VERSION_MAJOR==3 && PETSC_VERSION_MINOR>=5 )
 template<unsigned DIM>
 PetscErrorCode HyrbidFiniteDifference_ComputeJacobian(SNES snes, Vec input, Mat jacobian, Mat preconditioner, void* pContext)
+#else
+template<unsigned DIM>
+PetscErrorCode HyrbidFiniteDifference_ComputeJacobian(SNES snes, Vec input, Mat* pJacobian, Mat* pPreconditioner, MatStructure* pMatStructure, void* pContext)
 {
+    Mat jacobian = *pJacobian;
+#endif
     FiniteDifferenceSolver<DIM>* solver = (FiniteDifferenceSolver<DIM>*) pContext;
     PetscMatTools::Zero(jacobian);
     PetscMatTools::SwitchWriteMode(jacobian);

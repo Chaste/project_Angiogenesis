@@ -33,6 +33,7 @@
 
  */
 
+#ifdef CHASTE_ANGIOGENESIS_PYTHON
 #include <vector>
 #include <boost/python.hpp>
 #include <boost/python/module.hpp>
@@ -91,3 +92,4 @@ BOOST_PYTHON_MODULE(_mesh)
             .def("GetNumNodes", &PottsMesh<3u>::GetNumNodes)
             .def("GetNumElements", &PottsMesh<3u>::GetNumElements);
 }
+#endif // CHASTE_ANGIOGENESIS_PYTHON

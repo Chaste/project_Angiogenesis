@@ -33,6 +33,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
+#ifdef CHASTE_ANGIOGENESIS_PYTHON
 #include <vector>
 #include <boost/python.hpp>
 #include <boost/python/module.hpp>
@@ -139,3 +140,5 @@ BOOST_PYTHON_MODULE(_geometry)
       .from_python<std::vector<boost::shared_ptr<Facet> > > ()
       ;
 }
+
+#endif // CHASTE_ANGIOGENESIS_PYTHON

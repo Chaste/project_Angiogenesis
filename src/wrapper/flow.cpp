@@ -33,6 +33,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
+#ifdef CHASTE_ANGIOGENESIS_PYTHON
 #include <vector>
 #include <boost/python.hpp>
 #include <boost/python/module.hpp>
@@ -63,3 +64,5 @@ BOOST_PYTHON_MODULE(_flow)
         .def("SetHaematocrit", &BetteridgeHaematocritSolver<3>::SetHaematocrit)
     ;
 }
+
+#endif // CHASTE_ANGIOGENESIS_PYTHON

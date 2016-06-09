@@ -46,7 +46,6 @@
  * * Adding structural adaptation in response to flow
  * * Adding vessel regression in low flow regions
  *
- *
  * = The Test =
  * We start by introducing the necessary header files.
  */
@@ -143,6 +142,73 @@ public:
          * `TestBloodFlowLiteratePaper\bifurcating_network.vtp` into Paraview. For a nicer rendering you can do `Filters->Alphabetical->Tube`.
          */
     }
+
+    void TestFlowProblemWithHaematocrit() throw (Exception)
+    {
+        /*
+         * This time we solve a flow problem with haematocrit. We set up the problem as before.
+         */
+        double length = 100.0;
+        std::vector<boost::shared_ptr<VascularNode<2> > > nodes;
+        nodes.push_back(VascularNode<2>::Create(0.0, 0.0));
+        nodes.push_back(VascularNode<2>::Create(length, 0.0));
+        nodes.push_back(VascularNode<2>::Create(2.0*length, length));
+        nodes.push_back(VascularNode<2>::Create(2.0*length, -length));
+        std::vector<boost::shared_ptr<Vessel<2> > > vessels;
+        vessels.push_back(Vessel<2>::Create(nodes[0], nodes[1]));
+        vessels.push_back(Vessel<2>::Create(nodes[1], nodes[2]));
+        vessels.push_back(Vessel<2>::Create(nodes[1], nodes[3]));
+        boost::shared_ptr<VascularNetwork<2> > p_network = VascularNetwork<2>::Create();
+        p_network->AddVessels(vessels);
+        /*
+         * We specify which nodes will be the inlets and outlets of the network for the flow problem. This information, as well
+         * as all other info related to the flow problem, is contained in a `NodeFlowProperties` instance. Then we set the inlet and
+         * outlet pressures in Pa. Finally, we specify the radius and viscosity of each segment.
+         * This is used in the calculation of the impedance of the vessel in the flow problem.
+         */
+        nodes[0]->GetFlowProperties()->SetIsInputNode(true);
+        nodes[0]->GetFlowProperties()->SetPressure(5000.0);
+        nodes[2]->GetFlowProperties()->SetIsOutputNode(true);
+        nodes[2]->GetFlowProperties()->SetPressure(3000.0);
+        nodes[3]->GetFlowProperties()->SetIsOutputNode(true);
+        nodes[3]->GetFlowProperties()->SetPressure(3000.0);
+        p_network->SetSegmentRadii(10.0);
+        std::vector<boost::shared_ptr<VesselSegment<2> > > segments = p_network->GetVesselSegments();
+        for(unsigned idx=0; idx<segments.size(); idx++)
+        {
+            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);
+        }
+        /*
+         * We use a calculator to work out the impedance of each vessel based on assumptions of Poiseuille flow and cylindrical vessels. This
+         * updates the value of the impedance in the vessel.
+         */
+        PoiseuilleImpedanceCalculator<2> impedance_calculator = PoiseuilleImpedanceCalculator<2>();
+        impedance_calculator.Calculate(p_network);
+        /*
+         * Now we can solve for the flow rates in each vessel based on the inlet and outlet pressures and impedances. The solver
+         * updates the value of pressures and flow rates in each vessel and node in the network.
+         */
+        FlowSolver<2> flow_solver = FlowSolver<2>();
+        flow_solver.SetVesselNetwork(p_network);
+        flow_solver.Solve();
+        /*
+         * We can check to see if the final solution is reasonable
+         */
+//        TS_ASSERT_EQUALS(p_network->GetNumberOfNodes(), 4u);
+//        TS_ASSERT_EQUALS(p_network->GetNumberOfVessels(), 3u);
+
+        /*
+         * Next we write out the network, including updated flow data, to file.
+         */
+        MAKE_PTR_ARGS(OutputFileHandler, p_handler, ("TestBloodFlowLiteratePaper"));
+        p_network->Write(p_handler->GetOutputDirectoryFullPath() + "bifurcating_network_results.vtp");
+        /*
+         * Now we can visualize the results in Paraview. See [wiki:UserTutorials/VisualizingWithParaview here] to get started. To view the network import the file
+         * `TestBloodFlowLiteratePaper\bifurcating_network.vtp` into Paraview. For a nicer rendering you can do `Filters->Alphabetical->Tube`.
+         */
+    }
+
+
 };
 
 #endif /*TESTBLOODFLOWLITERATEPAPER_HPP_*/

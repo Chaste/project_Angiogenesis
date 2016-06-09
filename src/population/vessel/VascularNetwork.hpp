@@ -377,6 +377,7 @@ public:
 
     /*
      * Removes a vessel from the network
+     * @param deleteVessel also remove the vessel from its child segments and nodes if true.
      */
     void RemoveVessel(boost::shared_ptr<Vessel<DIM> > pVessel, bool deleteVessel = false);
 

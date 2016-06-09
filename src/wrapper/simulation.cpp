@@ -33,6 +33,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
+#ifdef CHASTE_ANGIOGENESIS_PYTHON
 #include <vector>
 #include <boost/python.hpp>
 #include <boost/python/module.hpp>
@@ -105,3 +106,4 @@ BOOST_PYTHON_MODULE(_simulation)
             .def("AddHybridSolver", &VascularTumourSolver<3>::AddHybridSolver)
     ;
 }
+#endif // CHASTE_ANGIOGENESIS_PYTHON
