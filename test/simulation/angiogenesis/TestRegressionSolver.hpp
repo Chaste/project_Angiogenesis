@@ -97,63 +97,21 @@ public:
 
         // Generate the network
         VasculatureGenerator<2> p_network_generator;
-        boost::shared_ptr<VascularNetwork<2> > p_network = p_network_generator.GenerateHexagonalNetwork(
-                1000, 1000, vessel_length);
+        boost::shared_ptr<VascularNetwork<2> > p_network = p_network_generator.GenerateHexagonalNetwork(1000, 1000, vessel_length);
 
-        // Make some nodes
-        std::vector<ChastePoint<2> > points;
-        points.push_back(ChastePoint<2>(0, 0, 0)); // input
-        points.push_back(ChastePoint<2>(0, 1.0, 0)); // input
-
-        std::vector<boost::shared_ptr<VascularNode<2> > > nodes;
-        for (unsigned i = 0; i < points.size(); i++)
-        {
-            nodes.push_back(boost::shared_ptr<VascularNode<2> > (VascularNode<2>::Create(points[i])));
-        }
-        boost::shared_ptr<VesselSegment<2> > p_segment1 = VesselSegment<2>::Create(nodes[0], nodes[1]);
-
-        double impedance = 1.e14;
-        p_segment1->GetFlowProperties()->SetImpedance(impedance);
+        // Make a dummy segment to set properties on
+        boost::shared_ptr<VesselSegment<2> > p_segment1 = VesselSegment<2>::Create(VascularNode<2>::Create(0.0, 0.0),
+                                                                                   VascularNode<2>::Create(1.0, 0.0));
+        p_segment1->GetFlowProperties()->SetImpedance(1.e14);
         p_network->SetSegmentProperties(p_segment1);
-        std::vector<std::pair<double, double> > extents = p_network->GetExtents();
-        double y_middle = (extents[1].first + extents[1].second) / 2.0;
-        std::vector<boost::shared_ptr<Vessel<2> > >::iterator vessel_iterator;
-        std::vector<boost::shared_ptr<Vessel<2> > > vessels = p_network->GetVessels();
-        for (vessel_iterator = vessels.begin(); vessel_iterator != vessels.end(); vessel_iterator++)
-        {
-            if ((*vessel_iterator)->GetStartNode()->GetNumberOfSegments() == 1)
-            {
-                if ((*vessel_iterator)->GetStartNode()->GetLocation()[1] > y_middle)
-                {
-                    (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetIsInputNode(true);
-                    (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetPressure(3393);
-                }
-            }
-            if ((*vessel_iterator)->GetEndNode()->GetNumberOfSegments() == 1)
-            {
-                if ((*vessel_iterator)->GetEndNode()->GetLocation()[1] > y_middle)
-                {
-                    (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetIsInputNode(true);
-                    (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetPressure(3393);
-                }
-            }
-            if ((*vessel_iterator)->GetStartNode()->GetNumberOfSegments() == 1)
-            {
-                if ((*vessel_iterator)->GetStartNode()->GetLocation()[1] <= y_middle)
-                {
-                    (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetIsOutputNode(true);
-                    (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetPressure(1993);
-                }
-            }
-            if ((*vessel_iterator)->GetEndNode()->GetNumberOfSegments() == 1)
-            {
-                if ((*vessel_iterator)->GetEndNode()->GetLocation()[1] <= y_middle)
-                {
-                    (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetIsOutputNode(true);
-                    (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetPressure(1993);
-                }
-            }
-        }
+
+        // Get the nearest node to the inlet and outlet
+        boost::shared_ptr<VascularNode<2> > p_inlet_node = p_network->GetNearestNode(ChastePoint<2>(742, 912));
+        boost::shared_ptr<VascularNode<2> > p_outlet_node = p_network->GetNearestNode(ChastePoint<2>(0, 0));
+        p_inlet_node->GetFlowProperties()->SetIsInputNode(true);
+        p_inlet_node->GetFlowProperties()->SetPressure(3393);
+        p_outlet_node->GetFlowProperties()->SetIsOutputNode(true);
+        p_outlet_node->GetFlowProperties()->SetPressure(1993);
 
         // Set up a structural adaptation solver
         boost::shared_ptr<StructuralAdaptationSolver<2> > p_adaptation_solver = StructuralAdaptationSolver<2>::Create();
@@ -162,14 +120,14 @@ public:
         p_adaptation_solver->SetMaxIterations(10000);
 
         // Set up a regression solver
-        double wss_threshold = 2.5e-5;
+        double wss_threshold = 8e-6;
         boost::shared_ptr<WallShearStressBasedRegressionSolver<2> > p_regression_solver =
                 WallShearStressBasedRegressionSolver<2>::Create();
         p_regression_solver->SetLowWallShearStressThreshold(wss_threshold);
         p_regression_solver->SetMaximumTimeWithLowWallShearStress(3);
 
         // Set up a vascular tumour solver
-        MAKE_PTR_ARGS(OutputFileHandler, p_handler, ("TestMultiVesselRegression"));
+        MAKE_PTR_ARGS(OutputFileHandler, p_handler, ("TestRegressionSolver/TestMultiVesselRegression"));
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
 
         VascularTumourSolver<2> vt_solver = VascularTumourSolver<2>();

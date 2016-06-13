@@ -171,6 +171,11 @@ public:
      */
     void SetWallShearStressCalculator(boost::shared_ptr<Alarcon03WallShearStressCalculator<DIM> > pCalculator);
 
+    /**
+     * To be called if the vessel network changes between solves
+     */
+    void UpdateFlowSolver();
+
 };
 
 #endif //SIMPLESTRCUTURALADAPATATIONSOLVER_HPP

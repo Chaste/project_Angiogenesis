@@ -92,6 +92,7 @@ void VascularTumourSolver<DIM>::Increment()
     // If there is a structural adaptation or flow problem solve it
     if(mpStructuralAdaptationSolver)
     {
+        mpStructuralAdaptationSolver->UpdateFlowSolver();
         mpStructuralAdaptationSolver->Solve();
     }
     else if(mpFlowSolver)

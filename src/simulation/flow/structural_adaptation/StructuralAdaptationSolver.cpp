@@ -146,6 +146,16 @@ void StructuralAdaptationSolver<DIM>::Iterate()
     mpRadiusCalculator->Calculate(this->mpVesselNetwork);
 }
 
+template<unsigned DIM>
+void StructuralAdaptationSolver<DIM>::UpdateFlowSolver()
+{
+    if(mpFlowSolver)
+    {
+        mpFlowSolver->SetVesselNetwork(this->mpVesselNetwork);
+        mpFlowSolver->SetUp();
+    }
+}
+
 // Explicit instantiation
 template class StructuralAdaptationSolver<2> ;
 template class StructuralAdaptationSolver<3> ;

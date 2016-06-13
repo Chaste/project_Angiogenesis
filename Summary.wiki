@@ -1,34 +1,81 @@
 = Angiogenesis Project =
 
-The Angiogenesis project is a Chaste add-on with functionality for modelling blood vessels. It is written in C++ and Python.
+The Angiogenesis project is a Chaste add-on with functionality for modelling blood vessels. It is written in C++ and Python and is supported on Linux only.
 
 = Installation =
 The project can be used directly as a C++ library or else as a Python package.
 First, Chaste dependencies need to be built from source following the [wiki:InstallGuides/InstallGuide Chaste Install Guide]. 
-The project only supports the development version of Chaste, the source can be obtained following instructions [wiki:ChasteGuides/AccessCodeRepository here].
-
-The C++ libraries can be built using either the standard Chaste Scons build system, see [wiki:ChasteGuides/DeveloperBuildGuide Chaste Developer Build Guide] and 
-[wiki:InstallGuides/CheckoutUserProject Chaste User Project Build Guide] or the [wiki:ChasteGuides/CmakeBuildGuide new CMake build system]. For the latter, the steps [wiki:InstallGuides/CheckoutUserProject here] up to the point of building still need to be followed. The command
-to build the C++ interface with CMake is:
+The project only supports the development version of Chaste. This can be obtained by doing:
 
 {{{
+svn --username anonymous checkout https://chaste.cs.ox.ac.uk/svn/chaste/trunk/ Chaste
+}}}
+
+using subversion. The project code itself can be obtained by doing: 
+
+{{{
+svn co "https://chaste.cs.ox.ac.uk/svn/chaste/projects/Angiogenesis"
+}}}
+
+The Angiogenesis project code needs to be included in the main Chaste source. This can be done with a symbolic link:
+
+{{{
+cd $CHASTE_SOURCE_DIR/projects
+ln -s $ANGIOGENESIS_PROJECT_SOURCE_DIR
+}}}
+
+The C++ libraries can be built using either the standard Chaste Scons build system (see [wiki:ChasteGuides/DeveloperBuildGuide Chaste Developer Build Guide] or the new [wiki:ChasteGuides/CmakeBuildGuide CMake build system] (preffered). 
+For CMake, first create a build directory outside the source tree and proceed as:
+
+{{{
+make $BUILD_DIR
+cd $BUILD_DIR
+cmake $CHASTE_SOURCE_DIR
 make project_Angiogenesis
 }}}
 
-The Python package can only be built using the CMake build system. Building requires Boost Python, which may already be installed on your system. If not, this can be done by adding `python` to the list of libraries to be built when following the Boost build instructions [wiki:InstallGuides/InstallGuide here]. First build
-the C++ libraries, as above. Then do:
+The will build the C++ library and all tests. To avoid building tests do:
 
 {{{
+make chaste_project_Angiogenesis
+}}}
+
+as the final command. Building the Python package requires Boost Python, which may already be installed on your system. If not, this can be done by adding `python` to the list of libraries to be built when following the Boost build instructions [wiki:InstallGuides/InstallGuide here].
+Then do:
+
+{{{
+cmake -DBUILD_ANGIOGENESIS_PYTHON=ON $CHASTE_SOURCE_DIR
+make project_Angiogenesis
 make project_Angiogenesis_Python
 }}}
 
-The Python package `chaste` will be in the build directory under `Chaste/projects/Angiogenesis/python` and can be imported in the typical way. For convenience, the build directory `Chaste/projects/Angiogenesis/python` should be added to your PYTHONPATH and
+The Python package `chaste` will be in `$BUILD_DIR` under `Chaste/projects/Angiogenesis/python` and can be imported in the typical way. For convenience, the directory `$BUILD_DIR/Chaste/projects/Angiogenesis/python` should be added to your PYTHONPATH and
 the Chaste library directories to LD_LIBRARY_PATH.
 
 == Usage ==
-For the C++ framework source and test code are in the `src` and `test` folders respectively. The Python source and tests are in the `src/python` and `test/python` folders.
+For the C++ framework source and test code are in the `src` and `test` folders respectively. The Python source and tests are in the `src/python` and `test/python` folders. C++ unit tests can be built and run using the Chaste CMake framework [wiki:ChasteGuides/CmakeBuildGuide as detailed here]. It is recommended that the tutorials for 
+either the [wiki:PaperTutorials/Angiogenesis/BuildVesselNetwork C++] or [wiki:PaperTutorials/Angiogenesis/PythonBuildVesselNetwork Python] frameworks are followed next. To run the first C++ tutorial do:
 
-Unit tests can be built and run using the Chaste CMake framework [wiki:ChasteGuides/CmakeBuildGuide as detailed here]. It is recommended that the tutorials for 
-either the [wiki:PaperTutorials/Angiogenesis/BuildVesselNetwork C++] or [wiki:PaperTutorials/Angiogenesis/PythonBuildVesselNetwork Python] frameworks are followed next.
+{{{
+ctest -R TestBuildVesselNetworkLiteratePaper
+}}}
+
+To run all C++ tests do:
+
+{{{
+ctest -L project_Angiogenesis
+}}}
+
+To run the Python tutorial do:
+
+{{{
+python $BUILD_DIR/Chaste/projects/Angiogenesis/python/test/tutorial/TestPythonBuildVesselNetworkLiteratePaper.py
+}}}
+
+To run all Python tests do:
+
+{{{
+python $BUILD_DIR/Chaste/projects/Angiogenesis/python/test/run_tests.py
+}}}
 
 A full list of tutorials is given at the bottom of this page.
