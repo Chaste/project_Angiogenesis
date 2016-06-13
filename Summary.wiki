@@ -24,11 +24,10 @@ cd $CHASTE_SOURCE_DIR/projects
 ln -s $ANGIOGENESIS_PROJECT_SOURCE_DIR
 }}}
 
-The C++ libraries can be built using either the standard Chaste Scons build system (see [wiki:ChasteGuides/DeveloperBuildGuide Chaste Developer Build Guide] or the new [wiki:ChasteGuides/CmakeBuildGuide CMake build system] (preffered). 
+The C++ libraries can be built using either the standard Chaste Scons build system (see [wiki:ChasteGuides/DeveloperBuildGuide Chaste Developer Build Guide]) or the new [wiki:ChasteGuides/CmakeBuildGuide CMake build system] (preffered). 
 For CMake, first create a build directory outside the source tree and proceed as:
 
 {{{
-make $BUILD_DIR
 cd $BUILD_DIR
 cmake $CHASTE_SOURCE_DIR
 make project_Angiogenesis

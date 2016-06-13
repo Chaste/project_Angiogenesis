@@ -33,8 +33,8 @@
 
  */
 
-#ifndef TestSimpleStructuralAdaptationSolver_hpp
-#define TestSimpleStructuralAdaptationSolver_hpp
+#ifndef TestAlarcon03HaematocritSolver_hpp
+#define TestAlarcon03HaematocritSolver_hpp
 
 #include <cxxtest/TestSuite.h>
 #include "StructuralAdaptationSolver.hpp"
@@ -45,11 +45,12 @@
 #include "FlowSolver.hpp"
 #include "VasculatureData.hpp"
 #include "SimulationTime.hpp"
-#include "FakePetscSetup.hpp"
 #include "Alarcon03HaematocritSolver.hpp"
 #include "PoiseuilleImpedanceCalculator.hpp"
 
-class TestSimpleStructuralAdaptationSolver : public CxxTest::TestSuite
+#include "FakePetscSetup.hpp"
+
+class TestAlarcon03HaematocritSolver : public CxxTest::TestSuite
 {
 
 public:
@@ -172,7 +173,8 @@ public:
         TS_ASSERT_DELTA(p_vessel2->GetHaematocrit(),0.45, 1e-6);
         TS_ASSERT_DELTA(p_vessel3->GetHaematocrit(),0.45, 1e-6);
     }
-    void TestHexagonalNetworkAlarcon03Haematocrit() throw(Exception)
+
+    void TestHexagonalNetwork() throw(Exception)
     {
         // Specify the network dimensions
         double vessel_length = 80.0;
@@ -281,4 +283,4 @@ public:
     }
 };
 
-#endif
+#endif // TestAlarcon03HaematocritSolver_hpp

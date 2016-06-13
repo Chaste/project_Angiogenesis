@@ -36,27 +36,34 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef AbstractHaematocritSolver_hpp
 #define AbstractHaematocritSolver_hpp
 
-#include <boost/shared_ptr.hpp>
+#include "SmartPointers.hpp"
 #include "VascularNetwork.hpp"
 
+/**
+ * This solver calculates the distribution of haematocrit in branching vessel networks. Concrete implementations
+ * correspond to different approaches used in the literature.
+ */
 template<unsigned DIM>
 class AbstractHaematocritSolver
 {
 
 public:
 
-    // constructor
+    /**
+     * Constructor.
+     */
     AbstractHaematocritSolver();
 
     /**
-     *  Virtual destructor.
+     * Destructor.
      */
     virtual ~AbstractHaematocritSolver();
 
     /**
-     *  Purely virtual method for performing the Solver encapsulated by concrete sub-classes of this class.
+     *  Pure virtual method to do the solve, to be overwritten in concrete classes
+     *  @param pNetwork the vessel network to do the solve on
      */
-    virtual void Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork) = 0;
+    virtual void Calculate(boost::shared_ptr<VascularNetwork<DIM> > pNetwork) = 0;
 
 };
 

@@ -31,15 +31,12 @@
 //LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 //OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
-#include <stdio.h>
 #include "Alarcon03HaematocritSolver.hpp"
 #include "LinearSystem.hpp"
 #include "VascularNode.hpp"
 #include "Vessel.hpp"
 #include "Exception.hpp"
 #include "ReplicatableVector.hpp"
-#include "Debug.hpp"
 
 template<unsigned DIM>
 Alarcon03HaematocritSolver<DIM>::Alarcon03HaematocritSolver() : AbstractHaematocritSolver<DIM>(),
@@ -57,30 +54,9 @@ Alarcon03HaematocritSolver<DIM>::~Alarcon03HaematocritSolver()
 }
 
 template<unsigned DIM>
-void Alarcon03HaematocritSolver<DIM>::SetTHR(double THR)
-{
-    mTHR = THR;
-    assert(mTHR > 1);
-}
-
-template<unsigned DIM>
-void Alarcon03HaematocritSolver<DIM>::SetAlpha(double Alpha)
-{
-    mAlpha = Alpha;
-    assert(mAlpha < 1);
-    assert(mAlpha > 0);
-}
-
-template<unsigned DIM>
-void Alarcon03HaematocritSolver<DIM>::SetHaematocrit(double haematocrit)
-{
-    mHaematocrit = haematocrit;
-}
-
-template<unsigned DIM>
 void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwork<DIM> > pNetwork)
 {
-    // create extra data tables to aid with formation of coefficient matrix for haematocrit calculation
+    // Give the vessels unique Ids
     std::vector<boost::shared_ptr<Vessel<DIM> > > vessels = pNetwork->GetVessels();
     for(unsigned idx=0; idx<vessels.size(); idx++)
     {
@@ -89,15 +65,22 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwor
 
     // Set up the linear system
     PetscInt lhsVectorSize = vessels.size();
-    unsigned max_vessels_per_branch = 5;
+    unsigned max_vessels_per_branch = 5; // this could be increased if needed
+
+    // If there are very few vessels, e.g. unit tests, set the number of non zeros to number of vessels
     if(vessels.size() < max_vessels_per_branch)
     {
         max_vessels_per_branch  = unsigned(lhsVectorSize);
     }
     LinearSystem linearSystem(lhsVectorSize, max_vessels_per_branch);
+
+    // Currently `LinearSystem` defaults to an iterative solver for <6 dof. This check just highlights that this
+    // is happening.
     if(lhsVectorSize > 6)
     {
         linearSystem.SetPcType("lu");
+
+        // Use hypre if it is installed
         #ifndef PETSC_HAVE_HYPRE
         linearSystem.SetPcType("hypre");
         #endif //PETSC_HAVE_HYPRE
@@ -108,20 +91,22 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwor
     {
         // Always have a diagonal entry for system, this sets zero haematocrit by default
         linearSystem.SetMatrixElement(idx, idx, 1);
+
+        // Set arterial haematocrit for input nodes
         if(vessels[idx]->GetStartNode()->GetFlowProperties()->IsInputNode() or vessels[idx]->GetEndNode()->GetFlowProperties()->IsInputNode())
         {
             linearSystem.SetRhsVectorElement(idx, mHaematocrit);
         }
-        // Set rhs to zero, it should already be zero but this explicitly captures the no flow case
+        // Set rhs to zero for no flow vessels. It should already be zero, but this explicitly sets it for clarity
         else if(vessels[idx]->GetFlowRate()==0.0)
         {
             linearSystem.SetRhsVectorElement(idx, 0.0);
         }
         else
         {
-            // Identify inflow node
+            // Identify the inflow node for this vessel
             boost::shared_ptr<VascularNode<DIM> > p_inflow_node;
-            double flow_rate= vessels[idx]->GetFlowRate();
+            double flow_rate = vessels[idx]->GetFlowRate();
             if(vessels[idx]->GetFlowRate()>0)
             {
                 p_inflow_node = vessels[idx]->GetStartNode();
@@ -131,7 +116,8 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwor
                 p_inflow_node = vessels[idx]->GetEndNode();
             }
 
-            // Identify number of inflow and outflow vessels
+            // Identify the number of 'parent' and 'competitor' vessels. Parent vessels feed into the current vessel. Competitor vessels share
+            // a parent vessel and do not feed in, i.e. they compete for haematocrit
             if(p_inflow_node->GetNumberOfSegments()>1)
             {
                 std::vector<boost::shared_ptr<Vessel<DIM> > > parent_vessels;
@@ -177,6 +163,7 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwor
                 }
                 else
                 {
+                    // This is for compatibility with the paper, we could allow for more if needed
                     if(competitor_vessels.size()>1 or parent_vessels.size()>1)
                     {
                         EXCEPTION("This solver can only work with branches with connectivity 3");
@@ -190,12 +177,12 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwor
 
                     if(my_velocity>mTHR*competitor_velocity)
                     {
-                        // Get all the haematocrit
+                        // I get all the haematocrit
                         linearSystem.SetMatrixElement(idx, parent_vessels[0]->GetId(), -1);
                     }
                     else if(my_velocity*mTHR>competitor_velocity)
                     {
-                        // Get some haematocrit
+                        // I get some haematocrit
                         if(my_velocity>competitor_velocity)
                         {
                             linearSystem.SetMatrixElement(idx, parent_vessels[0]->GetId(), -1.0/(1.0+(competitor_velocity/(my_velocity*mAlpha))));
@@ -206,7 +193,8 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwor
                         }
                         else
                         {
-                            // Velocities are the same, choose side for partitioning by vessel id so that there is some notion of conservation
+                            // Velocities are the same, but the partioining rule is not symmetric. This is not covered in the paper.
+                            // Choose side for partitioning by vessel id so that there is some notion of conservation of H
                             if(vessels[idx]->GetId()>competitor_vessels[0]->GetId())
                             {
                                 linearSystem.SetMatrixElement(idx, parent_vessels[0]->GetId(), -1.0/(1.0+(mAlpha*competitor_velocity/(my_velocity))));
@@ -222,10 +210,10 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwor
         }
     }
 
+    // Do the solve
     Vec solution = PetscTools::CreateVec(vessels.size());
     linearSystem.AssembleFinalLinearSystem();
     solution = linearSystem.Solve();
-
     ReplicatableVector a(solution);
 
     // assign haematocrit levels to vessels
@@ -239,6 +227,28 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwor
 
     PetscTools::Destroy(solution);
 }
+
+template<unsigned DIM>
+void Alarcon03HaematocritSolver<DIM>::SetTHR(double THR)
+{
+    mTHR = THR;
+    assert(mTHR > 1);
+}
+
+template<unsigned DIM>
+void Alarcon03HaematocritSolver<DIM>::SetAlpha(double Alpha)
+{
+    mAlpha = Alpha;
+    assert(mAlpha < 1);
+    assert(mAlpha > 0);
+}
+
+template<unsigned DIM>
+void Alarcon03HaematocritSolver<DIM>::SetHaematocrit(double haematocrit)
+{
+    mHaematocrit = haematocrit;
+}
+
 // Explicit instantiation
 template class Alarcon03HaematocritSolver<2>;
 template class Alarcon03HaematocritSolver<3>;

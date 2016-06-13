@@ -36,42 +36,70 @@
 #ifndef _BetteridgeHaematocritSolver_hpp
 #define _BetteridgeHaematocritSolver_hpp
 
-#include <boost/shared_ptr.hpp>
+#include "SmartPointers.hpp"
 #include "VascularNetwork.hpp"
 #include "AbstractHaematocritSolver.hpp"
 
-/*// TODO This solver is incomplete. PETSc has issues with the ordering in the
- * linear system due to zeros on diagonals. Suggest not using it for now.
+/**
+ * This solver calculates the distribution of haematocrit in branching vessel networks according to:
+ * Betteridge et al. (2006), Networks and Heterogenous Media, 1(4), pp515-535.
  */
-
 template<unsigned DIM>
 class BetteridgeHaematocritSolver : public AbstractHaematocritSolver<DIM>
 {
 
 private:
 
+    /**
+     * The threshold velocity ratio at which all haematocrit goes into the faster vessel
+     */
     double mTHR;
+
+    /**
+     * The partition coefficient for haematocrit
+     */
     double mAlpha;
-	double mHaematocrit;
+
+    /**
+     * The arterial haematocrit level
+     */
+    double mHaematocrit;
 
 public:
 
-    // constructor
-    BetteridgeHaematocritSolver(double haematocrit = 0.45);
+    /**
+     * Constructor.
+     */
+    BetteridgeHaematocritSolver();
 
     /**
      *  destructor.
      */
     ~BetteridgeHaematocritSolver();
 
+    /**
+     *  Do the solve
+     *  @param pNetwork the vessel network to do the solve on
+     */
+    void Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork);
+
+    /**
+     * Set the threshold velocity ratio
+     * @param thr the threshold velocity ratio
+     */
     void SetTHR(double thr);
 
+    /**
+     * Set the partition coefficient for haematocrit
+     * @param alpha the partition coefficient for haematocrit
+     */
     void SetAlpha(double alpha);
 
+    /**
+     * Set the artial haematocrit
+     * @param haematocrit the arterial haematocrit
+     */
     void SetHaematocrit(double haematocrit);
-
-    // method for performing the Calculation
-    void Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork);
 
 };
 
