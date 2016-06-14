@@ -33,50 +33,42 @@
 
  */
 
-#include "PoiseuilleImpedanceCalculator.hpp"
-#include "VesselSegment.hpp"
-#include "VasculatureData.hpp"
-#include "LinearSystem.hpp"
-#include "Exception.hpp"
-#include "ReplicatableVector.hpp"
-#include "MathsCustomFunctions.hpp"
-#include "Debug.hpp"
+#ifndef VesselImpedanceCalculator_HPP_
+#define VesselImpedanceCalculator_HPP_
 
+#include "SmartPointers.hpp"
+#include "AbstractVesselNetworkCalculator.hpp"
+#include "VascularNetwork.hpp"
+
+/**
+ * Calculate impedance, Z, of all vessel segments and vessels in network using Poiseuille flow
+ * approximation:
+ *
+ *          Z = \frac{8 \mu L}{\pi R^4},
+ *
+ *  where \mu is viscosity, L is length and R is radius. Length is calculated within this method.
+ *  VascularData entries "Radius" and "Viscosity" must be previously set on each segment before this
+ *  calculation can be implemented.
+ */
 template<unsigned DIM>
-PoiseuilleImpedanceCalculator<DIM>::PoiseuilleImpedanceCalculator()
+class VesselImpedanceCalculator : public AbstractVesselNetworkCalculator<DIM>
 {
 
-}
+public:
 
-template<unsigned DIM>
-PoiseuilleImpedanceCalculator<DIM>::~PoiseuilleImpedanceCalculator()
-{
+    /**
+     * Constructor.
+     */
+    VesselImpedanceCalculator();
 
-}
+    /**
+     * Destructor.
+     */
+    ~VesselImpedanceCalculator();
 
-template<unsigned DIM>
-void PoiseuilleImpedanceCalculator<DIM>::Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork)
-{
-    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
-    for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
-    {
-        double length = segments[segment_index]->GetLength();
-        double radius = segments[segment_index]->GetRadius();
-        double viscosity = segments[segment_index]->GetFlowProperties()->GetViscosity();
-        if (radius <= 0.0)
-        {
-            EXCEPTION("Radius should be a positive number.");
-        }
-        if (viscosity <= 0.0)
-        {
-            EXCEPTION("Viscosity should be a positive number.");
-        }
-        double impedance = 8.0 * viscosity * length / (M_PI * SmallPow(radius, 4u));
-        segments[segment_index]->GetFlowProperties()->SetImpedance(impedance);
-    }
-}
 
-// Explicit instantiation
-template class PoiseuilleImpedanceCalculator<2> ;
-template class PoiseuilleImpedanceCalculator<3> ;
+    void Calculate();
 
+};
+
+#endif /* VesselImpedanceCalculator_HPP_ */

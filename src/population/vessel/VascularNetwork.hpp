@@ -49,6 +49,7 @@
 #include "VascularNode.hpp"
 #include "VasculatureData.hpp"
 #include "UblasIncludes.hpp"
+#include "UnitCollections.hpp"
 
 /**
  A vessel network is a collection of vessels
@@ -268,12 +269,12 @@ public:
     /**
      Return the total volume of the network
      */
-    double GetTotalVolume();
+    units::quantity<unit::volume> GetTotalVolume();
 
     /**
      Return the total surface area of the network
      */
-    double GetTotalSurfaceArea();
+    units::quantity<unit::area> GetTotalSurfaceArea();
 
     /**
      Return the average distance between segments
@@ -414,7 +415,7 @@ public:
     /**
      Set the segment radii to the same value
      */
-    void SetSegmentRadii(double radius);
+    void SetSegmentRadii(units::quantity<unit::length> radius);
 
     /*
      * Translate the network along the provided vector

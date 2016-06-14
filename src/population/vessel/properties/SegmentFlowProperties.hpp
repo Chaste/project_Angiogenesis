@@ -39,6 +39,7 @@
 #include <string>
 #include <map>
 #include <boost/enable_shared_from_this.hpp>
+#include "UnitCollections.hpp"
 
 /**
  * This is a class for vascular segment flow properties.
@@ -54,52 +55,32 @@ private:
     /**
      * Haematocrit in the vessel at this segment
      */
-    double mHaematocrit;
+    units::quantity<unit::dimensionless> mHaematocrit;
 
     /**
      * Blood flow rate in the vessel at this segment
      */
-    double mFlowRate;
+    units::quantity<unit::flow_rate> mFlowRate;
 
     /**
      * Impedance of this vessel segment
      */
-    double mImpedance;
+    units::quantity<unit::flow_impedance> mImpedance;
 
     /**
      * Viscosity of this vessel segment
      */
-    double mViscosity;
+    units::quantity<unit::dynamic_viscosity> mViscosity;
 
     /**
      * Wall shear stress of this vessel segment
      */
-    double mWallShearStress;
+    units::quantity<unit::pressure> mWallShearStress;
 
     /**
-     * Mechanical stimulus of this vessel segment
+     * Growth stimulus of this vessel segment
      */
-    double mMechanicalStimulus;
-
-    /**
-     * Metabolic stimulus of this vessel segment
-     */
-    double mMetabolicStimulus;
-
-    /**
-     * Upstream conducted stimulus of this vessel segment
-     */
-    double mUpstreamConductedStimulus;
-
-    /**
-     * Downstream conducted stimulus of this vessel segment
-     */
-    double mDownstreamConductedStimulus;
-
-    /**
-     * Shrinking stimulus of this vessel segment
-     */
-    double mShrinkingStimulus;
+    units::quantity<unit::rate> mStimulus;
 
 public:
 
@@ -122,77 +103,49 @@ public:
      *
      * @return the segment haematocrit
      */
-    double GetHaematocrit() const;
+    units::quantity<unit::dimensionless> GetHaematocrit() const;
 
     /**
      * Return the impedance
      *
      * @return the segment impedance
      */
-    double GetImpedance() const;
+    units::quantity<unit::flow_impedance> GetImpedance() const;
 
     /**
      * Return the flow rate
      *
      * @return the segment flow rate
      */
-    double GetFlowRate() const;
+    units::quantity<unit::flow_rate> GetFlowRate() const;
 
     /**
      * Return the segment flow velocity
      *
      * @return the segment velocity
      */
-    double GetFlowVelocity() const;
+    units::quantity<unit::velocity> GetFlowVelocity() const;
 
     /**
      * Return the segment viscosity
      *
      * @return the segment viscosity
      */
-    double GetViscosity() const;
+    units::quantity<unit::dynamic_viscosity> GetViscosity() const;
 
     /**
      * Return the segment wall shear stress of this vessel segment
      *
      * @return the segment wall shear stress
      */
-    double GetWallShearStress() const;
+    units::quantity<unit::pressure> GetWallShearStress() const;
 
     /**
-     * Return the segment mechanical stimulus of this vessel segment
+     * Return the growth stimulus of this vessel segment
      *
-     * @return the segment mechanical stimulus
+     * @return the segment growth stimulus
      */
-    double GetMechanicalStimulus() const;
-
-    /**
-     * Return the metabolic stimulus of this vessel segment
-     *
-     * @return the segment metabolic stimulus
-     */
-    double GetMetabolicStimulus() const;
-
-    /**
-     * Return the upstream conducted stimulus of this vessel segment
-     *
-     * @return the segment upstream conducted stimulus
-     */
-    double GetUpstreamConductedStimulus() const;
-
-    /**
-     * Return the downstream conducted stimulus of this vessel segment
-     *
-     * @return the segment downstream conducted stimulus
-     */
-    double GetDownstreamConductedStimulus() const;
-
-    /**
-     * Return the shrinking stimulus of this vessel segment
-     *
-     * @return the segment shrinking stimulus
-     */
-    double GetShrinkingStimulus() const;
+    units::quantity<unit::rate> GetStimulus() const;
 
     /**
      * Return a map of segment data for use by the vtk writer
@@ -206,70 +159,42 @@ public:
      *
      * @param haematocrit the haematocrit in the segment
      */
-    void SetHaematocrit(double haematocrit);
+    void SetHaematocrit(units::quantity<unit::dimensionless> haematocrit);
 
     /**
      * Set the flow rate
      *
      * @param flowRate the flow rate in the segment
      */
-    void SetFlowRate(double flowRate);
+    void SetFlowRate(units::quantity<unit::flow_rate> flowRate);
 
     /**
      * Set the impedance
      *
      * @param impedance the impedance in the segment
      */
-    void SetImpedance(double impedance);
+    void SetImpedance(units::quantity<unit::flow_impedance> impedance);
 
     /**
      * Set the viscosity
      *
      * @param viscosity the viscosity in the segment
      */
-    void SetViscosity(double viscosity);
+    void SetViscosity(units::quantity<unit::dynamic_viscosity> viscosity);
 
     /**
      * Set the wall shear stress of this vessel segment
      *
      * @param wallShear the wall shear stress in the segment
      */
-    void SetWallShearStress(double wallShear);
+    void SetWallShearStress(units::quantity<unit::pressure> wallShear);
 
     /**
-     * Set the mechanical stimulus of this vessel segment
+     * Set the growth stimulus of this vessel segment
      *
-     * @param mechStimulus the mechanical stimulus in the segment
+     * @param mechStimulus the growth stimulus in the segment
      */
-    void SetMechanicalStimulus(double mechStimulus);
-
-    /**
-     * Set the metabolic stimulus of this vessel segment
-     *
-     * @param metabolicStimulus the metabolic stimulus in the segment
-     */
-    void SetMetabolicStimulus(double metabolicStimulus);
-
-    /**
-     * Set the upstream conducted stimulus of this vessel segment
-     *
-     * @param upstreamStimulus the upstream conducted stimulus in the segment
-     */
-    void SetUpstreamConductedStimulus(double upstreamStimulus);
-
-    /**
-     * Set the downstream conducted stimulus of this vessel segment
-     *
-     * @param downstreamStimulus the downstream conducted stimulus in the segment
-     */
-    void SetDownstreamConductedStimulus(double downstreamStimulus);
-
-    /**
-     * Set the shrinking stimulus of this vessel segment
-     *
-     * @param shrinkingStimulus the shrinking stimulus in the segment
-     */
-    void SetShrinkingStimulus(double shrinkingStimulus);
+    void SetStimulus(units::quantity<unit::rate> stimulus);
 
 };
 

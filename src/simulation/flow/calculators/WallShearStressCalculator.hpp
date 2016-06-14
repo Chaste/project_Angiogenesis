@@ -33,48 +33,30 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#include "Alarcon03ViscosityCalculator.hpp"
+#ifndef WallShearStressCalculator_hpp
+#define WallShearStressCalculator_hpp
+
+#include "boost/shared_ptr.hpp"
+#include "VascularNetwork.hpp"
+#include "UnitCollections.hpp"
 
 template<unsigned DIM>
-Alarcon03ViscosityCalculator<DIM>::Alarcon03ViscosityCalculator()
+class WallShearStressCalculator
 {
     
-}
-
-template<unsigned DIM>
-Alarcon03ViscosityCalculator<DIM>::~Alarcon03ViscosityCalculator()
-{
+public:
     
-}
-
-template<unsigned DIM>
-void Alarcon03ViscosityCalculator<DIM>::Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork)
-{
+    // constructor
+    WallShearStressCalculator();
     
-	std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
-
-	for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
-	{
-		double radius = pow(10.0, 6)*segments[segment_index]->GetRadius(); // scale radius
-
-		double haematocrit = segments[segment_index]->GetFlowProperties()->GetHaematocrit();
-		double plasma_viscosity = 3.5*pow(10.0, -3.0);
-
-		double power_term_1 = 1.0/(1.0 + pow(10.0, -11.0)*pow(2.0*radius, 12.0));
-		double c = (0.8 + exp(-0.15*radius))*(power_term_1 - 1) + power_term_1;
-
-		double mu_45 = 6.0*exp(-0.17*radius) + 3.2 - 2.44*exp(-0.06*pow(2*radius, 0.645));
-
-		double power_term_2 = pow((2.0*radius/(2.0*radius - 1.1)),2.0);
-		double mu_rel = (1.0 + (mu_45 - 1.0)*(((pow((1.0 - haematocrit), c)) - 1)/((pow((1.0 - 0.45), c)) - 1.0))*power_term_2)*power_term_2;
-
-		double viscosity = plasma_viscosity * mu_rel;
-
-		segments[segment_index]->GetFlowProperties()->SetViscosity(viscosity);
-	}
+    /**
+     *  destructor.
+     */
+    ~WallShearStressCalculator();
     
-}
+    // method for performing the Calculator
+    void Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork);
 
-// Explicit instantiation
-template class Alarcon03ViscosityCalculator<2>;
-template class Alarcon03ViscosityCalculator<3>;
+};
+
+#endif

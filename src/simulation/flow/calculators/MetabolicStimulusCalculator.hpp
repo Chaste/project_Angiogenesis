@@ -33,52 +33,91 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef _Alarcon03MechanicalStimulusCalculator_hpp
-#define _Alarcon03MechanicalStimulusCalculator_hpp
+#ifndef _MetabolicStimulusCalculator_hpp
+#define _MetabolicStimulusCalculator_hpp
 
-#include <boost/shared_ptr.hpp>
+#include "SmartPointers.hpp"
+#include "AbstractVesselNetworkCalculator.hpp"
 #include "VascularNetwork.hpp"
+#include "UnitCollections.hpp"
 
+/**
+ * Calculate a stimulus related to the ability of the vasculature to adopt to the
+ * metabolic need of the tissue. See Alarcon et al. (2003), JTB, 225, pp257-274.
+ */
 template<unsigned DIM>
-class Alarcon03MechanicalStimulusCalculator
+class MetabolicStimulusCalculator  : public AbstractVesselNetworkCalculator<DIM>
 {
-    
+
 private:
-    
-	/*
-	 * A small constant included to avoid singular behavior at low wall shear stress.
-	 */
-    double mTauRef;
 
-    /*
-     * The level of wall shear stress expected from the actual intravascular pressure, according
-     * to a parametric description of experimental data obtained in the rat mesentry (exhibiting a
-     * sigmoidal increase of wall shear stress with increasing pressure.
+    /**
+     * Reference flow rate
      */
-    double mTauP;
-    
+    units::quantity<unit::flow_rate> mQRef;
+
+    /**
+     * Metabolic Stimulus Constant
+     */
+    units::quantity<unit::rate> mKm;
+
+    /**
+     * Maximum stimulus
+     */
+    units::quantity<unit::rate> mMaxStimulus;
+
 public:
-    
-    // constructor
-    Alarcon03MechanicalStimulusCalculator();
-    
-    /**
-     *  destructor.
-     */
-    ~Alarcon03MechanicalStimulusCalculator();
-    
-    double GetTauP();
-    
-    double GetTauRef();
 
-    void SetTauRef(double TauRef);
-    
-    // method for performing the Calculation
     /**
-        This Calculator has been changed from the original found in Pries1998 in order to better fit experimental data.
-        See original paper and relevant test for comparison.
+     * Constructor.
      */
-    void Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork);
+    MetabolicStimulusCalculator();
+
+    /**
+     * Destructor.
+     */
+    ~MetabolicStimulusCalculator();
+
+    /**
+     * Get the reference flow rate
+     * @return reference flow rate
+     */
+    units::quantity<unit::flow_rate> GetQRef();
+
+    /**
+     * Get the stimulus constant
+     * @return the stimulus constant
+     */
+    units::quantity<unit::rate> GetKm();
+
+    /**
+     * Get the maximum stimulus
+     * @return the maximum stimulus
+     */
+    units::quantity<unit::rate> GetMaxStimulus();
+
+    /**
+     * set the reference flow rate
+     * @param qRef reference flow rate
+     */
+    void SetQRef(units::quantity<unit::flow_rate> qRef);
+
+    /**
+     * set the stimulus constant
+     * @param km stimulus constant
+     */
+    void SetKm(units::quantity<unit::rate> km);
+
+    /**
+     * set the maximum stimulus
+     * @param maxStimulus the maximum stimulus
+     */
+    void SetMaxStimulus(units::quantity<unit::rate> maxStimulus);
+
+    /**
+     * Do the calculation
+     */
+    void Calculate();
 
 };
 

@@ -98,7 +98,7 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwor
             linearSystem.SetRhsVectorElement(idx, mHaematocrit);
         }
         // Set rhs to zero for no flow vessels. It should already be zero, but this explicitly sets it for clarity
-        else if(vessels[idx]->GetFlowRate()==0.0)
+        else if(vessels[idx]->GetFlowRate()==0.0*unit::unit_flow_rate)
         {
             linearSystem.SetRhsVectorElement(idx, 0.0);
         }
@@ -106,8 +106,8 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwor
         {
             // Identify the inflow node for this vessel
             boost::shared_ptr<VascularNode<DIM> > p_inflow_node;
-            double flow_rate = vessels[idx]->GetFlowRate();
-            if(vessels[idx]->GetFlowRate()>0)
+            units::quantity<unit::flow_rate> flow_rate = vessels[idx]->GetFlowRate();
+            if(vessels[idx]->GetFlowRate()>0.0 * unit::unit_flow_rate)
             {
                 p_inflow_node = vessels[idx]->GetStartNode();
             }
@@ -127,25 +127,25 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwor
                     // if not this vessel
                     if(p_inflow_node->GetVesselSegment(jdx)->GetVessel()!=vessels[idx])
                     {
-                        double inflow_rate = p_inflow_node->GetVesselSegment(jdx)->GetVessel()->GetFlowRate();
+                        units::quantity<unit::flow_rate> inflow_rate = p_inflow_node->GetVesselSegment(jdx)->GetVessel()->GetFlowRate();
                         if(p_inflow_node->GetVesselSegment(jdx)->GetVessel()->GetEndNode()==p_inflow_node)
                         {
-                            if(inflow_rate>0)
+                            if(inflow_rate>0.0 * unit::unit_flow_rate)
                             {
                                 parent_vessels.push_back(p_inflow_node->GetVesselSegment(jdx)->GetVessel());
                             }
-                            else if(inflow_rate<0)
+                            else if(inflow_rate<0.0 * unit::unit_flow_rate)
                             {
                                 competitor_vessels.push_back(p_inflow_node->GetVesselSegment(jdx)->GetVessel());
                             }
                         }
                         if(p_inflow_node->GetVesselSegment(jdx)->GetVessel()->GetStartNode()==p_inflow_node)
                         {
-                            if(inflow_rate>0)
+                            if(inflow_rate>0.0 * unit::unit_flow_rate)
                             {
                                 competitor_vessels.push_back(p_inflow_node->GetVesselSegment(jdx)->GetVessel());
                             }
-                            else if(inflow_rate<0)
+                            else if(inflow_rate<0.0 * unit::unit_flow_rate)
                             {
                                 parent_vessels.push_back(p_inflow_node->GetVesselSegment(jdx)->GetVessel());
                             }
@@ -170,10 +170,10 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwor
                     }
 
                     // There is a bifurcation, apply a haematocrit splitting rule
-                    double my_radius = vessels[idx]->GetRadius();
-                    double competitor_radius = competitor_vessels[0]->GetRadius();
-                    double my_velocity = fabs(flow_rate)/(M_PI * my_radius * my_radius);
-                    double competitor_velocity = fabs(competitor_vessels[0]->GetFlowRate())/(M_PI * competitor_radius * competitor_radius);
+                    units::quantity<unit::length> my_radius = vessels[idx]->GetRadius();
+                    units::quantity<unit::length> competitor_radius = competitor_vessels[0]->GetRadius();
+                    units::quantity<unit::velocity> my_velocity = units::fabs(flow_rate)/(M_PI * my_radius * my_radius);
+                    units::quantity<unit::velocity> competitor_velocity = units::fabs(competitor_vessels[0]->GetFlowRate())/(M_PI * competitor_radius * competitor_radius);
 
                     if(my_velocity>mTHR*competitor_velocity)
                     {
@@ -229,14 +229,14 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwor
 }
 
 template<unsigned DIM>
-void Alarcon03HaematocritSolver<DIM>::SetTHR(double THR)
+void Alarcon03HaematocritSolver<DIM>::SetTHR(units::quantity<unit::dimensionless> THR)
 {
     mTHR = THR;
     assert(mTHR > 1);
 }
 
 template<unsigned DIM>
-void Alarcon03HaematocritSolver<DIM>::SetAlpha(double Alpha)
+void Alarcon03HaematocritSolver<DIM>::SetAlpha(units::quantity<unit::dimensionless> Alpha)
 {
     mAlpha = Alpha;
     assert(mAlpha < 1);
@@ -244,7 +244,7 @@ void Alarcon03HaematocritSolver<DIM>::SetAlpha(double Alpha)
 }
 
 template<unsigned DIM>
-void Alarcon03HaematocritSolver<DIM>::SetHaematocrit(double haematocrit)
+void Alarcon03HaematocritSolver<DIM>::SetHaematocrit(units::quantity<unit::dimensionless> haematocrit)
 {
     mHaematocrit = haematocrit;
 }

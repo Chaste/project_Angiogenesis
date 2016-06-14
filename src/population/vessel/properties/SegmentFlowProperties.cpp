@@ -37,15 +37,11 @@
 
 SegmentFlowProperties::SegmentFlowProperties() :
     mHaematocrit(0.45),
-    mFlowRate(0.0),
-    mImpedance(0.0),
-    mViscosity(0.0),
-    mWallShearStress(0.0),
-    mMechanicalStimulus(0.0),
-    mMetabolicStimulus(0.0),
-    mUpstreamConductedStimulus(0.0),
-    mDownstreamConductedStimulus(0.0),
-    mShrinkingStimulus(0.0)
+    mFlowRate(0.0*units::pow<3>(unit::metres)/unit::seconds),
+    mImpedance(0.0*unit::kg/(units::pow<4>(unit::metres)*unit::seconds)),
+    mViscosity(0.0*unit::kg/(unit::metres*unit::seconds)),
+    mWallShearStress(0.0*unit::pascals),
+    mStimulus(0.0*unit::reciprocal_seconds)
 {
 }
 
@@ -53,118 +49,74 @@ SegmentFlowProperties::~SegmentFlowProperties()
 {
 }
 
-double SegmentFlowProperties::GetHaematocrit() const
+units::quantity<unit::dimensionless> SegmentFlowProperties::GetHaematocrit() const
 {
     return mHaematocrit;
 }
 
-double SegmentFlowProperties::GetFlowRate() const
+units::quantity<unit::flow_rate> SegmentFlowProperties::GetFlowRate() const
 {
     return mFlowRate;
 }
 
-double SegmentFlowProperties::GetImpedance() const
+units::quantity<unit::flow_impedance> SegmentFlowProperties::GetImpedance() const
 {
     return mImpedance;
 }
 
-double SegmentFlowProperties::GetViscosity() const
+units::quantity<unit::dynamic_viscosity> SegmentFlowProperties::GetViscosity() const
 {
     return mViscosity;
 }
 
-double SegmentFlowProperties::GetWallShearStress() const
+units::quantity<unit::pressure> SegmentFlowProperties::GetWallShearStress() const
 {
     return mWallShearStress;
 }
 
-double SegmentFlowProperties::GetMechanicalStimulus() const
+units::quantity<unit::rate> SegmentFlowProperties::GetStimulus() const
 {
-    return mMechanicalStimulus;
-}
-
-double SegmentFlowProperties::GetMetabolicStimulus() const
-{
-    return mMetabolicStimulus;
-}
-
-double SegmentFlowProperties::GetUpstreamConductedStimulus() const
-{
-    return mUpstreamConductedStimulus;
-}
-
-double SegmentFlowProperties::GetDownstreamConductedStimulus() const
-{
-    return mDownstreamConductedStimulus;
-}
-
-double SegmentFlowProperties::GetShrinkingStimulus() const
-{
-    return mShrinkingStimulus;
+    return mStimulus;
 }
 
 std::map<std::string, double> SegmentFlowProperties::GetVtkData() const
 {
     std::map<std::string, double> vtk_data;
     vtk_data["Haematocrit"] = GetHaematocrit();
-    vtk_data["Flow Rate"] = GetFlowRate();
-    vtk_data["Impedance"] = GetImpedance();
-    vtk_data["Viscosity"] = GetViscosity();
-    vtk_data["Wall Shear Stress"] = GetWallShearStress();
-    vtk_data["Mechanical Stimulus"] = GetMechanicalStimulus();
-    vtk_data["Metabolic Stimulus"] = GetMetabolicStimulus();
-    vtk_data["Upstream Conducted Stimulus"] = GetUpstreamConductedStimulus();
-    vtk_data["Downstream Conducted Stimulus"] = GetDownstreamConductedStimulus();
-    vtk_data["Shrinking Stimulus"] = GetShrinkingStimulus();
+    vtk_data["Flow Rate m3/s"] = GetFlowRate()/(units::pow<3>(unit::metres)/unit::seconds);
+    vtk_data["Impedance kg/m4/s"] = GetImpedance()/(unit::kg/(units::pow<4>(unit::metres)*unit::seconds));
+    vtk_data["Viscosity kg/m/s"] = GetViscosity()/(unit::kg/(unit::metres*unit::seconds));
+    vtk_data["Wall Shear Stress Pa"] = GetWallShearStress()/(unit::pascals);
+    vtk_data["Growth Stimulus s-1"] = GetStimulus()/(unit::reciprocal_seconds);
     return vtk_data;
 }
 
-void SegmentFlowProperties::SetHaematocrit(double haematocrit)
+void SegmentFlowProperties::SetHaematocrit(units::quantity<unit::dimensionless> haematocrit)
 {
     mHaematocrit = haematocrit;
 }
 
-void SegmentFlowProperties::SetFlowRate(double flowRate)
+void SegmentFlowProperties::SetFlowRate(units::quantity<unit::flow_rate> flowRate)
 {
     mFlowRate = flowRate;
 }
 
-void SegmentFlowProperties::SetImpedance(double impedance)
+void SegmentFlowProperties::SetImpedance(units::quantity<unit::flow_impedance> impedance)
 {
     mImpedance = impedance;
 }
 
-void SegmentFlowProperties::SetViscosity(double viscosity)
+void SegmentFlowProperties::SetViscosity(units::quantity<unit::dynamic_viscosity> viscosity)
 {
     mViscosity = viscosity;
 }
 
-void SegmentFlowProperties::SetWallShearStress(double value)
+void SegmentFlowProperties::SetWallShearStress(units::quantity<unit::pressure> value)
 {
     mWallShearStress = value;
 }
 
-void SegmentFlowProperties::SetMechanicalStimulus(double value)
+void SegmentFlowProperties::SetStimulus(units::quantity<unit::rate> value)
 {
-    mMechanicalStimulus = value;
-}
-
-void SegmentFlowProperties::SetMetabolicStimulus(double value)
-{
-    mMetabolicStimulus = value;
-}
-
-void SegmentFlowProperties::SetUpstreamConductedStimulus(double value)
-{
-    mUpstreamConductedStimulus = value;
-}
-
-void SegmentFlowProperties::SetDownstreamConductedStimulus(double value)
-{
-    mDownstreamConductedStimulus = value;
-}
-
-void SegmentFlowProperties::SetShrinkingStimulus(double value)
-{
-    mShrinkingStimulus = value;
+    mStimulus = value;
 }

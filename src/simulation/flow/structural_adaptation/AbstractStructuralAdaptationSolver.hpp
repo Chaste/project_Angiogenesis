@@ -40,6 +40,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include "SmartPointers.hpp"
 #include "VascularNetwork.hpp"
+#include "UnitCollections.hpp"
 
 /**
  * This is an abstract implementation of a structural adaptation solver. It iterates
@@ -62,7 +63,7 @@ protected:
      *  Length of time which the algorithm is incremented on each occasion that the Iterate
      *  function is called.
      */
-    double mTimeIncrement;
+    units::quantity<unit::time> mTimeIncrement;
 
     /**
      *  Whether to output the progress of the structural adaptation algorithm to a file.
@@ -121,7 +122,7 @@ public:
      *  Returns the timeStep (in seconds).
      *  @return the time step
      */
-    double GetTimeIncrement() const;
+    units::quantity<unit::time> GetTimeIncrement() const;
 
     /**
      *  This method should contain all of the operations used within a single iteration of a structural
@@ -139,7 +140,7 @@ public:
      *  Setter for timeStep parameter.
      *  @param timeIncrement the time increment
      */
-    void SetTimeIncrement(double timeIncrement);
+    void SetTimeIncrement(units::quantity<unit::time> timeIncrement);
 
     /**
      *  Setter for maximum number of iterations.

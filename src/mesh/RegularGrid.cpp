@@ -44,6 +44,7 @@
 #include <vtkPolyData.h>
 #include <vtkPoints.h>
 #include <vtkSmartPointer.h>
+#include "UnitCollections.hpp"
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 RegularGrid<ELEMENT_DIM, SPACE_DIM>::RegularGrid() :
@@ -499,7 +500,7 @@ std::vector<std::vector<boost::shared_ptr<VesselSegment<SPACE_DIM> > > > Regular
             else
             {
                 if (segments[jdx]->GetDistance(GetLocationOf1dIndex(idx))
-                        < segments[jdx]->GetRadius() + sqrt(1.0 / 2.0) * mSpacing)
+                        < (segments[jdx]->GetRadius()/unit::metres) + sqrt(1.0 / 2.0) * mSpacing)
                 {
                     mPointSegmentMap[idx].push_back(segments[jdx]);
                 }

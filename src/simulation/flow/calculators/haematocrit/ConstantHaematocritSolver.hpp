@@ -40,6 +40,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "VascularNetwork.hpp"
 #include "AbstractHaematocritSolver.hpp"
+#include "UnitCollections.hpp"
 
 template<unsigned DIM>
 class ConstantHaematocritSolver : public AbstractHaematocritSolver<DIM>
@@ -47,12 +48,12 @@ class ConstantHaematocritSolver : public AbstractHaematocritSolver<DIM>
 
 private:
 
-	double mHaematocrit;
+    units::quantity<unit::dimensionless> mHaematocrit;
 
 public:
 
     // constructor
-    ConstantHaematocritSolver(double haematocrit = 0.45);
+    ConstantHaematocritSolver();
 
     /**
      *  Virtual destructor.
@@ -62,7 +63,7 @@ public:
     // method for performing the Solver
     void Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork);
 
-    void SetHaematocrit(double haematocrit);
+    void SetHaematocrit(units::quantity<unit::dimensionless> haematocrit);
 
 };
 

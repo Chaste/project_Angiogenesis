@@ -52,8 +52,8 @@
 #include "Polygon.hpp"
 #include "Exception.hpp"
 #include "Vertex.hpp"
-#include "Debug.hpp"
 
+#include "UnitCollections.hpp"
 #include "VasculatureGenerator.hpp"
 
 template<unsigned DIM>
@@ -143,7 +143,7 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateOval
     p_network->AddVessel(p_vessel_4);
     p_network->MergeCoincidentNodes(1.e-6);
 
-    double impedance = 1.e18;
+    units::quantity<unit::flow_impedance> impedance = 1.e18 * unit::kg/(units::pow<4>(unit::metres)*unit::seconds);
     p_vessel_1->GetSegments()[0]->GetFlowProperties()->SetImpedance(impedance);
     p_network->SetSegmentProperties(p_vessel_1->GetSegments()[0]);
 
@@ -1212,7 +1212,7 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateNetw
             boost::shared_ptr<VesselSegment<DIM> > p_segment = VesselSegment<DIM>::Create(nodes[pSegmentList[j - 1]],nodes[pSegmentList[j]]);
             if(unsigned(radii.size())>= pSegmentList[j])
             {
-                p_segment->SetRadius(radii[pSegmentList[j]]);
+                p_segment->SetRadius(radii[pSegmentList[j]]*unit::metres);
             }
             segments.push_back(p_segment);
         }

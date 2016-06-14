@@ -33,50 +33,35 @@
 
  */
 
-#include "ShrinkingStimulusCalculator.hpp"
+#include "math.h"
+#include "WallShearStressCalculator.hpp"
+#include "MathsCustomFunctions.hpp"
 
 template<unsigned DIM>
-ShrinkingStimulusCalculator<DIM>::ShrinkingStimulusCalculator() :  AbstractVesselNetworkCalculator<DIM>(),
-    mDefaultStimulus(1.79*unit::reciprocal_seconds)
+WallShearStressCalculator<DIM>::WallShearStressCalculator()
 {
 
 }
 
 template<unsigned DIM>
-ShrinkingStimulusCalculator<DIM>::~ShrinkingStimulusCalculator()
+WallShearStressCalculator<DIM>::~WallShearStressCalculator()
 {
 
-}
-
-template <unsigned DIM>
-boost::shared_ptr<ShrinkingStimulusCalculator<DIM> > ShrinkingStimulusCalculator<DIM>::Create()
-{
-    MAKE_PTR(ShrinkingStimulusCalculator<DIM>, pSelf);
-    return pSelf;
 }
 
 template<unsigned DIM>
-units::quantity<unit::rate> ShrinkingStimulusCalculator<DIM>::GetStimulus()
+void WallShearStressCalculator<DIM>::Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork)
 {
-    return mDefaultStimulus;
-}
-
-template<unsigned DIM>
-void ShrinkingStimulusCalculator<DIM>::SetStimulus(units::quantity<unit::rate> stimulus)
-{
-    mDefaultStimulus = stimulus;
-}
-
-template<unsigned DIM>
-void ShrinkingStimulusCalculator<DIM>::Calculate()
-{
-    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
     for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
     {
-        segments[segment_index]->GetFlowProperties()->SetStimulus(segments[segment_index]->GetFlowProperties()->GetStimulus() - mDefaultStimulus);
+        units::quantity<unit::flow_rate> flow_rate = units::fabs(segments[segment_index]->GetFlowProperties()->GetFlowRate());
+        units::quantity<unit::dynamic_viscosity> viscosity = segments[segment_index]->GetFlowProperties()->GetViscosity();
+        units::quantity<unit::pressure> wall_shear_stress = 8.0 * viscosity * flow_rate / (M_PI * units::pow<3>(segments[segment_index]->GetRadius()));
+        segments[segment_index]->GetFlowProperties()->SetWallShearStress(wall_shear_stress);
     }
 }
 
 // Explicit instantiation
-template class ShrinkingStimulusCalculator<2> ;
-template class ShrinkingStimulusCalculator<3> ;
+template class WallShearStressCalculator<2> ;
+template class WallShearStressCalculator<3> ;

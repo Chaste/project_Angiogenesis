@@ -51,6 +51,7 @@
  */
 #include <vector>
 #include <cxxtest/TestSuite.h>
+#include "../../src/simulation/flow/calculators/ImpedanceCalculator.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "SmartPointers.hpp"
 #include "VascularNode.hpp"
@@ -62,10 +63,6 @@
  * The flow solver, individual calculators and the structural adaptation solver
  */
 #include "FlowSolver.hpp"
-#include "PoiseuilleImpedanceCalculator.hpp"
-/*
- * We need to include this when running in serial
- */
 #include "FakePetscSetup.hpp"
 
 class TestBloodFlowLiteratePaper : public AbstractCellBasedWithTimingsTestSuite

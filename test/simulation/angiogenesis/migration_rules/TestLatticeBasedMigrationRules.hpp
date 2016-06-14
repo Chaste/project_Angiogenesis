@@ -37,6 +37,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TestLatticeBasedMigrationRules_hpp
 
 #include <cxxtest/TestSuite.h>
+#include "../../../../src/simulation/flow/calculators/ImpedanceCalculator.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "FileFinder.hpp"
 #include "OutputFileHandler.hpp"
@@ -53,8 +54,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "FunctionMap.hpp"
 #include "Owen2011MigrationRule.hpp"
 #include "FlowSolver.hpp"
-#include "PoiseuilleImpedanceCalculator.hpp"
-
 #include "PetscSetupAndFinalize.hpp"
 
 class TestLatticeBasedMigrationRules : public AbstractCellBasedWithTimingsTestSuite

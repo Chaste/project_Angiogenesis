@@ -33,68 +33,36 @@
 
  */
 
-#ifndef WALLSHEARSTRESSBASEDREGRESSIONSOLVER_HPP_
-#define WALLSHEARSTRESSBASEDREGRESSIONSOLVER_HPP_
-
+#include "VesselSegment.hpp"
+#include "MathsCustomFunctions.hpp"
+#include "VesselImpedanceCalculator.hpp"
 #include "UnitCollections.hpp"
-#include "RegressionSolver.hpp"
 
-/**
- * This class is for simulating modifications to the vessel network due to regression.
- */
 template<unsigned DIM>
-class WallShearStressBasedRegressionSolver : public RegressionSolver<DIM>
+VesselImpedanceCalculator<DIM>::VesselImpedanceCalculator() : AbstractVesselNetworkCalculator<DIM>()
 {
 
-    /**
-     * Threshold wall shear stress level, below which vessels will be removed.
-     * This threshold should be prescribed in units of pascals.
-     */
-    units::quantity<unit::pressure> mThresholdWss;
+}
 
-    /**
-     *  Maximum time that a vessel may exist with low wall shear stress.
-     *  After this amount of time a vessel is removed completely from
-     *  the vessel network.
-     *  This time should be prescribed in units of hours.
-     */
-    double mMaxTimeWithLowWss;
+template<unsigned DIM>
+VesselImpedanceCalculator<DIM>::~VesselImpedanceCalculator()
+{
 
-public:
+}
 
-    /**
-     * Constructor.
-     */
-    WallShearStressBasedRegressionSolver();
+template<unsigned DIM>
+void VesselImpedanceCalculator<DIM>::Calculate()
+{
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
+    for (unsigned idx = 0; idx < segments.size(); idx++)
+    {
+        units::quantity<unit::dynamic_viscosity> viscosity = segments[idx]->GetFlowProperties()->GetViscosity();
+        units::quantity<unit::flow_impedance> impedance = 8.0 * viscosity * segments[idx]->GetLength() * unit::metres / (M_PI * units::pow<4>(segments[idx]->GetRadius()));
+        segments[idx]->GetFlowProperties()->SetImpedance(impedance);
+    }
+}
 
-    /**
-     * Destructor.
-     */
-    virtual ~WallShearStressBasedRegressionSolver();
+// Explicit instantiation
+template class VesselImpedanceCalculator<2> ;
+template class VesselImpedanceCalculator<3> ;
 
-    /**
-     * Factor constructor. Construct a new instance of the class and return a shared pointer to it.
-     * @return a pointer to a new instance of the class.
-     */
-    static boost::shared_ptr<WallShearStressBasedRegressionSolver<DIM> > Create();
-
-    /**
-     *  Setter for mMaxTimeWithLowWss parameter.
-     *  @param time the max time for low WSS
-     */
-    void SetMaximumTimeWithLowWallShearStress(double time);
-
-    /**
-     *  Setter for mThresholdWss parameter.
-     *  @param threshold the value of WSS below which it is considered too low for the vessel
-     */
-    void SetLowWallShearStressThreshold(units::quantity<unit::pressure> threshold);
-
-    /**
-     * Increment one step in time
-     */
-    virtual void Increment();
-
-};
-
-#endif /* WALLSHEARSTRESSBASEDREGRESSIONSOLVER_HPP_ */

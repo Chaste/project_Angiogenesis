@@ -37,8 +37,8 @@
 #define TestPoiseuilleImpedanceCalculator_HPP_
 
 #include <cxxtest/TestSuite.h>
+#include "../../../../src/simulation/flow/calculators/ImpedanceCalculator.hpp"
 #include "SmartPointers.hpp"
-#include "PoiseuilleImpedanceCalculator.hpp"
 #include "VasculatureData.hpp"
 #include "MathsCustomFunctions.hpp"
 

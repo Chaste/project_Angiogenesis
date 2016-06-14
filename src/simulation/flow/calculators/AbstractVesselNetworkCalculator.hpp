@@ -46,6 +46,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 template<unsigned DIM>
 class AbstractVesselNetworkCalculator
 {
+
+protected:
+
     boost::shared_ptr<VascularNetwork<DIM> >  mpNetwork;
     
 public:

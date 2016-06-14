@@ -36,6 +36,7 @@
 #include "Facet.hpp"
 #include "HybridBoundaryCondition.hpp"
 #include "VesselSegment.hpp"
+#include "UnitCollections.hpp"
 
 template<unsigned DIM>
 HybridBoundaryCondition<DIM>::HybridBoundaryCondition()
@@ -210,7 +211,7 @@ std::pair<bool, double> HybridBoundaryCondition<DIM>::GetValue(c_vector<double,D
             std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
             for (unsigned jdx = 0; jdx <  segments.size(); jdx++)
             {
-                if (segments[jdx]->GetDistance(location) <= segments[jdx]->GetRadius() + tolerance)
+                if (segments[jdx]->GetDistance(location) <= segments[jdx]->GetRadius()/unit::metres + tolerance)
                 {
                     if(BoundaryConditionSource::PRESCRIBED)
                     {

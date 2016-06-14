@@ -17,6 +17,7 @@ population/vessel/TestVesselSegment.hpp
 population/vessel/TestVessel.hpp
 population/vessel/TestVascularNetwork.hpp
 population/vessel/properties/TestVasculatureData.hpp
+population/vessel/properties/TestSegmentFlowProperties.hpp
 population/vessel/generators/TestVasculatureGenerator.hpp
 population/combined/TestCaBasedCellPopulationWithVessels.hpp
 pde/TestFiniteDifferenceSolver.hpp
@@ -30,6 +31,7 @@ simulation/flow/haematocrit/TestBetteridgeHaematocritSolver.hpp
 simulation/flow/calculators/TestAlarcon03MechanicalStimulusCalculator.hpp
 simulation/flow/calculators/TestAlarcon03MetabolicStimulusCalculator.hpp
 simulation/flow/calculators/TestPoiseuilleImpedanceCalculator.hpp
+simulation/flow/calculators/TestVesselNetworkCalculators.hpp
 simulation/angiogenesis/migration_rules/TestLatticeBasedMigrationRules.hpp
 simulation/angiogenesis/migration_rules/TestOffLatticeMigrationRules.hpp
 simulation/angiogenesis/sprouting_rules/TestSproutingRules.hpp
@@ -43,3 +45,4 @@ tutorials/Test3dTumourSpheroid.hpp
 tutorials/TestSnailTrailLiteratePaper.hpp
 tutorials/TestBuildVesselNetworkLiteratePaper.hpp
 tutorials/TestBloodFlowLiteratePaper.hpp
+utility/TestUnitCollections.hpp

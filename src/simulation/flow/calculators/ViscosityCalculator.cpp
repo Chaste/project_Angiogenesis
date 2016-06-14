@@ -33,40 +33,46 @@
 
  */
 
-#ifndef PoiseuilleImpedanceCalculator_HPP_
-#define PoiseuilleImpedanceCalculator_HPP_
-
-#include <boost/shared_ptr.hpp>
-#include "VascularNetwork.hpp"
+#include "ViscosityCalculator.hpp"
+#include "UnitCollections.hpp"
 
 template<unsigned DIM>
-class PoiseuilleImpedanceCalculator
+ViscosityCalculator<DIM>::ViscosityCalculator()
 {
 
-public:
+}
 
-    /**
-     * Constructor.
-     */
-    PoiseuilleImpedanceCalculator();
+template<unsigned DIM>
+ViscosityCalculator<DIM>::~ViscosityCalculator()
+{
 
-    /**
-     * Destructor.
-     */
-    ~PoiseuilleImpedanceCalculator();
+}
 
-    /**
-     * Calculate impedance, Z, of all vessel segments and vessels in network using Poiseuille flow
-     * approximation:
-     *
-     * 			Z = \frac{8 \mu L}{\pi R^4},
-     *
-     * 	where \mu is viscosity, L is length and R is radius. Length is calculated within this method.
-     * 	VascularData entries "Radius" and "Viscosity" must be previously set on each segment before this
-     * 	calculation can be implemented.
-     */
-    void Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork);
+template<unsigned DIM>
+void ViscosityCalculator<DIM>::Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork)
+{
 
-};
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
+    for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
+    {
+        double radius = 1.e6 * segments[segment_index]->GetRadius()/unit::metres; // radius in micron
+        units::quantity<unit::dimensionless> haematocrit = segments[segment_index]->GetFlowProperties()->GetHaematocrit();
+        units::quantity<unit::dynamic_viscosity> plasma_viscosity = 3.5 * pow(10.0, -3.0) * unit::poiseuille;
 
-#endif /* PoiseuilleImpedanceCalculator_HPP_ */
+        double power_term_1 = 1.0 / (1.0 + pow(10.0, -11.0) * pow(2.0 * radius, 12));
+        double c = (0.8 + exp(-0.15 * radius)) * (power_term_1 - 1) + power_term_1;
+        double mu_45 = 6.0 * exp(-0.17 * radius) + 3.2 - 2.44 * exp(-0.06 * pow(2 * radius, 0.645));
+
+        double power_term_2 = pow((2.0 * radius / (2.0 * radius - 1.1)), 2.0);
+        double mu_rel = (1.0
+                + (mu_45 - 1.0) * (((pow((1.0 - haematocrit), c)) - 1) / ((pow((1.0 - 0.45), c)) - 1.0)) * power_term_2)
+                * power_term_2;
+
+        units::quantity<unit::dynamic_viscosity> viscosity = plasma_viscosity * mu_rel;
+        segments[segment_index]->GetFlowProperties()->SetViscosity(viscosity);
+    }
+}
+
+// Explicit instantiation
+template class ViscosityCalculator<2> ;
+template class ViscosityCalculator<3> ;

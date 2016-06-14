@@ -34,78 +34,67 @@
  */
 
 #include "Exception.hpp"
-#include "Alarcon03MechanicalStimulusCalculator.hpp"
+#include "MechanicalStimulusCalculator.hpp"
 
 template<unsigned DIM>
-Alarcon03MechanicalStimulusCalculator<DIM>::Alarcon03MechanicalStimulusCalculator() :
-        mTauRef(0.05), mTauP(0.0)
+MechanicalStimulusCalculator<DIM>::MechanicalStimulusCalculator() : AbstractVesselNetworkCalculator<DIM>(),
+    mTauRef(0.05 * unit::pascals),
+    mTauP(0.0 * unit::pascals)
 {
 
 }
 
 template<unsigned DIM>
-Alarcon03MechanicalStimulusCalculator<DIM>::~Alarcon03MechanicalStimulusCalculator()
+MechanicalStimulusCalculator<DIM>::~MechanicalStimulusCalculator()
 {
 
 }
 
 template<unsigned DIM>
-double Alarcon03MechanicalStimulusCalculator<DIM>::GetTauP()
+units::quantity<unit::pressure> MechanicalStimulusCalculator<DIM>::GetTauP()
 {
     return mTauP;
 }
 
 template<unsigned DIM>
-double Alarcon03MechanicalStimulusCalculator<DIM>::GetTauRef()
+void MechanicalStimulusCalculator<DIM>::SetTauRef(units::quantity<unit::pressure> TauRef)
 {
-    return mTauRef;
-}
-
-template<unsigned DIM>
-void Alarcon03MechanicalStimulusCalculator<DIM>::SetTauRef(double TauRef)
-{
-    if (TauRef <= 0.0)
-    {
-        EXCEPTION("Reference Wall Shear Stress must be positive.");
-    }
-
     mTauRef = TauRef;
 }
 
 template<unsigned DIM>
-void Alarcon03MechanicalStimulusCalculator<DIM>::Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork)
+void MechanicalStimulusCalculator<DIM>::Calculate()
 {
 
-    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
 
-    for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
+    for (unsigned idx = 0; idx < segments.size(); idx++)
     {
-        // get average pressure in segment. It is stored in pascal, so is converted to mmHg for the calculation.
-        double node0_pressure = segments[segment_index]->GetNode(0)->GetFlowProperties()->GetPressure();
-        double node1_pressure = segments[segment_index]->GetNode(1)->GetFlowProperties()->GetPressure();
+        // get average pressure in a segment. It is stored in pascal, so is converted to mmHg for the calculation.
+        double node0_pressure = segments[idx]->GetNode(0)->GetFlowProperties()->GetPressure();
+        double node1_pressure = segments[idx]->GetNode(1)->GetFlowProperties()->GetPressure();
 
+        // Conversion to mmHg
         double average_pressure = (node0_pressure + node1_pressure) * 760.0 / (2.0 * 1.01 * pow(10.0, 5));
 
         // The calculation does not work for pressures less than 1 mmHg, so we specify a cut-off value of TauP for lower
         // pressures.
         if (log10(average_pressure) < 1.0)
         {
-            mTauP = 1.4;
+            mTauP = 1.4 * unit::pascals;
         }
         else
         {
             // tau_p calculated in pascals
-            // factor of 0.1 introduced in order to convert original expression
-            // (calculated in units of dyne/cm^2) to pascals
-            mTauP = 0.1 * (100.0 - 86.0 * pow(exp(-5.0 * log10(log10(average_pressure))), 5.4));
+            // factor of 0.1 introduced in order to convert original expression (calculated in units of dyne/cm^2) to pascals
+            mTauP = 0.1 * (100.0 - 86.0 * pow(exp(-5.0 * log10(log10(average_pressure))), 5.4)) * unit::pascals;
         }
 
-        double wall_shear_stress = segments[segment_index]->GetFlowProperties()->GetWallShearStress();
-        double mechanical_stimulus = log10((wall_shear_stress + mTauRef) / mTauP);
-        segments[segment_index]->GetFlowProperties()->SetMechanicalStimulus(mechanical_stimulus);
+        units::quantity<unit::rate> mechanical_stimulus = log10((segments[idx]->GetFlowProperties()->GetWallShearStress() + mTauRef) / mTauP) * unit::reciprocal_seconds;
+        segments[idx]->GetFlowProperties()->SetStimulus(segments[idx]->GetFlowProperties()->GetStimulus() + mechanical_stimulus);
     }
 }
 
 // Explicit instantiation
-template class Alarcon03MechanicalStimulusCalculator<2> ;
-template class Alarcon03MechanicalStimulusCalculator<3> ;
+template class MechanicalStimulusCalculator<2> ;
+template class MechanicalStimulusCalculator<3> ;

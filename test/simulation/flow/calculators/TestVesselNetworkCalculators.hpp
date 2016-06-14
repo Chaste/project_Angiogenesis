@@ -33,41 +33,35 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef _Alarcon03RadiusCalculator_hpp
-#define _Alarcon03RadiusCalculator_hpp
+#ifndef TestVesselNetworkCalculators_hpp
+#define TestVesselNetworkCalculators_hpp
 
-#include <boost/shared_ptr.hpp>
+#include <cxxtest/TestSuite.h>
+#include <SmartPointers.hpp>
+//#include "ShrinkingStimulusCalculator.hpp"
 #include "VascularNetwork.hpp"
+#include "UnitCollections.hpp"
+#include <boost/units/systems/si/time.hpp>
 
-template<unsigned DIM>
-class Alarcon03RadiusCalculator
+class TestVesselNetworkCalculators : public CxxTest::TestSuite
 {
-    
-protected:
 
-    double mMinRadius;
-    double mMaxRadius;
-    double mTimeStep;
-    
 public:
-    
-    // constructor
-    Alarcon03RadiusCalculator();
-    
-    /**
-     *  destructor.
-     */
-    ~Alarcon03RadiusCalculator();
-    
-    void SetMinRadius(double minRadius);
-    
-    void SetMaxRadius(double maxRadius);
 
-    void SetTimestep(double dt);
-    
-    // method for performing the calculation
-    void Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork);
-    
+    void TestShrinkingStimulusCalculator()
+    {
+        std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
+        nodes.push_back(VascularNode<3>::Create(0));
+        nodes.push_back(VascularNode<3>::Create(100));
+        boost::shared_ptr<Vessel<3> > p_vessel(Vessel<3>::Create(VesselSegment<3>::Create(nodes[0], nodes[1])));
+        boost::shared_ptr<VascularNetwork<3> > p_vascular_network = VascularNetwork<3>::Create();
+        p_vascular_network->AddVessel(p_vessel);
+
+        std::cout << units::reciprocal_second::unit_type() << std::endl;
+//        ShrinkingStimulusCalculator<3> calculator = ShrinkingStimulusCalculator<3>();
+//        calculator.SetVesselNetwork(p_vascular_network);
+//        calculator.Calculate();
+    }
 };
 
-#endif
+#endif // TestVesselNetworkCalculators_hpp

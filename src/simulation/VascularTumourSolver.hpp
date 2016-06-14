@@ -43,7 +43,6 @@
 #include "SmartPointers.hpp"
 #include "VascularNetwork.hpp"
 #include "AbstractHybridSolver.hpp"
-#include "FlowSolver.hpp"
 #include "AbstractCellPopulation.hpp"
 #include "AngiogenesisSolver.hpp"
 #include "RegressionSolver.hpp"
@@ -75,11 +74,6 @@ class VascularTumourSolver
      * The collection of hybrid solvers
      */
     std::vector<boost::shared_ptr<AbstractHybridSolver<DIM> > > mHybridSolvers;
-
-    /**
-     * The flow solver in the vessel network
-     */
-    boost::shared_ptr<FlowSolver<DIM> > mpFlowSolver;
 
     /**
      * The structural adaptation solver for the vessel network
@@ -141,12 +135,6 @@ public:
      * @param pAngiogenesisSolver the solver for structural adaptation
      */
     void SetAngiogenesisSolver(boost::shared_ptr<AngiogenesisSolver<DIM> > pAngiogenesisSolver);
-
-    /**
-     * Set the flow solver for the network
-     * @pFlowSolver the flow solver for the network
-     */
-    void SetFlowSolver(boost::shared_ptr<FlowSolver<DIM> > pFlowSolver);
 
     /**
      * Set the output directory for results

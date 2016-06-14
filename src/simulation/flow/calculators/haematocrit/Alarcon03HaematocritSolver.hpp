@@ -39,6 +39,7 @@
 #include "SmartPointers.hpp"
 #include "VascularNetwork.hpp"
 #include "AbstractHaematocritSolver.hpp"
+#include "UnitCollections.hpp"
 
 /**
  * This solver calculates the distribution of haematocrit in branching vessel networks according to:
@@ -53,17 +54,17 @@ private:
     /**
      * The threshold velocity ratio at which all haematocrit goes into the faster vessel
      */
-    double mTHR;
+    units::quantity<unit::dimensionless> mTHR;
 
     /**
      * The partition coefficient for haematocrit
      */
-    double mAlpha;
+    units::quantity<unit::dimensionless> mAlpha;
 
     /**
      * The arterial haematocrit level
      */
-    double mHaematocrit;
+    units::quantity<unit::dimensionless> mHaematocrit;
 
 public:
 
@@ -87,19 +88,19 @@ public:
      * Set the threshold velocity ratio
      * @param thr the threshold velocity ratio
      */
-    void SetTHR(double thr);
+    void SetTHR(units::quantity<unit::dimensionless> thr);
 
     /**
      * Set the partition coefficient for haematocrit
      * @param alpha the partition coefficient for haematocrit
      */
-    void SetAlpha(double alpha);
+    void SetAlpha(units::quantity<unit::dimensionless> alpha);
 
     /**
      * Set the artial haematocrit
      * @param haematocrit the arterial haematocrit
      */
-    void SetHaematocrit(double haematocrit);
+    void SetHaematocrit(units::quantity<unit::dimensionless> haematocrit);
 
 };
 

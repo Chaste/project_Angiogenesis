@@ -625,26 +625,25 @@ double VascularNetwork<DIM>::GetTotalLength()
 }
 
 template <unsigned DIM>
-double VascularNetwork<DIM>::GetTotalVolume()
+units::quantity<unit::volume> VascularNetwork<DIM>::GetTotalVolume()
 {
-    double volume = 0.0;
+    units::quantity<unit::volume> volume = 0.0*units::pow<3>(unit::metres);
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = GetVesselSegments();
     for(unsigned idx=0; idx< segments.size(); idx++)
     {
-        volume += segments[idx]->GetLength() * segments[idx]->GetRadius() * segments[idx]->GetRadius() * M_PI;
+        volume += segments[idx]->GetLength() * unit::metres * segments[idx]->GetRadius() * segments[idx]->GetRadius() * M_PI;
     }
     return volume;
-
 }
 
 template <unsigned DIM>
-double VascularNetwork<DIM>::GetTotalSurfaceArea()
+units::quantity<unit::area> VascularNetwork<DIM>::GetTotalSurfaceArea()
 {
-    double area = 0.0;
+    units::quantity<unit::area> area = 0.0*units::pow<2>(unit::metres);
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = GetVesselSegments();
     for(unsigned idx=0; idx< segments.size(); idx++)
     {
-        area += segments[idx]->GetLength() * 2.0 * segments[idx]->GetRadius() * M_PI;
+        area += segments[idx]->GetLength() * unit::metres * 2.0 * segments[idx]->GetRadius() * M_PI;
     }
     return area;
 }
@@ -1352,7 +1351,7 @@ void VascularNetwork<DIM>::SetNodeRadii(double radius)
 }
 
 template <unsigned DIM>
-void VascularNetwork<DIM>::SetSegmentRadii(double radius)
+void VascularNetwork<DIM>::SetSegmentRadii(units::quantity<unit::length> radius)
 {
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = GetVesselSegments();
 

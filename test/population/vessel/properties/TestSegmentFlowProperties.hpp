@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+ Copyright (c) 2005-2014, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,50 +33,21 @@
 
  */
 
-#include "ShrinkingStimulusCalculator.hpp"
+#ifndef TESTVASCULARSEGMENT_HPP_
+#define TESTVASCULARSEGMENT_HPP_
 
-template<unsigned DIM>
-ShrinkingStimulusCalculator<DIM>::ShrinkingStimulusCalculator() :  AbstractVesselNetworkCalculator<DIM>(),
-    mDefaultStimulus(1.79*unit::reciprocal_seconds)
+#include <cxxtest/TestSuite.h>
+#include "UnitCollections.hpp"
+#include "SegmentFlowProperties.hpp"
+
+class TestSegmentFlowProperties : public CxxTest::TestSuite
 {
+public:
 
-}
-
-template<unsigned DIM>
-ShrinkingStimulusCalculator<DIM>::~ShrinkingStimulusCalculator()
-{
-
-}
-
-template <unsigned DIM>
-boost::shared_ptr<ShrinkingStimulusCalculator<DIM> > ShrinkingStimulusCalculator<DIM>::Create()
-{
-    MAKE_PTR(ShrinkingStimulusCalculator<DIM>, pSelf);
-    return pSelf;
-}
-
-template<unsigned DIM>
-units::quantity<unit::rate> ShrinkingStimulusCalculator<DIM>::GetStimulus()
-{
-    return mDefaultStimulus;
-}
-
-template<unsigned DIM>
-void ShrinkingStimulusCalculator<DIM>::SetStimulus(units::quantity<unit::rate> stimulus)
-{
-    mDefaultStimulus = stimulus;
-}
-
-template<unsigned DIM>
-void ShrinkingStimulusCalculator<DIM>::Calculate()
-{
-    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
-    for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
+    void TestSetAndGet() throw (Exception)
     {
-        segments[segment_index]->GetFlowProperties()->SetStimulus(segments[segment_index]->GetFlowProperties()->GetStimulus() - mDefaultStimulus);
+        SegmentFlowProperties properties = SegmentFlowProperties();
     }
-}
+};
 
-// Explicit instantiation
-template class ShrinkingStimulusCalculator<2> ;
-template class ShrinkingStimulusCalculator<3> ;
+#endif /*TESTVASCULARSEGMENT_HPP_*/

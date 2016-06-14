@@ -37,11 +37,12 @@
 #include <iostream>
 #include "AbstractStructuralAdaptationSolver.hpp"
 #include "SimulationTime.hpp"
+#include "UnitCollections.hpp"
 
 template<unsigned DIM>
 AbstractStructuralAdaptationSolver<DIM>::AbstractStructuralAdaptationSolver()
     :   mTolerance(1.e-4),
-        mTimeIncrement(1.e-4),
+        mTimeIncrement(1.e-4 * unit::seconds),
         mWriteOutput(false),
         mOutputFileName(),
         mMaxIterations(1.e5),
@@ -75,7 +76,7 @@ std::string AbstractStructuralAdaptationSolver<DIM>::GetOutputFileName() const
 }
 
 template<unsigned DIM>
-double AbstractStructuralAdaptationSolver<DIM>::GetTimeIncrement() const
+units::quantity<unit::time> AbstractStructuralAdaptationSolver<DIM>::GetTimeIncrement() const
 {
     return mTimeIncrement;
 }
@@ -87,7 +88,7 @@ void AbstractStructuralAdaptationSolver<DIM>::SetTolerance(double tolerance)
 }
 
 template<unsigned DIM>
-void AbstractStructuralAdaptationSolver<DIM>::SetTimeIncrement(double timeIncrement)
+void AbstractStructuralAdaptationSolver<DIM>::SetTimeIncrement(units::quantity<unit::time> timeIncrement)
 {
     mTimeIncrement = timeIncrement;
 }
@@ -117,27 +118,24 @@ void AbstractStructuralAdaptationSolver<DIM>::Solve()
 
     double max_radius_relative_change = 1.0;
     unsigned iteration = 0;
-    double time = 0.0;
+    units::quantity<unit::time> time = 0.0 * unit::seconds;
 
     if (mWriteOutput && !mOutputFileName.empty())
     {
         out.open(mOutputFileName.c_str());
-    }
-    if (out.is_open())
-    {
         out << "\n";
         out << "#Iteration   Maximum relative change in radius in network\n\n";
     }
 
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = mpVesselNetwork->GetVesselSegments();
-    std::vector<double> previous_radii(segments.size());
+    std::vector<units::quantity<unit::length> > previous_radii(segments.size());
     for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
     {
         previous_radii[segment_index] = segments[segment_index]->GetRadius();
     }
 
     // todo why is simulation time x 60.0, units = ?
-    while (max_radius_relative_change > mTolerance && time < SimulationTime::Instance()->GetTimeStep() * 60.0 && iteration < mMaxIterations)
+    while (max_radius_relative_change > mTolerance && time < (SimulationTime::Instance()->GetTimeStep() * 60.0 * unit::seconds) && iteration < mMaxIterations)
     {
         time += mTimeIncrement;
         iteration++;
@@ -147,7 +145,7 @@ void AbstractStructuralAdaptationSolver<DIM>::Solve()
         std::vector<double> relative_change(segments.size());
         for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
         {
-            double current_radius = segments[segment_index]->GetRadius();
+            units::quantity<unit::length> current_radius = segments[segment_index]->GetRadius();
             relative_change[segment_index] = fabs(1.0 - current_radius / previous_radii[segment_index]);
             previous_radii[segment_index] = current_radius;
         }

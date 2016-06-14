@@ -33,47 +33,42 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef _Alarcon03MetabolicStimulusCalculator_hpp
-#define _Alarcon03MetabolicStimulusCalculator_hpp
+#ifndef _RadiusCalculator_hpp
+#define _RadiusCalculator_hpp
 
 #include <boost/shared_ptr.hpp>
 #include "VascularNetwork.hpp"
+#include "UnitCollections.hpp"
 
 template<unsigned DIM>
-class Alarcon03MetabolicStimulusCalculator
+class RadiusCalculator
 {
+    
+protected:
 
-private:
-
-    double mQRef;
-    double mKm;
-    double mMaxStimulus;
-
+    units::quantity<unit::length> mMinRadius;
+    units::quantity<unit::length> mMaxRadius;
+    units::quantity<unit::time> mTimeStep;
+    
 public:
-
+    
     // constructor
-    Alarcon03MetabolicStimulusCalculator();
-
+    RadiusCalculator();
+    
     /**
      *  destructor.
      */
-    ~Alarcon03MetabolicStimulusCalculator();
+    ~RadiusCalculator();
+    
+    void SetMinRadius(units::quantity<unit::length> minRadius);
+    
+    void SetMaxRadius(units::quantity<unit::length> maxRadius);
 
-    double GetQRef();
-
-    double GetKm();
-
-    double GetMaxStimulus();
-
-    void SetQRef(double qRef);
-
-    void SetKm(double km);
-
-    void SetMaxStimulus(double maxStimulus);
-
+    void SetTimestep(units::quantity<unit::time> dt);
+    
     // method for performing the calculation
     void Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork);
-
+    
 };
 
 #endif

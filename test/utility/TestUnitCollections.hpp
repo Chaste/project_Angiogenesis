@@ -33,40 +33,55 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#include "math.h"
-#include "Alarcon03WallShearStressCalculator.hpp"
-#include "MathsCustomFunctions.hpp"
+#ifndef TestUnitCollections_hpp
+#define TestUnitCollections_hpp
 
+#include <cxxtest/TestSuite.h>
+#include <boost/units/quantity.hpp>
+#include <boost/units/systems/si/time.hpp>
+#include <boost/units/base_units/metric/hour.hpp>
+#include <SmartPointers.hpp>
+#include "UnitCollections.hpp"
 
-template<unsigned DIM>
-Alarcon03WallShearStressCalculator<DIM>::Alarcon03WallShearStressCalculator()
+class TestUnitCollections : public CxxTest::TestSuite
 {
-    
-}
 
-template<unsigned DIM>
-Alarcon03WallShearStressCalculator<DIM>::~Alarcon03WallShearStressCalculator()
-{
-    
-}
+public:
 
-template<unsigned DIM>
-void Alarcon03WallShearStressCalculator<DIM>::Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork)
-{
-    
-	std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
+    void TestBaseUnits()
+    {
+        // Time
+        units::quantity<unit::time> s1(3.0*unit::seconds);
+        units::quantity<unit::time> m1(3.0*unit::minutes);
+        units::quantity<unit::time> h1(3.0*unit::hours);
+        units::quantity<unit::time> d1(3.0*unit::days);
+        std::cout << s1 << std::endl;
+        std::cout << m1 << std::endl;
+        std::cout << h1 << std::endl;
+        std::cout << d1 << std::endl;
 
-	for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
-	{
-		double radius = segments[segment_index]->GetRadius();
-		double flow_rate = fabs(segments[segment_index]->GetFlowProperties()->GetFlowRate());
-		double viscosity = segments[segment_index]->GetFlowProperties()->GetViscosity();
+        // Rates
+        units::quantity<unit::rate> rs1 = 3.0*unit::reciprocal_seconds;
+        units::quantity<unit::rate> rm1(3.0*unit::reciprocal_minutes);
+        units::quantity<unit::rate> rh1(3.0*unit::reciprocal_hours);
+        std::cout << rs1 << std::endl;
+        std::cout << rm1 << std::endl;
+        std::cout << rh1 << std::endl;
 
-	    double wall_shear_stress = 8.0 * viscosity * flow_rate / (M_PI * SmallPow(radius, 3));
-	    segments[segment_index]->GetFlowProperties()->SetWallShearStress(wall_shear_stress);
-	}
-}
+        // Length
+        units::quantity<unit::length> lm1(3.0*unit::metres);
+        std::cout << lm1 << std::endl;
 
-// Explicit instantiation
-template class Alarcon03WallShearStressCalculator<2>;
-template class Alarcon03WallShearStressCalculator<3>;
+        // Force
+        units::quantity<unit::force> f1(3.0*unit::newtons);
+        std::cout << f1 << std::endl;
+
+        // Pressure
+        units::quantity<unit::pressure> p1(3.0*unit::pascals);
+        units::quantity<unit::pressure> ph1(3.0*unit::mmHg);
+        std::cout << p1 << std::endl;
+        std::cout << ph1 << std::endl;
+    }
+};
+
+#endif // TestUnitCollections_hpp

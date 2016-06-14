@@ -39,7 +39,7 @@
 template<unsigned DIM>
 WallShearStressBasedRegressionSolver<DIM>::WallShearStressBasedRegressionSolver() :
     RegressionSolver<DIM>(),
-    mThresholdWss(9),
+    mThresholdWss(9.0*unit::pascals),
     mMaxTimeWithLowWss(60)
 {
 
@@ -66,9 +66,8 @@ void WallShearStressBasedRegressionSolver<DIM>::SetMaximumTimeWithLowWallShearSt
 }
 
 template<unsigned DIM>
-void WallShearStressBasedRegressionSolver<DIM>::SetLowWallShearStressThreshold(double threshold)
+void WallShearStressBasedRegressionSolver<DIM>::SetLowWallShearStressThreshold(units::quantity<unit::pressure> threshold)
 {
-    assert(threshold >= 0);
     mThresholdWss = threshold;
 }
 

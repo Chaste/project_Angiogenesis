@@ -43,6 +43,7 @@
 #include "VasculatureData.hpp"
 #include "UblasVectorInclude.hpp"
 #include "ChastePoint.hpp"
+#include "UnitCollections.hpp"
 
 /**
  *  Forward declaration to allow vessels to manage adding and removing themselves from segments.
@@ -98,7 +99,7 @@ private:
     /**
      * Radius of the vessel at this segment
      */
-    double mRadius;
+    units::quantity<unit::length> mRadius;
 
     /**
      * The flow properties for the segment
@@ -235,7 +236,7 @@ public:
      *
      * @return the segment radius
      */
-    double GetRadius() const;
+    units::quantity<unit::length> GetRadius() const;
 
     /**
      * Return a point mid-way along the vessel segment
@@ -377,7 +378,7 @@ public:
      *
      * @radius the radius to be assigned
      */
-    void SetRadius(double radius);
+    void SetRadius(units::quantity<unit::length> radius);
 
 private:
 

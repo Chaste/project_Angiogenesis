@@ -47,7 +47,7 @@ VesselSegment<DIM>::VesselSegment(boost::shared_ptr<VascularNode<DIM> > pNode1, 
         mId(0),
         mLabel(),
         mVessel(boost::weak_ptr<Vessel<DIM> >()),
-        mRadius(1.0),
+        mRadius(1.0 * unit::metres),
         mpFlowProperties(boost::shared_ptr<SegmentFlowProperties> (new SegmentFlowProperties()))
 {
 }
@@ -192,7 +192,7 @@ double VesselSegment<DIM>::GetLength() const
 }
 
 template<unsigned DIM>
-double VesselSegment<DIM>::GetRadius() const
+units::quantity<unit::length> VesselSegment<DIM>::GetRadius() const
 {
     return mRadius;
 }
@@ -397,7 +397,7 @@ void VesselSegment<DIM>::SetLabel(const std::string& rLabel)
 }
 
 template<unsigned DIM>
-void VesselSegment<DIM>::SetRadius(double radius)
+void VesselSegment<DIM>::SetRadius(units::quantity<unit::length> radius)
 {
     mRadius = radius;
 }

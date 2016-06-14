@@ -33,50 +33,63 @@
 
  */
 
-#include "ShrinkingStimulusCalculator.hpp"
+#include "RadiusCalculator.hpp"
 
 template<unsigned DIM>
-ShrinkingStimulusCalculator<DIM>::ShrinkingStimulusCalculator() :  AbstractVesselNetworkCalculator<DIM>(),
-    mDefaultStimulus(1.79*unit::reciprocal_seconds)
+RadiusCalculator<DIM>::RadiusCalculator() :
+        mMinRadius(1e-6 * unit::metres),
+        mMaxRadius(50e-6 * unit::metres),
+        mTimeStep(0.0001 * unit::seconds)
 {
 
 }
 
 template<unsigned DIM>
-ShrinkingStimulusCalculator<DIM>::~ShrinkingStimulusCalculator()
+RadiusCalculator<DIM>::~RadiusCalculator()
 {
 
-}
-
-template <unsigned DIM>
-boost::shared_ptr<ShrinkingStimulusCalculator<DIM> > ShrinkingStimulusCalculator<DIM>::Create()
-{
-    MAKE_PTR(ShrinkingStimulusCalculator<DIM>, pSelf);
-    return pSelf;
 }
 
 template<unsigned DIM>
-units::quantity<unit::rate> ShrinkingStimulusCalculator<DIM>::GetStimulus()
+void RadiusCalculator<DIM>::SetMinRadius(units::quantity<unit::length> minRadius)
 {
-    return mDefaultStimulus;
+    mMinRadius = minRadius;
 }
 
 template<unsigned DIM>
-void ShrinkingStimulusCalculator<DIM>::SetStimulus(units::quantity<unit::rate> stimulus)
+void RadiusCalculator<DIM>::SetMaxRadius(units::quantity<unit::length> maxRadius)
 {
-    mDefaultStimulus = stimulus;
+    mMaxRadius = maxRadius;
 }
 
 template<unsigned DIM>
-void ShrinkingStimulusCalculator<DIM>::Calculate()
+void RadiusCalculator<DIM>::SetTimestep(units::quantity<unit::time>  dt)
 {
-    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
+    mTimeStep = dt;
+}
+
+template<unsigned DIM>
+void RadiusCalculator<DIM>::Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork)
+{
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
+
     for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
     {
-        segments[segment_index]->GetFlowProperties()->SetStimulus(segments[segment_index]->GetFlowProperties()->GetStimulus() - mDefaultStimulus);
+        units::quantity<unit::rate> total_stimulus = segments[segment_index]->GetFlowProperties()->GetStimulus();
+        units::quantity<unit::length> radius = segments[segment_index]->GetRadius();
+        radius *= 1.0 + mTimeStep * total_stimulus;
+        if (radius > mMaxRadius)
+        {
+            radius = mMaxRadius;
+        }
+        if (radius < mMinRadius)
+        {
+            radius = mMinRadius;
+        }
+        segments[segment_index]->SetRadius(radius);
     }
 }
 
 // Explicit instantiation
-template class ShrinkingStimulusCalculator<2> ;
-template class ShrinkingStimulusCalculator<3> ;
+template class RadiusCalculator<2> ;
+template class RadiusCalculator<3> ;

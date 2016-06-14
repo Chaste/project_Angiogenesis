@@ -33,28 +33,67 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef _Alarcon03WallShearStressCalculator_hpp
-#define _Alarcon03WallShearStressCalculator_hpp
+#ifndef _MechanicalStimulusCalculator_hpp
+#define _MechanicalStimulusCalculator_hpp
 
-#include "boost/shared_ptr.hpp"
+#include "SmartPointers.hpp"
 #include "VascularNetwork.hpp"
+#include "AbstractVesselNetworkCalculator.hpp"
+#include "UnitCollections.hpp"
 
+/**
+ * This solver calculates a flow derived vessel growth stimulus according to:
+ * Alarcon et al. (2003), JTB, 225, pp257-274. This Calculator has been changed from the original found in Pries1998
+ * in order to better fit experimental data. See original paper and relevant test for comparison.
+ *
+ * The calculator assumes pressures are in Pa
+ */
 template<unsigned DIM>
-class Alarcon03WallShearStressCalculator
+class MechanicalStimulusCalculator : public AbstractVesselNetworkCalculator<DIM>
 {
+    
+private:
+    
+	/*
+	 * A small constant included to avoid singular behavior at low wall shear stress.
+	 */
+    units::quantity<unit::pressure> mTauRef;
+
+    /*
+     * The level of wall shear stress expected from the actual intravascular pressure, according
+     * to a parametric description of experimental data obtained in the rat mesentry (exhibiting a
+     * sigmoidal increase of wall shear stress with increasing pressure.
+     */
+    units::quantity<unit::pressure> mTauP;
     
 public:
     
-    // constructor
-    Alarcon03WallShearStressCalculator();
+    /**
+     * Constructor.
+     */
+    MechanicalStimulusCalculator();
     
     /**
-     *  destructor.
+     * Destructor.
      */
-    ~Alarcon03WallShearStressCalculator();
-    
-    // method for performing the Calculator
-    void Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork);
+    ~MechanicalStimulusCalculator();
+
+    /**
+     * Return the shear stress as a function of pressure
+     * @return double the shear stress as a function of pressure
+     */
+    units::quantity<unit::pressure> GetTauP();
+
+    /**
+     * Set the wall shear stress reference value, a lower bound for the stimulus calculation
+     * @param tauRef the lower bound wall shear stress
+     */
+    void SetTauRef(units::quantity<unit::pressure> tauRef);
+
+    /**
+     * Do the calculation
+     */
+    void Calculate();
 
 };
 

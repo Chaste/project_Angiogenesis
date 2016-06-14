@@ -36,14 +36,22 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _ShrinkingStimulus_hpp
 #define _ShrinkingStimulus_hpp
 
-#include "boost/shared_ptr.hpp"
+#include "SmartPointers.hpp"
 #include "VascularNetwork.hpp"
+#include "UnitCollections.hpp"
+#include "AbstractVesselNetworkCalculator.hpp"
 
+/**
+ * Calculate a stimulus related to the tendency of the vasculature to shrink
+ * See Alarcon et al. (2003), JTB, 225, pp257-274.
+ */
 template<unsigned DIM>
-class ShrinkingStimulusCalculator
+class ShrinkingStimulusCalculator : public AbstractVesselNetworkCalculator<DIM>
 {
-    
-    double mDefaultStimulus;
+    /**
+     * The default value of the shrinking stimulus
+     */
+    units::quantity<unit::rate> mDefaultStimulus;
 
 public:
     
@@ -57,11 +65,27 @@ public:
      */
     ~ShrinkingStimulusCalculator();
     
+    /*
+     * Factor constructor. Construct a new instance of the class and return a shared pointer to it.
+     * @return a pointer to a new instance of the class.
+     */
+    static boost::shared_ptr<ShrinkingStimulusCalculator<DIM> > Create();
 
-    void SetStimulus(double stimulus);
+    /**
+     * Get the default value of the shrinking stimulus
+     * @return stimulus the value of the stimulus
+     */
+    units::quantity<unit::rate> GetStimulus();
 
-    // method for performing the Calculator
-    void Calculate(boost::shared_ptr<VascularNetwork<DIM> > pNetwork);
+    /**
+     * Set the default value of the shrinking stimulus
+     */
+    void SetStimulus(units::quantity<unit::rate> stimulus);
+
+    /**
+     * Do the solve
+     */
+    void Calculate();
 
 };
 

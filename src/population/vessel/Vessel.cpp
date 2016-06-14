@@ -444,9 +444,9 @@ double Vessel<DIM>::GetLength() const
 }
 
 template<unsigned DIM>
-double Vessel<DIM>::GetRadius() const
+units::quantity<unit::length> Vessel<DIM>::GetRadius() const
 {
-    double radius = 0.0;
+    units::quantity<unit::length> radius = 0.0 * unit::metres;
 
     for (unsigned i = 0; i < mSegments.size(); i++)
     {
@@ -457,9 +457,9 @@ double Vessel<DIM>::GetRadius() const
 }
 
 template<unsigned DIM>
-double Vessel<DIM>::GetHaematocrit() const
+units::quantity<unit::dimensionless> Vessel<DIM>::GetHaematocrit() const
 {
-    double haematocrit = 0.0;
+    units::quantity<unit::dimensionless> haematocrit = 0.0;
 
     for (unsigned i = 0; i < mSegments.size(); i++)
     {
@@ -470,9 +470,9 @@ double Vessel<DIM>::GetHaematocrit() const
 }
 
 template<unsigned DIM>
-double Vessel<DIM>::GetFlowRate() const
+units::quantity<unit::flow_rate> Vessel<DIM>::GetFlowRate() const
 {
-    double flow_rate = 0.0;
+    units::quantity<unit::flow_rate> flow_rate = 0.0 * units::pow<3>(unit::metres)/unit::seconds;
 
     for (unsigned i = 0; i < mSegments.size(); i++)
     {
@@ -483,9 +483,9 @@ double Vessel<DIM>::GetFlowRate() const
 }
 
 template<unsigned DIM>
-double Vessel<DIM>::GetImpedance() const
+units::quantity<unit::flow_impedance> Vessel<DIM>::GetImpedance() const
 {
-    double impedance = 0.0;
+    units::quantity<unit::flow_impedance> impedance = 0.0 * unit::kg/(units::pow<4>(unit::metres)*unit::seconds);
 
     for (unsigned i = 0; i < mSegments.size(); i++)
     {
@@ -496,9 +496,9 @@ double Vessel<DIM>::GetImpedance() const
 }
 
 template<unsigned DIM>
-double Vessel<DIM>::GetViscosity() const
+units::quantity<unit::dynamic_viscosity> Vessel<DIM>::GetViscosity() const
 {
-    double viscosity = 0.0;
+    units::quantity<unit::dynamic_viscosity> viscosity = 0.0 * unit::kg/(unit::metres*unit::seconds);
 
     for (unsigned i = 0; i < mSegments.size(); i++)
     {
@@ -570,18 +570,18 @@ std::map<std::string, double> Vessel<DIM>::GetVtkData() const
 {
     std::map<std::string, double> vtk_data;
     vtk_data["Vessel Id"] = double(GetId());
-    vtk_data["Vessel Radius"] = GetRadius();
-    vtk_data["Vessel Impedance"] = GetImpedance();
+    vtk_data["Vessel Radius"] = GetRadius()/(unit::metres);
+    vtk_data["Vessel Impedance"] = GetImpedance()/(unit::kg/(units::pow<4>(unit::metres)*unit::seconds));
     vtk_data["Vessel Haematocrit"] = GetHaematocrit();
-    vtk_data["Vessel Flow Rate"] = GetFlowRate();
-    vtk_data["Vessel Absolute Flow Rate"] = std::abs(GetFlowRate());
-    vtk_data["Vessel Viscosity"] = GetViscosity();
-    double wss = 0.0;
+    vtk_data["Vessel Flow Rate"] = GetFlowRate()/(units::pow<3>(unit::metres)/unit::seconds);;
+    vtk_data["Vessel Absolute Flow Rate"] = std::abs(GetFlowRate()/(units::pow<3>(unit::metres)/unit::seconds));
+    vtk_data["Vessel Viscosity"] = GetViscosity()/(unit::kg/(unit::metres*unit::seconds));
+    units::quantity<unit::pressure> wss = 0.0*unit::pascals;
     for (unsigned i = 0; i < mSegments.size(); i++)
     {
         wss += mSegments[i]->GetFlowProperties()->GetWallShearStress();
     }
-    vtk_data["Vessel Wall Shear Stress"] = wss/double(mSegments.size());
+    vtk_data["Vessel Wall Shear Stress"] = wss/(double(mSegments.size())*(unit::pascals));
     return vtk_data;
 }
 
@@ -813,7 +813,7 @@ void Vessel<DIM>::SetLabel(const std::string& label)
 }
 
 template<unsigned DIM>
-void Vessel<DIM>::SetRadius(double radius)
+void Vessel<DIM>::SetRadius(units::quantity<unit::length> radius)
 {
     for (unsigned i = 0; i < mSegments.size(); i++)
     {
@@ -822,7 +822,7 @@ void Vessel<DIM>::SetRadius(double radius)
 }
 
 template<unsigned DIM>
-void Vessel<DIM>::SetHaematocrit(double haematocrit)
+void Vessel<DIM>::SetHaematocrit(units::quantity<unit::dimensionless> haematocrit)
 {
     for (unsigned i = 0; i < mSegments.size(); i++)
     {
@@ -831,7 +831,7 @@ void Vessel<DIM>::SetHaematocrit(double haematocrit)
 }
 
 template<unsigned DIM>
-void Vessel<DIM>::SetFlowRate(double flowRate)
+void Vessel<DIM>::SetFlowRate(units::quantity<unit::flow_rate> flowRate)
 {
     for (unsigned i = 0; i < mSegments.size(); i++)
     {
@@ -932,8 +932,6 @@ bool Vessel<DIM>::VesselHasRegressed()
         return mRemoveViaRegression;
     }
 }
-
-
 
 // Explicit instantiation
 template class Vessel<2> ;

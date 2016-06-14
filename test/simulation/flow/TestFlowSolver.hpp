@@ -37,13 +37,13 @@
 #define TESTFlowSolver_HPP_
 
 #include <cxxtest/TestSuite.h>
+#include "../../../src/simulation/flow/calculators/ImpedanceCalculator.hpp"
 #include "FileFinder.hpp"
 #include "OutputFileHandler.hpp"
 #include "SmartPointers.hpp"
 #include "VasculatureGenerator.hpp"
 #include "FlowSolver.hpp"
 #include "VasculatureData.hpp"
-#include "PoiseuilleImpedanceCalculator.hpp"
 #include "FakePetscSetup.hpp"
 
 class TestFlowSolver : public CxxTest::TestSuite

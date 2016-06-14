@@ -33,25 +33,25 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef _Alarcon03ViscosityCalculator_hpp
-#define _Alarcon03ViscosityCalculator_hpp
+#ifndef _ViscosityCalculator_hpp
+#define _ViscosityCalculator_hpp
 
 #include <boost/shared_ptr.hpp>
 #include "VascularNetwork.hpp"
 
 template<unsigned DIM>
-class Alarcon03ViscosityCalculator
+class ViscosityCalculator
 {
     
 public:
     
     // constructor
-    Alarcon03ViscosityCalculator();
+    ViscosityCalculator();
 
     /**
      *  destructor.
      */
-    ~Alarcon03ViscosityCalculator();
+    ~ViscosityCalculator();
     
     // method for performing the calculation
     void Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork);

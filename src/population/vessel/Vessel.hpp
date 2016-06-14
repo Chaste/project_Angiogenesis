@@ -43,6 +43,7 @@
 #include "VascularNode.hpp"
 #include "VasculatureData.hpp"
 #include "ChastePoint.hpp"
+#include "UnitCollections.hpp"
 
 /**
  *  Struct to denote segment locations on the vessel
@@ -249,14 +250,14 @@ public:
      *
      *  @return double
      */
-    double GetImpedance() const;
+    units::quantity<unit::flow_impedance> GetImpedance() const;
 
     /**
      *  Return the Viscosity
      *
      *  @return double
      */
-    double GetViscosity() const;
+    units::quantity<unit::dynamic_viscosity> GetViscosity() const;
 
     /**
      *  Return the Label
@@ -277,17 +278,17 @@ public:
      *
      *  @return double
      */
-    double GetRadius() const;
+    units::quantity<unit::length> GetRadius() const;
 
     /**
      *  Return the haematocrit
      */
-    double GetHaematocrit() const;
+    units::quantity<unit::dimensionless> GetHaematocrit() const;
 
     /**
      *  Return the flow rate
      */
-    double GetFlowRate() const;
+    units::quantity<unit::flow_rate> GetFlowRate() const;
 
     /**
      *  Return the vessel's nodes
@@ -380,17 +381,17 @@ public:
      *
      *  @return double
      */
-    void SetRadius(double radius);
+    void SetRadius(units::quantity<unit::length> radius);
 
     /**
      *  Set the haematocrit
      */
-    void SetHaematocrit(double haematocrit);
+    void SetHaematocrit(units::quantity<unit::dimensionless> haematocrit);
 
     /**
      *  Set the flow rate
      */
-    void SetFlowRate(double flowRate);
+    void SetFlowRate(units::quantity<unit::flow_rate> flowRate);
 
     /**
      *  Update the data in mNodes

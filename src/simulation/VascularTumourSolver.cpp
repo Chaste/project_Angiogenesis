@@ -37,7 +37,6 @@
 #include "UblasIncludes.hpp"
 #include "VesselSegment.hpp"
 #include "VascularNode.hpp"
-#include "PoiseuilleImpedanceCalculator.hpp"
 #include "VascularTumourSolver.hpp"
 
 template<unsigned DIM>
@@ -46,7 +45,6 @@ VascularTumourSolver<DIM>::VascularTumourSolver() :
         mOutputFrequency(1),
         mpOutputFileHandler(),
         mHybridSolvers(),
-        mpFlowSolver(),
         mpStructuralAdaptationSolver(),
         mpAngiogenesisSolver(),
         mpRegressionSolver()
@@ -94,13 +92,6 @@ void VascularTumourSolver<DIM>::Increment()
     {
         mpStructuralAdaptationSolver->UpdateFlowSolver();
         mpStructuralAdaptationSolver->Solve();
-    }
-    else if(mpFlowSolver)
-    {
-        PoiseuilleImpedanceCalculator<DIM> impedance_calculator;
-        impedance_calculator.Calculate(mpNetwork);
-        mpFlowSolver->SetUp();
-        mpFlowSolver->Solve();
     }
 
     // If there are PDEs solve them
@@ -182,12 +173,6 @@ void VascularTumourSolver<DIM>::SetAngiogenesisSolver(boost::shared_ptr<Angiogen
 }
 
 template<unsigned DIM>
-void VascularTumourSolver<DIM>::SetFlowSolver(boost::shared_ptr<FlowSolver<DIM> > pFlowSolver)
-{
-    mpFlowSolver = pFlowSolver;
-}
-
-template<unsigned DIM>
 void VascularTumourSolver<DIM>::SetOutputFileHandler(boost::shared_ptr<OutputFileHandler> pFileHandler)
 {
     mpOutputFileHandler = pFileHandler;
@@ -232,13 +217,6 @@ void VascularTumourSolver<DIM>::Setup()
     if(mpStructuralAdaptationSolver)
     {
         mpStructuralAdaptationSolver->SetVesselNetwork(mpNetwork);
-    }
-    else if(mpFlowSolver)
-    {
-        PoiseuilleImpedanceCalculator<DIM> impedance_calculator;
-        impedance_calculator.Calculate(mpNetwork);
-        mpFlowSolver->SetVesselNetwork(mpNetwork);
-        mpFlowSolver->SetUp();
     }
 
     if(mpRegressionSolver)

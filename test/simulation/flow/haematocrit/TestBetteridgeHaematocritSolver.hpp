@@ -37,6 +37,7 @@
 #define TestBetteridgeHaematocritSolver_hpp
 
 #include <cxxtest/TestSuite.h>
+#include "../../../../src/simulation/flow/calculators/ImpedanceCalculator.hpp"
 #include "StructuralAdaptationSolver.hpp"
 #include "FileFinder.hpp"
 #include "OutputFileHandler.hpp"
@@ -46,8 +47,6 @@
 #include "VasculatureData.hpp"
 #include "SimulationTime.hpp"
 #include "BetteridgeHaematocritSolver.hpp"
-#include "PoiseuilleImpedanceCalculator.hpp"
-
 #include "FakePetscSetup.hpp"
 
 class TestBetteridgeHaematocritSolver : public CxxTest::TestSuite

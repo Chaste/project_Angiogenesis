@@ -49,6 +49,7 @@
 #include "LinearSystem.hpp"
 #include "ReplicatableVector.hpp"
 #include "UblasMatrixInclude.hpp"
+#include "UnitCollections.hpp"
 
 #include "GreensFunctionSolver.hpp"
 
@@ -324,9 +325,9 @@ boost::shared_ptr<boost::multi_array<double, 2> > GreensFunctionSolver<DIM>::Get
             {
                 double distance = norm_2(mSubSegmentCoordinates[iter2].rGetLocation() - mSubSegmentCoordinates[iter].rGetLocation());
                 double term;
-                if (distance < mSegmentPointMap[iter]->GetRadius())
+                if (distance < mSegmentPointMap[iter]->GetRadius()/unit::metres)
                 {
-                    double radius = mSegmentPointMap[iter]->GetRadius();
+                    double radius = mSegmentPointMap[iter]->GetRadius()/unit::metres;
                     double max_segment_length = std::max(mSubSegmentLengths[iter], mSubSegmentLengths[iter2]);
                     double green_correction = 0.6 * std::exp(-0.45 * max_segment_length /radius);
 
