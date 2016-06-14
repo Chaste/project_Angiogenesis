@@ -43,6 +43,7 @@
 #include "Vessel.hpp"
 #include "ChastePoint.hpp"
 #include "VasculatureData.hpp"
+#include "UnitCollections.hpp"
 
 class TestVessel : public CxxTest::TestSuite
 {
@@ -95,12 +96,12 @@ public:
         TS_ASSERT_EQUALS(pVessel1->GetId(), 5u);
         TS_ASSERT_EQUALS(pVessel1->rGetLabel().c_str(), label.c_str());
 
-        pVessel1->SetRadius(5.0);
+        pVessel1->SetRadius(5.0*unit::metres);
         pVessel1->SetHaematocrit(10.0);
-        pVessel1->SetFlowRate(15.0);
-        TS_ASSERT_DELTA(pVessel1->GetRadius(), 5.0, 1.e-6);
+        pVessel1->SetFlowRate(15.0*unit::unit_flow_rate);
+        TS_ASSERT_DELTA(pVessel1->GetRadius()/unit::metres, 5.0, 1.e-6);
         TS_ASSERT_DELTA(pVessel1->GetHaematocrit(), 10.0, 1.e-6);
-        TS_ASSERT_DELTA(pVessel1->GetFlowRate(), 15.0, 1.e-6);
+        TS_ASSERT_DELTA(pVessel1->GetFlowRate()/unit::unit_flow_rate, 15.0, 1.e-6);
     }
 
     void TestAddingAndRemovingSegments() throw (Exception)

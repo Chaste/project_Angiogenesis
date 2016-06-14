@@ -38,13 +38,14 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "SmartPointers.hpp"
 #include "VascularNetwork.hpp"
+#include "AbstractVesselNetworkCalculator.hpp"
 
 /**
  * This solver calculates the distribution of haematocrit in branching vessel networks. Concrete implementations
  * correspond to different approaches used in the literature.
  */
 template<unsigned DIM>
-class AbstractHaematocritSolver
+class AbstractHaematocritSolver : public AbstractVesselNetworkCalculator<DIM>
 {
 
 public:
@@ -63,7 +64,7 @@ public:
      *  Pure virtual method to do the solve, to be overwritten in concrete classes
      *  @param pNetwork the vessel network to do the solve on
      */
-    virtual void Calculate(boost::shared_ptr<VascularNetwork<DIM> > pNetwork) = 0;
+    virtual void Calculate() = 0;
 
 };
 

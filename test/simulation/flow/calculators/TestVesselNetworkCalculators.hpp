@@ -38,10 +38,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <cxxtest/TestSuite.h>
 #include <SmartPointers.hpp>
-//#include "ShrinkingStimulusCalculator.hpp"
+#include "ShrinkingStimulusCalculator.hpp"
 #include "VascularNetwork.hpp"
 #include "UnitCollections.hpp"
-#include <boost/units/systems/si/time.hpp>
 
 class TestVesselNetworkCalculators : public CxxTest::TestSuite
 {
@@ -57,10 +56,9 @@ public:
         boost::shared_ptr<VascularNetwork<3> > p_vascular_network = VascularNetwork<3>::Create();
         p_vascular_network->AddVessel(p_vessel);
 
-        std::cout << units::reciprocal_second::unit_type() << std::endl;
-//        ShrinkingStimulusCalculator<3> calculator = ShrinkingStimulusCalculator<3>();
-//        calculator.SetVesselNetwork(p_vascular_network);
-//        calculator.Calculate();
+        ShrinkingStimulusCalculator<3> calculator = ShrinkingStimulusCalculator<3>();
+        calculator.SetVesselNetwork(p_vascular_network);
+        calculator.Calculate();
     }
 };
 

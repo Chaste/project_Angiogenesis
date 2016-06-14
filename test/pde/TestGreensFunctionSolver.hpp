@@ -42,6 +42,7 @@
 #include "VasculatureGenerator.hpp"
 #include "HybridLinearEllipticPde.hpp"
 #include "RegularGrid.hpp"
+#include "UnitCollections.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
 
@@ -60,7 +61,7 @@ public:
         centre[2] = 0.0;
 
         boost::shared_ptr<VascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre, 14.0);
-        p_network->SetSegmentRadii(0.05);
+        p_network->SetSegmentRadii(0.05*unit::metres);
 
         // Set up the grid
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();

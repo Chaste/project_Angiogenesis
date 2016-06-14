@@ -38,7 +38,7 @@
 #include "MathsCustomFunctions.hpp"
 
 template<unsigned DIM>
-WallShearStressCalculator<DIM>::WallShearStressCalculator()
+WallShearStressCalculator<DIM>::WallShearStressCalculator() : AbstractVesselNetworkCalculator<DIM>()
 {
 
 }
@@ -50,9 +50,9 @@ WallShearStressCalculator<DIM>::~WallShearStressCalculator()
 }
 
 template<unsigned DIM>
-void WallShearStressCalculator<DIM>::Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork)
+void WallShearStressCalculator<DIM>::Calculate()
 {
-    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
     for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
     {
         units::quantity<unit::flow_rate> flow_rate = units::fabs(segments[segment_index]->GetFlowProperties()->GetFlowRate());

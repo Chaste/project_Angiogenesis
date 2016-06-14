@@ -49,6 +49,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "FlowSolver.hpp"
 #include "VascularTumourSolver.hpp"
 #include "OutputFileHandler.hpp"
+#include "UnitCollections.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
 
@@ -69,12 +70,12 @@ public:
         // Set a wall shear stress below the threshold
         double wss_threshold = 10.0;
         double vessel_wss = 5.0;
-        p_vessel->GetSegment(0)->GetFlowProperties()->SetWallShearStress(vessel_wss);
+        p_vessel->GetSegment(0)->GetFlowProperties()->SetWallShearStress(vessel_wss*unit::pascals);
 
         // Set up the regression solver
         WallShearStressBasedRegressionSolver<2> regression_solver = WallShearStressBasedRegressionSolver<2>();
         regression_solver.SetVesselNetwork(p_network);
-        regression_solver.SetLowWallShearStressThreshold(wss_threshold);
+        regression_solver.SetLowWallShearStressThreshold(wss_threshold*unit::pascals);
         regression_solver.SetMaximumTimeWithLowWallShearStress(3);
 
         // Run the solver for six 'increments'
@@ -102,7 +103,7 @@ public:
         // Make a dummy segment to set properties on
         boost::shared_ptr<VesselSegment<2> > p_segment1 = VesselSegment<2>::Create(VascularNode<2>::Create(0.0, 0.0),
                                                                                    VascularNode<2>::Create(1.0, 0.0));
-        p_segment1->GetFlowProperties()->SetImpedance(1.e14);
+        p_segment1->GetFlowProperties()->SetImpedance(1.e14*unit::unit_flow_impedance);
         p_network->SetSegmentProperties(p_segment1);
 
         // Get the nearest node to the inlet and outlet
@@ -116,14 +117,14 @@ public:
         // Set up a structural adaptation solver
         boost::shared_ptr<StructuralAdaptationSolver<2> > p_adaptation_solver = StructuralAdaptationSolver<2>::Create();
         p_adaptation_solver->SetTolerance(0.0001);
-        p_adaptation_solver->SetTimeIncrement(0.001);
+        p_adaptation_solver->SetTimeIncrement(0.001*unit::seconds);
         p_adaptation_solver->SetMaxIterations(10000);
 
         // Set up a regression solver
         double wss_threshold = 8e-6;
         boost::shared_ptr<WallShearStressBasedRegressionSolver<2> > p_regression_solver =
                 WallShearStressBasedRegressionSolver<2>::Create();
-        p_regression_solver->SetLowWallShearStressThreshold(wss_threshold);
+        p_regression_solver->SetLowWallShearStressThreshold(wss_threshold*unit::pascals);
         p_regression_solver->SetMaximumTimeWithLowWallShearStress(3);
 
         // Set up a vascular tumour solver

@@ -76,6 +76,7 @@
 #include "CaBasedCellPopulationWithVesselsGenerator.hpp"
 #include "AngiogenesisSolver.hpp"
 #include "FlowSolver.hpp"
+#include "UnitCollections.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
 
@@ -183,11 +184,11 @@ class Test2dVascularTumourGrowth : public AbstractCellBasedWithTimingsTestSuite
         boost::shared_ptr<VesselSegment<2> > p_segment(VesselSegment<2>::Create(nodes[0], nodes[1]));
 
         double initial_vessel_radius = 10.0e-6;
-        p_segment->SetRadius(initial_vessel_radius);
+        p_segment->SetRadius(initial_vessel_radius*unit::metres);
         double haematocrit = 0.45;
         p_segment->GetFlowProperties()->SetHaematocrit(haematocrit);
         double viscosity = 2e-3;
-        p_segment->GetFlowProperties()->SetViscosity(viscosity);
+        p_segment->GetFlowProperties()->SetViscosity(viscosity*unit::poiseuille);
         p_network->SetSegmentProperties(p_segment);
 
         std::vector<std::pair<double, double> > network_extents = p_network->GetExtents();
@@ -374,8 +375,8 @@ public:
 
         // todo currently there is an issue with the flow calculation - some blunt-ended vessels contain flow (they shouldn't)
         // this is an angiogenesis issue, sprouts take properties (including flow props) from parent vessels
-        boost::shared_ptr<FlowSolver<2> > flow_solver = FlowSolver<2>::Create();
-        p_vascular_tumour_solver->SetFlowSolver(flow_solver);
+//        boost::shared_ptr<FlowSolver<2> > flow_solver = FlowSolver<2>::Create();
+//        p_vascular_tumour_solver->SetFlowSolver(flow_solver);
 
         OnLatticeSimulation<2> simulator(*(cell_population.get()));
 

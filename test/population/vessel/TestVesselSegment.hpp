@@ -44,6 +44,7 @@
 #include "ChastePoint.hpp"
 #include "VesselSegment.hpp"
 #include "Vessel.hpp"
+#include "UnitCollections.hpp"
 
 class TestVesselSegment : public CxxTest::TestSuite
 {
@@ -96,13 +97,13 @@ public:
         TS_ASSERT_EQUALS(pSegment->GetId(), 5u);
         TS_ASSERT_EQUALS(pSegment->rGetLabel().c_str(), label.c_str());
 
-        pSegment->SetRadius(5.0);
-        TS_ASSERT_DELTA(pSegment->GetRadius(), 5.0, 1.e-6);
+        pSegment->SetRadius(5.0*unit::metres);
+        TS_ASSERT_DELTA(pSegment->GetRadius()/unit::metres, 5.0, 1.e-6);
 
         pSegment->GetFlowProperties()->SetHaematocrit(10.0);
-        pSegment->GetFlowProperties()->SetFlowRate(15.0);
+        pSegment->GetFlowProperties()->SetFlowRate(15.0*unit::unit_flow_rate);
         TS_ASSERT_DELTA(pSegment->GetFlowProperties()->GetHaematocrit(), 10.0, 1.e-6);
-        TS_ASSERT_DELTA(pSegment->GetFlowProperties()->GetFlowRate(), 15.0, 1.e-6);
+        TS_ASSERT_DELTA(pSegment->GetFlowProperties()->GetFlowRate()/unit::unit_flow_rate, 15.0, 1.e-6);
     }
 
     void TestAccessingData() throw (Exception)

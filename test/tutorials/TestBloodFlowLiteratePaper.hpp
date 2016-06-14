@@ -51,7 +51,6 @@
  */
 #include <vector>
 #include <cxxtest/TestSuite.h>
-#include "../../src/simulation/flow/calculators/ImpedanceCalculator.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "SmartPointers.hpp"
 #include "VascularNode.hpp"
@@ -62,7 +61,14 @@
 /*
  * The flow solver, individual calculators and the structural adaptation solver
  */
+#include "VesselImpedanceCalculator.hpp"
 #include "FlowSolver.hpp"
+#include "AlarconHaematocritSolver.hpp"
+#include "StructuralAdaptationSolver.hpp"
+/*
+ * Dimensional analysis and units
+ */
+#include "UnitCollections.hpp"
 #include "FakePetscSetup.hpp"
 
 class TestBloodFlowLiteratePaper : public AbstractCellBasedWithTimingsTestSuite
@@ -95,8 +101,7 @@ public:
         /*
          * We specify which nodes will be the inlets and outlets of the network for the flow problem. This information, as well
          * as all other info related to the flow problem, is contained in a `NodeFlowProperties` instance. Then we set the inlet and
-         * outlet pressures in Pa. Finally, we specify the radius and viscosity of each segment.
-         * This is used in the calculation of the impedance of the vessel in the flow problem.
+         * outlet pressures in Pa.
          */
         nodes[0]->GetFlowProperties()->SetIsInputNode(true);
         nodes[0]->GetFlowProperties()->SetPressure(5000.0);
@@ -104,18 +109,22 @@ public:
         nodes[2]->GetFlowProperties()->SetPressure(3000.0);
         nodes[3]->GetFlowProperties()->SetIsOutputNode(true);
         nodes[3]->GetFlowProperties()->SetPressure(3000.0);
-        p_network->SetSegmentRadii(10.0);
+        /*
+         * Now we set the segment radii and viscosity values. Not that we use unit types from the Boost Unit library.
+         */
+        p_network->SetSegmentRadii(10.0*1.e-6*unit::metres);
         std::vector<boost::shared_ptr<VesselSegment<2> > > segments = p_network->GetVesselSegments();
         for(unsigned idx=0; idx<segments.size(); idx++)
         {
-            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);
+            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3*unit::poiseuille);
         }
         /*
          * We use a calculator to work out the impedance of each vessel based on assumptions of Poiseuille flow and cylindrical vessels. This
          * updates the value of the impedance in the vessel.
          */
-        PoiseuilleImpedanceCalculator<2> impedance_calculator = PoiseuilleImpedanceCalculator<2>();
-        impedance_calculator.Calculate(p_network);
+        VesselImpedanceCalculator<2> impedance_calculator = VesselImpedanceCalculator<2>();
+        impedance_calculator.SetVesselNetwork(p_network);
+        impedance_calculator.Calculate();
         /*
          * Now we can solve for the flow rates in each vessel based on the inlet and outlet pressures and impedances. The solver
          * updates the value of pressures and flow rates in each vessel and node in the network.
@@ -128,7 +137,6 @@ public:
          */
 //        TS_ASSERT_EQUALS(p_network->GetNumberOfNodes(), 4u);
 //        TS_ASSERT_EQUALS(p_network->GetNumberOfVessels(), 3u);
-
         /*
          * Next we write out the network, including updated flow data, to file.
          */
@@ -157,37 +165,26 @@ public:
         vessels.push_back(Vessel<2>::Create(nodes[1], nodes[3]));
         boost::shared_ptr<VascularNetwork<2> > p_network = VascularNetwork<2>::Create();
         p_network->AddVessels(vessels);
-        /*
-         * We specify which nodes will be the inlets and outlets of the network for the flow problem. This information, as well
-         * as all other info related to the flow problem, is contained in a `NodeFlowProperties` instance. Then we set the inlet and
-         * outlet pressures in Pa. Finally, we specify the radius and viscosity of each segment.
-         * This is used in the calculation of the impedance of the vessel in the flow problem.
-         */
         nodes[0]->GetFlowProperties()->SetIsInputNode(true);
         nodes[0]->GetFlowProperties()->SetPressure(5000.0);
         nodes[2]->GetFlowProperties()->SetIsOutputNode(true);
         nodes[2]->GetFlowProperties()->SetPressure(3000.0);
         nodes[3]->GetFlowProperties()->SetIsOutputNode(true);
         nodes[3]->GetFlowProperties()->SetPressure(3000.0);
-        p_network->SetSegmentRadii(10.0);
+        p_network->SetSegmentRadii(10.0*1.e-6*unit::metres);
         std::vector<boost::shared_ptr<VesselSegment<2> > > segments = p_network->GetVesselSegments();
         for(unsigned idx=0; idx<segments.size(); idx++)
         {
-            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);
+            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3*unit::poiseuille);
         }
-        /*
-         * We use a calculator to work out the impedance of each vessel based on assumptions of Poiseuille flow and cylindrical vessels. This
-         * updates the value of the impedance in the vessel.
-         */
-        PoiseuilleImpedanceCalculator<2> impedance_calculator = PoiseuilleImpedanceCalculator<2>();
-        impedance_calculator.Calculate(p_network);
-        /*
-         * Now we can solve for the flow rates in each vessel based on the inlet and outlet pressures and impedances. The solver
-         * updates the value of pressures and flow rates in each vessel and node in the network.
-         */
+        VesselImpedanceCalculator<2> impedance_calculator = VesselImpedanceCalculator<2>();
+        impedance_calculator.SetVesselNetwork(p_network);
+        impedance_calculator.Calculate();
         FlowSolver<2> flow_solver = FlowSolver<2>();
         flow_solver.SetVesselNetwork(p_network);
         flow_solver.Solve();
+
+
         /*
          * We can check to see if the final solution is reasonable
          */

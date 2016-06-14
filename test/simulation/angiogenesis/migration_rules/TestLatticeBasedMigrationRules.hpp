@@ -37,7 +37,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TestLatticeBasedMigrationRules_hpp
 
 #include <cxxtest/TestSuite.h>
-#include "../../../../src/simulation/flow/calculators/ImpedanceCalculator.hpp"
+#include "VesselImpedanceCalculator.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "FileFinder.hpp"
 #include "OutputFileHandler.hpp"
@@ -55,6 +55,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Owen2011MigrationRule.hpp"
 #include "FlowSolver.hpp"
 #include "PetscSetupAndFinalize.hpp"
+#include "UnitCollections.hpp"
 
 class TestLatticeBasedMigrationRules : public AbstractCellBasedWithTimingsTestSuite
 {
@@ -215,11 +216,11 @@ public:
         p_node5->GetFlowProperties()->SetIsOutputNode(true);
         p_node5->GetFlowProperties()->SetPressure(1000);
 
-        p_network->SetSegmentRadii(10.0);
+        p_network->SetSegmentRadii(10.0*1.e-6*unit::metres);
         std::vector<boost::shared_ptr<VesselSegment<2> > > segments = p_network->GetVesselSegments();
         for(unsigned idx=0; idx<segments.size(); idx++)
         {
-            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);
+            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3*unit::poiseuille);
         }
 
         boost::shared_ptr<LatticeBasedMigrationRule<2> > p_migration_rule = LatticeBasedMigrationRule<2>::Create();
@@ -227,8 +228,9 @@ public:
         p_migration_rule->SetMovementProbability(0.5);
         p_migration_rule->SetNetwork(p_network);
 
-        PoiseuilleImpedanceCalculator<2> calculator;
-        calculator.Calculate(p_network);
+        VesselImpedanceCalculator<2> calculator;
+        calculator.SetVesselNetwork(p_network);
+        calculator.Calculate();
 
         FlowSolver<2> flow_solver;
         flow_solver.SetVesselNetwork(p_network);

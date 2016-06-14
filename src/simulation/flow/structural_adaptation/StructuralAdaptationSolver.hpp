@@ -36,17 +36,12 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef SIMPLESTRCUTURALADAPATATIONSOLVER_HPP
 #define SIMPLESTRCUTURALADAPATATIONSOLVER_HPP
 
-#include "VesselImpedanceCalculator.hpp"
 #include "SmartPointers.hpp"
 #include "VascularNetwork.hpp"
-#include "MechanicalStimulusCalculator.hpp"
-#include "MetabolicStimulusCalculator.hpp"
 #include "RadiusCalculator.hpp"
-#include "ViscosityCalculator.hpp"
-#include "WallShearStressCalculator.hpp"
 #include "FlowSolver.hpp"
-#include "AbstractHaematocritSolver.hpp"
 #include "AbstractStructuralAdaptationSolver.hpp"
+#include "AbstractVesselNetworkCalculator.hpp"
 
 /**
  * This is a concrete implementation of a structural adaptation solver. It iteratively changes
@@ -60,11 +55,6 @@ class StructuralAdaptationSolver : public AbstractStructuralAdaptationSolver<DIM
 private:
 
     /**
-     * A calculator to determine haematocrit in the network
-     */
-    boost::shared_ptr<AbstractHaematocritSolver<DIM> > mpHaematocritCalculator;
-
-    /**
      * A solver to calculate flow rates and pressures in the network
      */
     boost::shared_ptr<FlowSolver<DIM> > mpFlowSolver;
@@ -75,29 +65,14 @@ private:
     boost::shared_ptr<RadiusCalculator<DIM> > mpRadiusCalculator;
 
     /**
-     * A calculator to determine metabolic stimuli
+     * Calculators to be run before the flow solve
      */
-    boost::shared_ptr<MetabolicStimulusCalculator<DIM> > mpMetabolicStimulusCalculator;
+    std::vector<boost::shared_ptr<AbstractVesselNetworkCalculator<DIM> > > mPreFlowSolveCalculators;
 
     /**
-     * A calculator to determine impedance in vessels
+     * Calculators to be run after the flow solve
      */
-    boost::shared_ptr<VesselImpedanceCalculator<DIM> > mpImpedanceCalculator;
-
-    /**
-     * A calculator to determine mechanical stimuli
-     */
-    boost::shared_ptr<MechanicalStimulusCalculator<DIM> > mpMechanicalStimulusCalculator;
-
-    /**
-     * A calculator to determine fluid effective viscosity in vessels
-     */
-    boost::shared_ptr<ViscosityCalculator<DIM> > mpViscosityCalculator;
-
-    /**
-     * A calculator to determine wall shear stress in vessels
-     */
-    boost::shared_ptr<WallShearStressCalculator<DIM> > mpWallShearStressCalculator;
+    std::vector<boost::shared_ptr<AbstractVesselNetworkCalculator<DIM> > > mPostFlowSolveCalculators;
 
 
 public:
@@ -119,9 +94,27 @@ public:
     static boost::shared_ptr<StructuralAdaptationSolver<DIM> > Create();
 
     /**
+     * Get the flow calculator
+     * @return the flow solver.
+     */
+    boost::shared_ptr<FlowSolver<DIM> > GetFlowSolver();
+
+    /**
      * Perform a single iteration to update the radius and calculators
      */
     virtual void Iterate();
+
+    /**
+     * Add a vessel network calculator to be run before the flow solve
+     * @param pCalculator a vessel network calculator
+     */
+    void AddPreFlowSolveCalculator(boost::shared_ptr<AbstractVesselNetworkCalculator<DIM> > pCalculator);
+
+    /**
+     * Add a vessel network calculator to be run before the flow solve
+     * @param pCalculator a vessel network calculator
+     */
+    void AddPostFlowSolveCalculator(boost::shared_ptr<AbstractVesselNetworkCalculator<DIM> > pCalculator);
 
     /**
      * Set the flow calculator
@@ -130,46 +123,10 @@ public:
     void SetFlowSolver(boost::shared_ptr<FlowSolver<DIM> > pSolver);
 
     /**
-     * Set the haematocirt solver
-     * @param pCalculator the haematocirt calculator.
-     */
-    void SetHaematocritCalculator(boost::shared_ptr<AbstractHaematocritSolver<DIM> > pCalculator);
-
-    /**
-     * Set the impedance calculator
-     * @param pCalculator the impedance calculator.
-     */
-    void SetImpedanceCalculator(boost::shared_ptr<VesselImpedanceCalculator<DIM> > pCalculator);
-
-    /**
-     * Set the metabolic stimulus calculator
-     * @param pCalculator the metabolic stimulus calculator.
-     */
-    void SetMetabolicStimulusCalculator(boost::shared_ptr<MetabolicStimulusCalculator<DIM> > pCalculator);
-
-    /**
-     * Set the mechanical stimulus calculator
-     * @param pCalculator the mechanical stimulus calculator.
-     */
-    void SetMechanicalStimulusCalculator(boost::shared_ptr<MechanicalStimulusCalculator<DIM> > pCalculator);
-
-    /**
      * Set the radius calculator
      * @param pCalculator the radius calculator.
      */
     void SetRadiusCalculator(boost::shared_ptr<RadiusCalculator<DIM> > pCalculator);
-
-    /**
-     * Set the viscosity calculator
-     * @param pCalculator the viscosity calculator.
-     */
-    void SetViscosityCalculator(boost::shared_ptr<ViscosityCalculator<DIM> > pCalculator);
-
-    /**
-     * Set the wall shear stress calculator
-     * @param pCalculator the wall shear stress calculator.
-     */
-    void SetWallShearStressCalculator(boost::shared_ptr<WallShearStressCalculator<DIM> > pCalculator);
 
     /**
      * To be called if the vessel network changes between solves

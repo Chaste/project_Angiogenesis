@@ -72,10 +72,10 @@ void BetteridgeHaematocritSolver<DIM>::SetHaematocrit(units::quantity<unit::dime
 }
 
 template<unsigned DIM>
-void BetteridgeHaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwork<DIM> > pNetwork)
+void BetteridgeHaematocritSolver<DIM>::Calculate()
 {
     // Give the vessels unique Ids
-    std::vector<boost::shared_ptr<Vessel<DIM> > > vessels = pNetwork->GetVessels();
+    std::vector<boost::shared_ptr<Vessel<DIM> > > vessels = this->mpNetwork->GetVessels();
     for(unsigned idx=0; idx<vessels.size(); idx++)
     {
         vessels[idx]->SetId(idx);

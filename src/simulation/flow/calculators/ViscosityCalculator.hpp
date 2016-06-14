@@ -38,23 +38,32 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <boost/shared_ptr.hpp>
 #include "VascularNetwork.hpp"
+#include "AbstractVesselNetworkCalculator.hpp"
 
+/**
+ * This solver calculates the dynamic viscosity in a vessel as a function of radius and haematocrit according to:
+ * Alarcon et al. (2003), JTB, 225, pp257-274.
+ */
 template<unsigned DIM>
-class ViscosityCalculator
+class ViscosityCalculator : public AbstractVesselNetworkCalculator<DIM>
 {
     
 public:
     
-    // constructor
+    /**
+     * Constructor.
+     */
     ViscosityCalculator();
 
     /**
-     *  destructor.
+     *  Destructor.
      */
     ~ViscosityCalculator();
     
-    // method for performing the calculation
-    void Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork);
+    /**
+     * Do the calculation.
+     */
+    void Calculate();
     
 };
 

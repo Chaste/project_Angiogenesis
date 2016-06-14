@@ -76,6 +76,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "RandomNumberGenerator.hpp"
 #include "VascularTumourModifier.hpp"
 #include "RegularGrid.hpp"
+#include "UnitCollections.hpp"
 
 class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
 {
@@ -120,11 +121,11 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
         p_network->GetVessel(1)->GetEndNode()->GetFlowProperties()->SetPressure(1000.0);
 
         p_network->UpdateSegments();
-        p_network->SetSegmentRadii(10.0);
+        p_network->SetSegmentRadii(10.0*1.e-6*unit::metres);
         std::vector<boost::shared_ptr<VesselSegment<3> > > segments = p_network->GetVesselSegments();
         for(unsigned idx=0; idx<segments.size(); idx++)
         {
-            segments[idx]->GetFlowProperties()->SetViscosity(1.e-9);
+            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3*unit::poiseuille);
         }
         return p_network;
     }

@@ -36,7 +36,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "AbstractHaematocritSolver.hpp"
 
 template<unsigned DIM>
-AbstractHaematocritSolver<DIM>::AbstractHaematocritSolver()
+AbstractHaematocritSolver<DIM>::AbstractHaematocritSolver() : AbstractVesselNetworkCalculator<DIM>()
 {
 
 }

@@ -55,8 +55,7 @@
 #include "FlowSolver.hpp"
 #include "VascularTumourSolver.hpp"
 #include "PetscSetupAndFinalize.hpp"
-
-
+#include "UnitCollections.hpp"
 
 class TestSnailTrailLiteratePaper : public AbstractCellBasedWithTimingsTestSuite
 {
@@ -240,8 +239,8 @@ public:
                                                                                             divisions, alignment_axis);
 
         p_network->SetNodeRadii(10.0);
-        p_network->SetSegmentRadii(10.0);
-        p_network->GetVesselSegments()[0]->GetFlowProperties()->SetViscosity(1.e-9);
+        p_network->SetSegmentRadii(10.0*1.e-6*unit::metres);
+        p_network->GetVesselSegments()[0]->GetFlowProperties()->SetViscosity(1.e-3*unit::poiseuille);
         p_network->GetVessels()[0]->GetStartNode()->GetFlowProperties()->SetIsInputNode(true);
         p_network->GetVessels()[0]->GetStartNode()->GetFlowProperties()->SetPressure(0.005);
         p_network->GetVessels()[0]->GetEndNode()->GetFlowProperties()->SetIsOutputNode(true);
@@ -271,14 +270,14 @@ public:
         std::vector<boost::shared_ptr<VesselSegment<3> > > segments = p_network->GetVesselSegments();
         for(unsigned idx=0; idx<segments.size(); idx++)
         {
-            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);
+            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3*unit::poiseuille);
         }
 
         boost::shared_ptr<VascularTumourSolver<3> > p_vascular_tumour_solver = VascularTumourSolver<3>::Create();
         p_vascular_tumour_solver->SetVesselNetwork(p_network);
         p_vascular_tumour_solver->SetOutputFrequency(1);
         p_vascular_tumour_solver->SetAngiogenesisSolver(p_angiogenesis_solver);
-        p_vascular_tumour_solver->SetFlowSolver(p_flow_solver);
+//        p_vascular_tumour_solver->SetFlowSolver(p_flow_solver);
         p_vascular_tumour_solver->SetOutputFileHandler(p_handler);
 
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(100.0, 400);

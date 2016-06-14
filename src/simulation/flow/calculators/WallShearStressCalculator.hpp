@@ -39,23 +39,32 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "boost/shared_ptr.hpp"
 #include "VascularNetwork.hpp"
 #include "UnitCollections.hpp"
+#include "AbstractVesselNetworkCalculator.hpp"
 
+/**
+ * This solver calculates the wall shear stress in a vessel as a function of flow rate and viscosity according to:
+ * Alarcon et al. (2003), JTB, 225, pp257-274.
+ */
 template<unsigned DIM>
-class WallShearStressCalculator
+class WallShearStressCalculator : public AbstractVesselNetworkCalculator<DIM>
 {
     
 public:
     
-    // constructor
+    /**
+     * Constructor.
+     */
     WallShearStressCalculator();
     
     /**
-     *  destructor.
+     *  Destructor.
      */
     ~WallShearStressCalculator();
     
-    // method for performing the Calculator
-    void Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork);
+    /**
+     * Do the calculation.
+     */
+    void Calculate();
 
 };
 

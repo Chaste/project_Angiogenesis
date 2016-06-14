@@ -13,9 +13,10 @@
 #include <boost/shared_ptr.hpp>
 #include <math.h>
 #include "VascularNetwork.hpp"
-#include "Alarcon03MechanicalStimulusCalculator.hpp"
+#include "MechanicalStimulusCalculator.hpp"
+#include "UnitCollections.hpp"
 
-class TestAlarcon03MechanicalStimulusCalculator : public CxxTest::TestSuite
+class TestMechanicalStimulusCalculator : public CxxTest::TestSuite
 {
 
 public:
@@ -34,19 +35,20 @@ public:
         boost::shared_ptr<VascularNetwork<3> > p_vascular_network = VascularNetwork<3>::Create();
         p_vascular_network->AddVessel(p_vessel);
         double wall_shear_stress = 25.0;
-        p_vessel->GetSegments()[0]->GetFlowProperties()->SetWallShearStress(wall_shear_stress);
+        p_vessel->GetSegments()[0]->GetFlowProperties()->SetWallShearStress(wall_shear_stress*unit::pascals);
 
-        boost::shared_ptr<Alarcon03MechanicalStimulusCalculator<3> > calculator(new Alarcon03MechanicalStimulusCalculator<3>());
-        calculator->Calculate(p_vascular_network);
+        boost::shared_ptr<MechanicalStimulusCalculator<3> > calculator(new MechanicalStimulusCalculator<3>());
+        calculator->SetVesselNetwork(p_vascular_network);
+        calculator->Calculate();
 
         // convert pressure to mmhg
         double converted_pressure = pressure * 760 / (1.01 * pow(10.0, 5));
         double Tau_P = 0.1 * (100.0 - 86.0 * pow(exp(-5.0 * log10(log10(converted_pressure))), 5.4));
-        double expected_mechanical_stimulus = log10((wall_shear_stress + calculator->GetTauRef()) / Tau_P);
-        TS_ASSERT_DELTA(p_vessel->GetSegments()[0]->GetFlowProperties()->GetMechanicalStimulus(), expected_mechanical_stimulus, 1e-6);
+        double expected_mechanical_stimulus = log10((wall_shear_stress + 0.05) / Tau_P);
+        TS_ASSERT_DELTA(p_vessel->GetSegments()[0]->GetFlowProperties()->GetStimulus()/unit::reciprocal_seconds, expected_mechanical_stimulus, 1e-6);
     }
 
-    void TestAlarcon03MechanicalStimulusVsPressure()
+    void TestMechanicalStimulusVsPressure()
     {
         // Make a network
         std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
@@ -60,10 +62,10 @@ public:
         boost::shared_ptr<VascularNetwork<3> > p_vascular_network = VascularNetwork<3>::Create();
         p_vascular_network->AddVessel(p_vessel);
         double wall_shear_stress = 25.0;
-        p_vessel->GetSegments()[0]->GetFlowProperties()->SetWallShearStress(wall_shear_stress);
+        p_vessel->GetSegments()[0]->GetFlowProperties()->SetWallShearStress(wall_shear_stress*unit::pascals);
 
-        boost::shared_ptr<Alarcon03MechanicalStimulusCalculator<3> > calculator(new Alarcon03MechanicalStimulusCalculator<3>());
-        calculator->Calculate(p_vascular_network);
+        boost::shared_ptr<MechanicalStimulusCalculator<3> > calculator(new MechanicalStimulusCalculator<3>());
+        calculator->SetVesselNetwork(p_vascular_network);
 
         OutputFileHandler output_file(
                 "Vasculature/StructuralAdaptationAlgorithm/TestAlarcon03MechanicalStimulusCalculator", true);
@@ -76,8 +78,8 @@ public:
         {
             nodes[0]->GetFlowProperties()->SetPressure(double(mmHgPressure) * (1.01 * pow(10.0, 5) / 760));
             nodes[1]->GetFlowProperties()->SetPressure(double(mmHgPressure) * (1.01 * pow(10.0, 5) / 760));
-            calculator->Calculate(p_vascular_network);
-            out << mmHgPressure << " " << calculator->GetTauP() / 0.1 << "\n";
+            calculator->Calculate();
+            out << mmHgPressure << " " << calculator->GetTauP() / (0.1*unit::pascals) << "\n";
         }
         out.close();
     }

@@ -61,7 +61,7 @@ public:
     virtual ~ConstantHaematocritSolver();
 
     // method for performing the Solver
-    void Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork);
+    void Calculate();
 
     void SetHaematocrit(units::quantity<unit::dimensionless> haematocrit);
 

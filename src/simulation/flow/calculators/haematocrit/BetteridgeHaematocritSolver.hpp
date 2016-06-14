@@ -82,7 +82,7 @@ public:
      *  Do the solve
      *  @param pNetwork the vessel network to do the solve on
      */
-    void Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork);
+    void Calculate();
 
     /**
      * Set the threshold velocity ratio

@@ -33,8 +33,8 @@
 //
 // */
 
-#ifndef _Alarcon03HaematocritSolver_hpp
-#define _Alarcon03HaematocritSolver_hpp
+#ifndef _AlarconHaematocritSolver_hpp
+#define _AlarconHaematocritSolver_hpp
 
 #include "SmartPointers.hpp"
 #include "VascularNetwork.hpp"
@@ -46,7 +46,7 @@
  * Alarcon et al. (2003), JTB, 225, pp257-274.
  */
 template<unsigned DIM>
-class Alarcon03HaematocritSolver : public AbstractHaematocritSolver<DIM>
+class AlarconHaematocritSolver : public AbstractHaematocritSolver<DIM>
 {
 
 private:
@@ -71,18 +71,17 @@ public:
     /**
      * Constructor.
      */
-    Alarcon03HaematocritSolver();
+    AlarconHaematocritSolver();
 
     /**
      *  destructor.
      */
-    ~Alarcon03HaematocritSolver();
+    ~AlarconHaematocritSolver();
 
     /**
      *  Do the solve
-     *  @param pNetwork the vessel network to do the solve on
      */
-    void Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork);
+    void Calculate();
 
     /**
      * Set the threshold velocity ratio

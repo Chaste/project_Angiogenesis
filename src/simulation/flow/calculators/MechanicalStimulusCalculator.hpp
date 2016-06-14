@@ -54,12 +54,12 @@ class MechanicalStimulusCalculator : public AbstractVesselNetworkCalculator<DIM>
     
 private:
     
-	/*
+	/**
 	 * A small constant included to avoid singular behavior at low wall shear stress.
 	 */
     units::quantity<unit::pressure> mTauRef;
 
-    /*
+    /**
      * The level of wall shear stress expected from the actual intravascular pressure, according
      * to a parametric description of experimental data obtained in the rat mesentry (exhibiting a
      * sigmoidal increase of wall shear stress with increasing pressure.

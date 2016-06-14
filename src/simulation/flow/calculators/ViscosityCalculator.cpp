@@ -37,7 +37,7 @@
 #include "UnitCollections.hpp"
 
 template<unsigned DIM>
-ViscosityCalculator<DIM>::ViscosityCalculator()
+ViscosityCalculator<DIM>::ViscosityCalculator() : AbstractVesselNetworkCalculator<DIM>()
 {
 
 }
@@ -49,10 +49,10 @@ ViscosityCalculator<DIM>::~ViscosityCalculator()
 }
 
 template<unsigned DIM>
-void ViscosityCalculator<DIM>::Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork)
+void ViscosityCalculator<DIM>::Calculate()
 {
 
-    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
     for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
     {
         double radius = 1.e6 * segments[segment_index]->GetRadius()/unit::metres; // radius in micron

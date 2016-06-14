@@ -40,14 +40,10 @@
 template<unsigned DIM>
 StructuralAdaptationSolver<DIM>::StructuralAdaptationSolver() :
         AbstractStructuralAdaptationSolver<DIM>(),
-        mpHaematocritCalculator(new ConstantHaematocritSolver<DIM>),
-        mpFlowSolver(new FlowSolver<DIM> ),
-        mpRadiusCalculator(new RadiusCalculator<DIM> ),
-        mpMetabolicStimulusCalculator(new MetabolicStimulusCalculator<DIM> ),
-        mpImpedanceCalculator(new VesselImpedanceCalculator<DIM> ),
-        mpMechanicalStimulusCalculator(new MechanicalStimulusCalculator<DIM> ),
-        mpViscosityCalculator(new ViscosityCalculator<DIM> ),
-        mpWallShearStressCalculator(new WallShearStressCalculator<DIM> )
+        mpFlowSolver(new FlowSolver<DIM>),
+        mpRadiusCalculator(),
+        mPreFlowSolveCalculators(),
+        mPostFlowSolveCalculators()
 {
 
 }
@@ -66,51 +62,33 @@ boost::shared_ptr<StructuralAdaptationSolver<DIM> > StructuralAdaptationSolver<D
 }
 
 template<unsigned DIM>
+boost::shared_ptr<FlowSolver<DIM> > StructuralAdaptationSolver<DIM>::GetFlowSolver()
+{
+    return mpFlowSolver;
+}
+
+template<unsigned DIM>
 void StructuralAdaptationSolver<DIM>::SetRadiusCalculator(boost::shared_ptr<RadiusCalculator<DIM> > pCalculator)
 {
     mpRadiusCalculator = pCalculator;
 }
 
 template<unsigned DIM>
-void StructuralAdaptationSolver<DIM>::SetMetabolicStimulusCalculator(boost::shared_ptr<MetabolicStimulusCalculator<DIM> > pCalculator)
+void StructuralAdaptationSolver<DIM>::AddPreFlowSolveCalculator(boost::shared_ptr<AbstractVesselNetworkCalculator<DIM> > pCalculator)
 {
-    mpMetabolicStimulusCalculator = pCalculator;
+    mPreFlowSolveCalculators.push_back(pCalculator);
 }
 
 template<unsigned DIM>
-void StructuralAdaptationSolver<DIM>::SetImpedanceCalculator( boost::shared_ptr<VesselImpedanceCalculator<DIM> > pCalculator)
+void StructuralAdaptationSolver<DIM>::AddPostFlowSolveCalculator(boost::shared_ptr<AbstractVesselNetworkCalculator<DIM> > pCalculator)
 {
-    mpImpedanceCalculator = pCalculator;
-}
-
-template<unsigned DIM>
-void StructuralAdaptationSolver<DIM>::SetMechanicalStimulusCalculator(boost::shared_ptr<MechanicalStimulusCalculator<DIM> > pCalculator)
-{
-    mpMechanicalStimulusCalculator = pCalculator;
-}
-
-template<unsigned DIM>
-void StructuralAdaptationSolver<DIM>::SetViscosityCalculator(boost::shared_ptr<ViscosityCalculator<DIM> > pCalculator)
-{
-    mpViscosityCalculator = pCalculator;
-}
-
-template<unsigned DIM>
-void StructuralAdaptationSolver<DIM>::SetWallShearStressCalculator(boost::shared_ptr<WallShearStressCalculator<DIM> > pCalculator)
-{
-    mpWallShearStressCalculator = pCalculator;
+    mPostFlowSolveCalculators.push_back(pCalculator);
 }
 
 template<unsigned DIM>
 void StructuralAdaptationSolver<DIM>::SetFlowSolver(boost::shared_ptr<FlowSolver<DIM> > pCalculator)
 {
     mpFlowSolver = pCalculator;
-}
-
-template<unsigned DIM>
-void StructuralAdaptationSolver<DIM>::SetHaematocritCalculator(boost::shared_ptr<AbstractHaematocritSolver<DIM> > pCalculator)
-{
-    mpHaematocritCalculator = pCalculator;
 }
 
 template<unsigned DIM>
@@ -123,19 +101,38 @@ void StructuralAdaptationSolver<DIM>::Iterate()
 
     if(SimulationTime::Instance()->GetTimeStepsElapsed()==0)
     {
+        // Set up calculators
+        for(unsigned idx=0; idx<mPreFlowSolveCalculators.size();idx++)
+        {
+            mPreFlowSolveCalculators[idx]->SetVesselNetwork(this->mpVesselNetwork);
+        }
         UpdateFlowSolver();
+        for(unsigned idx=0; idx<mPostFlowSolveCalculators.size();idx++)
+        {
+            mPostFlowSolveCalculators[idx]->SetVesselNetwork(this->mpVesselNetwork);
+        }
+        if(mpRadiusCalculator)
+        {
+            mpRadiusCalculator->SetTimestep(this->GetTimeIncrement());
+            mpRadiusCalculator->SetVesselNetwork(this->mpVesselNetwork);
+        }
     }
 
-    mpRadiusCalculator->SetTimestep(this->GetTimeIncrement());
-    mpViscosityCalculator->Calculate(this->mpVesselNetwork);
-    mpImpedanceCalculator->Calculate();
+    for(unsigned idx=0; idx<mPreFlowSolveCalculators.size();idx++)
+    {
+        mPreFlowSolveCalculators[idx]->Calculate();
+    }
     mpFlowSolver->Update(false);
     mpFlowSolver->Solve();
-    mpHaematocritCalculator->Calculate(this->mpVesselNetwork);
-    mpWallShearStressCalculator->Calculate(this->mpVesselNetwork);
-    mpMetabolicStimulusCalculator->Calculate();
-    mpMechanicalStimulusCalculator->Calculate();
-    mpRadiusCalculator->Calculate(this->mpVesselNetwork);
+    for(unsigned idx=0; idx<mPostFlowSolveCalculators.size();idx++)
+    {
+        mPostFlowSolveCalculators[idx]->Calculate();
+    }
+    if(mpRadiusCalculator)
+    {
+        mpRadiusCalculator->SetTimestep(this->GetTimeIncrement());
+        mpRadiusCalculator->Calculate();
+    }
 }
 
 template<unsigned DIM>

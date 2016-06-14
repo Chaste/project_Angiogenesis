@@ -36,7 +36,7 @@
 #include "RadiusCalculator.hpp"
 
 template<unsigned DIM>
-RadiusCalculator<DIM>::RadiusCalculator() :
+RadiusCalculator<DIM>::RadiusCalculator() : AbstractVesselNetworkCalculator<DIM>(),
         mMinRadius(1e-6 * unit::metres),
         mMaxRadius(50e-6 * unit::metres),
         mTimeStep(0.0001 * unit::seconds)
@@ -69,10 +69,9 @@ void RadiusCalculator<DIM>::SetTimestep(units::quantity<unit::time>  dt)
 }
 
 template<unsigned DIM>
-void RadiusCalculator<DIM>::Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork)
+void RadiusCalculator<DIM>::Calculate()
 {
-    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
-
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
     for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
     {
         units::quantity<unit::rate> total_stimulus = segments[segment_index]->GetFlowProperties()->GetStimulus();

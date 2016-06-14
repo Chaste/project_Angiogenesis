@@ -45,6 +45,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "OutputFileHandler.hpp"
 #include "UblasIncludes.hpp"
 #include "VasculatureGenerator.hpp"
+#include "UnitCollections.hpp"
 
 class TestVesselNetwork : public CxxTest::TestSuite
 {
@@ -105,7 +106,7 @@ public:
         vessel_network.SetVesselData(data);
 
         vessel_network.SetNodeRadii(10.0);
-        vessel_network.SetSegmentRadii(12.0);
+        vessel_network.SetSegmentRadii(12.0*unit::metres);
     }
 
     void TestCopyingAndMovingNetwork() throw(Exception)

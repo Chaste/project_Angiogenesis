@@ -39,35 +39,67 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <boost/shared_ptr.hpp>
 #include "VascularNetwork.hpp"
 #include "UnitCollections.hpp"
+#include "AbstractVesselNetworkCalculator.hpp"
 
+/**
+ * This solver updates vessel radii as a result of growth stimulii according to:
+ * Alarcon et al. (2003), JTB, 225, pp257-274.
+ */
 template<unsigned DIM>
-class RadiusCalculator
+class RadiusCalculator : public AbstractVesselNetworkCalculator<DIM>
 {
     
 protected:
 
+    /**
+     * The minimum allowed radius.
+     */
     units::quantity<unit::length> mMinRadius;
+
+    /**
+     * The maximum allowed radius.
+     */
     units::quantity<unit::length> mMaxRadius;
+
+    /**
+     * The time step for radius update
+     */
     units::quantity<unit::time> mTimeStep;
     
 public:
     
-    // constructor
+    /**
+     * Constructor.
+     */
     RadiusCalculator();
     
     /**
-     *  destructor.
+     * Destructor.
      */
-    ~RadiusCalculator();
-    
+    virtual ~RadiusCalculator();
+
+    /**
+     * Set the minimum radius
+     * @param  minRadius the minimum radius
+     */
     void SetMinRadius(units::quantity<unit::length> minRadius);
-    
+
+    /**
+     * Set the maximum radius
+     * @param  maxRadius the maximum radius
+     */
     void SetMaxRadius(units::quantity<unit::length> maxRadius);
 
+    /**
+     * Set the time increment
+     * @param  dt the time increment for radius update
+     */
     void SetTimestep(units::quantity<unit::time> dt);
     
-    // method for performing the calculation
-    void Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork);
+    /**
+     * Do the calculation.
+     */
+    void Calculate();
     
 };
 

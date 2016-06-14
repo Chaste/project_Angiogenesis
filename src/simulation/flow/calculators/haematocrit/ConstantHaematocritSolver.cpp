@@ -56,9 +56,9 @@ void ConstantHaematocritSolver<DIM>::SetHaematocrit(units::quantity<unit::dimens
 }
 
 template<unsigned DIM>
-void ConstantHaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwork<DIM> > vascularNetwork)
+void ConstantHaematocritSolver<DIM>::Calculate()
 {
-    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = vascularNetwork->GetVesselSegments();
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
 
     for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
     {

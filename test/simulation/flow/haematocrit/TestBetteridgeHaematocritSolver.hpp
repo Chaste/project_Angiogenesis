@@ -37,7 +37,7 @@
 #define TestBetteridgeHaematocritSolver_hpp
 
 #include <cxxtest/TestSuite.h>
-#include "../../../../src/simulation/flow/calculators/ImpedanceCalculator.hpp"
+#include "VesselImpedanceCalculator.hpp"
 #include "StructuralAdaptationSolver.hpp"
 #include "FileFinder.hpp"
 #include "OutputFileHandler.hpp"
@@ -48,6 +48,7 @@
 #include "SimulationTime.hpp"
 #include "BetteridgeHaematocritSolver.hpp"
 #include "FakePetscSetup.hpp"
+#include "UnitCollections.hpp"
 
 class TestBetteridgeHaematocritSolver : public CxxTest::TestSuite
 {
@@ -66,15 +67,16 @@ public:
 
         boost::shared_ptr<Vessel<2> > p_vessel1(Vessel<2>::Create(p_segment1));
         boost::shared_ptr<Vessel<2> > p_vessel2(Vessel<2>::Create(p_segment2));
-        p_vessel1->SetFlowRate(1.0);
-        p_vessel2->SetFlowRate(2.0);
+        p_vessel1->SetFlowRate(1.0*unit::unit_flow_rate);
+        p_vessel2->SetFlowRate(2.0*unit::unit_flow_rate);
 
         boost::shared_ptr<VascularNetwork<2> > p_network = boost::shared_ptr<VascularNetwork<2> >(new VascularNetwork<2>);
         p_network->AddVessel(p_vessel1);
         p_network->AddVessel(p_vessel2);
 
         boost::shared_ptr<BetteridgeHaematocritSolver<2> > p_haematocrit_calculator(new BetteridgeHaematocritSolver<2>());
-        p_haematocrit_calculator->Calculate(p_network);
+        p_haematocrit_calculator->SetVesselNetwork(p_network);
+        p_haematocrit_calculator->Calculate();
 
         TS_ASSERT_DELTA(p_vessel1->GetHaematocrit(), 0.45, 1e-6);
         TS_ASSERT_DELTA(p_vessel2->GetHaematocrit(), 0.45/2.0, 1e-6);
@@ -92,9 +94,9 @@ public:
         boost::shared_ptr<Vessel<2> > p_vessel1(Vessel<2>::Create(p_node1, p_node3));
         boost::shared_ptr<Vessel<2> > p_vessel2(Vessel<2>::Create(p_node2, p_node3));
         boost::shared_ptr<Vessel<2> > p_vessel3(Vessel<2>::Create(p_node3, p_node4));
-        p_vessel1->SetFlowRate(3.0);
-        p_vessel2->SetFlowRate(2.0);
-        p_vessel3->SetFlowRate(1.0);
+        p_vessel1->SetFlowRate(3.0*unit::unit_flow_rate);
+        p_vessel2->SetFlowRate(2.0*unit::unit_flow_rate);
+        p_vessel3->SetFlowRate(1.0*unit::unit_flow_rate);
 
         boost::shared_ptr<VascularNetwork<2> > p_network = boost::shared_ptr<VascularNetwork<2> >(new VascularNetwork<2>);
         p_network->AddVessel(p_vessel1);
@@ -102,7 +104,8 @@ public:
         p_network->AddVessel(p_vessel3);
 
         boost::shared_ptr<BetteridgeHaematocritSolver<2> > p_haematocrit_calculator(new BetteridgeHaematocritSolver<2>());
-        p_haematocrit_calculator->Calculate(p_network);
+        p_haematocrit_calculator->SetVesselNetwork(p_network);
+        p_haematocrit_calculator->Calculate();
 
         TS_ASSERT_DELTA(p_vessel1->GetHaematocrit(),0.45, 1e-6);
         TS_ASSERT_DELTA(p_vessel2->GetHaematocrit(),0.45, 1e-6);
@@ -124,9 +127,9 @@ public:
         boost::shared_ptr<Vessel<2> > p_vessel1(Vessel<2>::Create(p_segment1));
         boost::shared_ptr<Vessel<2> > p_vessel2(Vessel<2>::Create(p_segment2));
         boost::shared_ptr<Vessel<2> > p_vessel3(Vessel<2>::Create(p_segment3));
-        p_vessel1->SetFlowRate(-1.0);
-        p_vessel2->SetFlowRate(-1.0);
-        p_vessel3->SetFlowRate(-1.0);
+        p_vessel1->SetFlowRate(-1.0*unit::unit_flow_rate);
+        p_vessel2->SetFlowRate(-1.0*unit::unit_flow_rate);
+        p_vessel3->SetFlowRate(-1.0*unit::unit_flow_rate);
 
         boost::shared_ptr<VascularNetwork<2> > p_network = boost::shared_ptr<VascularNetwork<2> >(new VascularNetwork<2>);
         p_network->AddVessel(p_vessel1);
@@ -134,7 +137,8 @@ public:
         p_network->AddVessel(p_vessel3);
 
         boost::shared_ptr<BetteridgeHaematocritSolver<2> > p_haematocrit_calculator(new BetteridgeHaematocritSolver<2>());
-        p_haematocrit_calculator->Calculate(p_network);
+        p_haematocrit_calculator->SetVesselNetwork(p_network);
+        p_haematocrit_calculator->Calculate();
 
         TS_ASSERT_DELTA(p_vessel1->GetHaematocrit(),0.45/2.0, 1e-6);
         TS_ASSERT_DELTA(p_vessel2->GetHaematocrit(),0.45/2.0, 1e-6);
@@ -156,9 +160,9 @@ public:
         boost::shared_ptr<Vessel<2> > p_vessel1(Vessel<2>::Create(p_segment1));
         boost::shared_ptr<Vessel<2> > p_vessel2(Vessel<2>::Create(p_segment2));
         boost::shared_ptr<Vessel<2> > p_vessel3(Vessel<2>::Create(p_segment3));
-        p_vessel1->SetFlowRate(-1.0);
-        p_vessel2->SetFlowRate(-3.0);
-        p_vessel3->SetFlowRate(-2.0);
+        p_vessel1->SetFlowRate(-1.0*unit::unit_flow_rate);
+        p_vessel2->SetFlowRate(-3.0*unit::unit_flow_rate);
+        p_vessel3->SetFlowRate(-2.0*unit::unit_flow_rate);
 
         boost::shared_ptr<VascularNetwork<2> > p_network = boost::shared_ptr<VascularNetwork<2> >(new VascularNetwork<2>);
         p_network->AddVessel(p_vessel1);
@@ -166,7 +170,8 @@ public:
         p_network->AddVessel(p_vessel3);
 
         boost::shared_ptr<BetteridgeHaematocritSolver<2> > p_haematocrit_calculator(new BetteridgeHaematocritSolver<2>());
-        p_haematocrit_calculator->Calculate(p_network);
+        p_haematocrit_calculator->SetVesselNetwork(p_network);
+        p_haematocrit_calculator->Calculate();
 
         TS_ASSERT_DELTA(p_vessel1->GetHaematocrit(),0.1568, 1e-3);
         TS_ASSERT_DELTA(p_vessel2->GetHaematocrit(),0.2589, 1e-3);
@@ -196,7 +201,7 @@ public:
         boost::shared_ptr<VesselSegment<2> > p_segment(VesselSegment<2>::Create(nodes[0], nodes[1]));
 
         double radius = 10.0;
-        p_segment->SetRadius(radius);
+        p_segment->SetRadius(1.e-6*radius*unit::metres);
         double haematocrit = 0.45;
         p_segment->GetFlowProperties()->SetHaematocrit(haematocrit);
         vascular_network->SetSegmentProperties(p_segment);
@@ -260,11 +265,12 @@ public:
         std::vector<boost::shared_ptr<VesselSegment<2> > > segments = vascular_network->GetVesselSegments();
         for(unsigned idx=0; idx<segments.size(); idx++)
         {
-            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);
+            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3*unit::poiseuille);
         }
 
-        PoiseuilleImpedanceCalculator<2> impedance_calculator;
-        impedance_calculator.Calculate(vascular_network);
+        VesselImpedanceCalculator<2> impedance_calculator;
+        impedance_calculator.SetVesselNetwork(vascular_network);
+        impedance_calculator.Calculate();
         FlowSolver<2> solver;
         solver.SetVesselNetwork(vascular_network);
         solver.SetUp();
@@ -275,7 +281,8 @@ public:
         vascular_network->Write(output_filename);
 
         boost::shared_ptr<BetteridgeHaematocritSolver<2> > p_haematocrit_calculator(new BetteridgeHaematocritSolver<2>());
-        p_haematocrit_calculator->Calculate(vascular_network);
+        p_haematocrit_calculator->SetVesselNetwork(vascular_network);
+        p_haematocrit_calculator->Calculate();
 
         std::string output_filename2 = output_file_handler.GetOutputDirectoryFullPath().append("HexNetHemo.vtp");
         vascular_network->Write(output_filename2);

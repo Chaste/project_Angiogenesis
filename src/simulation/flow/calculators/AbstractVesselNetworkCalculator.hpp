@@ -49,6 +49,9 @@ class AbstractVesselNetworkCalculator
 
 protected:
 
+    /**
+     * The vessel network.
+     */
     boost::shared_ptr<VascularNetwork<DIM> >  mpNetwork;
     
 public:

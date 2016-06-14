@@ -49,6 +49,7 @@
 #include "VesselSegment.hpp"
 #include "Vessel.hpp"
 #include "VascularNetwork.hpp"
+#include "UnitCollections.hpp"
 
 class TestHybridMesh : public CxxTest::TestSuite
 {
@@ -80,7 +81,7 @@ private:
             start_nodes[idx]->SetRadius(radius);
             end_nodes[idx]->SetRadius(radius);
             vessels.push_back(Vessel<3>::Create(VesselSegment<3>::Create(start_nodes[idx], end_nodes[idx])));
-            vessels[idx]->GetSegment(0)->SetRadius(radius);
+            vessels[idx]->GetSegment(0)->SetRadius(1.e-6*radius*unit::metres);
         }
 
         boost::shared_ptr<VascularNetwork<3> > p_network = VascularNetwork<3>::Create();

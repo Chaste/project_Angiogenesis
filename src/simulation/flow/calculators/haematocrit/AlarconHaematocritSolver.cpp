@@ -31,7 +31,7 @@
 //LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 //OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Alarcon03HaematocritSolver.hpp"
+#include "AlarconHaematocritSolver.hpp"
 #include "LinearSystem.hpp"
 #include "VascularNode.hpp"
 #include "Vessel.hpp"
@@ -39,7 +39,7 @@
 #include "ReplicatableVector.hpp"
 
 template<unsigned DIM>
-Alarcon03HaematocritSolver<DIM>::Alarcon03HaematocritSolver() : AbstractHaematocritSolver<DIM>(),
+AlarconHaematocritSolver<DIM>::AlarconHaematocritSolver() : AbstractHaematocritSolver<DIM>(),
     mTHR(2.5),
     mAlpha(0.5),
     mHaematocrit(0.45)
@@ -48,16 +48,16 @@ Alarcon03HaematocritSolver<DIM>::Alarcon03HaematocritSolver() : AbstractHaematoc
 }
 
 template<unsigned DIM>
-Alarcon03HaematocritSolver<DIM>::~Alarcon03HaematocritSolver()
+AlarconHaematocritSolver<DIM>::~AlarconHaematocritSolver()
 {
 
 }
 
 template<unsigned DIM>
-void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwork<DIM> > pNetwork)
+void AlarconHaematocritSolver<DIM>::Calculate()
 {
     // Give the vessels unique Ids
-    std::vector<boost::shared_ptr<Vessel<DIM> > > vessels = pNetwork->GetVessels();
+    std::vector<boost::shared_ptr<Vessel<DIM> > > vessels = this->mpNetwork->GetVessels();
     for(unsigned idx=0; idx<vessels.size(); idx++)
     {
         vessels[idx]->SetId(idx);
@@ -229,14 +229,14 @@ void Alarcon03HaematocritSolver<DIM>::Calculate(boost::shared_ptr<VascularNetwor
 }
 
 template<unsigned DIM>
-void Alarcon03HaematocritSolver<DIM>::SetTHR(units::quantity<unit::dimensionless> THR)
+void AlarconHaematocritSolver<DIM>::SetTHR(units::quantity<unit::dimensionless> THR)
 {
     mTHR = THR;
     assert(mTHR > 1);
 }
 
 template<unsigned DIM>
-void Alarcon03HaematocritSolver<DIM>::SetAlpha(units::quantity<unit::dimensionless> Alpha)
+void AlarconHaematocritSolver<DIM>::SetAlpha(units::quantity<unit::dimensionless> Alpha)
 {
     mAlpha = Alpha;
     assert(mAlpha < 1);
@@ -244,11 +244,11 @@ void Alarcon03HaematocritSolver<DIM>::SetAlpha(units::quantity<unit::dimensionle
 }
 
 template<unsigned DIM>
-void Alarcon03HaematocritSolver<DIM>::SetHaematocrit(units::quantity<unit::dimensionless> haematocrit)
+void AlarconHaematocritSolver<DIM>::SetHaematocrit(units::quantity<unit::dimensionless> haematocrit)
 {
     mHaematocrit = haematocrit;
 }
 
 // Explicit instantiation
-template class Alarcon03HaematocritSolver<2>;
-template class Alarcon03HaematocritSolver<3>;
+template class AlarconHaematocritSolver<2>;
+template class AlarconHaematocritSolver<3>;
