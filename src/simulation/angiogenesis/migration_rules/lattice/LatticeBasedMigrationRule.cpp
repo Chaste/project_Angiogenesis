@@ -40,7 +40,6 @@
 template<unsigned DIM>
 LatticeBasedMigrationRule<DIM>::LatticeBasedMigrationRule()
     : AbstractMigrationRule<DIM>(),
-      mpGrid(),
       mMovementProbability(0.01)
 {
 
@@ -129,12 +128,6 @@ int LatticeBasedMigrationRule<DIM>::GetNeighbourMovementIndex(std::vector<double
         }
     }
     return location_index;
-}
-
-template<unsigned DIM>
-void LatticeBasedMigrationRule<DIM>::SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid)
-{
-    mpGrid = pGrid;
 }
 
 template<unsigned DIM>

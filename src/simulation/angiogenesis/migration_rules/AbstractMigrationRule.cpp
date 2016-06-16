@@ -39,7 +39,9 @@ template<unsigned DIM>
 AbstractMigrationRule<DIM>::AbstractMigrationRule()
      :mpSolver(),
       mpVesselNetwork(),
-      mIsSprouting(false)
+      mIsSprouting(false),
+      mpCellPopulation(),
+      mpGrid()
 {
 
 }
@@ -57,11 +59,16 @@ void AbstractMigrationRule<DIM>::SetIsSprouting(bool isSprouting)
 }
 
 template<unsigned DIM>
+void AbstractMigrationRule<DIM>::SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid)
+{
+    mpGrid = pGrid;
+}
+
+template<unsigned DIM>
 void AbstractMigrationRule<DIM>::SetHybridSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pSolver)
 {
     mpSolver = pSolver;
 }
-
 
 template <unsigned DIM>
 boost::shared_ptr<AbstractMigrationRule<DIM> > AbstractMigrationRule<DIM>::Create()
@@ -74,6 +81,12 @@ template<unsigned DIM>
 void AbstractMigrationRule<DIM>::SetNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork)
 {
     mpVesselNetwork = pNetwork;
+}
+
+template<unsigned DIM>
+void AbstractMigrationRule<DIM>::SetCellPopulation(boost::shared_ptr<AbstractCellPopulation<DIM> > pPopulation)
+{
+    mpCellPopulation = pPopulation;
 }
 
 // Explicit instantiation

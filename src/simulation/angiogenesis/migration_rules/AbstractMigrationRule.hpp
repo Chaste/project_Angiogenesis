@@ -41,6 +41,7 @@
 #include "VascularNode.hpp"
 #include "SmartPointers.hpp"
 #include "AbstractHybridSolver.hpp"
+#include "AbstractCellPopulation.hpp"
 
 /**
  * Abstract class for implementing a vessel tip cell migration rule. On and off-lattice specializations
@@ -62,7 +63,20 @@ protected:
      */
     boost::shared_ptr<VascularNetwork<DIM> > mpVesselNetwork;
 
+    /**
+     * Distinguish between sprouting and migrating events
+     */
     bool mIsSprouting;
+
+    /**
+     * The cell population, only used in certain child classes
+     */
+    boost::shared_ptr<AbstractCellPopulation<DIM> > mpCellPopulation;
+
+    /**
+     * A regular grid, used in some lattice based simulations
+     */
+    boost::shared_ptr<RegularGrid<DIM> > mpGrid;
 
 public:
 
@@ -82,15 +96,35 @@ public:
      */
     static boost::shared_ptr<AbstractMigrationRule<DIM> > Create();
 
-    virtual void SetIsSprouting(bool isSprouting = true);
+    /**
+     * Set whether this is a sprouting event
+     * @param isSprouting is this a sprouting event
+     */
+     void SetIsSprouting(bool isSprouting = true);
 
     /**
-     * Set the hybrid solver containing the VEGF field
-     * @param pSolver the hybrid solver containing the VEGF field
+     * Set the hybrid solver containing the stimulus field
+     * @param pSolver the hybrid solver containing the stimulus field
      */
-    virtual void SetHybridSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pSolver);
+    void SetHybridSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pSolver);
 
+    /**
+     * Set the vessel network
+     * @param pNetwork the vessel network
+     */
     void SetNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork);
+
+    /**
+     * Set the lattice/grid for the vessel network
+     * @param pGrid the grid for the vessel network
+     */
+    void SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid);
+
+    /**
+     * Set the cell population
+     * @param pCellPopulation the cell population
+     */
+    void SetCellPopulation(boost::shared_ptr<AbstractCellPopulation<DIM> > pCellPopulation);
 
     virtual std::vector<c_vector<double, DIM> > GetDirections(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
     {

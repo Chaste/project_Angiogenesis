@@ -19,7 +19,6 @@ population/vessel/TestVascularNetwork.hpp
 population/vessel/properties/TestVasculatureData.hpp
 population/vessel/properties/TestSegmentFlowProperties.hpp
 population/vessel/generators/TestVasculatureGenerator.hpp
-population/combined/TestCaBasedCellPopulationWithVessels.hpp
 population/TestVesselNetworkCellPopulationInteractor.hpp
 pde/TestFiniteDifferenceSolver.hpp
 pde/TestGreensFunctionSolver.hpp
@@ -38,6 +37,7 @@ simulation/angiogenesis/migration_rules/TestOffLatticeMigrationRules.hpp
 simulation/angiogenesis/sprouting_rules/TestSproutingRules.hpp
 simulation/angiogenesis/TestAngiogenesisSolver.hpp
 simulation/angiogenesis/TestRegressionSolver.hpp
+simulation/angiogenesis/TestAngiogenesisWithCaPopulation.hpp
 simulation/TestVascularTumourSimulationModifier.hpp
 simulation/TestVascularTumourSolver.hpp
 tutorials/Test2dTumourSpheroid.hpp

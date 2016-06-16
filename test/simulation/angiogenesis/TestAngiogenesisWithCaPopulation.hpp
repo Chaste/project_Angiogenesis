@@ -31,8 +31,9 @@
 #include "SimulationTime.hpp"
 #include "PottsMesh.hpp"
 #include "PottsMeshGenerator.hpp"
-#include "CaPopulationMigrationRule.hpp"
+#include "CellPopulationMigrationRule.hpp"
 #include "AngiogenesisSolver.hpp"
+#include "RegularGrid.hpp"
 
 #include "FakePetscSetup.hpp"
 
@@ -43,9 +44,12 @@ public:
 
     void TestGrowSingleVessel() throw (Exception)
     {
-        // Set up the cell population
-        PottsMeshGenerator<2> generator(20, 0, 0, 20, 0, 0);
-        PottsMesh<2>* p_mesh = generator.GetMesh();
+        // Set up the vessel grid
+        boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
+        std::vector<unsigned> extents(3,1);
+        extents[0] = 20;
+        extents[1] = 20;
+        p_grid->SetExtents(extents);
 
         // Create the vessel network: single vessel in middle of domain
         c_vector<double, 2> start_position;
@@ -65,7 +69,9 @@ public:
         p_network->GetNearestNode(tip_position)->SetIsMigrating(true);
         p_network->Write(output_filename);
 
-        // Create endothelial cell population. First fill the domain, then kill all non-vessel cells, then label vessel cells
+        // Set up the cell population
+        PottsMeshGenerator<2> generator(20, 0, 0, 20, 0, 0);
+        PottsMesh<2>* p_mesh = generator.GetMesh();
         std::vector<unsigned> location_indices;
         for (unsigned index = 0; index < p_mesh->GetNumNodes(); index++)
         {
@@ -92,82 +98,15 @@ public:
         p_cell_population->AddCellWriter<CellMutationStatesWriter>();
         p_cell_population->AddPopulationWriter<NodeLocationWriter>();
 
-        boost::shared_ptr<CaPopulationMigrationRule<2> > p_migration_rule = CaPopulationMigrationRule<2>::Create();
-        p_migration_rule->SetCellPopulation(p_cell_population);
-
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10.0, 10);
         AngiogenesisSolver<2> angiogenesis_solver;
-        angiogenesis_solver.SetMigrationRule(p_migration_rule);
+        angiogenesis_solver.SetMigrationRule(CellPopulationMigrationRule<2>::Create());
         angiogenesis_solver.SetCellPopulation(p_cell_population);
         angiogenesis_solver.SetVesselNetwork(p_network);
         angiogenesis_solver.SetOutputFileHandler(p_file_handler);
+        angiogenesis_solver.SetVesselGrid(p_grid);
         angiogenesis_solver.Run(true);
     }
-
-//    void TestVolumeFractionMap() throw (Exception)
-//    {
-//        // Create the mesh
-//        PottsMeshGenerator<3> generator(20, 0, 0, 20, 0, 0, 21, 0, 0);
-//        PottsMesh<3>* p_mesh = generator.GetMesh();
-//
-//        // Create the vessel network: single vessel in middle of domain
-//        c_vector<double, 3> start_position;
-//        start_position[0] = 10;
-//        start_position[1] = 10;
-//        start_position[2] = 0;
-//        VasculatureGenerator<3> network_generator;
-//        boost::shared_ptr<VascularNetwork<3> > p_network = network_generator.GenerateSingleVessel(20, start_position);
-//
-//        // Write the initial network to file
-//        std::string output_directory = "TestCaBasedCellPopulationWithVesselsSelectTipCell";
-//        OutputFileHandler output_file_handler(output_directory, false);
-//        std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append(
-//                "InitialVesselNetwork.vtp");
-//        p_network->Write(output_filename);
-//
-//        // create endothelial cell population
-//        std::vector<unsigned> location_indices;
-//        for (unsigned index = 0; index < p_mesh->GetNumNodes(); index++)
-//        {
-//            location_indices.push_back(index);
-//        }
-//
-//        std::vector<CellPtr> cells;
-//        MAKE_PTR(DefaultCellProliferativeType, p_diff_type);
-//        MAKE_PTR(StalkCellMutationState, p_EC_state);
-//        CellsGenerator<Owen2011OxygenBasedCellCycleModel, 3> cells_generator;
-//        cells_generator.GenerateBasicRandom(cells, p_mesh->GetNumNodes(), p_diff_type);
-//        CaBasedCellPopulation<3> cell_population(*p_mesh, cells, location_indices);
-//
-//        VesselNetworkCellPopulationInteractor<3> interactor = VesselNetworkCellPopulationInteractor<3>();
-//        interactor.SetVesselNetwork(p_network);
-//        interactor.PartitionNetworkOverCells(cell_population);
-//        interactor.LabelVesselsInCellPopulation(cell_population, p_EC_state, p_EC_state);
-//
-//        boost::shared_ptr<WildTypeCellMutationState> wild_mutation_state(new WildTypeCellMutationState);
-//        boost::shared_ptr<WildTypeCellMutationState> wild_mutation_state2(new WildTypeCellMutationState);
-//        boost::shared_ptr<CancerCellMutationState> cancer_mutation_state(new CancerCellMutationState);
-//        boost::shared_ptr<CancerCellMutationState> cancer_mutation_state2(new CancerCellMutationState);
-//        boost::shared_ptr<MacrophageMutationState> mac_mutation_state(new MacrophageMutationState);
-//        boost::shared_ptr<StalkCellMutationState> stalk_mutation_state(new StalkCellMutationState);
-//        boost::shared_ptr<StalkCellMutationState> stalk_mutation_state2(new StalkCellMutationState);
-//
-//        cell_population.SetVolumeFraction(wild_mutation_state, 0.6);
-//        cell_population.SetVolumeFraction(cancer_mutation_state2, 0.6);
-//        cell_population.SetVolumeFraction(cancer_mutation_state, 0.8);
-//        TS_ASSERT_THROWS_ANYTHING(cell_population.SetVolumeFraction(mac_mutation_state, 1.6));
-//
-//        cell_population.SetVolumeFraction(mac_mutation_state, 0.5);
-//        cell_population.SetVolumeFraction(stalk_mutation_state, 0.9);
-//
-//        TS_ASSERT_DELTA(cell_population.GetOccupyingVolumeFraction(stalk_mutation_state2), 0.9, 1e-3);
-//        TS_ASSERT_DELTA(cell_population.GetOccupyingVolumeFraction(cancer_mutation_state), 0.8, 1e-3);
-//        TS_ASSERT_DELTA(cell_population.GetOccupyingVolumeFraction(mac_mutation_state), 0.5, 1e-3);
-//        TS_ASSERT_DELTA(cell_population.GetOccupyingVolumeFraction(wild_mutation_state2), 0.6, 1e-3);
-//
-//        TS_ASSERT_EQUALS(cell_population.IsSiteAvailable(1, cell_population->GetCellUsingLocationIndex(1)), false);
-//    }
-
 };
 
 #endif /*TESTCABASEDCELLPOPULATIONWITHVESSELS_HPP*/

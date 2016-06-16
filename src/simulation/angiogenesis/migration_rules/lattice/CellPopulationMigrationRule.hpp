@@ -33,35 +33,25 @@
 
  */
 
-#ifndef CaPopulationMigrationRule_HPP_
-#define CaPopulationMigrationRule_HPP_
+#ifndef CellPopulationMigrationRule_HPP_
+#define CellPopulationMigrationRule_HPP_
 
 #include <vector>
 #include <string>
-#include "AbstractMigrationRule.hpp"
+#include "LatticeBasedMigrationRule.hpp"
 #include "AbstractCellMutationState.hpp"
 #include "VascularNode.hpp"
 #include "SmartPointers.hpp"
-#include "CaBasedCellPopulation.hpp"
+#include "AbstractCellPopulation.hpp"
 
 /**
  * A simple random direction lattice based migration rule. Not physical, but useful for code testing.
  */
 template<unsigned DIM>
-class CaPopulationMigrationRule : public AbstractMigrationRule<DIM>
+class CellPopulationMigrationRule : public LatticeBasedMigrationRule<DIM>
 {
 
 protected:
-
-    /**
-     * The lattice/grid for the vessel simulation
-     */
-    boost::shared_ptr<RegularGrid<DIM> > mpGrid;
-
-    /**
-     * Cell movement probability
-     */
-    double mMovementProbability;
 
     /**
      * Volume fraction of a lattice site that each cell will occupy
@@ -69,27 +59,27 @@ protected:
     std::map<boost::shared_ptr<AbstractCellMutationState> , double > mVolumeFractionMap;
 
     /**
-     * The cell population for discrete cell angiogenesis models
+     * Collection of cells at each lattice point
      */
-    boost::shared_ptr<CaBasedCellPopulation<DIM> > mpCellPopulation;
+    std::vector<std::vector<CellPtr> > mPointCellMap;
 
 public:
 
     /**
      * Constructor.
      */
-    CaPopulationMigrationRule();
+    CellPopulationMigrationRule();
 
     /**
      * Destructor.
      */
-    virtual ~CaPopulationMigrationRule();
+    virtual ~CellPopulationMigrationRule();
 
     /**
      * Construct a new instance of the class and return a shared pointer to it.
      * @return a pointer to a new instance of the class
      */
-    static boost::shared_ptr<CaPopulationMigrationRule<DIM> > Create();
+    static boost::shared_ptr<CellPopulationMigrationRule<DIM> > Create();
 
     /**
      * Calculate the grid index that each migrating node will move into. Set to -1 if the
@@ -100,18 +90,6 @@ public:
     virtual std::vector<int> GetIndices(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes);
 
     /**
-     * Set the lattice/grid for the vessel network
-     * @param pGrid the grid for the vessel network
-     */
-    void SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid);
-
-    /**
-     * Set the movement probability
-     * @param movementProbability the movement probability
-     */
-    void SetMovementProbability(double movementProbability);
-
-    /**
      * Method to set volume fraction for particular type of cell.
      */
     void SetVolumeFraction(boost::shared_ptr<AbstractCellMutationState> mutation_state, double volume_fraction);
@@ -120,22 +98,6 @@ public:
      * Return occupying volume fraction for particular type of cell.
      */
     double GetOccupyingVolumeFraction(boost::shared_ptr<AbstractCellMutationState> mutation_state);
-
-    /**
-     * Return the maximum carying capacity of a particular cell type.
-     */
-    unsigned GetMaximumCarryingCapacity(boost::shared_ptr<AbstractCellMutationState> mutation_state);
-
-    /**
-     * Return occupyied volume fraction for a given location.
-     */
-    double GetOccupiedVolumeFraction(unsigned index);
-
-    /**
-     * Set a cell population for discrete cell solves
-     * @param pCellPopulation the cell population for discrete cell solves
-     */
-    void SetCellPopulation(boost::shared_ptr<CaBasedCellPopulation<DIM> > pCellPopulation);
 
 protected:
 
@@ -149,15 +111,6 @@ protected:
     virtual std::vector<double> GetNeighbourMovementProbabilities(boost::shared_ptr<VascularNode<DIM> > pNode,
                                                            std::vector<unsigned> neighbourIndices, unsigned gridIndex);
 
-    /**
-     * Get the index of the neighbour to move into.
-     * This can be over-written for custom movement rules.
-     * @param movementProbabilities the movement probabilities corresponding to each neighbour index
-     * @param neighbourIndices the grid indices of the neighbour nodes
-     * @return the neighbour index to move into
-     */
-    virtual int GetNeighbourMovementIndex(std::vector<double> movementProbabilities,
-                                               std::vector<unsigned> neighbourIndices);
 };
 
-#endif /* CaPopulationMigrationRule_HPP_ */
+#endif /* CellPopulationMigrationRule_HPP_ */

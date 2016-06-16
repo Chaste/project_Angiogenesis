@@ -34,41 +34,33 @@
  */
 
 #include "GeometryTools.hpp"
-#include "CaPopulationMigrationRule.hpp"
+#include "CellPopulationMigrationRule.hpp"
 #include "RandomNumberGenerator.hpp"
 
 template<unsigned DIM>
-CaPopulationMigrationRule<DIM>::CaPopulationMigrationRule()
-    : AbstractMigrationRule<DIM>(),
-      mpGrid(),
-      mMovementProbability(0.01),
+CellPopulationMigrationRule<DIM>::CellPopulationMigrationRule()
+    : LatticeBasedMigrationRule<DIM>(),
       mVolumeFractionMap(),
-      mpCellPopulation()
+      mPointCellMap()
 {
 
 }
 
 template <unsigned DIM>
-boost::shared_ptr<CaPopulationMigrationRule<DIM> > CaPopulationMigrationRule<DIM>::Create()
+boost::shared_ptr<CellPopulationMigrationRule<DIM> > CellPopulationMigrationRule<DIM>::Create()
 {
-    MAKE_PTR(CaPopulationMigrationRule<DIM>, pSelf);
+    MAKE_PTR(CellPopulationMigrationRule<DIM>, pSelf);
     return pSelf;
 }
 
 template<unsigned DIM>
-CaPopulationMigrationRule<DIM>::~CaPopulationMigrationRule()
+CellPopulationMigrationRule<DIM>::~CellPopulationMigrationRule()
 {
 
 }
 
 template<unsigned DIM>
-void CaPopulationMigrationRule<DIM>::SetCellPopulation(boost::shared_ptr<CaBasedCellPopulation<DIM> > cell_population)
-{
-    mpCellPopulation = cell_population;
-}
-
-template<unsigned DIM>
-void CaPopulationMigrationRule<DIM>::SetVolumeFraction(boost::shared_ptr<AbstractCellMutationState> mutation_state, double volume_fraction)
+void CellPopulationMigrationRule<DIM>::SetVolumeFraction(boost::shared_ptr<AbstractCellMutationState> mutation_state, double volume_fraction)
 {
     if(volume_fraction >1.0)
     {
@@ -93,7 +85,7 @@ void CaPopulationMigrationRule<DIM>::SetVolumeFraction(boost::shared_ptr<Abstrac
 }
 
 template<unsigned DIM>
-double CaPopulationMigrationRule<DIM>::GetOccupyingVolumeFraction(boost::shared_ptr<AbstractCellMutationState> mutation_state)
+double CellPopulationMigrationRule<DIM>::GetOccupyingVolumeFraction(boost::shared_ptr<AbstractCellMutationState> mutation_state)
 {
     typedef std::map<boost::shared_ptr<AbstractCellMutationState> , double>::iterator it_type; it_type iterator;
     for(iterator = mVolumeFractionMap.begin(); iterator != mVolumeFractionMap.end(); iterator++)
@@ -110,35 +102,25 @@ double CaPopulationMigrationRule<DIM>::GetOccupyingVolumeFraction(boost::shared_
 }
 
 template<unsigned DIM>
-unsigned CaPopulationMigrationRule<DIM>::GetMaximumCarryingCapacity(boost::shared_ptr<AbstractCellMutationState> mutation_state)
-{
-    return unsigned(1.0/GetOccupyingVolumeFraction(mutation_state));
-}
-
-template<unsigned DIM>
-double CaPopulationMigrationRule<DIM>::GetOccupiedVolumeFraction(unsigned index)
-{
-    std::set<CellPtr> cells = mpCellPopulation->GetCellsUsingLocationIndex(index);
-    std::set<CellPtr>::iterator it;
-
-    double occupied_volume_fraction = 0;
-
-    for (it = cells.begin(); it != cells.end(); ++it)
-    {
-        occupied_volume_fraction += GetOccupyingVolumeFraction((*it)->GetMutationState());
-    }
-
-    assert(occupied_volume_fraction <= 1.0);
-    return occupied_volume_fraction;
-}
-
-template<unsigned DIM>
-std::vector<double> CaPopulationMigrationRule<DIM>::GetNeighbourMovementProbabilities(boost::shared_ptr<VascularNode<DIM> > pNode,
+std::vector<double> CellPopulationMigrationRule<DIM>::GetNeighbourMovementProbabilities(boost::shared_ptr<VascularNode<DIM> > pNode,
                                                        std::vector<unsigned> neighbourIndices, unsigned gridIndex)
 {
     std::vector<double> probability_of_moving(neighbourIndices.size(), 0.0);
+
     for(unsigned idx=0; idx<neighbourIndices.size(); idx++)
     {
+        // Check for cell occupancy, if it is occupied don;t go anywhere
+        double total_occupancy = 0.0;
+        for(unsigned jdx=0; jdx<mPointCellMap[idx].size(); jdx++)
+        {
+            total_occupancy += GetOccupyingVolumeFraction(mPointCellMap[idx][jdx]->GetMutationState());
+        }
+
+        if(total_occupancy>=1.0)
+        {
+            continue;
+        }
+
         // Make sure that tip cell does not try to move into a location already occupied by the vessel that it comes from
         c_vector<double, DIM> neighbour_location = this->mpGrid->GetLocationOf1dIndex(neighbourIndices[idx]);
 
@@ -165,59 +147,13 @@ std::vector<double> CaPopulationMigrationRule<DIM>::GetNeighbourMovementProbabil
         }
 
         // Simple rule, equal probability for all directions
-        probability_of_moving[idx] = mMovementProbability * SimulationTime::Instance()->GetTimeStep();
+        probability_of_moving[idx] = this->mMovementProbability * SimulationTime::Instance()->GetTimeStep();
     }
     return probability_of_moving;
 }
 
 template<unsigned DIM>
-int CaPopulationMigrationRule<DIM>::GetNeighbourMovementIndex(std::vector<double> movementProbabilities,
-                                                                   std::vector<unsigned> neighbourIndices)
-{
-    int location_index = -1;
-
-    // Check that the cumulative movement probability is less than one, otherwise our time-step is too large
-    std::vector<double> cumulativeProbabilityVector(movementProbabilities.size());
-    std::partial_sum(movementProbabilities.begin(), movementProbabilities.end(), cumulativeProbabilityVector.begin());
-
-    if (cumulativeProbabilityVector.back() > 1.0)
-    {
-        EXCEPTION("Cumulative probability of tip cell moving is greater than one");
-    }
-
-    // Use roulette-wheel style selection to select which location the tip will move into
-    double cumulativeProbability = cumulativeProbabilityVector.back();
-    double random_number = RandomNumberGenerator::Instance()->ranf();
-
-    // If we move, choose a node to go to
-    if(random_number < cumulativeProbability)
-    {
-        for (unsigned ind = 0; ind < cumulativeProbabilityVector.size(); ind++)
-        {
-            if (random_number <= cumulativeProbabilityVector[ind])
-            {
-                location_index = neighbourIndices[ind];
-                break;
-            }
-        }
-    }
-    return location_index;
-}
-
-template<unsigned DIM>
-void CaPopulationMigrationRule<DIM>::SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid)
-{
-    mpGrid = pGrid;
-}
-
-template<unsigned DIM>
-void CaPopulationMigrationRule<DIM>::SetMovementProbability(double movementProbability)
-{
-    mMovementProbability = movementProbability;
-}
-
-template<unsigned DIM>
-std::vector<int> CaPopulationMigrationRule<DIM>::GetIndices(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
+std::vector<int> CellPopulationMigrationRule<DIM>::GetIndices(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
 {
     if(!this->mpGrid)
     {
@@ -228,6 +164,14 @@ std::vector<int> CaPopulationMigrationRule<DIM>::GetIndices(const std::vector<bo
     {
         EXCEPTION("A vessel network is required for this type of migration rule.");
     }
+
+    if(!this->mpCellPopulation)
+    {
+        EXCEPTION("A cell population is required for this type of migration rule.");
+    }
+
+    this->mpGrid->SetCellPopulation(*this->mpCellPopulation);
+    mPointCellMap = this->mpGrid->GetPointCellMap();
 
     // Set up the output indices vector
     std::vector<int> indices(rNodes.size(), -1);
@@ -251,12 +195,12 @@ std::vector<int> CaPopulationMigrationRule<DIM>::GetIndices(const std::vector<bo
         double sum = std::fabs(std::accumulate(probability_of_moving.begin(), probability_of_moving.end(), 0.0));
         if(sum > 0.0)
         {
-            indices[idx] = GetNeighbourMovementIndex(probability_of_moving, neighbour_indices[grid_index]);
+            indices[idx] = LatticeBasedMigrationRule<DIM>::GetNeighbourMovementIndex(probability_of_moving, neighbour_indices[grid_index]);
         }
     }
     return indices;
 }
 
 // Explicit instantiation
-template class CaPopulationMigrationRule<2> ;
-template class CaPopulationMigrationRule<3> ;
+template class CellPopulationMigrationRule<2> ;
+template class CellPopulationMigrationRule<3> ;

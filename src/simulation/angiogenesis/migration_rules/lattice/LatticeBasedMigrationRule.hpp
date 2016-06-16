@@ -52,11 +52,6 @@ class LatticeBasedMigrationRule : public AbstractMigrationRule<DIM>
 protected:
 
     /**
-     * The lattice/grid for the vessel simulation
-     */
-    boost::shared_ptr<RegularGrid<DIM> > mpGrid;
-
-    /**
      * Cell movement probability
      */
     double mMovementProbability;
@@ -86,12 +81,6 @@ public:
      * @return a vector of grid indices to move nodes into
      */
     virtual std::vector<int> GetIndices(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes);
-
-    /**
-     * Set the lattice/grid for the vessel network
-     * @param pGrid the grid for the vessel network
-     */
-    void SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid);
 
     /**
      * Set the movement probability
