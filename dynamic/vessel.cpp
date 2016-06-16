@@ -49,8 +49,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SegmentFlowProperties.hpp"
 #include "NodeFlowProperties.hpp"
 #include "FlowSolver.hpp"
-#include "PoiseuilleImpedanceCalculator.hpp"
 #include "converters.hpp"
+#include "UnitCollections.hpp"
 
 using namespace boost::python;
 
@@ -75,6 +75,7 @@ boost::shared_ptr<Vessel<3> > (*V3_Nodes)(std::vector<boost::shared_ptr<Vascular
 boost::shared_ptr<VascularNode<3> > (VascularNetwork<3>::*VNet3_NearestNode)(c_vector<double, 3>) = &VascularNetwork<3>::GetNearestNode;
 std::pair<boost::shared_ptr<VesselSegment<3> >, double> (VascularNetwork<3>::*VNet3_NearestSegment)(c_vector<double, 3>) = &VascularNetwork<3>::GetNearestSegment;
 boost::shared_ptr<Vessel<3> > (VascularNetwork<3>::*VNet3_NearestVessel)(c_vector<double, 3>) = &VascularNetwork<3>::GetNearestVessel;
+void (VascularNetwork<3>::*VNet3_SetSegmentRadii)(double, const std::string&) = &VascularNetwork<3>::SetSegmentRadii;
 void (VascularNetwork<3>::*VNet3_MergeCoincident)(double) = &VascularNetwork<3>::MergeCoincidentNodes;
 void (VascularNetwork<3>::*VNet3_Translate)(const c_vector<double, 3>&) = &VascularNetwork<3>::Translate;
 
@@ -170,13 +171,13 @@ BOOST_PYTHON_MODULE(_vessel)
         .def("SetNodeData", &VascularNetwork<3>::SetNodeData)
         .def("GetAverageVesselLength", &VascularNetwork<3>::GetAverageVesselLength)
         .def("SetVesselData", &VascularNetwork<3>::SetVesselData)
-        .def("SetSegmentRadii", &VascularNetwork<3>::SetSegmentRadii)
         .def("SetNodeRadii", &VascularNetwork<3>::SetNodeRadii)
         .def("RemoveVessel", &VascularNetwork<3>::RemoveVessel)
         .def("RemoveShortVessels", &VascularNetwork<3>::RemoveShortVessels)
         .def("MergeShortVessels", &VascularNetwork<3>::MergeShortVessels)
         .def("UpdateAll", &VascularNetwork<3>::UpdateAll)
         .def("UpdateNodes", &VascularNetwork<3>::UpdateNodes)
+        .def("SetSegmentRadii", VNet3_SetSegmentRadii)
         .def("Translate", VNet3_Translate)
         .def("Write", &VascularNetwork<3>::Write)
         .def("GetVtk", &VascularNetwork<3>::GetVtk)

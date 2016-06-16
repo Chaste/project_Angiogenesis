@@ -38,7 +38,7 @@ class TestBetteridgeCalculator(unittest.TestCase):
     v7 = chaste.population.vessel.Vessel([n6, n7])
     network.AddVessel(v7)
     
-    network.SetSegmentRadii(10.0)
+    network.SetSegmentRadii(10.0*1.e-6, "metres")
     viscosity = 1.e-3 # units ?
     initial_haematocrit = 0.1
     for eachVessel in network.GetVessels():
@@ -49,7 +49,7 @@ class TestBetteridgeCalculator(unittest.TestCase):
     v2.GetSegments()[0].SetRadius(5.0)
     v4.GetSegments()[0].SetRadius(5.0)
     
-    impedance_calculator = chaste.simulation.PoiseuilleImpedanceCalculator()
+    impedance_calculator = chaste.simulation.VesselImpedanceCalculator()
     impedance_calculator.Calculate(network)
     
     network.Write(file_handler.GetOutputDirectoryFullPath() + "/original_network.vtp")

@@ -51,13 +51,12 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "OutputFileHandler.hpp"
 #include "FileFinder.hpp"
 #include "Exception.hpp"
-//#include "SimulationTime.hpp"
+#include "UnitCollections.hpp"
 
 using namespace boost::python;
 
 // Overloaded method pointers
 const c_vector<double, 3>& (ChastePoint<3>::*ChastePoint_rGetLocation_3)() const = &ChastePoint<3>::rGetLocation;
-
 
 PyObject *myCPPExceptionType = NULL;
 
@@ -67,7 +66,6 @@ void translateMyCPPException(Exception const &e)
   boost::python::object pythonExceptionInstance(e);
   PyErr_SetObject(myCPPExceptionType, pythonExceptionInstance.ptr());
 }
-
 
 // Make the core module containing converters
 BOOST_PYTHON_MODULE(_core)
@@ -85,7 +83,6 @@ BOOST_PYTHON_MODULE(_core)
         .def_readwrite("first", &std::pair<double, double>::first)
         .def_readwrite("second", &std::pair<double, double>::second)
     ;
-
 
     // To Python converters
     //boost::python::to_python_converter<ChastePoint<3>, ChastePointToPython>();

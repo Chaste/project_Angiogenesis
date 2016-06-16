@@ -1,6 +1,7 @@
 #ifndef UnitCollections_hpp
 #define UnitCollections_hpp
 
+#include <map>
 #include <boost/units/quantity.hpp>
 #include <boost/units/derived_dimension.hpp>
 #include <boost/units/make_scaled_unit.hpp>
@@ -28,6 +29,8 @@
 #include <boost/units/base_units/metric/day.hpp>
 #include <boost/units/base_units/metric/mmHg.hpp>
 #include <boost/units/base_units/metric/micron.hpp>
+
+#include "Exception.hpp"
 
 namespace units = boost::units;
 namespace unit
@@ -82,6 +85,19 @@ namespace unit
     // Mass
     typedef units::si::mass mass;
     BOOST_UNITS_STATIC_CONSTANT(kg, units::si::mass);
+}
+
+inline units::quantity<unit::length> GetLengthUnit(std::string key)
+{
+    if(key=="metres" or key=="metre")
+    {
+        units::quantity<unit::length> unit_quantity = 1.0*unit::metres;
+        return unit_quantity;
+    }
+    else
+    {
+        EXCEPTION("Length unit key not recognized");
+    }
 }
 
 #endif //UnitCollections_hpp

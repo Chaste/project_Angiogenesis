@@ -20,6 +20,7 @@ population/vessel/properties/TestVasculatureData.hpp
 population/vessel/properties/TestSegmentFlowProperties.hpp
 population/vessel/generators/TestVasculatureGenerator.hpp
 population/combined/TestCaBasedCellPopulationWithVessels.hpp
+population/TestVesselNetworkCellPopulationInteractor.hpp
 pde/TestFiniteDifferenceSolver.hpp
 pde/TestGreensFunctionSolver.hpp
 pde/TestFiniteElementSolver.hpp
@@ -46,3 +47,4 @@ tutorials/TestSnailTrailLiteratePaper.hpp
 tutorials/TestBuildVesselNetworkLiteratePaper.hpp
 tutorials/TestBloodFlowLiteratePaper.hpp
 utility/TestUnitCollections.hpp
+image/TestImageToSurface.hpp

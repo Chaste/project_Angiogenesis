@@ -1361,6 +1361,13 @@ void VascularNetwork<DIM>::SetSegmentRadii(units::quantity<unit::length> radius)
     }
 }
 
+template <unsigned DIM>
+void VascularNetwork<DIM>::SetSegmentRadii(double radius, const std::string& unit)
+{
+    units::quantity<unit::length> radius_quantity = radius * GetLengthUnit(unit);
+    SetSegmentRadii(radius_quantity);
+}
+
 #ifdef CHASTE_VTK
 template <unsigned DIM>
 vtkSmartPointer<vtkPolyData> VascularNetwork<DIM>::GetVtk()

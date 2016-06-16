@@ -69,14 +69,13 @@
 #include "PottsMesh.hpp"
 #include "OnLatticeSimulation.hpp"
 #include "ApoptoticCellKiller.hpp"
-
 #include "VasculatureGenerator.hpp"
 #include "VascularNetwork.hpp"
 #include "CaBasedCellPopulationWithVessels.hpp"
-#include "CaBasedCellPopulationWithVesselsGenerator.hpp"
 #include "AngiogenesisSolver.hpp"
 #include "FlowSolver.hpp"
 #include "UnitCollections.hpp"
+#include "VesselNetworkCellPopulationInteractor.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
 
@@ -251,159 +250,172 @@ public:
 
     void TestOnLattice2dVascularTumourGrowth() throw (Exception)
     {
-        double domain_x = 41.0;
-        double domain_y = 61.0;
-        boost::shared_ptr<Part<2> > p_domain = Part<2>::Create();
-        p_domain->AddRectangle(domain_x, domain_y);
-
-        // Create the initial vessel network: hexagonally tesselated vascular network
-        boost::shared_ptr<VascularNetwork<2> > p_network = GetHexagonalNetwork(domain_x, domain_y);
-
-        // Create a lattice for the cell population
-        double spacing = 1.0;
-        unsigned num_x = unsigned(p_domain->GetBoundingBox()[1] / spacing);
-        unsigned num_y = unsigned(p_domain->GetBoundingBox()[3] / spacing);
-        PottsMeshGenerator<2> generator(num_x, 0, 0, num_y, 0, 0);
-        PottsMesh<2>* p_mesh = generator.GetMesh();
-        p_mesh->Scale(spacing, spacing);
-
-        // Create cell population
-        CaBasedCellPopulationWithVesselsGenerator<2> cellPopulationGenerator;
-        cellPopulationGenerator.SetIncludeNormalCellPopulation(true);
-        boost::shared_ptr<CaBasedCellPopulationWithVessels<2> > cell_population = cellPopulationGenerator.CreateCellPopulation(*p_mesh, p_network);
-
-        // Get initial tumour cell region
-        double radius = 5.0;
-        c_vector<double, 2> origin;
-        origin[0] = round(domain_x / 2.0);
-        origin[1] = round(domain_y / 2.0);
-        boost::shared_ptr<Part<2> > p_sub_domain = Part<2>::Create();
-        boost::shared_ptr<Polygon> circle = p_sub_domain->AddCircle(radius, origin);
-        std::vector<unsigned> location_indices;
-        for (unsigned ind = 0; ind < p_mesh->GetNumNodes(); ind++)
-        {
-            if (p_sub_domain->IsPointInPart(p_mesh->GetNode(ind)->rGetLocation()))
-            {
-                location_indices.push_back(ind);
-            }
-        }
-
-        // mutate all cells inside circle to make them cancerous
-        MAKE_PTR(CancerCellMutationState, p_cancerous_state);
-
-        double oxygen_concentration = 30.0;
-        for (unsigned i = 0; i < location_indices.size(); i++)
-        {
-            std::set<CellPtr> cells = cell_population->GetCellsUsingLocationIndex(location_indices[i]);
-            std::set<CellPtr>::iterator it;
-            for (it = cells.begin(); it != cells.end(); it++)
-            {
-                if ((*it)->GetMutationState()->IsType<WildTypeCellMutationState>())
-                {
-                    (*it)->SetMutationState(p_cancerous_state);
-                }
-            }
-        }
-
-        // update all cells in population to prescribe an initial oxygen concentration and apoptosis time
-        std::list<CellPtr> cells = cell_population->rGetCells();
-        std::list<CellPtr>::iterator it;
-        for (it = cells.begin(); it != cells.end(); ++it)
-        {
-            (*it)->GetCellData()->SetItem("oxygen", oxygen_concentration);
-            (*it)->GetCellData()->SetItem("VEGF", 0.0);
-            (*it)->GetCellData()->SetItem("p53", 0.0);
-            (*it)->GetCellData()->SetItem("Number_of_cancerous_neighbours", 0.0);
-            (*it)->GetCellData()->SetItem("Number_of_normal_neighbours", 0.0);
-            (*it)->SetApoptosisTime(3);
-        }
-
-        // inform cell_population what to write out to files
-        cell_population->SetOutputResultsForChasteVisualizer(false);
-        cell_population->AddCellWriter<CellLabelWriter>();
-        cell_population->AddCellPopulationCountWriter<CellProliferativePhasesCountWriter>();
-        cell_population->AddCellWriter<CellMutationStatesWriter>();
-        cell_population->AddCellWriter<CellProliferativeTypesWriter>();
-        cell_population->AddCellWriter<CellProliferativePhasesWriter>();
-
-        // set volume fractions occupied by each cell
-        boost::shared_ptr<WildTypeCellMutationState> wild_mutation_state(new WildTypeCellMutationState);
-        boost::shared_ptr<CancerCellMutationState> cancer_mutation_state(new CancerCellMutationState);
-        boost::shared_ptr<QuiescentCancerCellMutationState> quiescent_cancer_mutation_state(new QuiescentCancerCellMutationState);
-        boost::shared_ptr<StalkCellMutationState> stalk_mutation_state(new StalkCellMutationState);
-        boost::shared_ptr<TipCellMutationState> tip_mutation_state(new TipCellMutationState);
-        cell_population->SetVolumeFraction(wild_mutation_state, 0.6);
-        cell_population->SetVolumeFraction(cancer_mutation_state, 0.6);
-        cell_population->SetVolumeFraction(quiescent_cancer_mutation_state, 0.6);
-        cell_population->SetVolumeFraction(stalk_mutation_state, 0.4);
-        cell_population->SetVolumeFraction(tip_mutation_state, 0.4);
-
-        // Create a grid to solve PDEs on
-        boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
-        p_grid->SetSpacing(1.0);
-        std::vector<unsigned> extents;
-        extents.push_back(domain_x + 1); // num_x
-        extents.push_back(domain_y + 1); // num_y
-        extents.push_back(1); // num_z
-        p_grid->SetExtents(extents);
-
-        // Create the oxygen pde solver
-        boost::shared_ptr<FiniteDifferenceSolver<2> > p_oxygen_solver = FiniteDifferenceSolver<2>::Create();
-        p_oxygen_solver->SetGrid(p_grid);
-        p_oxygen_solver->SetPde(GetOxygenPde());
-        p_oxygen_solver->SetLabel("oxygen");
-
-        // Create the vegf pde solver
-        boost::shared_ptr<FiniteDifferenceSolver<2> > p_vegf_solver = FiniteDifferenceSolver<2>::Create();
-        p_vegf_solver->SetGrid(p_grid);
-        p_vegf_solver->SetPde(GetVegfPde());
-        p_vegf_solver->SetLabel("VEGF");
-        cell_population->AddPdeHandler(p_vegf_solver);
-
-        // Create the vascular tumour solver, which manages all pde solves
-        boost::shared_ptr<VascularTumourSolver<2> > p_vascular_tumour_solver = VascularTumourSolver<2>::Create();
-        p_vascular_tumour_solver->SetVesselNetwork(p_network);
-        p_vascular_tumour_solver->AddHybridSolver(p_oxygen_solver);
-        p_vascular_tumour_solver->AddHybridSolver(p_vegf_solver);
-        p_vascular_tumour_solver->SetOutputFrequency(1);
-
-        // add angiogenesis solver to vascular tumour solver
-        boost::shared_ptr<AngiogenesisSolver<2> > p_angiogenesis_solver = AngiogenesisSolver<2>::Create();
-        p_angiogenesis_solver->SetCellPopulation(cell_population);
-        p_angiogenesis_solver->SetVesselNetwork(p_network);
-        p_vascular_tumour_solver->SetAngiogenesisSolver(p_angiogenesis_solver);
-
-        // todo currently there is an issue with the flow calculation - some blunt-ended vessels contain flow (they shouldn't)
-        // this is an angiogenesis issue, sprouts take properties (including flow props) from parent vessels
-//        boost::shared_ptr<FlowSolver<2> > flow_solver = FlowSolver<2>::Create();
-//        p_vascular_tumour_solver->SetFlowSolver(flow_solver);
-
-        OnLatticeSimulation<2> simulator(*(cell_population.get()));
-
-        // Create the vascular tumour modifier which integrates with cell based Chaste
-        boost::shared_ptr<VascularTumourModifier<2> > p_vascular_tumour_modifier = VascularTumourModifier<2>::Create();
-        p_vascular_tumour_modifier->SetVascularTumourSolver(p_vascular_tumour_solver);
-
-        simulator.AddSimulationModifier(p_vascular_tumour_modifier);
-
-        // Create a Cell Concentration tracking modifier and add it to the simulation
-        MAKE_PTR(Owen2011TrackingModifier<2>, p_modifier);
-        simulator.AddSimulationModifier(p_modifier);
-
-        //Create cell killer to remove apoptotic cell from simulation
-        boost::shared_ptr<ApoptoticCellKiller<2> > apoptotic_cell_killer(new ApoptoticCellKiller<2>(cell_population.get()));
-        simulator.AddCellKiller(apoptotic_cell_killer);
-
-        std::string resultsDirectoryName = "Test2dVascularTumourGrowth/OnLatticeLarge";
-        simulator.SetOutputDirectory(resultsDirectoryName);
-        simulator.SetSamplingTimestepMultiple(5);
-        // todo this seems to break simulations if dt is set to 1 - causes a CVode error:
-        //          *CVODE Error -27 in module CVODE function CVode: tout too close to t0 to start integration.
-        //          CVODE failed to solve system: CV_TOO_CLOSE
-        simulator.SetDt(0.5);
-        simulator.SetEndTime(200);
-        simulator.Solve();
-
+//        double domain_x = 41.0;
+//        double domain_y = 61.0;
+//        boost::shared_ptr<Part<2> > p_domain = Part<2>::Create();
+//        p_domain->AddRectangle(domain_x, domain_y);
+//
+//        // Create the initial vessel network: hexagonally tesselated vascular network
+//        boost::shared_ptr<VascularNetwork<2> > p_network = GetHexagonalNetwork(domain_x, domain_y);
+//
+//        // Create a lattice for the cell population
+//        double spacing = 1.0;
+//        unsigned num_x = unsigned(p_domain->GetBoundingBox()[1] / spacing);
+//        unsigned num_y = unsigned(p_domain->GetBoundingBox()[3] / spacing);
+//        PottsMeshGenerator<2> generator(num_x, 0, 0, num_y, 0, 0);
+//        PottsMesh<2>* p_mesh = generator.GetMesh();
+//        p_mesh->Scale(spacing, spacing);
+//
+//        // Create cell population
+//        std::vector<unsigned> location_indices;
+//        for (unsigned index=0; index < p_mesh->GetNumNodes(); index++)
+//        {
+//            location_indices.push_back(index);
+//        }
+//        std::vector<CellPtr> cells;
+//        MAKE_PTR(DefaultCellProliferativeType, p_diff_type);
+//        MAKE_PTR(StalkCellMutationState, p_EC_state);
+//        CellsGenerator<Owen2011OxygenBasedCellCycleModel, 2> cells_generator;
+//        cells_generator.GenerateBasicRandom(cells, p_mesh->GetNumNodes(), p_diff_type);
+//        CaBasedCellPopulation<2> cell_population(*p_mesh, cells, location_indices);
+//
+//        VesselNetworkCellPopulationInteractor<2> interactor = VesselNetworkCellPopulationInteractor<2>();
+//        interactor.SetVesselNetwork(p_network);
+//        interactor.PartitionNetworkOverCells(cell_population);
+//        interactor.LabelVesselsInCellPopulation(cell_population, p_EC_state, p_EC_state);
+//
+//        // Get initial tumour cell region
+//        double radius = 5.0;
+//        c_vector<double, 2> origin;
+//        origin[0] = round(domain_x / 2.0);
+//        origin[1] = round(domain_y / 2.0);
+//        boost::shared_ptr<Part<2> > p_sub_domain = Part<2>::Create();
+//        boost::shared_ptr<Polygon> circle = p_sub_domain->AddCircle(radius, origin);
+//        std::vector<unsigned> location_indices;
+//        for (unsigned ind = 0; ind < p_mesh->GetNumNodes(); ind++)
+//        {
+//            if (p_sub_domain->IsPointInPart(p_mesh->GetNode(ind)->rGetLocation()))
+//            {
+//                location_indices.push_back(ind);
+//            }
+//        }
+//
+//        // mutate all cells inside circle to make them cancerous
+//        MAKE_PTR(CancerCellMutationState, p_cancerous_state);
+//
+//        double oxygen_concentration = 30.0;
+//        for (unsigned i = 0; i < location_indices.size(); i++)
+//        {
+//            std::set<CellPtr> cells = cell_population.GetCellsUsingLocationIndex(location_indices[i]);
+//            std::set<CellPtr>::iterator it;
+//            for (it = cells.begin(); it != cells.end(); it++)
+//            {
+//                if ((*it)->GetMutationState()->IsType<WildTypeCellMutationState>())
+//                {
+//                    (*it)->SetMutationState(p_cancerous_state);
+//                }
+//            }
+//        }
+//
+//        // update all cells in population to prescribe an initial oxygen concentration and apoptosis time
+//        std::list<CellPtr> cells_updated = cell_population.rGetCells();
+//        std::list<CellPtr>::iterator it;
+//        for (it = cells_updated.begin(); it != cells_updated.end(); ++it)
+//        {
+//            (*it)->GetCellData()->SetItem("oxygen", oxygen_concentration);
+//            (*it)->GetCellData()->SetItem("VEGF", 0.0);
+//            (*it)->GetCellData()->SetItem("p53", 0.0);
+//            (*it)->GetCellData()->SetItem("Number_of_cancerous_neighbours", 0.0);
+//            (*it)->GetCellData()->SetItem("Number_of_normal_neighbours", 0.0);
+//            (*it)->SetApoptosisTime(3);
+//        }
+//
+//        // inform cell_population what to write out to files
+//        cell_population.SetOutputResultsForChasteVisualizer(false);
+//        cell_population.AddCellWriter<CellLabelWriter>();
+//        cell_population.AddCellPopulationCountWriter<CellProliferativePhasesCountWriter>();
+//        cell_population.AddCellWriter<CellMutationStatesWriter>();
+//        cell_population.AddCellWriter<CellProliferativeTypesWriter>();
+//        cell_population.AddCellWriter<CellProliferativePhasesWriter>();
+//
+//        // set volume fractions occupied by each cell
+//        boost::shared_ptr<WildTypeCellMutationState> wild_mutation_state(new WildTypeCellMutationState);
+//        boost::shared_ptr<CancerCellMutationState> cancer_mutation_state(new CancerCellMutationState);
+//        boost::shared_ptr<QuiescentCancerCellMutationState> quiescent_cancer_mutation_state(new QuiescentCancerCellMutationState);
+//        boost::shared_ptr<StalkCellMutationState> stalk_mutation_state(new StalkCellMutationState);
+//        boost::shared_ptr<TipCellMutationState> tip_mutation_state(new TipCellMutationState);
+//        cell_population.SetVolumeFraction(wild_mutation_state, 0.6);
+//        cell_population.SetVolumeFraction(cancer_mutation_state, 0.6);
+//        cell_population.SetVolumeFraction(quiescent_cancer_mutation_state, 0.6);
+//        cell_population.SetVolumeFraction(stalk_mutation_state, 0.4);
+//        cell_population.SetVolumeFraction(tip_mutation_state, 0.4);
+//
+//        // Create a grid to solve PDEs on
+//        boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
+//        p_grid->SetSpacing(1.0);
+//        std::vector<unsigned> extents;
+//        extents.push_back(domain_x + 1); // num_x
+//        extents.push_back(domain_y + 1); // num_y
+//        extents.push_back(1); // num_z
+//        p_grid->SetExtents(extents);
+//
+//        // Create the oxygen pde solver
+//        boost::shared_ptr<FiniteDifferenceSolver<2> > p_oxygen_solver = FiniteDifferenceSolver<2>::Create();
+//        p_oxygen_solver->SetGrid(p_grid);
+//        p_oxygen_solver->SetPde(GetOxygenPde());
+//        p_oxygen_solver->SetLabel("oxygen");
+//
+//        // Create the vegf pde solver
+//        boost::shared_ptr<FiniteDifferenceSolver<2> > p_vegf_solver = FiniteDifferenceSolver<2>::Create();
+//        p_vegf_solver->SetGrid(p_grid);
+//        p_vegf_solver->SetPde(GetVegfPde());
+//        p_vegf_solver->SetLabel("VEGF");
+//        cell_population.AddPdeHandler(p_vegf_solver);
+//
+//        // Create the vascular tumour solver, which manages all pde solves
+//        boost::shared_ptr<VascularTumourSolver<2> > p_vascular_tumour_solver = VascularTumourSolver<2>::Create();
+//        p_vascular_tumour_solver->SetVesselNetwork(p_network);
+//        p_vascular_tumour_solver->AddHybridSolver(p_oxygen_solver);
+//        p_vascular_tumour_solver->AddHybridSolver(p_vegf_solver);
+//        p_vascular_tumour_solver->SetOutputFrequency(1);
+//
+//        // add angiogenesis solver to vascular tumour solver
+//        boost::shared_ptr<AngiogenesisSolver<2> > p_angiogenesis_solver = AngiogenesisSolver<2>::Create();
+//        p_angiogenesis_solver->SetCellPopulation(cell_population);
+//        p_angiogenesis_solver->SetVesselNetwork(p_network);
+//        p_vascular_tumour_solver->SetAngiogenesisSolver(p_angiogenesis_solver);
+//
+//        // todo currently there is an issue with the flow calculation - some blunt-ended vessels contain flow (they shouldn't)
+//        // this is an angiogenesis issue, sprouts take properties (including flow props) from parent vessels
+////        boost::shared_ptr<FlowSolver<2> > flow_solver = FlowSolver<2>::Create();
+////        p_vascular_tumour_solver->SetFlowSolver(flow_solver);
+//
+//        OnLatticeSimulation<2> simulator(*(cell_population));
+//
+//        // Create the vascular tumour modifier which integrates with cell based Chaste
+//        boost::shared_ptr<VascularTumourModifier<2> > p_vascular_tumour_modifier = VascularTumourModifier<2>::Create();
+//        p_vascular_tumour_modifier->SetVascularTumourSolver(p_vascular_tumour_solver);
+//
+//        simulator.AddSimulationModifier(p_vascular_tumour_modifier);
+//
+//        // Create a Cell Concentration tracking modifier and add it to the simulation
+//        MAKE_PTR(Owen2011TrackingModifier<2>, p_modifier);
+//        simulator.AddSimulationModifier(p_modifier);
+//
+//        //Create cell killer to remove apoptotic cell from simulation
+//        boost::shared_ptr<ApoptoticCellKiller<2> > apoptotic_cell_killer(new ApoptoticCellKiller<2>(cell_population));
+//        simulator.AddCellKiller(apoptotic_cell_killer);
+//
+//        std::string resultsDirectoryName = "Test2dVascularTumourGrowth/OnLatticeLarge";
+//        simulator.SetOutputDirectory(resultsDirectoryName);
+//        simulator.SetSamplingTimestepMultiple(5);
+//        // todo this seems to break simulations if dt is set to 1 - causes a CVode error:
+//        //          *CVODE Error -27 in module CVODE function CVode: tout too close to t0 to start integration.
+//        //          CVODE failed to solve system: CV_TOO_CLOSE
+//        simulator.SetDt(0.5);
+//        simulator.SetEndTime(200);
+//        simulator.Solve();
+//
     }
 };
 

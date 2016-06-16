@@ -417,6 +417,11 @@ public:
      */
     void SetSegmentRadii(units::quantity<unit::length> radius);
 
+    /**
+     Set the segment radii to the same value
+     */
+    void SetSegmentRadii(double radius, const std::string& unit);
+
     /*
      * Translate the network along the provided vector
      */

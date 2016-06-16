@@ -21,7 +21,7 @@ class TestNetworkToPlanarBoundaries(unittest.TestCase):
         v1 = vessel.Vessel([n1 ,n2])
         network = vessel.VascularNetwork()
         network.AddVessel(v1)
-        network.SetSegmentRadii(radius)
+        network.SetSegmentRadii(radius*1.e-6, "metres")
         
         return network
     
@@ -48,7 +48,7 @@ class TestNetworkTo3dCad(unittest.TestCase):
         v1 = vessel.Vessel([n1 ,n2])
         network = vessel.VascularNetwork()
         network.AddVessel(v1)
-        network.SetSegmentRadii(radius)
+        network.SetSegmentRadii(radius*1.e-6, "metres")
         
         return network
     
@@ -75,7 +75,7 @@ class TestNetworkToVtkLines(unittest.TestCase):
         v1 = vessel.Vessel([n1 ,n2])
         network = vessel.VascularNetwork()
         network.AddVessel(v1)
-        network.SetSegmentRadii(radius)
+        network.SetSegmentRadii(radius*1.e-6, "metres")
         
         return network
     

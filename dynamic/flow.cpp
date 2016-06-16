@@ -39,11 +39,10 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <boost/python/module.hpp>
 
 #include "FlowSolver.hpp"
-#include "PoiseuilleImpedanceCalculator.hpp"
+#include "VesselImpedanceCalculator.hpp"
 #include "BetteridgeHaematocritSolver.hpp"
 
 using namespace boost::python;
-
 
 // Make the module
 BOOST_PYTHON_MODULE(_flow)
@@ -53,11 +52,13 @@ BOOST_PYTHON_MODULE(_flow)
         .def("Solve", &FlowSolver<3>::Solve)
     ;
 
-    class_<PoiseuilleImpedanceCalculator<3>, boost::shared_ptr<PoiseuilleImpedanceCalculator<3u> > >("PoiseuilleImpedanceCalculator")
-        .def("Calculate", &PoiseuilleImpedanceCalculator<3>::Calculate)
+    class_<VesselImpedanceCalculator<3>, boost::shared_ptr<VesselImpedanceCalculator<3u> > >("VesselImpedanceCalculator")
+        .def("SetVesselNetwork", &VesselImpedanceCalculator<3>::SetVesselNetwork)
+        .def("Calculate", &VesselImpedanceCalculator<3>::Calculate)
     ;
 
     class_<BetteridgeHaematocritSolver<3>, boost::shared_ptr<BetteridgeHaematocritSolver<3u> > >("BetteridgeHaematocritSolver")
+        .def("SetVesselNetwork", &BetteridgeHaematocritSolver<3>::SetVesselNetwork)
         .def("Calculate", &BetteridgeHaematocritSolver<3>::Calculate)
         .def("SetTHR", &BetteridgeHaematocritSolver<3>::SetTHR)
         .def("SetAlpha", &BetteridgeHaematocritSolver<3>::SetAlpha)

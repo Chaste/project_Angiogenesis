@@ -4,7 +4,7 @@ from vmtk import vmtkscripts, pypes
 from scipy.spatial import Voronoi
 from scipy.sparse import csr_matrix
 import scipy.sparse.csgraph
-import chaste.geometry.converters
+import chaste.mesh.converters
 import chaste.interfaces.vtk_tools.vtk_tools
 
 class Centrelines2d():
@@ -21,8 +21,14 @@ class Centrelines2d():
     def update(self):
         
         # Convert from vtk format to tri plc format
-        vtk_to_tri = chaste.geometry.converters.VtkToTri()
-        points, edges = vtk_to_tri.generate(self.surface)
+        triangle = vtk.vtkTriangleFilter()
+        triangle.SetInput(self.surface)
+        triangle.Update()
+        
+        vtk_to_tri = chaste.mesh.converters.VtkToTriMesh()
+        vtk_to_tri.input = triangle.GetOutput()
+        vtk_to_tri.update()
+        points, edges = vtk_to_tri.output
         
         # Get the voronoi diagram of the input points
         input_points = []
@@ -83,8 +89,12 @@ class Centrelines2d():
                 sparse_edges.append([eachLabel, eachNeighbour])
                 
         # Use VTK to remove duplicate points
-        tri_to_vtk = chaste.geometry.converters.TriToVtk([verts, sparse_edges])
-        polyData = tri_to_vtk.generate()
+        tri_to_vtk = chaste.mesh.converters.TriMeshToVtk()
+        tri_to_vtk.input = [verts, sparse_edges]
+        tri_to_vtk.update()
+        polyData = tri_to_vtk.output
+        
+        print polyData
         
         clean = vtk.vtkCleanPolyData()
         clean.SetInput(polyData)
@@ -92,8 +102,10 @@ class Centrelines2d():
         
         # Remove duplicate edges
         centre = clean.GetOutput()
-        vtk_to_tri = chaste.geometry.converters.VtkToTri()
-        points, edges = vtk_to_tri.generate(centre)
+        vtk_to_tri = chaste.mesh.converters.VtkToTriMesh()
+        vtk_to_tri.input = centre
+        vtk_to_tri.update()
+        points, edges = vtk_to_tri.output
         unique_edges = []
 
         for idx, eachEdge in enumerate(edges):
@@ -129,14 +141,15 @@ class Centrelines2d():
         locator = vtk.vtkKdTreePointLocator()
         locator.SetDataSet(tidy_edges)
         
-        for idx, eachLoc in enumerate(self.start_points):
-            probe_loc = np.array((eachLoc[0], eachLoc[1], 0.0))
-            closest_id = locator.FindClosestPoint(probe_loc)
-            vtk_points.InsertNextPoint(probe_loc)
-            
-            cellArray.InsertNextCell(2)
-            cellArray.InsertCellPoint(closest_id)
-            cellArray.InsertCellPoint(vtk_numPoints + idx)
+        if self.start_points is not None:
+            for idx, eachLoc in enumerate(self.start_points):
+                probe_loc = np.array((eachLoc[0], eachLoc[1], 0.0))
+                closest_id = locator.FindClosestPoint(probe_loc)
+                vtk_points.InsertNextPoint(probe_loc)
+                
+                cellArray.InsertNextCell(2)
+                cellArray.InsertCellPoint(closest_id)
+                cellArray.InsertCellPoint(vtk_numPoints + idx)
         polygon = vtk.vtkPolyData()
         polygon.SetPoints(vtk_points)
         polygon.SetLines(cellArray)
@@ -146,34 +159,36 @@ class Centrelines2d():
         clean.Update()
         polygon = clean.GetOutput()
         
-        pruned = self.prune(polygon)
-        pruned = self.prune(pruned)
-        polybound = chaste.interfaces.vtk_tools.vtk_tools.vtk_lines_to_polylines(pruned)
+        self.network = polygon
         
-        smoother = vmtkscripts.vmtkCenterlineResampling()
-        smoother.Centerlines = polybound
-        smoother.length = 15.0
-        smoother.Execute()
-        self.network = smoother.Centerlines
-        
-        boundary_point_label = vtk.vtkFloatArray()
-        boundary_point_label.SetNumberOfComponents(1)
-        boundary_point_label.SetName("Radius")    
-        
-        locator = vtk.vtkKdTreePointLocator()
-        locator.SetDataSet(self.surface) 
-        vtk_numPoints = self.network.GetNumberOfPoints()    
-        vtk_points = self.network.GetPoints() 
-        surf_points = self.surface.GetPoints() 
-        
-        for idx in range(vtk_numPoints):
-            loc = vtk_points.GetPoint(idx)
-            closest = locator.FindClosestPoint(loc)
-            surf_closest = surf_points.GetPoint(closest)
-            radius = np.linalg.norm(np.array(loc) - np.array(surf_closest))/2.0
-            boundary_point_label.InsertNextTupleValue((float(radius),))  
-        
-        self.network.GetPointData().AddArray(boundary_point_label)  
+#         pruned = self.prune(polygon)
+#         pruned = self.prune(pruned)
+#         polybound = chaste.interfaces.vtk_tools.vtk_tools.vtk_lines_to_polylines_branch(pruned)
+#         
+#         smoother = vmtkscripts.vmtkCenterlineResampling()
+#         smoother.Centerlines = polybound
+#         smoother.length = 15.0
+#         smoother.Execute()
+#         self.network = smoother.Centerlines
+#         
+#         boundary_point_label = vtk.vtkFloatArray()
+#         boundary_point_label.SetNumberOfComponents(1)
+#         boundary_point_label.SetName("Radius")    
+#         
+#         locator = vtk.vtkKdTreePointLocator()
+#         locator.SetDataSet(self.surface) 
+#         vtk_numPoints = self.network.GetNumberOfPoints()    
+#         vtk_points = self.network.GetPoints() 
+#         surf_points = self.surface.GetPoints() 
+#         
+#         for idx in range(vtk_numPoints):
+#             loc = vtk_points.GetPoint(idx)
+#             closest = locator.FindClosestPoint(loc)
+#             surf_closest = surf_points.GetPoint(closest)
+#             radius = np.linalg.norm(np.array(loc) - np.array(surf_closest))/2.0
+#             boundary_point_label.InsertNextTupleValue((float(radius),))  
+#         
+#         self.network.GetPointData().AddArray(boundary_point_label)  
 
     def prune(self, surface):
         
@@ -204,12 +219,14 @@ class Centrelines2d():
         locator = vtk.vtkKdTreePointLocator()
         locator.SetDataSet(surface)
         near_seeds = np.zeros(numPoints)
-        for idx, eachLoc in enumerate(self.start_points):
-            probe_loc = np.array((eachLoc[0], eachLoc[1], 0.0))
-            closest_id = locator.FindClosestPoint(probe_loc)
-            near_seeds[closest_id] = 1.0
         
-        for idx in range(points):
+        if self.start_points is not None:
+            for idx, eachLoc in enumerate(self.start_points):
+                probe_loc = np.array((eachLoc[0], eachLoc[1], 0.0))
+                closest_id = locator.FindClosestPoint(probe_loc)
+                near_seeds[closest_id] = 1.0
+        
+        for idx in range(len(points)):
             num_segs = len(connectivity[idx])
             if num_segs == 1 and near_seeds[idx]==0:
                 c1_points[idx] = 1
@@ -249,7 +266,7 @@ class Centrelines2d():
         boundary_point_label.SetNumberOfComponents(1)
         boundary_point_label.SetName("PointRemoveLabel")     
         
-        for idx in range(c1_points):
+        for idx in range(len(c1_points)):
             boundary_point_label.InsertNextTupleValue((float(c1_points[idx]),))  
             
         surface.GetPointData().AddArray(boundary_point_label)  
