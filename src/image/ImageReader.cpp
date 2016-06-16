@@ -33,6 +33,7 @@
 
  */
 
+#ifdef CHASTE_ANGIOGENESIS_VMTK
 #include "Exception.hpp"
 #include "ImageReader.hpp"
 #include <boost/filesystem.hpp>
@@ -183,3 +184,4 @@ void ImageReader::Update()
         EXCEPTION("Image reading failed.");
     }
 }
+#endif /*CHASTE_ANGIOGENESIS_VMTK*/

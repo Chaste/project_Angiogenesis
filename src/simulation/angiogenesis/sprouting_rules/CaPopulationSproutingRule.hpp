@@ -32,59 +32,68 @@
  OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
-#ifdef CHASTE_ANGIOGENESIS_VMTK
-#ifndef ImageToSurface_HPP_
-#define ImageToSurface_HPP_
 
+#ifndef CaPopulationSproutingRule_HPP_
+#define CaPopulationSproutingRule_HPP_
+
+#include <vector>
+#include <string>
+#include "VascularNode.hpp"
 #include "SmartPointers.hpp"
-#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning
-#include <vtkImageData.h>
-#include <vtkPolyData.h>
-#include <vtkSmartPointer.h>
+#include "AbstractSproutingRule.hpp"
+#include "RegularGrid.hpp"
+#include "AbstractRegularGridHybridSolver.hpp"
 
 /**
-* Extract a vtkpolydata surface from an image using thresholding.
- * If marching cubes are used the result is an isosurface on the 'threshold' value. Otherwise
- * the surface is composed of all regions either above or below the threshold value. Surfaces
- * may need 'cleaning' before further processing. This can be done with an 'ImageCleaner'.
+ * A simple random lattice based sprouting rule, useful for code testing.
  */
-class ImageToSurface
+template<unsigned DIM>
+class CaPopulationSproutingRule : public AbstractSproutingRule<DIM>
 {
+
+protected:
+
     /**
-     *  The image
+     * The lattice/grid for the vessel simulation
      */
-    vtkSmartPointer<vtkImageData> mpImage;
+    boost::shared_ptr<RegularGrid<DIM> > mpGrid;
 
-    bool mSegmentAboveThreshold;
-
-    double mThreshold;
-
-    vtkSmartPointer<vtkPolyData> mpSurface;
-
-    bool mUseMarchingCubes;
+    /**
+     * Tip exclusion radius
+     */
+    double mTipExclusionRadius;
 
 public:
 
-    /* Constructor
+    /**
+     * Constructor.
      */
-    ImageToSurface();
+    CaPopulationSproutingRule();
 
-    ~ImageToSurface();
-
-    /* Factory constructor method
+    /**
+     * Destructor.
      */
-    static boost::shared_ptr<ImageToSurface> Create();
+    virtual ~CaPopulationSproutingRule();
 
-    void SetInput(vtkSmartPointer<vtkImageData> pImage);
+    /**
+     * Construct a new instance of the class and return a shared pointer to it.
+     * @return a pointer to a new instance of the class
+     */
+    static boost::shared_ptr<CaPopulationSproutingRule<DIM> > Create();
 
-    void SetThreshold(double threshold, bool segmentAboveThreshold);
+    /**
+     * Overwritten method to return nodes which may sprout
+     * @param rNodes nodes to check for sprouting
+     * @return a vector of nodes which may sprout
+     */
+    virtual std::vector<boost::shared_ptr<VascularNode<DIM> > > GetSprouts(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes);
 
-    void SetUseMarchingCubes(bool useMarchingCubes);
+    /**
+     * Set the lattice/grid for the vessel network
+     * @param pGrid the grid for the vessel network
+     */
+    void SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid);
 
-    void Update();
-
-    vtkSmartPointer<vtkPolyData> GetOutput();
 };
 
-#endif /*ImageToSurface_HPP_*/
-#endif /*CHASTE_ANGIOGENESIS_VMTK*/
+#endif /* CaPopulationSproutingRule_HPP_ */

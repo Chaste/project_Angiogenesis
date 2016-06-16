@@ -1,5 +1,4 @@
 /*
-
  Copyright (c) 2005-2015, University of Oxford.
  All rights reserved.
 
@@ -33,6 +32,7 @@
 
  */
 
+#ifdef CHASTE_ANGIOGENESIS_VMTK
 #include "Exception.hpp"
 #include "ImageToSurface.hpp"
 #include <vtkThreshold.h>
@@ -125,3 +125,4 @@ void ImageToSurface::Update()
         mpSurface = p_geometry->GetOutput();
     }
 }
+#endif /*CHASTE_ANGIOGENESIS_VMTK*/

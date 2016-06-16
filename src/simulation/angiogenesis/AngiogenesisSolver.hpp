@@ -44,7 +44,7 @@
 #include "AbstractSproutingRule.hpp"
 #include "AbstractMigrationRule.hpp"
 #include "RegularGrid.hpp"
-#include "CaBasedCellPopulationWithVessels.hpp"
+#include "AbstractCellPopulation.hpp"
 
 /**
  * This class is for simulating modifications to the vessel network due to sprouting angiogenesis.
@@ -90,7 +90,17 @@ class AngiogenesisSolver
     /**
      * The cell population for discrete cell angiogenesis models
      */
-    boost::shared_ptr<CaBasedCellPopulationWithVessels<DIM> > mpCellPopulation;
+    boost::shared_ptr<AbstractCellPopulation<DIM> > mpCellPopulation;
+
+    /**
+     * Tip cell collection for discrete cell angiogenesis models
+     */
+    std::vector<boost::shared_ptr<Cell> > mTipCells;
+
+    /**
+     * Cell node map for discrete cell angiogenesis models
+     */
+    std::map<boost::shared_ptr<Cell> , boost::shared_ptr<VascularNode<DIM> > > mCellNodeMap;
 
 public:
 
@@ -149,7 +159,7 @@ public:
      * Set a cell population for discrete cell solves
      * @param pCellPopulation the cell population for discrete cell solves
      */
-    void SetCellPopulation(boost::shared_ptr<CaBasedCellPopulationWithVessels<DIM> > pCellPopulation);
+    void SetCellPopulation(boost::shared_ptr<AbstractCellPopulation<DIM> > pCellPopulation);
 
     /**
      * Add a migration rule for tip cells

@@ -38,13 +38,16 @@
 
 #include <cxxtest/TestSuite.h>
 #include "SmartPointers.hpp"
-#include "ImageToSurface.hpp"
-#include "ImageReader.hpp"
-#include "FileFinder.hpp"
-#include "OutputFileHandler.hpp"
+#ifdef CHASTE_ANGIOGENESIS_VMTK
 #include <vtkXMLPolyDataWriter.h>
 #include <vtkXMLImageDataWriter.h>
 #include <vtkSmartPointer.h>
+#include "ImageToSurface.hpp"
+#include "ImageReader.hpp"
+#endif /*CHASTE_ANGIOGENESIS_VMTK*/
+
+#include "FileFinder.hpp"
+#include "OutputFileHandler.hpp"
 
 class TestImageToSurface : public CxxTest::TestSuite
 {
@@ -52,6 +55,7 @@ public:
 
     void TestDefaultExtraction()
     {
+        #ifdef CHASTE_ANGIOGENESIS_VMTK
         // Read the image from file
         OutputFileHandler file_handler1 = OutputFileHandler("TestImageToSurface/");
         FileFinder finder = FileFinder("projects/Angiogenesis/test/data/median.tif", RelativeTo::ChasteSourceRoot);
@@ -77,7 +81,7 @@ public:
         p_writer->SetFileName((file_handler1.GetOutputDirectoryFullPath()+"surface.vtp").c_str());
         p_writer->SetInput(surface_extract.GetOutput());
         p_writer->Write();
+        #endif /*CHASTE_ANGIOGENESIS_VMTK*/
     }
 };
-
-#endif /*TestImageToSurface_HPP_*/
+#endif

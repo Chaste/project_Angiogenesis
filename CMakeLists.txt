@@ -2,6 +2,12 @@ find_package(Chaste COMPONENTS cell_based)
 chaste_do_project(Angiogenesis)
 
 set(BUILD_ANGIOGENESIS_PYTHON "Build Python Bindings for Angiogenesis component" CACHE BOOL FALSE)
+set(BUILD_ANGIOGENESIS_VMTK "Build Tools Depending on VMTK for Angiogenesis component" CACHE BOOL FALSE)
+
+if(${BUILD_ANGIOGENESIS_VMTK})
+add_definitions(-DCHASTE_ANGIOGENESIS_VMTK)
+endif(${BUILD_ANGIOGENESIS_VMTK})
+
 if(${BUILD_ANGIOGENESIS_PYTHON})
 
 ######### Find Python, Boost Python and Chaste Dependencies ###################### 

@@ -57,12 +57,20 @@ void VesselNetworkCellPopulationInteractor<DIM>::LabelVesselsInCellPopulation(Ab
     for (typename AbstractCellPopulation<DIM>::Iterator cell_iter = rCellPopulation.Begin();cell_iter != rCellPopulation.End();++cell_iter)
     {
         c_vector<double, DIM> cell_location = rCellPopulation.GetLocationOfCellCentre(*cell_iter);
-        double node_distance = mpNetwork->GetDistanceToNearestNode(cell_location);
+        boost::shared_ptr<VascularNode<DIM> > p_nearest_node = mpNetwork->GetNearestNode(cell_location);
+        double node_distance = p_nearest_node->GetDistance(cell_location);
 
         std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> segment_distance_pair = mpNetwork->GetNearestSegment(cell_location);
         if (segment_distance_pair.second < threshold || node_distance < threshold)
         {
-            cell_iter->SetMutationState(pStalkState);
+            if(p_nearest_node->IsMigrating())
+            {
+                cell_iter->SetMutationState(pTipMutationState);
+            }
+            else
+            {
+                cell_iter->SetMutationState(pStalkState);
+            }
         }
     }
 }
