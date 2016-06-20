@@ -1,0 +1,61 @@
+# Build FreeCad
+
+list(APPEND projects freecad)
+
+ExternalProject_Add(freecad
+  DEPENDS boost opencascade xerces swig
+
+  GIT_REPOSITORY https://github.com/FreeCAD/FreeCAD.git
+  GIT_TAG 0.16
+  UPDATE_COMMAND ""
+  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+    -DBOOST_ROOT=${BOOST_ROOT} 
+    -DBOOST_DIR=${BOOST_ROOT} 
+    -DOCE_DIR=${OCE_DIR}
+    -DOCE_INCLUDE_DIR=${OCE_DIR}/include
+    -DOCE_LIBRARY=${OCE_DIR}/lib/libTKernel.so
+    -DOCC_DIR=${OCE_DIR}
+    -DOCC_INCLUDE_DIR=${OCE_DIR}/include/oce
+    -DOCC_LIBRARY=${OCE_DIR}/lib/libTKernel.so
+    -DXercesC_INCLUDE_DIRS=${XERCES_DIR}/include
+    -DXercesC_LIBRARIES=${XERCES_DIR}/lib/libxerces-c.so
+    -DSWIG_DIR=${SWIG_DIR}/share/swig/3.0.8
+    -DSWIG_EXECUTABLE=${SWIG_DIR}/bin/swig
+    -DBUILD_ARCH=OFF
+    -DBUILD_ASSEMBLY=OFF
+    -DBUILD_COMPLETE=OFF
+    -DBUILD_DRAFT=OFF
+    -DBUILD_DRAWING=OFF
+    -DBUILD_FEM=OFF
+    -DBUILD_FEM_NETGEN=OFF
+    -DBUILD_GUI=OFF
+    -DBUILD_IDF=OFF
+    -DBUILD_IMAGE=OFF
+    -DBUILD_IMPORT=OFF
+    -DBUILD_INSPECTION=OFF
+    -DBUILD_JTREADER=OFF
+    -DBUILD_MATERIAL=OFF
+    -DBUILD_MESH=ON
+    -DBUILD_MESH_PART=ON
+    -DBUILD_OPENSCAD=OFF
+    -DBUILD_PART=ON
+    -DBUILD_PART_DESIGN=OFF
+    -DBUILD_PATH=OFF
+    -DBUILD_PLOT=OFF
+    -DBUILD_POINTS=OFF
+    -DBUILD_RAYTRACING=OFF
+    -DBUILD_REVERSEENGINEERING=OFF
+    -DBUILD_ROBOT=OFF
+    -DBUILD_SANDBOX=OFF
+    -DBUILD_SHIP=OFF
+    -DBUILD_SKETCHER=OFF
+    -DBUILD_SPREADSHEET=OFF
+    -DBUILD_START=OFF
+    -DBUILD_TEMPLATE=OFF
+    -DBUILD_TEST=OFF
+    -DBUILD_VR=OFF
+    -DBUILD_WEB=OFF
+    -DPYTHON_EXECUTABLE=/home/grogan/.pyenv/versions/2.7.11/bin/python2
+    -DPYTHON_INCLUDE_DIR:PATH=/home/grogan/.pyenv/versions/2.7.11/include/python2.7
+    -DPYTHON_LIBRARY:FILEPATH=/home/grogan/.pyenv/versions/2.7.11/lib/libpython2.7.so
+)

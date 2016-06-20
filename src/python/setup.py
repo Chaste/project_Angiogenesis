@@ -5,18 +5,20 @@ class BinaryDistribution(Distribution):
         return False
 
 setup(
-    name = "casie",
+    name = "chaste",
     version = "0.1.dev0",
-    packages = ['casie'],
-    install_requires = ['numpy', 'matplotlib', 'pandas'],
+    packages = ['chaste'],
+    install_requires = ['scipy', 'matplotlib', 'pandas', 'numpy', 'jupyter'],
     package_data={
-        'casie': ['core/_core.so', 
+        'chaste': ['core/_core.so', 
                   'geometry/_geometry.so',
                   'mesh/_mesh.so',
                   'pde/_pde.so',
                   'population/vessel/_vessel.so',
                   'population/cell/_cell.so',
-                  'simulation/_simulation.so',],},
+                  'simulation/_simulation.so',
+                  'simulation/_flow.so',
+                  'simulation/_angiogenesis.so',],},
     include_package_data=True,
     test_suite='nose.collector',
     tests_require=['nose'],
