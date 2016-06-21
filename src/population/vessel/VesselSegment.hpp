@@ -79,17 +79,12 @@ private:
     /**
      * Container for generic segment data.
      */
-    VasculatureData mDataContainer;
+    std::map<std::string, double> mOutputData;
 
     /**
      * Id tag, can be useful for storing segment-vessel relationships in the VesselNetwork class.
      */
     unsigned mId;
-
-    /**
-     * Label tag, can be useful for identifying input and output segments.
-     */
-    std::string mLabel;
 
     /**
      * Weak pointer to the vessel owning this segment
@@ -165,14 +160,13 @@ public:
      * @param rKey the key to be queried
      * @return the node data for the input key
      */
-    template<typename T> T GetData(const std::string& rKey) const;
+    double GetOutputData(const std::string& rKey);
 
     /**
-     * Return a const reference to the segment's non-spatial data container.
-     *
-     * @return the data container
+     * Return the segment data.
+     * @return the segment data
      */
-    const VasculatureData& rGetDataContainer() const;
+    std::map<std::string, double> GetOutputData();
 
     /**
      * Return a vector of data keys for the segment. Input true if
@@ -181,17 +175,7 @@ public:
      * @param castableToDouble whether the returned keys should be castable to double
      * @return a vector of data keys for the node
      */
-    std::vector<std::string> GetDataKeys(bool castableToDouble = false) const;
-
-    /**
-     * Return the distance between the input point and the segment. If the projection of the
-     * point is within the segment the distance is the perpendicular distance to the segment.
-     * Otherwise it is the distance to the nearest node.
-     *
-     * @param rPoint the point the get the distance from
-     * @return the distance to the segment
-     */
-    double GetDistance(const ChastePoint<DIM>& rPoint) const;
+//    std::vector<std::string> GetDataKeys() const;
 
     /**
      * Return the distance between the input point and the segment. If the projection of the
@@ -201,7 +185,7 @@ public:
      * @param location the point the get the distance from
      * @return the distance to the segment
      */
-    double GetDistance(c_vector<double, DIM> location) const;
+    units::quantity<unit::length> GetDistance(c_vector<double, DIM> location) const;
 
     /**
      * Return the flow properties of the segment
@@ -218,18 +202,11 @@ public:
     unsigned GetId() const;
 
     /**
-     * Return the Label
-     *
-     * @return the segment label
-     */
-    const std::string& rGetLabel() const;
-
-    /**
      * Return the length
      *
      * @return the segment length
      */
-    double GetLength() const;
+    units::quantity<unit::length> GetLength() const;
 
     /**
      * Return the radius
@@ -266,15 +243,6 @@ public:
      * @return the segment nodes as a pair
      */
     std::pair<boost::shared_ptr<VascularNode<DIM> >, boost::shared_ptr<VascularNode<DIM> > > GetNodes() const;
-
-    /**
-     * Return the projection of a point onto the segment. If the projection is outside the segment an
-     * Exception is thrown.
-     *
-     * @param rPoint a ChastePoint at the location to be projected
-     * @return the location of the projected point
-     */
-    c_vector<double, DIM> GetPointProjection(const ChastePoint<DIM>& rPoint, bool projectToEnds = false) const;
 
     /**
      * Return the projection of a point onto the segment. If the projection is outside the segment an
@@ -341,16 +309,7 @@ public:
      *  @param rKey the key associated with the data
      *  @param the value to be added to the data map
      */
-    template<typename T> void SetData(const std::string& rKey, T value);
-
-    /**
-     *  Over-write the segment's non-spatial DataContainer
-     *
-     *  This can be useful when copying data from an existing segment.
-     *
-     *  @param rDataContainer the container to be inserted
-     */
-    void SetDataContainer(const VasculatureData& rDataContainer);
+    void SetOutputData(const std::string& rKey, double value);
 
     /**
      * Set the flow properties of the segment
@@ -365,13 +324,6 @@ public:
      * @param id the id to be assigned
      */
     void SetId(unsigned id);
-
-    /**
-     * Assign the Label
-     *
-     * @param rLabel the label to be assigned
-     */
-    void SetLabel(const std::string& rLabel);
 
     /**
      * Set the radius

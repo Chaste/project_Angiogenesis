@@ -16,7 +16,7 @@
 #include "SmartPointers.hpp"
 #include "VasculatureGenerator.hpp"
 #include "VascularNetwork.hpp"
-#include "CaBasedCellPopulationWithVessels.hpp"
+#include "CaBasedCellPopulation.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "DifferentiatedCellProliferativeType.hpp"
 #include "Owen2011OxygenBasedCellCycleModel.hpp"

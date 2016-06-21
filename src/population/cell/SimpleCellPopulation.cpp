@@ -82,10 +82,10 @@ template<unsigned DIM>
 void SimpleCellPopulation<DIM>::BooleanWithVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork)
 {
     std::vector<boost::shared_ptr<SimpleCell<DIM> > > remove_cells;
-    double tolerance = 1.e-6;
+    units::quantity<unit::length> tolerance = 1.e-6 * unit::metres;
     for(unsigned idx=0; idx<mCells.size();idx++)
     {
-        std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> seg_pair = pNetwork->GetNearestSegment(mCells[idx]->rGetLocation());
+        std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> > seg_pair = pNetwork->GetNearestSegment(mCells[idx]->rGetLocation());
         if(seg_pair.second < tolerance)
         {
             remove_cells.push_back(mCells[idx]);

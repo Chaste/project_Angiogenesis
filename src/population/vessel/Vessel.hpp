@@ -37,11 +37,11 @@
 #define Vessel_HPP_
 
 #include <vector>
+#include <string>
 #include <map>
 #include <boost/enable_shared_from_this.hpp>
 #include "VesselSegment.hpp"
 #include "VascularNode.hpp"
-#include "VasculatureData.hpp"
 #include "ChastePoint.hpp"
 #include "UnitCollections.hpp"
 
@@ -86,17 +86,12 @@ private:
     /**
      * Container for non-spatial vessel data.
      */
-    VasculatureData mDataContainer;
+    std::map<std::string, double> mOutputData;
 
     /**
      * Id tag, can be useful for storing segment-vessel relationships in the VesselNetwork class.
      */
     unsigned mId;
-
-    /**
-     * Label tag, can be useful for identifying input and output vessels.
-     */
-    std::string mLabel;
 
     /**
      * Whether a vessel is currently undergoing regression. A vessel can be saved from this fate.
@@ -111,7 +106,7 @@ private:
     /**
      * When the vessel will be removed.
      */
-    double mRegressionTime;
+    units::quantity<unit::time> mRegressionTime;
 
 private:
 
@@ -188,21 +183,21 @@ public:
     /**
      Divide the vessel at the specified location
      */
-    boost::shared_ptr<VascularNode<DIM> > DivideSegment(ChastePoint<DIM> location);
+    boost::shared_ptr<VascularNode<DIM> > DivideSegment(const c_vector<double, DIM>& location);
+
+    /**
+     * Return a map of vessel data for use by the vtk writer
+     *
+     * @return a map of vessel data for use by the vtk writer
+     */
+    std::map<std::string, double> GetOutputData() const;
 
     /**
      *  Return the vessel data for the input key. An attempt is made
      *  to cast to type T.
      *  @return T data
      */
-    template<typename T> T GetData(const std::string& rKey);
-
-    /**
-     *  Return a const reference to the vessel's non-spatial data container.
-     *
-     *  @return mDataContainer
-     */
-    const VasculatureData& rGetDataContainer() const;
+    double GetOutputData(const std::string& rKey);
 
     /**
      *  Return a vector of data keys for the vessel. Input true if
@@ -210,17 +205,17 @@ public:
      *
      *  @return std::vector<std::string>
      */
-    std::vector<std::string> GetDataKeys(bool castable_to_double = false) const;
+    std::vector<std::string> GetOutputDataKeys();
 
     /**
      *  Return the distance to the vessel end node closest to the input location
      */
-    double GetClosestEndNodeDistance(c_vector<double, DIM> location);
+    units::quantity<unit::length> GetClosestEndNodeDistance(const c_vector<double, DIM>& location);
 
     /**
      *  Return the distance from the vessel to the input location
      */
-    double GetDistance(c_vector<double, DIM> location) const;
+    units::quantity<unit::length> GetDistance(const c_vector<double, DIM>& location) const;
 
     /**
      @return vector of vessels connected to this one
@@ -260,18 +255,11 @@ public:
     units::quantity<unit::dynamic_viscosity> GetViscosity() const;
 
     /**
-     *  Return the Label
-     *
-     *  @return mLabel
-     */
-    const std::string& rGetLabel() const;
-
-    /**
      *  Return the length
      *
      *  @return double
      */
-    double GetLength() const;
+    units::quantity<unit::length> GetLength() const;
 
     /**
      *  Return the radius
@@ -309,11 +297,6 @@ public:
     unsigned GetNumberOfSegments();
 
     /**
-     @return mVesselSegmentLocations[index]
-     */
-    boost::shared_ptr<VesselSegment<DIM> > GetSegment(unsigned index);
-
-    /**
      @return mVesselSegments
      */
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > GetSegments();
@@ -322,13 +305,6 @@ public:
      @return shared pointer to the first node of the first segment
      */
     boost::shared_ptr<VascularNode<DIM> > GetStartNode();
-
-    /**
-     * Return a map of vessel data for use by the vtk writer
-     *
-     * @return a map of vessel data for use by the vtk writer
-     */
-    std::map<std::string, double> GetVtkData() const;
 
     /**
      *  Return true if the vessel has data corresponding to the input key.
@@ -355,26 +331,13 @@ public:
     /**
      *  Add data of any type to the segment using the identifying key
      */
-    template<typename T> void SetData(const std::string& rKey, T value);
-
-    /**
-     *  Over-write the vessel's non-spatial DataContainer
-     *
-     *  This can be useful when copying data from an existing node.
-     */
-    void SetDataContainer(const VasculatureData& rDataContainer);
+    void SetData(const std::string& rKey, double value);
 
     /**
      *  Assign the Id
      *
      */
     void SetId(unsigned id);
-
-    /**
-     *  Assign the Label
-     *
-     */
-    void SetLabel(const std::string& label);
 
     /**
      *  Set the radius
@@ -401,7 +364,7 @@ public:
     /**
      * Set time until removal of vessel from network.
      */
-    void SetTimeUntilRegression(double time);
+    void SetTimeUntilRegression(units::quantity<unit::time> time);
 
     /**
      * @return whether regression timer has started.

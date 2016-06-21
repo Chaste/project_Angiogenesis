@@ -45,12 +45,11 @@ Vessel<DIM>::Vessel(boost::shared_ptr<VesselSegment<DIM> > pSegment) :
         mSegments(std::vector<boost::shared_ptr<VesselSegment<DIM> > >()),
         mNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > >()),
         mNodesUpToDate(false),
-        mDataContainer(),
+        mOutputData(),
         mId(0),
-        mLabel(),
         mUndergoingRegression(false),
         mRemoveViaRegression(false),
-        mRegressionTime(DBL_MAX)
+        mRegressionTime(DBL_MAX*unit::seconds)
 {
     mSegments.push_back(pSegment);
 }
@@ -60,12 +59,11 @@ Vessel<DIM>::Vessel(std::vector<boost::shared_ptr<VesselSegment<DIM> > > segment
         mSegments(segments),
         mNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > >()),
         mNodesUpToDate(false),
-        mDataContainer(),
+        mOutputData(),
         mId(0),
-        mLabel(),
         mUndergoingRegression(false),
         mRemoveViaRegression(false),
-        mRegressionTime(DBL_MAX)
+        mRegressionTime(DBL_MAX*unit::seconds)
 {
     if (segments.size() > 1)
     {
@@ -98,12 +96,11 @@ Vessel<DIM>::Vessel(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes) :
         mSegments(std::vector<boost::shared_ptr<VesselSegment<DIM> > >()),
         mNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > >()),
         mNodesUpToDate(false),
-        mDataContainer(),
+        mOutputData(),
         mId(0),
-        mLabel(),
         mUndergoingRegression(false),
         mRemoveViaRegression(false),
-        mRegressionTime(DBL_MAX)
+        mRegressionTime(DBL_MAX*unit::seconds)
 {
 
     if (nodes.size() < 2)
@@ -124,12 +121,11 @@ Vessel<DIM>::Vessel(boost::shared_ptr<VascularNode<DIM> > pStartNode, boost::sha
     :        mSegments(std::vector<boost::shared_ptr<VesselSegment<DIM> > >()),
              mNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > >()),
              mNodesUpToDate(false),
-             mDataContainer(),
+             mOutputData(),
              mId(0),
-             mLabel(),
              mUndergoingRegression(false),
              mRemoveViaRegression(false),
-             mRegressionTime(DBL_MAX)
+             mRegressionTime(DBL_MAX*unit::seconds)
 {
     mSegments.push_back(VesselSegment<DIM>::Create(pStartNode, pEndNode));
 }
@@ -307,20 +303,20 @@ void Vessel<DIM>::AddSegments(std::vector<boost::shared_ptr<VesselSegment<DIM> >
 template<unsigned DIM>
 void Vessel<DIM>::CopyDataFromExistingVessel(boost::shared_ptr<Vessel<DIM> > pTargetVessel)
 {
-    mDataContainer.SetMap(pTargetVessel->rGetDataContainer().GetMap());
+    mOutputData = pTargetVessel->GetOutputData();
 }
 
 template<unsigned DIM>
-template<typename T> T Vessel<DIM>::GetData(const std::string& variableName)
+double Vessel<DIM>::GetOutputData(const std::string& variableName)
 {
-    return mDataContainer.GetData<T>(variableName);
+    return mOutputData[variableName];
 }
 
 template<unsigned DIM>
-double Vessel<DIM>::GetClosestEndNodeDistance(c_vector<double, DIM> location)
+units::quantity<unit::length> Vessel<DIM>::GetClosestEndNodeDistance(const c_vector<double, DIM>& location)
 {
-    double distance_1 = this->GetStartNode()->GetDistance(location);
-    double distance_2 = this->GetEndNode()->GetDistance(location);
+    units::quantity<unit::length> distance_1 = this->GetStartNode()->GetDistance(location);
+    units::quantity<unit::length> distance_2 = this->GetEndNode()->GetDistance(location);
     if(distance_1 > distance_2)
     {
         return distance_2;
@@ -332,13 +328,13 @@ double Vessel<DIM>::GetClosestEndNodeDistance(c_vector<double, DIM> location)
 }
 
 template<unsigned DIM>
-double Vessel<DIM>::GetDistance(c_vector<double, DIM> location) const
+units::quantity<unit::length> Vessel<DIM>::GetDistance(const c_vector<double, DIM>& location) const
 {
     // Get the distance to the nearest segment in the vessel
-    double nearest_distance = DBL_MAX;
+    units::quantity<unit::length> nearest_distance = DBL_MAX*unit::metres;
     for(unsigned idx=0; idx<mSegments.size(); idx++)
     {
-        double seg_distance = mSegments[idx]->GetDistance(location);
+        units::quantity<unit::length> seg_distance = mSegments[idx]->GetDistance(location);
         if(seg_distance < nearest_distance)
         {
             nearest_distance = seg_distance;
@@ -348,16 +344,10 @@ double Vessel<DIM>::GetDistance(c_vector<double, DIM> location) const
 }
 
 template<unsigned DIM>
-const VasculatureData& Vessel<DIM>::rGetDataContainer() const
-{
-    return mDataContainer;
-}
-
-template<unsigned DIM>
 std::vector<boost::shared_ptr<Vessel<DIM> > > Vessel<DIM>::GetConnectedVessels()
 {
-    std::vector<boost::shared_ptr<VesselSegment<DIM> > > start_segments = GetStartNode()->GetVesselSegments();
-    std::vector<boost::shared_ptr<VesselSegment<DIM> > > end_segments = GetStartNode()->GetVesselSegments();
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > start_segments = GetStartNode()->GetSegments();
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > end_segments = GetStartNode()->GetSegments();
 
     std::vector<boost::shared_ptr<Vessel<DIM> > > connected;
 
@@ -379,9 +369,14 @@ std::vector<boost::shared_ptr<Vessel<DIM> > > Vessel<DIM>::GetConnectedVessels()
 }
 
 template<unsigned DIM>
-std::vector<std::string> Vessel<DIM>::GetDataKeys(bool castable_to_double) const
+std::vector<std::string> Vessel<DIM>::GetOutputDataKeys()
 {
-    return mDataContainer.GetKeys(castable_to_double);
+    std::vector<std::string> keys;
+    for(std::map<std::string, double>::iterator it = mOutputData.begin(); it != mOutputData.end(); ++it)
+    {
+        keys.push_back(it->first);
+    }
+    return keys;
 }
 
 template<unsigned DIM>
@@ -425,15 +420,9 @@ unsigned Vessel<DIM>::GetId() const
 }
 
 template<unsigned DIM>
-const std::string& Vessel<DIM>::rGetLabel() const
+units::quantity<unit::length> Vessel<DIM>::GetLength() const
 {
-    return mLabel;
-}
-
-template<unsigned DIM>
-double Vessel<DIM>::GetLength() const
-{
-    double length = 0.0;
+    units::quantity<unit::length> length = 0.0 * unit::metres;
 
     for (unsigned i = 0; i < mSegments.size(); i++)
     {
@@ -536,19 +525,6 @@ unsigned Vessel<DIM>::GetNumberOfSegments()
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VesselSegment<DIM> > Vessel<DIM>::GetSegment(unsigned i)
-{
-    if (i < mSegments.size())
-    {
-        return mSegments[i];
-    }
-    else
-    {
-        EXCEPTION("Requested segment index exceeds number of segments.");
-    }
-}
-
-template<unsigned DIM>
 std::vector<boost::shared_ptr<VesselSegment<DIM> > > Vessel<DIM>::GetSegments()
 {
     return mSegments;
@@ -566,7 +542,7 @@ boost::shared_ptr<VascularNode<DIM> > Vessel<DIM>::GetStartNode()
 }
 
 template<unsigned DIM>
-std::map<std::string, double> Vessel<DIM>::GetVtkData() const
+std::map<std::string, double> Vessel<DIM>::GetOutputData() const
 {
     std::map<std::string, double> vtk_data;
     vtk_data["Vessel Id"] = double(GetId());
@@ -586,12 +562,6 @@ std::map<std::string, double> Vessel<DIM>::GetVtkData() const
 }
 
 template<unsigned DIM>
-bool Vessel<DIM>::HasDataKey(const std::string& rKey) const
-{
-    return mDataContainer.HasKey(rKey);
-}
-
-template<unsigned DIM>
 bool Vessel<DIM>::IsConnectedTo(boost::shared_ptr<Vessel<DIM> > pOtherVessel)
 {
     if (GetStartNode() == pOtherVessel->GetStartNode() || GetEndNode() == pOtherVessel->GetStartNode()
@@ -606,13 +576,13 @@ bool Vessel<DIM>::IsConnectedTo(boost::shared_ptr<Vessel<DIM> > pOtherVessel)
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VascularNode<DIM> > Vessel<DIM>::DivideSegment(ChastePoint<DIM> location)
+boost::shared_ptr<VascularNode<DIM> > Vessel<DIM>::DivideSegment(const c_vector<double, DIM>& location)
 {
     // Identify segment
     boost::shared_ptr<VesselSegment<DIM> > pVesselSegment;
     for (unsigned i = 0; i < mSegments.size(); i++)
     {
-        if (mSegments[i]->GetDistance(location) <= 1e-6)
+        if (mSegments[i]->GetDistance(location) <= 1e-6*unit::metres)
         {
             pVesselSegment = mSegments[i];
             if (pVesselSegment->GetNode(0)->IsCoincident(location))
@@ -646,8 +616,8 @@ boost::shared_ptr<VascularNode<DIM> > Vessel<DIM>::DivideSegment(ChastePoint<DIM
 
     // The node's data is averaged from the original segments's nodes
     // Get the closest node
-    double distance0 = pVesselSegment->GetNode(0)->GetDistance(location);
-    double distance1 = pVesselSegment->GetNode(1)->GetDistance(location);
+    units::quantity<unit::length> distance0 = pVesselSegment->GetNode(0)->GetDistance(location);
+    units::quantity<unit::length> distance1 = pVesselSegment->GetNode(1)->GetDistance(location);
     unsigned closest_index;
 
     if (distance0 <= distance1)
@@ -661,7 +631,7 @@ boost::shared_ptr<VascularNode<DIM> > Vessel<DIM>::DivideSegment(ChastePoint<DIM
 
     // Make a copy of the closest node
     boost::shared_ptr<VascularNode<DIM> > p_new_node = VascularNode<DIM>::Create(*pVesselSegment->GetNode(closest_index));
-    p_new_node->SetLocation(location);
+    p_new_node->SetLocationValue(location);
 
     // Make two new segments
     boost::shared_ptr<VesselSegment<DIM> > p_new_segment0 =
@@ -789,27 +759,15 @@ void Vessel<DIM>::RemoveSegments(SegmentLocation::Value location)
 }
 
 template<unsigned DIM>
-template<typename T> void Vessel<DIM>::SetData(const std::string& variableName, T value)
+void Vessel<DIM>::SetData(const std::string& variableName, double value)
 {
-    mDataContainer.SetData(variableName, value);
-}
-
-template<unsigned DIM>
-void Vessel<DIM>::SetDataContainer(const VasculatureData& rDataContainer)
-{
-    mDataContainer = rDataContainer;
+    mOutputData[variableName] = value;
 }
 
 template<unsigned DIM>
 void Vessel<DIM>::SetId(unsigned id)
 {
     mId = id;
-}
-
-template<unsigned DIM>
-void Vessel<DIM>::SetLabel(const std::string& label)
-{
-    mLabel = label;
 }
 
 template<unsigned DIM>
@@ -889,10 +847,9 @@ void Vessel<DIM>::UpdateNodes()
 
 
 template<unsigned DIM>
-void Vessel<DIM>::SetTimeUntilRegression(double time)
+void Vessel<DIM>::SetTimeUntilRegression(units::quantity<unit::time> time)
 {
     assert(!mRemoveViaRegression);
-    assert(time >= 0);
 
     if (HasRegressionTimerStarted())
     {
@@ -900,7 +857,7 @@ void Vessel<DIM>::SetTimeUntilRegression(double time)
     }
 
     mUndergoingRegression = true;
-    mRegressionTime = SimulationTime::Instance()->GetTime() + time;
+    mRegressionTime = SimulationTime::Instance()->GetTime()*unit::seconds + time;
 }
 
 template<unsigned DIM>
@@ -912,7 +869,7 @@ bool Vessel<DIM>::HasRegressionTimerStarted()
 template<unsigned DIM>
 void Vessel<DIM>::ResetRegressionTimer()
 {
-    mRegressionTime = DBL_MAX;
+    mRegressionTime = DBL_MAX * unit::seconds;
     mUndergoingRegression = false;
     mRemoveViaRegression = false;
 }
@@ -920,7 +877,7 @@ void Vessel<DIM>::ResetRegressionTimer()
 template<unsigned DIM>
 bool Vessel<DIM>::VesselHasRegressed()
 {
-    if (SimulationTime::Instance()->GetTime() >= mRegressionTime)
+    if (SimulationTime::Instance()->GetTime()*unit::seconds >= mRegressionTime)
     {
         assert(mUndergoingRegression);
         mRemoveViaRegression = true;
@@ -936,21 +893,3 @@ bool Vessel<DIM>::VesselHasRegressed()
 // Explicit instantiation
 template class Vessel<2> ;
 template class Vessel<3> ;
-
-template bool Vessel<2>::GetData<bool>(const std::string& variableName);
-template double Vessel<2>::GetData<double>(const std::string& variableName);
-template unsigned Vessel<2>::GetData<unsigned>(const std::string& variableName);
-template std::vector<double> Vessel<2>::GetData<std::vector<double> >(const std::string& variableName);
-template void Vessel<2>::SetData(const std::string& variableName, bool value);
-template void Vessel<2>::SetData(const std::string& variableName, double value);
-template void Vessel<2>::SetData(const std::string& variableName, unsigned value);
-template void Vessel<2>::SetData(const std::string& variableName, std::vector<double> value);
-
-template bool Vessel<3>::GetData<bool>(const std::string& variableName);
-template double Vessel<3>::GetData<double>(const std::string& variableName);
-template unsigned Vessel<3>::GetData<unsigned>(const std::string& variableName);
-template std::vector<double> Vessel<3>::GetData<std::vector<double> >(const std::string& variableName);
-template void Vessel<3>::SetData(const std::string& variableName, bool value);
-template void Vessel<3>::SetData(const std::string& variableName, double value);
-template void Vessel<3>::SetData(const std::string& variableName, unsigned value);
-template void Vessel<3>::SetData(const std::string& variableName, std::vector<double> value);

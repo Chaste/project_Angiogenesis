@@ -47,7 +47,7 @@
 
 /**
  * Class for generating surface representations of vessel networks. The generated surface is suitable for
- * finite element meshing and can be returned in PLC or VTK formats.
+ * finite element meshing and can be returned in PLC or VTK formats. Units are not maintained.
  */
 template<unsigned DIM>
 class VesselSurfaceGenerator

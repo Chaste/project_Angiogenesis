@@ -44,6 +44,7 @@
 #include "SmartPointers.hpp"
 #include "VascularNetwork.hpp"
 #include "SimpleCell.hpp"
+#include "UnitCollections.hpp"
 
 /* A minimal cell population class.
  */

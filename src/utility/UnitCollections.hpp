@@ -2,6 +2,8 @@
 #define UnitCollections_hpp
 
 #include <map>
+#include <string>
+#include <sstream>
 #include <boost/units/quantity.hpp>
 #include <boost/units/derived_dimension.hpp>
 #include <boost/units/make_scaled_unit.hpp>
@@ -28,7 +30,6 @@
 #include <boost/units/base_units/metric/hour.hpp>
 #include <boost/units/base_units/metric/day.hpp>
 #include <boost/units/base_units/metric/mmHg.hpp>
-#include <boost/units/base_units/metric/micron.hpp>
 
 #include "Exception.hpp"
 
@@ -59,7 +60,8 @@ namespace unit
     typedef units::si::area area;
     typedef units::si::volume volume;
     BOOST_UNITS_STATIC_CONSTANT(metres, units::si::length);
-    BOOST_UNITS_STATIC_CONSTANT(microns, units::metric::micron_base_unit::unit_type);
+    typedef units::make_scaled_unit<units::si::length , units::scale<10, units::static_rational<-6> > >::type micron_type;
+    BOOST_UNITS_STATIC_CONSTANT(microns, micron_type);
 
     // Force/Pressure/Stress
     typedef units::si::force force;
@@ -87,9 +89,14 @@ namespace unit
     BOOST_UNITS_STATIC_CONSTANT(kg, units::si::mass);
 }
 
-inline units::quantity<unit::length> GetLengthUnit(std::string key)
+inline units::quantity<unit::length> StringToLengthUnit(std::string key)
 {
     if(key=="metres" or key=="metre")
+    {
+        units::quantity<unit::length> unit_quantity = 1.0*unit::metres;
+        return unit_quantity;
+    }
+    else if(key=="microns" or key=="micron")
     {
         units::quantity<unit::length> unit_quantity = 1.0*unit::metres;
         return unit_quantity;
@@ -99,5 +106,21 @@ inline units::quantity<unit::length> GetLengthUnit(std::string key)
         EXCEPTION("Length unit key not recognized");
     }
 }
+
+inline std::string LengthQuantityToString(units::quantity<unit::length> quantity)
+{
+    std::stringstream buffer;
+    buffer << quantity.unit_type << std::endl;
+    return buffer.str();
+}
+
+inline std::pair<double, std::string> LengthQuantityToValueUnitPair(units::quantity<unit::length> quantity)
+{
+    std::pair<double, std::string> output_pair;
+    output_pair.first = quantity.value();
+    output_pair.second = LengthQuantityToString(quantity);
+    return output_pair;
+}
+
 
 #endif //UnitCollections_hpp

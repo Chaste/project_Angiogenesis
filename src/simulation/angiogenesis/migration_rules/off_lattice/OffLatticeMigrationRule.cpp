@@ -115,7 +115,7 @@ std::vector<c_vector<double, DIM> > OffLatticeMigrationRule<DIM>::GetDirections(
                 angle_z = RandomNumberGenerator::Instance()->NormalRandomDeviate(mMeanAngles[2], mSdvAngles[2]);
             }
             c_vector<double, DIM> currentDirection  =
-                    -rNodes[idx]->GetVesselSegment(0)->GetOppositeNode(rNodes[idx])->GetLocationVector() + rNodes[idx]->GetLocationVector();
+                    -rNodes[idx]->GetSegments()[0]->GetOppositeNode(rNodes[idx])->GetLocationValue() + rNodes[idx]->GetLocationValue();
             currentDirection /= norm_2(currentDirection);
 
             c_vector<double, DIM> new_direction_z = RotateAboutAxis<DIM>(currentDirection, mGlobalZ, angle_z);
@@ -128,7 +128,7 @@ std::vector<c_vector<double, DIM> > OffLatticeMigrationRule<DIM>::GetDirections(
             {
                 // Make points
                 std::vector<c_vector<double, DIM> > probe_locations;
-                probe_locations.push_back(rNodes[idx]->GetLocationVector());
+                probe_locations.push_back(rNodes[idx]->GetLocationValue());
                 probe_locations.push_back(probe_locations[0] + mProbeLength * unit_vector<double>(DIM,0));
                 probe_locations.push_back(probe_locations[0] - mProbeLength * unit_vector<double>(DIM,0));
                 probe_locations.push_back(probe_locations[0] + mProbeLength * unit_vector<double>(DIM,1));
@@ -197,13 +197,13 @@ std::vector<c_vector<double, DIM> > OffLatticeMigrationRule<DIM>::GetDirections(
             c_vector<double, DIM> min_direction = zero_vector<double>(DIM);
             for(unsigned jdx=0; jdx<nodes.size(); jdx++)
             {
-                if(IsPointInCone<DIM>(nodes[jdx]->GetLocationVector(), rNodes[idx]->GetLocationVector(), rNodes[idx]->GetLocationVector() + currentDirection * 100.0, M_PI/3.0))
+                if(IsPointInCone<DIM>(nodes[jdx]->GetLocationValue(), rNodes[idx]->GetLocationValue(), rNodes[idx]->GetLocationValue() + currentDirection * 100.0, M_PI/3.0))
                 {
-                    double distance = norm_2(rNodes[idx]->GetLocationVector() - nodes[jdx]->GetLocationVector());
+                    double distance = norm_2(rNodes[idx]->GetLocationValue() - nodes[jdx]->GetLocationValue());
                     if(distance < min_distance)
                     {
                         min_distance = distance;
-                        min_direction = nodes[jdx]->GetLocationVector() - rNodes[idx]->GetLocationVector();
+                        min_direction = nodes[jdx]->GetLocationValue() - rNodes[idx]->GetLocationValue();
                         min_direction /= norm_2(min_direction);
                     }
                 }
@@ -234,8 +234,8 @@ std::vector<c_vector<double, DIM> > OffLatticeMigrationRule<DIM>::GetDirectionsF
     for(unsigned idx = 0; idx < rNodes.size(); idx++)
     {
         c_vector<double, DIM> sprout_direction;
-        c_vector<double, DIM> cross_product = VectorProduct(rNodes[idx]->GetVesselSegments()[0]->GetUnitTangent(),
-                                                            rNodes[idx]->GetVesselSegments()[1]->GetUnitTangent());
+        c_vector<double, DIM> cross_product = VectorProduct(rNodes[idx]->GetSegments()[0]->GetUnitTangent(),
+                                                            rNodes[idx]->GetSegments()[1]->GetUnitTangent());
         double sum = 0.0;
         for(unsigned jdx=0; jdx<DIM; jdx++)
         {
@@ -245,7 +245,7 @@ std::vector<c_vector<double, DIM> > OffLatticeMigrationRule<DIM>::GetDirectionsF
         {
             // parallel segments, chose any normal to the first tangent
             c_vector<double, DIM> normal;
-            c_vector<double, DIM> tangent = rNodes[idx]->GetVesselSegments()[0]->GetUnitTangent();
+            c_vector<double, DIM> tangent = rNodes[idx]->GetSegments()[0]->GetUnitTangent();
 
             if(DIM==2 or tangent[2]==0.0)
             {
@@ -296,7 +296,7 @@ std::vector<c_vector<double, DIM> > OffLatticeMigrationRule<DIM>::GetDirectionsF
             }
         }
         double angle = RandomNumberGenerator::Instance()->NormalRandomDeviate(mMeanAngles[0], mSdvAngles[0]);
-        c_vector<double, DIM> new_direction = RotateAboutAxis<DIM>(sprout_direction, rNodes[idx]->GetVesselSegments()[0]->GetUnitTangent(), angle);
+        c_vector<double, DIM> new_direction = RotateAboutAxis<DIM>(sprout_direction, rNodes[idx]->GetSegments()[0]->GetUnitTangent(), angle);
         new_direction /= norm_2(new_direction);
         movement_vectors[idx] = new_direction * mVelocity;
     }

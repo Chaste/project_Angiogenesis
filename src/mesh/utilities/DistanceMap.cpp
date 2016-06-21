@@ -88,7 +88,7 @@ void DistanceMap<DIM>::Solve()
                     double min_distance = 1.e6;
                     for (unsigned idx = 0; idx <  segments.size(); idx++)
                     {
-                        double seg_dist = segments[idx]->GetDistance(location);
+                        double seg_dist = segments[idx]->GetDistance(location)/unit::metres;
                         if(seg_dist < min_distance)
                         {
                             min_distance = seg_dist;

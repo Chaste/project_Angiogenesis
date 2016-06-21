@@ -38,12 +38,12 @@
 
 #include <vector>
 #include <string>
-
 #include "VascularNetwork.hpp"
 #include "Vessel.hpp"
 #include "VascularNode.hpp"
 #include "Part.hpp"
 #include "UblasVectorInclude.hpp"
+#include "UnitCollections.hpp"
 
 /**
  *  Struct to define random vessel distribution properties
@@ -119,13 +119,6 @@ public:
      * Creates a hexagonal repeating unit
      */
     boost::shared_ptr<VascularNetwork<DIM> > GenerateHexagonalUnit(double vesselLength = 100.0);
-
-    /*
-     * Creates a simple diverging and converging network
-     */
-    boost::shared_ptr<VascularNetwork<DIM> > GenerateDivergeAndConvergeNetwork(c_vector<double, DIM> start_location,
-                                                                                       c_vector<double, DIM> end_location,
-                                                                                       double segmentLength = 20.0);
 
     /*
      * Creates a bifurcation repeating unit

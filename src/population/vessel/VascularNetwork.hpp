@@ -98,7 +98,7 @@ private:
     /**
      * Container for non-spatial vessel network data.
      */
-    VasculatureData mDataContainer;
+    std::map<std::string, double> mOutputData;
 
 public:
 
@@ -128,14 +128,14 @@ public:
     void AddVessels(std::vector<boost::shared_ptr<Vessel<DIM> > > vessels);
 
     /**
-     Make a copy of all vessels, but with new nodes and segments in each copy. Return the new vessels.
-     */
-    std::vector<boost::shared_ptr<Vessel<DIM> > > CopyVessels();
-
-    /**
      Copy flow properties from the specified segment to all other segments
      */
     void CopySegmentFlowProperties(unsigned index=0);
+
+    /**
+     Make a copy of all vessels, but with new nodes and segments in each copy. Return the new vessels.
+     */
+    std::vector<boost::shared_ptr<Vessel<DIM> > > CopyVessels();
 
     /**
      Make a copy of the selected vessels, but with new nodes and segments in each copy. Return the new vessels.
@@ -145,36 +145,31 @@ public:
     /*
      * Divides a vessel into two at the specified location.
      */
-    boost::shared_ptr<VascularNode<DIM> > DivideVessel(boost::shared_ptr<Vessel<DIM> > pVessel, ChastePoint<DIM> location);
+    boost::shared_ptr<VascularNode<DIM> > DivideVessel(boost::shared_ptr<Vessel<DIM> > pVessel, const c_vector<double, DIM>& location);
 
     /*
      * Add a new node to the end of the vessel
      * @param pEndNode the node that the new segment will start on, should already be on the end of the vessel
      * @param pNewNode the new node to be added to the end of the vessel
      */
-    void ExtendVessel(boost::shared_ptr<Vessel<DIM> > pVessel,
-                      boost::shared_ptr<VascularNode<DIM> > pEndNode,
+    void ExtendVessel(boost::shared_ptr<Vessel<DIM> > pVessel, boost::shared_ptr<VascularNode<DIM> > pEndNode,
                       boost::shared_ptr<VascularNode<DIM> > pNewNode);
 
     /*
      * Forms a sprout at the specified locations.
      */
-    boost::shared_ptr<Vessel<DIM> > FormSprout(ChastePoint<DIM> sproutBaseLocation, ChastePoint<DIM> sproutTipLocation);
+    boost::shared_ptr<Vessel<DIM> > FormSprout(const c_vector<double, DIM>& sproutBaseLocation,
+                                               const c_vector<double, DIM>& sproutTipLocation);
 
     /**
      Get distance to nearest node
      */
-    double GetDistanceToNearestNode(const ChastePoint<DIM>& rLocation);
+    units::quantity<unit::length> GetDistanceToNearestNode(const c_vector<double, DIM>& rLocation);
 
     /**
      Get the node nearest to the specified location
      */
-    boost::shared_ptr<VascularNode<DIM> > GetNearestNode(const ChastePoint<DIM>& rLocation);
-
-    /**
-     Get the node nearest to the specified location
-     */
-    boost::shared_ptr<VascularNode<DIM> > GetNearestNode(c_vector<double, DIM> location);
+    boost::shared_ptr<VascularNode<DIM> > GetNearestNode(const c_vector<double, DIM>& rLocation);
 
     /**
      Get the node nearest to the specified node
@@ -184,62 +179,47 @@ public:
     /**
      Get the segment nearest to the specified segment and the distance to it
      */
-    std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> GetNearestSegment(boost::shared_ptr<VesselSegment<DIM> > pSegment);
+    std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> > GetNearestSegment(boost::shared_ptr<VesselSegment<DIM> > pSegment);
 
     /**
      Get the segment nearest to the specified node and the distance to it
      */
-    std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> GetNearestSegment(boost::shared_ptr<VascularNode<DIM> > pNode, bool sameVessel = true);
+    std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> > GetNearestSegment(boost::shared_ptr<VascularNode<DIM> > pNode, bool sameVessel = true);
 
     /**
      Get the segment nearest to the specified location and the distance to it
      */
-    std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> GetNearestSegment(const ChastePoint<DIM>& rLocation);
-
-    /**
-     Get the segment nearest to the specified location and the distance to it
-     */
-    std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> GetNearestSegment(c_vector<double, DIM> location);
+    std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> > GetNearestSegment(const c_vector<double, DIM>& location);
 
     /**
      Get the intercapillary distance using a 2d measure
      */
-    std::vector<double> GetInterCapillaryDistances();
+    std::vector<units::quantity<unit::length> > GetInterCapillaryDistances();
 
     /**
      Get the segment nearest to the specified location
      */
-    boost::shared_ptr<Vessel<DIM> > GetNearestVessel(const ChastePoint<DIM>& rLocation);
+    boost::shared_ptr<Vessel<DIM> > GetNearestVessel(const c_vector<double, DIM>& location);
 
     /**
-     Get the segment nearest to the specified location
+     Get index of nearest node
      */
-    boost::shared_ptr<Vessel<DIM> > GetNearestVessel(c_vector<double, DIM> location);
+    unsigned GetNodeIndex(boost::shared_ptr<VascularNode<DIM> > node);
 
     /**
      Get the number of nodes near to a specified point
      */
-    unsigned NumberOfNodesNearLocation(const ChastePoint<DIM>& rLocation, double radius = 0.0);
+    unsigned NumberOfNodesNearLocation(const c_vector<double, DIM>&  rLocation, units::quantity<unit::length> radius = 0.0 * unit::metres);
 
     /**
      Return the extents of the vessel network in the form ((xmin, xmax), (ymin, ymax), (zmin, zmax))
      */
-    std::vector<std::pair<double, double> > GetExtents();
+    std::vector<std::pair<units::quantity<unit::length> , units::quantity<unit::length> > > GetExtents();
 
     /**
      Return the nodes in the network
      */
     std::vector<boost::shared_ptr<VascularNode<DIM> > > GetNodes();
-
-    /**
-     Return the node with the prescribed index
-     */
-    boost::shared_ptr<VascularNode<DIM> > GetNode(unsigned index);
-
-    /**
-     Return the node with the prescribed index
-     */
-    unsigned GetNodeIndex(boost::shared_ptr<VascularNode<DIM> > node);
 
     /**
      Return the number of nodes in the network.
@@ -264,7 +244,7 @@ public:
     /**
      Return the total length of the network
      */
-    double GetTotalLength();
+    units::quantity<unit::length> GetTotalLength();
 
     /**
      Return the total volume of the network
@@ -279,22 +259,17 @@ public:
     /**
      Return the average distance between segments
      */
-    double GetAverageInterSegmentDistance();
+    units::quantity<unit::length> GetAverageInterSegmentDistance();
 
     /**
      Return the average vessel length
      */
-    double GetAverageVesselLength();
+    units::quantity<unit::length> GetAverageVesselLength();
 
     /**
      Return a histogram of vessel length distributions
      */
     std::vector<unsigned> GetVesselLengthDistribution(double binSpacing = 10.0, unsigned numberOfBins = 10);
-
-    /**
-     Return the vessel with the specified index in the network
-     */
-    boost::shared_ptr<Vessel<DIM> > GetVessel(unsigned index);
 
     /**
      Return the only the nodes at the ends of vessels in the network
@@ -354,27 +329,27 @@ public:
     bool NodeIsInNetwork(boost::shared_ptr<VascularNode<DIM> > pSourceNode);
 
     /**
-     Merge short vessels in the network
+     * Merge short vessels in the network
      */
-    void MergeShortVessels(double cutoff = 10.0);
+    void MergeShortVessels(units::quantity<unit::length> cutoff = 10.0e-6 * unit::metres);
 
     /**
-     Merge nodes with the same spatial location. Useful for
-     tidying up networks read from file.
+     * Merge nodes with the same spatial location. Useful for
+     * tidying up networks read from file.
      */
-    void MergeCoincidentNodes(double tolerance = 0.0);
+    void MergeCoincidentNodes(units::quantity<unit::length> tolerance = 0.0 * unit::metres);
 
     /**
-     Merge nodes with the same spatial location. Useful for
-     tidying up networks read from file.
+     * Merge nodes with the same spatial location. Useful for
+     * tidying up networks read from file.
      */
-    void MergeCoincidentNodes(std::vector<boost::shared_ptr<Vessel<DIM> > > pVessels, double tolerance = 0.0);
+    void MergeCoincidentNodes(std::vector<boost::shared_ptr<Vessel<DIM> > > pVessels, units::quantity<unit::length> tolerance = 0.0 * unit::metres);
 
     /**
-     Merge nodes with the same spatial location. Useful for
-     tidying up networks read from file.
+     * Merge nodes with the same spatial location. Useful for
+     * tidying up networks read from file.
      */
-    void MergeCoincidentNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes, double tolerance = 0.0);
+    void MergeCoincidentNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes, units::quantity<unit::length> tolerance = 0.0 * unit::metres);
 
     /*
      * Removes a vessel from the network
@@ -383,42 +358,43 @@ public:
     void RemoveVessel(boost::shared_ptr<Vessel<DIM> > pVessel, bool deleteVessel = false);
 
     /**
-     Remove short vessels from the network
+     * Remove short vessels from the network
+     *
      */
-    void RemoveShortVessels(double cutoff = 10.0, bool endsOnly = true);
+    void RemoveShortVessels(units::quantity<unit::length> cutoff = 10.0, bool endsOnly = true);
 
     /**
-     Apply the input data to all nodes in the network
+     * Apply the input data to all nodes in the network
      */
     void SetNodeData(VasculatureData data);
 
     /**
-     Set the nodal radii to the same value
+     * Set the nodal radii to the same value
      */
-    void SetNodeRadii(double radius);
+    void SetNodeRadii(units::quantity<unit::length> radius);
 
     /**
-     Set the properties of the segments in the network based on those of the prototype
+     * Set the properties of the segments in the network based on those of the prototype
      */
     void SetSegmentProperties(boost::shared_ptr<VesselSegment<DIM> > prototype);
 
     /**
-     Apply the input data to all vessel segments in the network
+     * Apply the input data to all vessel segments in the network
      */
     void SetVesselData(VasculatureData data);
 
     /**
-     Apply the input data to all vessels in the network
+     * Apply the input data to all vessels in the network
      */
     void SetSegmentData(VasculatureData data);
 
     /**
-     Set the segment radii to the same value
+     * Set the segment radii to the same value
      */
     void SetSegmentRadii(units::quantity<unit::length> radius);
 
     /**
-     Set the segment radii to the same value
+     * Set the segment radii to the same value
      */
     void SetSegmentRadii(double radius, const std::string& unit);
 
@@ -470,7 +446,8 @@ public:
     /**
      * Returns whether a vessel crosses a line segment.
      */
-    bool VesselCrossesLineSegment(c_vector<double, DIM> coordinate_1, c_vector<double, DIM> coordinate_2, double radius = 1e-6);
+    bool VesselCrossesLineSegment(c_vector<double, DIM> coordinate_1, c_vector<double, DIM> coordinate_2,
+                                  units::quantity<unit::length> radius = 1e-6);
 
 };
 

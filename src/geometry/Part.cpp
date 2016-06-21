@@ -176,7 +176,7 @@ void Part<DIM>::AddVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pVesse
         std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = pVesselNetwork->GetNodes();
         for (unsigned idx = 0; idx < nodes.size(); idx++)
         {
-            vertices.push_back(Vertex::Create(nodes[idx]->GetLocation().rGetLocation()));
+            vertices.push_back(Vertex::Create(nodes[idx]->GetLocationValue()));
         }
 
         // If vertices lie on any existing facets add the vertex to the facet

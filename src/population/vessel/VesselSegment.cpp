@@ -37,15 +37,13 @@
 #include "UblasIncludes.hpp"
 #include "VascularNode.hpp"
 #include "Vessel.hpp"
-
 #include "VesselSegment.hpp"
 
 template<unsigned DIM>
 VesselSegment<DIM>::VesselSegment(boost::shared_ptr<VascularNode<DIM> > pNode1, boost::shared_ptr<VascularNode<DIM> > pNode2) :
         mNodes(std::pair<boost::shared_ptr<VascularNode<DIM> >, boost::shared_ptr<VascularNode<DIM> > >(pNode1, pNode2)),
-        mDataContainer(),
+        mOutputData(),
         mId(0),
-        mLabel(),
         mVessel(boost::weak_ptr<Vessel<DIM> >()),
         mRadius(1.0 * unit::metres),
         mpFlowProperties(boost::shared_ptr<SegmentFlowProperties> (new SegmentFlowProperties()))
@@ -56,14 +54,13 @@ template<unsigned DIM>
 VesselSegment<DIM>::VesselSegment(const VesselSegment<DIM>& rSegment) :
     boost::enable_shared_from_this<VesselSegment<DIM> >(),
     mNodes(rSegment.GetNodes()),
-    mDataContainer(),
+    mOutputData(),
     mId(0),
-    mLabel(),
     mVessel(boost::weak_ptr<Vessel<DIM> >()),
     mRadius(rSegment.GetRadius()),
     mpFlowProperties(boost::shared_ptr<SegmentFlowProperties> ())
 {
-    mDataContainer.SetMap(rSegment.rGetDataContainer().GetMap());
+//    mOutputData(rSegment.GetOutputData());
     SetFlowProperties(*(rSegment.GetFlowProperties()));
 }
 
@@ -113,34 +110,39 @@ void VesselSegment<DIM>::AddVessel(boost::shared_ptr<Vessel<DIM> > pVessel)
 template<unsigned DIM>
 void VesselSegment<DIM>::CopyDataFromExistingSegment(const boost::shared_ptr<VesselSegment<DIM> > pTargetSegment)
 {
-    mDataContainer.SetMap(pTargetSegment->rGetDataContainer().GetMap());
+    mOutputData = pTargetSegment->GetOutputData();
     mRadius = pTargetSegment->GetRadius();
     SetFlowProperties(*(pTargetSegment->GetFlowProperties()));
 }
 
 template<unsigned DIM>
-const VasculatureData& VesselSegment<DIM>::rGetDataContainer() const
+double VesselSegment<DIM>::GetOutputData(const std::string& rKey)
 {
-    return mDataContainer;
+    return mOutputData[rKey];
 }
 
 template<unsigned DIM>
-template<typename T> T VesselSegment<DIM>::GetData(const std::string& rKey) const
+std::map<std::string, double> VesselSegment<DIM>::GetOutputData()
 {
-    return mDataContainer.GetData<T>(rKey);
+    return mOutputData;
 }
 
-template<unsigned DIM>
-std::vector<std::string> VesselSegment<DIM>::GetDataKeys(bool castableToDouble) const
-{
-    return mDataContainer.GetKeys(castableToDouble);
-}
+//template<unsigned DIM>
+//std::vector<std::string> VesselSegment<DIM>::GetDataKeys() const
+//{
+//    std::vector<std::string> keys;
+//    for(std::map<std::string,double>::iterator it = mOutputData.begin(); it != mOutputData.end(); ++it)
+//    {
+//        keys.push_back(it->first);
+//    }
+//    return keys;
+//}
 
 template<unsigned DIM>
-double VesselSegment<DIM>::GetDistance(c_vector<double, DIM> location) const
+units::quantity<unit::length> VesselSegment<DIM>::GetDistance(c_vector<double, DIM> location) const
 {
-    c_vector<double, DIM> start_location = mNodes.first->GetLocationVector();
-    c_vector<double, DIM> segment_vector = mNodes.second->GetLocationVector() - start_location;
+    c_vector<double, DIM> start_location = mNodes.first->GetLocationValue();
+    c_vector<double, DIM> segment_vector = mNodes.second->GetLocationValue() - start_location;
 
     double dp_segment_point = inner_prod(segment_vector, location - start_location);
     // Point projection is outside segment, return node0 distance
@@ -158,15 +160,10 @@ double VesselSegment<DIM>::GetDistance(c_vector<double, DIM> location) const
 
     // Point projection is inside segment, get distance to point projection
     double projection_ratio = dp_segment_point / dp_segment_segment;
-    double distance = norm_2(start_location + projection_ratio * segment_vector - location);
+    units::quantity<unit::length> distance = norm_2(start_location + projection_ratio * segment_vector - location)*unit::metres;
     return distance;
 }
 
-template<unsigned DIM>
-double VesselSegment<DIM>::GetDistance(const ChastePoint<DIM>& rPoint) const
-{
-    return GetDistance(rPoint.rGetLocation());
-}
 template<unsigned DIM>
 boost::shared_ptr<SegmentFlowProperties> VesselSegment<DIM>::GetFlowProperties() const
 {
@@ -180,15 +177,9 @@ unsigned VesselSegment<DIM>::GetId() const
 }
 
 template<unsigned DIM>
-const std::string& VesselSegment<DIM>::rGetLabel() const
+units::quantity<unit::length> VesselSegment<DIM>::GetLength() const
 {
-    return mLabel;
-}
-
-template<unsigned DIM>
-double VesselSegment<DIM>::GetLength() const
-{
-    return norm_2(mNodes.second->GetLocationVector() - mNodes.first->GetLocationVector());
+    return norm_2(mNodes.second->GetLocationValue() - mNodes.first->GetLocationValue())*unit::metres;
 }
 
 template<unsigned DIM>
@@ -200,7 +191,7 @@ units::quantity<unit::length> VesselSegment<DIM>::GetRadius() const
 template<unsigned DIM>
 c_vector<double, DIM> VesselSegment<DIM>::GetMidPoint() const
 {
-    return (mNodes.second->GetLocationVector() + mNodes.first->GetLocationVector()) / 2.0;
+    return (mNodes.second->GetLocationValue() + mNodes.first->GetLocationValue()) / 2.0;
 }
 
 template<unsigned DIM>
@@ -246,8 +237,8 @@ std::pair<boost::shared_ptr<VascularNode<DIM> >, boost::shared_ptr<VascularNode<
 template<unsigned DIM>
 c_vector<double, DIM> VesselSegment<DIM>::GetPointProjection(c_vector<double, DIM> location, bool projectToEnds) const
 {
-    c_vector<double, DIM> start_location = GetNode(0)->GetLocation().rGetLocation();
-    c_vector<double, DIM> end_location = GetNode(1)->GetLocation().rGetLocation();
+    c_vector<double, DIM> start_location = GetNode(0)->GetLocationValue();
+    c_vector<double, DIM> end_location = GetNode(1)->GetLocationValue();
 
     c_vector<double, DIM> segment_vector = end_location - start_location;
     c_vector<double, DIM> point_vector = location - start_location;
@@ -283,15 +274,9 @@ c_vector<double, DIM> VesselSegment<DIM>::GetPointProjection(c_vector<double, DI
 }
 
 template<unsigned DIM>
-c_vector<double, DIM> VesselSegment<DIM>::GetPointProjection(const ChastePoint<DIM>& rPoint, bool projectToEnds) const
-{
-    return GetPointProjection(rPoint.rGetLocation(), projectToEnds);
-}
-
-template<unsigned DIM>
 c_vector<double, DIM> VesselSegment<DIM>::GetUnitTangent() const
 {
-    return (mNodes.second->GetLocationVector() - mNodes.first->GetLocationVector()) / GetLength();
+    return (mNodes.second->GetLocationValue() - mNodes.first->GetLocationValue()) / (GetLength()/unit::metres);
 }
 
 template<unsigned DIM>
@@ -305,12 +290,6 @@ boost::shared_ptr<Vessel<DIM> > VesselSegment<DIM>::GetVessel() const
     {
         EXCEPTION("A vessel has been requested but this segment doesn't have one.");
     }
-}
-
-template<unsigned DIM>
-bool VesselSegment<DIM>::HasDataKey(const std::string& rKey) const
-{
-    return mDataContainer.HasKey(rKey);
 }
 
 template<unsigned DIM>
@@ -373,27 +352,15 @@ void VesselSegment<DIM>::ReplaceNode(unsigned oldNodeIndex, boost::shared_ptr<Va
 }
 
 template<unsigned DIM>
-template<typename T> void VesselSegment<DIM>::SetData(const std::string& variableName, T value)
+void VesselSegment<DIM>::SetOutputData(const std::string& variableName, double value)
 {
-    mDataContainer.SetData(variableName, value);
-}
-
-template<unsigned DIM>
-void VesselSegment<DIM>::SetDataContainer(const VasculatureData& rDataContainer)
-{
-    mDataContainer = rDataContainer;
+    mOutputData[variableName] = value;
 }
 
 template<unsigned DIM>
 void VesselSegment<DIM>::SetId(unsigned id)
 {
     mId = id;
-}
-
-template<unsigned DIM>
-void VesselSegment<DIM>::SetLabel(const std::string& rLabel)
-{
-    mLabel = rLabel;
 }
 
 template<unsigned DIM>
@@ -416,23 +383,5 @@ void VesselSegment<DIM>::SetFlowProperties(const SegmentFlowProperties& rFlowPro
 }
 
 // Explicit instantiation
-template class VesselSegment<2> ;
-template class VesselSegment<3> ;
-
-template bool VesselSegment<2>::GetData<bool>(const std::string& variableName) const;
-template double VesselSegment<2>::GetData<double>(const std::string& variableName) const;
-template unsigned VesselSegment<2>::GetData<unsigned>(const std::string& variableName) const;
-template std::vector<double> VesselSegment<2>::GetData<std::vector<double> >(const std::string& variableName) const;
-template void VesselSegment<2>::SetData(const std::string& variableName, bool value);
-template void VesselSegment<2>::SetData(const std::string& variableName, double value);
-template void VesselSegment<2>::SetData(const std::string& variableName, unsigned value);
-template void VesselSegment<2>::SetData(const std::string& variableName, std::vector<double> value);
-
-template bool VesselSegment<3>::GetData<bool>(const std::string& variableName) const;
-template double VesselSegment<3>::GetData<double>(const std::string& variableName) const;
-template unsigned VesselSegment<3>::GetData<unsigned>(const std::string& variableName) const;
-template std::vector<double> VesselSegment<3>::GetData<std::vector<double> >(const std::string& variableName) const;
-template void VesselSegment<3>::SetData(const std::string& variableName, bool value);
-template void VesselSegment<3>::SetData(const std::string& variableName, double value);
-template void VesselSegment<3>::SetData(const std::string& variableName, unsigned value);
-template void VesselSegment<3>::SetData(const std::string& variableName, std::vector<double> value);
+template class VesselSegment<2>;
+template class VesselSegment<3>;

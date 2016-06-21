@@ -406,7 +406,7 @@ const std::vector<std::vector<boost::shared_ptr<VascularNode<SPACE_DIM> > > >& R
 
     for (unsigned idx = 0; idx < nodes.size(); idx++)
     {
-        c_vector<double, SPACE_DIM> location = nodes[idx]->GetLocationVector();
+        c_vector<double, SPACE_DIM> location = nodes[idx]->GetLocationValue();
         unsigned x_index = round((location[0] - origin_x) / mSpacing);
         unsigned y_index = round((location[1] - origin_y) / mSpacing);
         unsigned z_index = 0;
@@ -492,7 +492,7 @@ std::vector<std::vector<boost::shared_ptr<VesselSegment<SPACE_DIM> > > > Regular
         {
             if (!useVesselSurface)
             {
-                if (segments[jdx]->GetDistance(GetLocationOf1dIndex(idx)) < sqrt(1.0 / 2.0) * mSpacing)
+                if (segments[jdx]->GetDistance(GetLocationOf1dIndex(idx)) < sqrt(1.0 / 2.0) * mSpacing * unit::metres)
                 {
                     mPointSegmentMap[idx].push_back(segments[jdx]);
                 }
@@ -500,7 +500,7 @@ std::vector<std::vector<boost::shared_ptr<VesselSegment<SPACE_DIM> > > > Regular
             else
             {
                 if (segments[jdx]->GetDistance(GetLocationOf1dIndex(idx))
-                        < (segments[jdx]->GetRadius()/unit::metres) + sqrt(1.0 / 2.0) * mSpacing)
+                        < (segments[jdx]->GetRadius() + sqrt(1.0 / 2.0) * mSpacing * unit::metres))
                 {
                     mPointSegmentMap[idx].push_back(segments[jdx]);
                 }

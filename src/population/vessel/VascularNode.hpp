@@ -40,12 +40,11 @@
 #include <string>
 #include <map>
 #include <boost/enable_shared_from_this.hpp>
-
 #include "NodeFlowProperties.hpp"
-#include "VasculatureData.hpp"
 #include "UblasVectorInclude.hpp"
-#include "ChastePoint.hpp"
-#include "Cell.hpp"
+#include "UnitCollections.hpp"
+#include "VesselSegment.hpp"
+#include "SmartPointers.hpp"
 
 /**
  *  Forward declaration to allow segments to manage adding and removing themselves from nodes.
@@ -57,7 +56,8 @@ class VesselSegment;
  * This is a class for vascular nodes.
  *
  * Nodes are point locations along a vessel. They are useful for describing the end positions of
- * straight line vessel segments.
+ * straight line vessel segments. Nodes are initialized in dimensionless units, however they can
+ * be dimensionalized by setting a reference length scale.
  */
 template<unsigned DIM>
 class VascularNode : public boost::enable_shared_from_this<VascularNode<DIM> >
@@ -71,70 +71,51 @@ class VascularNode : public boost::enable_shared_from_this<VascularNode<DIM> >
 private:
 
     /**
-     * Location of a node.
+     * Location of a node. Metres implied.
      */
     ChastePoint<DIM> mLocation;
 
     /**
-     * Pointer to an associated Cell.
-     */
-    CellPtr mpCell;
-
-    /**
      * Container for generic node data.
      */
-    VasculatureData mDataContainer;
+    std::map<std::string, double> mOutputData;
 
     /**
-     * Id tag, used for storing segment-node relationships in the VesselNetwork class.
+     * Id tag, useful for post-processing
      */
     unsigned mId;
 
     /**
-     * Temporary Id tag, available to the user for tagging nodes as they like
-     */
-    unsigned mTempId;
-
-    /**
-     * Label tag, can be useful for identifying input and output nodes.
-     */
-    std::string mLabel;
-
-    /**
      * Collection of pointers to Vessel Segments connected to this node.
      */
-    std::vector<boost::weak_ptr<VesselSegment<DIM> > > mVesselSegments;
+    std::vector<boost::weak_ptr<VesselSegment<DIM> > > mSegments;
 
     /**
      * Radius of the vessel at this node
      */
-    double mRadius;
+    units::quantity<unit::length> mRadius;
 
     /**
      * The flow properties for the node
      */
-    boost::shared_ptr<NodeFlowProperties> mpNodeFlowProperties;
+    boost::shared_ptr<NodeFlowProperties> mpFlowProperties;
 
     /**
      * Is the vessel allowed to extend at this node
      */
     bool mIsMigrating;
 
-public:
-
     /**
-     * Constructor
-     *
-     * Create a node using a ChastePoint to specify the location
-     *
-     * @param rLocation the location of the node
+     * Reference length scale for dimensionalizing units
      */
-    VascularNode(const ChastePoint<DIM>& rLocation);
+    units::quantity<unit::length> mReferenceLength;
+
+private:
 
     /**
-     * Constructor
+     * Constructor. Kept private as the Create factory method should be used.
      *
-     * Create a node using xyz coordinates
+     * Create a node using xyz coordinates, metres are assumed.
      *
      * @param v1  the node's x-coordinate (defaults to 0)
      * @param v2  the node's y-coordinate (defaults to 0)
@@ -143,20 +124,22 @@ public:
     VascularNode(double v1 = 0.0, double v2 = 0.0, double v3 = 0.0);
 
     /**
-     * Constructor
+     * Constructor. Kept private as the Create factory method should be used.
      *
-     * Create a node using ublas c_vector
+     * Create a node using ublas c_vector, metres are assumed
      *
      * @param location the node's location (defaults to 0.0)
      */
     VascularNode(c_vector<double, DIM> location);
 
     /**
-     * Copy constructor
+     * Copy constructor. Kept private as the Create factory method should be used.
      *
      * @param rExistingNode the node to copy from
      */
     VascularNode(const VascularNode<DIM>& rExistingNode);
+
+public:
 
     /**
      * Destructor
@@ -167,18 +150,7 @@ public:
      * Construct a new instance of the class and return a shared pointer to it.
      *
      * This method is included so that nodes can be created in a way that is consistent with
-     * other vasculature features.
-     *
-     * @param rLocation the location of the node
-     * @return a pointer to the newly created node
-     */
-    static boost::shared_ptr<VascularNode<DIM> > Create(const ChastePoint<DIM>& rLocation);
-
-    /**
-     * Construct a new instance of the class and return a shared pointer to it.
-     *
-     * This method is included so that nodes can be created in a way that is consistent with
-     * other vasculature features.
+     * other vasculature features, metres are assumed.
      *
      * @param v1  the node's x-coordinate (defaults to 0)
      * @param v2  the node's y-coordinate (defaults to 0)
@@ -191,7 +163,7 @@ public:
      * Construct a new instance of the class and return a shared pointer to it.
      *
      * This method is included so that nodes can be created in a way that is consistent with
-     * other vasculature features.
+     * other vasculature features, metres are assumed.
      *
      * @param location the node's location (defaults to 0.0)
      * @return a pointer to the newly created node
@@ -202,7 +174,7 @@ public:
      * Construct a new instance of the class and return a shared pointer to it.
      *
      * This method is included so that nodes can be created in a way that is consistent with
-     * other vasculature features.
+     * other vasculature features
      *
      * @param rExistingNode the node to copy from
      * @return a pointer to the newly created node
@@ -221,59 +193,20 @@ public:
     static boost::shared_ptr<VascularNode<DIM> > Create(boost::shared_ptr<VascularNode<DIM> > pExistingNode);
 
     /**
-     * Return a boost shared pointer to the associated Cell. Can be NULL if there is no cell assigned.
+     * Return the non dimensional distance between the input location and the node
      *
-     * @return a boost shared pointer to the associated Cell
-     */
-    CellPtr GetCell() const;
-
-    /**
-     * Return the node data for the input key. An attempt is made to cast to type T.
-     *
-     * @param rKey the key to be queried
-     * @return the node data for the input key
-     */
-    template<typename T> T GetData(const std::string& rKey) const;
-
-    /**
-     * Return a const reference to the non-spatial data container.
-     *
-     * @return the data container for the node
-     */
-    const VasculatureData& rGetDataContainer() const;
-
-    /**
-     * Return a vector of data keys for the node. Input true if
-     * the corresponding value should be castable to double.
-     *
-     * @param castableToDouble whether the returned keys should be castable to double
-     * @return a vector of data keys for the node
-     */
-    std::vector<std::string> GetDataKeys(bool castableToDouble = false) const;
-
-    /**
-     * Return the distance between the input node and the node
-     *
-     * @param pNode a node to calculate the distance to
-     * @return the distance to the node
-     */
-    double GetDistance(boost::shared_ptr<VascularNode<DIM> > pNode) const;
-
-    /**
-     * Return the distance between the input point and the node
-     *
-     * @param rPoint a ChastePoint at the location to calculate the distance to
-     * @return the distance to the point
-     */
-    double GetDistance(const ChastePoint<DIM>& rPoint) const;
-
-    /**
-     * Return the distance between the input location and the node
-     *
-     * @param location the location to calculate the distance to
+     * @param rLocation the location to calculate the distance to
      * @return the distance to the location
      */
-    double GetDistance(c_vector<double, DIM> location) const;
+    double GetDistance(const c_vector<double, DIM>& rLocation) const;
+
+    /**
+     * Return the dimensional distance between the input location and the node
+     *
+     * @param rLocation the location to calculate the distance to
+     * @return the distance to the location
+     */
+    units::quantity<unit::length> GetDimensionalDistance(const c_vector<double, DIM>& rLocation) const;
 
     /**
      * Return the flow properties of the node
@@ -290,32 +223,18 @@ public:
     unsigned GetId() const;
 
     /**
-     * Return the node temp Id
-     *
-     * @return the node id
-     */
-    unsigned GetTempId() const;
-
-    /**
-     * Return a const reference to the Label
-     *
-     * @return mLabel
-     */
-    const std::string& rGetLabel() const;
-
-    /**
-     * Return the location of the node or, if there is one, the associated Cell.
-     *
-     * @return a ChastePoint at the location of the node
-     */
-    ChastePoint<DIM> GetLocation() const;
-
-    /**
-     * Return the location of the node or, if there is one, the associated Cell.
+     * Return a refence to the dimensionless location of the node.
      *
      * @return a ublas c_vector at the location of the node
      */
-    c_vector<double, DIM> GetLocationVector() const;
+    const c_vector<double, DIM>& rGetLocation() const;
+
+    /**
+     * Return a reference to the dimensional location of the node.
+     *
+     * @return a ublas c_vector at the location of the node
+     */
+    const c_vector<double, DIM>& rGetDimensionalLocation() const;
 
     /**
      * Return the number of attached segments
@@ -325,48 +244,68 @@ public:
     unsigned GetNumberOfSegments() const;
 
     /**
+     * Return the output data for the given key.
+     *
+     * @param rKey the key to be queried
+     * @return the node data for the input key
+     */
+    double GetOutputDataValue(const std::string& rKey) const;
+
+    /**
+     * Return a map of output data for writers
+     * @return a map of nodal data for use by the vtk writer
+     */
+    std::map<std::string, double> GetOutputData() const;
+
+    /**
+     * Return the keys of the output data map
+     * @param verbose include all flow data
+     * @return a map of nodal data for use by the vtk writer
+     */
+    std::vector<std::string> GetOutputDataKeys() const;
+
+    /**
      * Return the radius of the vessel at the node
+     *
+     * @return the radius of the vessel at the node
+     */
+    units::quantity<unit::length> GetDimensionalRadius() const;
+
+    /**
+     * Return the dimensionless radius of the vessel at the node
      *
      * @return the radius of the vessel at the node
      */
     double GetRadius() const;
 
     /**
-     * Return a map of nodal data for use by the vtk writer
+     * Return the reference length for the node
      *
-     * @return a map of nodal data for use by the vtk writer
+     * @return the reference length for the node
      */
-    std::map<std::string, double> GetVtkData() const;
+    units::quantity<unit::length> GetReferenceLength() const;
 
     /**
-     * Return a pointer to the specified vessel segment
+     * Return the reference length for the node as a value and unit pair. This
+     * incurs a cost relative to GetReferenceLength. It is used by the Python interface.
      *
-     * @param index the index of the vessel segment in the node's segment vector
-     * @return a pointer to the segment for the input index
+     * @return a pair containing the reference length value and unit as a string.
      */
-    boost::shared_ptr<VesselSegment<DIM> > GetVesselSegment(unsigned index) const;
+    std::pair<double, std::string> GetReferenceLengthValueAndUnit() const;
+
+    /**
+     * Return a pointer to the indexed vessel segment
+     * @param index the segment index
+     * @return a vector of pointers to the attached vessel segments
+     */
+    boost::shared_ptr<VesselSegment<DIM> > GetSegment(unsigned index) const;
 
     /**
      * Return a vector of pointers to the attached vessel segments.
      *
      * @return a vector of pointers to the attached vessel segments
      */
-    std::vector<boost::shared_ptr<VesselSegment<DIM> > > GetVesselSegments() const;
-
-    /**
-     * Return true if there is an associated Cell.
-     *
-     * @return whether there is a cell attached to the node.
-     */
-    bool HasCell() const;
-
-    /**
-     * Return true if the node has data corresponding to the input key.
-     *
-     * @param rKey the key to query the data collection with
-     * @return whether the key exists in the data collection
-     */
-    bool HasDataKey(const std::string& rKey) const;
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > GetSegments() const;
 
     /**
      * Return true if the input segment is attached to the node
@@ -379,18 +318,10 @@ public:
     /**
      * Return true if the node is coincident with the input location
      *
-     * @param rPoint a ChastePoint at the query location
+     * @param rLocation the query location
      * @return whether then node is coincident with the input location
      */
-    bool IsCoincident(const ChastePoint<DIM>& rPoint) const;
-
-    /**
-     * Return true if the node is coincident with the input node
-     *
-     * @param pNode the node to test the location of
-     * @return whether then node is coincident with the input node
-     */
-    bool IsCoincident(const boost::shared_ptr<VascularNode<DIM> > pNode) const;
+    bool IsCoincident(const c_vector<double, DIM>& rLocation) const;
 
     /**
      * Returns whether the node is actively migrating
@@ -400,53 +331,11 @@ public:
     bool IsMigrating() const;
 
     /**
-     * Remove the assigned Cell
-     */
-    void RemoveCell();
-
-    /**
-     * Assign a Cell to the node. Overwrite any existing Cell.
-     *
-     * @param pCell the cell to assign to the node
-     */
-    void SetCell(CellPtr pCell);
-
-    /**
-     * Add data of any type to the node using the identifying key
-     *
-     * @param rKey the key for the data being assigned to the node
-     */
-    template<typename T> void SetData(const std::string& rKey, T value);
-
-    /**
-     * Over-write the node's non-spatial DataContainer
-     *
-     * This can be useful when copying data from an existing node.
-     *
-     * @param rDataContainer the data container to be copied from
-     */
-    void SetDataContainer(const VasculatureData& rDataContainer);
-
-    /**
      * Assign the Id
      *
      * @param id the id for the node
      */
     void SetId(unsigned id);
-
-    /**
-     * Assign the temp id
-     *
-     * @param id the id for the node
-     */
-    void SetTempId(unsigned id);
-
-    /**
-     * Assign the Label
-     *
-     * @param rLabel the label of the node
-     */
-    void SetLabel(const std::string& rLabel);
 
     /**
      * Set the flow properties of the node
@@ -456,33 +345,62 @@ public:
     void SetFlowProperties(const NodeFlowProperties& rFlowProperties);
 
     /**
-     * Set the vessel radius at this node
-     *
-     * @param radius the vessel radius
-     */
-    void SetRadius(double radius);
-
-    /**
      * Set that the node is migrating
      * @param isMigrating whether the node is migrating
      */
     void SetIsMigrating(bool isMigrating);
 
     /**
-     * Set the location of the node. This breaks any links with an assigned Cell, so if there is an
-     * assigned Cell remove it.
-     *
-     * @param rLocation a ChastePoint at the location to be assigned
+     * Set the dimensionless location of the node.
+     * @param rLocation a ublas c_vector specifying the location
      */
-    void SetLocation(const ChastePoint<DIM>& rLocation);
+    void SetLocation(const c_vector<double, DIM>& rLocation);
 
     /**
-     * Set the location of the node. This breaks any links with an assigned Cell, so if there is an
-     * assigned Cell remove it.
+     * Set the dimensionless location of the node.
      *
-     * @param location a ublas c_vector specifying the location
+     * @param x the x location
+     * @param y the y location
+     * @param z the z location
      */
-    void SetLocation(c_vector<double, DIM> location);
+    void SetLocation(double x, double y, double z=0.0);
+
+    /**
+     * Add output data to the node using the identifying key
+     *
+     * @param rKey the key for the data being assigned to the node
+     * @param value the value to be stored
+     */
+    void SetOutputData(const std::string& rKey, double value);
+
+    /**
+     * Set the dimensionless vessel radius at this node
+     *
+     * @param radius the vessel radius
+     */
+    void SetRadius(double radius);
+
+    /**
+     * Set the reference length for the node
+     *
+     * @param referenceLength the reference length
+     */
+    void SetReferenceLength(units::quantity<unit::length> referenceLength);
+
+    /**
+     * Set the reference length for the node. This method incurs a theoretical efficiency penalty relative to
+     * the direct use of a Boost Unit. It is used by the Python interface.
+     *
+     * @param referenceLength the reference length
+     * @param unit the length unit, currently "metres" and "microns" are supported.
+     */
+    void SetReferenceLength(double referenceLength, const std::string& unit);
+
+    /**
+     * The output data map can get out of date if radii or node indices change. It should be updated
+     * before any write. This is not done in GetOutputData as that method needs to be const.
+     */
+    void UpdateOutputData();
 
 private:
 

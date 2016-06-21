@@ -71,11 +71,15 @@
 #include "ApoptoticCellKiller.hpp"
 #include "VasculatureGenerator.hpp"
 #include "VascularNetwork.hpp"
-#include "CaBasedCellPopulationWithVessels.hpp"
+#include "CaBasedCellPopulation.hpp"
 #include "AngiogenesisSolver.hpp"
 #include "FlowSolver.hpp"
 #include "UnitCollections.hpp"
 #include "VesselNetworkCellPopulationInteractor.hpp"
+#include "StalkCellMutationState.hpp"
+#include "TipCellMutationState.hpp"
+#include "CancerCellMutationState.hpp"
+#include "MacrophageMutationState.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
 
