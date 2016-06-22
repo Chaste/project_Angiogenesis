@@ -34,10 +34,11 @@
  */
 
 #include "ViscosityCalculator.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 
 template<unsigned DIM>
-ViscosityCalculator<DIM>::ViscosityCalculator() : AbstractVesselNetworkCalculator<DIM>()
+ViscosityCalculator<DIM>::ViscosityCalculator() : AbstractVesselNetworkCalculator<DIM>(),
+    mPlasmaViscosity(3.5e-3 * unit::poiseuille)
 {
 
 }
@@ -49,27 +50,38 @@ ViscosityCalculator<DIM>::~ViscosityCalculator()
 }
 
 template<unsigned DIM>
+void ViscosityCalculator<DIM>::SetDimensionalPlasmaViscosity(units::quantity<unit::dynamic_viscosity> visocity)
+{
+    mPlasmaViscosity = visocity;
+}
+
+template<unsigned DIM>
+void ViscosityCalculator<DIM>::SetPlasmaViscositySI(double visocity)
+{
+    mPlasmaViscosity = visocity * unit::poiseuille;
+}
+
+template<unsigned DIM>
 void ViscosityCalculator<DIM>::Calculate()
 {
-
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
     for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
     {
-        double radius = 1.e6 * segments[segment_index]->GetRadius()/unit::metres; // radius in micron
+        units::quantity<unit::length> radius = segments[segment_index]->GetDimensionalRadius();
         units::quantity<unit::dimensionless> haematocrit = segments[segment_index]->GetFlowProperties()->GetHaematocrit();
-        units::quantity<unit::dynamic_viscosity> plasma_viscosity = 3.5 * pow(10.0, -3.0) * unit::poiseuille;
 
-        double power_term_1 = 1.0 / (1.0 + pow(10.0, -11.0) * pow(2.0 * radius, 12));
-        double c = (0.8 + exp(-0.15 * radius)) * (power_term_1 - 1) + power_term_1;
-        double mu_45 = 6.0 * exp(-0.17 * radius) + 3.2 - 2.44 * exp(-0.06 * pow(2 * radius, 0.645));
+        // This equation assumes the radius is in micron so manually converted. No dimensional checking is done here, it may not
+        // even be possible for this equation.
+        double micron_radius = radius/unit::metres *1.e-6;
+        double power_term_1 = 1.0 / (1.0 + pow(10.0, -11.0) * pow(2.0 * micron_radius, 12));
+        double c = (0.8 + exp(-0.15 * micron_radius)) * (power_term_1 - 1) + power_term_1;
+        double mu_45 = 6.0 * exp(-0.17 * micron_radius) + 3.2 - 2.44 * exp(-0.06 * pow(2 * micron_radius, 0.645));
 
-        double power_term_2 = pow((2.0 * radius / (2.0 * radius - 1.1)), 2.0);
+        double power_term_2 = pow((2.0 * micron_radius / (2.0 * micron_radius - 1.1)), 2.0);
         double mu_rel = (1.0
-                + (mu_45 - 1.0) * (((pow((1.0 - haematocrit), c)) - 1) / ((pow((1.0 - 0.45), c)) - 1.0)) * power_term_2)
-                * power_term_2;
+                + (mu_45 - 1.0) * (((pow((1.0 - haematocrit), c)) - 1) / ((pow((1.0 - 0.45), c)) - 1.0)) * power_term_2) * power_term_2;
 
-        units::quantity<unit::dynamic_viscosity> viscosity = plasma_viscosity * mu_rel;
-        segments[segment_index]->GetFlowProperties()->SetViscosity(viscosity);
+        segments[segment_index]->GetFlowProperties()->SetDimensionalViscosity(mPlasmaViscosity*mu_rel);
     }
 }
 

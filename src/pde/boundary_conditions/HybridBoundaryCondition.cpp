@@ -36,7 +36,7 @@
 #include "Facet.hpp"
 #include "HybridBoundaryCondition.hpp"
 #include "VesselSegment.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 
 template<unsigned DIM>
 HybridBoundaryCondition<DIM>::HybridBoundaryCondition()
@@ -60,7 +60,7 @@ HybridBoundaryCondition<DIM>::~HybridBoundaryCondition()
 }
 
 template<unsigned DIM>
-void HybridBoundaryCondition<DIM>::SetNetwork(boost::shared_ptr<VascularNetwork <DIM> > pNetwork)
+void HybridBoundaryCondition<DIM>::SetNetwork(boost::shared_ptr<VesselNetwork <DIM> > pNetwork)
 {
 	mpNetwork = pNetwork;
 }
@@ -166,10 +166,10 @@ std::pair<bool, double> HybridBoundaryCondition<DIM>::GetValue(c_vector<double,D
             std::vector<boost::shared_ptr<Facet> > facets =  mpDomain->GetFacets();
             for(unsigned jdx=0; jdx<facets.size();jdx++)
             {
-                if(facets[jdx]->ContainsPoint(location) && (facets[jdx]->GetData("Boundary")>0.0))
-                {
-                    return std::pair<bool, double>(true, mValue);
-                }
+//                if(facets[jdx]->ContainsPoint(location) && (facets[jdx]->GetData("Boundary")>0.0))
+//                {
+//                    return std::pair<bool, double>(true, mValue);
+//                }
             }
         }
     }
@@ -191,10 +191,10 @@ std::pair<bool, double> HybridBoundaryCondition<DIM>::GetValue(c_vector<double,D
                     {
                         return std::pair<bool, double>(true, mValue);
                     }
-                    else
-                    {
-                        return std::pair<bool, double>(true, segments[jdx]->template GetData<double>(mLabel));
-                    }
+//                    else
+//                    {
+//                        return std::pair<bool, double>(true, segments[jdx]->template GetData<double>(mLabel));
+//                    }
                 }
             }
         }
@@ -211,15 +211,11 @@ std::pair<bool, double> HybridBoundaryCondition<DIM>::GetValue(c_vector<double,D
             std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
             for (unsigned jdx = 0; jdx <  segments.size(); jdx++)
             {
-                if (segments[jdx]->GetDistance(location) <= segments[jdx]->GetRadius()/unit::metres + tolerance)
+                if (segments[jdx]->GetDistance(location) <= segments[jdx]->GetRadius() + tolerance)
                 {
                     if(BoundaryConditionSource::PRESCRIBED)
                     {
                         return std::pair<bool, double>(true, mValue);
-                    }
-                    else
-                    {
-                        return std::pair<bool, double>(true, segments[jdx]->template GetData<double>(mLabel));
                     }
                 }
             }
@@ -307,11 +303,11 @@ void HybridBoundaryCondition<DIM>::UpdateRegularGridFacetBoundaryConditions(boos
                         (*pBoundaryConditions)[idx] = std::pair<bool, double>(true, mValue);
                         break;
                     }
-                    else
-                    {
-                        (*pBoundaryConditions)[idx] = std::pair<bool, double>(true, facets[jdx]->GetData(mLabel));
-                        break;
-                    }
+//                    else
+//                    {
+//                        (*pBoundaryConditions)[idx] = std::pair<bool, double>(true, facets[jdx]->GetData(mLabel));
+//                        break;
+//                    }
                 }
             }
         }
@@ -330,10 +326,10 @@ void HybridBoundaryCondition<DIM>::UpdateRegularGridSegmentBoundaryConditions(bo
             {
                 (*pBoundaryConditions)[idx] = std::pair<bool, double>(true, mValue);
             }
-            else
-            {
-                (*pBoundaryConditions)[idx] = std::pair<bool, double>(true, point_segment_map[idx][0]->template GetData<double>(mLabel));
-            }
+//            else
+//            {
+//                (*pBoundaryConditions)[idx] = std::pair<bool, double>(true, point_segment_map[idx][0]->template GetData<double>(mLabel));
+//            }
         }
     }
 }

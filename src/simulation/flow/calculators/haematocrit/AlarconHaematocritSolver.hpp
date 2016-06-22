@@ -37,9 +37,8 @@
 #define _AlarconHaematocritSolver_hpp
 
 #include "SmartPointers.hpp"
-#include "VascularNetwork.hpp"
 #include "AbstractHaematocritSolver.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 
 /**
  * This solver calculates the distribution of haematocrit in branching vessel networks according to:

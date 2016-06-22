@@ -49,7 +49,7 @@
 #include "LinearSystem.hpp"
 #include "ReplicatableVector.hpp"
 #include "UblasMatrixInclude.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 
 #include "GreensFunctionSolver.hpp"
 
@@ -252,8 +252,8 @@ void GreensFunctionSolver<DIM>::GenerateSubSegments()
             // Otherwise generate subsegment points along its length
             else
             {
-                c_vector<double, DIM> start_point = (*segment_iter)->GetNode(0)->GetLocationVector();
-                c_vector<double, DIM> end_point = (*segment_iter)->GetNode(1)->GetLocationVector();
+                c_vector<double, DIM> start_point = (*segment_iter)->GetNode(0)->rGetLocation();
+                c_vector<double, DIM> end_point = (*segment_iter)->GetNode(1)->rGetLocation();
 
                 double subsegment_length = segment_length / max_subsegment_length;
                 unsigned num_subsegments = std::floor(subsegment_length) + 1;
@@ -325,9 +325,9 @@ boost::shared_ptr<boost::multi_array<double, 2> > GreensFunctionSolver<DIM>::Get
             {
                 double distance = norm_2(mSubSegmentCoordinates[iter2].rGetLocation() - mSubSegmentCoordinates[iter].rGetLocation());
                 double term;
-                if (distance < mSegmentPointMap[iter]->GetRadius()/unit::metres)
+                if (distance < mSegmentPointMap[iter]->GetRadius())
                 {
-                    double radius = mSegmentPointMap[iter]->GetRadius()/unit::metres;
+                    double radius = mSegmentPointMap[iter]->GetRadius();
                     double max_segment_length = std::max(mSubSegmentLengths[iter], mSubSegmentLengths[iter2]);
                     double green_correction = 0.6 * std::exp(-0.45 * max_segment_length /radius);
 

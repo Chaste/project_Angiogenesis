@@ -37,9 +37,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _MechanicalStimulusCalculator_hpp
 
 #include "SmartPointers.hpp"
-#include "VascularNetwork.hpp"
 #include "AbstractVesselNetworkCalculator.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 
 /**
  * This solver calculates a flow derived vessel growth stimulus according to:

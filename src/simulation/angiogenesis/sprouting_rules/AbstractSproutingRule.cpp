@@ -74,7 +74,7 @@ void AbstractSproutingRule<DIM>::SetVesselEndCutoff(double cutoff)
 }
 
 template<unsigned DIM>
-void AbstractSproutingRule<DIM>::SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pVesselNetwork)
+void AbstractSproutingRule<DIM>::SetVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pVesselNetwork)
 {
     mpVesselNetwork = pVesselNetwork;
 }

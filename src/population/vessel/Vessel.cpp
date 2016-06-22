@@ -37,33 +37,24 @@
 #include "Exception.hpp"
 #include "UblasIncludes.hpp"
 #include "SimulationTime.hpp"
-
 #include "Vessel.hpp"
 
 template<unsigned DIM>
-Vessel<DIM>::Vessel(boost::shared_ptr<VesselSegment<DIM> > pSegment) :
+Vessel<DIM>::Vessel(boost::shared_ptr<VesselSegment<DIM> > pSegment) : AbstractVesselNetworkComponent<DIM>(),
         mSegments(std::vector<boost::shared_ptr<VesselSegment<DIM> > >()),
-        mNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > >()),
+        mNodes(std::vector<boost::shared_ptr<VesselNode<DIM> > >()),
         mNodesUpToDate(false),
-        mOutputData(),
-        mId(0),
-        mUndergoingRegression(false),
-        mRemoveViaRegression(false),
-        mRegressionTime(DBL_MAX*unit::seconds)
+        mpFlowProperties(boost::shared_ptr<VesselFlowProperties<DIM> >(new VesselFlowProperties<DIM>()))
 {
     mSegments.push_back(pSegment);
 }
 
 template<unsigned DIM>
-Vessel<DIM>::Vessel(std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments) :
+Vessel<DIM>::Vessel(std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments) : AbstractVesselNetworkComponent<DIM>(),
         mSegments(segments),
-        mNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > >()),
+        mNodes(std::vector<boost::shared_ptr<VesselNode<DIM> > >()),
         mNodesUpToDate(false),
-        mOutputData(),
-        mId(0),
-        mUndergoingRegression(false),
-        mRemoveViaRegression(false),
-        mRegressionTime(DBL_MAX*unit::seconds)
+        mpFlowProperties(boost::shared_ptr<VesselFlowProperties<DIM> >(new VesselFlowProperties<DIM>()))
 {
     if (segments.size() > 1)
     {
@@ -92,15 +83,11 @@ Vessel<DIM>::Vessel(std::vector<boost::shared_ptr<VesselSegment<DIM> > > segment
 }
 
 template<unsigned DIM>
-Vessel<DIM>::Vessel(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes) :
+Vessel<DIM>::Vessel(std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes) :
         mSegments(std::vector<boost::shared_ptr<VesselSegment<DIM> > >()),
-        mNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > >()),
+        mNodes(std::vector<boost::shared_ptr<VesselNode<DIM> > >()),
         mNodesUpToDate(false),
-        mOutputData(),
-        mId(0),
-        mUndergoingRegression(false),
-        mRemoveViaRegression(false),
-        mRegressionTime(DBL_MAX*unit::seconds)
+        mpFlowProperties(boost::shared_ptr<VesselFlowProperties<DIM> >(new VesselFlowProperties<DIM>()))
 {
 
     if (nodes.size() < 2)
@@ -117,15 +104,11 @@ Vessel<DIM>::Vessel(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes) :
 }
 
 template<unsigned DIM>
-Vessel<DIM>::Vessel(boost::shared_ptr<VascularNode<DIM> > pStartNode, boost::shared_ptr<VascularNode<DIM> > pEndNode)
+Vessel<DIM>::Vessel(boost::shared_ptr<VesselNode<DIM> > pStartNode, boost::shared_ptr<VesselNode<DIM> > pEndNode)
     :        mSegments(std::vector<boost::shared_ptr<VesselSegment<DIM> > >()),
-             mNodes(std::vector<boost::shared_ptr<VascularNode<DIM> > >()),
+             mNodes(std::vector<boost::shared_ptr<VesselNode<DIM> > >()),
              mNodesUpToDate(false),
-             mOutputData(),
-             mId(0),
-             mUndergoingRegression(false),
-             mRemoveViaRegression(false),
-             mRegressionTime(DBL_MAX*unit::seconds)
+             mpFlowProperties(boost::shared_ptr<VesselFlowProperties<DIM> >(new VesselFlowProperties<DIM>()))
 {
     mSegments.push_back(VesselSegment<DIM>::Create(pStartNode, pEndNode));
 }
@@ -159,7 +142,7 @@ boost::shared_ptr<Vessel<DIM> > Vessel<DIM>::Create(std::vector<boost::shared_pt
 }
 
 template<unsigned DIM>
-boost::shared_ptr<Vessel<DIM> > Vessel<DIM>::Create(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes)
+boost::shared_ptr<Vessel<DIM> > Vessel<DIM>::Create(std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes)
 {
     boost::shared_ptr<Vessel<DIM> > pSelf(new Vessel<DIM>(nodes));
 
@@ -174,7 +157,7 @@ boost::shared_ptr<Vessel<DIM> > Vessel<DIM>::Create(std::vector<boost::shared_pt
 }
 
 template<unsigned DIM>
-boost::shared_ptr<Vessel<DIM> > Vessel<DIM>::Create(boost::shared_ptr<VascularNode<DIM> > pStartNode, boost::shared_ptr<VascularNode<DIM> > pEndNode)
+boost::shared_ptr<Vessel<DIM> > Vessel<DIM>::Create(boost::shared_ptr<VesselNode<DIM> > pStartNode, boost::shared_ptr<VesselNode<DIM> > pEndNode)
 {
     boost::shared_ptr<Vessel<DIM> > pSelf(new Vessel<DIM>(pStartNode, pEndNode));
 
@@ -303,286 +286,17 @@ void Vessel<DIM>::AddSegments(std::vector<boost::shared_ptr<VesselSegment<DIM> >
 template<unsigned DIM>
 void Vessel<DIM>::CopyDataFromExistingVessel(boost::shared_ptr<Vessel<DIM> > pTargetVessel)
 {
-    mOutputData = pTargetVessel->GetOutputData();
+    this->mOutputData = pTargetVessel->GetOutputData();
 }
 
 template<unsigned DIM>
-double Vessel<DIM>::GetOutputData(const std::string& variableName)
-{
-    return mOutputData[variableName];
-}
-
-template<unsigned DIM>
-units::quantity<unit::length> Vessel<DIM>::GetClosestEndNodeDistance(const c_vector<double, DIM>& location)
-{
-    units::quantity<unit::length> distance_1 = this->GetStartNode()->GetDistance(location);
-    units::quantity<unit::length> distance_2 = this->GetEndNode()->GetDistance(location);
-    if(distance_1 > distance_2)
-    {
-        return distance_2;
-    }
-    else
-    {
-        return distance_1;
-    }
-}
-
-template<unsigned DIM>
-units::quantity<unit::length> Vessel<DIM>::GetDistance(const c_vector<double, DIM>& location) const
-{
-    // Get the distance to the nearest segment in the vessel
-    units::quantity<unit::length> nearest_distance = DBL_MAX*unit::metres;
-    for(unsigned idx=0; idx<mSegments.size(); idx++)
-    {
-        units::quantity<unit::length> seg_distance = mSegments[idx]->GetDistance(location);
-        if(seg_distance < nearest_distance)
-        {
-            nearest_distance = seg_distance;
-        }
-    }
-    return nearest_distance;
-}
-
-template<unsigned DIM>
-std::vector<boost::shared_ptr<Vessel<DIM> > > Vessel<DIM>::GetConnectedVessels()
-{
-    std::vector<boost::shared_ptr<VesselSegment<DIM> > > start_segments = GetStartNode()->GetSegments();
-    std::vector<boost::shared_ptr<VesselSegment<DIM> > > end_segments = GetStartNode()->GetSegments();
-
-    std::vector<boost::shared_ptr<Vessel<DIM> > > connected;
-
-    for(unsigned idx=0; idx<start_segments.size();idx++)
-    {
-        if(start_segments[idx]->GetVessel() != Shared())
-        {
-            connected.push_back(start_segments[idx]->GetVessel());
-        }
-    }
-    for(unsigned idx=0; idx<end_segments.size();idx++)
-    {
-        if(end_segments[idx]->GetVessel() != Shared())
-        {
-            connected.push_back(end_segments[idx]->GetVessel());
-        }
-    }
-    return connected;
-}
-
-template<unsigned DIM>
-std::vector<std::string> Vessel<DIM>::GetOutputDataKeys()
-{
-    std::vector<std::string> keys;
-    for(std::map<std::string, double>::iterator it = mOutputData.begin(); it != mOutputData.end(); ++it)
-    {
-        keys.push_back(it->first);
-    }
-    return keys;
-}
-
-template<unsigned DIM>
-boost::shared_ptr<VascularNode<DIM> > Vessel<DIM>::GetEndNode()
-{
-    if (!mNodesUpToDate)
-    {
-        UpdateNodes();
-    }
-
-    return mNodes.back();
-}
-
-template<unsigned DIM>
-boost::shared_ptr<VascularNode<DIM> > Vessel<DIM>::GetNodeAtOppositeEnd(
-        boost::shared_ptr<VascularNode<DIM> > pQueryNode)
-{
-    if (!mNodesUpToDate)
-    {
-        UpdateNodes();
-    }
-
-    if (pQueryNode == GetStartNode())
-    {
-        return GetEndNode();
-    }
-    else if (pQueryNode == GetEndNode())
-    {
-        return GetStartNode();
-    }
-    else
-    {
-        EXCEPTION("Query node is not at either end of the vessel.");
-    }
-}
-
-template<unsigned DIM>
-unsigned Vessel<DIM>::GetId() const
-{
-    return mId;
-}
-
-template<unsigned DIM>
-units::quantity<unit::length> Vessel<DIM>::GetLength() const
-{
-    units::quantity<unit::length> length = 0.0 * unit::metres;
-
-    for (unsigned i = 0; i < mSegments.size(); i++)
-    {
-        length += mSegments[i]->GetLength();
-    }
-
-    return length;
-}
-
-template<unsigned DIM>
-units::quantity<unit::length> Vessel<DIM>::GetRadius() const
-{
-    units::quantity<unit::length> radius = 0.0 * unit::metres;
-
-    for (unsigned i = 0; i < mSegments.size(); i++)
-    {
-        radius += mSegments[i]->GetRadius();
-    }
-
-    return radius / (double(mSegments.size()));
-}
-
-template<unsigned DIM>
-units::quantity<unit::dimensionless> Vessel<DIM>::GetHaematocrit() const
-{
-    units::quantity<unit::dimensionless> haematocrit = 0.0;
-
-    for (unsigned i = 0; i < mSegments.size(); i++)
-    {
-        haematocrit += mSegments[i]->GetFlowProperties()->GetHaematocrit();
-    }
-
-    return haematocrit / double(mSegments.size());
-}
-
-template<unsigned DIM>
-units::quantity<unit::flow_rate> Vessel<DIM>::GetFlowRate() const
-{
-    units::quantity<unit::flow_rate> flow_rate = 0.0 * units::pow<3>(unit::metres)/unit::seconds;
-
-    for (unsigned i = 0; i < mSegments.size(); i++)
-    {
-        flow_rate += mSegments[i]->GetFlowProperties()->GetFlowRate();
-    }
-
-    return flow_rate / double(mSegments.size());
-}
-
-template<unsigned DIM>
-units::quantity<unit::flow_impedance> Vessel<DIM>::GetImpedance() const
-{
-    units::quantity<unit::flow_impedance> impedance = 0.0 * unit::kg/(units::pow<4>(unit::metres)*unit::seconds);
-
-    for (unsigned i = 0; i < mSegments.size(); i++)
-    {
-        impedance += mSegments[i]->GetFlowProperties()->GetImpedance();
-    }
-
-    return impedance;
-}
-
-template<unsigned DIM>
-units::quantity<unit::dynamic_viscosity> Vessel<DIM>::GetViscosity() const
-{
-    units::quantity<unit::dynamic_viscosity> viscosity = 0.0 * unit::kg/(unit::metres*unit::seconds);
-
-    for (unsigned i = 0; i < mSegments.size(); i++)
-    {
-        viscosity += mSegments[i]->GetFlowProperties()->GetViscosity();
-    }
-
-    return viscosity / double(mSegments.size());
-}
-
-template<unsigned DIM>
-std::vector<boost::shared_ptr<VascularNode<DIM> > > Vessel<DIM>::GetNodes()
-{
-    if (!mNodesUpToDate)
-    {
-        UpdateNodes();
-    }
-
-    return mNodes;
-}
-
-template<unsigned DIM>
-unsigned Vessel<DIM>::GetNumberOfNodes()
-{
-    if (!mNodesUpToDate)
-    {
-        UpdateNodes();
-    }
-    return GetNumberOfSegments() + 1;
-}
-
-template<unsigned DIM>
-unsigned Vessel<DIM>::GetNumberOfSegments()
-{
-    return mSegments.size();
-}
-
-template<unsigned DIM>
-std::vector<boost::shared_ptr<VesselSegment<DIM> > > Vessel<DIM>::GetSegments()
-{
-    return mSegments;
-}
-
-template<unsigned DIM>
-boost::shared_ptr<VascularNode<DIM> > Vessel<DIM>::GetStartNode()
-{
-    if (!mNodesUpToDate)
-    {
-        UpdateNodes();
-    }
-
-    return mNodes.front();
-}
-
-template<unsigned DIM>
-std::map<std::string, double> Vessel<DIM>::GetOutputData() const
-{
-    std::map<std::string, double> vtk_data;
-    vtk_data["Vessel Id"] = double(GetId());
-    vtk_data["Vessel Radius"] = GetRadius()/(unit::metres);
-    vtk_data["Vessel Impedance"] = GetImpedance()/(unit::kg/(units::pow<4>(unit::metres)*unit::seconds));
-    vtk_data["Vessel Haematocrit"] = GetHaematocrit();
-    vtk_data["Vessel Flow Rate"] = GetFlowRate()/(units::pow<3>(unit::metres)/unit::seconds);;
-    vtk_data["Vessel Absolute Flow Rate"] = std::abs(GetFlowRate()/(units::pow<3>(unit::metres)/unit::seconds));
-    vtk_data["Vessel Viscosity"] = GetViscosity()/(unit::kg/(unit::metres*unit::seconds));
-    units::quantity<unit::pressure> wss = 0.0*unit::pascals;
-    for (unsigned i = 0; i < mSegments.size(); i++)
-    {
-        wss += mSegments[i]->GetFlowProperties()->GetWallShearStress();
-    }
-    vtk_data["Vessel Wall Shear Stress"] = wss/(double(mSegments.size())*(unit::pascals));
-    return vtk_data;
-}
-
-template<unsigned DIM>
-bool Vessel<DIM>::IsConnectedTo(boost::shared_ptr<Vessel<DIM> > pOtherVessel)
-{
-    if (GetStartNode() == pOtherVessel->GetStartNode() || GetEndNode() == pOtherVessel->GetStartNode()
-            || GetStartNode() == pOtherVessel->GetEndNode() || GetEndNode() == pOtherVessel->GetEndNode())
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-template<unsigned DIM>
-boost::shared_ptr<VascularNode<DIM> > Vessel<DIM>::DivideSegment(const c_vector<double, DIM>& location)
+boost::shared_ptr<VesselNode<DIM> > Vessel<DIM>::DivideSegment(const c_vector<double, DIM>& location, double distanceTolerance)
 {
     // Identify segment
     boost::shared_ptr<VesselSegment<DIM> > pVesselSegment;
     for (unsigned i = 0; i < mSegments.size(); i++)
     {
-        if (mSegments[i]->GetDistance(location) <= 1e-6*unit::metres)
+        if (mSegments[i]->GetDistance(location) <= distanceTolerance)
         {
             pVesselSegment = mSegments[i];
             if (pVesselSegment->GetNode(0)->IsCoincident(location))
@@ -616,8 +330,8 @@ boost::shared_ptr<VascularNode<DIM> > Vessel<DIM>::DivideSegment(const c_vector<
 
     // The node's data is averaged from the original segments's nodes
     // Get the closest node
-    units::quantity<unit::length> distance0 = pVesselSegment->GetNode(0)->GetDistance(location);
-    units::quantity<unit::length> distance1 = pVesselSegment->GetNode(1)->GetDistance(location);
+    double distance0 = pVesselSegment->GetNode(0)->GetDistance(location);
+    double distance1 = pVesselSegment->GetNode(1)->GetDistance(location);
     unsigned closest_index;
 
     if (distance0 <= distance1)
@@ -630,24 +344,18 @@ boost::shared_ptr<VascularNode<DIM> > Vessel<DIM>::DivideSegment(const c_vector<
     }
 
     // Make a copy of the closest node
-    boost::shared_ptr<VascularNode<DIM> > p_new_node = VascularNode<DIM>::Create(*pVesselSegment->GetNode(closest_index));
-    p_new_node->SetLocationValue(location);
+    boost::shared_ptr<VesselNode<DIM> > p_new_node = VesselNode<DIM>::Create(*pVesselSegment->GetNode(closest_index));
+    p_new_node->SetLocation(location);
 
     // Make two new segments
-    boost::shared_ptr<VesselSegment<DIM> > p_new_segment0 =
-          VesselSegment<DIM>::Create(pVesselSegment->GetNode(0), p_new_node);
-
-    boost::shared_ptr<VesselSegment<DIM> > p_new_segment1 =
-            VesselSegment<DIM>::Create(p_new_node, pVesselSegment->GetNode(1));
-
+    boost::shared_ptr<VesselSegment<DIM> > p_new_segment0 = VesselSegment<DIM>::Create(pVesselSegment->GetNode(0), p_new_node);
+    boost::shared_ptr<VesselSegment<DIM> > p_new_segment1 = VesselSegment<DIM>::Create(p_new_node, pVesselSegment->GetNode(1));
     p_new_segment0->CopyDataFromExistingSegment(pVesselSegment);
     p_new_segment1->CopyDataFromExistingSegment(pVesselSegment);
 
     // Add new segments, ensuring they are correctly ordered
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > newSegments;
-    typename std::vector<boost::shared_ptr<VesselSegment<DIM> > >::iterator it = std::find(mSegments.begin(),
-                                                                                             mSegments.end(),
-                                                                                             pVesselSegment);
+    typename std::vector<boost::shared_ptr<VesselSegment<DIM> > >::iterator it = std::find(mSegments.begin(), mSegments.end(), pVesselSegment);
 
     if (it == mSegments.end())
     {
@@ -721,6 +429,209 @@ boost::shared_ptr<VascularNode<DIM> > Vessel<DIM>::DivideSegment(const c_vector<
 }
 
 template<unsigned DIM>
+boost::shared_ptr<VesselFlowProperties<DIM> > Vessel<DIM>::GetFlowProperties() const
+{
+    return this->mpFlowProperties;
+}
+
+template<unsigned DIM>
+std::map<std::string, double> Vessel<DIM>::GetOutputData()
+{
+    std::map<std::string, double> flow_data = this->mpFlowProperties->GetOutputData(GetSegments());
+    this->mOutputData.insert(flow_data.begin(), flow_data.end());
+    this->mOutputData["Vessel Id"] = double(this->GetId());
+    this->mOutputData["Dimensionless Vessel Radius"] = this->GetRadius();
+    this->mOutputData["Vessel Radius m"] = this->GetRadiusSI();
+    return this->mOutputData;
+}
+
+template<unsigned DIM>
+double Vessel<DIM>::GetClosestEndNodeDistance(c_vector<double, DIM> location)
+{
+    double distance_1 = this->GetStartNode()->GetDistance(location);
+    double distance_2 = this->GetEndNode()->GetDistance(location);
+    if(distance_1 > distance_2)
+    {
+        return distance_2;
+    }
+    else
+    {
+        return distance_1;
+    }
+}
+
+template<unsigned DIM>
+double Vessel<DIM>::GetDistance(const c_vector<double, DIM>& location) const
+{
+    // Get the distance to the nearest segment in the vessel
+    double nearest_distance = DBL_MAX;
+    for(unsigned idx=0; idx<mSegments.size(); idx++)
+    {
+        double seg_distance = mSegments[idx]->GetDistance(location);
+        if(seg_distance < nearest_distance)
+        {
+            nearest_distance = seg_distance;
+        }
+    }
+    return nearest_distance;
+}
+
+template<unsigned DIM>
+std::vector<boost::shared_ptr<Vessel<DIM> > > Vessel<DIM>::GetConnectedVessels()
+{
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > start_segments = GetStartNode()->GetSegments();
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > end_segments = GetStartNode()->GetSegments();
+
+    std::vector<boost::shared_ptr<Vessel<DIM> > > connected;
+
+    for(unsigned idx=0; idx<start_segments.size();idx++)
+    {
+        if(start_segments[idx]->GetVessel() != Shared())
+        {
+            connected.push_back(start_segments[idx]->GetVessel());
+        }
+    }
+    for(unsigned idx=0; idx<end_segments.size();idx++)
+    {
+        if(end_segments[idx]->GetVessel() != Shared())
+        {
+            connected.push_back(end_segments[idx]->GetVessel());
+        }
+    }
+    return connected;
+}
+
+template<unsigned DIM>
+boost::shared_ptr<VesselNode<DIM> > Vessel<DIM>::GetEndNode()
+{
+    if (!mNodesUpToDate)
+    {
+        UpdateNodes();
+    }
+
+    return mNodes.back();
+}
+
+template<unsigned DIM>
+boost::shared_ptr<VesselNode<DIM> > Vessel<DIM>::GetNodeAtOppositeEnd(
+        boost::shared_ptr<VesselNode<DIM> > pQueryNode)
+{
+    if (!mNodesUpToDate)
+    {
+        UpdateNodes();
+    }
+
+    if (pQueryNode == GetStartNode())
+    {
+        return GetEndNode();
+    }
+    else if (pQueryNode == GetEndNode())
+    {
+        return GetStartNode();
+    }
+    else
+    {
+        EXCEPTION("Query node is not at either end of the vessel.");
+    }
+}
+
+template<unsigned DIM>
+double Vessel<DIM>::GetLength() const
+{
+    double length = 0.0;
+    for (unsigned i = 0; i < mSegments.size(); i++)
+    {
+        length += mSegments[i]->GetLength();
+    }
+    return length;
+}
+
+template<unsigned DIM>
+units::quantity<unit::length> Vessel<DIM>::GetDimensionalLength() const
+{
+    return this->GetLength()*this->mReferenceLength;
+}
+
+template<unsigned DIM>
+double Vessel<DIM>::GetRadius() const
+{
+   return this->GetDimensionalRadius() / this->mReferenceLength;
+}
+
+template<unsigned DIM>
+double Vessel<DIM>::GetRadiusSI() const
+{
+   return this->GetDimensionalRadius() / unit::metres;
+}
+
+template<unsigned DIM>
+units::quantity<unit::length> Vessel<DIM>::GetDimensionalRadius() const
+{
+    units::quantity<unit::length> radius = 0.0 * unit::metres;
+    for (unsigned i = 0; i < mSegments.size(); i++)
+    {
+        radius += mSegments[i]->GetDimensionalRadius();
+    }
+    return radius / (double(mSegments.size()));
+}
+
+template<unsigned DIM>
+std::vector<boost::shared_ptr<VesselNode<DIM> > > Vessel<DIM>::GetNodes()
+{
+    if (!mNodesUpToDate)
+    {
+        UpdateNodes();
+    }
+    return mNodes;
+}
+
+template<unsigned DIM>
+unsigned Vessel<DIM>::GetNumberOfNodes()
+{
+    if (!mNodesUpToDate)
+    {
+        UpdateNodes();
+    }
+    return GetNumberOfSegments() + 1;
+}
+
+template<unsigned DIM>
+unsigned Vessel<DIM>::GetNumberOfSegments()
+{
+    return mSegments.size();
+}
+
+template<unsigned DIM>
+std::vector<boost::shared_ptr<VesselSegment<DIM> > > Vessel<DIM>::GetSegments()
+{
+    return mSegments;
+}
+
+template<unsigned DIM>
+boost::shared_ptr<VesselNode<DIM> > Vessel<DIM>::GetStartNode()
+{
+    if (!mNodesUpToDate)
+    {
+        UpdateNodes();
+    }
+    return mNodes.front();
+}
+
+template<unsigned DIM>
+bool Vessel<DIM>::IsConnectedTo(boost::shared_ptr<Vessel<DIM> > pOtherVessel)
+{
+    if (GetStartNode() == pOtherVessel->GetStartNode() || GetEndNode() == pOtherVessel->GetStartNode()
+            || GetStartNode() == pOtherVessel->GetEndNode() || GetEndNode() == pOtherVessel->GetEndNode())
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+template<unsigned DIM>
 void Vessel<DIM>::Remove()
 {
     // Detach all segments from their nodes
@@ -735,7 +646,6 @@ void Vessel<DIM>::Remove()
 template<unsigned DIM>
 void Vessel<DIM>::RemoveSegments(SegmentLocation::Value location)
 {
-
     if (mSegments.size() == 1)
     {
         EXCEPTION("Vessel must have at least one segment.");
@@ -754,24 +664,17 @@ void Vessel<DIM>::RemoveSegments(SegmentLocation::Value location)
     {
         EXCEPTION("You can only remove segments from the start or end of vessels.");
     }
-
     mNodesUpToDate = false;
 }
 
 template<unsigned DIM>
-void Vessel<DIM>::SetData(const std::string& variableName, double value)
+void Vessel<DIM>::SetFlowProperties(const VesselFlowProperties<DIM> & rFlowProperties)
 {
-    mOutputData[variableName] = value;
+    this->mpFlowProperties = boost::shared_ptr<VesselFlowProperties<DIM> >(new VesselFlowProperties<DIM> (rFlowProperties));
 }
 
 template<unsigned DIM>
-void Vessel<DIM>::SetId(unsigned id)
-{
-    mId = id;
-}
-
-template<unsigned DIM>
-void Vessel<DIM>::SetRadius(units::quantity<unit::length> radius)
+void Vessel<DIM>::SetRadius(double radius)
 {
     for (unsigned i = 0; i < mSegments.size(); i++)
     {
@@ -780,20 +683,20 @@ void Vessel<DIM>::SetRadius(units::quantity<unit::length> radius)
 }
 
 template<unsigned DIM>
-void Vessel<DIM>::SetHaematocrit(units::quantity<unit::dimensionless> haematocrit)
+void Vessel<DIM>::SetRadiusSI(double radius)
 {
     for (unsigned i = 0; i < mSegments.size(); i++)
     {
-        mSegments[i]->GetFlowProperties()->SetHaematocrit(haematocrit);
+        mSegments[i]->SetRadiusSI(radius);
     }
 }
 
 template<unsigned DIM>
-void Vessel<DIM>::SetFlowRate(units::quantity<unit::flow_rate> flowRate)
+void Vessel<DIM>::SetDimensionalRadius(units::quantity<unit::length> radius)
 {
     for (unsigned i = 0; i < mSegments.size(); i++)
     {
-        mSegments[i]->GetFlowProperties()->SetFlowRate(flowRate);
+        mSegments[i]->SetDimensionalRadius(radius);
     }
 }
 
@@ -806,7 +709,7 @@ boost::shared_ptr<Vessel<DIM> > Vessel<DIM>::Shared()
 template<unsigned DIM>
 void Vessel<DIM>::UpdateNodes()
 {
-    mNodes = std::vector<boost::shared_ptr<VascularNode<DIM> > >();
+    mNodes = std::vector<boost::shared_ptr<VesselNode<DIM> > >();
 
     if (mSegments.size() == 1)
     {
@@ -843,51 +746,6 @@ void Vessel<DIM>::UpdateNodes()
         }
     }
     mNodesUpToDate = true;
-}
-
-
-template<unsigned DIM>
-void Vessel<DIM>::SetTimeUntilRegression(units::quantity<unit::time> time)
-{
-    assert(!mRemoveViaRegression);
-
-    if (HasRegressionTimerStarted())
-    {
-        EXCEPTION("SetTimeUntilRegression(time) called when already undergoing regression");
-    }
-
-    mUndergoingRegression = true;
-    mRegressionTime = SimulationTime::Instance()->GetTime()*unit::seconds + time;
-}
-
-template<unsigned DIM>
-bool Vessel<DIM>::HasRegressionTimerStarted()
-{
-    return mUndergoingRegression;
-}
-
-template<unsigned DIM>
-void Vessel<DIM>::ResetRegressionTimer()
-{
-    mRegressionTime = DBL_MAX * unit::seconds;
-    mUndergoingRegression = false;
-    mRemoveViaRegression = false;
-}
-
-template<unsigned DIM>
-bool Vessel<DIM>::VesselHasRegressed()
-{
-    if (SimulationTime::Instance()->GetTime()*unit::seconds >= mRegressionTime)
-    {
-        assert(mUndergoingRegression);
-        mRemoveViaRegression = true;
-        return mRemoveViaRegression;
-    }
-    else
-    {
-        mRemoveViaRegression = false;
-        return mRemoveViaRegression;
-    }
 }
 
 // Explicit instantiation

@@ -41,9 +41,10 @@
 #include <map>
 #include <boost/enable_shared_from_this.hpp>
 #include "VesselSegment.hpp"
-#include "VascularNode.hpp"
+#include "VesselNode.hpp"
 #include "ChastePoint.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
+#include "VesselFlowProperties.hpp"
 
 /**
  *  Struct to denote segment locations on the vessel
@@ -57,14 +58,14 @@ struct SegmentLocation
 };
 
 /**
- * This is a class for vessels.
+ * This is a class for vessels. A vessel is a component of a vessel network
  * .
  * Vessel are a collection of connected straight-line segments, i.e. a poly-line.
  * Vessel data and properties are derived from averaging or summing over their
  * segments as required.
  */
 template<unsigned DIM>
-class Vessel : public boost::enable_shared_from_this<Vessel<DIM> >
+class Vessel : public boost::enable_shared_from_this<Vessel<DIM> >, public AbstractVesselNetworkComponent<DIM>
 {
 private:
 
@@ -76,310 +77,260 @@ private:
     /**
      *  Nodes
      */
-    std::vector<boost::shared_ptr<VascularNode<DIM> > > mNodes;
+    std::vector<boost::shared_ptr<VesselNode<DIM> > > mNodes;
 
     /**
      *  Is the data in mNodes up to date.
      */
     bool mNodesUpToDate;
 
-    /**
-     * Container for non-spatial vessel data.
-     */
-    std::map<std::string, double> mOutputData;
-
-    /**
-     * Id tag, can be useful for storing segment-vessel relationships in the VesselNetwork class.
-     */
-    unsigned mId;
-
-    /**
-     * Whether a vessel is currently undergoing regression. A vessel can be saved from this fate.
-     */
-    bool mUndergoingRegression;
-
-    /**
-     * Whether a vessel should be removed from the network. A vessel exists inside the network until they are removed.
-     */
-    bool mRemoveViaRegression;
-
-    /**
-     * When the vessel will be removed.
-     */
-    units::quantity<unit::time> mRegressionTime;
+    boost::shared_ptr<VesselFlowProperties<DIM> > mpFlowProperties;
 
 private:
 
     /**
-     Constructor.
-
-     The vessel should always have at least one segment.
+     * Constructor. Kept private as the factory Create methods should be used instead.
+     *
+     * The vessel should always have at least one segment.
+     * @param pSegment the input segment
      */
     Vessel(boost::shared_ptr<VesselSegment<DIM> > pSegment);
 
     /**
-     Alternate Constructor.
-
-     The vessel should always have at least one segment. This is useful for initializing with many segments at once.
+     * Alternate Constructor. Kept private as the factory Create methods should be used instead.
+     *
+     * The vessel should always have at least one segment. This is useful for initializing with many segments at once.
+     * @param segments a collection of segments, should be joined end to tip
      */
     Vessel(std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments);
 
     /**
-     Alternate Constructor.
-
-     Initialize with a vector of nodes. The nodes are joined by segments in order. The ends are not closed.
+     * Alternate Constructor. Kept private as the factory Create methods should be used instead.
+     *
+     * Initialize with a vector of nodes. The nodes are joined by segments in order. The ends are not closed.
+     * @param nodes these nodes will be joined to form the vessel
      */
-    Vessel(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes);
+    Vessel(std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes);
 
     /**
-     Alternate Constructor.
-
-     Initialize with two nodes.
+     * Alternate Constructor. Kept private as the factory Create methods should be used instead.
+     * Initialize with two nodes.
+     * @param pStartNode the start node
+     * @param pEndNode the end node
      */
-    Vessel(boost::shared_ptr<VascularNode<DIM> > pStartNode, boost::shared_ptr<VascularNode<DIM> > pEndNode);
+    Vessel(boost::shared_ptr<VesselNode<DIM> > pStartNode, boost::shared_ptr<VesselNode<DIM> > pEndNode);
 
 public:
 
     /*
      * Construct a new instance of the class and return a shared pointer to it.
+     * @param pSegment the input segment
      */
     static boost::shared_ptr<Vessel<DIM> > Create(boost::shared_ptr<VesselSegment<DIM> > pSegment);
 
     /*
      * Construct a new instance of the class and return a shared pointer to it.
+     * @param segments a collection of segments, should be joined end to tip
      */
     static boost::shared_ptr<Vessel<DIM> > Create(std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments);
 
     /*
      * Construct a new instance of the class and return a shared pointer to it.
+     * @param nodes these nodes will be joined to form the vessel
      */
-    static boost::shared_ptr<Vessel<DIM> > Create(std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes);
+    static boost::shared_ptr<Vessel<DIM> > Create(std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes);
 
     /*
      * Construct a new instance of the class and return a shared pointer to it.
+     * @param pStartNode the start node
+     * @param pEndNode the end node
      */
-    static boost::shared_ptr<Vessel<DIM> > Create(boost::shared_ptr<VascularNode<DIM> > pStartNode, boost::shared_ptr<VascularNode<DIM> > pEndNode);
+    static boost::shared_ptr<Vessel<DIM> > Create(boost::shared_ptr<VesselNode<DIM> > pStartNode, boost::shared_ptr<VesselNode<DIM> > pEndNode);
 
     /**
-     Destructor.
+     * Destructor.
      */
     ~Vessel();
 
     /**
-     Add a single segment to either end of the vessel
+     * Add a single segment to either end of the vessel
+     * @param pSegment the segment
      */
     void AddSegment(boost::shared_ptr<VesselSegment<DIM> > pSegment);
 
     /**
-     Add a collection of segments to either end of the vessel
+     * Add a collection of segments to either end of the vessel
+     * @param pSegments the segments
      */
     void AddSegments(std::vector<boost::shared_ptr<VesselSegment<DIM> > > pSegments);
 
     /*
-     * Copy the member data and VasculatureData from the input vessel.
+     * Copy the member data from the input vessel.
+     * @param pTargetVessel the vessel to be copied from
      */
     void CopyDataFromExistingVessel(boost::shared_ptr<Vessel<DIM> > pTargetVessel);
 
     /**
-     Divide the vessel at the specified location
+     * Divide the vessel at the specified location
+     * @param rLocation the location of the division
+     * @param distanceTolerance how far from a segment should the probe point be
      */
-    boost::shared_ptr<VascularNode<DIM> > DivideSegment(const c_vector<double, DIM>& location);
+    boost::shared_ptr<VesselNode<DIM> > DivideSegment(const c_vector<double, DIM>& rLocation, double distanceTolerance = 1.e-6);
 
     /**
-     * Return a map of vessel data for use by the vtk writer
-     *
-     * @return a map of vessel data for use by the vtk writer
+     *  Return the dimensionless distance to the vessel end node closest to the input location
+     *  @param rLocation the location to probe
      */
-    std::map<std::string, double> GetOutputData() const;
+    double GetClosestEndNodeDistance(c_vector<double, DIM> rLocation);
 
     /**
-     *  Return the vessel data for the input key. An attempt is made
-     *  to cast to type T.
-     *  @return T data
+     *  Return the dimensionless distance from the vessel to the input location
+     *  @param rLocation the location to probe
      */
-    double GetOutputData(const std::string& rKey);
+    double GetDistance(const c_vector<double, DIM>& rLocation) const;
 
     /**
-     *  Return a vector of data keys for the vessel. Input true if
-     *  the corresponding value should be castable to double.
-     *
-     *  @return std::vector<std::string>
-     */
-    std::vector<std::string> GetOutputDataKeys();
-
-    /**
-     *  Return the distance to the vessel end node closest to the input location
-     */
-    units::quantity<unit::length> GetClosestEndNodeDistance(const c_vector<double, DIM>& location);
-
-    /**
-     *  Return the distance from the vessel to the input location
-     */
-    units::quantity<unit::length> GetDistance(const c_vector<double, DIM>& location) const;
-
-    /**
-     @return vector of vessels connected to this one
+     * @return vector of vessels connected to this one
      */
     std::vector<boost::shared_ptr<Vessel<DIM> > > GetConnectedVessels();
 
     /**
-     @return shared pointer to the second node of the last segment
+     * @return shared pointer to the second node of the last segment
      */
-    boost::shared_ptr<VascularNode<DIM> > GetEndNode();
+    boost::shared_ptr<VesselNode<DIM> > GetEndNode();
 
     /**
-     @return shared pointer to the node at the opposite end of the vessel
-     to the supplied one.
-     */
-    boost::shared_ptr<VascularNode<DIM> > GetNodeAtOppositeEnd(boost::shared_ptr<VascularNode<DIM> > pQueryNode);
-
-    /**
-     *  Return the Id
+     * Return the flow properties of the component
      *
-     *  @return mId
+     * @return the flow properties of the component
      */
-    unsigned GetId() const;
+    boost::shared_ptr<VesselFlowProperties<DIM> > GetFlowProperties() const;
 
     /**
-     *  Return the Impedance
-     *
-     *  @return double
+     * @return shared pointer to the node at the opposite end of the vessel
+     * to the supplied one.
      */
-    units::quantity<unit::flow_impedance> GetImpedance() const;
+    boost::shared_ptr<VesselNode<DIM> > GetNodeAtOppositeEnd(boost::shared_ptr<VesselNode<DIM> > pQueryNode);
 
     /**
-     *  Return the Viscosity
+     *  Return the dimensionless length
      *
-     *  @return double
+     *  @return the dimensionless length
      */
-    units::quantity<unit::dynamic_viscosity> GetViscosity() const;
+     double GetLength() const;
 
     /**
-     *  Return the length
+     *  Return the dimensional length
      *
-     *  @return double
+     *  @return the dimensional length
      */
-    units::quantity<unit::length> GetLength() const;
+     units::quantity<unit::length> GetDimensionalLength() const;
+
+    /**
+     *  Return the dimensional radius
+     *
+     *  @return the dimensional radius
+     */
+    units::quantity<unit::length> GetDimensionalRadius() const;
+
+    /**
+     *  Return the dimensionless radius
+     *
+     *  @return the dimensionless radius
+     */
+    double GetRadius() const;
 
     /**
      *  Return the radius
      *
-     *  @return double
+     *  @return the radius
      */
-    units::quantity<unit::length> GetRadius() const;
-
-    /**
-     *  Return the haematocrit
-     */
-    units::quantity<unit::dimensionless> GetHaematocrit() const;
-
-    /**
-     *  Return the flow rate
-     */
-    units::quantity<unit::flow_rate> GetFlowRate() const;
+    double GetRadiusSI() const;
 
     /**
      *  Return the vessel's nodes
      *
-     *  @return mLabel
+     *  @return the vessel nodes
      */
-    std::vector<boost::shared_ptr<VascularNode<DIM> > > GetNodes();
+    std::vector<boost::shared_ptr<VesselNode<DIM> > > GetNodes();
 
     /**
      * Return the number of nodes in the vessel
-     @return unsigned
+     * @return unsigned the number of nodes
      */
     unsigned GetNumberOfNodes();
 
     /**
-     @return mVesselSegments.size()
+     * @return the number of segments
      */
     unsigned GetNumberOfSegments();
 
     /**
-     @return mVesselSegments
+     * Return a map of vessel data for use by the vtk writer
+     * @return a map of vessel data for use by the vtk writer
+     */
+    std::map<std::string, double> GetOutputData();
+
+    /**
+     * @param index the segment index to return
+     * @return the indexed segment
+     */
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > GetSegment(unsigned index);
+
+    /**
+     * @return all the vessel segments
      */
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > GetSegments();
 
     /**
-     @return shared pointer to the first node of the first segment
+     * @return the vessel stat node
      */
-    boost::shared_ptr<VascularNode<DIM> > GetStartNode();
+    boost::shared_ptr<VesselNode<DIM> > GetStartNode();
 
     /**
-     *  Return true if the vessel has data corresponding to the input key.
-     *
-     *  @return bool
-     */
-    bool HasDataKey(const std::string& rKey) const;
-
-    /**
-     *  Return whether the vessel is connected to another vessel.
+     * @param pOtherVessel the other vessel to check for connect
+     * @return whether the vessel is connected to another vessel.
      */
     bool IsConnectedTo(boost::shared_ptr<Vessel<DIM> > pOtherVessel);
 
     /**
-     Remove the vessel from all its segments
+     * Remove the vessel from all its segments
      */
     void Remove();
 
     /**
-     Remove segments from the ends of a vessel
+     * Remove segments from the ends of a vessel
+     * @param location which end to remove from
      */
     void RemoveSegments(SegmentLocation::Value location);
 
     /**
-     *  Add data of any type to the segment using the identifying key
-     */
-    void SetData(const std::string& rKey, double value);
-
-    /**
-     *  Assign the Id
-     *
-     */
-    void SetId(unsigned id);
-
-    /**
      *  Set the radius
+     */
+    void SetRadius(double radius);
+
+    /**
+     *  Set the radius in SI
+     */
+    void SetRadiusSI(double radius);
+
+    /**
+     *  Set the dimensional radius
+     */
+    void SetDimensionalRadius(units::quantity<unit::length>  radius);
+
+    /**
+     * Set the flow properties of the vessel
      *
-     *  @return double
+     * @param rFlowProperties the flow properties to be set
      */
-    void SetRadius(units::quantity<unit::length> radius);
-
-    /**
-     *  Set the haematocrit
-     */
-    void SetHaematocrit(units::quantity<unit::dimensionless> haematocrit);
-
-    /**
-     *  Set the flow rate
-     */
-    void SetFlowRate(units::quantity<unit::flow_rate> flowRate);
+    void SetFlowProperties(const VesselFlowProperties<DIM>& rFlowProperties);
 
     /**
      *  Update the data in mNodes
      */
     void UpdateNodes();
 
-    /**
-     * Set time until removal of vessel from network.
-     */
-    void SetTimeUntilRegression(units::quantity<unit::time> time);
-
-    /**
-     * @return whether regression timer has started.
-     */
-    bool HasRegressionTimerStarted();
-
-    /**
-     * Rescue vessel from regression.
-     */
-    void ResetRegressionTimer();
-
-    /**
-     * @return whether the vessel should regress (be removed).
-     */
-    bool VesselHasRegressed();
 
 private:
 

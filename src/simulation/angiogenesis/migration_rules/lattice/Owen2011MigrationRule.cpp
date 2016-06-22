@@ -36,7 +36,6 @@
 #include "RandomNumberGenerator.hpp"
 #include "VesselSegment.hpp"
 #include "Vessel.hpp"
-#include "Debug.hpp"
 #include "Owen2011MigrationRule.hpp"
 #include "AbstractRegularGridHybridSolver.hpp"
 
@@ -76,7 +75,7 @@ void Owen2011MigrationRule<DIM>::SetCellMotilityParameter(double cellMotility)
 }
 
 template<unsigned DIM>
-std::vector<int> Owen2011MigrationRule<DIM>::GetIndices(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
+std::vector<int> Owen2011MigrationRule<DIM>::GetIndices(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes)
 {
     if(!this->mpSolver)
     {
@@ -90,7 +89,7 @@ std::vector<int> Owen2011MigrationRule<DIM>::GetIndices(const std::vector<boost:
 }
 
 template<unsigned DIM>
-std::vector<double> Owen2011MigrationRule<DIM>::GetNeighbourMovementProbabilities(boost::shared_ptr<VascularNode<DIM> > pNode,
+std::vector<double> Owen2011MigrationRule<DIM>::GetNeighbourMovementProbabilities(boost::shared_ptr<VesselNode<DIM> > pNode,
                                                        std::vector<unsigned> neighbourIndices, unsigned gridIndex)
 {
     std::vector<double> probability_of_moving(neighbourIndices.size(), 0.0);
@@ -103,7 +102,7 @@ std::vector<double> Owen2011MigrationRule<DIM>::GetNeighbourMovementProbabilitie
 
         for (unsigned seg_index = 0; seg_index < pNode->GetNumberOfSegments(); seg_index++)
         {
-            if(pNode->GetVesselSegment(seg_index)->GetOppositeNode(pNode)->IsCoincident(ChastePoint<DIM>(neighbour_location)))
+            if(pNode->GetSegment(seg_index)->GetOppositeNode(pNode)->IsCoincident(neighbour_location))
             {
                  sprout_already_attached_to_vessel_at_location = true;
                  break;
@@ -111,13 +110,13 @@ std::vector<double> Owen2011MigrationRule<DIM>::GetNeighbourMovementProbabilitie
         }
 
         //ensure that the new sprout would not try to cross a vessel which is oriented diagonally
-        bool vessel_crosses_line_segment = this->mpVesselNetwork->VesselCrossesLineSegment(neighbour_location, pNode->GetLocationVector());
+        bool vessel_crosses_line_segment = this->mpVesselNetwork->VesselCrossesLineSegment(neighbour_location, pNode->rGetLocation());
 
         if (!vessel_crosses_line_segment && !sprout_already_attached_to_vessel_at_location)
         {
             double VEGF_diff = (mVegfField[neighbourIndices[jdx]] - mVegfField[gridIndex]);
             double dt = SimulationTime::Instance()->GetTimeStep();
-            double dij = norm_2(pNode->GetLocationVector() - neighbour_location);
+            double dij = norm_2(pNode->rGetLocation() - neighbour_location);
             probability_of_moving[jdx] = ((mCellMotility * dt)/(2.0*dij*dij))*(1.0 + mCellChemotacticParameter*VEGF_diff/(2.0*mCellMotility));
             if (probability_of_moving[jdx] < 0.0)
             {

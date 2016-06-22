@@ -35,7 +35,7 @@
 
 #include "DiscreteSource.hpp"
 #include "AbstractCellPopulation.hpp"
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 #include "GeometryTools.hpp"
 
 template<unsigned DIM>
@@ -121,14 +121,10 @@ std::vector<double> DiscreteSource<DIM>::GetVesselRegularGridValues()
                     point_volume *= mpRegularGrid->GetSpacing();
                 }
 
-                double length_in_box = LengthOfLineInBox<DIM>(point_segment_map[idx][jdx]->GetNode(0)->GetLocationVector(),
-                                                                             point_segment_map[idx][jdx]->GetNode(1)->GetLocationVector(),
+                double length_in_box = LengthOfLineInBox<DIM>(point_segment_map[idx][jdx]->GetNode(0)->rGetLocation(),
+                                                                             point_segment_map[idx][jdx]->GetNode(1)->rGetLocation(),
                                                                              mpRegularGrid->GetLocationOf1dIndex(idx), mpRegularGrid->GetSpacing());
                 values[idx] += mValue * length_in_box/ point_volume;
-            }
-            else
-            {
-                values[idx] += point_segment_map[idx][jdx]->template GetData<double>(mLabel);
             }
         }
     }

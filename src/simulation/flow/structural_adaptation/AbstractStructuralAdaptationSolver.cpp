@@ -37,7 +37,6 @@
 #include <iostream>
 #include "AbstractStructuralAdaptationSolver.hpp"
 #include "SimulationTime.hpp"
-#include "UnitCollections.hpp"
 
 template<unsigned DIM>
 AbstractStructuralAdaptationSolver<DIM>::AbstractStructuralAdaptationSolver()
@@ -118,7 +117,7 @@ void AbstractStructuralAdaptationSolver<DIM>::Solve()
 
     double max_radius_relative_change = 1.0;
     unsigned iteration = 0;
-    units::quantity<unit::time> time = 0.0 * unit::seconds;
+    double time = 0.0;
 
     if (mWriteOutput && !mOutputFileName.empty())
     {
@@ -128,16 +127,15 @@ void AbstractStructuralAdaptationSolver<DIM>::Solve()
     }
 
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = mpVesselNetwork->GetVesselSegments();
-    std::vector<units::quantity<unit::length> > previous_radii(segments.size());
+    std::vector<double> previous_radii(segments.size());
     for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
     {
         previous_radii[segment_index] = segments[segment_index]->GetRadius();
     }
 
-    // todo why is simulation time x 60.0, units = ?
-    while (max_radius_relative_change > mTolerance && time < (SimulationTime::Instance()->GetTimeStep() * 60.0 * unit::seconds) && iteration < mMaxIterations)
+    while (max_radius_relative_change > mTolerance && time < (SimulationTime::Instance()->GetTimeStep()) && iteration < mMaxIterations)
     {
-        time += mTimeIncrement;
+        time += mTimeIncrement/this->mpVesselNetwork->GetReferenceTime();
         iteration++;
 
         Iterate();
@@ -145,7 +143,7 @@ void AbstractStructuralAdaptationSolver<DIM>::Solve()
         std::vector<double> relative_change(segments.size());
         for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
         {
-            units::quantity<unit::length> current_radius = segments[segment_index]->GetRadius();
+            double current_radius = segments[segment_index]->GetRadius();
             relative_change[segment_index] = fabs(1.0 - current_radius / previous_radii[segment_index]);
             previous_radii[segment_index] = current_radius;
         }
@@ -164,7 +162,7 @@ void AbstractStructuralAdaptationSolver<DIM>::Solve()
 }
 
 template<unsigned DIM>
-void AbstractStructuralAdaptationSolver<DIM>::SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork)
+void AbstractStructuralAdaptationSolver<DIM>::SetVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pNetwork)
 {
     mpVesselNetwork = pNetwork;
 }

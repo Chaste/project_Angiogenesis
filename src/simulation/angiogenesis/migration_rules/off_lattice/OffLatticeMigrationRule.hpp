@@ -39,7 +39,7 @@
 #include <vector>
 #include <string>
 #include "AbstractMigrationRule.hpp"
-#include "VascularNode.hpp"
+#include "VesselNode.hpp"
 #include "SmartPointers.hpp"
 
 /**
@@ -121,10 +121,10 @@ public:
      * @param rNodes nodes to calculate indices
      * @return a vector of movement vectors
      */
-    std::vector<c_vector<double, DIM> > GetDirections(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes);
+    std::vector<c_vector<double, DIM> > GetDirections(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes);
 
 
-    std::vector<c_vector<double, DIM> > GetDirectionsForSprouts(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes);
+    std::vector<c_vector<double, DIM> > GetDirectionsForSprouts(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes);
 };
 
 #endif /* OffLatticeMigrationRule_HPP_ */

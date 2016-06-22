@@ -33,16 +33,17 @@
 
  */
 
-#ifndef VASCULARNODE_HPP_
-#define VASCULARNODE_HPP_
+#ifndef VesselNode_HPP_
+#define VesselNode_HPP_
 
 #include <vector>
 #include <string>
 #include <map>
 #include <boost/enable_shared_from_this.hpp>
+#include "AbstractVesselNetworkComponent.hpp"
 #include "NodeFlowProperties.hpp"
 #include "UblasVectorInclude.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 #include "VesselSegment.hpp"
 #include "SmartPointers.hpp"
 
@@ -53,14 +54,14 @@ template<unsigned DIM>
 class VesselSegment;
 
 /**
- * This is a class for vascular nodes.
+ * This is a class for vascular nodes, which are vessel network components.
  *
- * Nodes are point locations along a vessel. They are useful for describing the end positions of
+ * Nodes are point locations along a vessel. They are used for describing the end positions of
  * straight line vessel segments. Nodes are initialized in dimensionless units, however they can
  * be dimensionalized by setting a reference length scale.
  */
 template<unsigned DIM>
-class VascularNode : public boost::enable_shared_from_this<VascularNode<DIM> >
+class VesselNode : public boost::enable_shared_from_this<VesselNode<DIM> >, public AbstractVesselNetworkComponent<DIM>
 {
 
     /**
@@ -71,19 +72,9 @@ class VascularNode : public boost::enable_shared_from_this<VascularNode<DIM> >
 private:
 
     /**
-     * Location of a node. Metres implied.
+     * Dimensionless location of a node in space.
      */
     ChastePoint<DIM> mLocation;
-
-    /**
-     * Container for generic node data.
-     */
-    std::map<std::string, double> mOutputData;
-
-    /**
-     * Id tag, useful for post-processing
-     */
-    unsigned mId;
 
     /**
      * Collection of pointers to Vessel Segments connected to this node.
@@ -91,84 +82,70 @@ private:
     std::vector<boost::weak_ptr<VesselSegment<DIM> > > mSegments;
 
     /**
-     * Radius of the vessel at this node
-     */
-    units::quantity<unit::length> mRadius;
-
-    /**
-     * The flow properties for the node
-     */
-    boost::shared_ptr<NodeFlowProperties> mpFlowProperties;
-
-    /**
      * Is the vessel allowed to extend at this node
      */
     bool mIsMigrating;
 
-    /**
-     * Reference length scale for dimensionalizing units
-     */
-    units::quantity<unit::length> mReferenceLength;
 
-private:
+    boost::shared_ptr<NodeFlowProperties<DIM> > mpFlowProperties;
 
     /**
      * Constructor. Kept private as the Create factory method should be used.
      *
-     * Create a node using xyz coordinates, metres are assumed.
+     * Create a node using xyz coordinates
      *
      * @param v1  the node's x-coordinate (defaults to 0)
      * @param v2  the node's y-coordinate (defaults to 0)
      * @param v3  the node's z-coordinate (defaults to 0)
      */
-    VascularNode(double v1 = 0.0, double v2 = 0.0, double v3 = 0.0);
+    VesselNode(double v1 = 0.0, double v2 = 0.0, double v3 = 0.0);
 
     /**
      * Constructor. Kept private as the Create factory method should be used.
      *
-     * Create a node using ublas c_vector, metres are assumed
+     * Create a node using ublas c_vector
      *
      * @param location the node's location (defaults to 0.0)
      */
-    VascularNode(c_vector<double, DIM> location);
+    VesselNode(c_vector<double, DIM> location);
 
     /**
      * Copy constructor. Kept private as the Create factory method should be used.
      *
      * @param rExistingNode the node to copy from
      */
-    VascularNode(const VascularNode<DIM>& rExistingNode);
+    VesselNode(const VesselNode<DIM>& rExistingNode);
 
 public:
 
     /**
      * Destructor
      */
-    ~VascularNode();
+    ~VesselNode();
 
     /**
      * Construct a new instance of the class and return a shared pointer to it.
      *
      * This method is included so that nodes can be created in a way that is consistent with
-     * other vasculature features, metres are assumed.
+     * other vasculature features
      *
      * @param v1  the node's x-coordinate (defaults to 0)
      * @param v2  the node's y-coordinate (defaults to 0)
      * @param v3  the node's z-coordinate (defaults to 0)
      * @return a pointer to the newly created node
      */
-    static boost::shared_ptr<VascularNode<DIM> > Create(double v1 = 0.0, double v2 = 0.0, double v3 = 0.0);
+    static boost::shared_ptr<VesselNode<DIM> > Create(double v1 = 0.0, double v2 = 0.0, double v3 = 0.0);
 
     /**
      * Construct a new instance of the class and return a shared pointer to it.
      *
      * This method is included so that nodes can be created in a way that is consistent with
-     * other vasculature features, metres are assumed.
+     * other vasculature features
      *
      * @param location the node's location (defaults to 0.0)
      * @return a pointer to the newly created node
      */
-    static boost::shared_ptr<VascularNode<DIM> > Create(c_vector<double, DIM> location);
+    static boost::shared_ptr<VesselNode<DIM> > Create(const c_vector<double, DIM>& location);
 
     /**
      * Construct a new instance of the class and return a shared pointer to it.
@@ -179,7 +156,7 @@ public:
      * @param rExistingNode the node to copy from
      * @return a pointer to the newly created node
      */
-    static boost::shared_ptr<VascularNode<DIM> > Create(const VascularNode<DIM>& rExistingNode);
+    static boost::shared_ptr<VesselNode<DIM> > Create(const VesselNode<DIM>& rExistingNode);
 
     /**
      * Construct a new instance of the class and return a shared pointer to it.
@@ -190,7 +167,7 @@ public:
      * @param pExistingNode the node to copy from
      * @return a pointer to the newly created node
      */
-    static boost::shared_ptr<VascularNode<DIM> > Create(boost::shared_ptr<VascularNode<DIM> > pExistingNode);
+    static boost::shared_ptr<VesselNode<DIM> > Create(boost::shared_ptr<VesselNode<DIM> > pExistingNode);
 
     /**
      * Return the non dimensional distance between the input location and the node
@@ -209,32 +186,25 @@ public:
     units::quantity<unit::length> GetDimensionalDistance(const c_vector<double, DIM>& rLocation) const;
 
     /**
-     * Return the flow properties of the node
+     * Return the flow properties of the component
      *
-     * @return the flow properties of the node
+     * @return the flow properties of the component
      */
-    boost::shared_ptr<NodeFlowProperties> GetFlowProperties() const;
+    boost::shared_ptr<NodeFlowProperties<DIM> > GetFlowProperties() const;
 
     /**
-     * Return the node Id
-     *
-     * @return the node id
-     */
-    unsigned GetId() const;
-
-    /**
-     * Return a refence to the dimensionless location of the node.
+     * Return a reference to the scaled location of the node.
      *
      * @return a ublas c_vector at the location of the node
      */
     const c_vector<double, DIM>& rGetLocation() const;
 
     /**
-     * Return a reference to the dimensional location of the node.
+     * Return a reference to the location of the node in SI units.
      *
      * @return a ublas c_vector at the location of the node
      */
-    const c_vector<double, DIM>& rGetDimensionalLocation() const;
+    const c_vector<double, DIM>& rGetLocationSI() const;
 
     /**
      * Return the number of attached segments
@@ -244,54 +214,10 @@ public:
     unsigned GetNumberOfSegments() const;
 
     /**
-     * Return the output data for the given key.
-     *
-     * @param rKey the key to be queried
-     * @return the node data for the input key
-     */
-    double GetOutputDataValue(const std::string& rKey) const;
-
-    /**
      * Return a map of output data for writers
-     * @return a map of nodal data for use by the vtk writer
+     * @return a map of component data for use by the vtk writer
      */
-    std::map<std::string, double> GetOutputData() const;
-
-    /**
-     * Return the keys of the output data map
-     * @param verbose include all flow data
-     * @return a map of nodal data for use by the vtk writer
-     */
-    std::vector<std::string> GetOutputDataKeys() const;
-
-    /**
-     * Return the radius of the vessel at the node
-     *
-     * @return the radius of the vessel at the node
-     */
-    units::quantity<unit::length> GetDimensionalRadius() const;
-
-    /**
-     * Return the dimensionless radius of the vessel at the node
-     *
-     * @return the radius of the vessel at the node
-     */
-    double GetRadius() const;
-
-    /**
-     * Return the reference length for the node
-     *
-     * @return the reference length for the node
-     */
-    units::quantity<unit::length> GetReferenceLength() const;
-
-    /**
-     * Return the reference length for the node as a value and unit pair. This
-     * incurs a cost relative to GetReferenceLength. It is used by the Python interface.
-     *
-     * @return a pair containing the reference length value and unit as a string.
-     */
-    std::pair<double, std::string> GetReferenceLengthValueAndUnit() const;
+    std::map<std::string, double> GetOutputData();
 
     /**
      * Return a pointer to the indexed vessel segment
@@ -323,26 +249,14 @@ public:
      */
     bool IsCoincident(const c_vector<double, DIM>& rLocation) const;
 
-    /**
-     * Returns whether the node is actively migrating
-     *
-     * @return true if the node is actively migrating
-     */
     bool IsMigrating() const;
-
-    /**
-     * Assign the Id
-     *
-     * @param id the id for the node
-     */
-    void SetId(unsigned id);
 
     /**
      * Set the flow properties of the node
      *
      * @param rFlowProperties the flow properties to be set
      */
-    void SetFlowProperties(const NodeFlowProperties& rFlowProperties);
+    void SetFlowProperties(const NodeFlowProperties<DIM>& rFlowProperties);
 
     /**
      * Set that the node is migrating
@@ -365,42 +279,6 @@ public:
      */
     void SetLocation(double x, double y, double z=0.0);
 
-    /**
-     * Add output data to the node using the identifying key
-     *
-     * @param rKey the key for the data being assigned to the node
-     * @param value the value to be stored
-     */
-    void SetOutputData(const std::string& rKey, double value);
-
-    /**
-     * Set the dimensionless vessel radius at this node
-     *
-     * @param radius the vessel radius
-     */
-    void SetRadius(double radius);
-
-    /**
-     * Set the reference length for the node
-     *
-     * @param referenceLength the reference length
-     */
-    void SetReferenceLength(units::quantity<unit::length> referenceLength);
-
-    /**
-     * Set the reference length for the node. This method incurs a theoretical efficiency penalty relative to
-     * the direct use of a Boost Unit. It is used by the Python interface.
-     *
-     * @param referenceLength the reference length
-     * @param unit the length unit, currently "metres" and "microns" are supported.
-     */
-    void SetReferenceLength(double referenceLength, const std::string& unit);
-
-    /**
-     * The output data map can get out of date if radii or node indices change. It should be updated
-     * before any write. This is not done in GetOutputData as that method needs to be const.
-     */
-    void UpdateOutputData();
 
 private:
 
@@ -419,4 +297,4 @@ private:
     void RemoveSegment(boost::shared_ptr<VesselSegment<DIM> > pVesselSegment);
 };
 
-#endif /* VASCULARNODE_HPP_ */
+#endif /* VesselNode_HPP_ */

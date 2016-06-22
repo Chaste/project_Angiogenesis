@@ -38,7 +38,6 @@
 
 #include "SmartPointers.hpp"
 #include "AbstractVesselNetworkCalculator.hpp"
-#include "VascularNetwork.hpp"
 
 /**
  * Calculate impedance, Z, of all vessel segments and vessels in network using Poiseuille flow

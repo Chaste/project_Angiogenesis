@@ -78,7 +78,7 @@ boost::shared_ptr<AbstractMigrationRule<DIM> > AbstractMigrationRule<DIM>::Creat
 }
 
 template<unsigned DIM>
-void AbstractMigrationRule<DIM>::SetNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork)
+void AbstractMigrationRule<DIM>::SetNetwork(boost::shared_ptr<VesselNetwork<DIM> > pNetwork)
 {
     mpVesselNetwork = pNetwork;
 }

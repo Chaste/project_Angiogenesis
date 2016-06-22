@@ -38,8 +38,8 @@
 
 #include <vector>
 #include <string>
-#include "VascularNetwork.hpp"
-#include "VascularNode.hpp"
+#include "VesselNetwork.hpp"
+#include "VesselNode.hpp"
 #include "SmartPointers.hpp"
 #include "RegularGrid.hpp"
 #include "AbstractHybridSolver.hpp"
@@ -67,7 +67,7 @@ protected:
     /**
      * Vessel network, useful if sprouting depends on neighbouring nodes
      */
-    boost::shared_ptr<VascularNetwork<DIM> > mpVesselNetwork;
+    boost::shared_ptr<VesselNetwork<DIM> > mpVesselNetwork;
 
     /**
      * How far from vessel ends can sprouts form
@@ -96,7 +96,7 @@ public:
      * Set the vessel network
      * @param pVesselNetwork pointer to a new method for the class
      */
-    void SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pVesselNetwork);
+    void SetVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pVesselNetwork);
 
     /**
      * Set the sprouting probability
@@ -115,9 +115,9 @@ public:
      * @param rNodes nodes to check for sprouting
      * @return a vector of nodes which may sprout
      */
-    virtual std::vector<boost::shared_ptr<VascularNode<DIM> > > GetSprouts(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
+    virtual std::vector<boost::shared_ptr<VesselNode<DIM> > > GetSprouts(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes)
     {
-        return std::vector<boost::shared_ptr<VascularNode<DIM> > >();
+        return std::vector<boost::shared_ptr<VesselNode<DIM> > >();
     }
 
     /**

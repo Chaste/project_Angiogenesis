@@ -172,8 +172,8 @@ void DensityMap<DIM>::Solve()
 
                     for (unsigned idx = 0; idx <  segments.size(); idx++)
                     {
-                        vessel_solution[grid_index] += LengthOfLineInBox(segments[idx]->GetNode(0)->GetLocationValue(),
-                                                                         segments[idx]->GetNode(1)->GetLocationValue(),
+                        vessel_solution[grid_index] += LengthOfLineInBox(segments[idx]->GetNode(0)->rGetLocation(),
+                                                                         segments[idx]->GetNode(1)->rGetLocation(),
                                                                          location, spacing);
                     }
                     vessel_solution[grid_index] /= (std::pow(spacing,3));

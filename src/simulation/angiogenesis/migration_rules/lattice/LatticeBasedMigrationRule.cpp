@@ -59,7 +59,7 @@ LatticeBasedMigrationRule<DIM>::~LatticeBasedMigrationRule()
 }
 
 template<unsigned DIM>
-std::vector<double> LatticeBasedMigrationRule<DIM>::GetNeighbourMovementProbabilities(boost::shared_ptr<VascularNode<DIM> > pNode,
+std::vector<double> LatticeBasedMigrationRule<DIM>::GetNeighbourMovementProbabilities(boost::shared_ptr<VesselNode<DIM> > pNode,
                                                        std::vector<unsigned> neighbourIndices, unsigned gridIndex)
 {
     std::vector<double> probability_of_moving(neighbourIndices.size(), 0.0);
@@ -71,7 +71,7 @@ std::vector<double> LatticeBasedMigrationRule<DIM>::GetNeighbourMovementProbabil
         bool already_attached = false;
         for (unsigned seg_index = 0; seg_index < pNode->GetNumberOfSegments(); seg_index++)
         {
-            if(pNode->GetVesselSegment(seg_index)->GetOppositeNode(pNode)->IsCoincident(ChastePoint<DIM>(neighbour_location)))
+            if(pNode->GetSegment(seg_index)->GetOppositeNode(pNode)->IsCoincident(neighbour_location))
             {
                 already_attached = true;
                 break;
@@ -80,7 +80,7 @@ std::vector<double> LatticeBasedMigrationRule<DIM>::GetNeighbourMovementProbabil
 
         // Also ensure that the new location would not try to cross a vessel which is oriented diagonally
         // TODO: Very slow, bottleneck
-//        if(already_attached or this->mpVesselNetwork->VesselCrossesLineSegment(neighbour_location, pNode->GetLocationVector()))
+//        if(already_attached or this->mpVesselNetwork->VesselCrossesLineSegment(neighbour_location, pNode->rGetLocation()))
 //        {
 //            continue;
 //        }
@@ -137,7 +137,7 @@ void LatticeBasedMigrationRule<DIM>::SetMovementProbability(double movementProba
 }
 
 template<unsigned DIM>
-std::vector<int> LatticeBasedMigrationRule<DIM>::GetIndices(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
+std::vector<int> LatticeBasedMigrationRule<DIM>::GetIndices(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes)
 {
     if(!this->mpGrid)
     {
@@ -153,7 +153,7 @@ std::vector<int> LatticeBasedMigrationRule<DIM>::GetIndices(const std::vector<bo
     std::vector<int> indices(rNodes.size(), -1);
 
     // Get the point-node map from the regular grid
-    std::vector<std::vector<boost::shared_ptr<VascularNode<DIM> > > > point_node_map = this->mpGrid->GetPointNodeMap();
+    std::vector<std::vector<boost::shared_ptr<VesselNode<DIM> > > > point_node_map = this->mpGrid->GetPointNodeMap();
 
     // Get the neighbour data from the regular grid
     std::vector<std::vector<unsigned> > neighbour_indices = this->mpGrid->GetNeighbourData();
@@ -162,7 +162,7 @@ std::vector<int> LatticeBasedMigrationRule<DIM>::GetIndices(const std::vector<bo
     for(unsigned idx = 0; idx < rNodes.size(); idx++)
     {
         // Get the grid index of the node
-        unsigned grid_index = this->mpGrid->GetNearestGridIndex(rNodes[idx]->GetLocationVector());
+        unsigned grid_index = this->mpGrid->GetNearestGridIndex(rNodes[idx]->rGetLocation());
 
         // Get the probability of moving into each of the neighbour sites
         std::vector<double> probability_of_moving = GetNeighbourMovementProbabilities(rNodes[idx], neighbour_indices[grid_index], grid_index);

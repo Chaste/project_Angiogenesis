@@ -39,6 +39,7 @@
 #include <string>
 #include <map>
 #include <boost/enable_shared_from_this.hpp>
+#include "AbstractVesselNetworkComponentFlowProperties.hpp"
 
 /**
  * This is a class for vascular node flow properties.
@@ -46,15 +47,11 @@
  * This class stores nodal data for vessel network flow problems. Each node has
  * an instance of the class.
  */
-class NodeFlowProperties : public boost::enable_shared_from_this<NodeFlowProperties>
+template<unsigned DIM>
+class NodeFlowProperties : public boost::enable_shared_from_this<NodeFlowProperties<DIM> >, public AbstractVesselNetworkComponentFlowProperties<DIM>
 {
 
 private:
-
-    /**
-     * Pressure in the vessel at this node
-     */
-    double mPressure;
 
     /**
      *  Is the node an input node
@@ -80,39 +77,22 @@ public:
     ~NodeFlowProperties();
 
     /**
-     * Return the pressure in the vessel at the node
-     *
-     * @return the pressure in the vessel at the node
-     */
-    double GetPressure() const;
-
-    /**
      * Return a map of nodal data for use by the vtk writer
-     *
      * @return a map of nodal data for use by the vtk writer
      */
-    std::map<std::string, double> GetVtkData() const;
+    std::map<std::string, double> GetOutputData() const;
 
     /**
      * Return true if the node is an input node
-     *
      * @return true if the node is an input node
      */
     bool IsInputNode() const;
 
     /**
      * Return true if the node is an output node
-     *
      * @return true if the node is an output node
      */
     bool IsOutputNode() const;
-
-    /**
-     * Set the vessel pressure at this node
-     *
-     * @param pressure the vessel pressure
-     */
-    void SetPressure(double pressure);
 
     /**
      * Set that the node is an input node

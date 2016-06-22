@@ -42,7 +42,7 @@
 #include "vtkSTLWriter.h"
 #include <boost/random.hpp>
 #include <boost/generator_iterator.hpp>
-#include "VascularNode.hpp"
+#include "VesselNode.hpp"
 #include "VesselSegment.hpp"
 #include "Vessel.hpp"
 #include "VesselSurfaceGenerator.hpp"
@@ -168,15 +168,15 @@ boost::shared_ptr<Polygon> Part<DIM>::AddRectangle(double sizeX, double sizeY, c
 }
 
 template<unsigned DIM>
-void Part<DIM>::AddVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pVesselNetwork, bool surface)
+void Part<DIM>::AddVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pVesselNetwork, bool surface)
 {
     if (!surface)
     {
         std::vector<boost::shared_ptr<Vertex> > vertices;
-        std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = pVesselNetwork->GetNodes();
+        std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes = pVesselNetwork->GetNodes();
         for (unsigned idx = 0; idx < nodes.size(); idx++)
         {
-            vertices.push_back(Vertex::Create(nodes[idx]->GetLocationValue()));
+            vertices.push_back(Vertex::Create(nodes[idx]->rGetLocation()));
         }
 
         // If vertices lie on any existing facets add the vertex to the facet

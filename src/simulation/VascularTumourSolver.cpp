@@ -36,7 +36,7 @@
 #include <boost/lexical_cast.hpp>
 #include "UblasIncludes.hpp"
 #include "VesselSegment.hpp"
-#include "VascularNode.hpp"
+#include "VesselNode.hpp"
 #include "VascularTumourSolver.hpp"
 
 template<unsigned DIM>
@@ -66,7 +66,7 @@ boost::shared_ptr<VascularTumourSolver<DIM> > VascularTumourSolver<DIM>::Create(
 }
 
 template<unsigned DIM>
-void VascularTumourSolver<DIM>::SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork)
+void VascularTumourSolver<DIM>::SetVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pNetwork)
 {
     mpNetwork = pNetwork;
 }

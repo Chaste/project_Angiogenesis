@@ -35,52 +35,55 @@
 
 #include "NodeFlowProperties.hpp"
 
-NodeFlowProperties::NodeFlowProperties() :
-        mPressure(0.0),
+template<unsigned DIM>
+NodeFlowProperties<DIM>::NodeFlowProperties() : AbstractVesselNetworkComponentFlowProperties<DIM>(),
         mIsInputNode(false),
         mIsOutputNode(false)
 {
+
 }
 
-NodeFlowProperties::~NodeFlowProperties()
+template<unsigned DIM>
+NodeFlowProperties<DIM>::~NodeFlowProperties()
 {
+
 }
 
-double NodeFlowProperties::GetPressure() const
+template<unsigned DIM>
+std::map<std::string, double> NodeFlowProperties<DIM>::GetOutputData() const
 {
-    return mPressure;
+    std::map<std::string, double> output_data;
+    output_data["Node Dimensionless Pressure"] = this->GetPressure();
+    output_data["Node Pressure Pa"] = this->GetPressureSI();
+    output_data["Node Is Input"] = double(IsInputNode());
+    output_data["Node Is Output"] = double(IsOutputNode());
+    return output_data;
 }
 
-std::map<std::string, double> NodeFlowProperties::GetVtkData() const
-{
-    std::map<std::string, double> vtk_data;
-    vtk_data["Node Pressure"] = GetPressure();
-    vtk_data["Node Is Input"] = double(IsInputNode());
-    vtk_data["Node Is Output"] = double(IsOutputNode());
-    return vtk_data;
-}
-
-bool NodeFlowProperties::IsInputNode() const
+template<unsigned DIM>
+bool NodeFlowProperties<DIM>::IsInputNode() const
 {
     return mIsInputNode;
 }
 
-bool NodeFlowProperties::IsOutputNode() const
+template<unsigned DIM>
+bool NodeFlowProperties<DIM>::IsOutputNode() const
 {
     return mIsOutputNode;
 }
 
-void NodeFlowProperties::SetIsInputNode(bool inputNode)
+template<unsigned DIM>
+void NodeFlowProperties<DIM>::SetIsInputNode(bool inputNode)
 {
     mIsInputNode = inputNode;
 }
 
-void NodeFlowProperties::SetIsOutputNode(bool outputNode)
+template<unsigned DIM>
+void NodeFlowProperties<DIM>::SetIsOutputNode(bool outputNode)
 {
     mIsOutputNode = outputNode;
 }
 
-void NodeFlowProperties::SetPressure(double pressure)
-{
-    mPressure = pressure;
-}
+// Explicit instantiation
+template class NodeFlowProperties<2> ;
+template class NodeFlowProperties<3> ;

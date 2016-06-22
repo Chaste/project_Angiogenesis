@@ -46,7 +46,7 @@
 #include "Vertex.hpp"
 #include "Polygon.hpp"
 #include "Facet.hpp"
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 
 /* A geometric feature described using a PLC (piecewise linear complex) description
  * (see the tetgen manual for details:http://wias-berlin.de/software/tetgen/).
@@ -146,7 +146,7 @@ public:
      * @param pVesselNetwork the vessel network to be added
      * @param surface true if a surface representation of the network is required
      */
-    void AddVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pVesselNetwork, bool surface = false);
+    void AddVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pVesselNetwork, bool surface = false);
 
     /* Extrude the part along the z-axis, inserting planar faces in place of edges.
      * @param pPolygon the polygon to extrude

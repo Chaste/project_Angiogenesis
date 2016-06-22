@@ -37,8 +37,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _RadiusCalculator_hpp
 
 #include <boost/shared_ptr.hpp>
-#include "VascularNetwork.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 #include "AbstractVesselNetworkCalculator.hpp"
 
 /**

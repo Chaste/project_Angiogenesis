@@ -94,7 +94,7 @@ void MetabolicStimulusCalculator<DIM>::Calculate()
     {
         units::quantity<unit::rate> metabolic_stimulus;
         units::quantity<unit::dimensionless> haematocrit = segments[idx]->GetFlowProperties()->GetHaematocrit();
-        units::quantity<unit::flow_rate> flow_rate = units::fabs(segments[idx]->GetFlowProperties()->GetFlowRate());
+        units::quantity<unit::flow_rate> flow_rate = units::fabs(segments[idx]->GetFlowProperties()->GetDimensionalFlowRate());
         if (flow_rate > 0.0 * unit::unit_flow_rate)
         {
             if (haematocrit > 0.0)
@@ -110,7 +110,7 @@ void MetabolicStimulusCalculator<DIM>::Calculate()
         {
             metabolic_stimulus = 0.0 * unit::reciprocal_seconds;
         }
-        segments[idx]->GetFlowProperties()->SetStimulus(segments[idx]->GetFlowProperties()->GetStimulus() + metabolic_stimulus);
+        segments[idx]->GetFlowProperties()->SetDimensionalGrowthStimulus(segments[idx]->GetFlowProperties()->GetDimensionalGrowthStimulus() + metabolic_stimulus);
     }
 }
 

@@ -38,10 +38,10 @@
 
 #include <vector>
 #include <string>
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 #include "AbstractCellPopulation.hpp"
 #include "AbstractCellMutationState.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 
 /**
  * The class manages interactions between vessel networks and cell populations. It helps to 'decompartmentalize'
@@ -56,7 +56,7 @@ protected:
     /**
      * The vessel network can be stored here. The cell population is not stored.
      */
-    boost::shared_ptr<VascularNetwork<DIM> > mpNetwork;
+    boost::shared_ptr<VesselNetwork<DIM> > mpNetwork;
 
 public:
 
@@ -80,34 +80,34 @@ public:
     void LabelVesselsInCellPopulation(AbstractCellPopulation<DIM>& cellPopulation,
                                       boost::shared_ptr<AbstractCellMutationState> pTipMutationState,
                                       boost::shared_ptr<AbstractCellMutationState> pStalkState,
-                                      units::quantity<unit::length> threshold = 1.25e-9 * unit::metres);
+                                      double threshold = 1.25e-6);
 
     /**
      * Divide vessels in the network between cell locations in the cell population by adding new nodes at locations
      * coincident with cells.
      * @param rCellPopulation the cell population
      */
-    void PartitionNetworkOverCells(AbstractCellPopulation<DIM>& rCellPopulation, units::quantity<unit::length> threshold = 1.25e-9 * unit::metres);
+    void PartitionNetworkOverCells(AbstractCellPopulation<DIM>& rCellPopulation, double threshold = 1.25e-6);
 
     /**
      * Remove any cells not overlapping with the vessel network. Does not label the cells.
      * @param rCellPopulation the cell population
      * @param threshold the max distance from a cell location to vessel centre for killing.
      */
-    void KillNonVesselOverlappingCells(AbstractCellPopulation<DIM>& rCellPopulation, units::quantity<unit::length> threshold = 1.25e-9 * unit::metres);
+    void KillNonVesselOverlappingCells(AbstractCellPopulation<DIM>& rCellPopulation, double threshold = 1.25e-6);
 
     /**
      * Remove any cells overlapping with the vessel network. Does not label the cells.
      * @param rCellPopulation the cell population
      * @param threshold the max distance from a cell location to vessel centre for killing.
      */
-    void KillOverlappingVesselCells(AbstractCellPopulation<DIM>& rCellPopulation, units::quantity<unit::length> threshold = 1.25e-9 * unit::metres);
+    void KillOverlappingVesselCells(AbstractCellPopulation<DIM>& rCellPopulation, double threshold = 1.25e-6);
 
     /**
      * Set the vessel network
      * @param pNetwork the vessel network
      */
-    void SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork);
+    void SetVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pNetwork);
 
 };
 

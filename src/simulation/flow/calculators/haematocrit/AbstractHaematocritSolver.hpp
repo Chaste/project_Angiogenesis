@@ -37,7 +37,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define AbstractHaematocritSolver_hpp
 
 #include "SmartPointers.hpp"
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 #include "AbstractVesselNetworkCalculator.hpp"
 
 /**

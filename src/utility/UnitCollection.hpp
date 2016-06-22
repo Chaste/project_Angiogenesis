@@ -89,38 +89,4 @@ namespace unit
     BOOST_UNITS_STATIC_CONSTANT(kg, units::si::mass);
 }
 
-inline units::quantity<unit::length> StringToLengthUnit(std::string key)
-{
-    if(key=="metres" or key=="metre")
-    {
-        units::quantity<unit::length> unit_quantity = 1.0*unit::metres;
-        return unit_quantity;
-    }
-    else if(key=="microns" or key=="micron")
-    {
-        units::quantity<unit::length> unit_quantity = 1.0*unit::metres;
-        return unit_quantity;
-    }
-    else
-    {
-        EXCEPTION("Length unit key not recognized");
-    }
-}
-
-inline std::string LengthQuantityToString(units::quantity<unit::length> quantity)
-{
-    std::stringstream buffer;
-    buffer << quantity.unit_type << std::endl;
-    return buffer.str();
-}
-
-inline std::pair<double, std::string> LengthQuantityToValueUnitPair(units::quantity<unit::length> quantity)
-{
-    std::pair<double, std::string> output_pair;
-    output_pair.first = quantity.value();
-    output_pair.second = LengthQuantityToString(quantity);
-    return output_pair;
-}
-
-
-#endif //UnitCollections_hpp
+#endif

@@ -37,8 +37,8 @@
 
 template<unsigned DIM>
 RadiusCalculator<DIM>::RadiusCalculator() : AbstractVesselNetworkCalculator<DIM>(),
-        mMinRadius(1e-6 * unit::metres),
-        mMaxRadius(50e-6 * unit::metres),
+        mMinRadius(1.0* unit::microns),
+        mMaxRadius(50.0 * unit::microns),
         mTimeStep(0.0001 * unit::seconds)
 {
 
@@ -74,8 +74,8 @@ void RadiusCalculator<DIM>::Calculate()
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
     for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
     {
-        units::quantity<unit::rate> total_stimulus = segments[segment_index]->GetFlowProperties()->GetStimulus();
-        units::quantity<unit::length> radius = segments[segment_index]->GetRadius();
+        units::quantity<unit::rate> total_stimulus = segments[segment_index]->GetFlowProperties()->GetDimensionalGrowthStimulus();
+        units::quantity<unit::length> radius = segments[segment_index]->GetDimensionalRadius();
         radius *= 1.0 + mTimeStep * total_stimulus;
         if (radius > mMaxRadius)
         {
@@ -85,7 +85,7 @@ void RadiusCalculator<DIM>::Calculate()
         {
             radius = mMinRadius;
         }
-        segments[segment_index]->SetRadius(radius);
+        segments[segment_index]->SetDimensionalRadius(radius);
     }
 }
 

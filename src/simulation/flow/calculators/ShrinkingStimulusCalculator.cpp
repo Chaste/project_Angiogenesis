@@ -73,7 +73,7 @@ void ShrinkingStimulusCalculator<DIM>::Calculate()
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
     for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
     {
-        segments[segment_index]->GetFlowProperties()->SetStimulus(segments[segment_index]->GetFlowProperties()->GetStimulus() - mDefaultStimulus);
+        segments[segment_index]->GetFlowProperties()->SetDimensionalGrowthStimulus(segments[segment_index]->GetFlowProperties()->GetDimensionalGrowthStimulus() - mDefaultStimulus);
     }
 }
 

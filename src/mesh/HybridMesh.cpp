@@ -43,7 +43,6 @@
 #include "UblasVectorInclude.hpp"
 #include "AbstractTetrahedralMesh.hpp"
 #include "VtkMeshWriter.hpp"
-#include "Debug.hpp"
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 HybridMesh<ELEMENT_DIM, SPACE_DIM>::HybridMesh()

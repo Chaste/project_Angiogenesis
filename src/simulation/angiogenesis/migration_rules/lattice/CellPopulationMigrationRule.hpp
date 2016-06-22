@@ -40,7 +40,7 @@
 #include <string>
 #include "LatticeBasedMigrationRule.hpp"
 #include "AbstractCellMutationState.hpp"
-#include "VascularNode.hpp"
+#include "VesselNode.hpp"
 #include "SmartPointers.hpp"
 #include "AbstractCellPopulation.hpp"
 
@@ -87,7 +87,7 @@ public:
      * @param rNodes nodes to calculate indices
      * @return a vector of grid indices to move nodes into
      */
-    virtual std::vector<int> GetIndices(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes);
+    virtual std::vector<int> GetIndices(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes);
 
     /**
      * Method to set volume fraction for particular type of cell.
@@ -108,7 +108,7 @@ protected:
      * @param neighbourIndices the grid indices of the neighbour nodes
      * @return a vector of movement probabilities corresponding to each neighbour index
      */
-    virtual std::vector<double> GetNeighbourMovementProbabilities(boost::shared_ptr<VascularNode<DIM> > pNode,
+    virtual std::vector<double> GetNeighbourMovementProbabilities(boost::shared_ptr<VesselNode<DIM> > pNode,
                                                            std::vector<unsigned> neighbourIndices, unsigned gridIndex);
 
 };

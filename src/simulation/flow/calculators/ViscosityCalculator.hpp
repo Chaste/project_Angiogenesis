@@ -37,7 +37,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _ViscosityCalculator_hpp
 
 #include <boost/shared_ptr.hpp>
-#include "VascularNetwork.hpp"
 #include "AbstractVesselNetworkCalculator.hpp"
 
 /**
@@ -48,6 +47,8 @@ template<unsigned DIM>
 class ViscosityCalculator : public AbstractVesselNetworkCalculator<DIM>
 {
     
+    units::quantity<unit::dynamic_viscosity> mPlasmaViscosity;
+
 public:
     
     /**
@@ -64,7 +65,11 @@ public:
      * Do the calculation.
      */
     void Calculate();
-    
+
+    void SetDimensionalPlasmaViscosity(units::quantity<unit::dynamic_viscosity> visocity);
+
+    void SetPlasmaViscositySI(double visocity);
+
 };
 
 #endif

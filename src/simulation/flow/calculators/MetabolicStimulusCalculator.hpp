@@ -38,8 +38,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "SmartPointers.hpp"
 #include "AbstractVesselNetworkCalculator.hpp"
-#include "VascularNetwork.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 
 /**
  * Calculate a stimulus related to the ability of the vasculature to adopt to the

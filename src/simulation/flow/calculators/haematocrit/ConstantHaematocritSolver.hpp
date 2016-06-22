@@ -38,9 +38,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <boost/shared_ptr.hpp>
 
-#include "VascularNetwork.hpp"
 #include "AbstractHaematocritSolver.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 
 template<unsigned DIM>
 class ConstantHaematocritSolver : public AbstractHaematocritSolver<DIM>

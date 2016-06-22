@@ -37,7 +37,7 @@
 #define REGRESSIONSOLVER_HPP_
 
 #include "SmartPointers.hpp"
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 
 /**
  * This class is for simulating modifications to the vessel network due to regression.
@@ -51,7 +51,7 @@ protected:
     /**
      * The vessel network
      */
-    boost::shared_ptr<VascularNetwork<DIM> > mpNetwork;
+    boost::shared_ptr<VesselNetwork<DIM> > mpNetwork;
 
 public:
 
@@ -69,7 +69,7 @@ public:
      * Set the vessel network
      * @param pNetwork the vessel network
      */
-    void SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork);
+    void SetVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pNetwork);
 
     /**
      * Increment one step in time

@@ -35,7 +35,7 @@
 
 #include "ConstantHaematocritSolver.hpp"
 #include "StructuralAdaptationSolver.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 
 template<unsigned DIM>
 StructuralAdaptationSolver<DIM>::StructuralAdaptationSolver() :

@@ -117,7 +117,7 @@ protected:
      */
     boost::shared_ptr<HybridMesh<DIM, DIM> > mpMesh;
 
-    boost::shared_ptr<VascularNetwork <DIM> > mpNetwork;
+    boost::shared_ptr<VesselNetwork <DIM> > mpNetwork;
 
 public:
 
@@ -148,7 +148,7 @@ public:
      */
     double GetValue();
 
-    void SetNetwork(boost::shared_ptr<VascularNetwork <DIM> > pNetwork);
+    void SetNetwork(boost::shared_ptr<VesselNetwork <DIM> > pNetwork);
 
     /**
      * Return the value of the boundary condition evaluated at a point and whether the point is on a boundary

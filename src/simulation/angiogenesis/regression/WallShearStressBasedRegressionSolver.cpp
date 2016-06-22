@@ -40,7 +40,7 @@ template<unsigned DIM>
 WallShearStressBasedRegressionSolver<DIM>::WallShearStressBasedRegressionSolver() :
     RegressionSolver<DIM>(),
     mThresholdWss(9.0*unit::pascals),
-    mMaxTimeWithLowWss(60)
+    mMaxTimeWithLowWss(60*unit::seconds)
 {
 
 }
@@ -59,9 +59,8 @@ boost::shared_ptr<WallShearStressBasedRegressionSolver<DIM> > WallShearStressBas
 }
 
 template<unsigned DIM>
-void WallShearStressBasedRegressionSolver<DIM>::SetMaximumTimeWithLowWallShearStress(double time)
+void WallShearStressBasedRegressionSolver<DIM>::SetMaximumTimeWithLowWallShearStress(units::quantity<unit::time> time)
 {
-    assert(time > 0);
     mMaxTimeWithLowWss = time;
 }
 
@@ -83,25 +82,25 @@ void WallShearStressBasedRegressionSolver<DIM>::Increment()
     for(unsigned idx=0;idx<vessels.size(); idx++)
     {
         // if wall shear stress of vessel is below threshold then start regression timer, unless it has already been started
-        if (vessels[idx]->GetSegment(0)->GetFlowProperties()->GetWallShearStress() < mThresholdWss)
+        if (vessels[idx]->GetFlowProperties()->GetDimensionalWallShearStress(vessels[idx]->GetSegments()) < mThresholdWss)
         {
-            if (!(vessels[idx]->HasRegressionTimerStarted()) && !(vessels[idx]->VesselHasRegressed()))
+            if (!(vessels[idx]->GetFlowProperties()->HasRegressionTimerStarted()) && !(vessels[idx]->GetFlowProperties()->HasVesselRegressed()))
             {
                 // increment time that the vessel has had low wall shear stress
-                vessels[idx]->SetTimeUntilRegression(mMaxTimeWithLowWss);
+                vessels[idx]->GetFlowProperties()->SetDimensionalTimeUntilRegression(mMaxTimeWithLowWss);
             }
         }
         else // otherwise rescue vessel
         {
             // wall shear stress above threshold so vessel is not regressing
-            vessels[idx]->ResetRegressionTimer();
+            vessels[idx]->GetFlowProperties()->ResetRegressionTimer();
         }
     }
 
     // iterate through all vessels and if regression flag is true then remove from the network
     for(unsigned idx=0;idx<vessels.size(); idx++)
     {
-        if (vessels[idx]->VesselHasRegressed())
+        if (vessels[idx]->GetFlowProperties()->HasVesselRegressed())
         {
             this->mpNetwork->RemoveVessel(vessels[idx], true);
         }

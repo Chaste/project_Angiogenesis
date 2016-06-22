@@ -38,7 +38,7 @@
 
 #include "SmartPointers.hpp"
 #include "AbstractRegularGridHybridSolver.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 
 template<unsigned DIM>
 class DistanceMap : public AbstractRegularGridHybridSolver<DIM>

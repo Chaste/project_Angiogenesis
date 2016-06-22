@@ -42,9 +42,9 @@
 #include <vtkPoints.h>
 #include "Part.hpp"
 #include "SmartPointers.hpp"
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 #include "SimpleCell.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 
 /* A minimal cell population class.
  */
@@ -76,7 +76,7 @@ public:
 
     void AddCells(std::vector<boost::shared_ptr<SimpleCell<DIM> > > cells);
 
-    void BooleanWithVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork);
+    void BooleanWithVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pNetwork);
 
     void GenerateCellsOnGrid(unsigned xDim = 10, unsigned yDim = 10, unsigned zDim = 10,
                              double spacing =1.0, c_vector<double, DIM> origin = zero_vector<double>(DIM));

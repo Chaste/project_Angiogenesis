@@ -39,7 +39,7 @@
 #include "PetscTools.hpp"
 #include "VesselSegment.hpp"
 #include "FlowSolver.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 
 template<unsigned DIM>
 FlowSolver<DIM>::FlowSolver()
@@ -98,7 +98,7 @@ void FlowSolver<DIM>::SetUp()
     mNodeNodeConnectivity = mpVesselNetwork->GetNodeNodeConnectivity();
 
     // Get the boundary condition nodes
-    std::vector<boost::shared_ptr<VascularNode<DIM> > > boundary_condition_nodes;
+    std::vector<boost::shared_ptr<VesselNode<DIM> > > boundary_condition_nodes;
     for (unsigned node_index = 0; node_index < num_nodes; node_index++)
     {
         if (mNodes[node_index]->GetFlowProperties()->IsInputNode()
@@ -131,9 +131,9 @@ void FlowSolver<DIM>::SetUseDirectSolver(bool useDirectSolver)
 }
 
 template<unsigned DIM>
-void FlowSolver<DIM>::SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pVascularNetwork)
+void FlowSolver<DIM>::SetVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pVesselNetwork)
 {
-    mpVesselNetwork = pVascularNetwork;
+    mpVesselNetwork = pVesselNetwork;
 }
 
 template<unsigned DIM>
@@ -153,7 +153,7 @@ void FlowSolver<DIM>::Update(bool runSetup)
     units::quantity<unit::flow_impedance> min_impedance = DBL_MAX * unit::unit_flow_impedance;
     for (unsigned vessel_index = 0; vessel_index < mVessels.size(); vessel_index++)
     {
-        units::quantity<unit::flow_impedance> impedance = mVessels[vessel_index]->GetImpedance();
+        units::quantity<unit::flow_impedance> impedance = mVessels[vessel_index]->GetFlowProperties()->GetDimensionalImpedance(mVessels[vessel_index]->GetSegments());
         if (impedance <= 0.0 * unit::unit_flow_impedance)
         {
             EXCEPTION("Impedance should be a positive number.");
@@ -227,9 +227,9 @@ void FlowSolver<DIM>::Solve()
     // Set the segment flow rates and nodal pressures
     for (unsigned vessel_index = 0; vessel_index < mVessels.size(); vessel_index++)
     {
-        double start_node_pressure = mVessels[vessel_index]->GetStartNode()->GetFlowProperties()->GetPressure();
-        double end_node_pressure = mVessels[vessel_index]->GetEndNode()->GetFlowProperties()->GetPressure();
-        units::quantity<unit::flow_rate> flow_rate = (start_node_pressure - end_node_pressure)*unit::pascals / mVessels[vessel_index]->GetImpedance();
+        units::quantity<unit::pressure> start_node_pressure = mVessels[vessel_index]->GetStartNode()->GetFlowProperties()->GetDimensionalPressure();
+        units::quantity<unit::pressure> end_node_pressure = mVessels[vessel_index]->GetEndNode()->GetFlowProperties()->GetDimensionalPressure();
+        units::quantity<unit::flow_rate> flow_rate = (start_node_pressure - end_node_pressure) / mVessels[vessel_index]->GetFlowProperties()->GetDimensionalImpedance(mVessels[vessel_index]->GetSegments());
 
         // Clean up small values as some structural adaptation calculators are sensitive to them.
         if (units::fabs(flow_rate) < pow(10, -20) * unit::unit_flow_rate)
@@ -238,14 +238,14 @@ void FlowSolver<DIM>::Solve()
         }
 
         std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = mVessels[vessel_index]->GetSegments();
-        units::quantity<unit::pressure> pressure = start_node_pressure * unit::pascals;
+        units::quantity<unit::pressure> pressure = start_node_pressure;
         for (unsigned segment_index = 0; segment_index < segments.size() - 1; segment_index++)
         {
-            pressure -= segments[segment_index]->GetFlowProperties()->GetImpedance() * flow_rate;
-            segments[segment_index]->GetNode(1)->GetFlowProperties()->SetPressure(pressure/unit::pascals);
-            segments[segment_index]->GetFlowProperties()->SetFlowRate(flow_rate);
+            pressure -= segments[segment_index]->GetFlowProperties()->GetDimensionalImpedance() * flow_rate;
+            segments[segment_index]->GetNode(1)->GetFlowProperties()->SetDimensionalPressure(pressure);
+            segments[segment_index]->GetFlowProperties()->SetDimensionalFlowRate(flow_rate);
         }
-        segments[segments.size() - 1]->GetFlowProperties()->SetFlowRate(flow_rate);
+        segments[segments.size() - 1]->GetFlowProperties()->SetDimensionalFlowRate(flow_rate);
     }
 
     // Clean up

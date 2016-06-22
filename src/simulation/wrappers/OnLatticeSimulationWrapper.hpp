@@ -44,7 +44,7 @@
 #include "CaBasedCellPopulation.hpp"
 #include "VascularTumourModifier.hpp"
 #include "LQRadiotherapyCellKiller.hpp"
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 
 class OnLatticeSimulationWrapper
 {
@@ -62,7 +62,7 @@ class OnLatticeSimulationWrapper
 
     bool mUseRadiotherapyKiller;
 
-    boost::shared_ptr<VascularNetwork<3> > mpNetwork;
+    boost::shared_ptr<VesselNetwork<3> > mpNetwork;
 
     double mVesselDistanceTolerance;
 
@@ -129,7 +129,7 @@ public:
 
     void SetEndTime(double endTime);
 
-    void SetNetwork(boost::shared_ptr<VascularNetwork<3> > pNetwork);
+    void SetNetwork(boost::shared_ptr<VesselNetwork<3> > pNetwork);
 
     void Solve(boost::shared_ptr<VascularTumourModifier<3> > pVtModifier);
 

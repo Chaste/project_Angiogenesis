@@ -38,9 +38,9 @@
 
 #include <vector>
 #include "SmartPointers.hpp"
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 #include "Vessel.hpp"
-#include "VascularNode.hpp"
+#include "VesselNode.hpp"
 #include "LinearSystem.hpp"
 
 /**
@@ -58,7 +58,7 @@ private:
      * Nodes in the vessel network. Stored in the flow solver to avoid
      * recalculation by the vessel network class.
      */
-    std::vector<boost::shared_ptr<VascularNode<DIM> > > mNodes;
+    std::vector<boost::shared_ptr<VesselNode<DIM> > > mNodes;
 
     /**
      * Vessels in the vessel network. Stored in the flow solver to avoid
@@ -69,7 +69,7 @@ private:
     /**
      * The vessel network
      */
-    boost::shared_ptr<VascularNetwork<DIM> > mpVesselNetwork;
+    boost::shared_ptr<VesselNetwork<DIM> > mpVesselNetwork;
 
     /**
      * A node-vessel connectivity map
@@ -137,9 +137,9 @@ public:
 
     /**
      * Set the vessel network to use in the solver.
-     * @param pVascularNetwork the vessel network.
+     * @param pVesselNetwork the vessel network.
      */
-    void SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pVascularNetwork);
+    void SetVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pVesselNetwork);
 
     /**
      * Run the flow solver and update the pressure and flow rate data in the vessel network

@@ -67,7 +67,7 @@ void LatticeBasedSproutingRule<DIM>::SetGrid(boost::shared_ptr<RegularGrid<DIM> 
 }
 
 template<unsigned DIM>
-std::vector<boost::shared_ptr<VascularNode<DIM> > > LatticeBasedSproutingRule<DIM>::GetSprouts(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
+std::vector<boost::shared_ptr<VesselNode<DIM> > > LatticeBasedSproutingRule<DIM>::GetSprouts(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes)
 {
     if(!this->mpVesselNetwork)
     {
@@ -75,7 +75,7 @@ std::vector<boost::shared_ptr<VascularNode<DIM> > > LatticeBasedSproutingRule<DI
     }
 
     // Set up the output sprouts vector
-    std::vector<boost::shared_ptr<VascularNode<DIM> > > sprouts;
+    std::vector<boost::shared_ptr<VesselNode<DIM> > > sprouts;
 
     // Loop over all nodes and randomly select sprouts
     for(unsigned idx = 0; idx < rNodes.size(); idx++)
@@ -88,11 +88,11 @@ std::vector<boost::shared_ptr<VascularNode<DIM> > > LatticeBasedSproutingRule<DI
         // Check we are not too close to the end of the vessel
         if(this->mVesselEndCutoff > 0.0)
         {
-            if(rNodes[idx]->GetVesselSegment(0)->GetVessel()->GetClosestEndNodeDistance(rNodes[idx]->GetLocationVector())< this->mVesselEndCutoff)
+            if(rNodes[idx]->GetSegment(0)->GetVessel()->GetClosestEndNodeDistance(rNodes[idx]->rGetLocation())< this->mVesselEndCutoff)
             {
                 continue;
             }
-            if(rNodes[idx]->GetVesselSegment(1)->GetVessel()->GetClosestEndNodeDistance(rNodes[idx]->GetLocationVector())< this->mVesselEndCutoff)
+            if(rNodes[idx]->GetSegment(1)->GetVessel()->GetClosestEndNodeDistance(rNodes[idx]->rGetLocation())< this->mVesselEndCutoff)
             {
                 continue;
             }
@@ -104,7 +104,7 @@ std::vector<boost::shared_ptr<VascularNode<DIM> > > LatticeBasedSproutingRule<DI
             bool too_close = false;
             for(unsigned jdx=0; jdx<sprouts.size(); jdx++)
             {
-                if(rNodes[idx]->GetDistance(sprouts[jdx]->GetLocationVector()) < mTipExclusionRadius)
+                if(rNodes[idx]->GetDistance(sprouts[jdx]->rGetLocation()) < mTipExclusionRadius)
                 {
                     too_close = true;
                 }

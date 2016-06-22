@@ -35,7 +35,7 @@
 
 #include "CellStateDependentDiscreteSource.hpp"
 #include "AbstractCellPopulation.hpp"
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 #include "Debug.hpp"
 
 template<unsigned DIM>

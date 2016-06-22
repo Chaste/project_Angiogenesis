@@ -39,7 +39,7 @@
 #include <vector>
 #include <string>
 #include "SmartPointers.hpp"
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 #include "Part.hpp"
 #include "AbstractSproutingRule.hpp"
 #include "AbstractMigrationRule.hpp"
@@ -55,7 +55,7 @@ class AngiogenesisSolver
     /**
      * The vessel network
      */
-    boost::shared_ptr<VascularNetwork<DIM> > mpNetwork;
+    boost::shared_ptr<VesselNetwork<DIM> > mpNetwork;
 
     /**
      * The radius in which anastamosis is allowed in angiogenesis simulations
@@ -100,7 +100,7 @@ class AngiogenesisSolver
     /**
      * Cell node map for discrete cell angiogenesis models
      */
-    std::map<boost::shared_ptr<Cell> , boost::shared_ptr<VascularNode<DIM> > > mCellNodeMap;
+    std::map<boost::shared_ptr<Cell> , boost::shared_ptr<VesselNode<DIM> > > mCellNodeMap;
 
 public:
 
@@ -189,7 +189,7 @@ public:
      * Set the vessel network
      * @param pNetwork the vessel network
      */
-    void SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork);
+    void SetVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pNetwork);
 
 protected:
 

@@ -166,7 +166,7 @@ void OnLatticeSimulationWrapper::SetUseRadiotherapyCellKiller(bool UseKiller)
     mUseRadiotherapyKiller = UseKiller;
 }
 
-void OnLatticeSimulationWrapper::SetNetwork(boost::shared_ptr<VascularNetwork<3> > pNetwork)
+void OnLatticeSimulationWrapper::SetNetwork(boost::shared_ptr<VesselNetwork<3> > pNetwork)
 {
     mpNetwork = pNetwork;
 }

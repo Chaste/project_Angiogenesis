@@ -95,7 +95,7 @@ void OffLatticeMigrationRule<DIM>::SetIsSprouting(bool isSprouting)
 }
 
 template<unsigned DIM>
-std::vector<c_vector<double, DIM> > OffLatticeMigrationRule<DIM>::GetDirections(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
+std::vector<c_vector<double, DIM> > OffLatticeMigrationRule<DIM>::GetDirections(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes)
 {
     if (this->mIsSprouting)
     {
@@ -115,7 +115,7 @@ std::vector<c_vector<double, DIM> > OffLatticeMigrationRule<DIM>::GetDirections(
                 angle_z = RandomNumberGenerator::Instance()->NormalRandomDeviate(mMeanAngles[2], mSdvAngles[2]);
             }
             c_vector<double, DIM> currentDirection  =
-                    -rNodes[idx]->GetSegments()[0]->GetOppositeNode(rNodes[idx])->GetLocationValue() + rNodes[idx]->GetLocationValue();
+                    -rNodes[idx]->GetSegments()[0]->GetOppositeNode(rNodes[idx])->rGetLocation() + rNodes[idx]->rGetLocation();
             currentDirection /= norm_2(currentDirection);
 
             c_vector<double, DIM> new_direction_z = RotateAboutAxis<DIM>(currentDirection, mGlobalZ, angle_z);
@@ -128,7 +128,7 @@ std::vector<c_vector<double, DIM> > OffLatticeMigrationRule<DIM>::GetDirections(
             {
                 // Make points
                 std::vector<c_vector<double, DIM> > probe_locations;
-                probe_locations.push_back(rNodes[idx]->GetLocationValue());
+                probe_locations.push_back(rNodes[idx]->rGetLocation());
                 probe_locations.push_back(probe_locations[0] + mProbeLength * unit_vector<double>(DIM,0));
                 probe_locations.push_back(probe_locations[0] - mProbeLength * unit_vector<double>(DIM,0));
                 probe_locations.push_back(probe_locations[0] + mProbeLength * unit_vector<double>(DIM,1));
@@ -191,19 +191,19 @@ std::vector<c_vector<double, DIM> > OffLatticeMigrationRule<DIM>::GetDirections(
             new_direction /= norm_2(new_direction);
 
             // Get the closest node in the search cone
-            std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes = this->mpVesselNetwork->GetNodes();
+            std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes = this->mpVesselNetwork->GetNodes();
 
             double min_distance = 1.e12;
             c_vector<double, DIM> min_direction = zero_vector<double>(DIM);
             for(unsigned jdx=0; jdx<nodes.size(); jdx++)
             {
-                if(IsPointInCone<DIM>(nodes[jdx]->GetLocationValue(), rNodes[idx]->GetLocationValue(), rNodes[idx]->GetLocationValue() + currentDirection * 100.0, M_PI/3.0))
+                if(IsPointInCone<DIM>(nodes[jdx]->rGetLocation(), rNodes[idx]->rGetLocation(), rNodes[idx]->rGetLocation() + currentDirection * 100.0, M_PI/3.0))
                 {
-                    double distance = norm_2(rNodes[idx]->GetLocationValue() - nodes[jdx]->GetLocationValue());
+                    double distance = norm_2(rNodes[idx]->rGetLocation() - nodes[jdx]->rGetLocation());
                     if(distance < min_distance)
                     {
                         min_distance = distance;
-                        min_direction = nodes[jdx]->GetLocationValue() - rNodes[idx]->GetLocationValue();
+                        min_direction = nodes[jdx]->rGetLocation() - rNodes[idx]->rGetLocation();
                         min_direction /= norm_2(min_direction);
                     }
                 }
@@ -228,7 +228,7 @@ std::vector<c_vector<double, DIM> > OffLatticeMigrationRule<DIM>::GetDirections(
 }
 
 template<unsigned DIM>
-std::vector<c_vector<double, DIM> > OffLatticeMigrationRule<DIM>::GetDirectionsForSprouts(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
+std::vector<c_vector<double, DIM> > OffLatticeMigrationRule<DIM>::GetDirectionsForSprouts(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes)
 {
     std::vector<c_vector<double, DIM> > movement_vectors(rNodes.size(), zero_vector<double>(DIM));
     for(unsigned idx = 0; idx < rNodes.size(); idx++)

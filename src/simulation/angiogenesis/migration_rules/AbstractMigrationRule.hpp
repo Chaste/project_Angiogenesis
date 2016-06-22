@@ -38,7 +38,7 @@
 
 #include <vector>
 #include <string>
-#include "VascularNode.hpp"
+#include "VesselNode.hpp"
 #include "SmartPointers.hpp"
 #include "AbstractHybridSolver.hpp"
 #include "AbstractCellPopulation.hpp"
@@ -61,7 +61,7 @@ protected:
     /**
      * The vessel network
      */
-    boost::shared_ptr<VascularNetwork<DIM> > mpVesselNetwork;
+    boost::shared_ptr<VesselNetwork<DIM> > mpVesselNetwork;
 
     /**
      * Distinguish between sprouting and migrating events
@@ -112,7 +112,7 @@ public:
      * Set the vessel network
      * @param pNetwork the vessel network
      */
-    void SetNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork);
+    void SetNetwork(boost::shared_ptr<VesselNetwork<DIM> > pNetwork);
 
     /**
      * Set the lattice/grid for the vessel network
@@ -126,12 +126,12 @@ public:
      */
     void SetCellPopulation(boost::shared_ptr<AbstractCellPopulation<DIM> > pCellPopulation);
 
-    virtual std::vector<c_vector<double, DIM> > GetDirections(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
+    virtual std::vector<c_vector<double, DIM> > GetDirections(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes)
     {
         return std::vector<c_vector<double, DIM> >();
     }
 
-    virtual std::vector<int> GetIndices(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
+    virtual std::vector<int> GetIndices(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes)
     {
         return std::vector<int>();
     }

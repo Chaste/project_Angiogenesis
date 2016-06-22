@@ -40,29 +40,29 @@
 #include <string>
 #include <boost/enable_shared_from_this.hpp>
 #include "SegmentFlowProperties.hpp"
-#include "VasculatureData.hpp"
 #include "UblasVectorInclude.hpp"
 #include "ChastePoint.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
+#include "AbstractVesselNetworkComponent.hpp"
 
 /**
- *  Forward declaration to allow vessels to manage adding and removing themselves from segments.
+ *  Forward declaration to allow vessels to manage adding and removing themselves from segments. and segment management by vessels.
  */
 template<unsigned DIM>
 class Vessel;
 
 template<unsigned DIM>
-class VascularNode;
+class VesselNode;
 
 /**
- * This is a class for vessel segments.
+ * This is a class for vessel segments. They are components of a vessel network.
  * .
  * Vessel segments are straight sub-units of vessels, defined by the positions of
  * their end nodes. Nodes cannot be created by the vessel segment class, they are
- * instead managed by the VascularNetwork class. Segments must always have two nodes.
+ * instead managed by the VesselNetwork class. Segments must always have two nodes.
  */
 template<unsigned DIM>
-class VesselSegment : public boost::enable_shared_from_this<VesselSegment<DIM> >
+class VesselSegment : public boost::enable_shared_from_this<VesselSegment<DIM> >, public AbstractVesselNetworkComponent<DIM>
 {
     /**
      * Allow vessels to manage adding and removing themselves from segments.
@@ -74,34 +74,14 @@ private:
     /**
      * Container for segment nodes
      */
-    std::pair<boost::shared_ptr<VascularNode<DIM> >, boost::shared_ptr<VascularNode<DIM> > > mNodes;
-
-    /**
-     * Container for generic segment data.
-     */
-    std::map<std::string, double> mOutputData;
-
-    /**
-     * Id tag, can be useful for storing segment-vessel relationships in the VesselNetwork class.
-     */
-    unsigned mId;
+    std::pair<boost::shared_ptr<VesselNode<DIM> >, boost::shared_ptr<VesselNode<DIM> > > mNodes;
 
     /**
      * Weak pointer to the vessel owning this segment
      */
     boost::weak_ptr<Vessel<DIM> > mVessel;
 
-    /**
-     * Radius of the vessel at this segment
-     */
-    units::quantity<unit::length> mRadius;
-
-    /**
-     * The flow properties for the segment
-     */
-    boost::shared_ptr<SegmentFlowProperties> mpFlowProperties;
-
-private:
+    boost::shared_ptr<SegmentFlowProperties<DIM> > mpFlowProperties;
 
     /**
      * Constructor - This is private as instances of this class must be created with a corresponding shared pointer. This is
@@ -110,13 +90,13 @@ private:
      * @param pNode1 the first node in the segment
      * @param pNode2 the second node in the segment
      */
-    VesselSegment(boost::shared_ptr<VascularNode<DIM> > pNode1, boost::shared_ptr<VascularNode<DIM> > pNode2);
+    VesselSegment(boost::shared_ptr<VesselNode<DIM> > pNode1, boost::shared_ptr<VesselNode<DIM> > pNode2);
 
 public:
 
     /**
      * Copy Constructor - This should not be used directly as instances of this class must be created with a corresponding shared pointer. This is
-     * implemented using the static Create method.
+     * implemented using the static Create method. This class can not be made private.
      *
      * @param rSegment the segment to be copied
      */
@@ -130,8 +110,8 @@ public:
      * @param pNode2 the second node in the segment
      * @return a pointer to the newly created segment
      */
-    static boost::shared_ptr<VesselSegment<DIM> > Create(boost::shared_ptr<VascularNode<DIM> > pNode1,
-                                                           boost::shared_ptr<VascularNode<DIM> > pNode2);
+    static boost::shared_ptr<VesselSegment<DIM> > Create(boost::shared_ptr<VesselNode<DIM> > pNode1,
+                                                           boost::shared_ptr<VesselNode<DIM> > pNode2);
 
     /**
      * Construct a new instance of the class and return a shared pointer to it. Also manage the association of segments to nodes by
@@ -155,27 +135,10 @@ public:
     void CopyDataFromExistingSegment(const boost::shared_ptr<VesselSegment<DIM> > pTargetSegment);
 
     /**
-     * Return the segment data for the input key. An attempt is made
-     * to cast to type T.
-     * @param rKey the key to be queried
-     * @return the node data for the input key
-     */
-    double GetOutputData(const std::string& rKey);
-
-    /**
      * Return the segment data.
      * @return the segment data
      */
     std::map<std::string, double> GetOutputData();
-
-    /**
-     * Return a vector of data keys for the segment. Input true if
-     * the corresponding value should be castable to double.
-     *
-     * @param castableToDouble whether the returned keys should be castable to double
-     * @return a vector of data keys for the node
-     */
-//    std::vector<std::string> GetDataKeys() const;
 
     /**
      * Return the distance between the input point and the segment. If the projection of the
@@ -185,40 +148,43 @@ public:
      * @param location the point the get the distance from
      * @return the distance to the segment
      */
-    units::quantity<unit::length> GetDistance(c_vector<double, DIM> location) const;
+    double GetDistance(const c_vector<double, DIM>& location) const;
 
     /**
-     * Return the flow properties of the segment
+     * Return the distance between the input point and the segment. If the projection of the
+     * point is within the segment the distance is the perpendicular distance to the segment.
+     * Otherwise it is the distance to the nearest node.
      *
-     * @return the flow properties of the segment
+     * @param location the point the get the distance from
+     * @return the distance to the segment
      */
-    boost::shared_ptr<SegmentFlowProperties> GetFlowProperties() const;
+    units::quantity<unit::length> GetDimensionalDistance(const c_vector<double, DIM>& location) const;
 
     /**
-     * Return the Id
+     * Return the flow properties of the component
      *
-     * @return the segment id
+     * @return the flow properties of the component
      */
-    unsigned GetId() const;
+    boost::shared_ptr<SegmentFlowProperties<DIM> > GetFlowProperties() const;
 
     /**
-     * Return the length
+     * Return the dimensionless length
      *
      * @return the segment length
      */
-    units::quantity<unit::length> GetLength() const;
+    double GetLength() const;
 
     /**
-     * Return the radius
+     * Return the dimensional length
      *
-     * @return the segment radius
+     * @return the segment length
      */
-    units::quantity<unit::length> GetRadius() const;
+    units::quantity<unit::length> GetDimensionalLength() const;
 
     /**
-     * Return a point mid-way along the vessel segment
+     * Return a dimensionless point mid-way along the vessel segment
      *
-     * @return a point midway along the segment
+     * @return a dimensionless point midway along the segment
      */
     c_vector<double, DIM> GetMidPoint() const;
 
@@ -227,7 +193,7 @@ public:
      *
      * @return a pointer to the node specified by the index
      */
-    boost::shared_ptr<VascularNode<DIM> > GetNode(unsigned index) const;
+    boost::shared_ptr<VesselNode<DIM> > GetNode(unsigned index) const;
 
     /**
      * Return a pointer to the node on the other side of the segment
@@ -235,26 +201,26 @@ public:
      * @param pInputNode the node to get the opposite one to
      * @return a pointer to the node on the other side of the segment
      */
-    boost::shared_ptr<VascularNode<DIM> > GetOppositeNode(boost::shared_ptr<VascularNode<DIM> > pInputNode) const;
+    boost::shared_ptr<VesselNode<DIM> > GetOppositeNode(boost::shared_ptr<VesselNode<DIM> > pInputNode) const;
 
     /**
      * Return the segment nodes as a pair
      *
      * @return the segment nodes as a pair
      */
-    std::pair<boost::shared_ptr<VascularNode<DIM> >, boost::shared_ptr<VascularNode<DIM> > > GetNodes() const;
+    std::pair<boost::shared_ptr<VesselNode<DIM> >, boost::shared_ptr<VesselNode<DIM> > > GetNodes() const;
 
     /**
-     * Return the projection of a point onto the segment. If the projection is outside the segment an
+     * Return the dimensionless projection of a point onto the segment. If the projection is outside the segment an
      * Exception is thrown.
      *
      * @param location the location to be projected
      * @return the location of the projected point
      */
-    c_vector<double, DIM> GetPointProjection(c_vector<double, DIM> location, bool projectToEnds = false) const;
+    c_vector<double, DIM> GetPointProjection(const c_vector<double, DIM>& location, bool projectToEnds = false) const;
 
     /**
-     * Return a unit vector pointing along the segment. The orientation along the segment is from node0 to node 1.
+     * Return a dimensionless unit vector pointing along the segment. The orientation along the segment is from node0 to node 1.
      *
      * @return a unit vector pointing along the segment
      */
@@ -268,19 +234,11 @@ public:
     boost::shared_ptr<Vessel<DIM> > GetVessel() const;
 
     /**
-     * Return true if the segment has data corresponding to the input key.
-     *
-     * @param rKey the key for the data
-     * @return whether the key exists in the data map
-     */
-    bool HasDataKey(const std::string& rKey) const;
-
-    /**
      * Return whether the node is in the segment.
      *
      * @return whether the node is in the segment
      */
-    bool HasNode(boost::shared_ptr<VascularNode<DIM> > pNode) const;
+    bool HasNode(boost::shared_ptr<VesselNode<DIM> > pNode) const;
 
     /**
      * Return whether the segment is connected to another segment.
@@ -296,7 +254,7 @@ public:
      * @param oldNodeIndex the index of the node to be replaced
      * @param pNewNode the node to be added to the segment
      */
-    void ReplaceNode(unsigned oldNodeIndex, boost::shared_ptr<VascularNode<DIM> > pNewNode);
+    void ReplaceNode(unsigned oldNodeIndex, boost::shared_ptr<VesselNode<DIM> > pNewNode);
 
     /**
      * Remove the segment from its nodes.
@@ -304,33 +262,11 @@ public:
     void Remove();
 
     /**
-     *  Add data of any type to the segment using the identifying key
-     *
-     *  @param rKey the key associated with the data
-     *  @param the value to be added to the data map
-     */
-    void SetOutputData(const std::string& rKey, double value);
-
-    /**
      * Set the flow properties of the segment
      *
      * @param rFlowProperties the flow properties to be set
      */
-    void SetFlowProperties(const SegmentFlowProperties& rFlowProperties);
-
-    /**
-     * Assign the Id
-     *
-     * @param id the id to be assigned
-     */
-    void SetId(unsigned id);
-
-    /**
-     * Set the radius
-     *
-     * @radius the radius to be assigned
-     */
-    void SetRadius(units::quantity<unit::length> radius);
+    void SetFlowProperties(const SegmentFlowProperties<DIM>& rFlowProperties);
 
 private:
 

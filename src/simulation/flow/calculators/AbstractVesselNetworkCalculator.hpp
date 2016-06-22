@@ -37,7 +37,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define AbstractVesselNetworkCalculator_hpp
 
 #include "SmartPointers.hpp"
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 
 /**
  * Calculators inheriting from this one can be passed to a StructuralAdaptationSolver and used to
@@ -52,7 +52,7 @@ protected:
     /**
      * The vessel network.
      */
-    boost::shared_ptr<VascularNetwork<DIM> >  mpNetwork;
+    boost::shared_ptr<VesselNetwork<DIM> >  mpNetwork;
     
 public:
     
@@ -70,7 +70,7 @@ public:
      * Set the vessel network.
      * @param pNetwork the vessel network
      */
-    void SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> >  pNetwork);
+    void SetVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> >  pNetwork);
 
     /**
      * Run the calculator. Over-ridden in child classes.

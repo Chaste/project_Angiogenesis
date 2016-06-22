@@ -36,7 +36,7 @@
 #ifndef WALLSHEARSTRESSBASEDREGRESSIONSOLVER_HPP_
 #define WALLSHEARSTRESSBASEDREGRESSIONSOLVER_HPP_
 
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 #include "RegressionSolver.hpp"
 
 /**
@@ -58,7 +58,7 @@ class WallShearStressBasedRegressionSolver : public RegressionSolver<DIM>
      *  the vessel network.
      *  This time should be prescribed in units of hours.
      */
-    double mMaxTimeWithLowWss;
+    units::quantity<unit::time> mMaxTimeWithLowWss;
 
 public:
 
@@ -82,7 +82,7 @@ public:
      *  Setter for mMaxTimeWithLowWss parameter.
      *  @param time the max time for low WSS
      */
-    void SetMaximumTimeWithLowWallShearStress(double time);
+    void SetMaximumTimeWithLowWallShearStress(units::quantity<unit::time> time);
 
     /**
      *  Setter for mThresholdWss parameter.

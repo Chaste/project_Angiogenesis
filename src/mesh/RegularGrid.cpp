@@ -44,7 +44,7 @@
 #include <vtkPolyData.h>
 #include <vtkPoints.h>
 #include <vtkSmartPointer.h>
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 RegularGrid<ELEMENT_DIM, SPACE_DIM>::RegularGrid() :
@@ -379,7 +379,7 @@ std::vector<double> RegularGrid<ELEMENT_DIM, SPACE_DIM>::InterpolateGridValues(
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-const std::vector<std::vector<boost::shared_ptr<VascularNode<SPACE_DIM> > > >& RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetPointNodeMap(
+const std::vector<std::vector<boost::shared_ptr<VesselNode<SPACE_DIM> > > >& RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetPointNodeMap(
         bool update)
 {
     if (!update)
@@ -401,12 +401,12 @@ const std::vector<std::vector<boost::shared_ptr<VascularNode<SPACE_DIM> > > >& R
         origin_z = mOrigin[2];
     }
 
-    mPointNodeMap = std::vector<std::vector<boost::shared_ptr<VascularNode<SPACE_DIM> > > >(GetNumberOfPoints());
-    std::vector<boost::shared_ptr<VascularNode<SPACE_DIM> > > nodes = mpNetwork->GetNodes();
+    mPointNodeMap = std::vector<std::vector<boost::shared_ptr<VesselNode<SPACE_DIM> > > >(GetNumberOfPoints());
+    std::vector<boost::shared_ptr<VesselNode<SPACE_DIM> > > nodes = mpNetwork->GetNodes();
 
     for (unsigned idx = 0; idx < nodes.size(); idx++)
     {
-        c_vector<double, SPACE_DIM> location = nodes[idx]->GetLocationValue();
+        c_vector<double, SPACE_DIM> location = nodes[idx]->rGetLocation();
         unsigned x_index = round((location[0] - origin_x) / mSpacing);
         unsigned y_index = round((location[1] - origin_y) / mSpacing);
         unsigned z_index = 0;
@@ -492,7 +492,7 @@ std::vector<std::vector<boost::shared_ptr<VesselSegment<SPACE_DIM> > > > Regular
         {
             if (!useVesselSurface)
             {
-                if (segments[jdx]->GetDistance(GetLocationOf1dIndex(idx)) < sqrt(1.0 / 2.0) * mSpacing * unit::metres)
+                if (segments[jdx]->GetDistance(GetLocationOf1dIndex(idx)) < sqrt(1.0 / 2.0) * mSpacing)
                 {
                     mPointSegmentMap[idx].push_back(segments[jdx]);
                 }
@@ -500,7 +500,7 @@ std::vector<std::vector<boost::shared_ptr<VesselSegment<SPACE_DIM> > > > Regular
             else
             {
                 if (segments[jdx]->GetDistance(GetLocationOf1dIndex(idx))
-                        < (segments[jdx]->GetRadius() + sqrt(1.0 / 2.0) * mSpacing * unit::metres))
+                        < (segments[jdx]->GetRadius() + sqrt(1.0 / 2.0) * mSpacing))
                 {
                     mPointSegmentMap[idx].push_back(segments[jdx]);
                 }
@@ -703,7 +703,7 @@ void RegularGrid<ELEMENT_DIM, SPACE_DIM>::SetUpVtkGrid()
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void RegularGrid<ELEMENT_DIM, SPACE_DIM>::SetVesselNetwork(boost::shared_ptr<VascularNetwork<SPACE_DIM> > pNetwork)
+void RegularGrid<ELEMENT_DIM, SPACE_DIM>::SetVesselNetwork(boost::shared_ptr<VesselNetwork<SPACE_DIM> > pNetwork)
 {
     mpNetwork = pNetwork;
 }

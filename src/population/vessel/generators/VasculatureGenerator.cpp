@@ -52,8 +52,6 @@
 #include "Polygon.hpp"
 #include "Exception.hpp"
 #include "Vertex.hpp"
-
-#include "UnitCollections.hpp"
 #include "VasculatureGenerator.hpp"
 
 template<unsigned DIM>
@@ -67,7 +65,7 @@ VasculatureGenerator<DIM>::~VasculatureGenerator()
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateOvalNetwork(double scale_factor,
+boost::shared_ptr<VesselNetwork<DIM> > VasculatureGenerator<DIM>::GenerateOvalNetwork(double scale_factor,
                                                                  unsigned num_increments,
                                                                  double a_param,
                                                                  double b_param)
@@ -76,9 +74,9 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateOval
     double increment_size = (2.0 * M_PI) / double(num_increments);
     double z_position = scale_factor;
 
-    std::vector<boost::shared_ptr<VascularNode<DIM> > > v1_nodes;
-    v1_nodes.push_back(VascularNode<DIM>::Create(0.0, 0.0, z_position));
-    v1_nodes.push_back(VascularNode<DIM>::Create(increment_size * scale_factor, 0.0, z_position));
+    std::vector<boost::shared_ptr<VesselNode<DIM> > > v1_nodes;
+    v1_nodes.push_back(VesselNode<DIM>::Create(0.0, 0.0, z_position));
+    v1_nodes.push_back(VesselNode<DIM>::Create(increment_size * scale_factor, 0.0, z_position));
     boost::shared_ptr<Vessel<DIM> > p_vessel_1 = Vessel<DIM>::Create(v1_nodes);
     p_vessel_1->SetId(1);
 
@@ -88,7 +86,7 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateOval
     bounds[4] = 0.0;
     bounds[5] = 2.0 * z_position;
 
-    std::vector<boost::shared_ptr<VascularNode<DIM> > > v2_nodes;
+    std::vector<boost::shared_ptr<VesselNode<DIM> > > v2_nodes;
     double y_max = 0.0;
     for(unsigned idx=0; idx<= num_increments/2; idx++)
     {
@@ -102,10 +100,10 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateOval
             y_max=y;
         }
         double z = z_position;
-        v2_nodes.push_back(VascularNode<DIM>::Create(x * scale_factor, y * scale_factor, z));
+        v2_nodes.push_back(VesselNode<DIM>::Create(x * scale_factor, y * scale_factor, z));
     }
 
-    std::vector<boost::shared_ptr<VascularNode<DIM> > > v3_nodes;
+    std::vector<boost::shared_ptr<VesselNode<DIM> > > v3_nodes;
     for(unsigned idx=num_increments/2; idx<= num_increments; idx++)
     {
         double t = double(idx) * increment_size;
@@ -118,18 +116,18 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateOval
             y_max=y;
         }
         double z = z_position;
-        v3_nodes.push_back(VascularNode<DIM>::Create(x * scale_factor, y * scale_factor, z));
+        v3_nodes.push_back(VesselNode<DIM>::Create(x * scale_factor, y * scale_factor, z));
     }
 
     boost::shared_ptr<Vessel<DIM> > p_vessel_2 = Vessel<DIM>::Create(v2_nodes);
     boost::shared_ptr<Vessel<DIM> > p_vessel_3 = Vessel<DIM>::Create(v3_nodes);
-    boost::shared_ptr<VascularNetwork<DIM> > p_network = VascularNetwork<DIM>::Create();
+    boost::shared_ptr<VesselNetwork<DIM> > p_network = VesselNetwork<DIM>::Create();
     p_vessel_2->SetId(2);
     p_vessel_3->SetId(3);
 
-    std::vector<boost::shared_ptr<VascularNode<DIM> > > v4_nodes;
-    v4_nodes.push_back(VascularNode<DIM>::Create((std::sqrt(a_param*a_param + b_param*b_param) + x_offset) * scale_factor, 0.0, z_position));
-    v4_nodes.push_back(VascularNode<DIM>::Create((std::sqrt(a_param*a_param + b_param*b_param) + increment_size + x_offset) * scale_factor, 0.0, z_position));
+    std::vector<boost::shared_ptr<VesselNode<DIM> > > v4_nodes;
+    v4_nodes.push_back(VesselNode<DIM>::Create((std::sqrt(a_param*a_param + b_param*b_param) + x_offset) * scale_factor, 0.0, z_position));
+    v4_nodes.push_back(VesselNode<DIM>::Create((std::sqrt(a_param*a_param + b_param*b_param) + increment_size + x_offset) * scale_factor, 0.0, z_position));
     bounds[1] = (std::sqrt(a_param*a_param + b_param*b_param) + increment_size + x_offset) * scale_factor;
     bounds[2] = -y_max * scale_factor;
     bounds[3] = y_max * scale_factor;
@@ -141,22 +139,16 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateOval
     p_network->AddVessel(p_vessel_2);
     p_network->AddVessel(p_vessel_3);
     p_network->AddVessel(p_vessel_4);
-    p_network->MergeCoincidentNodes(1.e-6*unit::metres);
+    p_network->MergeCoincidentNodes(1.e-6);
 
-    units::quantity<unit::flow_impedance> impedance = 1.e18 * unit::kg/(units::pow<4>(unit::metres)*unit::seconds);
-    p_vessel_1->GetSegments()[0]->GetFlowProperties()->SetImpedance(impedance);
     p_network->SetSegmentProperties(p_vessel_1->GetSegments()[0]);
-
     p_vessel_1->GetStartNode()->GetFlowProperties()->SetIsInputNode(true);
-    p_vessel_1->GetStartNode()->GetFlowProperties()->SetPressure(3393);
-
     p_vessel_4->GetEndNode()->GetFlowProperties()->SetIsOutputNode(true);
-    p_vessel_4->GetEndNode()->GetFlowProperties()->SetPressure(1000.5);
     return p_network;
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateParrallelNetwork(boost::shared_ptr<Part<DIM> > domain,
+boost::shared_ptr<VesselNetwork<DIM> > VasculatureGenerator<DIM>::GenerateParrallelNetwork(boost::shared_ptr<Part<DIM> > domain,
                                                                     double targetDensity,
                                                                     VesselDistribution::Value distributionType,
                                                                     double exclusionDistance,
@@ -187,8 +179,8 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateParr
     double spacing_y = delta_y / double(num_y);
 
     // Generate the start and end nodes
-    std::vector<boost::shared_ptr<VascularNode<DIM> > > start_nodes;
-    std::vector<boost::shared_ptr<VascularNode<DIM> > > end_nodes;
+    std::vector<boost::shared_ptr<VesselNode<DIM> > > start_nodes;
+    std::vector<boost::shared_ptr<VesselNode<DIM> > > end_nodes;
     if(distributionType == VesselDistribution::REGULAR)
     {
         for(unsigned idx=0; idx<num_y; idx++)
@@ -199,13 +191,13 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateParr
                double location_y = bbox[2] + spacing_y / 2.0 + double(idx) * spacing_y;
                if(DIM==2)
                {
-                   start_nodes.push_back(VascularNode<DIM>::Create(location_x, location_y));
-                   end_nodes.push_back(VascularNode<DIM>::Create(location_x, location_y));
+                   start_nodes.push_back(VesselNode<DIM>::Create(location_x, location_y));
+                   end_nodes.push_back(VesselNode<DIM>::Create(location_x, location_y));
                }
                else
                {
-                   start_nodes.push_back(VascularNode<DIM>::Create(location_x, location_y, bbox[4]));
-                   end_nodes.push_back(VascularNode<DIM>::Create(location_x, location_y, bbox[4] + delta_z));
+                   start_nodes.push_back(VesselNode<DIM>::Create(location_x, location_y, bbox[4]));
+                   end_nodes.push_back(VesselNode<DIM>::Create(location_x, location_y, bbox[4] + delta_z));
                }
            }
         }
@@ -233,8 +225,8 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateParr
            {
                for(unsigned kdx=0; kdx<start_nodes.size();kdx++)
                {
-                   double sq_distance = pow((start_nodes[kdx]->GetLocationValue()[1]- location_y),2) +
-                           pow((start_nodes[kdx]->GetLocationValue()[0]- location_x),2);
+                   double sq_distance = pow((start_nodes[kdx]->rGetLocation()[1]- location_y),2) +
+                           pow((start_nodes[kdx]->rGetLocation()[0]- location_x),2);
                    if(sq_distance < (exclusionDistance * exclusionDistance))
                    {
                        free_space = false;
@@ -248,13 +240,13 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateParr
            {
                if(DIM==2)
                {
-                   start_nodes.push_back(VascularNode<DIM>::Create(location_x, location_y));
-                   end_nodes.push_back(VascularNode<DIM>::Create(location_x, location_y));
+                   start_nodes.push_back(VesselNode<DIM>::Create(location_x, location_y));
+                   end_nodes.push_back(VesselNode<DIM>::Create(location_x, location_y));
                }
                else
                {
-                   start_nodes.push_back(VascularNode<DIM>::Create(location_x, location_y, bbox[4]));
-                   end_nodes.push_back(VascularNode<DIM>::Create(location_x, location_y, bbox[4] + delta_z));
+                   start_nodes.push_back(VesselNode<DIM>::Create(location_x, location_y, bbox[4]));
+                   end_nodes.push_back(VesselNode<DIM>::Create(location_x, location_y, bbox[4] + delta_z));
                }
                attempts = 0;
            }
@@ -307,8 +299,8 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateParr
             {
                 for(unsigned kdx=0; kdx<start_nodes.size();kdx++)
                 {
-                    double sq_distance = pow((start_nodes[kdx]->GetLocationValue()[1]- location_y),2) +
-                            pow((start_nodes[kdx]->GetLocationValue()[0]- location_x),2);
+                    double sq_distance = pow((start_nodes[kdx]->rGetLocation()[1]- location_y),2) +
+                            pow((start_nodes[kdx]->rGetLocation()[0]- location_x),2);
                     if(sq_distance < (exclusionDistance * exclusionDistance))
                     {
                         free_space = false;
@@ -322,13 +314,13 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateParr
             {
                 if(DIM==2)
                 {
-                    start_nodes.push_back(VascularNode<DIM>::Create(location_x, location_y));
-                    end_nodes.push_back(VascularNode<DIM>::Create(location_x, location_y));
+                    start_nodes.push_back(VesselNode<DIM>::Create(location_x, location_y));
+                    end_nodes.push_back(VesselNode<DIM>::Create(location_x, location_y));
                 }
                 else
                 {
-                    start_nodes.push_back(VascularNode<DIM>::Create(location_x, location_y, bbox[4]));
-                    end_nodes.push_back(VascularNode<DIM>::Create(location_x, location_y, bbox[4] + delta_z));
+                    start_nodes.push_back(VesselNode<DIM>::Create(location_x, location_y, bbox[4]));
+                    end_nodes.push_back(VesselNode<DIM>::Create(location_x, location_y, bbox[4] + delta_z));
                 }
                 attempts = 0;
             }
@@ -351,14 +343,14 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateParr
     }
 
     // Generate and write the network
-    boost::shared_ptr<VascularNetwork<DIM> > p_network = VascularNetwork<DIM>::Create();
+    boost::shared_ptr<VesselNetwork<DIM> > p_network = VesselNetwork<DIM>::Create();
     p_network->AddVessels(vessels);
 
     return p_network;
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::Generate3dNetwork(boost::shared_ptr<Part<DIM> > domain,
+boost::shared_ptr<VesselNetwork<DIM> > VasculatureGenerator<DIM>::Generate3dNetwork(boost::shared_ptr<Part<DIM> > domain,
                                                                                         std::vector<double> targetDensity,
                                                                     VesselDistribution::Value distributionType,
                                                                     double exclusionDistance,
@@ -376,7 +368,7 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::Generate3dNe
     }
 
     // Generate the network
-    boost::shared_ptr<VascularNetwork<DIM> > p_network = VascularNetwork<DIM>::Create();
+    boost::shared_ptr<VesselNetwork<DIM> > p_network = VesselNetwork<DIM>::Create();
 
     // Get the bounding box of the domain and the volume of the bbox
     c_vector<double, 2*DIM> bbox = domain->GetBoundingBox();
@@ -396,7 +388,7 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::Generate3dNe
     double spacing_z = delta_z / double(num_z);
 
     // Generate the nodes
-    std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes;
+    std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes;
     if(distributionType == VesselDistribution::REGULAR)
     {
         for(unsigned kdx=0; kdx<num_z+2; kdx++)
@@ -436,7 +428,7 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::Generate3dNe
                        location_z += spacing_z;
                    }
 
-                   nodes.push_back(VascularNode<DIM>::Create(location_x, location_y, location_z));
+                   nodes.push_back(VesselNode<DIM>::Create(location_x, location_y, location_z));
                }
             }
         }
@@ -619,12 +611,12 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::Generate3dNe
 }
 
 template<unsigned DIM>
-void VasculatureGenerator<DIM>::PatternUnitByTranslation(boost::shared_ptr<VascularNetwork<DIM> > input_unit,
+void VasculatureGenerator<DIM>::PatternUnitByTranslation(boost::shared_ptr<VesselNetwork<DIM> > input_unit,
                                                          std::vector<unsigned> numberOfUnits)
 {
 
     // Get unit dimensions
-    std::vector<std::pair<units::quantity<unit::length>, units::quantity<unit::length> > > extents= input_unit->GetExtents();
+    std::vector<std::pair<double, double> > extents= input_unit->GetExtents();
 
     // For each number of units in each dimension copy the original vessels and move the copy to the desired location
     double num_x = 0;
@@ -651,7 +643,7 @@ void VasculatureGenerator<DIM>::PatternUnitByTranslation(boost::shared_ptr<Vascu
     for(unsigned idx =0; idx < num_x; idx++)
     {
         c_vector<double, DIM> translation_vector;
-        translation_vector[0] = double(idx+1) * (extents[0].second - extents[0].first)/unit::metres;
+        translation_vector[0] = double(idx+1) * (extents[0].second - extents[0].first);
         translation_vector[1] = 0.0;
         if(DIM==3)
         {
@@ -668,7 +660,7 @@ void VasculatureGenerator<DIM>::PatternUnitByTranslation(boost::shared_ptr<Vascu
     {
         c_vector<double, DIM> translation_vector;
         translation_vector[0] = 0.0;
-        translation_vector[1] = double(idx+1) * (extents[1].second - extents[1].first)/unit::metres;
+        translation_vector[1] = double(idx+1) * (extents[1].second - extents[1].first);
         if(DIM==3)
         {
             translation_vector[2] = 0.0;
@@ -686,7 +678,7 @@ void VasculatureGenerator<DIM>::PatternUnitByTranslation(boost::shared_ptr<Vascu
         translation_vector[1] = 0.0;
         if(DIM==3)
         {
-            translation_vector[2] = double(idx+1) * (extents[2].second - extents[2].first)/unit::metres;
+            translation_vector[2] = double(idx+1) * (extents[2].second - extents[2].first);
         }
         std::vector<boost::shared_ptr<Vessel<DIM> > > copied_vessels = input_unit->CopyVessels(y_transform_vessels);
         input_unit->Translate(translation_vector, copied_vessels);
@@ -695,23 +687,23 @@ void VasculatureGenerator<DIM>::PatternUnitByTranslation(boost::shared_ptr<Vascu
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateHexagonalUnit(double vesselLength)
+boost::shared_ptr<VesselNetwork<DIM> > VasculatureGenerator<DIM>::GenerateHexagonalUnit(double vesselLength)
 {
     // Generate the nodes
-    std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes;
-    nodes.push_back(VascularNode<DIM>::Create(0.0, 0.0, 0.0)); //0
-    nodes.push_back(VascularNode<DIM>::Create(vesselLength, vesselLength, 0.0)); //1
-    nodes.push_back(VascularNode<DIM>::Create(0.0, 2.0 * vesselLength, 0.0)); //2
-    nodes.push_back(VascularNode<DIM>::Create(2.0 * vesselLength, vesselLength, 0.0)); //3
-    nodes.push_back(VascularNode<DIM>::Create(3.0 * vesselLength, 0.0, 0.0)); //4
-    nodes.push_back(VascularNode<DIM>::Create(4.0 * vesselLength, 0.0, 0.0)); //5
-    nodes.push_back(VascularNode<DIM>::Create(3.0 * vesselLength, 2.0 * vesselLength, 0.0)); //6
+    std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes;
+    nodes.push_back(VesselNode<DIM>::Create(0.0, 0.0, 0.0)); //0
+    nodes.push_back(VesselNode<DIM>::Create(vesselLength, vesselLength, 0.0)); //1
+    nodes.push_back(VesselNode<DIM>::Create(0.0, 2.0 * vesselLength, 0.0)); //2
+    nodes.push_back(VesselNode<DIM>::Create(2.0 * vesselLength, vesselLength, 0.0)); //3
+    nodes.push_back(VesselNode<DIM>::Create(3.0 * vesselLength, 0.0, 0.0)); //4
+    nodes.push_back(VesselNode<DIM>::Create(4.0 * vesselLength, 0.0, 0.0)); //5
+    nodes.push_back(VesselNode<DIM>::Create(3.0 * vesselLength, 2.0 * vesselLength, 0.0)); //6
     if (DIM == 3)
     {
-        nodes.push_back(VascularNode<DIM>::Create(0.0, 0.0, 1.5*vesselLength)); //7
-        nodes.push_back(VascularNode<DIM>::Create(vesselLength, vesselLength, 1.5*vesselLength)); //8
-        nodes.push_back(VascularNode<DIM>::Create(2.0 * vesselLength, vesselLength, 1.5*vesselLength)); //9
-        nodes.push_back(VascularNode<DIM>::Create(3.0 * vesselLength, 0.0, 1.5*vesselLength)); //9
+        nodes.push_back(VesselNode<DIM>::Create(0.0, 0.0, 1.5*vesselLength)); //7
+        nodes.push_back(VesselNode<DIM>::Create(vesselLength, vesselLength, 1.5*vesselLength)); //8
+        nodes.push_back(VesselNode<DIM>::Create(2.0 * vesselLength, vesselLength, 1.5*vesselLength)); //9
+        nodes.push_back(VesselNode<DIM>::Create(3.0 * vesselLength, 0.0, 1.5*vesselLength)); //9
     }
 
     // Generate the segments and vessels
@@ -732,24 +724,24 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateHexa
     }
 
     // Generate the network
-    boost::shared_ptr<VascularNetwork<DIM> > pNetwork(new VascularNetwork<DIM>());
+    boost::shared_ptr<VesselNetwork<DIM> > pNetwork(new VesselNetwork<DIM>());
     pNetwork->AddVessels(vessels);
 
     return pNetwork;
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateBifurcationUnit(double vesselLength,
+boost::shared_ptr<VesselNetwork<DIM> > VasculatureGenerator<DIM>::GenerateBifurcationUnit(double vesselLength,
         c_vector<double, DIM> startPosition)
 {
     // Generate the nodes
-    std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes;
-    nodes.push_back(VascularNode<DIM>::Create(0.0, vesselLength, 0.0)); //0
-    nodes.push_back(VascularNode<DIM>::Create(vesselLength, vesselLength, 0.0)); //1
-    nodes.push_back(VascularNode<DIM>::Create(2.0 * vesselLength, 2.0 * vesselLength, 0.0)); //2
-    nodes.push_back(VascularNode<DIM>::Create(2.0 * vesselLength, 0.0, 0.0)); //3
-    nodes.push_back(VascularNode<DIM>::Create(3.0 * vesselLength, vesselLength, 0.0)); //4
-    nodes.push_back(VascularNode<DIM>::Create(4.0 * vesselLength, vesselLength, 0.0)); //5
+    std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes;
+    nodes.push_back(VesselNode<DIM>::Create(0.0, vesselLength, 0.0)); //0
+    nodes.push_back(VesselNode<DIM>::Create(vesselLength, vesselLength, 0.0)); //1
+    nodes.push_back(VesselNode<DIM>::Create(2.0 * vesselLength, 2.0 * vesselLength, 0.0)); //2
+    nodes.push_back(VesselNode<DIM>::Create(2.0 * vesselLength, 0.0, 0.0)); //3
+    nodes.push_back(VesselNode<DIM>::Create(3.0 * vesselLength, vesselLength, 0.0)); //4
+    nodes.push_back(VesselNode<DIM>::Create(4.0 * vesselLength, vesselLength, 0.0)); //5
 
     // Generate the segments and vessels
     std::vector<boost::shared_ptr<Vessel<DIM> > > vessels;
@@ -761,18 +753,18 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateBifu
     vessels.push_back(Vessel<DIM>::Create(VesselSegment<DIM>::Create(nodes[4], nodes[5])));
 
     // Generate the network
-    boost::shared_ptr<VascularNetwork<DIM> > p_network(new VascularNetwork<DIM>());
+    boost::shared_ptr<VesselNetwork<DIM> > p_network(new VesselNetwork<DIM>());
     p_network->AddVessels(vessels);
     p_network->Translate(startPosition);
     return p_network;
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateSingleVessel(double vesselLength,
+boost::shared_ptr<VesselNetwork<DIM> > VasculatureGenerator<DIM>::GenerateSingleVessel(double vesselLength,
         c_vector<double, DIM> startPosition, unsigned divisions, unsigned axis)
 {
-    std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes;
-    nodes.push_back(VascularNode<DIM>::Create(startPosition)); //0
+    std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes;
+    nodes.push_back(VesselNode<DIM>::Create(startPosition)); //0
     double interval = vesselLength/double(divisions + 1);
 
     for(unsigned idx=0;idx<divisions+1;idx++)
@@ -781,11 +773,11 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateSing
         {
             if(axis==0)
             {
-                nodes.push_back(VascularNode<DIM>::Create(startPosition[0] + interval*double(idx+1), startPosition[1])); //1
+                nodes.push_back(VesselNode<DIM>::Create(startPosition[0] + interval*double(idx+1), startPosition[1])); //1
             }
             else
             {
-                nodes.push_back(VascularNode<DIM>::Create(startPosition[0], startPosition[1] + interval*double(idx+1))); //1
+                nodes.push_back(VesselNode<DIM>::Create(startPosition[0], startPosition[1] + interval*double(idx+1))); //1
             }
 
         }
@@ -793,15 +785,15 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateSing
         {
             if(axis==0)
             {
-                nodes.push_back(VascularNode<DIM>::Create(startPosition[0] + interval*double(idx+1), startPosition[1], startPosition[2])); //1
+                nodes.push_back(VesselNode<DIM>::Create(startPosition[0] + interval*double(idx+1), startPosition[1], startPosition[2])); //1
             }
             else if(axis==1)
             {
-                nodes.push_back(VascularNode<DIM>::Create(startPosition[0], startPosition[1] + interval*double(idx+1), startPosition[2])); //2
+                nodes.push_back(VesselNode<DIM>::Create(startPosition[0], startPosition[1] + interval*double(idx+1), startPosition[2])); //2
             }
             else
             {
-                nodes.push_back(VascularNode<DIM>::Create(startPosition[0], startPosition[1], startPosition[2] + interval*double(idx+1))); //3
+                nodes.push_back(VesselNode<DIM>::Create(startPosition[0], startPosition[1], startPosition[2] + interval*double(idx+1))); //3
             }
         }
     }
@@ -810,7 +802,7 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateSing
     vessels.push_back(Vessel<DIM>::Create(nodes));
 
     // Generate the network
-    boost::shared_ptr<VascularNetwork<DIM> > p_network(new VascularNetwork<DIM>());
+    boost::shared_ptr<VesselNetwork<DIM> > p_network(new VesselNetwork<DIM>());
     p_network->AddVessels(vessels);
     return p_network;
 }
@@ -825,9 +817,9 @@ std::string to_string(T const& value)
 
 
 template<unsigned DIM>
-boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateFromPart(boost::shared_ptr<Part<DIM> > part)
+boost::shared_ptr<VesselNetwork<DIM> > VasculatureGenerator<DIM>::GenerateFromPart(boost::shared_ptr<Part<DIM> > part)
 {
-    boost::shared_ptr<VascularNetwork<DIM> > p_network = VascularNetwork<DIM>::Create();
+    boost::shared_ptr<VesselNetwork<DIM> > p_network = VesselNetwork<DIM>::Create();
 
     // Get the polygons
     std::vector<boost::shared_ptr<Polygon> > polygons = part->GetPolygons();
@@ -838,8 +830,8 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateFrom
         std::vector<boost::shared_ptr<Vertex> > vertices = polygons[idx]->GetVertices();
         for (unsigned jdx = 1; jdx < vertices.size(); jdx++)
         {
-            segments.push_back(VesselSegment<DIM>::Create(VascularNode<DIM>::Create(vertices[jdx-1]->rGetLocation()),
-                                                                                                  VascularNode<DIM>::Create(vertices[jdx]->rGetLocation())));
+            segments.push_back(VesselSegment<DIM>::Create(VesselNode<DIM>::Create(vertices[jdx-1]->rGetLocation()),
+                                                                                                  VesselNode<DIM>::Create(vertices[jdx]->rGetLocation())));
         }
         vessels.push_back(Vessel<DIM>::Create(segments));
     }
@@ -850,7 +842,7 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateFrom
 
 
 template<unsigned DIM>
-boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateVoronoiNetwork(double cubeX,
+boost::shared_ptr<VesselNetwork<DIM> > VasculatureGenerator<DIM>::GenerateVoronoiNetwork(double cubeX,
                                                                                              double cubeY,
                                                                                              double cubeZ,
                                                                                              unsigned numPoints)
@@ -864,12 +856,12 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateVoro
     p_part->AddCuboid(cubeX, cubeY, cubeZ);
     VoronoiGenerator<DIM> generator;
     boost::shared_ptr<Part<DIM> > p_tesselation = generator.Generate(p_part, std::vector<boost::shared_ptr<Vertex> >(), numPoints);
-    boost::shared_ptr<VascularNetwork<DIM> > p_network =  GenerateFromPart(p_tesselation);
+    boost::shared_ptr<VesselNetwork<DIM> > p_network =  GenerateFromPart(p_tesselation);
     return p_network;
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateHexagonalNetwork(double width,
+boost::shared_ptr<VesselNetwork<DIM> > VasculatureGenerator<DIM>::GenerateHexagonalNetwork(double width,
                                                                                                double height,
                                                                                                double vessel_length)
 {
@@ -900,108 +892,108 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateHexa
     // Generate an array of vessels with no spatial info
     unsigned number_of_vessels = (units_in_x_direction * units_in_y_direction * 6) + (units_in_y_direction * 5)
             + units_in_x_direction;
-    boost::shared_ptr<VascularNetwork<DIM> > pVesselNetwork(new VascularNetwork<DIM>());
+    boost::shared_ptr<VesselNetwork<DIM> > pVesselNetwork(new VesselNetwork<DIM>());
     std::vector<boost::shared_ptr<Vessel<DIM> > > vessel_array;
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > vessel_segment_array;
 
     for (unsigned i = 0; i < number_of_vessels; i++)
     {
         // instantiate set of vessel segments with any nodes then later change location of that node
-        // with GetNode(index)->SetLocationValue(ChastePoint ... )
-        boost::shared_ptr<VascularNode<DIM> > node1(VascularNode<DIM>::Create(0, 0, 0));
-        boost::shared_ptr<VascularNode<DIM> > node2(VascularNode<DIM>::Create(0, 0, 0));
+        // with GetNode(index)->SetLocation(ChastePoint ... )
+        boost::shared_ptr<VesselNode<DIM> > node1(VesselNode<DIM>::Create(0, 0, 0));
+        boost::shared_ptr<VesselNode<DIM> > node2(VesselNode<DIM>::Create(0, 0, 0));
         vessel_segment_array.push_back(VesselSegment<DIM>::Create(node1, node2));
     }
 
     // Set the left side coordinates of vessels in the network
-    vessel_segment_array[0]->GetNode(0)->SetLocationValue(0.0, 0.0);
-    vessel_segment_array[1]->GetNode(0)->SetLocationValue(diagonal_vessel_length + horizontal_vessel_length, diagonal_vessel_length);
-    vessel_segment_array[2]->GetNode(0)->SetLocationValue(2.0 * diagonal_vessel_length + horizontal_vessel_length, 0.0);
+    vessel_segment_array[0]->GetNode(0)->SetLocation(0.0, 0.0);
+    vessel_segment_array[1]->GetNode(0)->SetLocation(diagonal_vessel_length + horizontal_vessel_length, diagonal_vessel_length);
+    vessel_segment_array[2]->GetNode(0)->SetLocation(2.0 * diagonal_vessel_length + horizontal_vessel_length, 0.0);
     for (unsigned i = 3; i < (2 + 3 * units_in_x_direction); i++)
     {
-        vessel_segment_array[i]->GetNode(0)->SetLocationValue(vessel_segment_array[i - 3]->GetNode(0)->GetLocation()[0]
+        vessel_segment_array[i]->GetNode(0)->SetLocation(vessel_segment_array[i - 3]->GetNode(0)->rGetLocation()[0]
                                 + 2.0 * (diagonal_vessel_length + horizontal_vessel_length),
-                        vessel_segment_array[i - 3]->GetNode(0)->GetLocation()[1]);
+                        vessel_segment_array[i - 3]->GetNode(0)->rGetLocation()[1]);
     }
-    vessel_segment_array[2 + 3 * units_in_x_direction]->GetNode(0)->SetLocationValue(0, 2.0 * diagonal_vessel_length);
-    vessel_segment_array[2 + 3 * units_in_x_direction + 1]->GetNode(0)->SetLocationValue(diagonal_vessel_length, diagonal_vessel_length);
-    vessel_segment_array[2 + 3 * units_in_x_direction + 2]->GetNode(0)->SetLocationValue(diagonal_vessel_length + horizontal_vessel_length, diagonal_vessel_length);
+    vessel_segment_array[2 + 3 * units_in_x_direction]->GetNode(0)->SetLocation(0, 2.0 * diagonal_vessel_length);
+    vessel_segment_array[2 + 3 * units_in_x_direction + 1]->GetNode(0)->SetLocation(diagonal_vessel_length, diagonal_vessel_length);
+    vessel_segment_array[2 + 3 * units_in_x_direction + 2]->GetNode(0)->SetLocation(diagonal_vessel_length + horizontal_vessel_length, diagonal_vessel_length);
 
     for (unsigned i = (2 + 3 * units_in_x_direction + 3);
             i < (2 + 3 * units_in_x_direction + 3 * (units_in_x_direction + 1)); i++)
     {
-        vessel_segment_array[i]->GetNode(0)->SetLocationValue(
-                        vessel_segment_array[i - 3]->GetNode(0)->GetLocation()[0]
+        vessel_segment_array[i]->GetNode(0)->SetLocation(
+                        vessel_segment_array[i - 3]->GetNode(0)->rGetLocation()[0]
                                 + 2.0 * (diagonal_vessel_length + horizontal_vessel_length),
-                        vessel_segment_array[i - 3]->GetNode(0)->GetLocation()[1]);
+                        vessel_segment_array[i - 3]->GetNode(0)->rGetLocation()[1]);
     }
 
     for (unsigned i = (2 + 3 * units_in_x_direction + 3 * (units_in_x_direction + 1));
             i < number_of_vessels - units_in_x_direction; i++)
     {
-        vessel_segment_array[i]->GetNode(0)->SetLocationValue(
+        vessel_segment_array[i]->GetNode(0)->SetLocation(
                         vessel_segment_array[i - (2 + 3 * units_in_x_direction + 3 * (units_in_x_direction + 1))]->GetNode(
-                                0)->GetLocation()[0],
+                                0)->rGetLocation()[0],
                         vessel_segment_array[i - (2 + 3 * units_in_x_direction + 3 * (units_in_x_direction + 1))]->GetNode(
-                                0)->GetLocation()[1] + 2.0 * diagonal_vessel_length);
+                                0)->rGetLocation()[1] + 2.0 * diagonal_vessel_length);
     }
-    vessel_segment_array[number_of_vessels - units_in_x_direction]->GetNode(0)->SetLocationValue(
+    vessel_segment_array[number_of_vessels - units_in_x_direction]->GetNode(0)->SetLocation(
                     2.0 * diagonal_vessel_length + horizontal_vessel_length,
-                    vessel_segment_array[number_of_vessels - units_in_x_direction - 1]->GetNode(0)->GetLocation()[1]
+                    vessel_segment_array[number_of_vessels - units_in_x_direction - 1]->GetNode(0)->rGetLocation()[1]
                             + diagonal_vessel_length);
 
     for (unsigned i = 1; i < units_in_x_direction; i++)
     {
-        vessel_segment_array[number_of_vessels - units_in_x_direction + i]->GetNode(0)->SetLocationValue(
-                        vessel_segment_array[number_of_vessels - units_in_x_direction + i - 1]->GetNode(0)->GetLocation()[0]
+        vessel_segment_array[number_of_vessels - units_in_x_direction + i]->GetNode(0)->SetLocation(
+                        vessel_segment_array[number_of_vessels - units_in_x_direction + i - 1]->GetNode(0)->rGetLocation()[0]
                                 + 2 * (diagonal_vessel_length + horizontal_vessel_length),
-                        vessel_segment_array[number_of_vessels - units_in_x_direction + i - 1]->GetNode(0)->GetLocation()[1]);
+                        vessel_segment_array[number_of_vessels - units_in_x_direction + i - 1]->GetNode(0)->rGetLocation()[1]);
     }
 
     // Set the right side coordinates of vessels in the network
-    vessel_segment_array[0]->GetNode(1)->SetLocationValue(diagonal_vessel_length, diagonal_vessel_length);
-    vessel_segment_array[1]->GetNode(1)->SetLocationValue(2.0 * diagonal_vessel_length + horizontal_vessel_length, 0.0);
-    vessel_segment_array[2]->GetNode(1)->SetLocationValue(2.0 * (diagonal_vessel_length + horizontal_vessel_length), 0.0);
+    vessel_segment_array[0]->GetNode(1)->SetLocation(diagonal_vessel_length, diagonal_vessel_length);
+    vessel_segment_array[1]->GetNode(1)->SetLocation(2.0 * diagonal_vessel_length + horizontal_vessel_length, 0.0);
+    vessel_segment_array[2]->GetNode(1)->SetLocation(2.0 * (diagonal_vessel_length + horizontal_vessel_length), 0.0);
 
     for (unsigned i = 3; i < (2 + 3 * units_in_x_direction); i++)
     {
-        vessel_segment_array[i]->GetNode(1)->SetLocationValue(
-                        vessel_segment_array[i - 3]->GetNode(1)->GetLocation()[0]
+        vessel_segment_array[i]->GetNode(1)->SetLocation(
+                        vessel_segment_array[i - 3]->GetNode(1)->rGetLocation()[0]
                                 + 2 * (diagonal_vessel_length + horizontal_vessel_length),
-                        vessel_segment_array[i - 3]->GetNode(1)->GetLocation()[1]);
+                        vessel_segment_array[i - 3]->GetNode(1)->rGetLocation()[1]);
     }
-    vessel_segment_array[2 + 3 * units_in_x_direction]->GetNode(1)->SetLocationValue(diagonal_vessel_length, diagonal_vessel_length);
-    vessel_segment_array[2 + 3 * units_in_x_direction + 1]->GetNode(1)->SetLocationValue(diagonal_vessel_length + horizontal_vessel_length, diagonal_vessel_length);
-    vessel_segment_array[2 + 3 * units_in_x_direction + 2]->GetNode(1)->SetLocationValue(2 * diagonal_vessel_length + horizontal_vessel_length, 2 * diagonal_vessel_length);
+    vessel_segment_array[2 + 3 * units_in_x_direction]->GetNode(1)->SetLocation(diagonal_vessel_length, diagonal_vessel_length);
+    vessel_segment_array[2 + 3 * units_in_x_direction + 1]->GetNode(1)->SetLocation(diagonal_vessel_length + horizontal_vessel_length, diagonal_vessel_length);
+    vessel_segment_array[2 + 3 * units_in_x_direction + 2]->GetNode(1)->SetLocation(2 * diagonal_vessel_length + horizontal_vessel_length, 2 * diagonal_vessel_length);
 
     for (unsigned i = (2 + 3 * units_in_x_direction + 3);
             i < (2 + 3 * units_in_x_direction + 3 * (units_in_x_direction + 1)); i++)
     {
-        vessel_segment_array[i]->GetNode(1)->SetLocationValue(vessel_segment_array[i - 3]->GetNode(1)->GetLocation()[0]
+        vessel_segment_array[i]->GetNode(1)->SetLocation(vessel_segment_array[i - 3]->GetNode(1)->rGetLocation()[0]
                                 + 2 * (diagonal_vessel_length + horizontal_vessel_length),
-                        vessel_segment_array[i - 3]->GetNode(1)->GetLocation()[1]);
+                        vessel_segment_array[i - 3]->GetNode(1)->rGetLocation()[1]);
     }
 
     for (unsigned i = (2 + 3 * units_in_x_direction + 3 * (units_in_x_direction + 1));
             i < number_of_vessels - units_in_x_direction; i++)
     {
-        vessel_segment_array[i]->GetNode(1)->SetLocationValue(vessel_segment_array[i - (2 + 3 * units_in_x_direction + 3 * (units_in_x_direction + 1))]->GetNode(
-                                1)->GetLocation()[0],
+        vessel_segment_array[i]->GetNode(1)->SetLocation(vessel_segment_array[i - (2 + 3 * units_in_x_direction + 3 * (units_in_x_direction + 1))]->GetNode(
+                                1)->rGetLocation()[0],
                         vessel_segment_array[i - (2 + 3 * units_in_x_direction + 3 * (units_in_x_direction + 1))]->GetNode(
-                                1)->GetLocation()[1] + 2 * diagonal_vessel_length);
+                                1)->rGetLocation()[1] + 2 * diagonal_vessel_length);
     }
 
-    vessel_segment_array[number_of_vessels - units_in_x_direction]->GetNode(1)->SetLocationValue(
+    vessel_segment_array[number_of_vessels - units_in_x_direction]->GetNode(1)->SetLocation(
                     2 * (diagonal_vessel_length + horizontal_vessel_length),
-                    vessel_segment_array[number_of_vessels - units_in_x_direction - 1]->GetNode(0)->GetLocation()[1]
+                    vessel_segment_array[number_of_vessels - units_in_x_direction - 1]->GetNode(0)->rGetLocation()[1]
                             + diagonal_vessel_length);
 
     for (unsigned i = 1; i < units_in_x_direction; i++)
     {
-        vessel_segment_array[number_of_vessels - units_in_x_direction + i]->GetNode(1)->SetLocationValue(
-                        vessel_segment_array[number_of_vessels - units_in_x_direction + i - 1]->GetNode(1)->GetLocation()[0]
+        vessel_segment_array[number_of_vessels - units_in_x_direction + i]->GetNode(1)->SetLocation(
+                        vessel_segment_array[number_of_vessels - units_in_x_direction + i - 1]->GetNode(1)->rGetLocation()[0]
                                 + 2 * (diagonal_vessel_length + horizontal_vessel_length),
-                        vessel_segment_array[number_of_vessels - units_in_x_direction + i - 1]->GetNode(1)->GetLocation()[1]);
+                        vessel_segment_array[number_of_vessels - units_in_x_direction + i - 1]->GetNode(1)->rGetLocation()[1]);
     }
 
     typename std::vector<boost::shared_ptr<VesselSegment<DIM> > >::iterator segment_iterator;
@@ -1018,10 +1010,10 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateHexa
 
 #ifdef CHASTE_VTK
 template<unsigned DIM>
-boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateNetworkFromVtkFile(const std::string& filename)
+boost::shared_ptr<VesselNetwork<DIM> > VasculatureGenerator<DIM>::GenerateNetworkFromVtkFile(const std::string& filename)
 {
     // Create an empty vessel network
-    boost::shared_ptr<VascularNetwork<DIM> > pVesselNetwork = VascularNetwork<DIM>::Create();
+    boost::shared_ptr<VesselNetwork<DIM> > pVesselNetwork = VesselNetwork<DIM>::Create();
 
     // Create a VTK PolyData object based on the contents of the input VTK file
     vtkSmartPointer<vtkXMLPolyDataReader> p_reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
@@ -1032,18 +1024,18 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateNetw
     p_polydata = p_reader->GetOutput();
 
     // Create the nodes
-    std::vector<boost::shared_ptr<VascularNode<DIM> > > nodes;
+    std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes;
     for (vtkIdType i = 0; i < p_polydata->GetNumberOfPoints(); i++)
     {
         double point_coords[3];
         p_polydata->GetPoint(i, point_coords);
         if (DIM < 3)
         {
-            nodes.push_back(VascularNode<DIM>::Create(point_coords[0], point_coords[1]));
+            nodes.push_back(VesselNode<DIM>::Create(point_coords[0], point_coords[1]));
         }
         else
         {
-            nodes.push_back(VascularNode<DIM>::Create(point_coords[0], point_coords[1], point_coords[2]));
+            nodes.push_back(VesselNode<DIM>::Create(point_coords[0], point_coords[1], point_coords[2]));
         }
     }
 
@@ -1082,7 +1074,7 @@ boost::shared_ptr<VascularNetwork<DIM> > VasculatureGenerator<DIM>::GenerateNetw
             boost::shared_ptr<VesselSegment<DIM> > p_segment = VesselSegment<DIM>::Create(nodes[pSegmentList[j - 1]],nodes[pSegmentList[j]]);
             if(unsigned(radii.size())>= pSegmentList[j])
             {
-                p_segment->SetRadius(radii[pSegmentList[j]]*unit::metres);
+                p_segment->SetRadius(radii[pSegmentList[j]]);
             }
             segments.push_back(p_segment);
         }

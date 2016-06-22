@@ -41,7 +41,7 @@
 
 #include "StructuralAdaptationSolver.hpp"
 #include "SmartPointers.hpp"
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 #include "AbstractHybridSolver.hpp"
 #include "AbstractCellPopulation.hpp"
 #include "AngiogenesisSolver.hpp"
@@ -58,7 +58,7 @@ class VascularTumourSolver
     /**
      * The vessel network
      */
-    boost::shared_ptr<VascularNetwork<DIM> > mpNetwork;
+    boost::shared_ptr<VesselNetwork<DIM> > mpNetwork;
 
     /**
      * The frequency of file based output
@@ -170,7 +170,7 @@ public:
      * Set the vessel network
      * @param pNetwork the vessel network
      */
-    void SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork);
+    void SetVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pNetwork);
 
     /**
      * Set the regression solver

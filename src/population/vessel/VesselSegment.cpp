@@ -35,37 +35,31 @@
 
 #include "SmartPointers.hpp"
 #include "UblasIncludes.hpp"
-#include "VascularNode.hpp"
+#include "VesselNode.hpp"
 #include "Vessel.hpp"
 #include "VesselSegment.hpp"
 
 template<unsigned DIM>
-VesselSegment<DIM>::VesselSegment(boost::shared_ptr<VascularNode<DIM> > pNode1, boost::shared_ptr<VascularNode<DIM> > pNode2) :
-        mNodes(std::pair<boost::shared_ptr<VascularNode<DIM> >, boost::shared_ptr<VascularNode<DIM> > >(pNode1, pNode2)),
-        mOutputData(),
-        mId(0),
+VesselSegment<DIM>::VesselSegment(boost::shared_ptr<VesselNode<DIM> > pNode1, boost::shared_ptr<VesselNode<DIM> > pNode2) :
+        AbstractVesselNetworkComponent<DIM>(),
+        mNodes(std::pair<boost::shared_ptr<VesselNode<DIM> >, boost::shared_ptr<VesselNode<DIM> > >(pNode1, pNode2)),
         mVessel(boost::weak_ptr<Vessel<DIM> >()),
-        mRadius(1.0 * unit::metres),
-        mpFlowProperties(boost::shared_ptr<SegmentFlowProperties> (new SegmentFlowProperties()))
+        mpFlowProperties(boost::shared_ptr<SegmentFlowProperties<DIM> >(new SegmentFlowProperties<DIM>()))
 {
 }
 
 template<unsigned DIM>
 VesselSegment<DIM>::VesselSegment(const VesselSegment<DIM>& rSegment) :
-    boost::enable_shared_from_this<VesselSegment<DIM> >(),
+    boost::enable_shared_from_this<VesselSegment<DIM> >(), AbstractVesselNetworkComponent<DIM>(),
     mNodes(rSegment.GetNodes()),
-    mOutputData(),
-    mId(0),
     mVessel(boost::weak_ptr<Vessel<DIM> >()),
-    mRadius(rSegment.GetRadius()),
-    mpFlowProperties(boost::shared_ptr<SegmentFlowProperties> ())
+    mpFlowProperties(boost::shared_ptr<SegmentFlowProperties<DIM> >(new SegmentFlowProperties<DIM>()))
 {
-//    mOutputData(rSegment.GetOutputData());
-    SetFlowProperties(*(rSegment.GetFlowProperties()));
+    this->SetFlowProperties(*(rSegment.GetFlowProperties()));
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VesselSegment<DIM> > VesselSegment<DIM>::Create(boost::shared_ptr<VascularNode<DIM> > pNode1, boost::shared_ptr<VascularNode<DIM> > pNode2)
+boost::shared_ptr<VesselSegment<DIM> > VesselSegment<DIM>::Create(boost::shared_ptr<VesselNode<DIM> > pNode1, boost::shared_ptr<VesselNode<DIM> > pNode2)
 {
     boost::shared_ptr<VesselSegment<DIM> > pSelf(new VesselSegment<DIM>(pNode1, pNode2));
 
@@ -110,39 +104,22 @@ void VesselSegment<DIM>::AddVessel(boost::shared_ptr<Vessel<DIM> > pVessel)
 template<unsigned DIM>
 void VesselSegment<DIM>::CopyDataFromExistingSegment(const boost::shared_ptr<VesselSegment<DIM> > pTargetSegment)
 {
-    mOutputData = pTargetSegment->GetOutputData();
-    mRadius = pTargetSegment->GetRadius();
-    SetFlowProperties(*(pTargetSegment->GetFlowProperties()));
+    this->mOutputData = pTargetSegment->GetOutputData();
+    this->SetRadius(pTargetSegment->GetRadius());
+    this->SetFlowProperties(*(pTargetSegment->GetFlowProperties()));
 }
 
 template<unsigned DIM>
-double VesselSegment<DIM>::GetOutputData(const std::string& rKey)
+units::quantity<unit::length> VesselSegment<DIM>::GetDimensionalDistance(const c_vector<double, DIM>& location) const
 {
-    return mOutputData[rKey];
+    return this->GetDistance(location)*this->mReferenceLength;
 }
 
 template<unsigned DIM>
-std::map<std::string, double> VesselSegment<DIM>::GetOutputData()
+double VesselSegment<DIM>::GetDistance(const c_vector<double, DIM>& location) const
 {
-    return mOutputData;
-}
-
-//template<unsigned DIM>
-//std::vector<std::string> VesselSegment<DIM>::GetDataKeys() const
-//{
-//    std::vector<std::string> keys;
-//    for(std::map<std::string,double>::iterator it = mOutputData.begin(); it != mOutputData.end(); ++it)
-//    {
-//        keys.push_back(it->first);
-//    }
-//    return keys;
-//}
-
-template<unsigned DIM>
-units::quantity<unit::length> VesselSegment<DIM>::GetDistance(c_vector<double, DIM> location) const
-{
-    c_vector<double, DIM> start_location = mNodes.first->GetLocationValue();
-    c_vector<double, DIM> segment_vector = mNodes.second->GetLocationValue() - start_location;
+    c_vector<double, DIM> start_location = mNodes.first->rGetLocation();
+    c_vector<double, DIM> segment_vector = mNodes.second->rGetLocation() - start_location;
 
     double dp_segment_point = inner_prod(segment_vector, location - start_location);
     // Point projection is outside segment, return node0 distance
@@ -160,42 +137,46 @@ units::quantity<unit::length> VesselSegment<DIM>::GetDistance(c_vector<double, D
 
     // Point projection is inside segment, get distance to point projection
     double projection_ratio = dp_segment_point / dp_segment_segment;
-    units::quantity<unit::length> distance = norm_2(start_location + projection_ratio * segment_vector - location)*unit::metres;
-    return distance;
+    return norm_2(start_location + projection_ratio * segment_vector - location);
 }
 
 template<unsigned DIM>
-boost::shared_ptr<SegmentFlowProperties> VesselSegment<DIM>::GetFlowProperties() const
+units::quantity<unit::length> VesselSegment<DIM>::GetDimensionalLength() const
 {
-    return mpFlowProperties;
+    return this->GetLength()*this->mReferenceLength;
 }
 
 template<unsigned DIM>
-unsigned VesselSegment<DIM>::GetId() const
+boost::shared_ptr<SegmentFlowProperties<DIM> > VesselSegment<DIM>::GetFlowProperties() const
 {
-    return mId;
+    return this->mpFlowProperties;
 }
 
 template<unsigned DIM>
-units::quantity<unit::length> VesselSegment<DIM>::GetLength() const
+double VesselSegment<DIM>::GetLength() const
 {
-    return norm_2(mNodes.second->GetLocationValue() - mNodes.first->GetLocationValue())*unit::metres;
+    return norm_2(mNodes.second->rGetLocation() - mNodes.first->rGetLocation());
 }
 
 template<unsigned DIM>
-units::quantity<unit::length> VesselSegment<DIM>::GetRadius() const
+std::map<std::string, double> VesselSegment<DIM>::GetOutputData()
 {
-    return mRadius;
+    std::map<std::string, double> flow_data = this->mpFlowProperties->GetOutputData();
+    this->mOutputData.insert(flow_data.begin(), flow_data.end());
+    this->mOutputData["Segment Id"] = double(this->GetId());
+    this->mOutputData["Dimensionless Segment Radius"] = this->GetRadius();
+    this->mOutputData["Segment Radius m: "] = this->GetRadiusSI();
+    return this->mOutputData;
 }
 
 template<unsigned DIM>
 c_vector<double, DIM> VesselSegment<DIM>::GetMidPoint() const
 {
-    return (mNodes.second->GetLocationValue() + mNodes.first->GetLocationValue()) / 2.0;
+    return (mNodes.second->rGetLocation() + mNodes.first->rGetLocation()) / 2.0;
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VascularNode<DIM> > VesselSegment<DIM>::GetNode(unsigned index) const
+boost::shared_ptr<VesselNode<DIM> > VesselSegment<DIM>::GetNode(unsigned index) const
 {
     if (index == 0u)
     {
@@ -212,7 +193,7 @@ boost::shared_ptr<VascularNode<DIM> > VesselSegment<DIM>::GetNode(unsigned index
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VascularNode<DIM> > VesselSegment<DIM>::GetOppositeNode(boost::shared_ptr<VascularNode<DIM> > pInputNode) const
+boost::shared_ptr<VesselNode<DIM> > VesselSegment<DIM>::GetOppositeNode(boost::shared_ptr<VesselNode<DIM> > pInputNode) const
 {
     if(pInputNode == mNodes.first)
     {
@@ -229,16 +210,16 @@ boost::shared_ptr<VascularNode<DIM> > VesselSegment<DIM>::GetOppositeNode(boost:
 }
 
 template<unsigned DIM>
-std::pair<boost::shared_ptr<VascularNode<DIM> >, boost::shared_ptr<VascularNode<DIM> > > VesselSegment<DIM>::GetNodes() const
+std::pair<boost::shared_ptr<VesselNode<DIM> >, boost::shared_ptr<VesselNode<DIM> > > VesselSegment<DIM>::GetNodes() const
 {
     return mNodes;
 }
 
 template<unsigned DIM>
-c_vector<double, DIM> VesselSegment<DIM>::GetPointProjection(c_vector<double, DIM> location, bool projectToEnds) const
+c_vector<double, DIM> VesselSegment<DIM>::GetPointProjection(const c_vector<double, DIM>& location, bool projectToEnds) const
 {
-    c_vector<double, DIM> start_location = GetNode(0)->GetLocationValue();
-    c_vector<double, DIM> end_location = GetNode(1)->GetLocationValue();
+    c_vector<double, DIM> start_location = GetNode(0)->rGetLocation();
+    c_vector<double, DIM> end_location = GetNode(1)->rGetLocation();
 
     c_vector<double, DIM> segment_vector = end_location - start_location;
     c_vector<double, DIM> point_vector = location - start_location;
@@ -276,7 +257,7 @@ c_vector<double, DIM> VesselSegment<DIM>::GetPointProjection(c_vector<double, DI
 template<unsigned DIM>
 c_vector<double, DIM> VesselSegment<DIM>::GetUnitTangent() const
 {
-    return (mNodes.second->GetLocationValue() - mNodes.first->GetLocationValue()) / (GetLength()/unit::metres);
+    return (mNodes.second->rGetLocation() - mNodes.first->rGetLocation()) / (this->GetLength());
 }
 
 template<unsigned DIM>
@@ -293,7 +274,7 @@ boost::shared_ptr<Vessel<DIM> > VesselSegment<DIM>::GetVessel() const
 }
 
 template<unsigned DIM>
-bool VesselSegment<DIM>::HasNode(boost::shared_ptr<VascularNode<DIM> > pNode) const
+bool VesselSegment<DIM>::HasNode(boost::shared_ptr<VesselNode<DIM> > pNode) const
 {
     return (pNode == GetNode(0) || pNode == GetNode(1));
 }
@@ -326,7 +307,7 @@ void VesselSegment<DIM>::Remove()
 }
 
 template<unsigned DIM>
-void VesselSegment<DIM>::ReplaceNode(unsigned oldNodeIndex, boost::shared_ptr<VascularNode<DIM> > pNewNode)
+void VesselSegment<DIM>::ReplaceNode(unsigned oldNodeIndex, boost::shared_ptr<VesselNode<DIM> > pNewNode)
 {
     if (oldNodeIndex == 0u)
     {
@@ -352,21 +333,9 @@ void VesselSegment<DIM>::ReplaceNode(unsigned oldNodeIndex, boost::shared_ptr<Va
 }
 
 template<unsigned DIM>
-void VesselSegment<DIM>::SetOutputData(const std::string& variableName, double value)
+void VesselSegment<DIM>::SetFlowProperties(const SegmentFlowProperties<DIM> & rFlowProperties)
 {
-    mOutputData[variableName] = value;
-}
-
-template<unsigned DIM>
-void VesselSegment<DIM>::SetId(unsigned id)
-{
-    mId = id;
-}
-
-template<unsigned DIM>
-void VesselSegment<DIM>::SetRadius(units::quantity<unit::length> radius)
-{
-    mRadius = radius;
+    this->mpFlowProperties = boost::shared_ptr<SegmentFlowProperties<DIM> >(new SegmentFlowProperties<DIM> (rFlowProperties));
 }
 
 template<unsigned DIM>
@@ -374,12 +343,6 @@ boost::shared_ptr<VesselSegment<DIM> > VesselSegment<DIM>::Shared()
 {
     boost::shared_ptr<VesselSegment<DIM> > pSegment = this->shared_from_this();
     return pSegment;
-}
-
-template<unsigned DIM>
-void VesselSegment<DIM>::SetFlowProperties(const SegmentFlowProperties& rFlowProperties)
-{
-    mpFlowProperties = boost::shared_ptr<SegmentFlowProperties>(new SegmentFlowProperties(rFlowProperties));
 }
 
 // Explicit instantiation

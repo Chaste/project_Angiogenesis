@@ -33,7 +33,7 @@
 
 #include "BetteridgeHaematocritSolver.hpp"
 #include "LinearSystem.hpp"
-#include "VascularNode.hpp"
+#include "VesselNode.hpp"
 #include "Vessel.hpp"
 #include "Exception.hpp"
 #include "ReplicatableVector.hpp"
@@ -108,16 +108,16 @@ void BetteridgeHaematocritSolver<DIM>::Calculate()
             linearSystem.SetRhsVectorElement(idx, mHaematocrit);
         }
         // Set rhs to zero, it should already be zero but this explicitly captures the no flow case
-        else if(vessels[idx]->GetFlowRate()==0.0*unit::unit_flow_rate)
+        else if(vessels[idx]->GetFlowProperties()->GetDimensionalFlowRate(vessels[idx]->GetSegments())==0.0*unit::unit_flow_rate)
         {
             linearSystem.SetRhsVectorElement(idx, 0.0);
         }
         else
         {
             // Identify inflow node
-            boost::shared_ptr<VascularNode<DIM> > p_inflow_node;
-            units::quantity<unit::flow_rate> flow_rate= vessels[idx]->GetFlowRate();
-            if(vessels[idx]->GetFlowRate()>0 * unit::unit_flow_rate)
+            boost::shared_ptr<VesselNode<DIM> > p_inflow_node;
+            units::quantity<unit::flow_rate> flow_rate= vessels[idx]->GetFlowProperties()->GetDimensionalFlowRate(vessels[idx]->GetSegments());
+            if(flow_rate >0 * unit::unit_flow_rate)
             {
                 p_inflow_node = vessels[idx]->GetStartNode();
             }
@@ -131,43 +131,43 @@ void BetteridgeHaematocritSolver<DIM>::Calculate()
             {
                 std::vector<boost::shared_ptr<Vessel<DIM> > > parent_vessels;
                 std::vector<boost::shared_ptr<Vessel<DIM> > > competitor_vessels;
-                for(unsigned jdx=0; jdx<p_inflow_node->GetVesselSegments().size(); jdx++)
+                for(unsigned jdx=0; jdx<p_inflow_node->GetSegments().size(); jdx++)
                 {
                     // if not this vessel
-                    if(p_inflow_node->GetVesselSegment(jdx)->GetVessel()!=vessels[idx])
+                    if(p_inflow_node->GetSegment(jdx)->GetVessel()!=vessels[idx])
                     {
-                        units::quantity<unit::flow_rate> inflow_rate = p_inflow_node->GetVesselSegment(jdx)->GetVessel()->GetFlowRate();
-                        if(p_inflow_node->GetVesselSegment(jdx)->GetVessel()->GetEndNode()==p_inflow_node)
+                        units::quantity<unit::flow_rate> inflow_rate = p_inflow_node->GetSegment(jdx)->GetVessel()->GetFlowProperties()->GetDimensionalFlowRate(p_inflow_node->GetSegment(jdx)->GetVessel()->GetSegments());
+                        if(p_inflow_node->GetSegment(jdx)->GetVessel()->GetEndNode()==p_inflow_node)
                         {
                             if(inflow_rate>0.0 * unit::unit_flow_rate)
                             {
-                                parent_vessels.push_back(p_inflow_node->GetVesselSegment(jdx)->GetVessel());
+                                parent_vessels.push_back(p_inflow_node->GetSegment(jdx)->GetVessel());
                             }
                             else if(inflow_rate<0.0 * unit::unit_flow_rate)
                             {
-                                competitor_vessels.push_back(p_inflow_node->GetVesselSegment(jdx)->GetVessel());
+                                competitor_vessels.push_back(p_inflow_node->GetSegment(jdx)->GetVessel());
                             }
                         }
-                        if(p_inflow_node->GetVesselSegment(jdx)->GetVessel()->GetStartNode()==p_inflow_node)
+                        if(p_inflow_node->GetSegment(jdx)->GetVessel()->GetStartNode()==p_inflow_node)
                         {
                             if(inflow_rate>0.0 * unit::unit_flow_rate)
                             {
-                                competitor_vessels.push_back(p_inflow_node->GetVesselSegment(jdx)->GetVessel());
+                                competitor_vessels.push_back(p_inflow_node->GetSegment(jdx)->GetVessel());
                             }
                             else if(inflow_rate<0.0 * unit::unit_flow_rate)
                             {
-                                parent_vessels.push_back(p_inflow_node->GetVesselSegment(jdx)->GetVessel());
+                                parent_vessels.push_back(p_inflow_node->GetSegment(jdx)->GetVessel());
                             }
                         }
                     }
                 }
 
                 // If there are no competitor vessels the haematocrit is just the sum of the parent values
-                if(competitor_vessels.size()==0 or units::fabs(competitor_vessels[0]->GetFlowRate()) == 0.0 * unit::unit_flow_rate)
+                if(competitor_vessels.size()==0 or units::fabs(competitor_vessels[0]->GetFlowProperties()->GetDimensionalFlowRate(competitor_vessels[0]->GetSegments())) == 0.0 * unit::unit_flow_rate)
                 {
                     for(unsigned jdx=0; jdx<parent_vessels.size();jdx++)
                     {
-                        linearSystem.SetMatrixElement(idx, parent_vessels[jdx]->GetId(), -fabs(parent_vessels[jdx]->GetFlowRate()/flow_rate));
+                        linearSystem.SetMatrixElement(idx, parent_vessels[jdx]->GetId(), -fabs(parent_vessels[jdx]->GetFlowProperties()->GetDimensionalFlowRate(parent_vessels[jdx]->GetSegments())/flow_rate));
                     }
                 }
                 else
@@ -176,18 +176,20 @@ void BetteridgeHaematocritSolver<DIM>::Calculate()
                     {
                         EXCEPTION("This solver can only work with branches with connectivity 3");
                     }
+                    units::quantity<unit::flow_rate> competitor0_flow_rate = competitor_vessels[0]->GetFlowProperties()->GetDimensionalFlowRate(competitor_vessels[0]->GetSegments());
+                    units::quantity<unit::flow_rate> parent0_flow_rate = parent_vessels[0]->GetFlowProperties()->GetDimensionalFlowRate(parent_vessels[0]->GetSegments());
 
                     // There is a bifurcation, apply a haematocrit splitting rule
-                    units::quantity<unit::length> my_radius = vessels[idx]->GetRadius();
-                    units::quantity<unit::length> competitor_radius = competitor_vessels[0]->GetRadius();
+                    units::quantity<unit::length> my_radius = vessels[idx]->GetDimensionalRadius();
+                    units::quantity<unit::length> competitor_radius = competitor_vessels[0]->GetDimensionalRadius();
                     units::quantity<unit::velocity> my_velocity = units::fabs(flow_rate)/(M_PI * my_radius * my_radius);
-                    units::quantity<unit::velocity> competitor_velocity = fabs(competitor_vessels[0]->GetFlowRate())/(M_PI * competitor_radius * competitor_radius);
+                    units::quantity<unit::velocity> competitor_velocity = fabs(competitor0_flow_rate)/(M_PI * competitor_radius * competitor_radius);
 
                     // Alpha now depends on haematocrit in the parent vessel, so system is non-linear. Will solve iteratively
-                    units::quantity<unit::dimensionless> alpha = 1.0 - parent_vessels[0]->GetHaematocrit();
+                    units::quantity<unit::dimensionless> alpha = 1.0 - parent_vessels[0]->GetFlowProperties()->GetHaematocrit(parent_vessels[0]->GetSegments());
                     units::quantity<unit::dimensionless> term = alpha * (my_velocity/competitor_velocity-1.0);
-                    units::quantity<unit::dimensionless> flow_ratio_pm = fabs(parent_vessels[0]->GetFlowRate())/fabs(flow_rate);
-                    units::quantity<unit::dimensionless> flow_ratio_cm = fabs(competitor_vessels[0]->GetFlowRate())/fabs(flow_rate);
+                    units::quantity<unit::dimensionless> flow_ratio_pm = fabs(parent0_flow_rate)/fabs(flow_rate);
+                    units::quantity<unit::dimensionless> flow_ratio_cm = fabs(competitor0_flow_rate)/fabs(flow_rate);
 
                     double numer = flow_ratio_pm;
                     double denom = 1.0+flow_ratio_cm*(1.0/(1.0+term));
@@ -218,16 +220,19 @@ void BetteridgeHaematocritSolver<DIM>::Calculate()
             linearSystem.SwitchWriteModeLhsMatrix();
             for(unsigned idx=0; idx<update_indices.size();idx++)
             {
-                units::quantity<unit::flow_rate> flow_rate = vessels[update_indices[idx][0]]->GetFlowRate();
-                units::quantity<unit::length> my_radius = vessels[update_indices[idx][0]]->GetRadius();
-                units::quantity<unit::length> competitor_radius = vessels[update_indices[idx][2]]->GetRadius();
-                units::quantity<unit::velocity> my_velocity = fabs(flow_rate)/(M_PI * my_radius * my_radius);
-                units::quantity<unit::velocity> competitor_velocity = fabs(vessels[update_indices[idx][2]]->GetFlowRate())/(M_PI * competitor_radius * competitor_radius);
-                units::quantity<unit::dimensionless> alpha = 1.0 - vessels[update_indices[idx][1]]->GetHaematocrit();
+                units::quantity<unit::flow_rate> self_flow_rate = vessels[update_indices[idx][0]]->GetFlowProperties()->GetDimensionalFlowRate(vessels[update_indices[idx][0]]->GetSegments());
+                units::quantity<unit::flow_rate> competitor0_flow_rate = vessels[update_indices[idx][2]]->GetFlowProperties()->GetDimensionalFlowRate(vessels[update_indices[idx][2]]->GetSegments());
+                units::quantity<unit::flow_rate> parent0_flow_rate = vessels[update_indices[idx][1]]->GetFlowProperties()->GetDimensionalFlowRate(vessels[update_indices[idx][1]]->GetSegments());
+
+                units::quantity<unit::length> my_radius = vessels[update_indices[idx][0]]->GetDimensionalRadius();
+                units::quantity<unit::length> competitor_radius = vessels[update_indices[idx][2]]->GetDimensionalRadius();
+                units::quantity<unit::velocity> my_velocity = fabs(self_flow_rate)/(M_PI * my_radius * my_radius);
+                units::quantity<unit::velocity> competitor_velocity = fabs(competitor0_flow_rate)/(M_PI * competitor_radius * competitor_radius);
+                units::quantity<unit::dimensionless> alpha = 1.0 - vessels[update_indices[idx][1]]->GetFlowProperties()->GetHaematocrit(vessels[update_indices[idx][1]]->GetSegments());
 
                 double term = alpha * (my_velocity/competitor_velocity-1.0);
-                double flow_ratio_pm = fabs(vessels[update_indices[idx][1]]->GetFlowRate()/flow_rate);
-                double flow_ratio_cm = fabs(vessels[update_indices[idx][2]]->GetFlowRate()/flow_rate);
+                double flow_ratio_pm = fabs(parent0_flow_rate/self_flow_rate);
+                double flow_ratio_cm = fabs(competitor0_flow_rate/self_flow_rate);
                 double numer = flow_ratio_pm;
                 double denom = 1.0+flow_ratio_cm*(1.0/(1.0+term));
 
@@ -244,9 +249,9 @@ void BetteridgeHaematocritSolver<DIM>::Calculate()
         residual = 0;
         for (unsigned i = 0; i < vessels.size(); i++)
         {
-            if(vessels[i]->GetHaematocrit() - a[i] > residual)
+            if(vessels[i]->GetFlowProperties()->GetHaematocrit(vessels[i]->GetSegments()) - a[i] > residual)
             {
-                residual = vessels[i]->GetHaematocrit() - a[i];
+                residual = vessels[i]->GetFlowProperties()->GetHaematocrit(vessels[i]->GetSegments()) - a[i];
             }
         }
 
@@ -255,7 +260,7 @@ void BetteridgeHaematocritSolver<DIM>::Calculate()
         {
             for (unsigned jdx = 0; jdx < vessels[idx]->GetNumberOfSegments(); jdx++)
             {
-                vessels[idx]->GetSegment(jdx)->GetFlowProperties()->SetHaematocrit(a[idx]);
+                vessels[idx]->GetSegments()[jdx]->GetFlowProperties()->SetHaematocrit(a[idx]);
             }
         }
 

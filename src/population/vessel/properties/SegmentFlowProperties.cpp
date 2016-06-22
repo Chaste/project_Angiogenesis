@@ -35,88 +35,251 @@
 
 #include "SegmentFlowProperties.hpp"
 
-SegmentFlowProperties::SegmentFlowProperties() :
-    mHaematocrit(0.45),
-    mFlowRate(0.0*units::pow<3>(unit::metres)/unit::seconds),
-    mImpedance(0.0*unit::kg/(units::pow<4>(unit::metres)*unit::seconds)),
-    mViscosity(0.0*unit::kg/(unit::metres*unit::seconds)),
+template<unsigned DIM>
+SegmentFlowProperties<DIM>::SegmentFlowProperties() : AbstractVesselNetworkComponentFlowProperties<DIM>(),
+    mHaematocrit(0.0),
+    mFlowRate(0.0*unit::unit_flow_rate),
+    mImpedance(0.0*unit::unit_flow_impedance),
+    mViscosity(0.0*unit::poiseuille),
     mWallShearStress(0.0*unit::pascals),
     mStimulus(0.0*unit::reciprocal_seconds)
 {
 }
 
-SegmentFlowProperties::~SegmentFlowProperties()
+template<unsigned DIM>
+SegmentFlowProperties<DIM>::~SegmentFlowProperties()
 {
 }
 
-units::quantity<unit::dimensionless> SegmentFlowProperties::GetHaematocrit() const
+template<unsigned DIM>
+double SegmentFlowProperties<DIM>::GetHaematocrit() const
 {
     return mHaematocrit;
 }
 
-units::quantity<unit::flow_rate> SegmentFlowProperties::GetFlowRate() const
+template<unsigned DIM>
+units::quantity<unit::dimensionless> SegmentFlowProperties<DIM>::GetDimensionalHaematocrit() const
+{
+    return mHaematocrit;
+}
+
+template<unsigned DIM>
+double SegmentFlowProperties<DIM>::GetHaematocritSI() const
+{
+    return mHaematocrit;
+}
+
+template<unsigned DIM>
+double SegmentFlowProperties<DIM>::GetFlowRate() const
+{
+    return mFlowRate/(units::pow<3>(this->mReferenceLength)/this->mReferenceTime);
+}
+
+template<unsigned DIM>
+units::quantity<unit::flow_rate> SegmentFlowProperties<DIM>::GetDimensionalFlowRate() const
 {
     return mFlowRate;
 }
 
-units::quantity<unit::flow_impedance> SegmentFlowProperties::GetImpedance() const
+template<unsigned DIM>
+double SegmentFlowProperties<DIM>::GetFlowRateSI() const
+{
+    return mFlowRate/unit::unit_flow_rate;
+}
+
+template<unsigned DIM>
+double SegmentFlowProperties<DIM>::GetImpedance() const
+{
+    return mImpedance/(this->mReferenceMass/(units::pow<4>(this->mReferenceLength) * this->mReferenceTime));
+}
+
+template<unsigned DIM>
+units::quantity<unit::flow_impedance> SegmentFlowProperties<DIM>::GetDimensionalImpedance() const
 {
     return mImpedance;
 }
 
-units::quantity<unit::dynamic_viscosity> SegmentFlowProperties::GetViscosity() const
+template<unsigned DIM>
+double SegmentFlowProperties<DIM>::GetImpedanceSI() const
+{
+    return mImpedance/unit::unit_flow_impedance;
+}
+
+template<unsigned DIM>
+double SegmentFlowProperties<DIM>::GetViscosity() const
+{
+    return mViscosity/(this->mReferenceMass/(this->mReferenceLength * this->mReferenceTime));
+}
+
+template<unsigned DIM>
+units::quantity<unit::dynamic_viscosity> SegmentFlowProperties<DIM>::GetDimensionalViscosity() const
 {
     return mViscosity;
 }
 
-units::quantity<unit::pressure> SegmentFlowProperties::GetWallShearStress() const
+template<unsigned DIM>
+double SegmentFlowProperties<DIM>::GetViscositySI() const
+{
+    return mViscosity/unit::poiseuille;
+}
+
+template<unsigned DIM>
+double SegmentFlowProperties<DIM>::GetWallShearStress() const
+{
+    return mWallShearStress / (this->mReferenceMass/(this->mReferenceLength*this->mReferenceTime*this->mReferenceTime));
+}
+
+template<unsigned DIM>
+units::quantity<unit::pressure> SegmentFlowProperties<DIM>::GetDimensionalWallShearStress() const
 {
     return mWallShearStress;
 }
 
-units::quantity<unit::rate> SegmentFlowProperties::GetStimulus() const
+template<unsigned DIM>
+double SegmentFlowProperties<DIM>::GetWallShearStressSI() const
+{
+    return mWallShearStress / unit::pascals;
+}
+
+template<unsigned DIM>
+double SegmentFlowProperties<DIM>::GetGrowthStimulus() const
+{
+    return mStimulus/(1.0/this->mReferenceTime);
+}
+
+template<unsigned DIM>
+units::quantity<unit::rate> SegmentFlowProperties<DIM>::GetDimensionalGrowthStimulus() const
 {
     return mStimulus;
 }
 
-std::map<std::string, double> SegmentFlowProperties::GetVtkData() const
+template<unsigned DIM>
+double SegmentFlowProperties<DIM>::GetGrowthStimulusSI() const
 {
-    std::map<std::string, double> vtk_data;
-    vtk_data["Haematocrit"] = GetHaematocrit();
-    vtk_data["Flow Rate m3/s"] = GetFlowRate()/(units::pow<3>(unit::metres)/unit::seconds);
-    vtk_data["Impedance kg/m4/s"] = GetImpedance()/(unit::kg/(units::pow<4>(unit::metres)*unit::seconds));
-    vtk_data["Viscosity kg/m/s"] = GetViscosity()/(unit::kg/(unit::metres*unit::seconds));
-    vtk_data["Wall Shear Stress Pa"] = GetWallShearStress()/(unit::pascals);
-    vtk_data["Growth Stimulus s-1"] = GetStimulus()/(unit::reciprocal_seconds);
-    return vtk_data;
+    return mStimulus / unit::reciprocal_seconds;
 }
 
-void SegmentFlowProperties::SetHaematocrit(units::quantity<unit::dimensionless> haematocrit)
+template<unsigned DIM>
+std::map<std::string, double> SegmentFlowProperties<DIM>::GetOutputData() const
+{
+    std::map<std::string, double> output_data;
+    output_data["Segment Haematocrit"] = this->GetHaematocrit();
+    output_data["Segment Flow Rate m^3/s"] = this->GetFlowRate();
+    output_data["Segment Impedance kg/m^4/s"] = this->GetImpedance();
+    output_data["Segment Viscosity kg/m/s"] = this->GetViscosity();
+    output_data["Segment Wall Shear Stress Pa"] = this->GetWallShearStress();
+    output_data["Segment Growth Stimulus s^-1"] = this->GetGrowthStimulus();
+    return output_data;
+}
+
+template<unsigned DIM>
+void SegmentFlowProperties<DIM>::SetHaematocrit(double haematocrit)
 {
     mHaematocrit = haematocrit;
 }
 
-void SegmentFlowProperties::SetFlowRate(units::quantity<unit::flow_rate> flowRate)
+template<unsigned DIM>
+void SegmentFlowProperties<DIM>::SetDimensionalHaematocrit(units::quantity<unit::dimensionless> haematocrit)
+{
+    mHaematocrit = haematocrit;
+}
+
+template<unsigned DIM>
+void SegmentFlowProperties<DIM>::SetHaematocritSI(double haematocrit)
+{
+    mHaematocrit = haematocrit;
+}
+
+template<unsigned DIM>
+void SegmentFlowProperties<DIM>::SetFlowRate(double flowRate)
+{
+    mFlowRate = flowRate * (units::pow<3>(this->mReferenceLength)/this->mReferenceTime);
+}
+
+template<unsigned DIM>
+void SegmentFlowProperties<DIM>::SetDimensionalFlowRate(units::quantity<unit::flow_rate> flowRate)
 {
     mFlowRate = flowRate;
 }
 
-void SegmentFlowProperties::SetImpedance(units::quantity<unit::flow_impedance> impedance)
+template<unsigned DIM>
+void SegmentFlowProperties<DIM>::SetFlowRateSI(double flowRate)
+{
+    mFlowRate = flowRate * unit::unit_flow_rate;
+}
+
+template<unsigned DIM>
+void SegmentFlowProperties<DIM>::SetImpedance(double impedance)
+{
+    mImpedance = impedance * (this->mReferenceMass/(units::pow<4>(this->mReferenceLength) * this->mReferenceTime));
+}
+
+template<unsigned DIM>
+void SegmentFlowProperties<DIM>::SetDimensionalImpedance(units::quantity<unit::flow_impedance> impedance)
 {
     mImpedance = impedance;
 }
 
-void SegmentFlowProperties::SetViscosity(units::quantity<unit::dynamic_viscosity> viscosity)
+template<unsigned DIM>
+void SegmentFlowProperties<DIM>::SetImpedanceSI(double impedance)
+{
+    mImpedance = impedance*unit::unit_flow_impedance;
+}
+
+template<unsigned DIM>
+void SegmentFlowProperties<DIM>::SetViscosity(double viscosity)
+{
+    mViscosity = viscosity * (this->mReferenceMass/(this->mReferenceLength * this->mReferenceTime));
+}
+
+template<unsigned DIM>
+void SegmentFlowProperties<DIM>::SetDimensionalViscosity(units::quantity<unit::dynamic_viscosity> viscosity)
 {
     mViscosity = viscosity;
 }
 
-void SegmentFlowProperties::SetWallShearStress(units::quantity<unit::pressure> value)
+template<unsigned DIM>
+void SegmentFlowProperties<DIM>::SetViscositySI(double viscosity)
+{
+    mViscosity = viscosity * unit::poiseuille;
+}
+
+template<unsigned DIM>
+void SegmentFlowProperties<DIM>::SetWallShearStress(double value)
+{
+    mWallShearStress = value * (this->mReferenceMass/(this->mReferenceLength*this->mReferenceTime*this->mReferenceTime)) ;
+}
+
+template<unsigned DIM>
+void SegmentFlowProperties<DIM>::SetDimensionalWallShearStress(units::quantity<unit::pressure> value)
 {
     mWallShearStress = value;
 }
 
-void SegmentFlowProperties::SetStimulus(units::quantity<unit::rate> value)
+template<unsigned DIM>
+void SegmentFlowProperties<DIM>::SetWallShearStressSI(double value)
+{
+    mWallShearStress = value * unit::pascals;
+}
+
+template<unsigned DIM>
+void SegmentFlowProperties<DIM>::SetGrowthStimulus(double value)
+{
+    mStimulus = value*(1.0/this->mReferenceTime);
+}
+
+template<unsigned DIM>
+void SegmentFlowProperties<DIM>::SetDimensionalGrowthStimulus(units::quantity<unit::rate> value)
 {
     mStimulus = value;
 }
+
+template<unsigned DIM>
+void SegmentFlowProperties<DIM>::SetGrowthStimulusSI(double value)
+{
+    mStimulus = value*unit::reciprocal_seconds;
+}
+
+// Explicit instantiation
+template class SegmentFlowProperties<2> ;
+template class SegmentFlowProperties<3> ;

@@ -38,7 +38,7 @@
 
 #include <vector>
 #include <string>
-#include "VascularNode.hpp"
+#include "VesselNode.hpp"
 #include "SmartPointers.hpp"
 #include "LatticeBasedMigrationRule.hpp"
 #include "RegularGrid.hpp"
@@ -93,7 +93,7 @@ public:
      * @param rNodes nodes to calculate indices
      * @return a vector of grid indices to move nodes into
      */
-    std::vector<int> GetIndices(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes);
+    std::vector<int> GetIndices(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes);
 
     /**
      * Set the cell chemotactic parameter
@@ -116,7 +116,7 @@ private:
      * @param neighbourIndices the grid indices of the neighbour nodes
      * @return a vector of movement probabilities corresponding to each neighbour index
      */
-    std::vector<double> GetNeighbourMovementProbabilities(boost::shared_ptr<VascularNode<DIM> > pNode,
+    std::vector<double> GetNeighbourMovementProbabilities(boost::shared_ptr<VesselNode<DIM> > pNode,
                                                            std::vector<unsigned> neighbourIndices, unsigned gridIndex);
 };
 

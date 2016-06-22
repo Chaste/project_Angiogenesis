@@ -40,7 +40,7 @@
 #include <string>
 
 #include "AbstractSproutingRule.hpp"
-#include "VascularNode.hpp"
+#include "VesselNode.hpp"
 #include "SmartPointers.hpp"
 
 /**
@@ -78,7 +78,7 @@ public:
      * @param rNodes nodes to check for sprouting
      * @return a vector of nodes which may sprout
      */
-    virtual std::vector<boost::shared_ptr<VascularNode<DIM> > > GetSprouts(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes);
+    virtual std::vector<boost::shared_ptr<VesselNode<DIM> > > GetSprouts(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes);
 
 };
 

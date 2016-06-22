@@ -67,7 +67,7 @@ void Owen2011SproutingRule<DIM>::SetHalfMaxVegf(double halfMaxVegf)
 }
 
 template<unsigned DIM>
-std::vector<boost::shared_ptr<VascularNode<DIM> > > Owen2011SproutingRule<DIM>::GetSprouts(const std::vector<boost::shared_ptr<VascularNode<DIM> > >& rNodes)
+std::vector<boost::shared_ptr<VesselNode<DIM> > > Owen2011SproutingRule<DIM>::GetSprouts(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes)
 {
 
     if(!this->mpGrid)
@@ -84,7 +84,7 @@ std::vector<boost::shared_ptr<VascularNode<DIM> > > Owen2011SproutingRule<DIM>::
     this->mVegfField = this->mpSolver->GetSolutionAtGridPoints(this->mpGrid);
 
     // Set up the output sprouts vector
-    std::vector<boost::shared_ptr<VascularNode<DIM> > > sprouts;
+    std::vector<boost::shared_ptr<VesselNode<DIM> > > sprouts;
 
     // Loop over all nodes and randomly select sprouts
     for(unsigned idx = 0; idx < rNodes.size(); idx++)
@@ -97,11 +97,11 @@ std::vector<boost::shared_ptr<VascularNode<DIM> > > Owen2011SproutingRule<DIM>::
         // Check we are not too close to the end of the vessel
         if(this->mVesselEndCutoff > 0.0)
         {
-            if(rNodes[idx]->GetVesselSegment(0)->GetVessel()->GetClosestEndNodeDistance(rNodes[idx]->GetLocationVector())< this->mVesselEndCutoff)
+            if(rNodes[idx]->GetSegment(0)->GetVessel()->GetClosestEndNodeDistance(rNodes[idx]->rGetLocation())< this->mVesselEndCutoff)
             {
                 continue;
             }
-            if(rNodes[idx]->GetVesselSegment(1)->GetVessel()->GetClosestEndNodeDistance(rNodes[idx]->GetLocationVector())< this->mVesselEndCutoff)
+            if(rNodes[idx]->GetSegment(1)->GetVessel()->GetClosestEndNodeDistance(rNodes[idx]->rGetLocation())< this->mVesselEndCutoff)
             {
                 continue;
             }
@@ -113,7 +113,7 @@ std::vector<boost::shared_ptr<VascularNode<DIM> > > Owen2011SproutingRule<DIM>::
             bool too_close = false;
             for(unsigned jdx=0; jdx<sprouts.size(); jdx++)
             {
-                if(rNodes[idx]->GetDistance(sprouts[jdx]->GetLocationVector()) < this->mTipExclusionRadius)
+                if(rNodes[idx]->GetDistance(sprouts[jdx]->rGetLocation()) < this->mTipExclusionRadius)
                 {
                     too_close = true;
                 }
@@ -125,7 +125,7 @@ std::vector<boost::shared_ptr<VascularNode<DIM> > > Owen2011SproutingRule<DIM>::
         }
 
         // Get the grid index of the node
-        unsigned grid_index = this->mpGrid->GetNearestGridIndex(rNodes[idx]->GetLocationVector());
+        unsigned grid_index = this->mpGrid->GetNearestGridIndex(rNodes[idx]->rGetLocation());
         double vegf_conc = this->mVegfField[grid_index];
         double prob_tip_selection = this->mSproutingProbability*SimulationTime::Instance()->GetTimeStep()*vegf_conc/(vegf_conc + mHalfMaxVegf);
 

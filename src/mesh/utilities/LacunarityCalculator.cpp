@@ -36,8 +36,6 @@
 #include "VesselSegment.hpp"
 #include "ChastePoint.hpp"
 #include "GeometryTools.hpp"
-#include "Debug.hpp"
-
 #include "LacunarityCalculator.hpp"
 
 template<unsigned DIM>
@@ -61,7 +59,7 @@ LacunarityCalculator<DIM>::~LacunarityCalculator()
 }
 
 template<unsigned DIM>
-void LacunarityCalculator<DIM>::SetVesselNetwork(boost::shared_ptr<VascularNetwork<DIM> > pNetwork)
+void LacunarityCalculator<DIM>::SetVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pNetwork)
 {
     mpNetwork = pNetwork;
 }
@@ -113,8 +111,8 @@ void LacunarityCalculator<DIM>::Solve()
                     double vessel_length = 0.0;
                     for (unsigned seg_index = 0; seg_index < segments.size(); seg_index++)
                     {
-                        vessel_length += LengthOfLineInBox<DIM>(segments[seg_index]->GetNode(0)->GetLocationValue(),
-                                                                segments[seg_index]->GetNode(1)->GetLocationValue(),
+                        vessel_length += LengthOfLineInBox<DIM>(segments[seg_index]->GetNode(0)->rGetLocation(),
+                                                                segments[seg_index]->GetNode(1)->rGetLocation(),
                                                                 box_location, box_size);
                     }
                     q1 += vessel_length;
