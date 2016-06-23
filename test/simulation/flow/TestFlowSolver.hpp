@@ -43,15 +43,14 @@
 #include "SmartPointers.hpp"
 #include "VasculatureGenerator.hpp"
 #include "FlowSolver.hpp"
-#include "VasculatureData.hpp"
 #include "FakePetscSetup.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 
 class TestFlowSolver : public CxxTest::TestSuite
 {
 
-    typedef boost::shared_ptr<VascularNode<2> > NodePtr2;
-    typedef boost::shared_ptr<VascularNode<3> > NodePtr3;
+    typedef boost::shared_ptr<VesselNode<2> > NodePtr2;
+    typedef boost::shared_ptr<VesselNode<3> > NodePtr3;
     typedef boost::shared_ptr<VesselSegment<2> > SegmentPtr2;
     typedef boost::shared_ptr<VesselSegment<3> > SegmentPtr3;
     typedef boost::shared_ptr<Vessel<2> > VesselPtr2;
@@ -67,21 +66,18 @@ public:
         points.push_back(ChastePoint<3>(0, 0, 0));
         points.push_back(ChastePoint<3>(5, 0, 0));
 
-        std::vector<NodePtr3> nodes;
-        for (unsigned i = 0; i < points.size(); i++)
-        {
-            nodes.push_back(NodePtr3(VascularNode<3>::Create(points[i])));
-        }
+        boost::shared_ptr<VesselNode<3> > pn1 = VesselNode<3>::Create(0, 0, 0);
+        boost::shared_ptr<VesselNode<3> > pn2 = VesselNode<3>::Create(5, 0, 0);
 
-        SegmentPtr3 p_segment(VesselSegment<3>::Create(nodes[0], nodes[1]));
+        SegmentPtr3 p_segment(VesselSegment<3>::Create(pn1, pn2));
         VesselPtr3 p_vessel(Vessel<3>::Create(p_segment));
 
         // Generate the network
-        boost::shared_ptr<VascularNetwork<3> > p_vascular_network = VascularNetwork<3>::Create();
+        boost::shared_ptr<VesselNetwork<3> > p_vascular_network = VesselNetwork<3>::Create();
         p_vascular_network->AddVessel(p_vessel);
 
         units::quantity<unit::flow_impedance> impedance = 1.e12 * unit::unit_flow_impedance;
-        p_segment->GetFlowProperties()->SetImpedance(impedance);
+        p_segment->GetFlowProperties()->SetDimensionalImpedance(impedance);
         p_vascular_network->SetSegmentProperties(p_segment);
 
         p_vessel->GetStartNode()->GetFlowProperties()->SetIsInputNode(true);
@@ -98,10 +94,10 @@ public:
         TS_ASSERT_DELTA(p_vessel->GetStartNode()->GetFlowProperties()->GetPressure(), 3393, 1e-6);
         TS_ASSERT_DELTA(p_vessel->GetEndNode()->GetFlowProperties()->GetPressure(), 1000.5, 1e-6);
 
-        TS_ASSERT_DELTA(p_vessel->GetFlowRate()/unit::unit_flow_rate, (3393 - 1000.5) *unit::unit_flow_impedance/ impedance, 1e-6);
-        TS_ASSERT_DELTA(p_segment->GetFlowProperties()->GetFlowRate()/unit::unit_flow_rate, (3393 - 1000.5)*unit::unit_flow_impedance / impedance, 1e-6);
+        TS_ASSERT_DELTA(p_vessel->GetFlowProperties()->GetDimensionalFlowRate(p_vessel->GetSegments())/unit::unit_flow_rate, (3393 - 1000.5) *unit::unit_flow_impedance/ impedance, 1e-6);
+        TS_ASSERT_DELTA(p_segment->GetFlowProperties()->GetDimensionalFlowRate()/unit::unit_flow_rate, (3393 - 1000.5)*unit::unit_flow_impedance / impedance, 1e-6);
 
-        p_segment->GetFlowProperties()->SetImpedance(-1.0*unit::unit_flow_impedance);
+        p_segment->GetFlowProperties()->SetDimensionalImpedance(-1.0*unit::unit_flow_impedance);
         TS_ASSERT_THROWS_THIS(solver.Update(), "Impedance should be a positive number.");
     }
 //
@@ -119,7 +115,7 @@ public:
 //        std::vector<NodePtr3> nodes;
 //        for (unsigned i = 0; i < points.size(); i++)
 //        {
-//            nodes.push_back(NodePtr3(VascularNode<3>::Create(points[i])));
+//            nodes.push_back(NodePtr3(VesselNode<3>::Create(points[i])));
 //        }
 //
 //        SegmentPtr3 p_segment1(VesselSegment<3>::Create(nodes[0], nodes[1]));
@@ -136,7 +132,7 @@ public:
 //        VesselPtr3 p_vessel(Vessel<3>::Create(segments));
 //
 //        // Generate the network
-//        boost::shared_ptr<VascularNetwork<3> > p_vascular_network(new VascularNetwork<3>());
+//        boost::shared_ptr<VesselNetwork<3> > p_vascular_network(new VesselNetwork<3>());
 //
 //        p_vascular_network->AddVessel(p_vessel);
 //
@@ -186,7 +182,7 @@ public:
 //        std::vector<NodePtr3> nodes;
 //        for (unsigned i = 0; i < points.size(); i++)
 //        {
-//            nodes.push_back(NodePtr3(VascularNode<3>::Create(points[i])));
+//            nodes.push_back(NodePtr3(VesselNode<3>::Create(points[i])));
 //        }
 //
 //        SegmentPtr3 p_segment1(VesselSegment<3>::Create(nodes[0], nodes[1]));
@@ -196,7 +192,7 @@ public:
 //        VesselPtr3 p_vessel2(Vessel<3>::Create(p_segment2));
 //
 //        // Generate the network
-//        boost::shared_ptr<VascularNetwork<3> > p_vascular_network(new VascularNetwork<3>());
+//        boost::shared_ptr<VesselNetwork<3> > p_vascular_network(new VesselNetwork<3>());
 //
 //        p_vascular_network->AddVessel(p_vessel1);
 //        p_vascular_network->AddVessel(p_vessel2);
@@ -238,7 +234,7 @@ public:
 //        std::vector<NodePtr3> nodes;
 //        for (unsigned i = 0; i < points.size(); i++)
 //        {
-//            nodes.push_back(NodePtr3(VascularNode<3>::Create(points[i])));
+//            nodes.push_back(NodePtr3(VesselNode<3>::Create(points[i])));
 //        }
 //
 //        SegmentPtr3 p_segment1(VesselSegment<3>::Create(nodes[0], nodes[2]));
@@ -264,7 +260,7 @@ public:
 //        vessels.push_back(p_vessel6);
 //
 //        // Generate the network
-//        boost::shared_ptr<VascularNetwork<3> > p_vascular_network(new VascularNetwork<3>());
+//        boost::shared_ptr<VesselNetwork<3> > p_vascular_network(new VesselNetwork<3>());
 //
 //        p_vascular_network->AddVessels(vessels);
 //
@@ -317,7 +313,7 @@ public:
 //        std::vector<NodePtr3> nodes;
 //        for (unsigned i = 0; i < points.size(); i++)
 //        {
-//            nodes.push_back(NodePtr3(VascularNode<3>::Create(points[i])));
+//            nodes.push_back(NodePtr3(VesselNode<3>::Create(points[i])));
 //        }
 //
 //        SegmentPtr3 p_segment1(VesselSegment<3>::Create(nodes[0], nodes[2]));
@@ -334,7 +330,7 @@ public:
 //        vessels.push_back(p_vessel3); // output vessel
 //
 //        // Generate the network
-//        boost::shared_ptr<VascularNetwork<3> > p_vascular_network(new VascularNetwork<3>());
+//        boost::shared_ptr<VesselNetwork<3> > p_vascular_network(new VesselNetwork<3>());
 //
 //        p_vascular_network->AddVessels(vessels);
 //
@@ -387,7 +383,7 @@ public:
 //
 //        // Generate the network
 //        VasculatureGenerator<2> vascular_network_generator;
-//        boost::shared_ptr<VascularNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(
+//        boost::shared_ptr<VesselNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(
 //                1000, 1000, vessel_length);
 //
 //        // Make some nodes
@@ -398,7 +394,7 @@ public:
 //        std::vector<NodePtr2> nodes;
 //        for (unsigned i = 0; i < points.size(); i++)
 //        {
-//            nodes.push_back(NodePtr2(VascularNode<2>::Create(points[i])));
+//            nodes.push_back(NodePtr2(VesselNode<2>::Create(points[i])));
 //        }
 //
 //        SegmentPtr2 p_segment1(VesselSegment<2>::Create(nodes[0], nodes[1]));
@@ -465,20 +461,20 @@ public:
 //    void TestLoop() throw(Exception)
 //    {
 //        // Make a network
-//        std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
+//        std::vector<boost::shared_ptr<VesselNode<3> > > bottom_nodes;
 //        for(unsigned idx=0; idx<5; idx++)
 //        {
-//            bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 10.0, 0.0));
+//            bottom_nodes.push_back(VesselNode<3>::Create(double(idx)*10, 10.0, 0.0));
 //        }
 //        bottom_nodes[0]->GetFlowProperties()->SetIsInputNode(true);
 //        bottom_nodes[0]->GetFlowProperties()->SetPressure(3000);
 //        bottom_nodes[4]->GetFlowProperties()->SetIsOutputNode(true);
 //        bottom_nodes[4]->GetFlowProperties()->SetPressure(1000);
 //
-//        std::vector<boost::shared_ptr<VascularNode<3> > > top_nodes;
+//        std::vector<boost::shared_ptr<VesselNode<3> > > top_nodes;
 //        for(unsigned idx=1; idx<3; idx+=1)
 //        {
-//            top_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 20.0, 0.0));
+//            top_nodes.push_back(VesselNode<3>::Create(double(idx)*10, 20.0, 0.0));
 //        }
 //
 //        boost::shared_ptr<Vessel<3> > p_vessel1 = Vessel<3>::Create(bottom_nodes[0], bottom_nodes[1]);
@@ -489,7 +485,7 @@ public:
 //        boost::shared_ptr<Vessel<3> > p_vessel5 = Vessel<3>::Create(bottom_nodes[2], top_nodes[1]);
 //        boost::shared_ptr<Vessel<3> > p_vessel6 = Vessel<3>::Create(top_nodes[0], top_nodes[1]);
 //
-//        boost::shared_ptr<VascularNetwork<3> > p_network = VascularNetwork<3>::Create();
+//        boost::shared_ptr<VesselNetwork<3> > p_network = VesselNetwork<3>::Create();
 //        p_network->AddVessel(p_vessel1);
 //        p_network->AddVessel(p_vessel2);
 //        p_network->AddVessel(p_vessel3);
@@ -521,10 +517,10 @@ public:
 //    void TestSproutingWithFlow() throw(Exception)
 //    {
 //        // Make a network
-//        std::vector<boost::shared_ptr<VascularNode<3> > > bottom_nodes;
+//        std::vector<boost::shared_ptr<VesselNode<3> > > bottom_nodes;
 //        for(unsigned idx=0; idx<6; idx++)
 //        {
-//            bottom_nodes.push_back(VascularNode<3>::Create(double(idx)*10, 10.0, 0.0));
+//            bottom_nodes.push_back(VesselNode<3>::Create(double(idx)*10, 10.0, 0.0));
 //        }
 //        bottom_nodes[0]->GetFlowProperties()->SetIsInputNode(true);
 //        bottom_nodes[0]->GetFlowProperties()->SetPressure(3000);
@@ -532,7 +528,7 @@ public:
 //        bottom_nodes[5]->GetFlowProperties()->SetPressure(1000);
 //
 //        boost::shared_ptr<Vessel<3> > p_vessel1 = Vessel<3>::Create(bottom_nodes);
-//        boost::shared_ptr<VascularNetwork<3> > p_network = VascularNetwork<3>::Create();
+//        boost::shared_ptr<VesselNetwork<3> > p_network = VesselNetwork<3>::Create();
 //        p_network->AddVessel(p_vessel1);
 //        p_network->SetSegmentRadii(10.0);
 //
@@ -573,7 +569,7 @@ public:
 //
 //        // Generate the network
 //        VasculatureGenerator<2> vascular_network_generator;
-//        boost::shared_ptr<VascularNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(
+//        boost::shared_ptr<VesselNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(
 //                1000, 1000, vessel_length);
 //
 //        // Make some nodes
@@ -584,7 +580,7 @@ public:
 //        std::vector<NodePtr2> nodes;
 //        for (unsigned i = 0; i < points.size(); i++)
 //        {
-//            nodes.push_back(NodePtr2(VascularNode<2>::Create(points[i])));
+//            nodes.push_back(NodePtr2(VesselNode<2>::Create(points[i])));
 //        }
 //
 //        SegmentPtr2 p_segment1(VesselSegment<2>::Create(nodes[0], nodes[1]));

@@ -57,8 +57,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "AbstractMesh.hpp"
 #include "AbstractCellPopulation.hpp"
 #include "Owen2011OxygenBasedCellCycleModel.hpp"
-//#include "TestCases.cpp"
-
 #include "converters.hpp"
 
 using namespace boost::python;

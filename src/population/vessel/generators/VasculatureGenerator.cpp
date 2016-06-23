@@ -1061,6 +1061,7 @@ boost::shared_ptr<VesselNetwork<DIM> > VasculatureGenerator<DIM>::GenerateNetwor
     vtkSmartPointer<vtkCellArray> pCellArray = vtkSmartPointer<vtkCellArray>::New();
     pCellArray = p_polydata->GetLines();
 
+    std::cout << radii.size() << std::endl;
     for (int i = 0; i < p_polydata->GetNumberOfLines(); i++)
     {
         // Make a new vessel
@@ -1072,7 +1073,7 @@ boost::shared_ptr<VesselNetwork<DIM> > VasculatureGenerator<DIM>::GenerateNetwor
         for (int j = 1; j < num_segments; j++)
         {
             boost::shared_ptr<VesselSegment<DIM> > p_segment = VesselSegment<DIM>::Create(nodes[pSegmentList[j - 1]],nodes[pSegmentList[j]]);
-            if(unsigned(radii.size())>= pSegmentList[j])
+            if(unsigned(radii.size())> pSegmentList[j])
             {
                 p_segment->SetRadius(radii[pSegmentList[j]]);
             }

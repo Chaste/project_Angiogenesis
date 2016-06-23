@@ -73,7 +73,7 @@
 #include "OnLatticeSimulation.hpp"
 #include "LQRadiotherapyCellKiller.hpp"
 #include "VasculatureGenerator.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
 

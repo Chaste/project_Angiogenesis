@@ -42,10 +42,10 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "OutputFileHandler.hpp"
 #include "SmartPointers.hpp"
 #include "VasculatureGenerator.hpp"
-#include "VascularNode.hpp"
+#include "VesselNode.hpp"
 #include "VesselSegment.hpp"
 #include "Vessel.hpp"
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 #include "Part.hpp"
 #include "FiniteDifferenceSolver.hpp"
 #include "AngiogenesisSolver.hpp"
@@ -65,13 +65,13 @@ public:
     void TestSingleVesselGrowth() throw(Exception)
     {
         // Make a network
-        boost::shared_ptr<VascularNode<3> > p_node1 = VascularNode<3>::Create(0.0, 0.0, 0.0);
-        boost::shared_ptr<VascularNode<3> > p_node2 = VascularNode<3>::Create(100.0, 0.0, 0.0);
+        boost::shared_ptr<VesselNode<3> > p_node1 = VesselNode<3>::Create(0.0, 0.0, 0.0);
+        boost::shared_ptr<VesselNode<3> > p_node2 = VesselNode<3>::Create(100.0, 0.0, 0.0);
         p_node2->SetIsMigrating(true);
         boost::shared_ptr<Vessel<3> > p_vessel1 = Vessel<3>::Create(VesselSegment<3>::Create(p_node1, p_node2));
-        boost::shared_ptr<VascularNetwork<3> > p_network = boost::shared_ptr<VascularNetwork<3> >(new VascularNetwork<3>());
+        boost::shared_ptr<VesselNetwork<3> > p_network = boost::shared_ptr<VesselNetwork<3> >(new VesselNetwork<3>());
         p_network->AddVessel(p_vessel1);
-        p_network->GetVessel(0)->GetEndNode()->SetIsMigrating(true);
+        p_network->GetVessels()[0]->GetEndNode()->SetIsMigrating(true);
 
         // Set up an angiogenesis solver
         boost::shared_ptr<LatticeBasedMigrationRule<3> > p_migration_rule = LatticeBasedMigrationRule<3>::Create();

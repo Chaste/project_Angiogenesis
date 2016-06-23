@@ -1,4 +1,4 @@
-from setuptools import setup, Distribution
+from setuptools import setup, Distribution,find_packages
 
 class BinaryDistribution(Distribution):
     def is_pure(self):
@@ -7,8 +7,8 @@ class BinaryDistribution(Distribution):
 setup(
     name = "chaste",
     version = "0.1.dev0",
-    packages = ['chaste'],
-    install_requires = ['scipy', 'matplotlib', 'pandas', 'numpy', 'jupyter'],
+    packages = find_packages(),
+#    install_requires = ['scipy', 'matplotlib', 'pandas', 'numpy', 'jupyter'],
     package_data={
         'chaste': ['core/_core.so', 
                   'geometry/_geometry.so',
@@ -20,8 +20,8 @@ setup(
                   'simulation/_flow.so',
                   'simulation/_angiogenesis.so',],},
     include_package_data=True,
-    test_suite='nose.collector',
-    tests_require=['nose'],
+#    test_suite='nose.collector',
+#    tests_require=['nose'],
 
     # Project Metadata
     author = "James Grogan - WCMB, University of Oxford",

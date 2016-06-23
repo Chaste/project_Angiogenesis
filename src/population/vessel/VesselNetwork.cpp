@@ -1319,6 +1319,7 @@ vtkSmartPointer<vtkPolyData> VesselNetwork<DIM>::GetVtk()
 //            pVesselInfoVector.push_back(pVesselInfo);
 //        }
 //    }
+
     std::map<std::string, double>::iterator vessel_map_iterator;
     std::map<std::string, double> vessel_data_map = mVessels[0]->GetOutputData();
     for(vessel_map_iterator = vessel_data_map.begin(); vessel_map_iterator != vessel_data_map.end(); vessel_map_iterator++)

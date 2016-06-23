@@ -59,13 +59,14 @@
  * pointer MACROs.
  */
 #include "SmartPointers.hpp"
+#include "OutputFileHandler.hpp"
 /*
  * These headers contain the building-blocks of the vessel networks; nodes, segments, vessels and the network itself.
  */
-#include "VascularNode.hpp"
+#include "VesselNode.hpp"
 #include "VesselSegment.hpp"
 #include "Vessel.hpp"
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 /*
  * Tools for generating vessel networks
  */
@@ -98,10 +99,10 @@ public:
          * create a Y shaped network. Later we will learn how to build up networks in a more efficient manner.
          */
         double length = 100.0;
-        boost::shared_ptr<VascularNode<2> > p_node_1 = VascularNode<2>::Create(0.0, 0.0);
-        boost::shared_ptr<VascularNode<2> > p_node_2 = VascularNode<2>::Create(length, 0.0);
-        boost::shared_ptr<VascularNode<2> > p_node_3 = VascularNode<2>::Create(2.0*length, length);
-        boost::shared_ptr<VascularNode<2> > p_node_4 = VascularNode<2>::Create(2.0*length, -length);
+        boost::shared_ptr<VesselNode<2> > p_node_1 = VesselNode<2>::Create(0.0, 0.0);
+        boost::shared_ptr<VesselNode<2> > p_node_2 = VesselNode<2>::Create(length, 0.0);
+        boost::shared_ptr<VesselNode<2> > p_node_3 = VesselNode<2>::Create(2.0*length, length);
+        boost::shared_ptr<VesselNode<2> > p_node_4 = VesselNode<2>::Create(2.0*length, -length);
         /*
          * Next we make vessel segments and vessels. Vessel segments are straight-line features which contain a vascular node at each end. Vessels
          * can be constructed from multiple vessel segments, but in this case each vessel just has a single segment.
@@ -115,7 +116,7 @@ public:
         /*
          * Now we can add our vessels to a vessel network.
          */
-        boost::shared_ptr<VascularNetwork<2> > p_network = VascularNetwork<2>::Create();
+        boost::shared_ptr<VesselNetwork<2> > p_network = VesselNetwork<2>::Create();
         p_network->AddVessel(p_vessel_1);
         p_network->AddVessel(p_vessel_2);
         p_network->AddVessel(p_vessel_3);
@@ -153,7 +154,7 @@ public:
         double target_width = 600.0;
         double target_height = 800.0;
         double length = 100.0;
-        boost::shared_ptr<VascularNetwork<3> > p_network = network_generator.GenerateHexagonalNetwork(target_width, target_height, length);
+        boost::shared_ptr<VesselNetwork<3> > p_network = network_generator.GenerateHexagonalNetwork(target_width, target_height, length);
         /*
          * Get the number of nodes and vessels for testing later, and write the network to file as before.
          */
@@ -161,10 +162,11 @@ public:
         unsigned number_of_vessels = p_network->GetNumberOfVessels();
         MAKE_PTR_ARGS(OutputFileHandler, p_handler, ("TestBuildVesselNetworkLiteratePaper"));
         p_network->Write(p_handler->GetOutputDirectoryFullPath() + "hexagonal_network.vtp");
+
         /*
          * We use our generator to read the network back in from the VTK file.
          */
-        boost::shared_ptr<VascularNetwork<3> > p_network_from_file =
+        boost::shared_ptr<VesselNetwork<3> > p_network_from_file =
                 network_generator.GenerateNetworkFromVtkFile(p_handler->GetOutputDirectoryFullPath() + "hexagonal_network.vtp");
         /*
          * Finally we check that the network has been correctly read back in using our unit test framework

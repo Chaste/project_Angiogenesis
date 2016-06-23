@@ -33,8 +33,8 @@
 
  */
 
-#ifndef TESTVASCULARNODE_HPP_
-#define TESTVASCULARNODE_HPP_
+#ifndef TESTVesselNode_HPP_
+#define TESTVesselNode_HPP_
 
 #include "Exception.hpp"
 #include "AbstractCellBasedTestSuite.hpp"
@@ -44,12 +44,11 @@
 #include "UblasIncludes.hpp"
 #include "SmartPointers.hpp"
 #include "VesselSegment.hpp"
-#include "VascularNode.hpp"
-#include "VasculatureData.hpp"
+#include "VesselNode.hpp"
 #include "NodeFlowProperties.hpp"
 #include "FakePetscSetup.hpp"
 
-class TestVascularNode : public AbstractCellBasedTestSuite
+class TestVesselNode : public AbstractCellBasedTestSuite
 {
 
 public:
@@ -64,55 +63,41 @@ public:
         location1[0] = 1.0;
         location1[1] = 2.0;
 
-        // Regular Constructors - Using factory ones is preferred
-        VascularNode<2> node1(0.0, 0.0);
-        VascularNode<3> node2(point1);
-        VascularNode<2> node3(location1);
-        VascularNode<2> node4(node3);
-
         // Pointer Factory Constructors
-        boost::shared_ptr<VascularNode<3> > p_node_1 = VascularNode<3>::Create(2.0, 3.0, 4.0);
-        boost::shared_ptr<VascularNode<2> > p_node_2 = VascularNode<2>::Create(point2);
-        boost::shared_ptr<VascularNode<3> > p_node_3 = VascularNode<3>::Create(location1);
-        boost::shared_ptr<VascularNode<2> > p_node_4 = VascularNode<2>::Create(node3);
-        boost::shared_ptr<VascularNode<2> > p_node_5 = VascularNode<2>::Create(p_node_4);
+        boost::shared_ptr<VesselNode<3> > p_node_1 = VesselNode<3>::Create(2.0, 3.0, 4.0);
+        boost::shared_ptr<VesselNode<3> > p_node_3 = VesselNode<3>::Create(location1);
 
         // Test the location methods
-        TS_ASSERT_DELTA(p_node_1->GetLocation()[0], 2.0, 1.e-6);
-        TS_ASSERT_DELTA(p_node_1->GetLocation()[1], 3.0, 1.e-6);
-        TS_ASSERT_DELTA(p_node_1->GetLocation()[2], 4.0, 1.e-6);
-        TS_ASSERT_DELTA(p_node_5->GetLocationVector()[0], 1.0, 1.e-6);
-        TS_ASSERT_DELTA(p_node_5->GetLocationVector()[1], 2.0, 1.e-6);
+        TS_ASSERT_DELTA(p_node_1->rGetLocation()[0], 2.0, 1.e-6);
+        TS_ASSERT_DELTA(p_node_1->rGetLocation()[1], 3.0, 1.e-6);
+        TS_ASSERT_DELTA(p_node_1->rGetLocation()[2], 4.0, 1.e-6);
     }
 
     void TestSimpleGetAndSetMethods() throw (Exception)
     {
         // Make a node
-        boost::shared_ptr<VascularNode<3> > p_node = VascularNode<3>::Create();
+        boost::shared_ptr<VesselNode<3> > p_node = VesselNode<3>::Create();
 
         // Test simple Getters and Setters
         p_node->SetId(5u);
-        std::string label = "Inlet";
-        p_node->SetLabel(label);
         p_node->GetFlowProperties()->SetPressure(5.0);
         p_node->SetRadius(10.0);
         p_node->GetFlowProperties()->SetIsInputNode(true);
         p_node->GetFlowProperties()->SetIsOutputNode(true);
 
         TS_ASSERT_EQUALS(p_node->GetId(), 5u);
-        TS_ASSERT_EQUALS(p_node->rGetLabel().c_str(), label.c_str());
         TS_ASSERT_DELTA(p_node->GetFlowProperties()->GetPressure(), 5.0, 1.e-6);
         TS_ASSERT_DELTA(p_node->GetRadius(), 10.0, 1.e-6);
         TS_ASSERT(p_node->GetFlowProperties()->IsInputNode());
         TS_ASSERT(p_node->GetFlowProperties()->IsOutputNode());
 
         // Test setting node flow properties
-        NodeFlowProperties node_flow_properties;
+        NodeFlowProperties<3> node_flow_properties;
         node_flow_properties.SetPressure(12.0);
         p_node->SetFlowProperties(node_flow_properties);
 
         // Check the data map for the vtk writer
-        std::map<std::string, double> vtk_data = p_node->GetVtkData();
+        std::map<std::string, double> vtk_data = p_node->GetOutputData();
         TS_ASSERT_DELTA(vtk_data["Node Id"], 5.0, 1.e-6);
         TS_ASSERT_DELTA(vtk_data["Node Radius"], 10.0, 1.e-6);
         TS_ASSERT_DELTA(vtk_data["Node Pressure"], 12.0, 1.e-6);
@@ -123,58 +108,30 @@ public:
     void TestDistanceAndConincidentMethods() throw (Exception)
     {
         // Set up some points nodes
-        boost::shared_ptr<VascularNode<3> > p_node_1 = VascularNode<3>::Create(1.0, 2.0, 3.0);
-        boost::shared_ptr<VascularNode<3> > p_node_2 = VascularNode<3>::Create(1.0, 2.0, 3.0);
-        boost::shared_ptr<VascularNode<3> > p_node_3 = VascularNode<3>::Create(4.0, 5.0, 6.0);
+        boost::shared_ptr<VesselNode<3> > p_node_1 = VesselNode<3>::Create(1.0, 2.0, 3.0);
+        boost::shared_ptr<VesselNode<3> > p_node_2 = VesselNode<3>::Create(1.0, 2.0, 3.0);
+        boost::shared_ptr<VesselNode<3> > p_node_3 = VesselNode<3>::Create(4.0, 5.0, 6.0);
 
         c_vector<double, 3> location1;
         location1[0] = 6.0;
         location1[1] = 7.0;
         location1[2] = 8.0;
-        ChastePoint<3> point1(1.0, 2.0, 3.0);
 
         // Coincident methods
-        TS_ASSERT(p_node_1->IsCoincident(p_node_2));
-        TS_ASSERT(p_node_1->IsCoincident(point1));
+        TS_ASSERT(p_node_1->IsCoincident(p_node_2->rGetLocation()));
+        TS_ASSERT(p_node_1->IsCoincident(location1));
 
         // Distance methods
-        TS_ASSERT_DELTA(p_node_1->GetDistance(p_node_3), std::sqrt(27.0), 1.e-6);
+        TS_ASSERT_DELTA(p_node_1->GetDistance(p_node_3->rGetLocation()), std::sqrt(27.0), 1.e-6);
         TS_ASSERT_DELTA(p_node_1->GetDistance(location1), std::sqrt(75.0), 1.e-6);
-        TS_ASSERT_DELTA(p_node_1->GetDistance(point1), 0.0, 1.e-6);
-    }
-
-    void TestAccessingData() throw (Exception)
-    {
-        VascularNode<3> node;
-        std::string key ="My Key";
-        double value = 5.5;
-        node.SetData(key, value);
-
-        // Check the key is set
-        TS_ASSERT(node.HasDataKey(key));
-        TS_ASSERT_EQUALS(node.GetDataKeys()[0].c_str(), key.c_str());
-
-        bool castable_to_double = true;
-        TS_ASSERT_EQUALS(node.GetDataKeys(castable_to_double)[0].c_str(), key.c_str());
-
-        // Check the key value is retrieved
-        TS_ASSERT_DELTA(node.GetData<double>(key), value, 1.e-6);
-        TS_ASSERT_DELTA(node.rGetDataContainer().GetData<double>(key), value, 1.e-6);
-
-        // Replace the existing data container with a new one
-        VasculatureData data_container;
-        double new_value = 7.5;
-        data_container.SetData("New Key", new_value);
-        node.SetDataContainer(data_container);
-        TS_ASSERT_DELTA(node.GetData<double>("New Key"), new_value, 1.e-6);
     }
 
     void TestAddingAndRemovingVesselSegments() throw (Exception)
     {
         // Make some nodes
-        boost::shared_ptr<VascularNode<2> > p_node_1 = VascularNode<2>::Create(0);
-        boost::shared_ptr<VascularNode<2> > p_node_2 = VascularNode<2>::Create(1);
-        boost::shared_ptr<VascularNode<2> > p_node_3 = VascularNode<2>::Create(2);
+        boost::shared_ptr<VesselNode<2> > p_node_1 = VesselNode<2>::Create(0);
+        boost::shared_ptr<VesselNode<2> > p_node_2 = VesselNode<2>::Create(1);
+        boost::shared_ptr<VesselNode<2> > p_node_3 = VesselNode<2>::Create(2);
 
         // Make some vessel segments
         boost::shared_ptr<VesselSegment<2> > p_segment1 = VesselSegment<2>::Create(p_node_1, p_node_2);
@@ -187,9 +144,9 @@ public:
         TS_ASSERT_EQUALS(p_node_2->GetNumberOfSegments(), 2u);
 
         // Check that the segments are correctly retrieved from the node.
-        TS_ASSERT(p_node_2->IsCoincident(p_node_2->GetVesselSegment(0)->GetNode(1)));
-        TS_ASSERT(p_node_2->IsCoincident(p_node_2->GetVesselSegments()[0]->GetNode(1)));
-        TS_ASSERT_THROWS_THIS(p_node_2->GetVesselSegment(3), "Attempted to access a segment with an out of range index.");
+        TS_ASSERT(p_node_2->IsCoincident(p_node_2->GetSegment(0)->GetNode(1)->rGetLocation()));
+        TS_ASSERT(p_node_2->IsCoincident(p_node_2->GetSegments()[0]->GetNode(1)->rGetLocation()));
+        TS_ASSERT_THROWS_THIS(p_node_2->GetSegment(3), "Attempted to access a segment with an out of range index.");
 
         // Check that the vessel segment connectivity is updated when a node is replaced.
         p_segment2->ReplaceNode(1, p_node_1);
@@ -199,28 +156,6 @@ public:
         // Check that a node can't be replaced with one that's already there
         TS_ASSERT_THROWS_THIS(p_segment2->ReplaceNode(0, p_node_1), "This segment is already attached to this node.");
     }
-
-    void TestAddingAndRemovingCells() throw (Exception)
-    {
-        // Make a node
-        VascularNode<2> node(4.0, 3.0);
-
-        // Create some cells
-        std::vector<CellPtr> cells;
-        CellsGenerator<FixedDurationGenerationBasedCellCycleModel, 2> cells_generator;
-        cells_generator.GenerateBasic(cells, 1);
-
-        TS_ASSERT(!node.HasCell());
-        TS_ASSERT_THROWS_THIS(node.GetCell(), "A Cell has been requested but none have been assigned to this Node.");
-
-        // try adding a cell
-        node.SetCell(cells[0]);
-        TS_ASSERT(node.HasCell());
-
-        // try removing a cell
-        node.RemoveCell();
-        TS_ASSERT(!node.HasCell());
-    }
 };
 
-#endif /*TESTVASCULARNODE_HPP_*/
+#endif /*TESTVesselNode_HPP_*/

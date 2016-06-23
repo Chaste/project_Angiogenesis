@@ -53,10 +53,11 @@
 #include <cxxtest/TestSuite.h>
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "SmartPointers.hpp"
-#include "VascularNode.hpp"
+#include "OutputFileHandler.hpp"
+#include "VesselNode.hpp"
 #include "VesselSegment.hpp"
 #include "Vessel.hpp"
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 #include "VasculatureGenerator.hpp"
 /*
  * The flow solver, individual calculators and the structural adaptation solver
@@ -68,7 +69,7 @@
 /*
  * Dimensional analysis and units
  */
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 #include "FakePetscSetup.hpp"
 
 class TestBloodFlowLiteratePaper : public AbstractCellBasedWithTimingsTestSuite
@@ -87,16 +88,16 @@ public:
          * Note that segments do not need to be explicitly created if there is only one per vessel.
          */
         double length = 100.0;
-        std::vector<boost::shared_ptr<VascularNode<2> > > nodes;
-        nodes.push_back(VascularNode<2>::Create(0.0, 0.0));
-        nodes.push_back(VascularNode<2>::Create(length, 0.0));
-        nodes.push_back(VascularNode<2>::Create(2.0*length, length));
-        nodes.push_back(VascularNode<2>::Create(2.0*length, -length));
+        std::vector<boost::shared_ptr<VesselNode<2> > > nodes;
+        nodes.push_back(VesselNode<2>::Create(0.0, 0.0));
+        nodes.push_back(VesselNode<2>::Create(length, 0.0));
+        nodes.push_back(VesselNode<2>::Create(2.0*length, length));
+        nodes.push_back(VesselNode<2>::Create(2.0*length, -length));
         std::vector<boost::shared_ptr<Vessel<2> > > vessels;
         vessels.push_back(Vessel<2>::Create(nodes[0], nodes[1]));
         vessels.push_back(Vessel<2>::Create(nodes[1], nodes[2]));
         vessels.push_back(Vessel<2>::Create(nodes[1], nodes[3]));
-        boost::shared_ptr<VascularNetwork<2> > p_network = VascularNetwork<2>::Create();
+        boost::shared_ptr<VesselNetwork<2> > p_network = VesselNetwork<2>::Create();
         p_network->AddVessels(vessels);
         /*
          * We specify which nodes will be the inlets and outlets of the network for the flow problem. This information, as well
@@ -112,11 +113,11 @@ public:
         /*
          * Now we set the segment radii and viscosity values. Not that we use unit types from the Boost Unit library.
          */
-        p_network->SetSegmentRadii(10.0*1.e-6*unit::metres);
+        p_network->SetSegmentRadii(10.0);
         std::vector<boost::shared_ptr<VesselSegment<2> > > segments = p_network->GetVesselSegments();
         for(unsigned idx=0; idx<segments.size(); idx++)
         {
-            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3*unit::poiseuille);
+            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);
         }
         /*
          * We use a calculator to work out the impedance of each vessel based on assumptions of Poiseuille flow and cylindrical vessels. This
@@ -154,16 +155,16 @@ public:
          * This time we solve a flow problem with haematocrit. We set up the problem as before.
          */
         double length = 100.0;
-        std::vector<boost::shared_ptr<VascularNode<2> > > nodes;
-        nodes.push_back(VascularNode<2>::Create(0.0, 0.0));
-        nodes.push_back(VascularNode<2>::Create(length, 0.0));
-        nodes.push_back(VascularNode<2>::Create(2.0*length, length));
-        nodes.push_back(VascularNode<2>::Create(2.0*length, -length));
+        std::vector<boost::shared_ptr<VesselNode<2> > > nodes;
+        nodes.push_back(VesselNode<2>::Create(0.0, 0.0));
+        nodes.push_back(VesselNode<2>::Create(length, 0.0));
+        nodes.push_back(VesselNode<2>::Create(2.0*length, length));
+        nodes.push_back(VesselNode<2>::Create(2.0*length, -length));
         std::vector<boost::shared_ptr<Vessel<2> > > vessels;
         vessels.push_back(Vessel<2>::Create(nodes[0], nodes[1]));
         vessels.push_back(Vessel<2>::Create(nodes[1], nodes[2]));
         vessels.push_back(Vessel<2>::Create(nodes[1], nodes[3]));
-        boost::shared_ptr<VascularNetwork<2> > p_network = VascularNetwork<2>::Create();
+        boost::shared_ptr<VesselNetwork<2> > p_network = VesselNetwork<2>::Create();
         p_network->AddVessels(vessels);
         nodes[0]->GetFlowProperties()->SetIsInputNode(true);
         nodes[0]->GetFlowProperties()->SetPressure(5000.0);
@@ -171,11 +172,11 @@ public:
         nodes[2]->GetFlowProperties()->SetPressure(3000.0);
         nodes[3]->GetFlowProperties()->SetIsOutputNode(true);
         nodes[3]->GetFlowProperties()->SetPressure(3000.0);
-        p_network->SetSegmentRadii(10.0*1.e-6*unit::metres);
+        p_network->SetSegmentRadii(10.0);
         std::vector<boost::shared_ptr<VesselSegment<2> > > segments = p_network->GetVesselSegments();
         for(unsigned idx=0; idx<segments.size(); idx++)
         {
-            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3*unit::poiseuille);
+            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);
         }
         VesselImpedanceCalculator<2> impedance_calculator = VesselImpedanceCalculator<2>();
         impedance_calculator.SetVesselNetwork(p_network);

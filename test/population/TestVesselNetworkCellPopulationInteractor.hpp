@@ -15,7 +15,7 @@
 #include "OutputFileHandler.hpp"
 #include "SmartPointers.hpp"
 #include "VasculatureGenerator.hpp"
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 #include "CaBasedCellPopulation.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "DifferentiatedCellProliferativeType.hpp"
@@ -57,7 +57,7 @@ public:
         start_position[1] = 10;
         start_position[2] = 0;
         VasculatureGenerator<3> network_generator;
-        boost::shared_ptr<VascularNetwork<3> > p_network = network_generator.GenerateSingleVessel(20, start_position);
+        boost::shared_ptr<VesselNetwork<3> > p_network = network_generator.GenerateSingleVessel(20, start_position);
 
         // Write the initial network to file
         std::string output_directory = "TestVesselNetworkCellPopulationInteractor";
@@ -91,15 +91,6 @@ public:
         TS_ASSERT_EQUALS(p_network->GetNumberOfNodes(), 21u);
         TS_ASSERT_EQUALS(p_network->GetNumberOfVessels(), 1u);
         TS_ASSERT_EQUALS(p_network->GetNumberOfVesselNodes(), 2u);
-        // Test that each node has a cell associated with it
-        for (unsigned idx = 0; idx < p_network->GetNumberOfNodes(); idx++)
-        {
-            if (!p_network->GetNode(idx)->HasCell())
-            {
-                std::cout << p_network->GetNode(idx)->GetLocationVector() << idx << std::endl;
-            }
-            TS_ASSERT(p_network->GetNode(idx)->GetNumberOfSegments() > 0);
-        }
 
         std::string output_filename2 = output_file_handler.GetOutputDirectoryFullPath().append("AssociatedVesselNetwork.vtp");
         p_network->Write(output_filename2);

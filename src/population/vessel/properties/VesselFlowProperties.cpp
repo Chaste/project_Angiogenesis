@@ -51,12 +51,12 @@ VesselFlowProperties<DIM>::~VesselFlowProperties()
 template<unsigned DIM>
 units::quantity<unit::dimensionless> VesselFlowProperties<DIM>::GetDimensionalHaematocrit(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const
 {
-    units::quantity<unit::dimensionless> haematocrit = 0.0;
+    units::quantity<unit::dimensionless> value = 0.0;
     for (unsigned i = 0; i < segments.size(); i++)
     {
-        haematocrit += segments[i]->GetFlowProperties()->GetDimensionalHaematocrit();
+        value += segments[i]->GetFlowProperties()->GetDimensionalHaematocrit() / double(segments.size());
     }
-    return haematocrit / double(segments.size());
+    return value;
 }
 
 template<unsigned DIM>
@@ -68,7 +68,7 @@ double VesselFlowProperties<DIM>::GetHaematocrit(const std::vector<boost::shared
 template<unsigned DIM>
 double VesselFlowProperties<DIM>::GetHaematocritSI(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const
 {
-    return GetHaematocritSI(segments);
+    return GetDimensionalHaematocrit(segments);
 }
 
 template<unsigned DIM>
@@ -77,9 +77,9 @@ units::quantity<unit::flow_rate> VesselFlowProperties<DIM>::GetDimensionalFlowRa
     units::quantity<unit::flow_rate> value = 0.0 * unit::unit_flow_rate;
     for (unsigned i = 0; i < segments.size(); i++)
     {
-        value += segments[i]->GetFlowProperties()->GetDimensionalFlowRate();
+        value += segments[i]->GetFlowProperties()->GetDimensionalFlowRate() / double(segments.size());
     }
-    return value / double(segments.size());
+    return value;
 }
 
 template<unsigned DIM>
@@ -123,9 +123,9 @@ units::quantity<unit::dynamic_viscosity> VesselFlowProperties<DIM>::GetDimension
     units::quantity<unit::dynamic_viscosity> value = 0.0 * unit::poiseuille;
     for (unsigned i = 0; i < segments.size(); i++)
     {
-        value += segments[i]->GetFlowProperties()->GetDimensionalViscosity();
+        value += segments[i]->GetFlowProperties()->GetDimensionalViscosity()/ double(segments.size());
     }
-    return value/ double(segments.size());
+    return value;
 }
 
 template<unsigned DIM>
@@ -146,9 +146,9 @@ units::quantity<unit::pressure> VesselFlowProperties<DIM>::GetDimensionalWallShe
     units::quantity<unit::pressure> value = 0.0 * unit::pascals;
     for (unsigned i = 0; i < segments.size(); i++)
     {
-        value += segments[i]->GetFlowProperties()->GetDimensionalWallShearStress();
+        value += segments[i]->GetFlowProperties()->GetDimensionalWallShearStress()/ double(segments.size());
     }
-    return value/ double(segments.size());
+    return value;
 }
 
 template<unsigned DIM>
@@ -169,9 +169,9 @@ units::quantity<unit::rate> VesselFlowProperties<DIM>::GetDimensionalGrowthStimu
     units::quantity<unit::rate> value = 0.0 * unit::reciprocal_seconds;
     for (unsigned i = 0; i < segments.size(); i++)
     {
-        value += segments[i]->GetFlowProperties()->GetDimensionalGrowthStimulus();
+        value += segments[i]->GetFlowProperties()->GetDimensionalGrowthStimulus()/ double(segments.size());
     }
-    return value/ double(segments.size());
+    return value;
 }
 
 template<unsigned DIM>

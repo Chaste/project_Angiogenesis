@@ -38,11 +38,11 @@
 
 #include <cxxtest/TestSuite.h>
 #include "GreensFunctionSolver.hpp"
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 #include "VasculatureGenerator.hpp"
 #include "HybridLinearEllipticPde.hpp"
 #include "RegularGrid.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
 
@@ -60,8 +60,8 @@ public:
         centre[1] = 0.5;
         centre[2] = 0.0;
 
-        boost::shared_ptr<VascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre, 14.0);
-        p_network->SetSegmentRadii(0.05*unit::metres);
+        boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre, 14.0);
+        p_network->SetSegmentRadii(0.05);
 
         // Set up the grid
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();

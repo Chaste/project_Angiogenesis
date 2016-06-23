@@ -37,7 +37,7 @@
 #define TESTVASCULARSEGMENT_HPP_
 
 #include <cxxtest/TestSuite.h>
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 #include "SegmentFlowProperties.hpp"
 
 class TestSegmentFlowProperties : public CxxTest::TestSuite
@@ -46,7 +46,7 @@ public:
 
     void TestSetAndGet() throw (Exception)
     {
-        SegmentFlowProperties properties = SegmentFlowProperties();
+        SegmentFlowProperties<3> properties = SegmentFlowProperties<3>();
     }
 };
 

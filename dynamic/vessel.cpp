@@ -40,70 +40,66 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <boost/python/stl_iterator.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include "UblasIncludes.hpp"
-#include "VascularNode.hpp"
+#include "VesselNode.hpp"
 #include "VesselSegment.hpp"
 #include "Vessel.hpp"
-#include "VasculatureData.hpp"
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 #include "VasculatureGenerator.hpp"
 #include "SegmentFlowProperties.hpp"
 #include "NodeFlowProperties.hpp"
-#include "FlowSolver.hpp"
+#include "VesselFlowProperties.hpp"
 #include "converters.hpp"
-#include "UnitCollections.hpp"
 
 using namespace boost::python;
 
 // Vascular Node Overloads
-boost::shared_ptr<VascularNode<3> > (*VN3_ChastePoint)(const ChastePoint<3>& ) = &VascularNode<3>::Create;
-boost::shared_ptr<VascularNode<3> > (*VN3_Doubles)(double, double, double) = &VascularNode<3>::Create;
-boost::shared_ptr<VascularNode<3> > (*VN3_CVec)(c_vector<double, 3>) = &VascularNode<3>::Create;
-void (VascularNode<3>::*VN3_SetLocation)(c_vector<double, 3>) = &VascularNode<3>::SetLocation;
+boost::shared_ptr<VesselNode<3> > (*VN3_Doubles)(double, double, double) = &VesselNode<3>::Create;
+boost::shared_ptr<VesselNode<3> > (*VN3_CVec)(const c_vector<double, 3>&) = &VesselNode<3>::Create;
+void (VesselNode<3>::*VN3_SetLocation)(const c_vector<double, 3>&) = &VesselNode<3>::SetLocation;
 
 // Vessel Segment Overloads
-boost::shared_ptr<VesselSegment<3> > (*VS3_Nodes)(boost::shared_ptr<VascularNode<3> >, boost::shared_ptr<VascularNode<3> >) = &VesselSegment<3>::Create;
+boost::shared_ptr<VesselSegment<3> > (*VS3_Nodes)(boost::shared_ptr<VesselNode<3> >, boost::shared_ptr<VesselNode<3> >) = &VesselSegment<3>::Create;
 boost::shared_ptr<VesselSegment<3> > (*VS3_Copy)(boost::shared_ptr<VesselSegment<3> >) = &VesselSegment<3>::Create;
-double (VesselSegment<3>::*VS3_GetDistance)(c_vector<double, 3>) const = &VesselSegment<3>::GetDistance;
+double (VesselSegment<3>::*VS3_GetDistance)(const c_vector<double, 3>&) const = &VesselSegment<3>::GetDistance;
 //c_vector<double, 3> (VesselSegment<3>::*VS3_GetPointProjection)(c_vector<double, 3>) const = &VesselSegment<3>::GetPointProjection;
 
 // Vessel Overloads
 boost::shared_ptr<Vessel<3> > (*V3_SingleSegment)(boost::shared_ptr<VesselSegment<3> >) = &Vessel<3>::Create;
 boost::shared_ptr<Vessel<3> > (*V3_MultiSegment)(std::vector<boost::shared_ptr<VesselSegment<3> > >) = &Vessel<3>::Create;
-boost::shared_ptr<Vessel<3> > (*V3_Nodes)(std::vector<boost::shared_ptr<VascularNode<3> > >) = &Vessel<3>::Create;
+boost::shared_ptr<Vessel<3> > (*V3_Nodes)(std::vector<boost::shared_ptr<VesselNode<3> > >) = &Vessel<3>::Create;
 
 // Vessel Network Overloads
-boost::shared_ptr<VascularNode<3> > (VascularNetwork<3>::*VNet3_NearestNode)(c_vector<double, 3>) = &VascularNetwork<3>::GetNearestNode;
-std::pair<boost::shared_ptr<VesselSegment<3> >, double> (VascularNetwork<3>::*VNet3_NearestSegment)(c_vector<double, 3>) = &VascularNetwork<3>::GetNearestSegment;
-boost::shared_ptr<Vessel<3> > (VascularNetwork<3>::*VNet3_NearestVessel)(c_vector<double, 3>) = &VascularNetwork<3>::GetNearestVessel;
-void (VascularNetwork<3>::*VNet3_SetSegmentRadii)(double, const std::string&) = &VascularNetwork<3>::SetSegmentRadii;
-void (VascularNetwork<3>::*VNet3_MergeCoincident)(double) = &VascularNetwork<3>::MergeCoincidentNodes;
-void (VascularNetwork<3>::*VNet3_Translate)(const c_vector<double, 3>&) = &VascularNetwork<3>::Translate;
+boost::shared_ptr<VesselNode<3> > (VesselNetwork<3>::*VNet3_NearestNode)(const c_vector<double, 3>&) = &VesselNetwork<3>::GetNearestNode;
+std::pair<boost::shared_ptr<VesselSegment<3> >, double> (VesselNetwork<3>::*VNet3_NearestSegment)(const c_vector<double, 3>&) = &VesselNetwork<3>::GetNearestSegment;
+boost::shared_ptr<Vessel<3> > (VesselNetwork<3>::*VNet3_NearestVessel)(const c_vector<double, 3>&) = &VesselNetwork<3>::GetNearestVessel;
+void (VesselNetwork<3>::*VNet3_SetSegmentRadii)(double) = &VesselNetwork<3>::SetSegmentRadii;
+void (VesselNetwork<3>::*VNet3_MergeCoincident)(double) = &VesselNetwork<3>::MergeCoincidentNodes;
+void (VesselNetwork<3>::*VNet3_Translate)(const c_vector<double, 3>&) = &VesselNetwork<3>::Translate;
 
 // Make the module
 BOOST_PYTHON_MODULE(_vessel)
 {
-    class_<VascularNode<3>, boost::shared_ptr<VascularNode<3> >, boost::noncopyable >("VascularNode", no_init)
-        .def("__init__", make_constructor(VN3_ChastePoint))
+    class_<VesselNode<3>, boost::shared_ptr<VesselNode<3> >, boost::noncopyable >("VesselNode", no_init)
         .def("__init__", make_constructor(VN3_Doubles))
         .def("__init__", make_constructor(VN3_CVec))
-        .add_property("id", &VascularNode<3>::GetId, &VascularNode<3>::SetId)
-        .def("GetNumberOfSegments", &VascularNode<3>::GetNumberOfSegments)
-        .def("GetRadius", &VascularNode<3>::GetRadius)
-        .def("SetRadius", &VascularNode<3>::SetRadius)
-        .def("GetVesselSegment", &VascularNode<3>::GetVesselSegment)
-        .def("GetVesselSegments", &VascularNode<3>::GetVesselSegments)
-        .def("GetLocation", &VascularNode<3>::GetLocationVector)
+        .add_property("id", &VesselNode<3>::GetId, &VesselNode<3>::SetId)
+        .def("GetNumberOfSegments", &VesselNode<3>::GetNumberOfSegments)
+        .def("GetRadius", &VesselNode<3>::GetRadius)
+        .def("SetRadius", &VesselNode<3>::SetRadius)
+//        .def("GetSegment", &VesselNode<3>::GetSegment)
+        .def("GetSegments", &VesselNode<3>::GetSegments)
+        .def("GetLocation", &VesselNode<3>::rGetLocation, return_value_policy<copy_const_reference>())
         .def("SetLocation", VN3_SetLocation)
-        .def("GetFlowProperties", &VascularNode<3>::GetFlowProperties)
+        .def("GetFlowProperties", &VesselNode<3>::GetFlowProperties)
     ;
 
-    class_<NodeFlowProperties, boost::shared_ptr<NodeFlowProperties>, boost::noncopyable >("NodeFlowProperties")
-        .def("GetPressure", &NodeFlowProperties::GetPressure)
-        .def("SetPressure", &NodeFlowProperties::SetPressure)
-        .def("SetIsInputNode", &NodeFlowProperties::SetIsInputNode)
-        .def("SetIsOutputNode", &NodeFlowProperties::SetIsOutputNode)
-        .def("IsInputNode", &NodeFlowProperties::IsInputNode)
-        .def("IsOutputNode", &NodeFlowProperties::IsOutputNode)
+    class_<NodeFlowProperties<3>, boost::shared_ptr<NodeFlowProperties<3> >, boost::noncopyable >("NodeFlowProperties")
+        .def("GetPressure", &NodeFlowProperties<3>::GetPressure)
+        .def("SetPressure", &NodeFlowProperties<3>::SetPressure)
+        .def("SetIsInputNode", &NodeFlowProperties<3>::SetIsInputNode)
+        .def("SetIsOutputNode", &NodeFlowProperties<3>::SetIsOutputNode)
+        .def("IsInputNode", &NodeFlowProperties<3>::IsInputNode)
+        .def("IsOutputNode", &NodeFlowProperties<3>::IsOutputNode)
     ;
 
     class_<VesselSegment<3>, boost::shared_ptr<VesselSegment<3> >, boost::noncopyable >("VesselSegment", no_init)
@@ -123,13 +119,12 @@ BOOST_PYTHON_MODULE(_vessel)
         .def("ReplaceNode", &VesselSegment<3>::ReplaceNode)
     ;
 
-    class_<SegmentFlowProperties, boost::shared_ptr<SegmentFlowProperties>, boost::noncopyable >("SegmentFlowProperties")
-        .def("SetImpedance", &SegmentFlowProperties::SetImpedance)
-        .def("SetViscosity", &SegmentFlowProperties::SetViscosity)
-        .def("GetFlowRate", &SegmentFlowProperties::GetFlowRate)
-//        .def("GetFlowVelocity", &SegmentFlowProperties::GetFlowVelocity)
-        .def("SetHaematocrit", &SegmentFlowProperties::SetHaematocrit)
-        .def("GetHaematocrit", &SegmentFlowProperties::GetHaematocrit)
+    class_<SegmentFlowProperties<3>, boost::shared_ptr<SegmentFlowProperties<3> >, boost::noncopyable >("SegmentFlowProperties")
+        .def("SetImpedance", &SegmentFlowProperties<3>::SetImpedance)
+        .def("SetViscosity", &SegmentFlowProperties<3>::SetViscosity)
+        .def("GetFlowRate", &SegmentFlowProperties<3>::GetFlowRate)
+        .def("SetHaematocrit", &SegmentFlowProperties<3>::SetHaematocrit)
+        .def("GetHaematocrit", &SegmentFlowProperties<3>::GetHaematocrit)
     ;
 
     class_<Vessel<3>, boost::shared_ptr<Vessel<3> >, boost::noncopyable >("Vessel", no_init)
@@ -146,53 +141,51 @@ BOOST_PYTHON_MODULE(_vessel)
         .def("GetStartNode", &Vessel<3>::GetStartNode)
         .def("AddSegment", &Vessel<3>::AddSegment)
         .def("AddSegments", &Vessel<3>::AddSegments)
-        .def("GetSegment", &Vessel<3>::GetSegment)
+//        .def("GetSegment", &Vessel<3>::GetSegment)
         .def("GetDistance", &Vessel<3>::GetDistance)
-        .def("GetFlowRate", &Vessel<3>::GetFlowRate)
         .def("IsConnected", &Vessel<3>::IsConnectedTo)
         .def("RemoveSegments", &Vessel<3>::RemoveSegments)
     ;
 
-    class_<VascularNetwork<3>, boost::shared_ptr<VascularNetwork<3> >, boost::noncopyable >("VascularNetwork")
-        .def("GetNodes", &VascularNetwork<3>::GetNodes)
-		.def("GetVesselEndNodes", &VascularNetwork<3>::GetVesselEndNodes)
-		.def("GetVessels", &VascularNetwork<3>::GetVessels)
-		.def("GetExtents", &VascularNetwork<3>::GetExtents)
-		.def("GetNumberOfNodes", &VascularNetwork<3>::GetNumberOfNodes)
-		.def("GetNumberOfVessels", &VascularNetwork<3>::GetNumberOfVessels)
-		.def("AddVessel", &VascularNetwork<3>::AddVessel)
-        .def("AddVessels", &VascularNetwork<3>::AddVessels)
-        .def("CopySegmentFlowProperties", &VascularNetwork<3>::CopySegmentFlowProperties)
-        .def("GetVessel", &VascularNetwork<3>::GetVessel)
+    class_<VesselFlowProperties<3>, boost::shared_ptr<VesselFlowProperties<3> >, boost::noncopyable >("VesselFlowProperties")
+        .def("SetImpedance", &VesselFlowProperties<3>::SetImpedance)
+        .def("SetViscosity", &VesselFlowProperties<3>::SetViscosity)
+        .def("GetFlowRate", &VesselFlowProperties<3>::GetFlowRate)
+        .def("SetHaematocrit", &VesselFlowProperties<3>::SetHaematocrit)
+        .def("GetHaematocrit", &VesselFlowProperties<3>::GetHaematocrit)
+    ;
+
+    class_<VesselNetwork<3>, boost::shared_ptr<VesselNetwork<3> >, boost::noncopyable >("VesselNetwork")
+        .def("GetNodes", &VesselNetwork<3>::GetNodes)
+		.def("GetVesselEndNodes", &VesselNetwork<3>::GetVesselEndNodes)
+		.def("GetVessels", &VesselNetwork<3>::GetVessels)
+		.def("GetExtents", &VesselNetwork<3>::GetExtents)
+		.def("GetNumberOfNodes", &VesselNetwork<3>::GetNumberOfNodes)
+		.def("GetNumberOfVessels", &VesselNetwork<3>::GetNumberOfVessels)
+		.def("AddVessel", &VesselNetwork<3>::AddVessel)
+        .def("AddVessels", &VesselNetwork<3>::AddVessels)
+        .def("CopySegmentFlowProperties", &VesselNetwork<3>::CopySegmentFlowProperties)
+//        .def("GetVessel", &VesselNetwork<3>::GetVessel)
         .def("GetNearestNode", VNet3_NearestNode)
         .def("GetNearestSegment", VNet3_NearestSegment)
         .def("GetNearestVessel", VNet3_NearestVessel)
         .def("MergeNodes", VNet3_MergeCoincident)
-        .def("SetNodeData", &VascularNetwork<3>::SetNodeData)
-        .def("GetAverageVesselLength", &VascularNetwork<3>::GetAverageVesselLength)
-        .def("SetVesselData", &VascularNetwork<3>::SetVesselData)
-        .def("SetNodeRadii", &VascularNetwork<3>::SetNodeRadii)
-        .def("RemoveVessel", &VascularNetwork<3>::RemoveVessel)
-        .def("RemoveShortVessels", &VascularNetwork<3>::RemoveShortVessels)
-        .def("MergeShortVessels", &VascularNetwork<3>::MergeShortVessels)
-        .def("UpdateAll", &VascularNetwork<3>::UpdateAll)
-        .def("UpdateNodes", &VascularNetwork<3>::UpdateNodes)
+        .def("GetAverageVesselLength", &VesselNetwork<3>::GetAverageVesselLength)
+        .def("SetNodeRadii", &VesselNetwork<3>::SetNodeRadii)
+        .def("RemoveVessel", &VesselNetwork<3>::RemoveVessel)
+        .def("RemoveShortVessels", &VesselNetwork<3>::RemoveShortVessels)
+        .def("MergeShortVessels", &VesselNetwork<3>::MergeShortVessels)
+        .def("UpdateAll", &VesselNetwork<3>::UpdateAll)
+        .def("UpdateNodes", &VesselNetwork<3>::UpdateNodes)
         .def("SetSegmentRadii", VNet3_SetSegmentRadii)
         .def("Translate", VNet3_Translate)
-        .def("Write", &VascularNetwork<3>::Write)
-        .def("GetVtk", &VascularNetwork<3>::GetVtk)
-        .def("GetTotalLength", &VascularNetwork<3>::GetTotalLength)
-        .def("WriteConnectivity", &VascularNetwork<3>::WriteConnectivity)
-        .def("GetVesselLengthDistribution", &VascularNetwork<3>::GetVesselLengthDistribution)
+        .def("Write", &VesselNetwork<3>::Write)
+        .def("GetVtk", &VesselNetwork<3>::GetVtk)
+        .def("GetTotalLength", &VesselNetwork<3>::GetTotalLength)
+        .def("WriteConnectivity", &VesselNetwork<3>::WriteConnectivity)
+        .def("GetVesselLengthDistribution", &VesselNetwork<3>::GetVesselLengthDistribution)
         .enable_pickling()
     ;
-
-    class_<VasculatureData>("VasculatureData")
-		.def("GetScalarData", &VasculatureData::GetData<double>)
-		.def("GetVectorData", &VasculatureData::GetData<std::vector<double> >)
-		.def("SetScalarData", &VasculatureData::SetData<double>)
-		.def("SetVectorData", &VasculatureData::SetData<std::vector<double> >)
-	;
 
     class_<VasculatureGenerator<3> >("VasculatureGenerator")
         .def("GenerateHexagonalUnit", &VasculatureGenerator<3>::GenerateHexagonalUnit)
@@ -211,9 +204,9 @@ BOOST_PYTHON_MODULE(_vessel)
         .value("TWO_LAYER", VesselDistribution::TWO_LAYER)
         ;
 
-    class_<std::pair<boost::shared_ptr<VascularNode<3> >, boost::shared_ptr<VascularNode<3> > > > ("NodePair")
-		.def_readwrite("first", &std::pair<boost::shared_ptr<VascularNode<3> >, boost::shared_ptr<VascularNode<3> > >::first)
-    	.def_readwrite("second", &std::pair<boost::shared_ptr<VascularNode<3> >, boost::shared_ptr<VascularNode<3> > >::second)
+    class_<std::pair<boost::shared_ptr<VesselNode<3> >, boost::shared_ptr<VesselNode<3> > > > ("NodePair")
+		.def_readwrite("first", &std::pair<boost::shared_ptr<VesselNode<3> >, boost::shared_ptr<VesselNode<3> > >::first)
+    	.def_readwrite("second", &std::pair<boost::shared_ptr<VesselNode<3> >, boost::shared_ptr<VesselNode<3> > >::second)
     ;
 
     class_<std::pair<boost::shared_ptr<VesselSegment<3> >, double > > ("SegDistPair")
@@ -226,8 +219,8 @@ BOOST_PYTHON_MODULE(_vessel)
         .value("end", SegmentLocation::End)
         ;
 
-    class_<std::vector<boost::shared_ptr<VascularNode<3> > > > ("VecNodePtrs")
-         .def(vector_ptr_indexing_suite<std::vector<boost::shared_ptr<VascularNode<3> > > >())
+    class_<std::vector<boost::shared_ptr<VesselNode<3> > > > ("VecNodePtrs")
+         .def(vector_ptr_indexing_suite<std::vector<boost::shared_ptr<VesselNode<3> > > >())
     ;
 
     class_<std::vector<boost::shared_ptr<VesselSegment<3> > > > ("VecSegmentPtrs")
@@ -240,7 +233,7 @@ BOOST_PYTHON_MODULE(_vessel)
 
     // Register Angiogenesis Converters
     PythonIterableToStl()
-        .from_python<std::vector<boost::shared_ptr<VascularNode<3> > > > ()
+        .from_python<std::vector<boost::shared_ptr<VesselNode<3> > > > ()
         .from_python<std::vector<boost::shared_ptr<VesselSegment<3> > > >()
         .from_python<std::vector<boost::shared_ptr<Vessel<3> > > >()
       ;

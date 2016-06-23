@@ -51,7 +51,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "OutputFileHandler.hpp"
 #include "FileFinder.hpp"
 #include "Exception.hpp"
-#include "UnitCollections.hpp"
 
 using namespace boost::python;
 

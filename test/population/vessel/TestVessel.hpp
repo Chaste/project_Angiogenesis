@@ -38,12 +38,10 @@
 
 #include <cxxtest/TestSuite.h>
 #include "SmartPointers.hpp"
-#include "VascularNode.hpp"
+#include "VesselNode.hpp"
 #include "VesselSegment.hpp"
 #include "Vessel.hpp"
 #include "ChastePoint.hpp"
-#include "VasculatureData.hpp"
-#include "UnitCollections.hpp"
 
 class TestVessel : public CxxTest::TestSuite
 {
@@ -51,10 +49,10 @@ public:
 
     void TestConstructor() throw (Exception)
     {
-        std::vector<boost::shared_ptr<VascularNode<2> > > nodes;
+        std::vector<boost::shared_ptr<VesselNode<2> > > nodes;
         for (unsigned idx = 0; idx < 6; idx++)
         {
-            nodes.push_back(VascularNode<2>::Create(double(idx), double(idx) + 1.0));
+            nodes.push_back(VesselNode<2>::Create(double(idx), double(idx) + 1.0));
         }
 
         // Make some segments
@@ -80,37 +78,34 @@ public:
         boost::shared_ptr<Vessel<2> > pVessel3 = Vessel<2>::Create(nodes);
 
         // Check that locations are correct
-        TS_ASSERT(pVessel1->GetStartNode()->IsCoincident(nodes[0]));
-        TS_ASSERT(pVessel2->GetEndNode()->IsCoincident(nodes[3]));
+        TS_ASSERT(pVessel1->GetStartNode()->IsCoincident(nodes[0]->rGetLocation()));
+        TS_ASSERT(pVessel2->GetEndNode()->IsCoincident(nodes[3]->rGetLocation()));
 
         // Check that segments are correctly returned
         TS_ASSERT_EQUALS(pVessel2->GetNumberOfSegments(), 2u);
         TS_ASSERT_EQUALS(pVessel3->GetNumberOfSegments(), 5u);
         TS_ASSERT_EQUALS(pVessel2->GetSegments().size(), 2u);
-        TS_ASSERT(pVessel2->GetSegment(0)->GetNode(0)->IsCoincident(nodes[1]));
+        TS_ASSERT(pVessel2->GetSegments()[0]->GetNode(0)->IsCoincident(nodes[1]->rGetLocation()));
 
         // Test simple Getters and Setters
         pVessel1->SetId(5u);
-        std::string label = "Inlet";
-        pVessel1->SetLabel(label);
         TS_ASSERT_EQUALS(pVessel1->GetId(), 5u);
-        TS_ASSERT_EQUALS(pVessel1->rGetLabel().c_str(), label.c_str());
 
-        pVessel1->SetRadius(5.0*unit::metres);
-        pVessel1->SetHaematocrit(10.0);
-        pVessel1->SetFlowRate(15.0*unit::unit_flow_rate);
-        TS_ASSERT_DELTA(pVessel1->GetRadius()/unit::metres, 5.0, 1.e-6);
-        TS_ASSERT_DELTA(pVessel1->GetHaematocrit(), 10.0, 1.e-6);
-        TS_ASSERT_DELTA(pVessel1->GetFlowRate()/unit::unit_flow_rate, 15.0, 1.e-6);
+        pVessel1->SetRadius(5.0);
+        pVessel1->GetFlowProperties()->SetHaematocrit(10.0, pVessel1->GetSegments());
+        pVessel1->GetFlowProperties()->SetFlowRate(15.0, pVessel1->GetSegments());
+        TS_ASSERT_DELTA(pVessel1->GetRadius(), 5.0, 1.e-6);
+        TS_ASSERT_DELTA(pVessel1->GetFlowProperties()->GetHaematocrit(pVessel1->GetSegments()), 10.0, 1.e-6);
+        TS_ASSERT_DELTA(pVessel1->GetFlowProperties()->GetFlowRate(pVessel1->GetSegments()), 15.0, 1.e-6);
     }
 
     void TestAddingAndRemovingSegments() throw (Exception)
     {
         // Make some nodes
-        std::vector<boost::shared_ptr<VascularNode<2> > > nodes;
+        std::vector<boost::shared_ptr<VesselNode<2> > > nodes;
         for (unsigned idx = 0; idx < 6; idx++)
         {
-            nodes.push_back(VascularNode<2>::Create(double(idx), double(idx) + 1.0));
+            nodes.push_back(VesselNode<2>::Create(double(idx), double(idx) + 1.0));
         }
 
         // Make some segments
@@ -154,44 +149,11 @@ public:
                               "Input vessel segments are not attached in the correct order.");
     }
 
-    void TestAccessingData() throw (Exception)
-    {
-        // Make a segment
-        boost::shared_ptr<VesselSegment<3> > pSegment1 = VesselSegment<3>::Create(VascularNode<3>::Create(1.0, 2.0, 6.0),
-                                                                                      VascularNode<3>::Create(3.0, 4.0, 7.0));
-
-        // Make a vessel
-        boost::shared_ptr<Vessel<3> > pVessel1 = Vessel<3>::Create(pSegment1);
-
-        // Set some data
-        double radius = 5.5;
-        std::string key = "radius";
-        pVessel1->SetData(key, radius);
-
-        // Check the key is set
-        TS_ASSERT(pVessel1->HasDataKey("radius"));
-        TS_ASSERT_EQUALS(pVessel1->GetDataKeys()[0].c_str(), key.c_str());
-
-        bool value_is_castable_to_double = true;
-        TS_ASSERT_EQUALS(pVessel1->GetDataKeys(value_is_castable_to_double)[0].c_str(), key.c_str());
-
-        // Check the key value is retrieved
-        TS_ASSERT_DELTA(pVessel1->GetData<double>("radius"), radius, 1.e-6);
-        TS_ASSERT_DELTA(pVessel1->rGetDataContainer().GetData<double>("radius"), radius, 1.e-6);
-
-        // Replace the existing data container with a new one
-        VasculatureData data_container;
-        double haematocrit = 7.5;
-        data_container.SetData("haematocrit", haematocrit);
-        pVessel1->SetDataContainer(data_container);
-        TS_ASSERT_DELTA(pVessel1->GetData<double>("haematocrit"), haematocrit, 1.e-6);
-    }
-
     void TestRemoveMethod() throw (Exception)
     {
         // Make a segment
-        boost::shared_ptr<VascularNode<3> > p_node1 = VascularNode<3>::Create(0.0);
-        boost::shared_ptr<VascularNode<3> > p_node2 = VascularNode<3>::Create(1.0);
+        boost::shared_ptr<VesselNode<3> > p_node1 = VesselNode<3>::Create(0.0);
+        boost::shared_ptr<VesselNode<3> > p_node2 = VesselNode<3>::Create(1.0);
         boost::shared_ptr<VesselSegment<3> > pSegment1 = VesselSegment<3>::Create(p_node1, p_node2);
 
         // Make a vessel

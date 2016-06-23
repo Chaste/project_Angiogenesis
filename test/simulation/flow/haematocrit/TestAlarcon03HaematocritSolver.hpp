@@ -43,11 +43,10 @@
 #include "SmartPointers.hpp"
 #include "VasculatureGenerator.hpp"
 #include "FlowSolver.hpp"
-#include "VasculatureData.hpp"
 #include "SimulationTime.hpp"
 #include "AlarconHaematocritSolver.hpp"
 #include "FakePetscSetup.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 
 class TestAlarconHaematocritSolver : public CxxTest::TestSuite
 {

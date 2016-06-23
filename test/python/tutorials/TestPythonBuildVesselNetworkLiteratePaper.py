@@ -63,27 +63,30 @@ class TestPythonBuildVesselNetworkLiteratePaper(unittest.TestCase):
         ## create a Y shaped network. Later we will learn how to build up networks in a more efficient manner.
         
         length = 100.0
-        n1 = vessel.VascularNode(0.0, 0.0 ,0.0)
-        n2 = vessel.VascularNode(length, 0.0, 0.0)
-        n3 = vessel.VascularNode(2.0 * length, length, 0.0)
-        n4 = vessel.VascularNode(2.0 * length, -length, 0.0)
+        n1 = vessel.VesselNode(0.0, 0.0 ,0.0)
+        n2 = vessel.VesselNode(length, 0.0, 0.0)
+        n3 = vessel.VesselNode(2.0 * length, length, 0.0)
+        n4 = vessel.VesselNode(2.0 * length, -length, 0.0)
         ## Next we make vessel segments and vessels. Vessel segments are straight-line features which contain a vascular node at each end. Vessels
         ## can be constructed from multiple vessel segments, but in this case each vessel just has a single segment.
         v1 = vessel.Vessel([n1 ,n2])
         v2 = vessel.Vessel([n2, n3])
-        v3 = vessel.Vessel([n3, n4])
+        v3 = vessel.Vessel([n2, n4])
+        
         ## Now we can add our vessels to a vessel network.
-        network = vessel.VascularNetwork()
+        network = vessel.VesselNetwork()
         network.AddVessel(v1)
         network.AddVessel(v2)
         network.AddVessel(v3)
         ## We use our test framework to make sure that the network has been created correctly by checking the number of vessels and nodes
         self.assertEqual(network.GetNumberOfNodes(), 4)
         self.assertEqual(network.GetNumberOfVessels(), 3)
+        
         ## Next we write out network to file. We use the Chaste `OutputFileHandler` functionality to management the output location
         ## Networks are written using VTKs PolyData format, which should have a .vtp extension.
         file_handler = chaste.core.OutputFileHandler("TestPythonBuildVesselNetworkLiteratePaper", True)
         network.Write(file_handler.GetOutputDirectoryFullPath() + "bifurcating_network.vtp")
+
         ## Now we can visualize then network in Paraview. See the tutorial [wiki:UserTutorials/VisualizingWithParaview here], to get started. To view the network import the file
         ## `TestPythonBuildVesselNetworkLiteratePaper\bifurcating_network.vtp` into Paraview. For a nicer rendering you can do `Filters->Alphabetical->Tube`.
         

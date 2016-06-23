@@ -45,10 +45,9 @@
 #include "Part.hpp"
 #include "Vertex.hpp"
 #include "HybridLinearEllipticPde.hpp"
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 #include "VasculatureGenerator.hpp"
 #include "SmartPointers.hpp"
-#include "VasculatureData.hpp"
 #include "HybridBoundaryCondition.hpp"
 #include "HybridMesh.hpp"
 #include "PetscSetupAndFinalize.hpp"
@@ -65,7 +64,7 @@ public:
         c_vector<double,3> centre = zero_vector<double>(3);
         centre[0] = vessel_length/2.0;
         centre[1] = vessel_length/2.0;
-        boost::shared_ptr<VascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre);
+        boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre);
 
         // Set up the mesh
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
@@ -105,7 +104,7 @@ public:
         c_vector<double,3> centre = zero_vector<double>(3);
         centre[0] = vessel_length/2.0;
         centre[1] = vessel_length/2.0;
-        boost::shared_ptr<VascularNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre);
+        boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre);
 
         // Set up the mesh
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
