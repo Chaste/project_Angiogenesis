@@ -39,14 +39,15 @@
 #include <vtkPointData.h>
 #include <vtkPolyData.h>
 #include <vtkProbeFilter.h>
-#include "Debug.hpp"
+#include <vtkImageData.h>
+#include <vtkSmartPointer.h>
 
 #include "AbstractRegularGridHybridSolver.hpp"
 
 template<unsigned DIM>
 AbstractRegularGridHybridSolver<DIM>::AbstractRegularGridHybridSolver()
     :   AbstractHybridSolver<DIM>(),
-        mpVtkSolution(),
+        mpVtkSolution(vtkSmartPointer<vtkImageData>::New()),
         mpRegularGrid(),
         mPointSolution()
 {
@@ -62,18 +63,18 @@ AbstractRegularGridHybridSolver<DIM>::~AbstractRegularGridHybridSolver()
 template<unsigned DIM>
 boost::shared_ptr<RegularGrid<DIM> > AbstractRegularGridHybridSolver<DIM>::GetGrid()
 {
-    if(!mpRegularGrid)
+    if(!this->mpRegularGrid)
     {
         EXCEPTION("A regular grid has not been set.");
     }
 
-    return mpRegularGrid;
+    return this->mpRegularGrid;
 }
 
 template<unsigned DIM>
 std::vector<double> AbstractRegularGridHybridSolver<DIM>::GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints)
 {
-    if(!mpVtkSolution)
+    if(!this->mpVtkSolution)
     {
         this->Setup();
     }
@@ -99,7 +100,7 @@ std::vector<double> AbstractRegularGridHybridSolver<DIM>::GetSolutionAtPoints(st
 
     vtkSmartPointer<vtkProbeFilter> p_probe_filter = vtkSmartPointer<vtkProbeFilter>::New();
     p_probe_filter->SetInput(p_polydata);
-    p_probe_filter->SetSource(mpVtkSolution);
+    p_probe_filter->SetSource(this->mpVtkSolution);
     p_probe_filter->Update();
     vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetOutput()->GetPointData();
 
@@ -126,58 +127,58 @@ std::vector<double> AbstractRegularGridHybridSolver<DIM>::GetSolutionAtGridPoint
 template<unsigned DIM>
 vtkSmartPointer<vtkImageData> AbstractRegularGridHybridSolver<DIM>::GetVtkSolution()
 {
-    if(!mpVtkSolution)
+    if(!this->mpVtkSolution)
     {
         this->Setup();
     }
 
-    return mpVtkSolution;
+    return this->mpVtkSolution;
 }
 
 template<unsigned DIM>
 void AbstractRegularGridHybridSolver<DIM>::SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid)
 {
-    mpRegularGrid = pGrid;
+    this->mpRegularGrid = pGrid;
 }
 
 template<unsigned DIM>
 void AbstractRegularGridHybridSolver<DIM>::Setup()
 {
-    if(!mpRegularGrid)
+    if(!this->mpRegularGrid)
     {
         EXCEPTION("Regular grid hybrid solvers need a grid before Setup can be called.");
     }
 
     // Set up the VTK solution
-    mpVtkSolution = vtkSmartPointer<vtkImageData>::New();
+    this->mpVtkSolution = vtkSmartPointer<vtkImageData>::New();
 
     if(DIM==3)
     {
-        mpVtkSolution->SetDimensions(mpRegularGrid->GetExtents()[0], mpRegularGrid->GetExtents()[1], mpRegularGrid->GetExtents()[2]);
+        this->mpVtkSolution->SetDimensions(this->mpRegularGrid->GetExtents()[0], this->mpRegularGrid->GetExtents()[1], this->mpRegularGrid->GetExtents()[2]);
     }
     else
     {
-        mpVtkSolution->SetDimensions(mpRegularGrid->GetExtents()[0], mpRegularGrid->GetExtents()[1], 1);
+        this->mpVtkSolution->SetDimensions(this->mpRegularGrid->GetExtents()[0], this->mpRegularGrid->GetExtents()[1], 1);
     }
 
-    mpVtkSolution->SetSpacing(mpRegularGrid->GetSpacing(), mpRegularGrid->GetSpacing(), mpRegularGrid->GetSpacing());
+    this->mpVtkSolution->SetSpacing(this->mpRegularGrid->GetSpacing(), this->mpRegularGrid->GetSpacing(), this->mpRegularGrid->GetSpacing());
 
     if(DIM==3)
     {
-        mpVtkSolution->SetOrigin(mpRegularGrid->GetOrigin()[0], mpRegularGrid->GetOrigin()[1], mpRegularGrid->GetOrigin()[2]);
+        this->mpVtkSolution->SetOrigin(this->mpRegularGrid->GetOrigin()[0], this->mpRegularGrid->GetOrigin()[1], this->mpRegularGrid->GetOrigin()[2]);
     }
     else
     {
-        mpVtkSolution->SetOrigin(mpRegularGrid->GetOrigin()[0], mpRegularGrid->GetOrigin()[1], 0.0);
+        this->mpVtkSolution->SetOrigin(this->mpRegularGrid->GetOrigin()[0], this->mpRegularGrid->GetOrigin()[1], 0.0);
     }
 
-    mPointSolution = std::vector<double>(0.0, mpRegularGrid->GetNumberOfPoints());
+    this->mPointSolution = std::vector<double>(0.0, this->mpRegularGrid->GetNumberOfPoints());
 }
 
 template<unsigned DIM>
-void AbstractRegularGridHybridSolver<DIM>::UpdateSolution(std::vector<double>& data)
+void AbstractRegularGridHybridSolver<DIM>::UpdateSolution(std::vector<double> data)
 {
-    if(!mpVtkSolution)
+    if(!this->mpVtkSolution)
     {
         this->Setup();
     }
@@ -186,25 +187,24 @@ void AbstractRegularGridHybridSolver<DIM>::UpdateSolution(std::vector<double>& d
     pPointData->SetNumberOfComponents(1);
     pPointData->SetNumberOfTuples(data.size());
     pPointData->SetName(this->GetLabel().c_str());
-
     for (unsigned i = 0; i < data.size(); i++)
     {
         pPointData->SetValue(i, data[i]);
     }
-    mpVtkSolution->GetPointData()->AddArray(pPointData);
+    this->mpVtkSolution->GetPointData()->AddArray(pPointData);
 
     // Note, if the data vector being passed in is mPointSolution, then it will be overwritten with zeros.
-    mPointSolution = std::vector<double>(0.0, data.size());
+    this->mPointSolution = std::vector<double>(data.size(), 0.0);
     for (unsigned i = 0; i < data.size(); i++)
     {
-        mPointSolution[i] = data[i];
+        this->mPointSolution[i] = data[i];
     }
 }
 
 template<unsigned DIM>
 void AbstractRegularGridHybridSolver<DIM>::UpdateCellData()
 {
-    if(!mpVtkSolution)
+    if(!this->mpVtkSolution)
     {
         this->Setup();
     }
@@ -214,8 +214,8 @@ void AbstractRegularGridHybridSolver<DIM>::UpdateCellData()
         EXCEPTION("The hybrid solver needs a cell population for this operation.");
     }
 
-    mpRegularGrid->SetCellPopulation(*(this->mpCellPopulation));
-    std::vector<std::vector<CellPtr> > point_cell_map = mpRegularGrid->GetPointCellMap();
+    this->mpRegularGrid->SetCellPopulation(*(this->mpCellPopulation));
+    std::vector<std::vector<CellPtr> > point_cell_map = this->mpRegularGrid->GetPointCellMap();
     for(unsigned idx=0; idx<point_cell_map.size(); idx++)
     {
         for(unsigned jdx=0; jdx<point_cell_map[idx].size(); jdx++)
@@ -234,17 +234,17 @@ void AbstractRegularGridHybridSolver<DIM>::Update()
 template<unsigned DIM>
 std::vector<double> AbstractRegularGridHybridSolver<DIM>::GetPointSolution()
 {
-    if(!mpVtkSolution)
+    if(!this->mpVtkSolution)
     {
         this->Setup();
     }
-    return mPointSolution;
+    return this->mPointSolution;
 }
 
 template<unsigned DIM>
 void AbstractRegularGridHybridSolver<DIM>::Write()
 {
-    if(!mpVtkSolution)
+    if(!this->mpVtkSolution)
     {
         this->Setup();
     }
@@ -264,7 +264,7 @@ void AbstractRegularGridHybridSolver<DIM>::Write()
         pImageDataWriter->SetFileName((this->mpOutputFileHandler->GetOutputDirectoryFullPath() + "/solution.vti").c_str());
     }
 
-    pImageDataWriter->SetInput(mpVtkSolution);
+    pImageDataWriter->SetInput(this->mpVtkSolution);
     pImageDataWriter->Update();
     pImageDataWriter->Write();
 }

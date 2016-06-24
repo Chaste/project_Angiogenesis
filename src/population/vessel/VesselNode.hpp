@@ -89,6 +89,9 @@ private:
 
     boost::shared_ptr<NodeFlowProperties<DIM> > mpFlowProperties;
 
+
+    unsigned mPtrComparisonId;
+
     /**
      * Constructor. Kept private as the Create factory method should be used.
      *
@@ -122,6 +125,10 @@ public:
      * Destructor
      */
     ~VesselNode();
+
+    void SetComparisonId(unsigned id);
+
+    unsigned GetComparisonId();
 
     /**
      * Construct a new instance of the class and return a shared pointer to it.

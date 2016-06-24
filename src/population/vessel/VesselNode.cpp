@@ -42,7 +42,8 @@ VesselNode<DIM>::VesselNode(double v1, double v2, double v3) : AbstractVesselNet
         mLocation(ChastePoint<DIM>(v1 ,v2, v3)),
         mSegments(std::vector<boost::weak_ptr<VesselSegment<DIM> > >()),
         mIsMigrating(false),
-        mpFlowProperties(boost::shared_ptr<NodeFlowProperties<DIM> >(new NodeFlowProperties<DIM>()))
+        mpFlowProperties(boost::shared_ptr<NodeFlowProperties<DIM> >(new NodeFlowProperties<DIM>())),
+        mPtrComparisonId(0)
 {
     this->mpFlowProperties = boost::shared_ptr<NodeFlowProperties<DIM> >(new NodeFlowProperties<DIM>());
 }
@@ -52,7 +53,8 @@ VesselNode<DIM>::VesselNode(c_vector<double, DIM> location) : AbstractVesselNetw
         mLocation(ChastePoint<DIM>(location)),
         mSegments(std::vector<boost::weak_ptr<VesselSegment<DIM> > >()),
         mIsMigrating(false),
-        mpFlowProperties(boost::shared_ptr<NodeFlowProperties<DIM> >(new NodeFlowProperties<DIM>()))
+        mpFlowProperties(boost::shared_ptr<NodeFlowProperties<DIM> >(new NodeFlowProperties<DIM>())),
+        mPtrComparisonId(0)
 {
     this->mpFlowProperties = boost::shared_ptr<NodeFlowProperties<DIM> >(new NodeFlowProperties<DIM>());
 }
@@ -63,7 +65,8 @@ VesselNode<DIM>::VesselNode(const VesselNode<DIM>& rExistingNode) :
         mLocation(rExistingNode.rGetLocation()),
         mSegments(std::vector<boost::weak_ptr<VesselSegment<DIM> > >()),
         mIsMigrating(false),
-        mpFlowProperties(boost::shared_ptr<NodeFlowProperties<DIM> >(new NodeFlowProperties<DIM>()))
+        mpFlowProperties(boost::shared_ptr<NodeFlowProperties<DIM> >(new NodeFlowProperties<DIM>())),
+        mPtrComparisonId(0)
 {
     SetFlowProperties(*(rExistingNode.GetFlowProperties()));
     mIsMigrating = rExistingNode.IsMigrating();
@@ -105,6 +108,18 @@ boost::shared_ptr<VesselNode<DIM> > VesselNode<DIM>::Create(boost::shared_ptr<Ve
     }
     MAKE_PTR_ARGS(VesselNode<DIM>, pSelf, (*pExistingNode));
     return pSelf;
+}
+
+template<unsigned DIM>
+void VesselNode<DIM>::SetComparisonId(unsigned id)
+{
+    mPtrComparisonId = id;
+}
+
+template<unsigned DIM>
+unsigned VesselNode<DIM>::GetComparisonId()
+{
+    return mPtrComparisonId;
 }
 
 template<unsigned DIM>

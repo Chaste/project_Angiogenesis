@@ -5,7 +5,7 @@ Sample Snail Trail Angiogenesis Model
 import unittest
 import chaste
 import chaste.simulation
-import chaste.mesh
+import chaste.pde
 import chaste.population.vessel
 
 class TestSnailTrail(unittest.TestCase):
@@ -20,18 +20,17 @@ class TestSnailTrail(unittest.TestCase):
         grid.SetExtents((25, 25, 1))
         
         # Set up a vegf field
-        field = chaste.mesh.FunctionMap()
+        field = chaste.pde.FunctionMap()
         field.SetGrid(grid)
         
         vegf_field = []
         for idx in range(grid.GetExtents()[0]*grid.GetExtents()[1]):
             vegf_field.append(0.2*grid.GetLocationOf1dIndex(idx)[0]/(grid.GetSpacing()*grid.GetExtents()[0]))
             
-        field.SetPointSolution(vegf_field)
         field.SetFileName("Function.vti")
         field.SetFileHandler(file_handler)
         field.Setup()
-        field.UpdateVtkBaseSolution(vegf_field)
+        field.UpdateSolution(vegf_field)
         field.Write()
         
         # Set up the initial vessel

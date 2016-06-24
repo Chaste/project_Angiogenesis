@@ -185,7 +185,6 @@ public:
         flow_solver.SetVesselNetwork(p_network);
         flow_solver.Solve();
 
-
         /*
          * We can check to see if the final solution is reasonable
          */
@@ -202,7 +201,6 @@ public:
          * `TestBloodFlowLiteratePaper\bifurcating_network.vtp` into Paraview. For a nicer rendering you can do `Filters->Alphabetical->Tube`.
          */
     }
-
 
 };
 

@@ -40,7 +40,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "OutputFileHandler.hpp"
 #include "SmartPointers.hpp"
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 #include "WallShearStressBasedRegressionSolver.hpp"
 #include "AngiogenesisSolver.hpp"
 #include "SimulationTime.hpp"
@@ -49,7 +49,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "FlowSolver.hpp"
 #include "VascularTumourSolver.hpp"
 #include "OutputFileHandler.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
+#include "Debug.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
 
@@ -61,32 +62,32 @@ public:
     void TestSingleVesselRegression() throw(Exception)
     {
         // Make a vessel
-        boost::shared_ptr<VascularNode<2> > p_node1 = VascularNode<2>::Create(0.0, 0.0);
-        boost::shared_ptr<VascularNode<2> > p_node2 = VascularNode<2>::Create(0.0,100.0);
+        boost::shared_ptr<VesselNode<2> > p_node1 = VesselNode<2>::Create(0.0, 0.0);
+        boost::shared_ptr<VesselNode<2> > p_node2 = VesselNode<2>::Create(0.0,100.0);
         boost::shared_ptr<Vessel<2> > p_vessel = Vessel<2>::Create(p_node1, p_node2);
-        boost::shared_ptr<VascularNetwork<2> > p_network = VascularNetwork<2>::Create();
+        boost::shared_ptr<VesselNetwork<2> > p_network = VesselNetwork<2>::Create();
         p_network->AddVessel(p_vessel);
 
         // Set a wall shear stress below the threshold
         double wss_threshold = 10.0;
         double vessel_wss = 5.0;
-        p_vessel->GetSegment(0)->GetFlowProperties()->SetWallShearStress(vessel_wss*unit::pascals);
+        p_vessel->GetSegments()[0]->GetFlowProperties()->SetWallShearStress(vessel_wss);
 
         // Set up the regression solver
         WallShearStressBasedRegressionSolver<2> regression_solver = WallShearStressBasedRegressionSolver<2>();
         regression_solver.SetVesselNetwork(p_network);
         regression_solver.SetLowWallShearStressThreshold(wss_threshold*unit::pascals);
-        regression_solver.SetMaximumTimeWithLowWallShearStress(3);
+        regression_solver.SetMaximumTimeWithLowWallShearStress(3*unit::seconds);
 
         // Run the solver for six 'increments'
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
         for(unsigned idx=0 ; idx<6; idx++)
         {
             regression_solver.Increment();
-            TS_ASSERT(p_network->GetVessel(0)->HasRegressionTimerStarted());
+            TS_ASSERT(p_vessel->GetFlowProperties()->HasRegressionTimerStarted());
             SimulationTime::Instance()->IncrementTimeOneStep();
         }
-        TS_ASSERT(p_network->GetVessel(0)->VesselHasRegressed());
+        TS_ASSERT(p_vessel->GetFlowProperties()->HasVesselRegressed());
         TS_ASSERT_EQUALS(p_network->GetNumberOfVessels(), 0);
     }
 
@@ -98,17 +99,24 @@ public:
 
         // Generate the network
         VasculatureGenerator<2> p_network_generator;
-        boost::shared_ptr<VascularNetwork<2> > p_network = p_network_generator.GenerateHexagonalNetwork(1000, 1000, vessel_length);
+        boost::shared_ptr<VesselNetwork<2> > p_network = p_network_generator.GenerateHexagonalNetwork(1000, 1000, vessel_length);
 
         // Make a dummy segment to set properties on
-        boost::shared_ptr<VesselSegment<2> > p_segment1 = VesselSegment<2>::Create(VascularNode<2>::Create(0.0, 0.0),
-                                                                                   VascularNode<2>::Create(1.0, 0.0));
-        p_segment1->GetFlowProperties()->SetImpedance(1.e14*unit::unit_flow_impedance);
+        boost::shared_ptr<VesselSegment<2> > p_segment1 = VesselSegment<2>::Create(VesselNode<2>::Create(0.0, 0.0),
+                                                                                   VesselNode<2>::Create(1.0, 0.0));
+        p_segment1->GetFlowProperties()->SetImpedance(0.0001);
         p_network->SetSegmentProperties(p_segment1);
 
         // Get the nearest node to the inlet and outlet
-        boost::shared_ptr<VascularNode<2> > p_inlet_node = p_network->GetNearestNode(ChastePoint<2>(742, 912));
-        boost::shared_ptr<VascularNode<2> > p_outlet_node = p_network->GetNearestNode(ChastePoint<2>(0, 0));
+        c_vector<double, 2> loc1;
+        c_vector<double, 2> loc2;
+        loc1[0] = 742;
+        loc1[1] = 912;
+        loc2[0] = 0;
+        loc2[1] = 0;
+
+        boost::shared_ptr<VesselNode<2> > p_inlet_node = p_network->GetNearestNode(loc1);
+        boost::shared_ptr<VesselNode<2> > p_outlet_node = p_network->GetNearestNode(loc2);
         p_inlet_node->GetFlowProperties()->SetIsInputNode(true);
         p_inlet_node->GetFlowProperties()->SetPressure(3393);
         p_outlet_node->GetFlowProperties()->SetIsOutputNode(true);
@@ -121,11 +129,10 @@ public:
         p_adaptation_solver->SetMaxIterations(10000);
 
         // Set up a regression solver
-        double wss_threshold = 8e-6;
-        boost::shared_ptr<WallShearStressBasedRegressionSolver<2> > p_regression_solver =
-                WallShearStressBasedRegressionSolver<2>::Create();
+        double wss_threshold = 8.0;
+        boost::shared_ptr<WallShearStressBasedRegressionSolver<2> > p_regression_solver = WallShearStressBasedRegressionSolver<2>::Create();
         p_regression_solver->SetLowWallShearStressThreshold(wss_threshold*unit::pascals);
-        p_regression_solver->SetMaximumTimeWithLowWallShearStress(3);
+        p_regression_solver->SetMaximumTimeWithLowWallShearStress(3000.0*unit::seconds);
 
         // Set up a vascular tumour solver
         MAKE_PTR_ARGS(OutputFileHandler, p_handler, ("TestRegressionSolver/TestMultiVesselRegression"));

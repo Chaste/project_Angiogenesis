@@ -9,14 +9,14 @@ class TestBetteridgeCalculator(unittest.TestCase):
     
     # Set up a vessel network
     length = 100.0 # um
-    network = chaste.population.vessel.VascularNetwork()
-    n1 = chaste.population.vessel.VascularNode((0.0, 0.0, 0.0))
-    n2 = chaste.population.vessel.VascularNode((length, 0.0, 0.0))
-    n3 = chaste.population.vessel.VascularNode((length + math.cos(math.pi/6.0)*length, math.sin(math.pi/6.0)*length, 0.0))
-    n4 = chaste.population.vessel.VascularNode((length + math.cos(math.pi/6.0)*length, -math.sin(math.pi/6.0)*length, 0.0))
-    n5 = chaste.population.vessel.VascularNode((length + 2.0*math.cos(math.pi/6.0)*length, 0.0, 0.0))
-    n6 = chaste.population.vessel.VascularNode((2.0 * length + 2.0*math.cos(math.pi/6.0)*length, 0.0, 0.0))
-    n7 = chaste.population.vessel.VascularNode((3.0 * length + 2.0*math.cos(math.pi/6.0)*length, 0.0, 0.0))
+    network = chaste.population.vessel.VesselNetwork()
+    n1 = chaste.population.vessel.VesselNode((0.0, 0.0, 0.0))
+    n2 = chaste.population.vessel.VesselNode((length, 0.0, 0.0))
+    n3 = chaste.population.vessel.VesselNode((length + math.cos(math.pi/6.0)*length, math.sin(math.pi/6.0)*length, 0.0))
+    n4 = chaste.population.vessel.VesselNode((length + math.cos(math.pi/6.0)*length, -math.sin(math.pi/6.0)*length, 0.0))
+    n5 = chaste.population.vessel.VesselNode((length + 2.0*math.cos(math.pi/6.0)*length, 0.0, 0.0))
+    n6 = chaste.population.vessel.VesselNode((2.0 * length + 2.0*math.cos(math.pi/6.0)*length, 0.0, 0.0))
+    n7 = chaste.population.vessel.VesselNode((3.0 * length + 2.0*math.cos(math.pi/6.0)*length, 0.0, 0.0))
     
     n1.GetFlowProperties().SetIsInputNode(True)#
     n1.GetFlowProperties().SetPressure(5000.0) # pa ?
@@ -38,7 +38,7 @@ class TestBetteridgeCalculator(unittest.TestCase):
     v7 = chaste.population.vessel.Vessel([n6, n7])
     network.AddVessel(v7)
     
-    network.SetSegmentRadii(10.0*1.e-6, "metres")
+    network.SetSegmentRadii(10.0)
     viscosity = 1.e-3 # units ?
     initial_haematocrit = 0.1
     for eachVessel in network.GetVessels():
@@ -50,7 +50,8 @@ class TestBetteridgeCalculator(unittest.TestCase):
     v4.GetSegments()[0].SetRadius(5.0)
     
     impedance_calculator = chaste.simulation.VesselImpedanceCalculator()
-    impedance_calculator.Calculate(network)
+    impedance_calculator.SetVesselNetwork(network)
+    impedance_calculator.Calculate()
     
     network.Write(file_handler.GetOutputDirectoryFullPath() + "/original_network.vtp")
     
@@ -59,8 +60,6 @@ class TestBetteridgeCalculator(unittest.TestCase):
     flow_solver.Solve()
     
     haematocrit_calculator = chaste.simulation.BetteridgeHaematocritSolver()
-    haematocrit_calculator.SetTHR(2.5)
-    haematocrit_calculator.SetAlpha(0.5)
     haematocrit_calculator.SetHaematocrit(initial_haematocrit)
     haematocrit_calculator.Calculate(network)
     

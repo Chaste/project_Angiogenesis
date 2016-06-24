@@ -99,6 +99,7 @@ BOOST_PYTHON_MODULE(_pde)
 
     class_<FunctionMap<3>, boost::shared_ptr<FunctionMap<3u> >, bases<AbstractRegularGridHybridSolver<3> >  >("FunctionMap")
         .def("Solve", &FunctionMap<3>::Solve)
+        .def("UpdateSolution", &FunctionMap<3>::UpdateSolution)
     ;
 
     class_<FiniteDifferenceSolver<3>, boost::shared_ptr<FiniteDifferenceSolver<3u> >, bases<AbstractRegularGridHybridSolver<3> > >("FiniteDifferenceSolver")

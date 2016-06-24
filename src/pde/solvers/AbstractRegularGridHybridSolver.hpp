@@ -104,12 +104,12 @@ public:
     /**
      * Return the solution as vtk image data
      */
-    vtkSmartPointer<vtkImageData> GetVtkSolution();
+    virtual vtkSmartPointer<vtkImageData> GetVtkSolution();
 
     /**
      * Return the solution on the grid points
      */
-    std::vector<double> GetPointSolution();
+    virtual std::vector<double> GetPointSolution();
 
     /**
      * Set the structured grid
@@ -125,7 +125,7 @@ public:
     /**
      * Update the solution manually
      */
-    virtual void UpdateSolution(std::vector<double>& data);
+    virtual void UpdateSolution(std::vector<double> data);
 
     /**
      * Update the cell data as passed in
@@ -145,7 +145,7 @@ public:
     /**
      * Overridden Write method. Writes the solution to file using a VTK structured grid.
      */
-    void Write();
+    virtual void Write();
 };
 
 #endif /* ABSTRACTREGULARGRIDHYBRIDSOLVER_HPP_ */

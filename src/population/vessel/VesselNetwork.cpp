@@ -1055,9 +1055,10 @@ bool VesselNetwork<DIM>::IsConnected(boost::shared_ptr<VesselNode<DIM> > pSource
 template <unsigned DIM>
 std::vector<bool > VesselNetwork<DIM>::IsConnected(std::vector<boost::shared_ptr<VesselNode<DIM> > > sourceNodes,
         std::vector<boost::shared_ptr<VesselNode<DIM> > > queryNodes)
-        {
+{
     // Assign the vessel nodes unique IDs
     std::vector<boost::shared_ptr<VesselNode<DIM> > >  vessel_nodes = GetVesselEndNodes();
+
     typename std::vector<boost::shared_ptr<VesselNode<DIM> > >::iterator node_iter;
     unsigned counter = 0;
     for(node_iter = vessel_nodes.begin(); node_iter != vessel_nodes.end(); node_iter++)
@@ -1081,7 +1082,6 @@ std::vector<bool > VesselNetwork<DIM>::IsConnected(std::vector<boost::shared_ptr
 
     for(unsigned i=0; i<sourceNodes.size(); i++)
     {
-
         if (!NodeIsInNetwork(sourceNodes[i]))
         {
             EXCEPTION("Source node is not in network.");
@@ -1101,7 +1101,6 @@ std::vector<bool > VesselNetwork<DIM>::IsConnected(std::vector<boost::shared_ptr
 
         for (unsigned j=0; j<queryNodes.size(); j++)
         {
-
             if (!NodeIsInNetwork(queryNodes[j]))
             {
                 EXCEPTION("Query node is not in network.");
@@ -1131,8 +1130,9 @@ std::vector<bool > VesselNetwork<DIM>::IsConnected(std::vector<boost::shared_ptr
         }
 
     }
+
     return connected;
-        }
+}
 
 template <unsigned DIM>
 bool VesselNetwork<DIM>::NodeIsInNetwork(boost::shared_ptr<VesselNode<DIM> > pSourceNode)
@@ -1558,7 +1558,7 @@ template<unsigned DIM>
 struct NodePtrComp
 {
   bool operator()( const boost::shared_ptr<VesselNode<DIM> >  & a, const boost::shared_ptr<VesselNode<DIM> >  & b )
-    { return a->GetId() > b->GetId(); }
+    { return a->GetComparisonId() > b->GetComparisonId(); }
 };
 
 template<unsigned DIM>
@@ -1566,6 +1566,7 @@ void VesselNetwork<DIM>::UpdateNodes()
 {
       mNodes = std::vector<boost::shared_ptr<VesselNode<DIM> > >();
       std::set<boost::shared_ptr<VesselNode<DIM> >, NodePtrComp<DIM> >  nodes;
+//      std::set<boost::shared_ptr<VesselNode<DIM> > >  nodes;
       std::vector<boost::shared_ptr<VesselNode<DIM> > > temp_nodes;
 
       typename std::vector<boost::shared_ptr<Vessel<DIM> > >::iterator it;
@@ -1576,7 +1577,7 @@ void VesselNetwork<DIM>::UpdateNodes()
           std::vector<boost::shared_ptr<VesselNode<DIM> > > vessel_nodes = (*it)->GetNodes();
           for (unsigned idx=0; idx<vessel_nodes.size(); idx++)
           {
-              vessel_nodes[idx]->SetId(counter);
+              vessel_nodes[idx]->SetComparisonId(counter);
               temp_nodes.push_back(vessel_nodes[idx]);
               counter ++;
           }
