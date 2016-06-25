@@ -1,10 +1,37 @@
-//
-//  TestAlarcon03MechanicalStimulusCalculator.hpp
-//  VascularTumourGrowthModellingFramework
-//
-//  Created by Anthony Connor on 03/12/2012.
-//  Copyright (c) 2012 Anthony Connor. All rights reserved.
-//
+/*
+
+Copyright (c) 2005-2015, University of Oxford.
+All rights reserved.
+
+University of Oxford means the Chancellor, Masters and Scholars of the
+University of Oxford, having an administrative office at Wellington
+Square, Oxford OX1 2JD, UK.
+
+This file is part of Chaste.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+ * Redistributions of source code must retain the above copyright notice,
+   this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+ * Neither the name of the University of Oxford nor the names of its
+   contributors may be used to endorse or promote products derived from this
+   software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+ */
 
 #ifndef TestAlarcon03MechanicalStimulusCalculator_hpp
 #define TestAlarcon03MechanicalStimulusCalculator_hpp
@@ -12,9 +39,10 @@
 #include <cxxtest/TestSuite.h>
 #include <boost/shared_ptr.hpp>
 #include <math.h>
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 #include "MechanicalStimulusCalculator.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
+#include "OutputFileHandler.hpp"
 
 class TestMechanicalStimulusCalculator : public CxxTest::TestSuite
 {
@@ -24,18 +52,18 @@ public:
     void TestSingleVessel()
     {
         // Make a network
-        std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
-        nodes.push_back(VascularNode<3>::Create(0));
-        nodes.push_back(VascularNode<3>::Create(100));
+        std::vector<boost::shared_ptr<VesselNode<3> > > nodes;
+        nodes.push_back(VesselNode<3>::Create(0));
+        nodes.push_back(VesselNode<3>::Create(100));
         double pressure = 3933.0;
         nodes[0]->GetFlowProperties()->SetPressure(pressure);
         nodes[1]->GetFlowProperties()->SetPressure(pressure);
 
         boost::shared_ptr<Vessel<3> > p_vessel(Vessel<3>::Create(VesselSegment<3>::Create(nodes[0], nodes[1])));
-        boost::shared_ptr<VascularNetwork<3> > p_vascular_network = VascularNetwork<3>::Create();
+        boost::shared_ptr<VesselNetwork<3> > p_vascular_network = VesselNetwork<3>::Create();
         p_vascular_network->AddVessel(p_vessel);
         double wall_shear_stress = 25.0;
-        p_vessel->GetSegments()[0]->GetFlowProperties()->SetWallShearStress(wall_shear_stress*unit::pascals);
+        p_vessel->GetSegments()[0]->GetFlowProperties()->SetWallShearStress(wall_shear_stress);
 
         boost::shared_ptr<MechanicalStimulusCalculator<3> > calculator(new MechanicalStimulusCalculator<3>());
         calculator->SetVesselNetwork(p_vascular_network);
@@ -45,24 +73,24 @@ public:
         double converted_pressure = pressure * 760 / (1.01 * pow(10.0, 5));
         double Tau_P = 0.1 * (100.0 - 86.0 * pow(exp(-5.0 * log10(log10(converted_pressure))), 5.4));
         double expected_mechanical_stimulus = log10((wall_shear_stress + 0.05) / Tau_P);
-        TS_ASSERT_DELTA(p_vessel->GetSegments()[0]->GetFlowProperties()->GetStimulus()/unit::reciprocal_seconds, expected_mechanical_stimulus, 1e-6);
+        TS_ASSERT_DELTA(p_vessel->GetSegments()[0]->GetFlowProperties()->GetGrowthStimulus(), expected_mechanical_stimulus, 1e-6);
     }
 
     void TestMechanicalStimulusVsPressure()
     {
         // Make a network
-        std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
-        nodes.push_back(VascularNode<3>::Create(0));
-        nodes.push_back(VascularNode<3>::Create(100));
+        std::vector<boost::shared_ptr<VesselNode<3> > > nodes;
+        nodes.push_back(VesselNode<3>::Create(0));
+        nodes.push_back(VesselNode<3>::Create(100));
         double pressure = 3933.0;
         nodes[0]->GetFlowProperties()->SetPressure(pressure);
         nodes[1]->GetFlowProperties()->SetPressure(pressure);
 
         boost::shared_ptr<Vessel<3> > p_vessel(Vessel<3>::Create(VesselSegment<3>::Create(nodes[0], nodes[1])));
-        boost::shared_ptr<VascularNetwork<3> > p_vascular_network = VascularNetwork<3>::Create();
+        boost::shared_ptr<VesselNetwork<3> > p_vascular_network = VesselNetwork<3>::Create();
         p_vascular_network->AddVessel(p_vessel);
         double wall_shear_stress = 25.0;
-        p_vessel->GetSegments()[0]->GetFlowProperties()->SetWallShearStress(wall_shear_stress*unit::pascals);
+        p_vessel->GetSegments()[0]->GetFlowProperties()->SetWallShearStress(wall_shear_stress);
 
         boost::shared_ptr<MechanicalStimulusCalculator<3> > calculator(new MechanicalStimulusCalculator<3>());
         calculator->SetVesselNetwork(p_vascular_network);
@@ -79,7 +107,7 @@ public:
             nodes[0]->GetFlowProperties()->SetPressure(double(mmHgPressure) * (1.01 * pow(10.0, 5) / 760));
             nodes[1]->GetFlowProperties()->SetPressure(double(mmHgPressure) * (1.01 * pow(10.0, 5) / 760));
             calculator->Calculate();
-            out << mmHgPressure << " " << calculator->GetTauP() / (0.1*unit::pascals) << "\n";
+            out << mmHgPressure << " " << calculator->GetTauP() / (0.1) << "\n";
         }
         out.close();
     }

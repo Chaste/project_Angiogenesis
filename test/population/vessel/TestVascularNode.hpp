@@ -95,14 +95,6 @@ public:
         NodeFlowProperties<3> node_flow_properties;
         node_flow_properties.SetPressure(12.0);
         p_node->SetFlowProperties(node_flow_properties);
-
-        // Check the data map for the vtk writer
-        std::map<std::string, double> vtk_data = p_node->GetOutputData();
-        TS_ASSERT_DELTA(vtk_data["Node Id"], 5.0, 1.e-6);
-        TS_ASSERT_DELTA(vtk_data["Node Radius"], 10.0, 1.e-6);
-        TS_ASSERT_DELTA(vtk_data["Node Pressure"], 12.0, 1.e-6);
-        TS_ASSERT_DELTA(vtk_data["Node Is Input"], 0.0, 1.e-6);
-        TS_ASSERT_DELTA(vtk_data["Node Is Output"], 0.0, 1.e-6);
     }
 
     void TestDistanceAndConincidentMethods() throw (Exception)
@@ -113,9 +105,9 @@ public:
         boost::shared_ptr<VesselNode<3> > p_node_3 = VesselNode<3>::Create(4.0, 5.0, 6.0);
 
         c_vector<double, 3> location1;
-        location1[0] = 6.0;
-        location1[1] = 7.0;
-        location1[2] = 8.0;
+        location1[0] = 1.0;
+        location1[1] = 2.0;
+        location1[2] = 3.0;
 
         // Coincident methods
         TS_ASSERT(p_node_1->IsCoincident(p_node_2->rGetLocation()));
@@ -146,7 +138,7 @@ public:
         // Check that the segments are correctly retrieved from the node.
         TS_ASSERT(p_node_2->IsCoincident(p_node_2->GetSegment(0)->GetNode(1)->rGetLocation()));
         TS_ASSERT(p_node_2->IsCoincident(p_node_2->GetSegments()[0]->GetNode(1)->rGetLocation()));
-        TS_ASSERT_THROWS_THIS(p_node_2->GetSegment(3), "Attempted to access a segment with an out of range index.");
+        TS_ASSERT_THROWS_THIS(p_node_2->GetSegment(3), "Requested segment index out of range.");
 
         // Check that the vessel segment connectivity is updated when a node is replaced.
         p_segment2->ReplaceNode(1, p_node_1);

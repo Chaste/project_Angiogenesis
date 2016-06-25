@@ -1,0 +1,17 @@
+package:
+  name: xsd
+  version: "3.3.0"
+
+source:
+  fn:  xsd-3.3.0-x86_64-linux-gnu.tar.bz2
+  url: http://www.codesynthesis.com/download/xsd/3.3/linux-gnu/x86_64/xsd-3.3.0-x86_64-linux-gnu.tar.bz2
+
+#build:
+
+
+#requirements:
+
+about:
+  home: http://www.codesynthesis.com/products/xsd/
+  license: GPL 2.0 with FLOSS Exception
+

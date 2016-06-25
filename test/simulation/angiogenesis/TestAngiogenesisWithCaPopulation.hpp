@@ -15,7 +15,7 @@
 #include "OutputFileHandler.hpp"
 #include "SmartPointers.hpp"
 #include "VasculatureGenerator.hpp"
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 #include "CaBasedCellPopulation.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "DifferentiatedCellProliferativeType.hpp"
@@ -56,7 +56,7 @@ public:
         start_position[0] = 10;
         start_position[1] = 0;
         VasculatureGenerator<2> network_generator;
-        boost::shared_ptr<VascularNetwork<2> > p_network = network_generator.GenerateSingleVessel(10, start_position);
+        boost::shared_ptr<VesselNetwork<2> > p_network = network_generator.GenerateSingleVessel(10, start_position);
 
         // Write the initial network to file
         std::string output_directory = "TestAngiogenesisWithCaPopulation";

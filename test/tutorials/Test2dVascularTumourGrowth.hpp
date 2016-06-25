@@ -70,11 +70,11 @@
 #include "OnLatticeSimulation.hpp"
 #include "ApoptoticCellKiller.hpp"
 #include "VasculatureGenerator.hpp"
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 #include "CaBasedCellPopulation.hpp"
 #include "AngiogenesisSolver.hpp"
 #include "FlowSolver.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 #include "VesselNetworkCellPopulationInteractor.hpp"
 #include "StalkCellMutationState.hpp"
 #include "TipCellMutationState.hpp"
@@ -176,22 +176,22 @@ class Test2dVascularTumourGrowth : public AbstractCellBasedWithTimingsTestSuite
         return p_pde;
     }
 
-    boost::shared_ptr<VascularNetwork<2> > GetHexagonalNetwork(double domain_x, double domain_y)
+    boost::shared_ptr<VesselNetwork<2> > GetHexagonalNetwork(double domain_x, double domain_y)
     {
         VasculatureGenerator<2> network_generator;
-        boost::shared_ptr<VascularNetwork<2> > p_network = network_generator.GenerateHexagonalNetwork(domain_x, domain_y, 7);
+        boost::shared_ptr<VesselNetwork<2> > p_network = network_generator.GenerateHexagonalNetwork(domain_x, domain_y, 7);
 
-        std::vector<boost::shared_ptr<VascularNode<2> > > nodes;
-        nodes.push_back(VascularNode<2>::Create(0, 0));
-        nodes.push_back(VascularNode<2>::Create(1, 0));
+        std::vector<boost::shared_ptr<VesselNode<2> > > nodes;
+        nodes.push_back(VesselNode<2>::Create(0, 0));
+        nodes.push_back(VesselNode<2>::Create(1, 0));
         boost::shared_ptr<VesselSegment<2> > p_segment(VesselSegment<2>::Create(nodes[0], nodes[1]));
 
         double initial_vessel_radius = 10.0e-6;
-        p_segment->SetRadius(initial_vessel_radius*unit::metres);
+        p_segment->SetRadius(initial_vessel_radius);
         double haematocrit = 0.45;
         p_segment->GetFlowProperties()->SetHaematocrit(haematocrit);
         double viscosity = 2e-3;
-        p_segment->GetFlowProperties()->SetViscosity(viscosity*unit::poiseuille);
+        p_segment->GetFlowProperties()->SetViscosity(viscosity);
         p_network->SetSegmentProperties(p_segment);
 
         std::vector<std::pair<double, double> > network_extents = p_network->GetExtents();
@@ -204,9 +204,9 @@ class Test2dVascularTumourGrowth : public AbstractCellBasedWithTimingsTestSuite
         {
             if ((*vessel_iterator)->GetStartNode()->GetNumberOfSegments() == 1)
             {
-                if ((*vessel_iterator)->GetStartNode()->GetLocation()[1] > y_middle)
+                if ((*vessel_iterator)->GetStartNode()->rGetLocation()[1] > y_middle)
                 {
-                    if ((*vessel_iterator)->GetStartNode()->GetLocation()[0] > x_middle)
+                    if ((*vessel_iterator)->GetStartNode()->rGetLocation()[0] > x_middle)
                     {
                         (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetIsInputNode(true);
                         (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetPressure(3320);
@@ -215,9 +215,9 @@ class Test2dVascularTumourGrowth : public AbstractCellBasedWithTimingsTestSuite
             }
             if ((*vessel_iterator)->GetEndNode()->GetNumberOfSegments() == 1)
             {
-                if ((*vessel_iterator)->GetEndNode()->GetLocation()[1] > y_middle)
+                if ((*vessel_iterator)->GetEndNode()->rGetLocation()[1] > y_middle)
                 {
-                    if ((*vessel_iterator)->GetStartNode()->GetLocation()[0] > x_middle)
+                    if ((*vessel_iterator)->GetStartNode()->rGetLocation()[0] > x_middle)
                     {
                         (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetIsInputNode(true);
                         (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetPressure(3320);
@@ -226,9 +226,9 @@ class Test2dVascularTumourGrowth : public AbstractCellBasedWithTimingsTestSuite
             }
             if ((*vessel_iterator)->GetStartNode()->GetNumberOfSegments() == 1)
             {
-                if ((*vessel_iterator)->GetStartNode()->GetLocation()[1] <= y_middle)
+                if ((*vessel_iterator)->GetStartNode()->rGetLocation()[1] <= y_middle)
                 {
-                    if ((*vessel_iterator)->GetStartNode()->GetLocation()[0] < x_middle)
+                    if ((*vessel_iterator)->GetStartNode()->rGetLocation()[0] < x_middle)
                     {
                         (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetIsOutputNode(true);
                         (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetPressure(2090);
@@ -237,9 +237,9 @@ class Test2dVascularTumourGrowth : public AbstractCellBasedWithTimingsTestSuite
             }
             if ((*vessel_iterator)->GetEndNode()->GetNumberOfSegments() == 1)
             {
-                if ((*vessel_iterator)->GetEndNode()->GetLocation()[1] <= y_middle)
+                if ((*vessel_iterator)->GetEndNode()->rGetLocation()[1] <= y_middle)
                 {
-                    if ((*vessel_iterator)->GetStartNode()->GetLocation()[0] < x_middle)
+                    if ((*vessel_iterator)->GetStartNode()->rGetLocation()[0] < x_middle)
                     {
                         (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetIsOutputNode(true);
                         (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetPressure(2090);
@@ -260,7 +260,7 @@ public:
 //        p_domain->AddRectangle(domain_x, domain_y);
 //
 //        // Create the initial vessel network: hexagonally tesselated vascular network
-//        boost::shared_ptr<VascularNetwork<2> > p_network = GetHexagonalNetwork(domain_x, domain_y);
+//        boost::shared_ptr<VesselNetwork<2> > p_network = GetHexagonalNetwork(domain_x, domain_y);
 //
 //        // Create a lattice for the cell population
 //        double spacing = 1.0;

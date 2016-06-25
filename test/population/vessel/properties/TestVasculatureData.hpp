@@ -53,109 +53,11 @@ class TestVesselNode : public AbstractCellBasedTestSuite
 
 public:
 
-    void TestConstructorAndLocationMethods() throw (Exception)
+    void TestToBeRemoved() throw (Exception)
     {
-        // Set up some points and locations
-        ChastePoint<3> point1(1.0, 2.0, 3.0);
-        ChastePoint<2> point2(5.0, 6.0);
 
-        c_vector<double, 2> location1;
-        location1[0] = 1.0;
-        location1[1] = 2.0;
-
-        // Pointer Factory Constructors
-        boost::shared_ptr<VesselNode<3> > p_node_1 = VesselNode<3>::Create(2.0, 3.0, 4.0);
-        boost::shared_ptr<VesselNode<3> > p_node_3 = VesselNode<3>::Create(location1);
-
-        // Test the location methods
-        TS_ASSERT_DELTA(p_node_1->rGetLocation()[0], 2.0, 1.e-6);
-        TS_ASSERT_DELTA(p_node_1->rGetLocation()[1], 3.0, 1.e-6);
-        TS_ASSERT_DELTA(p_node_1->rGetLocation()[2], 4.0, 1.e-6);
     }
 
-    void TestSimpleGetAndSetMethods() throw (Exception)
-    {
-        // Make a node
-        boost::shared_ptr<VesselNode<3> > p_node = VesselNode<3>::Create();
-
-        // Test simple Getters and Setters
-        p_node->SetId(5u);
-        p_node->GetFlowProperties()->SetPressure(5.0);
-        p_node->SetRadius(10.0);
-        p_node->GetFlowProperties()->SetIsInputNode(true);
-        p_node->GetFlowProperties()->SetIsOutputNode(true);
-
-        TS_ASSERT_EQUALS(p_node->GetId(), 5u);
-        TS_ASSERT_DELTA(p_node->GetFlowProperties()->GetPressure(), 5.0, 1.e-6);
-        TS_ASSERT_DELTA(p_node->GetRadius(), 10.0, 1.e-6);
-        TS_ASSERT(p_node->GetFlowProperties()->IsInputNode());
-        TS_ASSERT(p_node->GetFlowProperties()->IsOutputNode());
-
-        // Test setting node flow properties
-        NodeFlowProperties<3> node_flow_properties;
-        node_flow_properties.SetPressure(12.0);
-        p_node->SetFlowProperties(node_flow_properties);
-
-        // Check the data map for the vtk writer
-        std::map<std::string, double> vtk_data = p_node->GetOutputData();
-        TS_ASSERT_DELTA(vtk_data["Node Id"], 5.0, 1.e-6);
-        TS_ASSERT_DELTA(vtk_data["Node Radius"], 10.0, 1.e-6);
-        TS_ASSERT_DELTA(vtk_data["Node Pressure"], 12.0, 1.e-6);
-        TS_ASSERT_DELTA(vtk_data["Node Is Input"], 0.0, 1.e-6);
-        TS_ASSERT_DELTA(vtk_data["Node Is Output"], 0.0, 1.e-6);
-    }
-
-    void TestDistanceAndConincidentMethods() throw (Exception)
-    {
-        // Set up some points nodes
-        boost::shared_ptr<VesselNode<3> > p_node_1 = VesselNode<3>::Create(1.0, 2.0, 3.0);
-        boost::shared_ptr<VesselNode<3> > p_node_2 = VesselNode<3>::Create(1.0, 2.0, 3.0);
-        boost::shared_ptr<VesselNode<3> > p_node_3 = VesselNode<3>::Create(4.0, 5.0, 6.0);
-
-        c_vector<double, 3> location1;
-        location1[0] = 6.0;
-        location1[1] = 7.0;
-        location1[2] = 8.0;
-
-        // Coincident methods
-        TS_ASSERT(p_node_1->IsCoincident(p_node_2->rGetLocation()));
-        TS_ASSERT(p_node_1->IsCoincident(location1));
-
-        // Distance methods
-        TS_ASSERT_DELTA(p_node_1->GetDistance(p_node_3->rGetLocation()), std::sqrt(27.0), 1.e-6);
-        TS_ASSERT_DELTA(p_node_1->GetDistance(location1), std::sqrt(75.0), 1.e-6);
-    }
-
-    void TestAddingAndRemovingVesselSegments() throw (Exception)
-    {
-        // Make some nodes
-        boost::shared_ptr<VesselNode<2> > p_node_1 = VesselNode<2>::Create(0);
-        boost::shared_ptr<VesselNode<2> > p_node_2 = VesselNode<2>::Create(1);
-        boost::shared_ptr<VesselNode<2> > p_node_3 = VesselNode<2>::Create(2);
-
-        // Make some vessel segments
-        boost::shared_ptr<VesselSegment<2> > p_segment1 = VesselSegment<2>::Create(p_node_1, p_node_2);
-        boost::shared_ptr<VesselSegment<2> > p_segment2 = VesselSegment<2>::Create(p_node_2, p_node_3);
-
-        // Check that the vessel segments have been suitably added to the nodes.
-        TS_ASSERT(p_node_1->IsAttachedTo(p_segment1));
-        TS_ASSERT(!p_node_3->IsAttachedTo(p_segment1));
-        TS_ASSERT_EQUALS(p_node_1->GetNumberOfSegments(), 1u);
-        TS_ASSERT_EQUALS(p_node_2->GetNumberOfSegments(), 2u);
-
-        // Check that the segments are correctly retrieved from the node.
-        TS_ASSERT(p_node_2->IsCoincident(p_node_2->GetSegment(0)->GetNode(1)->rGetLocation()));
-        TS_ASSERT(p_node_2->IsCoincident(p_node_2->GetSegments()[0]->GetNode(1)->rGetLocation()));
-        TS_ASSERT_THROWS_THIS(p_node_2->GetSegment(3), "Attempted to access a segment with an out of range index.");
-
-        // Check that the vessel segment connectivity is updated when a node is replaced.
-        p_segment2->ReplaceNode(1, p_node_1);
-        TS_ASSERT_EQUALS(p_node_1->GetNumberOfSegments(), 2u);
-        TS_ASSERT_EQUALS(p_node_3->GetNumberOfSegments(), 0u);
-
-        // Check that a node can't be replaced with one that's already there
-        TS_ASSERT_THROWS_THIS(p_segment2->ReplaceNode(0, p_node_1), "This segment is already attached to this node.");
-    }
 };
 
 #endif /*TESTVesselNode_HPP_*/

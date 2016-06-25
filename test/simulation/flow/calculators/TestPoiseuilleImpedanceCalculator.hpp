@@ -39,16 +39,15 @@
 #include <cxxtest/TestSuite.h>
 #include "VesselImpedanceCalculator.hpp"
 #include "SmartPointers.hpp"
-#include "VasculatureData.hpp"
 #include "MathsCustomFunctions.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 #include "FakePetscSetup.hpp"
 
 class TestVesselImpedanceCalculator : public CxxTest::TestSuite
 {
 
-    typedef boost::shared_ptr<VascularNode<2> > NodePtr2;
-    typedef boost::shared_ptr<VascularNode<3> > NodePtr3;
+    typedef boost::shared_ptr<VesselNode<2> > NodePtr2;
+    typedef boost::shared_ptr<VesselNode<3> > NodePtr3;
     typedef boost::shared_ptr<VesselSegment<2> > SegmentPtr2;
     typedef boost::shared_ptr<VesselSegment<3> > SegmentPtr3;
     typedef boost::shared_ptr<Vessel<2> > VesselPtr2;
@@ -65,23 +64,21 @@ public:
         points.push_back(ChastePoint<3>(5, 0, 0));
 
         std::vector<NodePtr3> nodes;
-        for (unsigned i = 0; i < points.size(); i++)
-        {
-            nodes.push_back(NodePtr3(VascularNode<3>::Create(points[i])));
-        }
+        nodes.push_back(NodePtr3(VesselNode<3>::Create(0,0)));
+        nodes.push_back(NodePtr3(VesselNode<3>::Create(5,0)));
 
         SegmentPtr3 p_segment(VesselSegment<3>::Create(nodes[0], nodes[1]));
         VesselPtr3 p_vessel(Vessel<3>::Create(p_segment));
 
         // Generate the network
-        boost::shared_ptr<VascularNetwork<3> > p_vascular_network(new VascularNetwork<3>());
+        boost::shared_ptr<VesselNetwork<3> > p_vascular_network(new VesselNetwork<3>());
 
         p_vascular_network->AddVessel(p_vessel);
         double viscosity = 2e-3;
         double radius = 5e-6;
 
-        p_segment->SetRadius(radius*1.e-6*unit::metres);
-        p_segment->GetFlowProperties()->SetViscosity(viscosity*unit::poiseuille);
+        p_segment->SetRadius(radius);
+        p_segment->GetFlowProperties()->SetViscosity(viscosity);
 
         p_vascular_network->SetSegmentProperties(p_segment);
 
@@ -91,15 +88,8 @@ public:
 
         double expected_impedance = 8 * viscosity * 5 / (M_PI * SmallPow(radius, 4u));
 
-        TS_ASSERT_DELTA(p_vessel->GetImpedance()/unit::unit_flow_impedance, expected_impedance, 1e-6);
-        TS_ASSERT_DELTA(p_segment->GetFlowProperties()->GetImpedance()/unit::unit_flow_impedance, expected_impedance, 1e-6);
-
-        p_segment->SetRadius(0.0*unit::metres);
-        TS_ASSERT_THROWS_THIS(calculator.Calculate(), "Radius should be a positive number.");
-
-        p_segment->SetRadius(5e-6*unit::metres);
-        p_segment->GetFlowProperties()->SetViscosity(0.0*unit::poiseuille);
-        TS_ASSERT_THROWS_THIS(calculator.Calculate(), "Viscosity should be a positive number.");
+        TS_ASSERT_DELTA(p_vessel->GetFlowProperties()->GetImpedance(p_vessel->GetSegments()), expected_impedance, 1e-6);
+        TS_ASSERT_DELTA(p_segment->GetFlowProperties()->GetImpedance(), expected_impedance, 1e-6);
     }
 
 };

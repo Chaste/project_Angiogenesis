@@ -37,9 +37,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TESTOWEN2011TUMOURSPHEROIDSIMULATIONS_HPP_
 
 #include <cxxtest/TestSuite.h>
-#include "../../src/population/vessel/angiogenesis/migration_rules/OffLatticeMigrationRule.hpp"
-#include "../../src/population/vessel/angiogenesis/migration_rules/OffLatticeSolutionDependentGrowthDirectionModifier.hpp"
-#include "../../src/population/vessel/angiogenesis/migration_rules/OffLatticeTipAttractionGrowthDirectionModifier.hpp"
+#include "OffLatticeMigrationRule.hpp"
 #include "OffLatticeSproutingRule.hpp"
 #include "VascularTumourModifier.hpp"
 #include "CheckpointArchiveTypes.hpp"

@@ -77,6 +77,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "VascularTumourModifier.hpp"
 #include "RegularGrid.hpp"
 #include "UnitCollection.hpp"
+#include "Debug.hpp"
 
 class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
 {
@@ -121,11 +122,11 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
         p_network->GetVessels()[1]->GetEndNode()->GetFlowProperties()->SetPressure(1000.0);
 
         p_network->UpdateSegments();
-        p_network->SetSegmentRadii(10.0*1.e-6*unit::metres);
+        p_network->SetSegmentRadii(10.0);
         std::vector<boost::shared_ptr<VesselSegment<3> > > segments = p_network->GetVesselSegments();
         for(unsigned idx=0; idx<segments.size(); idx++)
         {
-            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3*unit::poiseuille);
+            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);
         }
         return p_network;
     }
@@ -199,7 +200,7 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
 
 public:
 
-    void TestCaBasedSpheroid() throw (Exception)
+    void DontTestCaBasedSpheroid() throw (Exception)
     {
         // Create the simulation domain
         boost::shared_ptr<Part<3> > p_domain = GetSimulationDomain();
@@ -256,7 +257,7 @@ public:
         OnLatticeSimulation<3> simulator(cell_population);
         simulator.SetOutputDirectory("TestAngiogenesisSimulationModifier/CaBased");
         simulator.SetDt(1.0);
-        simulator.SetEndTime(10.0);
+        simulator.SetEndTime(8.0);
         simulator.AddSimulationModifier(p_simulation_modifier);
         simulator.Solve();
     }
@@ -282,6 +283,8 @@ public:
             c_vector<double, 3> location = Grid::GetLocationOf1dIndex(location_indices[idx], num_x, num_y, spacing);
             nodes.push_back(new Node<3>(idx, location, false));
         }
+
+        MARK;
         NodesOnlyMesh<3> mesh;
         mesh.ConstructNodesWithoutMesh(nodes, 1.5 * spacing);
         std::vector<CellPtr> cells;
@@ -291,6 +294,7 @@ public:
         cell_population.SetAbsoluteMovementThreshold(2.0 * spacing);
         cell_population.AddCellWriter<CellLabelWriter>();
 
+        MARK;
         // Create the vessel network
         boost::shared_ptr<VesselNetwork<3> > p_network = GetVesselNetwork();
 
@@ -300,18 +304,21 @@ public:
         p_oxygen_solver->GetGrid()->SetCellPopulation(cell_population);
         p_oxygen_solver->Setup();
 
+        MARK;
         // Create the vegf pde solver
         boost::shared_ptr<FiniteDifferenceSolver<3> > p_vegf_solver = GetVegfSolver(p_domain, p_network);
         p_vegf_solver->GetGrid()->SetVesselNetwork(p_network);
         p_vegf_solver->GetGrid()->SetCellPopulation(cell_population);
         p_vegf_solver->Setup();
 
+        MARK;
         // Create the angiogenesis solver
         boost::shared_ptr<VascularTumourSolver<3> > p_vascular_tumour_solver = VascularTumourSolver<3>::Create();
         p_vascular_tumour_solver->SetVesselNetwork(p_network);
         p_vascular_tumour_solver->AddHybridSolver(p_oxygen_solver);
         p_vascular_tumour_solver->AddHybridSolver(p_vegf_solver);
 
+        MARK;
         boost::shared_ptr<VascularTumourModifier<3> > p_simulation_modifier = boost::shared_ptr<VascularTumourModifier<3> >(new VascularTumourModifier<3>);
         p_simulation_modifier->SetVascularTumourSolver(p_vascular_tumour_solver);
 
@@ -320,6 +327,7 @@ public:
 
         p_simulation_modifier->SetCellDataUpdateLabels(update_labels);
 
+        MARK;
         OffLatticeSimulation<3> simulator(cell_population);
         simulator.SetOutputDirectory("TestAngiogenesisSimulationModifier/NodeBased");
         simulator.SetDt(1.0);
@@ -329,6 +337,7 @@ public:
         MAKE_PTR(GeneralisedLinearSpringForce<3>, p_force);
         simulator.AddForce(p_force);
         simulator.Solve();
+        MARK;
 
         // Tidy up
         for (unsigned i=0; i<nodes.size(); i++)

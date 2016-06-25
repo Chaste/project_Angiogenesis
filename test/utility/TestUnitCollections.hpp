@@ -41,7 +41,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <boost/units/systems/si/time.hpp>
 #include <boost/units/base_units/metric/hour.hpp>
 #include <SmartPointers.hpp>
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 #include "UblasVectorInclude.hpp"
 
 class TestUnitCollections : public CxxTest::TestSuite
@@ -72,11 +72,6 @@ public:
         // Length
         units::quantity<unit::length> lm1(3.0*unit::metres);
         std::cout << lm1 << std::endl;
-
-        units::quantity<c_vector<unit::length, 3> > length_vector;
-        length_vector[0] = 3.0 * unit::metres;
-        length_vector[1] = 2.0 * unit::metres;
-        length_vector[2] = 1.0 * unit::metres;
 
         // Force
         units::quantity<unit::force> f1(3.0*unit::newtons);

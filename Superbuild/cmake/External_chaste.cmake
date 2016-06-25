@@ -32,7 +32,7 @@ ExternalProject_Add(chaste
   SVN_REPOSITORY https://chaste.cs.ox.ac.uk/svn/chaste/trunk/ 
   ${chaste_cmds}
   UPDATE_COMMAND ""
-  INSTALL_COMMAND ""
+  INSTALL_COMMAND make install
 )
 
 ExternalProject_Get_Property(chaste install_dir)

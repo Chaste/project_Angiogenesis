@@ -43,10 +43,10 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "OutputFileHandler.hpp"
 #include "SmartPointers.hpp"
 #include "VasculatureGenerator.hpp"
-#include "VascularNode.hpp"
+#include "VesselNode.hpp"
 #include "VesselSegment.hpp"
 #include "Vessel.hpp"
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 #include "Part.hpp"
 #include "AngiogenesisSolver.hpp"
 #include "VesselSegment.hpp"
@@ -55,7 +55,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Owen2011MigrationRule.hpp"
 #include "FlowSolver.hpp"
 #include "PetscSetupAndFinalize.hpp"
-#include "UnitCollections.hpp"
+#include "UnitCollection.hpp"
 
 class TestLatticeBasedMigrationRules : public AbstractCellBasedWithTimingsTestSuite
 {
@@ -75,11 +75,11 @@ public:
         p_grid->SetExtents(extents);
 
         // Make a vessel
-        boost::shared_ptr<VascularNode<2> > p_node1 = VascularNode<2>::Create(0.0, 2.0*spacing);
-        boost::shared_ptr<VascularNode<2> > p_node2 = VascularNode<2>::Create(spacing, 2.0*spacing);
+        boost::shared_ptr<VesselNode<2> > p_node1 = VesselNode<2>::Create(0.0, 2.0*spacing);
+        boost::shared_ptr<VesselNode<2> > p_node2 = VesselNode<2>::Create(spacing, 2.0*spacing);
         p_node2->SetIsMigrating(true);
         boost::shared_ptr<Vessel<2> > p_vessel = Vessel<2>::Create(p_node1, p_node2);
-        boost::shared_ptr<VascularNetwork<2> > p_network = VascularNetwork<2>::Create();
+        boost::shared_ptr<VesselNetwork<2> > p_network = VesselNetwork<2>::Create();
         p_network->AddVessel(p_vessel);
         p_grid->SetVesselNetwork(p_network);
 
@@ -96,7 +96,7 @@ public:
         unsigned not_moved = 0;
         for(unsigned idx=0; idx<100; idx++)
         {
-            std::vector<int> indices = p_migration_rule->GetIndices(std::vector<boost::shared_ptr<VascularNode<2> > > (1, p_node2));
+            std::vector<int> indices = p_migration_rule->GetIndices(std::vector<boost::shared_ptr<VesselNode<2> > > (1, p_node2));
             if (indices[0] == -1)
             {
                 not_moved++;
@@ -104,7 +104,6 @@ public:
             else
             {
                 TS_ASSERT(indices[0] == 16 or indices[0] == 22 or indices[0] == 8)
-                std::cout << indices[0];
             }
         }
         TS_ASSERT(not_moved>0)
@@ -124,11 +123,11 @@ public:
         p_grid->SetExtents(extents);
 
         // Make a vessel
-        boost::shared_ptr<VascularNode<2> > p_node1 = VascularNode<2>::Create(0.0, 2.0*spacing);
-        boost::shared_ptr<VascularNode<2> > p_node2 = VascularNode<2>::Create(spacing, 2.0*spacing);
+        boost::shared_ptr<VesselNode<2> > p_node1 = VesselNode<2>::Create(0.0, 2.0*spacing);
+        boost::shared_ptr<VesselNode<2> > p_node2 = VesselNode<2>::Create(spacing, 2.0*spacing);
         p_node2->SetIsMigrating(true);
         boost::shared_ptr<Vessel<2> > p_vessel = Vessel<2>::Create(p_node1, p_node2);
-        boost::shared_ptr<VascularNetwork<2> > p_network = VascularNetwork<2>::Create();
+        boost::shared_ptr<VesselNetwork<2> > p_network = VesselNetwork<2>::Create();
         p_network->AddVessel(p_vessel);
         p_grid->SetVesselNetwork(p_network);
 
@@ -159,7 +158,7 @@ public:
         unsigned num_right = 0;
         for(unsigned idx=0; idx<100; idx++)
         {
-            std::vector<int> indices = p_migration_rule->GetIndices(std::vector<boost::shared_ptr<VascularNode<2> > > (1, p_node2));
+            std::vector<int> indices = p_migration_rule->GetIndices(std::vector<boost::shared_ptr<VesselNode<2> > > (1, p_node2));
             if (indices[0] == -1)
             {
                 not_moved++;
@@ -193,18 +192,18 @@ public:
         extents[2] = 1; // num_z
         p_grid->SetExtents(extents);
 
-        boost::shared_ptr<VascularNode<2> > p_node1 = VascularNode<2>::Create(0.0, 2.0*spacing);
-        boost::shared_ptr<VascularNode<2> > p_node2 = VascularNode<2>::Create(spacing, 2.0*spacing);
-        boost::shared_ptr<VascularNode<2> > p_node3 = VascularNode<2>::Create(2.0*spacing, 2.0*spacing);
-        boost::shared_ptr<VascularNode<2> > p_node4 = VascularNode<2>::Create(3.0*spacing, 2.0*spacing);
-        boost::shared_ptr<VascularNode<2> > p_node5 = VascularNode<2>::Create(4.0*spacing, 2.0*spacing);
+        boost::shared_ptr<VesselNode<2> > p_node1 = VesselNode<2>::Create(0.0, 2.0*spacing);
+        boost::shared_ptr<VesselNode<2> > p_node2 = VesselNode<2>::Create(spacing, 2.0*spacing);
+        boost::shared_ptr<VesselNode<2> > p_node3 = VesselNode<2>::Create(2.0*spacing, 2.0*spacing);
+        boost::shared_ptr<VesselNode<2> > p_node4 = VesselNode<2>::Create(3.0*spacing, 2.0*spacing);
+        boost::shared_ptr<VesselNode<2> > p_node5 = VesselNode<2>::Create(4.0*spacing, 2.0*spacing);
 
         p_node3->SetIsMigrating(true);
         boost::shared_ptr<Vessel<2> > p_vessel1 = Vessel<2>::Create(p_node1, p_node2);
         boost::shared_ptr<Vessel<2> > p_vessel2 = Vessel<2>::Create(p_node2, p_node3);
         boost::shared_ptr<Vessel<2> > p_vessel3 = Vessel<2>::Create(p_node3, p_node4);
         boost::shared_ptr<Vessel<2> > p_vessel4 = Vessel<2>::Create(p_node4, p_node5);
-        boost::shared_ptr<VascularNetwork<2> > p_network = VascularNetwork<2>::Create();
+        boost::shared_ptr<VesselNetwork<2> > p_network = VesselNetwork<2>::Create();
         p_network->AddVessel(p_vessel1);
         p_network->AddVessel(p_vessel2);
         p_network->AddVessel(p_vessel3);
@@ -216,11 +215,11 @@ public:
         p_node5->GetFlowProperties()->SetIsOutputNode(true);
         p_node5->GetFlowProperties()->SetPressure(1000);
 
-        p_network->SetSegmentRadii(10.0*1.e-6*unit::metres);
+        p_network->SetSegmentRadii(10.0);
         std::vector<boost::shared_ptr<VesselSegment<2> > > segments = p_network->GetVesselSegments();
         for(unsigned idx=0; idx<segments.size(); idx++)
         {
-            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3*unit::poiseuille);
+            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);
         }
 
         boost::shared_ptr<LatticeBasedMigrationRule<2> > p_migration_rule = LatticeBasedMigrationRule<2>::Create();

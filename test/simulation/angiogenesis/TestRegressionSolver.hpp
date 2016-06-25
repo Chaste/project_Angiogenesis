@@ -50,7 +50,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "VascularTumourSolver.hpp"
 #include "OutputFileHandler.hpp"
 #include "UnitCollection.hpp"
-#include "Debug.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
 

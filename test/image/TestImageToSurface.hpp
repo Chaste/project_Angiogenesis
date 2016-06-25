@@ -56,6 +56,7 @@ public:
     void TestDefaultExtraction()
     {
         #ifdef CHASTE_ANGIOGENESIS_VMTK
+
         // Read the image from file
         OutputFileHandler file_handler1 = OutputFileHandler("TestImageToSurface/");
         FileFinder finder = FileFinder("projects/Angiogenesis/test/data/median.tif", RelativeTo::ChasteSourceRoot);
@@ -81,6 +82,7 @@ public:
         p_writer->SetFileName((file_handler1.GetOutputDirectoryFullPath()+"surface.vtp").c_str());
         p_writer->SetInput(surface_extract.GetOutput());
         p_writer->Write();
+
         #endif /*CHASTE_ANGIOGENESIS_VMTK*/
     }
 };

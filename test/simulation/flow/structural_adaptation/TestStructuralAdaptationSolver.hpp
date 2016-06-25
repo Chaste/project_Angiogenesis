@@ -1,10 +1,37 @@
-//
-//  TestStructuralAdaptationSolver.hpp
-//  VascularTumourGrowthModellingFramework
-//
-//  Created by Anthony Connor on 03/12/2012.
-//  Copyright (c) 2012 Anthony Connor. All rights reserved.
-//
+/*
+
+ Copyright (c) 2005-2015, University of Oxford.
+ All rights reserved.
+
+ University of Oxford means the Chancellor, Masters and Scholars of the
+ University of Oxford, having an administrative office at Wellington
+ Square, Oxford OX1 2JD, UK.
+
+ This file is part of Chaste.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ * Redistributions of source code must retain the above copyright notice,
+ this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice,
+ this list of conditions and the following disclaimer in the documentation
+ and/or other materials provided with the distribution.
+ * Neither the name of the University of Oxford nor the names of its
+ contributors may be used to endorse or promote products derived from this
+ software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+ */
 
 #ifndef TestStructuralAdaptationSolver_hpp
 #define TestStructuralAdaptationSolver_hpp
@@ -20,67 +47,71 @@
 #include "AlarconHaematocritSolver.hpp"
 #include "FakePetscSetup.hpp"
 #include "UnitCollection.hpp"
+#include "VesselImpedanceCalculator.hpp"
 
 class TestStructuralAdaptationSolver : public CxxTest::TestSuite
 {
 
 public:
 
-//    void TestMultiVesselNetwork() throw(Exception)
-//    {
-//        std::vector<boost::shared_ptr<VesselNode<2> > > nodes;
-//        for(unsigned idx=0; idx<8; idx++)
-//        {
-//            nodes.push_back(VesselNode<2>::Create(double(idx*10.0), 0.0));
-//        }
-//
-//        nodes[0]->GetFlowProperties()->SetIsInputNode(true);
-//        nodes[0]->GetFlowProperties()->SetPressure(3322);
-//        nodes[7]->GetFlowProperties()->SetIsOutputNode(true);
-//        nodes[7]->GetFlowProperties()->SetPressure(1993);
-//
-//        double haematocrit = 0.45;
-//        std::vector<boost::shared_ptr<VesselSegment<2> > > segments;
-//        for(unsigned idx=0; idx<7; idx++)
-//        {
-//            segments.push_back(VesselSegment<2>::Create(nodes[idx], nodes[idx+1]));
-//            segments[idx]->GetFlowProperties()->SetHaematocrit(haematocrit);
-//            segments[idx]->SetRadius(10.0);
-//        }
-//
-//        std::vector<boost::shared_ptr<Vessel<2> > > vessels;
-//        for(unsigned idx=0; idx<7; idx++)
-//        {
-//            vessels.push_back(Vessel<2>::Create(segments[idx]));
-//        }
-//
-//        boost::shared_ptr<VesselNetwork<2> > p_network = VesselNetwork<2>::Create();
-//        p_network->AddVessels(vessels);
-//
-//        SimulationTime* p_simulation_time = SimulationTime::Instance();
-//        p_simulation_time->SetStartTime(0.0);
-//        p_simulation_time->SetEndTimeAndNumberOfTimeSteps(30, 1);
-//
-//        // Write the network to file
-//        OutputFileHandler output_file_handler("TestStructuralAdaptationSolver", false);
-//        std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("MultiVesselNetwork.vtp");
-//        std::string progress_output_filename = output_file_handler.GetOutputDirectoryFullPath().append("MultiVesselNetwork_SAAProgress.dat");
-//
-//        StructuralAdaptationSolver<2> solver;
-//        solver.SetVesselNetwork(p_network);
-//        solver.SetWriteOutput(true);
-//        solver.SetOutputFileName(progress_output_filename);
-//        solver.SetTolerance(0.0001);
-//        solver.SetTimeIncrement(0.0001);
-//        solver.Solve();
-//
-//        // Write the network to file
-//        p_network->Write(output_filename);
-//
-//        TS_ASSERT_DELTA((nodes[3]->GetFlowProperties()->GetPressure() + nodes[4]->GetFlowProperties()->GetPressure())/2.0,(3322.0 + 1993.0) / 2.0, 1e-6);
-////        TS_ASSERT_DELTA(units::fabs(segments[0]->GetFlowProperties()->GetFlowRate()),units::fabs(segments[1]->GetFlowProperties()->GetFlowRate()),1e-6);
-//        p_simulation_time->Destroy();
-//    }
+void TestMultiVesselNetwork() throw(Exception)
+{
+    std::vector<boost::shared_ptr<VesselNode<2> > > nodes;
+    for(unsigned idx=0; idx<8; idx++)
+    {
+        nodes.push_back(VesselNode<2>::Create(double(idx*10.0), 0.0));
+    }
+
+    nodes[0]->GetFlowProperties()->SetIsInputNode(true);
+    nodes[0]->GetFlowProperties()->SetPressure(3322);
+    nodes[7]->GetFlowProperties()->SetIsOutputNode(true);
+    nodes[7]->GetFlowProperties()->SetPressure(1993);
+
+    double haematocrit = 0.45;
+    std::vector<boost::shared_ptr<VesselSegment<2> > > segments;
+    for(unsigned idx=0; idx<7; idx++)
+    {
+        segments.push_back(VesselSegment<2>::Create(nodes[idx], nodes[idx+1]));
+        segments[idx]->GetFlowProperties()->SetHaematocrit(haematocrit);
+        segments[idx]->SetRadius(10.0);
+    }
+
+    std::vector<boost::shared_ptr<Vessel<2> > > vessels;
+    for(unsigned idx=0; idx<7; idx++)
+    {
+        vessels.push_back(Vessel<2>::Create(segments[idx]));
+    }
+
+    boost::shared_ptr<VesselNetwork<2> > p_network = VesselNetwork<2>::Create();
+    p_network->AddVessels(vessels);
+
+    SimulationTime* p_simulation_time = SimulationTime::Instance();
+    p_simulation_time->SetStartTime(0.0);
+    p_simulation_time->SetEndTimeAndNumberOfTimeSteps(30, 1);
+
+    // Write the network to file
+    OutputFileHandler output_file_handler("TestStructuralAdaptationSolver", false);
+    std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("MultiVesselNetwork.vtp");
+    std::string progress_output_filename = output_file_handler.GetOutputDirectoryFullPath().append("MultiVesselNetwork_SAAProgress.dat");
+
+    boost::shared_ptr<VesselImpedanceCalculator<2> > p_impedance_calculator = boost::shared_ptr<VesselImpedanceCalculator<2> >(new VesselImpedanceCalculator<2>);
+
+    StructuralAdaptationSolver<2> solver;
+    solver.SetVesselNetwork(p_network);
+    solver.SetWriteOutput(true);
+    solver.SetOutputFileName(progress_output_filename);
+    solver.SetTolerance(0.0001);
+    solver.AddPreFlowSolveCalculator(p_impedance_calculator);
+    solver.SetTimeIncrement(0.0001 * unit::seconds);
+    solver.Solve();
+
+    // Write the network to file
+    p_network->Write(output_filename);
+
+    TS_ASSERT_DELTA((nodes[3]->GetFlowProperties()->GetPressure() + nodes[4]->GetFlowProperties()->GetPressure())/2.0,(3322.0 + 1993.0) / 2.0, 1e-6);
+    TS_ASSERT_DELTA(fabs(segments[0]->GetFlowProperties()->GetFlowRate()),fabs(segments[1]->GetFlowProperties()->GetFlowRate()),1e-6);
+    p_simulation_time->Destroy();
+}
 
 //    void TestOneVesselNetwork() throw(Exception)
 //    {

@@ -39,8 +39,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <cxxtest/TestSuite.h>
 #include <SmartPointers.hpp>
 #include "ShrinkingStimulusCalculator.hpp"
-#include "VascularNetwork.hpp"
-#include "UnitCollections.hpp"
+#include "VesselNetwork.hpp"
+#include "UnitCollection.hpp"
 
 class TestVesselNetworkCalculators : public CxxTest::TestSuite
 {
@@ -49,11 +49,11 @@ public:
 
     void TestShrinkingStimulusCalculator()
     {
-        std::vector<boost::shared_ptr<VascularNode<3> > > nodes;
-        nodes.push_back(VascularNode<3>::Create(0));
-        nodes.push_back(VascularNode<3>::Create(100));
+        std::vector<boost::shared_ptr<VesselNode<3> > > nodes;
+        nodes.push_back(VesselNode<3>::Create(0));
+        nodes.push_back(VesselNode<3>::Create(100));
         boost::shared_ptr<Vessel<3> > p_vessel(Vessel<3>::Create(VesselSegment<3>::Create(nodes[0], nodes[1])));
-        boost::shared_ptr<VascularNetwork<3> > p_vascular_network = VascularNetwork<3>::Create();
+        boost::shared_ptr<VesselNetwork<3> > p_vascular_network = VesselNetwork<3>::Create();
         p_vascular_network->AddVessel(p_vessel);
 
         ShrinkingStimulusCalculator<3> calculator = ShrinkingStimulusCalculator<3>();

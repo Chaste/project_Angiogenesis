@@ -156,9 +156,9 @@ public:
         p_network->Write(output_filename);
 
         std::vector<double> density2;
-        density2.push_back(4.e-5);
-        density2.push_back(4.e-5);
-        density2.push_back(4.e-5);
+        density2.push_back(3.e-5);
+        density2.push_back(3.e-5);
+        density2.push_back(3.e-5);
         boost::shared_ptr<VesselNetwork<3> > p_network2 = network_generator.Generate3dNetwork(p_part,
                                                                                                   density2,
                                                                                                         VesselDistribution::UNIFORM);

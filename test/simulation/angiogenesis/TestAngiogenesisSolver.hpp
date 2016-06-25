@@ -43,9 +43,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "LatticeBasedMigrationRule.hpp"
 #include "LatticeBasedSproutingRule.hpp"
-#include "VascularNode.hpp"
+#include "VesselNode.hpp"
 #include "Vessel.hpp"
-#include "VascularNetwork.hpp"
+#include "VesselNetwork.hpp"
 #include "AngiogenesisSolver.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
@@ -70,11 +70,11 @@ public:
         p_grid->SetExtents(extents);
 
         // Make a vessel
-        boost::shared_ptr<VascularNode<2> > p_node1 = VascularNode<2>::Create(0.0, 2.0*spacing);
-        boost::shared_ptr<VascularNode<2> > p_node2 = VascularNode<2>::Create(spacing, 2.0*spacing);
+        boost::shared_ptr<VesselNode<2> > p_node1 = VesselNode<2>::Create(0.0, 2.0*spacing);
+        boost::shared_ptr<VesselNode<2> > p_node2 = VesselNode<2>::Create(spacing, 2.0*spacing);
         p_node2->SetIsMigrating(true);
         boost::shared_ptr<Vessel<2> > p_vessel = Vessel<2>::Create(p_node1, p_node2);
-        boost::shared_ptr<VascularNetwork<2> > p_network = VascularNetwork<2>::Create();
+        boost::shared_ptr<VesselNetwork<2> > p_network = VesselNetwork<2>::Create();
         p_network->AddVessel(p_vessel);
         p_grid->SetVesselNetwork(p_network);
 
