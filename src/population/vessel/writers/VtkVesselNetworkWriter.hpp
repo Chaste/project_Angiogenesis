@@ -36,8 +36,7 @@
 #ifndef VtkVesselNetworkWriter_HPP_
 #define VtkVesselNetworkWriter_HPP_
 
-#include <vector>
-#include <map>
+#include <string>
 #ifdef CHASTE_VTK
 #define _BACKWARD_BACKWARD_WARNING_H 1
 #include <vtkPolyData.h>

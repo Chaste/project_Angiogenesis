@@ -39,11 +39,6 @@
 #include <vector>
 #include <set>
 #include <map>
-#ifdef CHASTE_VTK
-#define _BACKWARD_BACKWARD_WARNING_H 1
-#include <vtkPolyData.h>
-#include <vtkSmartPointer.h>
-#endif // CHASTE_VTK
 #include "Vessel.hpp"
 #include "VesselSegment.hpp"
 #include "VesselNode.hpp"
@@ -97,17 +92,17 @@ private:
 
 public:
 
-    /*
-     * Constructor
+    /**
+     * Constructor. Use the create factory method instead
      */
     VesselNetwork();
 
-    /*
+    /**
      * Construct a new instance of the class and return a shared pointer to it.
      */
     static boost::shared_ptr<VesselNetwork<DIM> > Create();
 
-    /*
+    /**
      * Destructor
      */
     ~VesselNetwork();
@@ -137,12 +132,12 @@ public:
      */
     std::vector<boost::shared_ptr<Vessel<DIM> > > CopyVessels(std::vector<boost::shared_ptr<Vessel<DIM> > > vessels);
 
-    /*
+    /**
      * Divides a vessel into two at the specified location.
      */
     boost::shared_ptr<VesselNode<DIM> > DivideVessel(boost::shared_ptr<Vessel<DIM> > pVessel, const c_vector<double, DIM>& location);
 
-    /*
+    /**
      * Add a new node to the end of the vessel
      * @param pEndNode the node that the new segment will start on, should already be on the end of the vessel
      * @param pNewNode the new node to be added to the end of the vessel
@@ -150,7 +145,7 @@ public:
     void ExtendVessel(boost::shared_ptr<Vessel<DIM> > pVessel, boost::shared_ptr<VesselNode<DIM> > pEndNode,
                       boost::shared_ptr<VesselNode<DIM> > pNewNode);
 
-    /*
+    /**
      * Forms a sprout at the specified locations.
      */
     boost::shared_ptr<Vessel<DIM> > FormSprout(const c_vector<double, DIM>& sproutBaseLocation,
@@ -292,32 +287,6 @@ public:
     std::vector<boost::shared_ptr<Vessel<DIM> > > GetVessels();
 
     /**
-     Return the indices of each node attached to a node
-     */
-    std::vector<std::vector<unsigned> > GetNodeNodeConnectivity();
-
-    /**
-     Return the indices of each vessel attached to a node
-     */
-    std::vector<std::vector<unsigned> > GetNodeVesselConnectivity();
-
-    /**
-     Return the the vessel network in vtk form
-     */
-    vtkSmartPointer<vtkPolyData> GetVtk();
-
-    /**
-     Return whether a node is connected to a source node.
-     */
-    bool IsConnected(boost::shared_ptr<VesselNode<DIM> > pSourceNode, boost::shared_ptr<VesselNode<DIM> > pQueryNode);
-
-    /**
-     Return whether a vector of nodes is connected to a vector of source nodes.
-     */
-    std::vector<bool> IsConnected(std::vector<boost::shared_ptr<VesselNode<DIM> > > sourceNodes,
-                                  std::vector<boost::shared_ptr<VesselNode<DIM> > > queryNodes);
-
-    /**
      * Return whether node is in network.
      */
     bool NodeIsInNetwork(boost::shared_ptr<VesselNode<DIM> > pSourceNode);
@@ -345,7 +314,7 @@ public:
      */
     void MergeCoincidentNodes(std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes, double tolerance = 0.0);
 
-    /*
+    /**
      * Removes a vessel from the network
      * @param deleteVessel also remove the vessel from its child segments and nodes if true.
      */
@@ -372,50 +341,40 @@ public:
      */
     void SetSegmentRadii(double radius);
 
-    /*
+    /**
      * Translate the network along the provided vector
      */
     void Translate(const c_vector<double, DIM>& rTranslationVector);
 
-    /*
+    /**
      * Translate specific vessels along the provided vector
      */
     void Translate(const c_vector<double, DIM>& rTranslationVector, std::vector<boost::shared_ptr<Vessel<DIM> > > vessels);
 
-    /*
+    /**
      * Update the network node collection
      */
     void UpdateNodes();
 
-    /*
+    /**
      * Update the network segment collection
      */
     void UpdateSegments();
 
-    /*
+    /**
      * Update the network vessel collection
      */
     void UpdateVesselNodes();
 
-    /*
+    /**
      * Update the vessel id tags
      */
     void UpdateVesselIds();
 
-    /*
+    /**
      * Update all dynamic storage in the vessel network, optionally merge coinciden nodes
      */
     void UpdateAll(bool merge=false);
-
-    /**
-     Write the VesselNetwork data to a file.
-     */
-    void Write(const std::string& rFilename);
-
-    /**
-     * Outputs connectivity of vessels to file in graphviz format (.gv).
-     */
-    void WriteConnectivity(const std::string& rFilename);
 
     /**
      * Returns whether a vessel crosses a line segment.

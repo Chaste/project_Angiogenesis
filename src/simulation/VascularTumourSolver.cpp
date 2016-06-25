@@ -38,6 +38,7 @@
 #include "VesselSegment.hpp"
 #include "VesselNode.hpp"
 #include "VascularTumourSolver.hpp"
+#include "VtkVesselNetworkWriter.hpp"
 
 template<unsigned DIM>
 VascularTumourSolver<DIM>::VascularTumourSolver() :
@@ -144,7 +145,11 @@ void VascularTumourSolver<DIM>::Increment()
         mpNetwork->UpdateAll();
         if(mOutputFrequency > 0 && num_steps % mOutputFrequency == 0)
         {
-            mpNetwork->Write(mpOutputFileHandler->GetOutputDirectoryFullPath() + "/VesselNetwork_inc_" + boost::lexical_cast<std::string>(num_steps+1)+".vtp");
+        	boost::shared_ptr<VtkVesselNetworkWriter<DIM> > p_network_writer = VtkVesselNetworkWriter<DIM>::Create();
+    		p_network_writer->SetVesselNetwork(mpNetwork);
+    		p_network_writer->SetFileName(mpOutputFileHandler->GetOutputDirectoryFullPath() + "/VesselNetwork_inc_" +
+    				boost::lexical_cast<std::string>(num_steps+1)+".vtp");
+    		p_network_writer->Write();
         }
     }
 }
@@ -154,8 +159,11 @@ void VascularTumourSolver<DIM>::Run()
 {
     if(this->mpNetwork)
     {
+    	boost::shared_ptr<VtkVesselNetworkWriter<DIM> > p_network_writer = VtkVesselNetworkWriter<DIM>::Create();
         mpNetwork->UpdateAll(true);
-        mpNetwork->Write(mpOutputFileHandler->GetOutputDirectoryFullPath() + "/VesselNetwork_inc_0.vtp");
+		p_network_writer->SetVesselNetwork(mpNetwork);
+		p_network_writer->SetFileName(mpOutputFileHandler->GetOutputDirectoryFullPath() + "/VesselNetwork_inc_0.vtp");
+		p_network_writer->Write();
     }
 
     Setup();

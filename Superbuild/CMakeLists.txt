@@ -29,6 +29,10 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 set_directory_properties(PROPERTIES EP_BASE "${CMAKE_BINARY_DIR}/third_party")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/third_party/lib")
 
+# Find Python
+find_package(PythonLibs REQUIRED)
+include_directories(${PYTHON_INCLUDE_DIRS})
+
 if(BUILD_Xerces)
     include(External_xerces)
 endif()

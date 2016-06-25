@@ -33,6 +33,7 @@
 
  */
 
+#include <fstream>
 #include "ConstantHaematocritSolver.hpp"
 #include "StructuralAdaptationSolver.hpp"
 #include "UnitCollection.hpp"
