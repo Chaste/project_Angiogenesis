@@ -6,6 +6,7 @@ geometry/TestGeometryTools.hpp
 geometry/generators/TestMappableGridGenerator.hpp
 geometry/generators/TestVesselSurfaceGenerator.hpp
 geometry/generators/TestVoronoiGenerator.hpp
+geometry/surface_tools/TestSurfaceTools.hpp
 mesh/TestHybridMesh.hpp
 mesh/TestRegularGrid.hpp
 mesh/utilities/TestDistanceMap.hpp

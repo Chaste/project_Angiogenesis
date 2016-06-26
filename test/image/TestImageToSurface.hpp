@@ -45,6 +45,8 @@
 #include "ImageToSurface.hpp"
 #include "ImageReader.hpp"
 #include "VtkSurfaceCleaner.hpp"
+#include "VtkSurfaceWriter.hpp"
+
 //#endif /*CHASTE_ANGIOGENESIS_VMTK*/
 
 #include "FileFinder.hpp"
@@ -79,7 +81,7 @@ public:
         surface_extract.Update();
 
         // Write the surface to file
-        vtkSmartPointer<vtkXMLPolyDataWriter> p_writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
+        boost::shared_ptr<VtkSurfaceWriter> p_writer = VtkSurfaceWriter::Create();
         p_writer->SetFileName((file_handler1.GetOutputDirectoryFullPath()+"surface.vtp").c_str());
         p_writer->SetInput(surface_extract.GetOutput());
         p_writer->Write();
@@ -94,6 +96,11 @@ public:
         p_writer->SetFileName((file_handler1.GetOutputDirectoryFullPath()+"surface_cleaned.vtp").c_str());
         p_writer->SetInput(p_cleaner->GetOutput());
         p_writer->Write();
+
+        p_writer->SetFileName((file_handler1.GetOutputDirectoryFullPath()+"surface_cleaned.stl").c_str());
+        p_writer->SetWriteStl(true);
+        p_writer->Write();
+
 
 //        #endif /*CHASTE_ANGIOGENESIS_VMTK*/
     }

@@ -48,7 +48,7 @@
 
 #define REAL double
 #define VOID void
-#include "tetgen15.h"
+#include "tetgen.h"
 #undef REAL
 #undef VOID
 
@@ -93,7 +93,7 @@ boost::shared_ptr<Part<DIM> > VoronoiGenerator<DIM>::Generate(boost::shared_ptr<
     }
 
     // Use tetgen to make the tessellation
-    class tetgen15::tetgenio mesher_input, mesher_output;
+    class tetgen::tetgenio mesher_input, mesher_output;
 
     mesher_input.initialize();
     mesher_output.initialize();
@@ -107,13 +107,13 @@ boost::shared_ptr<Part<DIM> > VoronoiGenerator<DIM>::Generate(boost::shared_ptr<
             mesher_input.pointlist[DIM*idx + jdx] = seeds[idx]->rGetLocation()[jdx];
         }
     }
-    tetgen15::tetrahedralize((char*)"veeQ", &mesher_input, &mesher_output);
+    tetgen::tetrahedralize((char*)"veeQ", &mesher_input, &mesher_output);
 
     // Create 2-point polygons corresponding to each edge
     std::vector<boost::shared_ptr<Polygon> > polygons;
     for (int n=0; n<mesher_output.numberofvedges; ++n)
     {
-      tetgen15::tetgenio::voroedge e =  mesher_output.vedgelist[n];
+      tetgen::tetgenio::voroedge e =  mesher_output.vedgelist[n];
       int n0 = e.v1;
       int n1 = e.v2;
       double* u = &mesher_output.vpointlist[DIM*n0];
