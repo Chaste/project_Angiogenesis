@@ -32,59 +32,39 @@
  OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
-//#ifdef CHASTE_ANGIOGENESIS_VMTK
-#ifndef ImageToSurface_HPP_
-#define ImageToSurface_HPP_
 
+#ifndef TestVtkVesselNetworkReader_HPP_
+#define TestVtkVesselNetworkReader_HPP_
+
+#include <cxxtest/TestSuite.h>
+#include "FileFinder.hpp"
+#include "OutputFileHandler.hpp"
 #include "SmartPointers.hpp"
-#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning
-#include <vtkImageData.h>
-#include <vtkPolyData.h>
-#include <vtkSmartPointer.h>
+#include "VtkVesselNetworkReader.hpp"
+#include "FakePetscSetup.hpp"
 
-/**
-* Extract a vtkpolydata surface from an image using thresholding.
- * If marching cubes are used the result is an isosurface on the 'threshold' value. Otherwise
- * the surface is composed of all regions either above or below the threshold value. Surfaces
- * may need 'cleaning' before further processing. This can be done with an 'ImageCleaner'.
- */
-class ImageToSurface
+class TestVtkVesselNetworkReader : public CxxTest::TestSuite
 {
-    /**
-     *  The image
-     */
-    vtkSmartPointer<vtkImageData> mpImage;
-
-    bool mSegmentAboveThreshold;
-
-    double mThreshold;
-
-    vtkSmartPointer<vtkPolyData> mpSurface;
-
-    bool mUseMarchingCubes;
-
 public:
 
-    /* Constructor
-     */
-    ImageToSurface();
+    void TestReadNetworkFromFile() throw(Exception)
+    {
+        // Locate the input file
+        FileFinder fileFinder("projects/Angiogenesis/test/data/tapmeier_network.vtp", RelativeTo::ChasteSourceRoot);
+        TS_ASSERT(fileFinder.Exists());
+        TS_ASSERT(fileFinder.IsFile());
 
-    ~ImageToSurface();
+        // Generate the network
+        boost::shared_ptr<VtkVesselNetworkReader<3> > p_network_reader = VtkVesselNetworkReader<3>::Create();
+        p_network_reader->SetFileName(fileFinder.GetAbsolutePath());
+        boost::shared_ptr<VesselNetwork<3> > p_network = p_network_reader->Read();
 
-    /* Factory constructor method
-     */
-    static boost::shared_ptr<ImageToSurface> Create();
-
-    void SetInput(vtkSmartPointer<vtkImageData> pImage);
-
-    void SetThreshold(double threshold, bool segmentAboveThreshold);
-
-    void SetUseMarchingCubes(bool useMarchingCubes);
-
-    void Update();
-
-    vtkSmartPointer<vtkPolyData> GetOutput();
+        // Write the network to file
+        OutputFileHandler output_file_handler("TestVasculatureGenerator", false);
+        std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("VtkVesselNetwork.vtp");
+        p_network->MergeCoincidentNodes();
+        p_network->Write(output_filename);
+    }
 };
 
-#endif /*ImageToSurface_HPP_*/
-//#endif /*CHASTE_ANGIOGENESIS_VMTK*/
+#endif /*TestVtkVesselNetworkReader_HPP_*/

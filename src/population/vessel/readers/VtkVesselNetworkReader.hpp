@@ -13,7 +13,7 @@
  modification, are permitted provided that the following conditions are met:
  * Redistributions of source code must retain the above copyright notice,
  this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the abovea copyright notice,
+ * Redistributions in binary form must reproduce the above copyright notice,
  this list of conditions and the following disclaimer in the documentation
  and/or other materials provided with the distribution.
  * Neither the name of the University of Oxford nor the names of its
@@ -33,35 +33,44 @@
 
  */
 
-#ifndef TESTDISCRETESOURCE_HPP_
-#define TESTDISCRETESOURCE_HPP_
+#ifndef VTKVESSELNETWORKREADER_HPP_
+#define VTKVESSELNETWORKREADER_HPP_
 
-#include <cxxtest/TestSuite.h>
-#include <vector>
 #include <string>
 #include "SmartPointers.hpp"
-#include "Part.hpp"
-#include "HybridLinearEllipticPde.hpp"
-#include "HybridNonLinearEllipticPde.hpp"
-#include "FiniteDifferenceSolver.hpp"
 #include "VesselNetwork.hpp"
-#include "VasculatureGenerator.hpp"
-#include "OutputFileHandler.hpp"
-#include "RegularGrid.hpp"
-#include "DiscreteSource.hpp"
 
-#include "PetscSetupAndFinalize.hpp"
-
-class TestDiscreteSource : public CxxTest::TestSuite
+template<unsigned DIM>
+class VtkVesselNetworkReader
 {
+
+    std::string mFileName;
+
+    std::string mRadiusLabel;
 
 public:
 
-    void ToBeRemoved() throw(Exception)
-    {
+    /**
+     * Constructor
+     */
+    VtkVesselNetworkReader();
 
-    }
+    /**
+     * Destructor
+     */
+    ~VtkVesselNetworkReader();
+
+    /**
+     * Construct a new instance of the class and return a shared pointer to it.
+     */
+    static boost::shared_ptr<VtkVesselNetworkReader<DIM> > Create();
+
+    void SetRadiusArrayName(const std::string& rRadius);
+
+    void SetFileName(const std::string& rFileName);
+
+    boost::shared_ptr<VesselNetwork<DIM> > Read();
 
 };
 
-#endif /*TESTDISCRETESOURCE_HPP_*/
+#endif /* VTKVESSELNETWORKREADER_HPP_ */

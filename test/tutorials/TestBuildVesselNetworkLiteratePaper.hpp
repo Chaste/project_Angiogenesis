@@ -71,6 +71,7 @@
  * Tools for generating vessel networks
  */
 #include "VasculatureGenerator.hpp"
+#include "VtkVesselNetworkReader.hpp"
 /*
  * We need to include this when running in serial
  */
@@ -164,10 +165,11 @@ public:
         p_network->Write(p_handler->GetOutputDirectoryFullPath() + "hexagonal_network.vtp");
 
         /*
-         * We use our generator to read the network back in from the VTK file.
+         * We use a reader to read the network back in from the VTK file.
          */
-        boost::shared_ptr<VesselNetwork<3> > p_network_from_file =
-                network_generator.GenerateNetworkFromVtkFile(p_handler->GetOutputDirectoryFullPath() + "hexagonal_network.vtp");
+        VtkVesselNetworkReader<3> network_reader;
+        network_reader.SetFileName(p_handler->GetOutputDirectoryFullPath() + "hexagonal_network.vtp");
+        boost::shared_ptr<VesselNetwork<3> > p_network_from_file = network_reader.Read();
         /*
          * Finally we check that the network has been correctly read back in using our unit test framework
          */

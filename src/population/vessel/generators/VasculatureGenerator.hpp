@@ -146,17 +146,6 @@ public:
      */
     boost::shared_ptr<VesselNetwork<DIM> > GenerateFromPart(boost::shared_ptr<Part<DIM> > part);
 
-#ifdef CHASTE_VTK
-    /*
-     * Generates a vessel network from a vtk file.
-     *
-     * @param filename name of file in which vascular network is described.
-     * @param cleanPoints merge coincident points using vtk clean polydata
-     * @return a pointer to the generated vascular network.
-     */
-    boost::shared_ptr<VesselNetwork<DIM> > GenerateNetworkFromVtkFile(const std::string& rFilename);
-#endif // CHASTE_VTK
-
     /*
      * Creates a vessel network based on a voronoi tesselation in the provided cube.
      */

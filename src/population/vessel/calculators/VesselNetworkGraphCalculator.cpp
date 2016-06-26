@@ -80,6 +80,13 @@ VesselNetworkGraphCalculator<DIM>::~VesselNetworkGraphCalculator()
 }
 
 template <unsigned DIM>
+boost::shared_ptr<VesselNetworkGraphCalculator<DIM> > VesselNetworkGraphCalculator<DIM>::Create()
+{
+    MAKE_PTR(VesselNetworkGraphCalculator<DIM>, pSelf);
+    return pSelf;
+}
+
+template <unsigned DIM>
 std::vector<std::vector<unsigned> > VesselNetworkGraphCalculator<DIM>::GetNodeNodeConnectivity()
 {
 	if(!mpVesselNetwork)
@@ -272,7 +279,7 @@ std::vector<bool > VesselNetworkGraphCalculator<DIM>::IsConnected(std::vector<bo
 
         for (unsigned j=0; j<queryNodes.size(); j++)
         {
-            if (!NodeIsInNetwork(queryNodes[j]))
+            if (!mpVesselNetwork->NodeIsInNetwork(queryNodes[j]))
             {
                 EXCEPTION("Query node is not in network.");
             }
@@ -323,8 +330,8 @@ void VesselNetworkGraphCalculator<DIM>::WriteConnectivity(const std::string& out
         {
             for (unsigned j = 1; j < (*node_iterator)->GetSegments().size(); j++)
             {
-                add_edge(GetVesselIndex((*node_iterator)->GetSegments()[0]->GetVessel()),
-                        GetVesselIndex((*node_iterator)->GetSegments()[j]->GetVessel()), G);
+                add_edge(mpVesselNetwork->GetVesselIndex((*node_iterator)->GetSegments()[0]->GetVessel()),
+                         mpVesselNetwork->GetVesselIndex((*node_iterator)->GetSegments()[j]->GetVessel()), G);
             }
         }
     }
@@ -335,8 +342,8 @@ void VesselNetworkGraphCalculator<DIM>::WriteConnectivity(const std::string& out
     {
         if ((*vessel_iterator)->GetStartNode()->GetNumberOfSegments() == 1 && (*vessel_iterator)->GetEndNode()->GetNumberOfSegments() == 1)
         {
-            add_edge(GetVesselIndex((*vessel_iterator)),
-                    GetVesselIndex((*vessel_iterator)), G);
+            add_edge(mpVesselNetwork->GetVesselIndex((*vessel_iterator)),
+                     mpVesselNetwork->GetVesselIndex((*vessel_iterator)), G);
         }
     }
 
@@ -344,6 +351,12 @@ void VesselNetworkGraphCalculator<DIM>::WriteConnectivity(const std::string& out
     boost::dynamic_properties dp;
     dp.property("node_id", get(boost::vertex_index, G));
     write_graphviz_dp(outf, G, dp);
+}
+
+template <unsigned DIM>
+void VesselNetworkGraphCalculator<DIM>::SetVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pVesselNetwork)
+{
+    mpVesselNetwork = pVesselNetwork;
 }
 
 // Explicit instantiation

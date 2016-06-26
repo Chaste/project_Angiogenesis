@@ -40,6 +40,7 @@
 #include "VesselSegment.hpp"
 #include "FlowSolver.hpp"
 #include "UnitCollection.hpp"
+#include "VesselNetworkGraphCalculator.hpp"
 
 template<unsigned DIM>
 FlowSolver<DIM>::FlowSolver()
@@ -85,6 +86,7 @@ void FlowSolver<DIM>::SetUp()
 
     // Set up the system
     mpLinearSystem = boost::shared_ptr<LinearSystem>(new LinearSystem(num_nodes, max_branches + 1));
+
     // If the network is small the preconditioner is turned off in LinearSystem,
     // so an iterative solver is used instead.
     if (num_nodes >= 6 && mUseDirectSolver)
@@ -94,8 +96,10 @@ void FlowSolver<DIM>::SetUp()
     }
 
     // Get the node-vessel and node-node connectivity
-    mNodeVesselConnectivity = mpVesselNetwork->GetNodeVesselConnectivity();
-    mNodeNodeConnectivity = mpVesselNetwork->GetNodeNodeConnectivity();
+    boost::shared_ptr<VesselNetworkGraphCalculator<DIM> > p_graph_calculator = VesselNetworkGraphCalculator<DIM>::Create();
+    p_graph_calculator->SetVesselNetwork(mpVesselNetwork);
+    mNodeVesselConnectivity = p_graph_calculator->GetNodeVesselConnectivity();
+    mNodeNodeConnectivity = p_graph_calculator->GetNodeNodeConnectivity();
 
     // Get the boundary condition nodes
     std::vector<boost::shared_ptr<VesselNode<DIM> > > boundary_condition_nodes;
@@ -110,7 +114,7 @@ void FlowSolver<DIM>::SetUp()
     }
 
     // Get the nodes that correspond to segments that are not connected to the rest of the network
-    std::vector<bool> connected = mpVesselNetwork->IsConnected(boundary_condition_nodes, mNodes);
+    std::vector<bool> connected = p_graph_calculator->IsConnected(boundary_condition_nodes, mNodes);
     std::vector<unsigned> mUnconnectedNodeIndices;
     for (unsigned node_index = 0; node_index < num_nodes; node_index++)
     {

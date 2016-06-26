@@ -50,7 +50,7 @@
 #define REAL double
 #define VOID void
 #include "triangle.h"
-#include "tetgen15.h"
+#include "tetgen.h"
 #undef REAL
 #undef VOID
 
@@ -151,7 +151,7 @@ private:
     void Mesh3d(boost::shared_ptr<Part<SPACE_DIM> > pPart, double maxElementArea = 0.0);
 
     // This is the same as the TetrahedralMesh implementation of ImportFromMesher but avoids a lot of templating hassle.
-    void ImportFromTetgen(tetgen15::tetgenio& mesherOutput, unsigned numberOfElements, int *elementList,
+    void ImportFromTetgen(tetgen::tetgenio& mesherOutput, unsigned numberOfElements, int *elementList,
                           unsigned numberOfFaces, int *faceList, int *edgeMarkerList);
 
     void InitialiseTriangulateIo(triangulateio& mesherIo);

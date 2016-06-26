@@ -189,31 +189,6 @@ public:
         std::string output_filename5 = output_file_handler.GetOutputDirectoryFullPath().append("TwoLayerExclusionNetwork.vtp");
         p_network3->Write(output_filename5);
     }
-
-#ifdef CHASTE_VTK
-    void TestGeneratorWithVtkInput() throw(Exception)
-    {
-        // Locate the input file
-        FileFinder fileFinder("projects/Angiogenesis/test/data/tapmeier_network.vtp", RelativeTo::ChasteSourceRoot);
-        TS_ASSERT(fileFinder.Exists());
-        TS_ASSERT(fileFinder.IsFile());
-        std::string input_filename = fileFinder.GetAbsolutePath();
-
-        // Generate the network
-        VasculatureGenerator<3> vascular_network_generator;
-        boost::shared_ptr<VesselNetwork<3> > vascular_network = vascular_network_generator.GenerateNetworkFromVtkFile(input_filename);
-
-        // Write the network to file
-        OutputFileHandler output_file_handler("TestVasculatureGenerator", false);
-        std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("VtkVesselNetwork.vtp");
-        vascular_network->MergeCoincidentNodes();
-        vascular_network->Write(output_filename);
-
-        std::string output_filename1 = output_file_handler.GetOutputDirectoryFullPath().append("VesselNetworkConnectivityGraph.gv");
-        vascular_network->WriteConnectivity(output_filename1);
-
-    }
-#endif // CHASTE_VTK
 };
 
 #endif /*TESTVesselNetworkGENERATOR_HPP_*/

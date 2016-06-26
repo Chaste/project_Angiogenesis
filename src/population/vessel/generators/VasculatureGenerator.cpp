@@ -35,17 +35,6 @@
 
 #include <sstream>
 #include <boost/lexical_cast.hpp>
-#ifdef CHASTE_VTK
-#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the strstream deprecated warning for now (gcc4.3)
-#include <vtkDoubleArray.h>
-#include <vtkCellData.h>
-#include <vtkCellArray.h>
-#include <vtkPointData.h>
-#include <vtkPolyData.h>
-#include <vtkLine.h>
-#include <vtkXMLPolyDataReader.h>
-#include <vtkSmartPointer.h>
-#endif // CHASTE_VTK
 #include "RandomNumberGenerator.hpp"
 #include "SmartPointers.hpp"
 #include "VoronoiGenerator.hpp"
@@ -1007,84 +996,6 @@ boost::shared_ptr<VesselNetwork<DIM> > VasculatureGenerator<DIM>::GenerateHexago
     pVesselNetwork->MergeCoincidentNodes();
     return pVesselNetwork;
 }
-
-#ifdef CHASTE_VTK
-template<unsigned DIM>
-boost::shared_ptr<VesselNetwork<DIM> > VasculatureGenerator<DIM>::GenerateNetworkFromVtkFile(const std::string& filename)
-{
-    // Create an empty vessel network
-    boost::shared_ptr<VesselNetwork<DIM> > pVesselNetwork = VesselNetwork<DIM>::Create();
-
-    // Create a VTK PolyData object based on the contents of the input VTK file
-    vtkSmartPointer<vtkXMLPolyDataReader> p_reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
-    vtkSmartPointer<vtkPolyData> p_polydata = vtkSmartPointer<vtkPolyData>::New();
-    vtkSmartPointer<vtkPointData> p_point_data = vtkSmartPointer<vtkPointData>::New();
-    p_reader->SetFileName(filename.c_str());
-    p_reader->Update();
-    p_polydata = p_reader->GetOutput();
-
-    // Create the nodes
-    std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes;
-    for (vtkIdType i = 0; i < p_polydata->GetNumberOfPoints(); i++)
-    {
-        double point_coords[3];
-        p_polydata->GetPoint(i, point_coords);
-        if (DIM < 3)
-        {
-            nodes.push_back(VesselNode<DIM>::Create(point_coords[0], point_coords[1]));
-        }
-        else
-        {
-            nodes.push_back(VesselNode<DIM>::Create(point_coords[0], point_coords[1], point_coords[2]));
-        }
-    }
-
-    // Extract radii corresponding to each node from the VTK Polydata and store them in a list.
-    p_point_data = p_polydata->GetPointData();
-    std::string radius_label = "Node Radius";
-    std::vector<double> radii;
-    for (vtkIdType i = 0; i < p_point_data->GetNumberOfArrays(); i++)
-    {
-        std::string array_name = p_point_data->GetArrayName(i);
-        if (array_name.compare(radius_label) == 0)
-        {
-            for (vtkIdType j = 0; j < p_point_data->GetArray(i)->GetNumberOfTuples(); j++)
-            {
-                radii.push_back(p_point_data->GetArray(i)->GetTuple1(j));
-            }
-        }
-    }
-
-    // Extract vessels from the VTK Polydata. This is done by iterating over a VTK CellArray object which
-    // returns a 'pointList' vtkIdList object. This object contains the point IDs of the nodes which make up
-    // the vessel.
-    vtkSmartPointer<vtkCellArray> pCellArray = vtkSmartPointer<vtkCellArray>::New();
-    pCellArray = p_polydata->GetLines();
-
-    std::cout << radii.size() << std::endl;
-    for (int i = 0; i < p_polydata->GetNumberOfLines(); i++)
-    {
-        // Make a new vessel
-        vtkIdType num_segments;
-        vtkIdType* pSegmentList;
-        pCellArray->GetNextCell(num_segments, pSegmentList);
-        std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments;
-        // Add segments to the vessels in order
-        for (int j = 1; j < num_segments; j++)
-        {
-            boost::shared_ptr<VesselSegment<DIM> > p_segment = VesselSegment<DIM>::Create(nodes[pSegmentList[j - 1]],nodes[pSegmentList[j]]);
-            if(unsigned(radii.size())> pSegmentList[j])
-            {
-                p_segment->SetRadius(radii[pSegmentList[j]]);
-            }
-            segments.push_back(p_segment);
-        }
-        // Add the resulting vessel to the network
-        pVesselNetwork->AddVessel(Vessel<DIM>::Create(segments));
-    }
-    return pVesselNetwork;
-}
-#endif // CHASTE_VTK
 
 //Explicit instantiation
 template class VasculatureGenerator<2> ;

@@ -117,10 +117,10 @@ void HybridMesh<ELEMENT_DIM, SPACE_DIM>::Mesh3d(boost::shared_ptr<Part<SPACE_DIM
     std::vector<boost::shared_ptr<Facet> > facets = pPart->GetFacets();
     unsigned num_facets = facets.size();
 
-    class tetgen15::tetgenio mesher_input, mesher_output;
+    class tetgen::tetgenio mesher_input, mesher_output;
 
-    tetgen15::tetgenio::facet *f;
-    tetgen15::tetgenio::polygon *p;
+    tetgen::tetgenio::facet *f;
+    tetgen::tetgenio::polygon *p;
     mesher_input.pointlist = new double[(num_vertices) * 3];
     mesher_input.numberofpoints = num_vertices;
 
@@ -144,7 +144,7 @@ void HybridMesh<ELEMENT_DIM, SPACE_DIM>::Mesh3d(boost::shared_ptr<Part<SPACE_DIM
     }
 
     mesher_input.numberoffacets = num_facets;
-    mesher_input.facetlist = new tetgen15::tetgenio::facet[num_facets];
+    mesher_input.facetlist = new tetgen::tetgenio::facet[num_facets];
     mesher_input.facetmarkerlist = new int[num_facets];
     for (unsigned idx = 0; idx < num_facets; idx++)
     {
@@ -152,7 +152,7 @@ void HybridMesh<ELEMENT_DIM, SPACE_DIM>::Mesh3d(boost::shared_ptr<Part<SPACE_DIM
         f = &mesher_input.facetlist[idx];
         std::vector<boost::shared_ptr<Polygon> > polygons = facets[idx]->GetPolygons();
         f->numberofpolygons = polygons.size();
-        f->polygonlist = new tetgen15::tetgenio::polygon[f->numberofpolygons];
+        f->polygonlist = new tetgen::tetgenio::polygon[f->numberofpolygons];
         f->numberofholes = 0;
         f->holelist = NULL;
         for (unsigned jdx = 0; jdx < polygons.size(); jdx++)
@@ -173,7 +173,7 @@ void HybridMesh<ELEMENT_DIM, SPACE_DIM>::Mesh3d(boost::shared_ptr<Part<SPACE_DIM
     }
 
     // Library call
-    tetgen15::tetrahedralize((char*) mesher_command.c_str(), &mesher_input, &mesher_output);
+    tetgen::tetrahedralize((char*) mesher_command.c_str(), &mesher_input, &mesher_output);
 
     this->ImportFromTetgen(mesher_output, mesher_output.numberoftetrahedra, mesher_output.tetrahedronlist,
                            mesher_output.numberoftrifaces, mesher_output.trifacelist, NULL);
@@ -184,7 +184,7 @@ template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void HybridMesh<ELEMENT_DIM, SPACE_DIM>::GenerateFromStl(const std::string& filename, double maxElementArea,
                                                          std::vector<c_vector<double, SPACE_DIM> > holes)
 {
-    class tetgen15::tetgenio mesher_input, mesher_output;
+    class tetgen::tetgenio mesher_input, mesher_output;
     char * writable = new char[filename.size() + 1];
     std::copy(filename.begin(), filename.end(), writable);
     writable[filename.size()] = '\0';
@@ -208,7 +208,7 @@ void HybridMesh<ELEMENT_DIM, SPACE_DIM>::GenerateFromStl(const std::string& file
     }
 
     // Library call
-    tetgen15::tetrahedralize((char*) mesher_command.c_str(), &mesher_input, &mesher_output);
+    tetgen::tetrahedralize((char*) mesher_command.c_str(), &mesher_input, &mesher_output);
 
     this->ImportFromTetgen(mesher_output, mesher_output.numberoftetrahedra, mesher_output.tetrahedronlist,
                            mesher_output.numberoftrifaces, mesher_output.trifacelist, NULL);
@@ -217,7 +217,7 @@ void HybridMesh<ELEMENT_DIM, SPACE_DIM>::GenerateFromStl(const std::string& file
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridMesh<ELEMENT_DIM, SPACE_DIM>::ImportFromTetgen(tetgen15::tetgenio& mesherOutput, unsigned numberOfElements,
+void HybridMesh<ELEMENT_DIM, SPACE_DIM>::ImportFromTetgen(tetgen::tetgenio& mesherOutput, unsigned numberOfElements,
                                                           int *elementList, unsigned numberOfFaces, int *faceList,
                                                           int *edgeMarkerList)
 {

@@ -164,7 +164,8 @@ const c_vector<double, DIM>& VesselNode<DIM>::rGetLocation() const
 template<unsigned DIM>
 const c_vector<double, DIM>& VesselNode<DIM>::rGetLocationSI() const
 {
-    return mLocation.rGetLocation()*double((this->mReferenceLength/unit::metres));
+    double length_multiplier = this->mReferenceLength/unit::metres;
+    return mLocation.rGetLocation()*length_multiplier;
 }
 
 template<unsigned DIM>

@@ -193,6 +193,12 @@ vtkSmartPointer<vtkPolyData> VtkVesselNetworkWriter<DIM>::GetOutput()
 }
 
 template <unsigned DIM>
+void VtkVesselNetworkWriter<DIM>::SetFileName(const std::string& rFileName)
+{
+    mFilename = rFileName;
+}
+
+template <unsigned DIM>
 void VtkVesselNetworkWriter<DIM>::Write()
 {
     if(mFilename.empty())

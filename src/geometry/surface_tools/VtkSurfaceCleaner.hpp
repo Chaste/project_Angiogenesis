@@ -33,58 +33,64 @@
 
  */
 //#ifdef CHASTE_ANGIOGENESIS_VMTK
-#ifndef ImageToSurface_HPP_
-#define ImageToSurface_HPP_
+#ifndef VtkSurfaceCleaner_HPP_
+#define VtkSurfaceCleaner_HPP_
 
 #include "SmartPointers.hpp"
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning
-#include <vtkImageData.h>
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
 
 /**
-* Extract a vtkpolydata surface from an image using thresholding.
- * If marching cubes are used the result is an isosurface on the 'threshold' value. Otherwise
- * the surface is composed of all regions either above or below the threshold value. Surfaces
- * may need 'cleaning' before further processing. This can be done with an 'ImageCleaner'.
- */
-class ImageToSurface
+* This class tries to improve the quality of a triangulated vtk polydata surface through decimation
+* and subdivision. It is useful for removing 'staircase' effects in surfaces derived from pixel/voxel
+* based descriptions. With increased 'cleaning' there is greater divergence of the output surface
+* from the original.
+*/
+class VtkSurfaceCleaner
 {
     /**
-     *  The image
+     *  The input surface
      */
-    vtkSmartPointer<vtkImageData> mpImage;
+    vtkSmartPointer<vtkPolyData> mpInputSurface;
 
-    bool mSegmentAboveThreshold;
+    /**
+     *  The output surface
+     */
+    vtkSmartPointer<vtkPolyData> mpOutputSurface;
 
-    double mThreshold;
+    double mDecimateTargetReduction;
 
-    vtkSmartPointer<vtkPolyData> mpSurface;
+    double mDecimateFeatureAngle;
 
-    bool mUseMarchingCubes;
+    unsigned mLinearSubdivisionNumber;
 
 public:
 
-    /* Constructor
+    /**
+     * Constructor
      */
-    ImageToSurface();
+    VtkSurfaceCleaner();
 
-    ~ImageToSurface();
+    ~VtkSurfaceCleaner();
 
-    /* Factory constructor method
+    /**
+     * Factory constructor method
      */
-    static boost::shared_ptr<ImageToSurface> Create();
+    static boost::shared_ptr<VtkSurfaceCleaner> Create();
 
-    void SetInput(vtkSmartPointer<vtkImageData> pImage);
+    void SetInput(vtkSmartPointer<vtkPolyData> pInputSurface);
 
-    void SetThreshold(double threshold, bool segmentAboveThreshold);
+    void SetDecimateTargetReduction(double value);
 
-    void SetUseMarchingCubes(bool useMarchingCubes);
+    void SetDecimateFeatureAngle(double value);
+
+    void SetLinearSubdivisionNumber(double value);
 
     void Update();
 
     vtkSmartPointer<vtkPolyData> GetOutput();
 };
 
-#endif /*ImageToSurface_HPP_*/
+#endif /*VtkSurfaceCleaner_HPP_*/
 //#endif /*CHASTE_ANGIOGENESIS_VMTK*/

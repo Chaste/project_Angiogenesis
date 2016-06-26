@@ -602,6 +602,16 @@ unsigned Vessel<DIM>::GetNumberOfSegments()
 }
 
 template<unsigned DIM>
+boost::shared_ptr<VesselSegment<DIM> > Vessel<DIM>::GetSegment(unsigned index)
+{
+    if(index  >= mSegments.size())
+    {
+        EXCEPTION("Requested segment index out of range");
+    }
+    return mSegments[index];
+}
+
+template<unsigned DIM>
 std::vector<boost::shared_ptr<VesselSegment<DIM> > > Vessel<DIM>::GetSegments()
 {
     return mSegments;

@@ -275,7 +275,7 @@ public:
      * @param index the segment index to return
      * @return the indexed segment
      */
-    std::vector<boost::shared_ptr<VesselSegment<DIM> > > GetSegment(unsigned index);
+    boost::shared_ptr<VesselSegment<DIM> > GetSegment(unsigned index);
 
     /**
      * @return all the vessel segments

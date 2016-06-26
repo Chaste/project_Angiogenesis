@@ -182,11 +182,6 @@ public:
     std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> GetNearestSegment(const c_vector<double, DIM>& location);
 
     /**
-     Get the intercapillary distance using a 2d measure
-     */
-    std::vector<units::quantity<unit::length> > GetInterCapillaryDistances();
-
-    /**
      Get the segment nearest to the specified location
      */
     boost::shared_ptr<Vessel<DIM> > GetNearestVessel(const c_vector<double, DIM>& location);
@@ -205,6 +200,12 @@ public:
      Return the extents of the vessel network in the form ((xmin, xmax), (ymin, ymax), (zmin, zmax))
      */
     std::vector<std::pair<double, double> > GetExtents();
+
+    /**
+     * Return the indexed node in the network
+     * This is dangerous as the node member array can be updated and this index will be out of date, use GetNodes instead.
+     */
+    boost::shared_ptr<VesselNode<DIM> > GetNode(unsigned index);
 
     /**
      Return the nodes in the network
@@ -232,36 +233,6 @@ public:
     unsigned GetMaxBranchesOnNode();
 
     /**
-     Return the total length of the network
-     */
-    units::quantity<unit::length> GetTotalLength();
-
-    /**
-     Return the total volume of the network
-     */
-    units::quantity<unit::volume> GetTotalVolume();
-
-    /**
-     Return the total surface area of the network
-     */
-    units::quantity<unit::area> GetTotalSurfaceArea();
-
-    /**
-     Return the average distance between segments
-     */
-    units::quantity<unit::length> GetAverageInterSegmentDistance();
-
-    /**
-     Return the average vessel length
-     */
-    units::quantity<unit::length> GetAverageVesselLength();
-
-    /**
-     Return a histogram of vessel length distributions
-     */
-    std::vector<unsigned> GetVesselLengthDistribution(double binSpacing = 10.0, unsigned numberOfBins = 10);
-
-    /**
      Return the only the nodes at the ends of vessels in the network
      */
     std::vector<boost::shared_ptr<VesselNode<DIM> > > GetVesselEndNodes();
@@ -280,6 +251,11 @@ public:
      Return the vessel segments in the network
      */
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > GetVesselSegments();
+
+    /**
+     Return the indexed vessel
+     */
+    boost::shared_ptr<Vessel<DIM> > GetVessel(unsigned index);
 
     /**
      Return the vessels in the network
@@ -380,6 +356,9 @@ public:
      * Returns whether a vessel crosses a line segment.
      */
     bool VesselCrossesLineSegment(c_vector<double, DIM> coordinate_1, c_vector<double, DIM> coordinate_2, double radius = 1e-6);
+
+
+    void Write(const std::string& rFileName);
 
 };
 

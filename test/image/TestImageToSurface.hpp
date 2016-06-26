@@ -38,13 +38,14 @@
 
 #include <cxxtest/TestSuite.h>
 #include "SmartPointers.hpp"
-#ifdef CHASTE_ANGIOGENESIS_VMTK
+//#ifdef CHASTE_ANGIOGENESIS_VMTK
 #include <vtkXMLPolyDataWriter.h>
 #include <vtkXMLImageDataWriter.h>
 #include <vtkSmartPointer.h>
 #include "ImageToSurface.hpp"
 #include "ImageReader.hpp"
-#endif /*CHASTE_ANGIOGENESIS_VMTK*/
+#include "VtkSurfaceCleaner.hpp"
+//#endif /*CHASTE_ANGIOGENESIS_VMTK*/
 
 #include "FileFinder.hpp"
 #include "OutputFileHandler.hpp"
@@ -55,7 +56,7 @@ public:
 
     void TestDefaultExtraction()
     {
-        #ifdef CHASTE_ANGIOGENESIS_VMTK
+//        #ifdef CHASTE_ANGIOGENESIS_VMTK
 
         // Read the image from file
         OutputFileHandler file_handler1 = OutputFileHandler("TestImageToSurface/");
@@ -83,7 +84,18 @@ public:
         p_writer->SetInput(surface_extract.GetOutput());
         p_writer->Write();
 
-        #endif /*CHASTE_ANGIOGENESIS_VMTK*/
+        // Clean the surface
+        boost::shared_ptr<VtkSurfaceCleaner> p_cleaner = VtkSurfaceCleaner::Create();
+        p_cleaner->SetInput(surface_extract.GetOutput());
+        p_cleaner->SetDecimateTargetReduction(0.99);
+        p_cleaner->SetLinearSubdivisionNumber(3);
+        p_cleaner->Update();
+
+        p_writer->SetFileName((file_handler1.GetOutputDirectoryFullPath()+"surface_cleaned.vtp").c_str());
+        p_writer->SetInput(p_cleaner->GetOutput());
+        p_writer->Write();
+
+//        #endif /*CHASTE_ANGIOGENESIS_VMTK*/
     }
 };
 #endif

@@ -32,12 +32,13 @@
 
  */
 
-#ifdef CHASTE_ANGIOGENESIS_VMTK
+//#ifdef CHASTE_ANGIOGENESIS_VMTK
 #include "Exception.hpp"
 #include "ImageToSurface.hpp"
 #include <vtkThreshold.h>
 #include <vtkGeometryFilter.h>
 #include <vtkMarchingCubes.h>
+#include <vtkTriangleFilter.h>
 
 ImageToSurface::ImageToSurface()
     : mpImage(),
@@ -122,7 +123,11 @@ void ImageToSurface::Update()
         p_geometry->SetInputConnection(p_threshold->GetOutputPort());
         p_geometry->Update();
 
-        mpSurface = p_geometry->GetOutput();
+        vtkSmartPointer<vtkTriangleFilter> p_triangle = vtkSmartPointer<vtkTriangleFilter>::New();
+        p_triangle->SetInputConnection(p_geometry->GetOutputPort());
+        p_triangle->Update();
+
+        mpSurface = p_triangle->GetOutput();
     }
 }
-#endif /*CHASTE_ANGIOGENESIS_VMTK*/
+//#endif /*CHASTE_ANGIOGENESIS_VMTK*/

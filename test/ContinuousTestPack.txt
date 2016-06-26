@@ -23,7 +23,6 @@ population/TestVesselNetworkCellPopulationInteractor.hpp
 pde/TestFiniteDifferenceSolver.hpp
 pde/TestGreensFunctionSolver.hpp
 pde/TestFiniteElementSolver.hpp
-pde/TestKroghCylinderSolver.hpp
 simulation/flow/TestFlowSolver.hpp
 simulation/flow/structural_adaptation/TestStructuralAdaptationSolver.hpp
 simulation/flow/haematocrit/TestAlarcon03HaematocritSolver.hpp
