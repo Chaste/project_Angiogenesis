@@ -2,11 +2,16 @@ find_package(Chaste COMPONENTS cell_based)
 chaste_do_project(Angiogenesis)
 
 set(BUILD_ANGIOGENESIS_PYTHON "Build Python Bindings for Angiogenesis component" CACHE BOOL TRUE)
-set(BUILD_ANGIOGENESIS_VMTK "Build Tools Depending on VMTK for Angiogenesis component" CACHE BOOL FALSE)
+set(BUILD_ANGIOGENESIS_EXTENDED "Build Tools Depending on Additional Dependencies to Chaste" CACHE BOOL FALSE)
 
-if(${BUILD_ANGIOGENESIS_VMTK})
-add_definitions(-DCHASTE_ANGIOGENESIS_VMTK)
-endif(${BUILD_ANGIOGENESIS_VMTK})
+if(${BUILD_ANGIOGENESIS_EXTENDED})
+add_definitions(-DCHASTE_ANGIOGENESIS_EXTENDED)
+
+# We Need ITK
+FIND_PACKAGE(ITK REQUIRED)
+INCLUDE(${ITK_USE_FILE})
+
+endif(${BUILD_ANGIOGENESIS_EXTENDED})
 
 set(BUILD_ANGIOGENESIS_PYTHON ON)
 if(${BUILD_ANGIOGENESIS_PYTHON})

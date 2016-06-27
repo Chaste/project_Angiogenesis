@@ -13,7 +13,7 @@
  modification, are permitted provided that the following conditions are met:
  * Redistributions of source code must retain the above copyright notice,
  this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
+ * Redistributions in binary form must reproduce the abovea copyright notice,
  this list of conditions and the following disclaimer in the documentation
  and/or other materials provided with the distribution.
  * Neither the name of the University of Oxford nor the names of its
@@ -32,55 +32,52 @@
  OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
-//#ifdef CHASTE_ANGIOGENESIS_VMTK
-#ifndef ImageToSkeleton_HPP_
-#define ImageToSkeleton_HPP_
 
+#ifndef TestImageToSurface_HPP_
+#define TestImageToSurface_HPP_
+
+#include <cxxtest/TestSuite.h>
 #include "SmartPointers.hpp"
-#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning
-#include <vtkImageData.h>
-#include <vtkPolyData.h>
+//#ifdef CHASTE_ANGIOGENESIS_VMTK
+#include <vtkXMLPolyDataWriter.h>
+#include <vtkXMLImageDataWriter.h>
 #include <vtkSmartPointer.h>
+#include "ImageToSkeleton.hpp"
+#include "ImageReader.hpp"
+//#endif /*CHASTE_ANGIOGENESIS_VMTK*/
 
-/**
-* Extract a vtkpolydata surface from an image using thresholding.
- * If marching cubes are used the result is an isosurface on the 'threshold' value. Otherwise
- * the surface is composed of all regions either above or below the threshold value. Surfaces
- * may need 'cleaning' before further processing. This can be done with an 'ImageCleaner'.
- */
-class ImageToSkeleton
+#include "FileFinder.hpp"
+#include "OutputFileHandler.hpp"
+
+class TestImageToSkeleton : public CxxTest::TestSuite
 {
-    /**
-     *  The image
-     */
-    vtkSmartPointer<vtkImageData> mpImage;
-
-    vtkSmartPointer<vtkImageData> mpSkeleton;
-
-    bool mReverseIntensity;
-
 public:
 
-    /**
-     *  Constructor
-     */
-    ImageToSkeleton();
+    void TestDefaultExtraction()
+    {
+//        #ifdef CHASTE_ANGIOGENESIS_VMTK
 
-    ~ImageToSkeleton();
+        // Read the image from file
+        OutputFileHandler file_handler1 = OutputFileHandler("TestImageToSkeleton/");
+        FileFinder finder = FileFinder("projects/Angiogenesis/test/data/median.tif", RelativeTo::ChasteSourceRoot);
 
-    /**
-     *  Factory constructor method
-     */
-    static boost::shared_ptr<ImageToSkeleton> Create();
+        ImageReader reader = ImageReader();
+        reader.SetFilename(finder.GetAbsolutePath());
+        reader.SetImageResizeFactors(0.5, 0.5, 1.0);
+        reader.Update();
 
-    void SetInput(vtkSmartPointer<vtkImageData> pImage);
+        // Extract the surface
+        ImageToSkeleton skeleton_extract = ImageToSkeleton();
+        skeleton_extract.SetInput(reader.GetOutput());
+        skeleton_extract.SetReverseIntensity(true);
+        skeleton_extract.Update();
 
-    void SetReverseIntensity(bool value);
+        vtkSmartPointer<vtkXMLImageDataWriter> p_writer1 = vtkSmartPointer<vtkXMLImageDataWriter>::New();
+        p_writer1->SetFileName((file_handler1.GetOutputDirectoryFullPath()+"skeleton.vti").c_str());
+        p_writer1->SetInput(reader.GetOutput());
+        p_writer1->Write();
 
-    void Update();
-
-    vtkSmartPointer<vtkImageData> GetOutput();
+//        #endif /*CHASTE_ANGIOGENESIS_VMTK*/
+    }
 };
-
-#endif /*ImageToSkeleton_HPP_*/
-//#endif /*CHASTE_ANGIOGENESIS_VMTK*/
+#endif

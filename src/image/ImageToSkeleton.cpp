@@ -36,10 +36,13 @@
 #include "Exception.hpp"
 #include "ImageToSkeleton.hpp"
 #include <vtkImageSkeleton2D.h>
+#include <vtkPointData.h>
+#include <vtkCellData.h>
 
 ImageToSkeleton::ImageToSkeleton()
     : mpImage(),
-      mpSkeleton()
+      mpSkeleton(),
+      mReverseIntensity(false)
 {
 
 }
@@ -55,7 +58,12 @@ ImageToSkeleton::~ImageToSkeleton()
 
 }
 
-vtkSmartPointer<vtkPolyData> ImageToSkeleton::GetOutput()
+void ImageToSkeleton::SetReverseIntensity(bool value)
+{
+    mReverseIntensity = value;
+}
+
+vtkSmartPointer<vtkImageData> ImageToSkeleton::GetOutput()
 {
     if(mpSkeleton)
     {
@@ -79,9 +87,32 @@ void ImageToSkeleton::Update()
         EXCEPTION("No input set.");
     }
 
+    if(mReverseIntensity)
+    {
+        double max_intensity = mpImage->GetPointData()->GetArray("ImageScalars")->GetDataTypeMax();
+        if(max_intensity>0.0)
+        {
+            for(unsigned idx=0; idx< mpImage->GetNumberOfPoints(); idx++)
+            {
+                double current_intensity = mpImage->GetPointData()->GetArray("ImageScalars")->GetTuple1(idx);
+                double new_value = max_intensity - current_intensity;
+                if(new_value==1.0)
+                {
+                    new_value = 2.0;
+                }
+                mpImage->GetPointData()->GetArray("ImageScalars")->SetTuple1(idx, new_value);
+            }
+        }
+    }
+    mpImage->GetPointData()->SetScalars(mpImage->GetPointData()->GetArray("ImageScalars"));
+    mpImage->GetCellData()->SetScalars(mpImage->GetPointData()->GetArray("ImageScalars"));
+
     vtkSmartPointer<vtkImageSkeleton2D> p_skeleton = vtkSmartPointer<vtkImageSkeleton2D>::New();
     p_skeleton->SetInput(mpImage);
-
+    p_skeleton->SetNumberOfIterations(20);
+    p_skeleton->ReleaseDataFlagOff();
+    p_skeleton->Update();
+    mpSkeleton = p_skeleton->GetOutput();
 
 }
 //#endif /*CHASTE_ANGIOGENESIS_VMTK*/

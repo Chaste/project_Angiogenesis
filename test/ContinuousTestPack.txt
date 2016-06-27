@@ -48,3 +48,4 @@ tutorials/TestBuildVesselNetworkLiteratePaper.hpp
 tutorials/TestBloodFlowLiteratePaper.hpp
 utility/TestUnitCollections.hpp
 image/TestImageToSurface.hpp
+image/TestImageToSkeleton.hpp
