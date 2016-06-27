@@ -1,65 +1,47 @@
-find_package(Chaste COMPONENTS cell_based)
-chaste_do_project(Angiogenesis)
+# Copyright (c) 2005-2016, University of Oxford.
+# All rights reserved.
+# 
+# University of Oxford means the Chancellor, Masters and Scholars of the
+# University of Oxford, having an administrative office at Wellington
+# Square, Oxford OX1 2JD, UK.
+# 
+# This file is part of Chaste.
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#  * Redistributions of source code must retain the above copyright notice,
+#    this list of conditions and the following disclaimer.
+#  * Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+#  * Neither the name of the University of Oxford nor the names of its
+#    contributors may be used to endorse or promote products derived from this
+#    software without specific prior written permission.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+# GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+# OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# 
 
-set(BUILD_ANGIOGENESIS_PYTHON "Build Python Bindings for Angiogenesis component" CACHE BOOL TRUE)
-set(BUILD_ANGIOGENESIS_EXTENDED "Build Tools Depending on Additional Dependencies to Chaste" CACHE BOOL FALSE)
+# This file covers two different build options depending on the value of BUILD_ANGIOGENESIS_EXTENDED
+# in the cmake cache. If it is OFF the component is built as a Chaste subproject, with Chaste-only
+# dependencies. If it is ON the component is built using a standalone build system with Chaste
+# as an external project and with an extra set of dependencies.
 
+set(BUILD_ANGIOGENESIS_EXTENDED "Build the extended Angiogenesis component" CACHE BOOL TRUE)
 if(${BUILD_ANGIOGENESIS_EXTENDED})
-add_definitions(-DCHASTE_ANGIOGENESIS_EXTENDED)
-
-# We Need ITK
-FIND_PACKAGE(ITK REQUIRED)
-INCLUDE(${ITK_USE_FILE})
-
+{
+    include(${CMAKE_CURRENT_SOURCE_DIR}/ProjectAngiogenesisExtended.cmake)
+}
+else(${BUILD_ANGIOGENESIS_EXTENDED})
+{
+    include(${CMAKE_CURRENT_SOURCE_DIR}/ProjectAngiogenesisBase.cmake)
+}
 endif(${BUILD_ANGIOGENESIS_EXTENDED})
-
-set(BUILD_ANGIOGENESIS_PYTHON ON)
-if(${BUILD_ANGIOGENESIS_PYTHON})
-
-######### Find Python, Boost Python and Chaste Dependencies ###################### 
-add_definitions(-DCHASTE_ANGIOGENESIS_PYTHON)
-find_package(Boost COMPONENTS python REQUIRED)
-find_package(PythonLibs REQUIRED)
-include_directories(${PYTHON_INCLUDE_DIRS})
-include_directories(${Chaste_INCLUDE_DIRS} ${Chaste_THIRD_PARTY_INCLUDE_DIRS})
-set(PROJECT_ANGIO_SOURCE ${CMAKE_CURRENT_SOURCE_DIR})
-set(PROJECT_ANGIO_LIB ${CMAKE_CURRENT_BINARY_DIR}/libchaste_project_Angiogenesis.so)
-find_package(ProjectAngiogenesis PATHS ${CMAKE_CURRENT_SOURCE_DIR})
-include_directories(${ProjectAngiogenesis_INCLUDE_DIRS})
-
-######### Build the Python modules ###################### 
-set (ANGIOGENESIS_PYTHON_MODULES "")
-set (ANGIOGENESIS_PYTHON_MODULE_LOCATIONS "")
-list (APPEND ANGIOGENESIS_PYTHON_MODULES core)
-list (APPEND ANGIOGENESIS_PYTHON_MODULE_LOCATIONS ${CMAKE_CURRENT_BINARY_DIR}/python/chaste/core/)
-list (APPEND ANGIOGENESIS_PYTHON_MODULES geometry)
-list (APPEND ANGIOGENESIS_PYTHON_MODULE_LOCATIONS ${CMAKE_CURRENT_BINARY_DIR}/python/chaste/geometry/)
-list (APPEND ANGIOGENESIS_PYTHON_MODULES vessel)
-list (APPEND ANGIOGENESIS_PYTHON_MODULE_LOCATIONS ${CMAKE_CURRENT_BINARY_DIR}/python/chaste/population/vessel/)
-list (APPEND ANGIOGENESIS_PYTHON_MODULES pde)
-list (APPEND ANGIOGENESIS_PYTHON_MODULE_LOCATIONS ${CMAKE_CURRENT_BINARY_DIR}/python/chaste/pde/)
-list (APPEND ANGIOGENESIS_PYTHON_MODULES simulation)
-list (APPEND ANGIOGENESIS_PYTHON_MODULE_LOCATIONS ${CMAKE_CURRENT_BINARY_DIR}/python/chaste/simulation/)
-list (APPEND ANGIOGENESIS_PYTHON_MODULES mesh)
-list (APPEND ANGIOGENESIS_PYTHON_MODULE_LOCATIONS ${CMAKE_CURRENT_BINARY_DIR}/python/chaste/mesh/)
-list (APPEND ANGIOGENESIS_PYTHON_MODULES cell)
-list (APPEND ANGIOGENESIS_PYTHON_MODULE_LOCATIONS ${CMAKE_CURRENT_BINARY_DIR}/python/chaste/population/cell/)
-list (APPEND ANGIOGENESIS_PYTHON_MODULES flow)
-list (APPEND ANGIOGENESIS_PYTHON_MODULE_LOCATIONS ${CMAKE_CURRENT_BINARY_DIR}/python/chaste/simulation/)
-list (APPEND ANGIOGENESIS_PYTHON_MODULES angiogenesis)
-list (APPEND ANGIOGENESIS_PYTHON_MODULE_LOCATIONS ${CMAKE_CURRENT_BINARY_DIR}/python/chaste/simulation/)
-
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/python/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/python/ PATTERN "*.so" EXCLUDE)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/test/python/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/python/test/)
-list(LENGTH ANGIOGENESIS_PYTHON_MODULES len1)
-math(EXPR len2 "${len1} - 1")
-foreach(val RANGE ${len2})
-    list(GET ANGIOGENESIS_PYTHON_MODULES ${val} python_module)
-    list(GET ANGIOGENESIS_PYTHON_MODULE_LOCATIONS ${val} python_module_location)
-    add_library(_${python_module} SHARED ${CMAKE_CURRENT_SOURCE_DIR}/dynamic/${python_module}.cpp)
-    set_target_properties(_${python_module} PROPERTIES PREFIX "" LIBRARY_OUTPUT_DIRECTORY ${python_module_location})
-    target_link_libraries(_${python_module} boost_python ${PYTHON_LIBRARIES} ${Chaste_THIRD_PARTY_LIBRARIES} ${Chaste_LIBRARIES} ${PROJECT_ANGIO_LIB})
-endforeach()
-add_custom_target(project_Angiogenesis_Python)
-add_dependencies(project_Angiogenesis_Python _core _geometry _vessel _pde _simulation _mesh _cell _flow _angiogenesis)
-endif(${BUILD_ANGIOGENESIS_PYTHON})
