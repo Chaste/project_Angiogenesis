@@ -46,7 +46,10 @@
 #include "AbstractVesselNetworkComponentProperties.hpp"
 
 /**
- * This class contains functionality common to all components of a vessel network
+ * This class contains functionality common to all components of a vessel network.
+ *
+ * Note: It is named 'Abstract' to discourage instantiation, but is not strictly an abstract class.
+ * A pure virtual destructor is avoided as it prevents Python wrapping.
  */
 template<unsigned DIM>
 class AbstractVesselNetworkComponent
@@ -94,7 +97,7 @@ public:
     /**
      * Destructor
      */
-    virtual ~AbstractVesselNetworkComponent() = 0;
+    virtual ~AbstractVesselNetworkComponent();
 
     /**
      * Return the component Id

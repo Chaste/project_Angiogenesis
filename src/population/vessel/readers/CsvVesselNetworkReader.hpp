@@ -32,56 +32,47 @@
  OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
-//#ifdef CHASTE_ANGIOGENESIS_VMTK
-#ifndef ImageToSkeleton_HPP_
-#define ImageToSkeleton_HPP_
 
+#ifndef CSVVESSELNETWORKREADER_HPP_
+#define CSVVESSELNETWORKREADER_HPP_
+
+#include <string>
 #include "SmartPointers.hpp"
-#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning
-
-#include <vtkImageData.h>
-#include <vtkPolyData.h>
-#include <vtkSmartPointer.h>
+#include "VesselNetwork.hpp"
 
 /**
-* Extract a vtkpolydata surface from an image using thresholding.
- * If marching cubes are used the result is an isosurface on the 'threshold' value. Otherwise
- * the surface is composed of all regions either above or below the threshold value. Surfaces
- * may need 'cleaning' before further processing. This can be done with an 'ImageCleaner'.
+ * This class reads vessel network skeleton information in the format used by the ImageJ Skeletonize3D/Analyze Skeleton
+ * plugins and creates a vessel network.
  */
-class ImageToSkeleton
+template<unsigned DIM>
+class CsvVesselNetworkReader
 {
-    /**
-     *  The image
-     */
-    vtkSmartPointer<vtkImageData> mpImage;
 
-    vtkSmartPointer<vtkImageData> mpSkeleton;
+    std::string mFileName;
 
-    bool mReverseIntensity;
+    std::string mRadiusLabel;
 
 public:
 
     /**
-     *  Constructor
+     * Constructor
      */
-    ImageToSkeleton();
-
-    ~ImageToSkeleton();
+    CsvVesselNetworkReader();
 
     /**
-     *  Factory constructor method
+     * Destructor
      */
-    static boost::shared_ptr<ImageToSkeleton> Create();
+    ~CsvVesselNetworkReader();
 
-    void SetInput(vtkSmartPointer<vtkImageData> pImage);
+    /**
+     * Construct a new instance of the class and return a shared pointer to it.
+     */
+    static boost::shared_ptr<CsvVesselNetworkReader<DIM> > Create();
 
-    void SetReverseIntensity(bool value);
+    void SetFileName(const std::string& rFileName);
 
-    void Update();
+    boost::shared_ptr<VesselNetwork<DIM> > Read();
 
-    vtkSmartPointer<vtkImageData> GetOutput();
 };
 
-#endif /*ImageToSkeleton_HPP_*/
-//#endif /*CHASTE_ANGIOGENESIS_VMTK*/
+#endif /* CSVVESSELNETWORKREADER_HPP_ */

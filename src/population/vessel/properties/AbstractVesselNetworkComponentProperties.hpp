@@ -41,7 +41,10 @@
 #include <boost/enable_shared_from_this.hpp>
 #include "UnitCollection.hpp"
 /**
- * This class contains common functionality for flow property containers for all vessel network components.
+ * This class contains common functionality for property containers for all vessel network components.
+ *
+ * Note: It is named 'Abstract' to discourage instantiation, but is not strictly an abstract class.
+ * A pure virtual destructor is avoided as it prevents Python wrapping.
  */
 template<unsigned DIM>
 class AbstractVesselNetworkComponentProperties : public boost::enable_shared_from_this<AbstractVesselNetworkComponentProperties<DIM> >
@@ -74,7 +77,7 @@ public:
     /**
      * Destructor
      */
-    virtual ~AbstractVesselNetworkComponentProperties() = 0;
+    virtual ~AbstractVesselNetworkComponentProperties();
 
     /**
      * Return the reference length for the component

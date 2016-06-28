@@ -41,6 +41,7 @@
 #include "OutputFileHandler.hpp"
 #include "SmartPointers.hpp"
 #include "VtkVesselNetworkReader.hpp"
+#include "CsvVesselNetworkReader.hpp"
 #include "FakePetscSetup.hpp"
 
 class TestVtkVesselNetworkReader : public CxxTest::TestSuite
@@ -60,8 +61,27 @@ public:
         boost::shared_ptr<VesselNetwork<3> > p_network = p_network_reader->Read();
 
         // Write the network to file
-        OutputFileHandler output_file_handler("TestVasculatureGenerator", false);
+        OutputFileHandler output_file_handler("TestVesselNetworkReaders", false);
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("VtkVesselNetwork.vtp");
+        p_network->MergeCoincidentNodes();
+        p_network->Write(output_filename);
+    }
+
+    void TestReadCsvNetworkFromFile() throw(Exception)
+    {
+        // Locate the input file
+        FileFinder fileFinder("projects/Angiogenesis/test/data/Branch_information.csv", RelativeTo::ChasteSourceRoot);
+        TS_ASSERT(fileFinder.Exists());
+        TS_ASSERT(fileFinder.IsFile());
+
+        // Generate the network
+        boost::shared_ptr<CsvVesselNetworkReader<3> > p_network_reader = CsvVesselNetworkReader<3>::Create();
+        p_network_reader->SetFileName(fileFinder.GetAbsolutePath());
+        boost::shared_ptr<VesselNetwork<3> > p_network = p_network_reader->Read();
+
+        // Write the network to file
+        OutputFileHandler output_file_handler("TestVesselNetworkReaders", false);
+        std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("CsvVesselNetwork.vtp");
         p_network->MergeCoincidentNodes();
         p_network->Write(output_filename);
     }

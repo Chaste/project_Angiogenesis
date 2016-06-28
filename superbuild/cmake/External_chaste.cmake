@@ -30,11 +30,11 @@ BUILD_COMMAND make chaste_cell_based
 )
 
 ExternalProject_Add(chaste
-  DEPENDS boost petsc xsd xerces vtk
+  DEPENDS boost petsc xsd vtk xerces
   SVN_REPOSITORY https://chaste.cs.ox.ac.uk/svn/chaste/trunk/ 
   ${chaste_cmds}
   UPDATE_COMMAND ""
-  INSTALL_COMMAND make install
+  INSTALL_COMMAND ""
 )
 
 ExternalProject_Get_Property(chaste install_dir)

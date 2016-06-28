@@ -35,13 +35,10 @@
 # dependencies. If it is ON the component is built using a standalone build system with Chaste
 # as an external project and with an extra set of dependencies.
 
-set(BUILD_ANGIOGENESIS_EXTENDED "Build the extended Angiogenesis component" CACHE BOOL TRUE)
-if(${BUILD_ANGIOGENESIS_EXTENDED})
-{
-    include(${CMAKE_CURRENT_SOURCE_DIR}/ProjectAngiogenesisExtended.cmake)
-}
-else(${BUILD_ANGIOGENESIS_EXTENDED})
-{
-    include(${CMAKE_CURRENT_SOURCE_DIR}/ProjectAngiogenesisBase.cmake)
-}
-endif(${BUILD_ANGIOGENESIS_EXTENDED})
+find_package(Chaste COMPONENTS cell_based)
+chaste_do_project(Angiogenesis)
+
+set(BUILD_ANGIOGENESIS_PYTHON ON CACHE BOOL "Build Python Bindings for Angiogenesis component")
+if(${BUILD_ANGIOGENESIS_PYTHON})
+    include(${CMAKE_CURRENT_SOURCE_DIR}/ProjectAngiogenesisPython.cmake)
+endif(${BUILD_ANGIOGENESIS_PYTHON})

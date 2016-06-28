@@ -37,12 +37,10 @@
 #define TESTBUILDVESSELNETWORKLITERATEPAPER_HPP_
 
 /* = Building A Vessel Network Tutorial =
- * This tutorial is designed to introduce the C++ interface for modelling vessel networks. An equivalent Python tutorial
- * is [wiki:PaperTutorials/Angiogenesis/PythonBuildVesselNetwork here]. It is advised that you at least read [wiki:UserTutorials/WritingTests the Chaste tutorial on writing tests]
- * before proceeding with this one.
+ * This tutorial is designed to introduce the C++ interface for modelling vessel networks.
  *
- * This tutorial covers:
- * * Building a network from a collection of nodes, segments and vessels
+ * The following is covered:
+ * * Manually building a network from a collection of nodes, segments and vessels
  * * Writing networks to file and visualizing with Paraview
  * * Building a network using a network generator
  * * Reading a network from file
@@ -59,6 +57,9 @@
  * pointer MACROs.
  */
 #include "SmartPointers.hpp"
+/*
+ * The OutputFileHandler manages where output files are written to.
+ */
 #include "OutputFileHandler.hpp"
 /*
  * These headers contain the building-blocks of the vessel networks; nodes, segments, vessels and the network itself.
@@ -71,6 +72,9 @@
  * Tools for generating vessel networks
  */
 #include "VasculatureGenerator.hpp"
+/*
+ * We use this to read in vessel networks in VTK format
+ */
 #include "VtkVesselNetworkReader.hpp"
 /*
  * We need to include this when running in serial

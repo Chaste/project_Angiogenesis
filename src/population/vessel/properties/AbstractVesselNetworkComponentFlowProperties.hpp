@@ -44,6 +44,9 @@
 
 /**
  * This class contains common functionality for flow property containers for all vessel network components.
+ *
+ * Note: It is named 'Abstract' to discourage instantiation, but is not strictly an abstract class.
+ * A pure virtual destructor is avoided as it prevents Python wrapping.
  */
 template<unsigned DIM>
 class AbstractVesselNetworkComponentFlowProperties: public boost::enable_shared_from_this<AbstractVesselNetworkComponentFlowProperties<DIM> >,
@@ -67,7 +70,7 @@ public:
     /**
      * Destructor
      */
-    virtual ~AbstractVesselNetworkComponentFlowProperties() = 0;
+    virtual ~AbstractVesselNetworkComponentFlowProperties();
 
     /**
      * Return the dimensionless pressure in the component

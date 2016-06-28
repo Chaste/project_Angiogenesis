@@ -20,6 +20,7 @@ population/vessel/TestVascularNetwork.hpp
 population/vessel/properties/TestVasculatureData.hpp
 population/vessel/properties/TestSegmentFlowProperties.hpp
 population/vessel/generators/TestVasculatureGenerator.hpp
+population/vessel/readers/TestVtkVesselNetworkReader.hpp
 population/TestVesselNetworkCellPopulationInteractor.hpp
 pde/TestFiniteDifferenceSolver.hpp
 pde/TestGreensFunctionSolver.hpp
@@ -43,7 +44,7 @@ simulation/TestVascularTumourSolver.hpp
 tutorials/Test2dTumourSpheroid.hpp
 tutorials/Test2dVascularTumourGrowth.hpp
 tutorials/Test3dTumourSpheroid.hpp
-tutorials/TestSnailTrailLiteratePaper.hpp
+tutorials/TestLatticeBasedAngiogenesisLiteratePaper.hpp
 tutorials/TestBuildVesselNetworkLiteratePaper.hpp
 tutorials/TestBloodFlowLiteratePaper.hpp
 utility/TestUnitCollections.hpp

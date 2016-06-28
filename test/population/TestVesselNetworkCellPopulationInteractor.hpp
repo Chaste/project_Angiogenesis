@@ -38,6 +38,7 @@
 #include "PdeAndBoundaryConditions.hpp"
 #include "CellBasedPdeHandler.hpp"
 #include "AveragedSourcePde.hpp"
+#include "DefaultCellProliferativeType.hpp"
 #include "VesselNetworkCellPopulationInteractor.hpp"
 
 class TestVesselNetworkCellPopulationInteractor : public AbstractCellBasedWithTimingsTestSuite
