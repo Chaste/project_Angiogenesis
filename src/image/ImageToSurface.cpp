@@ -39,9 +39,10 @@
 #include <vtkGeometryFilter.h>
 #include <vtkMarchingCubes.h>
 #include <vtkTriangleFilter.h>
+#include <Debug.hpp>
 
 ImageToSurface::ImageToSurface()
-    : mpImage(),
+    : mpImage(vtkSmartPointer<vtkImageData>::New()),
       mSegmentAboveThreshold(true),
       mThreshold(1.0),
       mpSurface(),
@@ -75,7 +76,16 @@ vtkSmartPointer<vtkPolyData> ImageToSurface::GetOutput()
 
 void ImageToSurface::SetInput(vtkSmartPointer<vtkImageData> pImage)
 {
+    std::cout << "SOFA SO GOOD!" << std::endl;
     mpImage = pImage;
+    std::cout << "ITS ALIVE JOHNNY!" << std::endl;
+    std::cout << mpImage  << std::endl;
+}
+
+void ImageToSurface::SetInputRaw(vtkImageData* pImage)
+{
+    mpImage.TakeReference(pImage);
+//    pImage->Delete();
 }
 
 void ImageToSurface::SetThreshold(double threshold, bool segmentAboveThreshold)

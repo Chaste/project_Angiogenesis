@@ -33,7 +33,7 @@ class MergeStl():
         e7 = Part.makeLine((width,height,depth), (0,height,depth))
         e8 = Part.makeLine((0,height,depth), (0,0,depth))
         w1 = Part.Wire([e1,e2,e3,e4]) 
-        w2 = Part.Wire([e5,e6,e7,e8]) 
+        w2 = Pa
         
         sides = w1.extrude(Base.Vector(0,0,depth))
         front = Part.Face(w1)

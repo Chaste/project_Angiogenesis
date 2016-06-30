@@ -1,5 +1,5 @@
 import vtk
-import dolfin as df
+#import dolfin as df
 import numpy as np
 import chaste.utility.bases as bases
 
@@ -294,74 +294,74 @@ class TriMeshToDolfin(bases.SimpleIOBase):
         
         return self.output
     
-class LineBoundary(df.SubDomain):
-    
-    def set_edges(self, edges, tol = 1.e-3):
-        self.edges = edges
-        self.tol = tol
-    
-    def inside(self, x, on_boundary):
-        
-        inside = False
-        
-        if len(x) == 2:
-            position = np.array((x[0], x[1], 0.0))
-        else:
-            position = np.array(x)
-            
-        if on_boundary:
-            for eachEdge in self.edges:
-                if len(eachEdge[0]) == 2:
-                    e1loc = np.array((eachEdge[0][0], eachEdge[0][1], 0.0))
-                    e2loc = np.array((eachEdge[1][0], eachEdge[1][1], 0.0))
-                else:
-                    e1loc = np.array(eachEdge[0])
-                    e2loc = np.array(eachEdge[1])
-                if vtk.vtkLine.DistanceToLine(position, e1loc, e2loc) <= self.tol:
-                    dp1 = np.linalg.norm(e1loc - position)
-                    dp2 = np.linalg.norm(e2loc - position)
-                    dpLine = np.linalg.norm(e1loc - e2loc)
-                    
-                    if dp1 + dp2 <= dpLine + self.tol:
-                        inside = True
-                        break
-        return inside
-    
-class DefaultBoundary(df.SubDomain):
-    
-    def inside(self, x, on_boundary):
-        return on_boundary
-    
-class OnVesselCentre(df.SubDomain):
-     
-    def set_network(self, network, tol = 1.e-3):
-        self.network = network
-        self.tol = tol
-        vtk_to_tri = chaste.geometry.other.VtkToTri()
-        points, edges = vtk_to_tri.generate(self.network)
-        self.points = points
-        self.edges = edges
-        
-    def inside(self, x, on_boundary):
-         
-        if len(x) == 2:
-            position = np.array((x[0], x[1], 0.0))
-        else:
-            position = np.array(x)
-        
-        am_inside = False
-        for eachEdge in self.edges:
-            if len(self.points[eachEdge[0]]) == 2:
-                e1loc = np.array((self.points[eachEdge[0]][0], self.points[eachEdge[0]][1], 0.0))
-                e2loc = np.array((self.points[eachEdge[1]][0], self.points[eachEdge[1]][1], 0.0))
-            else:
-                e1loc = np.array(self.points[eachEdge[0]])
-                e2loc = np.array(self.points[eachEdge[1]])
-            if vtk.vtkLine.DistanceToLine(position, e1loc, e2loc) <= self.tol:
-                dp1 = np.linalg.norm(e1loc - position)
-                dp2 = np.linalg.norm(e2loc - position)
-                dpLine = np.linalg.norm(e1loc - e2loc)
-                if dp1 + dp2 <= dpLine + self.tol:
-                    am_inside = True
-                    break
-        return am_inside
+# class LineBoundary(df.SubDomain):
+#     
+#     def set_edges(self, edges, tol = 1.e-3):
+#         self.edges = edges
+#         self.tol = tol
+#     
+#     def inside(self, x, on_boundary):
+#         
+#         inside = False
+#         
+#         if len(x) == 2:
+#             position = np.array((x[0], x[1], 0.0))
+#         else:
+#             position = np.array(x)
+#             
+#         if on_boundary:
+#             for eachEdge in self.edges:
+#                 if len(eachEdge[0]) == 2:
+#                     e1loc = np.array((eachEdge[0][0], eachEdge[0][1], 0.0))
+#                     e2loc = np.array((eachEdge[1][0], eachEdge[1][1], 0.0))
+#                 else:
+#                     e1loc = np.array(eachEdge[0])
+#                     e2loc = np.array(eachEdge[1])
+#                 if vtk.vtkLine.DistanceToLine(position, e1loc, e2loc) <= self.tol:
+#                     dp1 = np.linalg.norm(e1loc - position)
+#                     dp2 = np.linalg.norm(e2loc - position)
+#                     dpLine = np.linalg.norm(e1loc - e2loc)
+#                     
+#                     if dp1 + dp2 <= dpLine + self.tol:
+#                         inside = True
+#                         break
+#         return inside
+#     
+# class DefaultBoundary(df.SubDomain):
+#     
+#     def inside(self, x, on_boundary):
+#         return on_boundary
+#     
+# class OnVesselCentre(df.SubDomain):
+#      
+#     def set_network(self, network, tol = 1.e-3):
+#         self.network = network
+#         self.tol = tol
+#         vtk_to_tri = chaste.geometry.other.VtkToTri()
+#         points, edges = vtk_to_tri.generate(self.network)
+#         self.points = points
+#         self.edges = edges
+#         
+#     def inside(self, x, on_boundary):
+#          
+#         if len(x) == 2:
+#             position = np.array((x[0], x[1], 0.0))
+#         else:
+#             position = np.array(x)
+#         
+#         am_inside = False
+#         for eachEdge in self.edges:
+#             if len(self.points[eachEdge[0]]) == 2:
+#                 e1loc = np.array((self.points[eachEdge[0]][0], self.points[eachEdge[0]][1], 0.0))
+#                 e2loc = np.array((self.points[eachEdge[1]][0], self.points[eachEdge[1]][1], 0.0))
+#             else:
+#                 e1loc = np.array(self.points[eachEdge[0]])
+#                 e2loc = np.array(self.points[eachEdge[1]])
+#             if vtk.vtkLine.DistanceToLine(position, e1loc, e2loc) <= self.tol:
+#                 dp1 = np.linalg.norm(e1loc - position)
+#                 dp2 = np.linalg.norm(e2loc - position)
+#                 dpLine = np.linalg.norm(e1loc - e2loc)
+#                 if dp1 + dp2 <= dpLine + self.tol:
+#                     am_inside = True
+#                     break
+#         return am_inside

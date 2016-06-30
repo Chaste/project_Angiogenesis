@@ -32,11 +32,11 @@
 
  */
 
-//#ifdef CHASTE_ANGIOGENESIS_VMTK
+#ifdef CHASTE_ANGIOGENESIS_EXTENDED
 #include "Exception.hpp"
 #include "ImageToSkeleton.hpp"
-#include <itkImage.h>
-#include <itkVTKImageToImageFilter.h>
+//#include <itkImage.h>
+//#include <itkVTKImageToImageFilter.h>
 #include <vtkImageSkeleton2D.h>
 #include <vtkPointData.h>
 #include <vtkCellData.h>
@@ -110,11 +110,11 @@ void ImageToSkeleton::Update()
     mpImage->GetPointData()->SetScalars(mpImage->GetPointData()->GetArray("ImageScalars"));
     mpImage->GetCellData()->SetScalars(mpImage->GetPointData()->GetArray("ImageScalars"));
 
-    typedef itk::Image<unsigned char, 2> ImageType;
-    typedef itk::VTKImageToImageFilter<ImageType> VTKImageToImageType;
-    VTKImageToImageType::Pointer vtkImageToImageFilter = VTKImageToImageType::New();
-    vtkImageToImageFilter->SetInput(mpImage);
-    vtkImageToImageFilter->Update();
+//    typedef itk::Image<unsigned char, 2> ImageType;
+//    typedef itk::VTKImageToImageFilter<ImageType> VTKImageToImageType;
+//    VTKImageToImageType::Pointer vtkImageToImageFilter = VTKImageToImageType::New();
+//    vtkImageToImageFilter->SetInput(mpImage);
+//    vtkImageToImageFilter->Update();
 
     vtkSmartPointer<vtkImageSkeleton2D> p_skeleton = vtkSmartPointer<vtkImageSkeleton2D>::New();
     p_skeleton->SetInput(mpImage);
@@ -124,4 +124,4 @@ void ImageToSkeleton::Update()
     mpSkeleton = p_skeleton->GetOutput();
 
 }
-//#endif /*CHASTE_ANGIOGENESIS_VMTK*/
+#endif /*CHASTE_ANGIOGENESIS_EXTENDED*/

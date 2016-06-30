@@ -62,8 +62,13 @@ set_directory_properties(PROPERTIES EP_BASE "${CMAKE_BINARY_DIR}/third_party")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 
 # Find Python
-find_package(PythonLibs REQUIRED)
+find_package(PythonLibs 2.7 REQUIRED)
+find_package( PythonInterp 2.7 REQUIRED )
 include_directories(${PYTHON_INCLUDE_DIRS})
+message(STATUS ${PYTHON_INCLUDE_DIRS})
+message(STATUS ${PYTHON_LIBRARY})
+message(STATUS ${PYTHON_LIBRARIES})
+message(STATUS ${PYTHON_EXECUTABLE})
 
 if(BUILD_Xerces)
     include(External_xerces)

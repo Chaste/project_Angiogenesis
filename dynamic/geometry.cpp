@@ -46,6 +46,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Part.hpp"
 #include "MappableGridGenerator.hpp"
 #include "converters.hpp"
+#include "VtkSurfaceCleaner.hpp"
+#include "VtkBoundaryExtractor.hpp"
 using namespace boost::python;
 
 // Pointer to overloaded member functions
@@ -121,6 +123,23 @@ BOOST_PYTHON_MODULE(_geometry)
         .def("GeneratePlane", &MappableGridGenerator::GeneratePlane)
         .def("GenerateCylinder", &MappableGridGenerator::GenerateCylinder)
         .def("GenerateHemisphere", &MappableGridGenerator::GenerateHemisphere)
+    ;
+
+    class_<VtkSurfaceCleaner, boost::shared_ptr<VtkSurfaceCleaner> >("VtkSurfaceCleaner")
+        .def("SetInput",&VtkSurfaceCleaner::SetInput)
+        .def("SetDecimateTargetReduction",&VtkSurfaceCleaner::SetDecimateTargetReduction)
+        .def("SetDecimateFeatureAngle",&VtkSurfaceCleaner::SetDecimateFeatureAngle)
+        .def("SetLinearSubdivisionNumber",&VtkSurfaceCleaner::SetLinearSubdivisionNumber)
+        .def("Update",&VtkSurfaceCleaner::Update)
+        .def("GetOutput",&VtkSurfaceCleaner::GetOutput)
+    ;
+
+    class_<VtkBoundaryExtractor, boost::shared_ptr<VtkBoundaryExtractor> >("VtkBoundaryExtractor")
+        .def("SetInput",&VtkBoundaryExtractor::SetInput)
+        .def("SetSmoothingLength",&VtkBoundaryExtractor::SetSmoothingLength)
+        .def("SetDoSmoothing",&VtkBoundaryExtractor::SetDoSmoothing)
+        .def("Update",&VtkBoundaryExtractor::Update)
+        .def("GetOutput",&VtkBoundaryExtractor::GetOutput)
     ;
 
     // Containers

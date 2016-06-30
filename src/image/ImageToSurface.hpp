@@ -77,6 +77,8 @@ public:
 
     void SetInput(vtkSmartPointer<vtkImageData> pImage);
 
+    void SetInputRaw(vtkImageData* pImage);
+
     void SetThreshold(double threshold, bool segmentAboveThreshold);
 
     void SetUseMarchingCubes(bool useMarchingCubes);

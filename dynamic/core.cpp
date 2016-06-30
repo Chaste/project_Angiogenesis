@@ -92,6 +92,9 @@ BOOST_PYTHON_MODULE(_core)
     boost::python::to_python_converter<c_vector<double, 6>, CVectorToNumpyArray<c_vector<double, 6> > >();
     boost::python::to_python_converter<std::vector<double>, StdVectorDoubleToNumpyArray<std::vector<double> > >();
 
+    converter::registry::insert(&extract_vtk_wrapped_pointer, type_id<vtkImageData>());
+    converter::registry::insert(&extract_vtk_wrapped_pointer, type_id<vtkSmartPointer<vtkImageData> >());
+
     class_<std::vector<unsigned> > ("VecUnsigned")
          .def(vector_ptr_indexing_suite<std::vector<unsigned> >())
     ;

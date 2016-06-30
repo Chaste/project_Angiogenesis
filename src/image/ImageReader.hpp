@@ -33,7 +33,7 @@
 
  */
 
-//#ifdef CHASTE_ANGIOGENESIS_VMTK
+#ifdef CHASTE_ANGIOGENESIS_EXTENDED
 #ifndef ImageReader_HPP_
 #define ImageReader_HPP_
 
@@ -83,4 +83,4 @@ public:
 };
 
 #endif /*ImageReader_HPP_*/
-//#endif /*CHASTE_ANGIOGENESIS_VMTK*/
+#endif /*CHASTE_ANGIOGENESIS_EXTENDED*/

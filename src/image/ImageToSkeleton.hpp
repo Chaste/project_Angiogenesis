@@ -32,7 +32,7 @@
  OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
-//#ifdef CHASTE_ANGIOGENESIS_VMTK
+#ifdef CHASTE_ANGIOGENESIS_EXTENDED
 #ifndef ImageToSkeleton_HPP_
 #define ImageToSkeleton_HPP_
 
@@ -84,4 +84,4 @@ public:
 };
 
 #endif /*ImageToSkeleton_HPP_*/
-//#endif /*CHASTE_ANGIOGENESIS_VMTK*/
+#endif /*CHASTE_ANGIOGENESIS_EXTENDED*/

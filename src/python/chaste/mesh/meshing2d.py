@@ -17,13 +17,16 @@ class ChasteGeometryMesher2d(bases.SimpleIOBase):
     def update(self):
         
         # convert to vtk
-        vtk_geometry = self.input.GetVtk(True)
+#        vtk_geometry = self.input.GetVtk(True)
+        vtk_geometry = self.input
       
         # convert vtk to MeshPy Tri format
         converter = converters.VtkToTriMesh()
         converter.input = vtk_geometry
         converter.update()
         points, edges = converter.output
+        
+        print points, edges
         
         # Do the meshing with triangle
         mesh_info = MeshInfo()
@@ -45,14 +48,15 @@ class ChasteGeometryMesher2d(bases.SimpleIOBase):
                 mesh_info.holes.resize(len(self.holes))
                 for idx, eachHole in enumerate(self.holes):
                     mesh_info.holes[idx] = [eachHole[0], eachHole[1]]             
-            self.output = build(mesh_info, volume_constraints=True, attributes=True, generate_faces=True)
+            data = build(mesh_info, volume_constraints=True, attributes=True, generate_faces=True)
+            self.output = [data.points, data.elements]
         else:
             if self.holes is not None:
                 mesh_info.holes.resize(len(self.holes))
                 for idx, eachHole in enumerate(self.holes):
                     mesh_info.holes[idx] = [eachHole[0], eachHole[1]]
-            self.output = build(mesh_info, max_volume = self.region1_mesh_size)
-            
+            data = build(mesh_info, max_volume = self.region1_mesh_size)
+            self.output = [data.points, data.elements]
         return self.output
         
 class EmbeddedChasteGeometryMesher2d(bases.SimpleIOBase):

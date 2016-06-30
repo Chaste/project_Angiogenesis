@@ -38,13 +38,13 @@
 
 #include <cxxtest/TestSuite.h>
 #include "SmartPointers.hpp"
-//#ifdef CHASTE_ANGIOGENESIS_VMTK
+#ifdef CHASTE_ANGIOGENESIS_EXTENDED
 #include <vtkXMLPolyDataWriter.h>
 #include <vtkXMLImageDataWriter.h>
 #include <vtkSmartPointer.h>
 #include "ImageToSkeleton.hpp"
 #include "ImageReader.hpp"
-//#endif /*CHASTE_ANGIOGENESIS_VMTK*/
+#endif /*CHASTE_ANGIOGENESIS_EXTENDED*/
 
 #include "FileFinder.hpp"
 #include "OutputFileHandler.hpp"
@@ -55,7 +55,7 @@ public:
 
     void TestDefaultExtraction()
     {
-//        #ifdef CHASTE_ANGIOGENESIS_VMTK
+        #ifdef CHASTE_ANGIOGENESIS_EXTENDED
 
         // Read the image from file
         OutputFileHandler file_handler1 = OutputFileHandler("TestImageToSkeleton/");
@@ -77,7 +77,7 @@ public:
         p_writer1->SetInput(reader.GetOutput());
         p_writer1->Write();
 
-//        #endif /*CHASTE_ANGIOGENESIS_VMTK*/
+        #endif /*CHASTE_ANGIOGENESIS_EXTENDED*/
     }
 };
 #endif

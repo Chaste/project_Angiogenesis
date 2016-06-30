@@ -38,7 +38,7 @@
 
 #include <cxxtest/TestSuite.h>
 #include "SmartPointers.hpp"
-//#ifdef CHASTE_ANGIOGENESIS_VMTK
+#ifdef CHASTE_ANGIOGENESIS_EXTENDED
 #include <vtkXMLPolyDataWriter.h>
 #include <vtkXMLImageDataWriter.h>
 #include <vtkSmartPointer.h>
@@ -46,8 +46,7 @@
 #include "ImageReader.hpp"
 #include "VtkSurfaceCleaner.hpp"
 #include "VtkSurfaceWriter.hpp"
-
-//#endif /*CHASTE_ANGIOGENESIS_VMTK*/
+#endif /*CHASTE_ANGIOGENESIS_EXTENDED*/
 
 #include "FileFinder.hpp"
 #include "OutputFileHandler.hpp"
@@ -58,7 +57,7 @@ public:
 
     void TestDefaultExtraction()
     {
-//        #ifdef CHASTE_ANGIOGENESIS_VMTK
+        #ifdef CHASTE_ANGIOGENESIS_EXTENDED
 
         // Read the image from file
         OutputFileHandler file_handler1 = OutputFileHandler("TestImageToSurface/");
@@ -89,8 +88,8 @@ public:
         // Clean the surface
         boost::shared_ptr<VtkSurfaceCleaner> p_cleaner = VtkSurfaceCleaner::Create();
         p_cleaner->SetInput(surface_extract.GetOutput());
-        p_cleaner->SetDecimateTargetReduction(0.99);
-        p_cleaner->SetLinearSubdivisionNumber(3);
+        p_cleaner->SetDecimateTargetReduction(0.995);
+        p_cleaner->SetLinearSubdivisionNumber(1);
         p_cleaner->Update();
 
         p_writer->SetFileName((file_handler1.GetOutputDirectoryFullPath()+"surface_cleaned.vtp").c_str());
@@ -101,8 +100,7 @@ public:
         p_writer->SetWriteStl(true);
         p_writer->Write();
 
-
-//        #endif /*CHASTE_ANGIOGENESIS_VMTK*/
+        #endif /*CHASTE_ANGIOGENESIS_EXTENDED*/
     }
 };
 #endif
