@@ -39,17 +39,12 @@
 #include <cxxtest/TestSuite.h>
 #include "SmartPointers.hpp"
 #ifdef CHASTE_ANGIOGENESIS_EXTENDED
-#include <vtkXMLPolyDataWriter.h>
-#include <vtkXMLImageDataWriter.h>
-#include <vtkSmartPointer.h>
-#include "ImageToSkeleton.hpp"
 #include "ImageIO.hpp"
 #endif /*CHASTE_ANGIOGENESIS_EXTENDED*/
-
 #include "FileFinder.hpp"
 #include "OutputFileHandler.hpp"
 
-class TestImageToSkeleton : public CxxTest::TestSuite
+class TestImageIO : public CxxTest::TestSuite
 {
 public:
 
@@ -58,33 +53,34 @@ public:
         #ifdef CHASTE_ANGIOGENESIS_EXTENDED
 
         // Read the image from file
-        OutputFileHandler file_handler1 = OutputFileHandler("TestImageToSkeleton/");
-//        FileFinder finder = FileFinder("projects/Angiogenesis/test/data/median.tif", RelativeTo::ChasteSourceRoot);
-//        FileFinder finder = FileFinder("projects/Angiogenesis/test/data/domain.png", RelativeTo::ChasteSourceRoot);
-//        FileFinder finder = FileFinder("projects/Angiogenesis/test/data/test.tif", RelativeTo::ChasteSourceRoot);
+        OutputFileHandler file_handler1 = OutputFileHandler("TestImageIO/");
+        FileFinder finder = FileFinder("projects/Angiogenesis/test/data/median.tif", RelativeTo::ChasteSourceRoot);
 
-        ImageIO reader = ImageIO();
-//        reader.SetFilename(finder.GetAbsolutePath());
-        reader.SetFilename("/home/grogan/median.tif");
-        reader.SetImageResizeFactors(0.5, 0.5, 1.0);
-        reader.ReadVtkImage();
+        ImageIO image_io = ImageIO();
 
-        vtkSmartPointer<vtkXMLImageDataWriter> p_writer = vtkSmartPointer<vtkXMLImageDataWriter>::New();
-        p_writer->SetFileName((file_handler1.GetOutputDirectoryFullPath()+"initial.vti").c_str());
-        p_writer->SetInput(reader.GetVtkImage());
-        p_writer->Write();
+        // Read the file in vtk format
+        image_io.SetFilename(finder.GetAbsolutePath());
+        image_io.SetImageResizeFactors(0.5, 0.5, 1.0);
+        image_io.ReadVtkImage();
 
-        // Extract the surface
-        ImageToSkeleton skeleton_extract = ImageToSkeleton();
-        skeleton_extract.SetInput(reader.GetVtkImage());
-        skeleton_extract.SetReverseIntensity(true);
-        skeleton_extract.SetUseVtkVersion(false);
-        skeleton_extract.Update();
+        // Write it out in VTI format
+        image_io.SetFilename(file_handler1.GetOutputDirectoryFullPath()+"image_vtk_format.vti");
+        image_io.WriteVtkImage();
 
-        vtkSmartPointer<vtkXMLImageDataWriter> p_writer1 = vtkSmartPointer<vtkXMLImageDataWriter>::New();
-        p_writer1->SetFileName((file_handler1.GetOutputDirectoryFullPath()+"skeleton.vti").c_str());
-        p_writer1->SetInput(skeleton_extract.GetOutput());
-        p_writer1->Write();
+        // Write it out in PNG format using ITK
+        image_io.SetFilename(file_handler1.GetOutputDirectoryFullPath()+"image_itk_format.png");
+        image_io.ConvertVtkToItk();
+        image_io.WriteItkImage();
+
+        // Read the image using ITK
+        image_io.SetFilename(finder.GetAbsolutePath());
+        image_io.ReadItkImage();
+
+        // Write it out in VTK format
+        image_io.ConvertItkToVtk();
+        image_io.SetFilename(file_handler1.GetOutputDirectoryFullPath()+"image_vtk_from_itk_format.vti");
+        image_io.WriteVtkImage();
+
         #endif /*CHASTE_ANGIOGENESIS_EXTENDED*/
     }
 };

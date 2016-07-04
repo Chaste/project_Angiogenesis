@@ -35,17 +35,25 @@
 #ifdef CHASTE_ANGIOGENESIS_EXTENDED
 #include "Exception.hpp"
 #include "ImageToSkeleton.hpp"
-//#include <itkImage.h>
-//#include <itkVTKImageToImageFilter.h>
+#include <itkImage.h>
+#include <itkImageFileWriter.h>
+#include <itkImageFileReader.h>
+#include <itkBinaryThinningImageFilter.h>
+#include <itkImageToVTKImageFilter.h>
+#include <itkTIFFImageIOFactory.h>
+#include <itkVTKImageToImageFilter.h>
 #include <vtkImageSkeleton2D.h>
+#include <vtkImageShiftScale.h>
 #include <vtkPointData.h>
 #include <vtkCellData.h>
-
+#include <vtkImageCast.h>
+#include "itkPNGImageIOFactory.h"
 
 ImageToSkeleton::ImageToSkeleton()
-    : mpImage(),
-      mpSkeleton(),
-      mReverseIntensity(false)
+    : mpImage(vtkSmartPointer<vtkImageData>::New()),
+      mpSkeleton(vtkSmartPointer<vtkImageData>::New()),
+      mReverseIntensity(false),
+      mUseVTKVersion(true)
 {
 
 }
@@ -83,6 +91,11 @@ void ImageToSkeleton::SetInput(vtkSmartPointer<vtkImageData> pImage)
     mpImage = pImage;
 }
 
+void ImageToSkeleton::SetUseVtkVersion(bool value)
+{
+    mUseVTKVersion = value;
+}
+
 void ImageToSkeleton::Update()
 {
     if(!mpImage)
@@ -90,38 +103,75 @@ void ImageToSkeleton::Update()
         EXCEPTION("No input set.");
     }
 
-    if(mReverseIntensity)
+    if(mUseVTKVersion)
     {
-        double max_intensity = mpImage->GetPointData()->GetArray("ImageScalars")->GetDataTypeMax();
-        if(max_intensity>0.0)
-        {
-            for(unsigned idx=0; idx< mpImage->GetNumberOfPoints(); idx++)
-            {
-                double current_intensity = mpImage->GetPointData()->GetArray("ImageScalars")->GetTuple1(idx);
-                double new_value = max_intensity - current_intensity;
-                if(new_value==1.0)
-                {
-                    new_value = 2.0;
-                }
-                mpImage->GetPointData()->GetArray("ImageScalars")->SetTuple1(idx, new_value);
-            }
-        }
+        vtkSmartPointer<vtkImageShiftScale> imCast1 = vtkSmartPointer<vtkImageShiftScale>::New();
+        imCast1->SetOutputScalarTypeToUnsignedChar();
+        imCast1->SetInput(mpImage);
+        imCast1->Update();
+
+        vtkSmartPointer<vtkImageSkeleton2D> p_skeleton = vtkSmartPointer<vtkImageSkeleton2D>::New();
+        p_skeleton->SetInput(imCast1->GetOutput());
+        p_skeleton->SetNumberOfIterations(100);
+        p_skeleton->SetPrune(0);
+        p_skeleton->ReleaseDataFlagOff();
+        p_skeleton->Update();
+        mpSkeleton = p_skeleton->GetOutput();
     }
-    mpImage->GetPointData()->SetScalars(mpImage->GetPointData()->GetArray("ImageScalars"));
-    mpImage->GetCellData()->SetScalars(mpImage->GetPointData()->GetArray("ImageScalars"));
+    else
+    {
+        itk::TIFFImageIOFactory::RegisterOneFactory();
 
-//    typedef itk::Image<unsigned char, 2> ImageType;
-//    typedef itk::VTKImageToImageFilter<ImageType> VTKImageToImageType;
-//    VTKImageToImageType::Pointer vtkImageToImageFilter = VTKImageToImageType::New();
-//    vtkImageToImageFilter->SetInput(mpImage);
-//    vtkImageToImageFilter->Update();
+        typedef itk::Image<unsigned char, 2> ImageType;
+        typedef itk::ImageFileReader<ImageType> ImageReader;
+        ImageReader::Pointer reader = ImageReader::New();
+        reader->SetFileName("/home/grogan/median.tif");
+        reader->Update();
 
-    vtkSmartPointer<vtkImageSkeleton2D> p_skeleton = vtkSmartPointer<vtkImageSkeleton2D>::New();
-    p_skeleton->SetInput(mpImage);
-    p_skeleton->SetNumberOfIterations(20);
-    p_skeleton->ReleaseDataFlagOff();
-    p_skeleton->Update();
-    mpSkeleton = p_skeleton->GetOutput();
+//        vtkSmartPointer<vtkImageShiftScale> imCast1 = vtkSmartPointer<vtkImageShiftScale>::New();
+//        imCast1->SetOutputScalarTypeToUnsignedChar();
+//        imCast1->SetInput(mpImage);
+//        imCast1->Update();
+
+//        typedef itk::Image<unsigned char, 2> ImageType;
+//        typedef itk::VTKImageToImageFilter<ImageType> VTKImageToImageType;
+//        VTKImageToImageType::Pointer vtkImageToImageFilter = VTKImageToImageType::New();
+//        vtkImageToImageFilter->SetInput(mpImage);
+//        vtkImageToImageFilter->Update();
+
+        typedef itk::BinaryThinningImageFilter<ImageType, ImageType> BinaryThinningImageFilterType;
+        BinaryThinningImageFilterType::Pointer binaryThinningImageFilter = BinaryThinningImageFilterType::New();
+//        binaryThinningImageFilter->SetInput(vtkImageToImageFilter->GetOutput());
+        binaryThinningImageFilter->SetInput(reader->GetOutput());
+        binaryThinningImageFilter->Update();
+
+        typedef itk::ImageToVTKImageFilter<ImageType> ConnectorType;
+        ConnectorType::Pointer connector = ConnectorType::New();
+        connector->SetInput(binaryThinningImageFilter->GetOutput());
+        connector->Update();
+        connector->UpdateOutputInformation();
+
+        vtkSmartPointer<vtkImageCast> imCast = vtkSmartPointer<vtkImageCast>::New();
+        imCast->SetOutputScalarTypeToFloat();
+        imCast->SetInput(connector->GetOutput());
+
+        vtkImageData* p_output = imCast->GetOutput();
+        p_output->Update();
+        p_output->Register(NULL); // Avoids memory problems.
+        mpSkeleton.TakeReference(p_output);
+
+        // Todo move below to own class
+//        itk::PNGImageIOFactory::RegisterOneFactory();
+//        typedef  itk::ImageFileWriter< ImageType  > WriterType;
+//        WriterType::Pointer writer = WriterType::New();
+//        writer->SetFileName("/home/grogan/test.png");
+//        writer->SetInput(vtkImageToImageFilter->GetOutput());
+//        writer->Update();
+    }
+
+    // Convert to polydata. Iterate over the grid.
+
+
 
 }
 #endif /*CHASTE_ANGIOGENESIS_EXTENDED*/

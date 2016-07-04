@@ -6,6 +6,7 @@ set(itk_cmds
 CMAKE_ARGS -DBUILD_SHARED_LIBS:BOOL=ON 
     -DBUILD_EXAMPLES:BOOL=off 
     -DITK_WRAP_PYTHON:BOOL=ON 
+    -DCMAKE_BUILD_TYPE:STRING=Release
     -DITK_USE_FLAT_DIRECTORY_INSTALL:BOOL=ON 
     -DITK_USE_REVIEW:BOOL=ON # important
     -DModule_ITKReview:BOOL=ON # not sure if needed, playing it safe

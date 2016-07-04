@@ -38,17 +38,14 @@
 
 #include "SmartPointers.hpp"
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning
-
 #include <vtkImageData.h>
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
 
 /**
-* Extract a vtkpolydata surface from an image using thresholding.
- * If marching cubes are used the result is an isosurface on the 'threshold' value. Otherwise
- * the surface is composed of all regions either above or below the threshold value. Surfaces
- * may need 'cleaning' before further processing. This can be done with an 'ImageCleaner'.
- */
+* Get the skeleton of an image using binary thinning filters. The skeleton is a 1 pixel wide representation
+* of features in the image.
+*/
 class ImageToSkeleton
 {
     /**
@@ -59,6 +56,8 @@ class ImageToSkeleton
     vtkSmartPointer<vtkImageData> mpSkeleton;
 
     bool mReverseIntensity;
+
+    bool mUseVTKVersion;
 
 public:
 
@@ -77,6 +76,8 @@ public:
     void SetInput(vtkSmartPointer<vtkImageData> pImage);
 
     void SetReverseIntensity(bool value);
+
+    void SetUseVtkVersion(bool value);
 
     void Update();
 
