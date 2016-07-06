@@ -709,7 +709,7 @@ void RegularGrid<ELEMENT_DIM, SPACE_DIM>::SetVesselNetwork(boost::shared_ptr<Ves
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void RegularGrid<ELEMENT_DIM, SPACE_DIM>::Write(boost::shared_ptr<OutputFileHandler> pFileHandler)
+vtkSmartPointer<vtkImageData> RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetVtkGrid()
 {
     if (!mVtkGridIsSetUp)
     {
@@ -728,10 +728,15 @@ void RegularGrid<ELEMENT_DIM, SPACE_DIM>::Write(boost::shared_ptr<OutputFileHand
         }
         mpVtkGrid->GetPointData()->AddArray(pPointData);
     }
+    return mpVtkGrid;
+}
 
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+void RegularGrid<ELEMENT_DIM, SPACE_DIM>::Write(boost::shared_ptr<OutputFileHandler> pFileHandler)
+{
     vtkSmartPointer<vtkXMLImageDataWriter> pImageDataWriter = vtkSmartPointer<vtkXMLImageDataWriter>::New();
     pImageDataWriter->SetFileName((pFileHandler->GetOutputDirectoryFullPath() + "/grid.vti").c_str());
-    pImageDataWriter->SetInput(mpVtkGrid);
+    pImageDataWriter->SetInput(GetVtkGrid());
     pImageDataWriter->Update();
     pImageDataWriter->Write();
 }

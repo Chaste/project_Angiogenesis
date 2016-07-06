@@ -38,7 +38,8 @@
 template<unsigned DIM>
 NodeFlowProperties<DIM>::NodeFlowProperties() : AbstractVesselNetworkComponentFlowProperties<DIM>(),
         mIsInputNode(false),
-        mIsOutputNode(false)
+        mIsOutputNode(false),
+        mUseVelocityBoundaryCondition(false)
 {
 
 }
@@ -82,6 +83,18 @@ template<unsigned DIM>
 void NodeFlowProperties<DIM>::SetIsOutputNode(bool outputNode)
 {
     mIsOutputNode = outputNode;
+}
+
+template<unsigned DIM>
+void NodeFlowProperties<DIM>::SetUseVelocityBoundaryCondition(bool useVelocity)
+{
+    mUseVelocityBoundaryCondition = useVelocity;
+}
+
+template<unsigned DIM>
+bool NodeFlowProperties<DIM>::UseVelocityBoundaryCondition()
+{
+    return mUseVelocityBoundaryCondition;
 }
 
 // Explicit instantiation

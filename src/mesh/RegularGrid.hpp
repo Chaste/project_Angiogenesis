@@ -248,6 +248,9 @@ public:
      */
     double GetSpacing();
 
+
+    vtkSmartPointer<vtkImageData> GetVtkGrid();
+
     /**
      * Sample a function specified on the grid at the specified locations
      * @param locations the sample locations

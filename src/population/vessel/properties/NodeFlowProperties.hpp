@@ -63,6 +63,11 @@ private:
      */
     bool mIsOutputNode;
 
+    /**
+     *  Whether to use the nodal pressure or segment velocity as a boundary condition
+     */
+    bool mUseVelocityBoundaryCondition;
+
 
 public:
 
@@ -105,6 +110,10 @@ public:
      * @param isOutput whether the node is an output
      */
     void SetIsOutputNode(bool isOutput);
+
+    void SetUseVelocityBoundaryCondition(bool useVelocity);
+
+    bool UseVelocityBoundaryCondition();
 };
 
 #endif /* NODEFLOWPROPERTIES_HPP_ */

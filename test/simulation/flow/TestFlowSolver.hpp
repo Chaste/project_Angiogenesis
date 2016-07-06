@@ -44,7 +44,6 @@
 #include "VasculatureGenerator.hpp"
 #include "FlowSolver.hpp"
 #include "FakePetscSetup.hpp"
-#include "UnitCollection.hpp"
 
 class TestFlowSolver : public CxxTest::TestSuite
 {
@@ -60,12 +59,7 @@ public:
 
     void TestFlowThroughSingleSegment() throw (Exception)
     {
-
         // Make some nodes
-        std::vector<ChastePoint<3> > points;
-        points.push_back(ChastePoint<3>(0, 0, 0));
-        points.push_back(ChastePoint<3>(5, 0, 0));
-
         boost::shared_ptr<VesselNode<3> > pn1 = VesselNode<3>::Create(0, 0, 0);
         boost::shared_ptr<VesselNode<3> > pn2 = VesselNode<3>::Create(5, 0, 0);
 
@@ -76,8 +70,8 @@ public:
         boost::shared_ptr<VesselNetwork<3> > p_vascular_network = VesselNetwork<3>::Create();
         p_vascular_network->AddVessel(p_vessel);
 
-        units::quantity<unit::flow_impedance> impedance = 1.e12 * unit::unit_flow_impedance;
-        p_segment->GetFlowProperties()->SetDimensionalImpedance(impedance);
+        double impedance = 1.e12;
+        p_segment->GetFlowProperties()->SetImpedance(impedance);
         p_vascular_network->SetSegmentProperties(p_segment);
 
         p_vessel->GetStartNode()->GetFlowProperties()->SetIsInputNode(true);
@@ -94,11 +88,88 @@ public:
         TS_ASSERT_DELTA(p_vessel->GetStartNode()->GetFlowProperties()->GetPressure(), 3393, 1e-6);
         TS_ASSERT_DELTA(p_vessel->GetEndNode()->GetFlowProperties()->GetPressure(), 1000.5, 1e-6);
 
-        TS_ASSERT_DELTA(p_vessel->GetFlowProperties()->GetDimensionalFlowRate(p_vessel->GetSegments())/unit::unit_flow_rate, (3393 - 1000.5) *unit::unit_flow_impedance/ impedance, 1e-6);
-        TS_ASSERT_DELTA(p_segment->GetFlowProperties()->GetDimensionalFlowRate()/unit::unit_flow_rate, (3393 - 1000.5)*unit::unit_flow_impedance / impedance, 1e-6);
+        TS_ASSERT_DELTA(p_vessel->GetFlowProperties()->GetFlowRate(p_vessel->GetSegments()), (3393 - 1000.5) / impedance, 1e-6);
+        TS_ASSERT_DELTA(p_segment->GetFlowProperties()->GetFlowRate(), (3393 - 1000.5) / impedance, 1e-6);
 
-        p_segment->GetFlowProperties()->SetDimensionalImpedance(-1.0*unit::unit_flow_impedance);
+        p_segment->GetFlowProperties()->SetImpedance(-1.0);
         TS_ASSERT_THROWS_THIS(solver.Update(), "Impedance should be a positive number.");
+    }
+
+    void TestFlowThroughSingleSegmentVelocityBc() throw (Exception)
+    {
+        boost::shared_ptr<VesselNode<3> > pn1 = VesselNode<3>::Create(0, 0, 0);
+        boost::shared_ptr<VesselNode<3> > pn2 = VesselNode<3>::Create(5, 0, 0);
+
+        SegmentPtr3 p_segment(VesselSegment<3>::Create(pn1, pn2));
+        VesselPtr3 p_vessel(Vessel<3>::Create(p_segment));
+
+        // Generate the network
+        boost::shared_ptr<VesselNetwork<3> > p_vascular_network = VesselNetwork<3>::Create();
+        p_vascular_network->AddVessel(p_vessel);
+
+        double impedance = 1.e12;
+        p_segment->GetFlowProperties()->SetImpedance(impedance);
+        p_vascular_network->SetSegmentProperties(p_segment);
+
+        p_vessel->GetStartNode()->GetFlowProperties()->SetIsInputNode(true);
+        p_vessel->GetStartNode()->GetFlowProperties()->SetUseVelocityBoundaryCondition(true);
+
+        p_vessel->GetEndNode()->GetFlowProperties()->SetIsOutputNode(true);
+        p_vessel->GetEndNode()->GetFlowProperties()->SetPressure(0.0);
+        p_vessel->GetFlowProperties()->SetFlowRate(1.e-9, p_vessel->GetSegments());
+
+        FlowSolver<3> solver;
+        solver.SetVesselNetwork(p_vascular_network);
+        solver.SetUp();
+        solver.Solve();
+
+        TS_ASSERT_DELTA(p_vessel->GetStartNode()->GetFlowProperties()->GetPressure(), 1000.0, 1e-6);
+        TS_ASSERT_DELTA(p_vessel->GetEndNode()->GetFlowProperties()->GetPressure(), 0.0, 1e-6);
+        TS_ASSERT_DELTA(p_vessel->GetFlowProperties()->GetFlowRate(p_vessel->GetSegments()), 1.e-9, 1e-6);
+    }
+
+    void TestFlowThroughBifurcationVelocityBc() throw (Exception)
+    {
+        boost::shared_ptr<VesselNode<3> > pn1 = VesselNode<3>::Create(0, 0, 0);
+        boost::shared_ptr<VesselNode<3> > pn2 = VesselNode<3>::Create(5, 0, 0);
+        boost::shared_ptr<VesselNode<3> > pn3 = VesselNode<3>::Create(10, 5, 0);
+        boost::shared_ptr<VesselNode<3> > pn4 = VesselNode<3>::Create(10, -5, 0);
+        SegmentPtr3 p_segment1(VesselSegment<3>::Create(pn1, pn2));
+        SegmentPtr3 p_segment2(VesselSegment<3>::Create(pn2, pn3));
+        SegmentPtr3 p_segment3(VesselSegment<3>::Create(pn2, pn4));
+        VesselPtr3 p_vessel1(Vessel<3>::Create(p_segment1));
+        VesselPtr3 p_vessel2(Vessel<3>::Create(p_segment2));
+        VesselPtr3 p_vessel3(Vessel<3>::Create(p_segment3));
+
+        // Generate the network
+        boost::shared_ptr<VesselNetwork<3> > p_vascular_network = VesselNetwork<3>::Create();
+        p_vascular_network->AddVessel(p_vessel1);
+        p_vascular_network->AddVessel(p_vessel2);
+        p_vascular_network->AddVessel(p_vessel3);
+
+        double impedance = 1.e12;
+        p_segment1->GetFlowProperties()->SetImpedance(impedance);
+        p_vascular_network->SetSegmentProperties(p_segment1);
+
+        p_vessel1->GetStartNode()->GetFlowProperties()->SetIsInputNode(true);
+        p_vessel1->GetStartNode()->GetFlowProperties()->SetUseVelocityBoundaryCondition(true);
+
+        p_vessel2->GetEndNode()->GetFlowProperties()->SetIsOutputNode(true);
+        p_vessel2->GetEndNode()->GetFlowProperties()->SetPressure(0.0);
+        p_vessel3->GetEndNode()->GetFlowProperties()->SetIsOutputNode(true);
+        p_vessel3->GetEndNode()->GetFlowProperties()->SetPressure(0.0);
+        p_vessel1->GetFlowProperties()->SetFlowRate(1.e-9, p_vessel1->GetSegments());
+
+        FlowSolver<3> solver;
+        solver.SetVesselNetwork(p_vascular_network);
+        solver.SetUp();
+        solver.Solve();
+
+        TS_ASSERT_DELTA(p_vessel1->GetStartNode()->GetFlowProperties()->GetPressure(), (3.0/2.0)*impedance*1.e-9, 1e-6);
+        TS_ASSERT_DELTA(p_vessel1->GetEndNode()->GetFlowProperties()->GetPressure(), (1.0/2.0)*impedance*1.e-9, 1e-6);
+        TS_ASSERT_DELTA(p_vessel1->GetFlowProperties()->GetFlowRate(p_vessel1->GetSegments()), 1.e-9, 1e-6);
+        TS_ASSERT_DELTA(p_vessel2->GetEndNode()->GetFlowProperties()->GetPressure(), 0.0, 1e-6);
+        TS_ASSERT_DELTA(p_vessel3->GetEndNode()->GetFlowProperties()->GetPressure(), 0.0, 1e-6);
     }
 
     void TestFlowThroughSingleVesselWithMultipleSegments() throw (Exception)

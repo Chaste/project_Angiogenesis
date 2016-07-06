@@ -43,6 +43,7 @@
 template<unsigned DIM>
 class DistanceMap : public AbstractRegularGridHybridSolver<DIM>
 {
+    bool mUseSegmentRadii;
 
 public:
 
@@ -54,6 +55,8 @@ public:
     static boost::shared_ptr<DistanceMap<DIM> > Create();
 
     ~DistanceMap();
+
+    void SetUseSegmentRadii(bool useRadii);
 
     void Solve();
 

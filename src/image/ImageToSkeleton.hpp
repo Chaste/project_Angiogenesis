@@ -35,29 +35,55 @@
 #ifdef CHASTE_ANGIOGENESIS_EXTENDED
 #ifndef ImageToSkeleton_HPP_
 #define ImageToSkeleton_HPP_
-
 #include "SmartPointers.hpp"
-#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning
-#include <vtkImageData.h>
-#include <vtkPolyData.h>
-#include <vtkSmartPointer.h>
+#include "VesselNetwork.hpp"
 
 /**
-* Get the skeleton of an image using binary thinning filters. The skeleton is a 1 pixel wide representation
-* of features in the image.
+* Get a vessel network from a binary mask in image format. The input image format should be an
+* 8 bit grayscale TIFF. The (quick and dirty) 2D VTK algorithm or the considerably slower ITK binary thinning
+* algorithms can be used. Output data in VTK formats at intermediate stages can be requested.
 */
 class ImageToSkeleton
 {
     /**
-     *  The image
+     *  Use the 2d vtk algorithm (default)
      */
-    vtkSmartPointer<vtkImageData> mpImage;
+    bool mUseVTK2d;
 
-    vtkSmartPointer<vtkImageData> mpSkeleton;
+    /**
+     *  Use the 2d itk algorithm
+     */
+    bool mUseITK2d;
 
-    bool mReverseIntensity;
+    /**
+     *  Use the 3d itk algorithm
+     */
+    bool mUseITK3d;
 
-    bool mUseVTKVersion;
+    /**
+     *  Verbose output
+     */
+    bool mVerboseOutput;
+
+    /**
+     *  Prune level for vtk algorithm
+     */
+    unsigned mVtkPruneLevel;
+
+    /**
+     *  The output directory
+     */
+    std::string mOutputDirectory;
+
+    /**
+     *  The input file
+     */
+    std::string mInputFile;
+
+    /**
+     *  The vessel network
+     */
+    boost::shared_ptr<VesselNetwork<3> > mpVesselNetwork;
 
 public:
 
@@ -66,6 +92,9 @@ public:
      */
     ImageToSkeleton();
 
+    /**
+     *  Destructor
+     */
     ~ImageToSkeleton();
 
     /**
@@ -73,15 +102,46 @@ public:
      */
     static boost::shared_ptr<ImageToSkeleton> Create();
 
-    void SetInput(vtkSmartPointer<vtkImageData> pImage);
+    /**
+     *  Return a vessel network
+     */
+    boost::shared_ptr<VesselNetwork<3> > GetOutput();
 
-    void SetReverseIntensity(bool value);
+    /**
+     *  Set filename
+     */
+    void SetFilename(std::string filename);
 
-    void SetUseVtkVersion(bool value);
+    /**
+     *  Set the output directory for verbose mode
+     */
+    void SetOutputDirectory(std::string directory);
 
+    /**
+     *  Use the vtk skeletonize algorithm
+     */
+    void SetUseVtkAlgorithm(bool value);
+
+    /**
+     *  Use the itk 2d binary thinning algorithm
+     */
+    void SetUseItk2dAlgorithm(bool value);
+
+    /**
+     *  Use the itk 3d binary thinning algorithm
+     */
+    void SetUseItk3dAlgorithm(bool value);
+
+    /**
+     *  Do verbose output
+     */
+    void SetUseVerboseMode(bool value);
+
+    /**
+     *  Run the tool
+     */
     void Update();
 
-    vtkSmartPointer<vtkImageData> GetOutput();
 };
 
 #endif /*ImageToSkeleton_HPP_*/

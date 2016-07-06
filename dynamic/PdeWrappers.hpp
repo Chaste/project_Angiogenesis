@@ -38,7 +38,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define PDEWRAPPERS_HPP_
 
 #include <boost/python.hpp>
-#include <boost/python/module.hpp>
 #include <vtkSmartPointer.h>
 #include <vtkImageData.h>
 #include "SmartPointers.hpp"
@@ -74,12 +73,12 @@ struct AbstractHybridSolverWrap : AbstractHybridSolver3, wrapper<AbstractHybridS
 
     std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, 3> > samplePoints)
     {
-        this->get_override("GetSolutionAtPoints")();
+        return this->get_override("GetSolutionAtPoints")();
     }
 
     std::vector<double> GetSolutionAtGridPoints(boost::shared_ptr<RegularGrid<3> > pGrid)
     {
-        this->get_override("GetSolutionAtGridPoints")();
+        return this->get_override("GetSolutionAtGridPoints")();
     }
 
     void UpdateCellData()

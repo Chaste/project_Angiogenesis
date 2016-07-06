@@ -37,8 +37,6 @@
 #include <vector>
 #include <boost/python.hpp>
 #include <boost/python/module.hpp>
-#include <boost/python/stl_iterator.hpp>
-#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include "SmartPointers.hpp"
 #include "HybridMesh.hpp"
 #include "PottsMesh.hpp"
@@ -48,7 +46,6 @@
 #include "Node.hpp"
 #include "DistanceMap.hpp"
 #include "FunctionMap.hpp"
-#include "converters.hpp"
 #include "AbstractRegularGridHybridSolver.hpp"
 #include "AbstractHybridSolver.hpp"
 
@@ -75,7 +72,8 @@ BOOST_PYTHON_MODULE(_mesh)
         .def("SetCellPopulation", &RegularGrid<3>::SetCellPopulation)
         .def("SetCaBasedPopulation", &RegularGrid<3>::SetCaBasedPopulation)
         .def("Write", &RegularGrid<3>::Write)
-        .def("SetUpVtkGrid", &RegularGrid<3>::SetUpVtkGrid);
+        .def("SetUpVtkGrid", &RegularGrid<3>::SetUpVtkGrid)
+        .def("GetVtkGrid", &RegularGrid<3>::GetVtkGrid);
 
     class_<HybridMesh<3>, boost::shared_ptr<HybridMesh<3> >, boost::noncopyable>("HybridMesh")
         .def("GetConnectivity", &HybridMesh<3>::GetConnectivity)

@@ -18,9 +18,21 @@ def dir_maker(file_path):
 def write(feature, filename):
     
     dir_maker(filename)
+    _, extension = os.path.splitext(filename)
     
     if "vtk" in feature.__class__.__name__:
-        writer = chaste.utility.recursion.get_class("vtk.vtkXML" + feature.__class__.__name__[3:] + "Writer")()
+        
+        if "tiff" in extension or "tif" in extension:
+            
+            converter = vtk.vtkImageShiftScale()
+            converter.SetScale(255.0)
+            converter.SetOutputScalarTypeToUnsignedChar()
+            converter.SetInput(feature)
+            converter.Update()
+            feature = converter.GetOutput()
+            writer = vtk.vtkTIFFWriter()
+        else:
+            writer = chaste.utility.recursion.get_class("vtk.vtkXML" + feature.__class__.__name__[3:] + "Writer")()
         writer.SetFileName(filename)
         if vtk.VTK_MAJOR_VERSION <= 5:
             writer.SetInput(feature)

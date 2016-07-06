@@ -32,102 +32,116 @@
  OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
-
-#ifdef CHASTE_ANGIOGENESIS_EXTENDED
-#ifndef ImageIO_HPP_
-#define ImageIO_HPP_
+//#ifdef CHASTE_ANGIOGENESIS_VMTK
+#ifndef NetworkToImage_HPP_
+#define NetworkToImage_HPP_
 
 #include "SmartPointers.hpp"
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning
 #include <vtkImageData.h>
 #include <vtkSmartPointer.h>
+#include "VesselNetwork.hpp"
 
 /**
- *  This class manages input and output of 2D and 3D images using VTK.
- */
-class ImageIO
+* Convert a vessel network to vtk image data. This can be used for visualization
+* or as input to centreline/mesh tools.
+*/
+template<unsigned DIM>
+class NetworkToImage
 {
-
-private:
+    /**
+     *  The image
+     */
+    vtkSmartPointer<vtkImageData> mpImage;
 
     /**
-     *  A vtk image
+     *  The vessel network
      */
-    vtkSmartPointer<vtkImageData> mpVtkImage;
+    boost::shared_ptr<VesselNetwork<DIM> > mpNetwork;
 
     /**
-     *  A filepath
+     *  The grid spacing
      */
-    std::string mFilepath;
+    double mGridSpacing;
 
     /**
-     *  The fraction of pixels to retain in X after reading
+     *  The padding factor in X
      */
-    double mResizeX;
+    double mPaddingFactorX;
 
     /**
-     *  The fraction of pixels to retain in Y after reading
+     *  The padding factor in Y
      */
-    double mResizeY;
+    double mPaddingFactorY;
 
     /**
-     *  The fraction of pixels to retain in Z
+     *  The padding factor in Z
      */
-    double mResizeZ;
+    double mPaddingFactorZ;
+
+    /**
+     *  The dimension of the output image
+     */
+    unsigned mImageDimension;
+
 
 public:
 
     /**
      * Constructor
      */
-    ImageIO();
+    NetworkToImage();
 
     /**
      * Destructor
      */
-    ~ImageIO();
+    ~NetworkToImage();
 
     /**
      * Factory constructor method
-     * @return a shared pointer to a instance of this class
+     * @return a pointer to the class
      */
-    static boost::shared_ptr<ImageIO> Create();
+    static boost::shared_ptr<NetworkToImage<DIM> > Create();
 
     /**
-     * Get the image in vti format
+     * Get the image
+     * @return a pointer to the image representation of the network
      */
-    vtkSmartPointer<vtkImageData> GetImage();
+    vtkSmartPointer<vtkImageData> GetOutput();
 
     /**
-     * Set the filename for the readers and writers
-     * @param rFilename the file name
+     * Set the vessel network
+     * @param pNetwork the network
      */
-    void SetFilename(const std::string& rFilename);
+    void SetNetwork(boost::shared_ptr<VesselNetwork<DIM> > pNetwork);
 
     /**
-     * Set the resize factors for the image
-     * @param factorX the fraction of pixels to retain in x
-     * @param factorY the fraction of pixels to retain in y
-     * @param factorZ the fraction of pixels to retain in z
+     * Set the pixel spacing for the image
+     * @param spacing the pixel spacing
      */
-    void SetImageResizeFactors(double factorX, double factorY=1.0, double factorZ=1.0);
+    void SetGridSpacing(double spacing);
 
     /**
-     * Set the image in vti format
+     * Set the padding factors for the image. This is multiplied by the network extents
+     * to add padding. Eg. final_extent = original_extent * (1+padding factor)
+     * @param paddingX the X padding factor
+     * @param paddingY the Y padding factor
+     * @param paddingZ the Z padding factor
      */
-    void SetImage(vtkSmartPointer<vtkImageData> pImage);
+    void SetPaddingFactors(double paddingX, double paddingY, double paddingZ);
 
     /**
-     * Do the read operation
+     * Set the image dimension. Although the class is templated over spatial dimension, it is often of interest to make
+     * 2D images. The image dimension can be set here.
+     * @param dimension the image dimension
      */
-    void Read();
+    void SetImageDimension(unsigned dimension);
 
     /**
-     * Write the image in VTK format
+     * Do the conversion
      */
-    void Write();
-
+    void Update();
 };
 
-#endif /*ImageIO_HPP_*/
-#endif /*CHASTE_ANGIOGENESIS_EXTENDED*/
+#endif /*NetworkToImage_HPP_*/
+//#endif /*CHASTE_ANGIOGENESIS_VMTK*/

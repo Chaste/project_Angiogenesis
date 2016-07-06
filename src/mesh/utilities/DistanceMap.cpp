@@ -40,7 +40,8 @@
 template<unsigned DIM>
 DistanceMap<DIM>::DistanceMap()
 
-    :   AbstractRegularGridHybridSolver<DIM>()
+    :   AbstractRegularGridHybridSolver<DIM>(),
+        mUseSegmentRadii(false)
 {
 
 }
@@ -56,6 +57,12 @@ template<unsigned DIM>
 DistanceMap<DIM>::~DistanceMap()
 {
 
+}
+
+template<unsigned DIM>
+void DistanceMap<DIM>::SetUseSegmentRadii(bool useRadii)
+{
+    this->mUseSegmentRadii = useRadii;
 }
 
 template<unsigned DIM>
@@ -89,6 +96,14 @@ void DistanceMap<DIM>::Solve()
                     for (unsigned idx = 0; idx <  segments.size(); idx++)
                     {
                         double seg_dist = segments[idx]->GetDistance(location);
+                        if(this->mUseSegmentRadii)
+                        {
+                            if(seg_dist<=segments[idx]->GetRadius())
+                            {
+                                seg_dist = 0.0;
+                            }
+                        }
+
                         if(seg_dist < min_distance)
                         {
                             min_distance = seg_dist;

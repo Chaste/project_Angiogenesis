@@ -49,6 +49,7 @@
 #include "NodeFlowProperties.hpp"
 #include "VesselFlowProperties.hpp"
 #include "AbstractVesselNetworkComponent.hpp"
+#include "VtkVesselNetworkWriter.hpp"
 #include "converters.hpp"
 
 using namespace boost::python;
@@ -119,6 +120,8 @@ BOOST_PYTHON_MODULE(_vessel)
     .def("SetIsOutputNode", &NodeFlowProperties<3>::SetIsOutputNode)
     .def("IsInputNode", &NodeFlowProperties<3>::IsInputNode)
     .def("IsOutputNode", &NodeFlowProperties<3>::IsOutputNode)
+    .def("SetUseVelocityBoundaryCondition", &NodeFlowProperties<3>::SetUseVelocityBoundaryCondition)
+    .def("UseVelocityBoundaryCondition", &NodeFlowProperties<3>::UseVelocityBoundaryCondition)
     ;
 
     class_<VesselSegment<3>, boost::shared_ptr<VesselSegment<3> >, boost::noncopyable, bases<AbstractVesselNetworkComponent<3> > >("VesselSegment", no_init)
@@ -182,12 +185,15 @@ BOOST_PYTHON_MODULE(_vessel)
     .def("GetDistance", &Vessel<3>::GetDistance)
     .def("IsConnected", &Vessel<3>::IsConnectedTo)
     .def("RemoveSegments", &Vessel<3>::RemoveSegments)
+    .def("GetFlowProperties", &Vessel<3>::GetFlowProperties)
     ;
 
     class_<VesselFlowProperties<3>, boost::shared_ptr<VesselFlowProperties<3> >, boost::noncopyable >("VesselFlowProperties")
     .def("SetImpedance", &VesselFlowProperties<3>::SetImpedance)
     .def("SetViscosity", &VesselFlowProperties<3>::SetViscosity)
     .def("GetFlowRate", &VesselFlowProperties<3>::GetFlowRate)
+    .def("SetFlowRate", &VesselFlowProperties<3>::SetFlowRate)
+//    .def("GetFlowVelocity", &VesselFlowProperties<3>::GetFlowVelocity)
     .def("SetHaematocrit", &VesselFlowProperties<3>::SetHaematocrit)
     .def("GetHaematocrit", &VesselFlowProperties<3>::GetHaematocrit)
     ;
@@ -209,6 +215,7 @@ BOOST_PYTHON_MODULE(_vessel)
     .def("MergeNodes", VNet3_MergeCoincident)
 //        .def("GetAverageVesselLength", &VesselNetwork<3>::GetAverageVesselLength)
     .def("SetNodeRadii", &VesselNetwork<3>::SetNodeRadii)
+    .def("SetNodeRadiiFromSegments", &VesselNetwork<3>::SetNodeRadiiFromSegments)
     .def("RemoveVessel", &VesselNetwork<3>::RemoveVessel)
     .def("RemoveShortVessels", &VesselNetwork<3>::RemoveShortVessels)
     .def("MergeShortVessels", &VesselNetwork<3>::MergeShortVessels)
@@ -221,6 +228,13 @@ BOOST_PYTHON_MODULE(_vessel)
 //        .def("GetTotalLength", &VesselNetwork<3>::GetTotalLength)
 //        .def("WriteConnectivity", &VesselNetwork<3>::WriteConnectivity)
 //        .def("GetVesselLengthDistribution", &VesselNetwork<3>::GetVesselLengthDistribution)
+    ;
+
+    class_<VtkVesselNetworkWriter<3>, boost::shared_ptr<VtkVesselNetworkWriter<3> >, boost::noncopyable >("VtkVesselNetworkWriter")
+    .def("SetVesselNetwork", &VtkVesselNetworkWriter<3>::SetVesselNetwork)
+    .def("SetFileName", &VtkVesselNetworkWriter<3>::SetFileName)
+    .def("GetOutput", &VtkVesselNetworkWriter<3>::GetOutput)
+    .def("Write", &VtkVesselNetworkWriter<3>::Write)
     ;
 
     class_<VasculatureGenerator<3> >("VasculatureGenerator")

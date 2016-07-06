@@ -185,6 +185,12 @@ void FlowSolver<DIM>::Update(bool runSetup)
         if (is_bc_node or is_unconnected_node)
         {
             mpLinearSystem->AddToMatrixElement(node_index, node_index, 1.0);
+            if(mNodes[node_index]->GetFlowProperties()->UseVelocityBoundaryCondition())
+            {
+                // Velocity BC: Assumes only single vessel at inlets
+                mpLinearSystem->AddToMatrixElement(node_index, mNodeNodeConnectivity[node_index][0], -1.0);
+            }
+
         }
         else
         {
@@ -202,9 +208,20 @@ void FlowSolver<DIM>::Update(bool runSetup)
     // Update the RHS
     for (unsigned bc_index = 0; bc_index < mBoundaryConditionNodeIndices.size(); bc_index++)
     {
-        mpLinearSystem->SetRhsVectorElement(
-                mBoundaryConditionNodeIndices[bc_index],
-                mNodes[mBoundaryConditionNodeIndices[bc_index]]->GetFlowProperties()->GetPressure());
+        if(mNodes[mBoundaryConditionNodeIndices[bc_index]]->GetFlowProperties()->UseVelocityBoundaryCondition())
+        {
+            boost::shared_ptr<Vessel<DIM> > p_vessel = mNodes[mBoundaryConditionNodeIndices[bc_index]]->GetSegment(0)->GetVessel();
+            double flow_rate = fabs(p_vessel->GetFlowProperties()->GetFlowRate(p_vessel->GetSegments()));
+            double impedance = p_vessel->GetFlowProperties()->GetImpedance(p_vessel->GetSegments());
+            double pressure_drop = flow_rate * impedance;
+            mpLinearSystem->SetRhsVectorElement(mBoundaryConditionNodeIndices[bc_index], pressure_drop);
+        }
+        else
+        {
+            mpLinearSystem->SetRhsVectorElement(
+                    mBoundaryConditionNodeIndices[bc_index],
+                    mNodes[mBoundaryConditionNodeIndices[bc_index]]->GetFlowProperties()->GetPressure());
+        }
     }
 }
 

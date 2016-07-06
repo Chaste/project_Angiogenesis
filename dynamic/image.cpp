@@ -37,22 +37,22 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include <boost/python.hpp>
 #include <boost/python/module.hpp>
-#include <boost/python/stl_iterator.hpp>
-#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include "SmartPointers.hpp"
-#include "ImageReader.hpp"
+#include "ImageIO.hpp"
 #include "ImageToSurface.hpp"
-#include "converters.hpp"
+#include "NetworkToImage.hpp"
 using namespace boost::python;
 
 // Make the module
 BOOST_PYTHON_MODULE(_image)
 {
-    class_<ImageReader, boost::shared_ptr<ImageReader> >("ImageReader")
-        .def("SetFilename",&ImageReader::SetFilename)
-        .def("SetImageResizeFactors",&ImageReader::SetImageResizeFactors)
-        .def("Update",&ImageReader::Update)
-        .def("GetOutput",&ImageReader::GetOutput)
+    class_<ImageIO, boost::shared_ptr<ImageIO> >("ImageIO")
+        .def("SetFilename",&ImageIO::SetFilename)
+        .def("SetImageResizeFactors",&ImageIO::SetImageResizeFactors)
+        .def("Read",&ImageIO::Read)
+        .def("Write",&ImageIO::Write)
+        .def("GetImage",&ImageIO::GetImage)
+        .def("SetImage",&ImageIO::SetImage)
     ;
 
     class_<ImageToSurface, boost::shared_ptr<ImageToSurface> >("ImageToSurface")
@@ -61,6 +61,15 @@ BOOST_PYTHON_MODULE(_image)
         .def("SetUseMarchingCubes",&ImageToSurface::SetUseMarchingCubes)
         .def("Update",&ImageToSurface::Update)
         .def("GetOutput",&ImageToSurface::GetOutput)
+    ;
+
+    class_<NetworkToImage<3>, boost::shared_ptr<NetworkToImage<3> > >("NetworkToImage")
+        .def("SetNetwork",&NetworkToImage<3>::SetNetwork)
+        .def("SetGridSpacing",&NetworkToImage<3>::SetGridSpacing)
+        .def("SetPaddingFactors",&NetworkToImage<3>::SetPaddingFactors)
+        .def("SetImageDimension",&NetworkToImage<3>::SetImageDimension)
+        .def("Update",&NetworkToImage<3>::Update)
+        .def("GetOutput",&NetworkToImage<3>::GetOutput)
     ;
 }
 

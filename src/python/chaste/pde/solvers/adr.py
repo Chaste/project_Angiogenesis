@@ -2,9 +2,9 @@ from dolfin import *
 
 # Ignore fenicstools import warnings, don't need the missing tools
 import warnings
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore")
-    from fenicstools import interpolate_nonmatching_mesh
+# with warnings.catch_warnings():
+#     warnings.simplefilter("ignore")
+#     from fenicstools import interpolate_nonmatching_mesh
     
 class SolverCg():
     

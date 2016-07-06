@@ -43,6 +43,7 @@
 #endif /*CHASTE_ANGIOGENESIS_EXTENDED*/
 #include "FileFinder.hpp"
 #include "OutputFileHandler.hpp"
+#include "Debug.hpp"
 
 class TestImageIO : public CxxTest::TestSuite
 {
@@ -50,31 +51,45 @@ public:
 
     void TestDefaultExtraction()
     {
+        MARK;
         #ifdef CHASTE_ANGIOGENESIS_EXTENDED
 
+        MARK;
         // Read the image from file
         OutputFileHandler file_handler1 = OutputFileHandler("TestImageIO/");
         FileFinder finder = FileFinder("projects/Angiogenesis/test/data/median.tif", RelativeTo::ChasteSourceRoot);
 
-        ImageIO image_io = ImageIO();
+        std::cout << "wut!!" << std::endl;
+        MARK;
+        ImageIO image_io;
 
+        MARK;
         // Read the file in vtk format
         image_io.SetFilename(finder.GetAbsolutePath());
+        MARK;
         image_io.SetImageResizeFactors(0.5, 0.5, 1.0);
+        MARK;
         image_io.ReadVtkImage();
 
+        MARK;
         // Write it out in VTI format
         image_io.SetFilename(file_handler1.GetOutputDirectoryFullPath()+"image_vtk_format.vti");
         image_io.WriteVtkImage();
 
+        MARK;
         // Write it out in PNG format using ITK
         image_io.SetFilename(file_handler1.GetOutputDirectoryFullPath()+"image_itk_format.png");
+        MARK;
         image_io.ConvertVtkToItk();
+        MARK;
         image_io.WriteItkImage();
+        MARK;
 
         // Read the image using ITK
         image_io.SetFilename(finder.GetAbsolutePath());
+        MARK;
         image_io.ReadItkImage();
+        MARK;
 
         // Write it out in VTK format
         image_io.ConvertItkToVtk();

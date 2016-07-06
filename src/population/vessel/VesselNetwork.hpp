@@ -199,7 +199,7 @@ public:
     /**
      Return the extents of the vessel network in the form ((xmin, xmax), (ymin, ymax), (zmin, zmax))
      */
-    std::vector<std::pair<double, double> > GetExtents();
+    std::vector<std::pair<double, double> > GetExtents(bool useRadii = false);
 
     /**
      * Return the indexed node in the network
@@ -306,6 +306,8 @@ public:
      * Set the nodal radii to the same value
      */
     void SetNodeRadii(double radius);
+
+    void SetNodeRadiiFromSegments();
 
     /**
      * Set the properties of the segments in the network based on those of the prototype

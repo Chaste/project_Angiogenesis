@@ -251,7 +251,23 @@ boost::shared_ptr<Vessel<DIM> > VesselNetwork<DIM>::FormSprout(const c_vector<do
 }
 
 template <unsigned DIM>
-std::vector<std::pair<double, double> > VesselNetwork<DIM>::GetExtents()
+void VesselNetwork<DIM>::SetNodeRadiiFromSegments()
+{
+    std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes = GetNodes();
+    for(unsigned idx=0; idx<nodes.size(); idx++)
+    {
+        double av_radius = 0;
+        for(unsigned jdx=0; jdx<nodes[idx]->GetNumberOfSegments(); jdx++)
+        {
+            av_radius += nodes[idx]->GetSegment(jdx)->GetRadius();
+        }
+        av_radius /= double(nodes[idx]->GetNumberOfSegments());
+        nodes[idx]->SetRadius(av_radius);
+    }
+}
+
+template <unsigned DIM>
+std::vector<std::pair<double, double> > VesselNetwork<DIM>::GetExtents(bool useRadii)
 {
     double x_max = -DBL_MAX;
     double y_max = -DBL_MAX;
@@ -266,16 +282,28 @@ std::vector<std::pair<double, double> > VesselNetwork<DIM>::GetExtents()
         if(location[0] > x_max)
         {
             x_max = location[0];
+            if(useRadii)
+            {
+                x_max += (*it)->GetRadius();
+            }
         }
         if(location[1] > y_max)
         {
             y_max = location[1];
+            if(useRadii)
+            {
+                y_max += (*it)->GetRadius();
+            }
         }
         if(DIM > 2)
         {
             if(location[2] > z_max)
             {
                 z_max = location[2];
+                if(useRadii)
+                {
+                    z_max += (*it)->GetRadius();
+                }
             }
         }
     }
@@ -290,16 +318,28 @@ std::vector<std::pair<double, double> > VesselNetwork<DIM>::GetExtents()
         if(location[0] < x_min)
         {
             x_min = location[0];
+            if(useRadii)
+            {
+                x_min -= (*it)->GetRadius();
+            }
         }
         if(location[1] < y_min)
         {
             y_min = location[1];
+            if(useRadii)
+            {
+                y_min -= (*it)->GetRadius();
+            }
         }
         if(DIM > 2)
         {
             if(location[2] < z_min)
             {
                 z_min = location[2];
+                if(useRadii)
+                {
+                    z_min -= (*it)->GetRadius();
+                }
             }
         }
     }

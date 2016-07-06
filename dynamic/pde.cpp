@@ -37,8 +37,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include <boost/python.hpp>
 #include <boost/python/module.hpp>
-#include <boost/python/stl_iterator.hpp>
-#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning for now (gcc4.3)
 #include <vtkSmartPointer.h>
 #include <vtkImageData.h>
@@ -52,8 +50,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "GreensFunctionSolver.hpp"
 #include "CellStateDependentDiscreteSource.hpp"
 #include "PdeWrappers.hpp"
-
-#include "converters.hpp"
 
 using namespace boost::python;
 
@@ -95,6 +91,7 @@ BOOST_PYTHON_MODULE(_pde)
 
     class_<DistanceMap<3>, boost::shared_ptr<DistanceMap<3u> >, bases<AbstractRegularGridHybridSolver<3> > >("DistanceMap")
         .def("Solve", &DistanceMap<3>::Solve)
+        .def("SetUseSegmentRadii", &DistanceMap<3>::SetUseSegmentRadii)
     ;
 
     class_<FunctionMap<3>, boost::shared_ptr<FunctionMap<3u> >, bases<AbstractRegularGridHybridSolver<3> >  >("FunctionMap")

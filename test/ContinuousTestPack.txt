@@ -51,3 +51,4 @@ utility/TestUnitCollections.hpp
 image/TestImageToSurface.hpp
 image/TestImageToSkeleton.hpp
 image/TestImageIO.hpp
+image/TestNetworkToImage.hpp

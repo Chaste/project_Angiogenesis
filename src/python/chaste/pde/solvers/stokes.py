@@ -63,8 +63,7 @@ class VesselInlet(SubDomain):
         self.tol = tol
  
     def inside(self, x, on_boundary):
-        im_inside = abs(x[1]-68.0)<1.0 and abs(x[0]--40.3)<1.0
-        im_inside = im_inside or (abs(x[1]-26.49)<1.0 and abs(x[0]--20.12)<1.0)
+        im_inside = x[1] < 1.e-6
         return im_inside
 
 class Solver():
@@ -138,7 +137,7 @@ class Solver1d():
     def run(self):
 
         v_in = self.parameters["average_velocity"]
-        mu = Constant(self.parameters["effective_viscosity"])*1.e12
+        mu = Constant(self.parameters["effective_viscosity"])
     
             # Define function spaces
         P2 = VectorElement("Lagrange", self.mesh.ufl_cell(), 2)
@@ -156,7 +155,7 @@ class Solver1d():
         
         # Positive flow in y direction at the inlet
         if self.dimension == 2:
-            inflow = Constant((v_in, 0.0))
+            inflow = Constant((0.0, v_in))
         else:
             inflow = Constant((0.0, 0.0, v_in))
             

@@ -36,6 +36,7 @@
 #ifdef CHASTE_ANGIOGENESIS_EXTENDED
 #include "Exception.hpp"
 #include <boost/filesystem.hpp>
+#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning
 #include <vtkTIFFReader.h>
 #include <vtkPNGReader.h>
 #include <vtkJPEGReader.h>
@@ -54,7 +55,6 @@
 
 ImageIO::ImageIO()
     : mpVtkImage(vtkSmartPointer<vtkImageData>::New()),
-      mpItkImage(itk::Image<unsigned char, 2>::New()),
       mFilepath(),
       mResizeX(1.0),
       mResizeY(1.0),
@@ -74,51 +74,50 @@ ImageIO::~ImageIO()
 
 }
 
-void ImageIO::ConvertVtkToItk()
-{
-    if(!mpVtkImage)
-    {
-        EXCEPTION("Vtk image data has not been set.");
-    }
+//void ImageIO::ConvertVtkToItk()
+//{
+//    MARK;
+//    if(!mpVtkImage)
+//    {
+//        EXCEPTION("Vtk image data has not been set.");
+//    }
+//
+//    MARK;
+//    typedef itk::Image<unsigned char, 2> ImageType;
+//    typedef itk::VTKImageToImageFilter<ImageType> VTKImageToImageType;
+//    VTKImageToImageType::Pointer vtkImageToImageFilter = VTKImageToImageType::New();
+//    vtkImageToImageFilter->SetInput(mpVtkImage);
+//    vtkImageToImageFilter->Update();
+//    MARK;
+//    mpItkImage = vtkImageToImageFilter->GetOutput();
+//    MARK;
+//}
+//
+//void ImageIO::ConvertItkToVtk()
+//{
+//    if(!mpItkImage)
+//    {
+//        EXCEPTION("Itk image data has not been set.");
+//    }
+//
+//    typedef itk::Image<unsigned char, 2> ImageType;
+//    typedef itk::ImageToVTKImageFilter<ImageType> ConnectorType;
+//    ConnectorType::Pointer connector = ConnectorType::New();
+//    connector->SetInput(mpItkImage);
+//    connector->Update();
+//    connector->UpdateOutputInformation();
+//
+//    vtkSmartPointer<vtkImageCast> imCast = vtkSmartPointer<vtkImageCast>::New();
+//    imCast->SetOutputScalarTypeToFloat();
+//    imCast->SetInput(connector->GetOutput());
+//
+//    vtkImageData* p_output = imCast->GetOutput();
+//    p_output->Update();
+//    p_output->Register(NULL); // Avoids memory problems.
+//    mpVtkImage.TakeReference(p_output);
+//}
 
-    vtkSmartPointer<vtkImageCast> imCast = vtkSmartPointer<vtkImageCast>::New();
-    imCast->SetOutputScalarTypeToUnsignedChar();
-    imCast->SetInput(mpVtkImage);
-    imCast->Update();
-
-    typedef itk::Image<unsigned char, 2> ImageType;
-    typedef itk::VTKImageToImageFilter<ImageType> VTKImageToImageType;
-    VTKImageToImageType::Pointer vtkImageToImageFilter = VTKImageToImageType::New();
-    vtkImageToImageFilter->SetInput(imCast->GetOutput());
-    vtkImageToImageFilter->Update();
-    mpItkImage = vtkImageToImageFilter->GetOutput();
-}
-
-void ImageIO::ConvertItkToVtk()
-{
-    if(!mpItkImage)
-    {
-        EXCEPTION("Itk image data has not been set.");
-    }
-
-    typedef itk::Image<unsigned char, 2> ImageType;
-    typedef itk::ImageToVTKImageFilter<ImageType> ConnectorType;
-    ConnectorType::Pointer connector = ConnectorType::New();
-    connector->SetInput(mpItkImage);
-    connector->Update();
-    connector->UpdateOutputInformation();
-
-    vtkSmartPointer<vtkImageCast> imCast = vtkSmartPointer<vtkImageCast>::New();
-    imCast->SetOutputScalarTypeToFloat();
-    imCast->SetInput(connector->GetOutput());
-
-    vtkImageData* p_output = imCast->GetOutput();
-    p_output->Update();
-    p_output->Register(NULL); // Avoids memory problems.
-    mpVtkImage.TakeReference(p_output);
-}
-
-vtkSmartPointer<vtkImageData> ImageIO::GetVtkImage()
+vtkSmartPointer<vtkImageData> ImageIO::GetImage()
 {
     if(mpVtkImage)
     {
@@ -126,38 +125,13 @@ vtkSmartPointer<vtkImageData> ImageIO::GetVtkImage()
     }
     else
     {
-        if(mpItkImage)
-        {
-            // Convert to VTK
-            ConvertItkToVtk();
-            return mpVtkImage;
-        }
-        else
-        {
-            EXCEPTION("No image data has been set.");
-        }
+        EXCEPTION("No image data has been set.");
     }
 }
 
-itk::Image<unsigned char, 2>::Pointer ImageIO::GetItkImage()
+void ImageIO::SetImage(vtkSmartPointer<vtkImageData> pImage)
 {
-    if(mpItkImage)
-    {
-        return mpItkImage;
-    }
-    else
-    {
-        if(mpVtkImage)
-        {
-            // Convert to ITK
-            ConvertVtkToItk();
-            return mpItkImage;
-        }
-        else
-        {
-            EXCEPTION("No image data has been set.");
-        }
-    }
+    mpVtkImage = pImage;
 }
 
 void ImageIO::SetFilename(const std::string& filename)
@@ -172,7 +146,7 @@ void ImageIO::SetImageResizeFactors(double factorX, double factorY, double facto
     mResizeZ = factorZ;
 }
 
-void ImageIO::ReadVtkImage()
+void ImageIO::Read()
 {
     // Get the file extension
     if(mFilepath == "")
@@ -278,47 +252,47 @@ void ImageIO::ReadVtkImage()
     }
 }
 
-void ImageIO::ReadItkImage()
-{
-    // Get the file extension
-    if(mFilepath == "")
-    {
-        EXCEPTION("Input file not specified for image reader");
-    }
-    std::string file_extension  = boost::filesystem::extension(mFilepath);
+//void ImageIO::ReadItkImage()
+//{
+//    // Get the file extension
+//    if(mFilepath == "")
+//    {
+//        EXCEPTION("Input file not specified for image reader");
+//    }
+//    std::string file_extension  = boost::filesystem::extension(mFilepath);
+//
+//    if(file_extension == ".tif" or file_extension == ".tiff" or file_extension == ".TIF" or file_extension == ".TIFF")
+//    {
+//        itk::TIFFImageIOFactory::RegisterOneFactory();
+//        typedef itk::Image<unsigned char, 2> ImageType;
+//        typedef itk::ImageFileReader<ImageType> ImageReader;
+//        ImageReader::Pointer reader = ImageReader::New();
+//        reader->SetFileName(mFilepath.c_str());
+//        reader->Update();
+//        mpItkImage = reader->GetOutput();
+//    }
+//    else if(file_extension == ".png" or file_extension == ".PNG")
+//    {
+//        itk::PNGImageIOFactory::RegisterOneFactory();
+//        typedef itk::Image<unsigned char, 2> ImageType;
+//        typedef itk::ImageFileReader<ImageType> ImageReader;
+//        ImageReader::Pointer reader = ImageReader::New();
+//        reader->SetFileName(mFilepath.c_str());
+//        reader->Update();
+//        mpItkImage = reader->GetOutput();
+//    }
+//    else
+//    {
+//        EXCEPTION("Input file extension not supported");
+//    }
+//
+//    if(!mpItkImage)
+//    {
+//        EXCEPTION("Image reading failed.");
+//    }
+//}
 
-    if(file_extension == ".tif" or file_extension == ".tiff" or file_extension == ".TIF" or file_extension == ".TIFF")
-    {
-        itk::TIFFImageIOFactory::RegisterOneFactory();
-        typedef itk::Image<unsigned char, 2> ImageType;
-        typedef itk::ImageFileReader<ImageType> ImageReader;
-        ImageReader::Pointer reader = ImageReader::New();
-        reader->SetFileName(mFilepath.c_str());
-        reader->Update();
-        mpItkImage = reader->GetOutput();
-    }
-    else if(file_extension == ".png" or file_extension == ".PNG")
-    {
-        itk::PNGImageIOFactory::RegisterOneFactory();
-        typedef itk::Image<unsigned char, 2> ImageType;
-        typedef itk::ImageFileReader<ImageType> ImageReader;
-        ImageReader::Pointer reader = ImageReader::New();
-        reader->SetFileName(mFilepath.c_str());
-        reader->Update();
-        mpItkImage = reader->GetOutput();
-    }
-    else
-    {
-        EXCEPTION("Input file extension not supported");
-    }
-
-    if(!mpItkImage)
-    {
-        EXCEPTION("Image reading failed.");
-    }
-}
-
-void ImageIO::WriteVtkImage()
+void ImageIO::Write()
 {
     if(mFilepath == "")
     {
@@ -327,25 +301,25 @@ void ImageIO::WriteVtkImage()
 
     vtkSmartPointer<vtkXMLImageDataWriter> p_writer1 = vtkSmartPointer<vtkXMLImageDataWriter>::New();
     p_writer1->SetFileName(mFilepath.c_str());
-    p_writer1->SetInput(GetVtkImage());
+    p_writer1->SetInput(GetImage());
     p_writer1->Write();
 }
 
-void ImageIO::WriteItkImage()
-{
-    if(mFilepath == "")
-    {
-        EXCEPTION("Output file not specified for image writer");
-    }
-
-    itk::TIFFImageIOFactory::RegisterOneFactory();
-    itk::PNGImageIOFactory::RegisterOneFactory();
-    typedef itk::Image<unsigned char, 2> ImageType;
-    typedef itk::ImageFileWriter<ImageType> WriterType;
-    WriterType::Pointer writer = WriterType::New();
-    writer->SetFileName(mFilepath.c_str());
-    writer->SetInput(GetItkImage());
-    writer->Update();
-}
+//void ImageIO::WriteItkImage()
+//{
+//    if(mFilepath == "")
+//    {
+//        EXCEPTION("Output file not specified for image writer");
+//    }
+//
+//    itk::TIFFImageIOFactory::RegisterOneFactory();
+//    itk::PNGImageIOFactory::RegisterOneFactory();
+//    typedef itk::Image<unsigned char, 2> ImageType;
+//    typedef itk::ImageFileWriter<ImageType> WriterType;
+//    WriterType::Pointer writer = WriterType::New();
+//    writer->SetFileName(mFilepath.c_str());
+//    writer->SetInput(GetItkImage());
+//    writer->Update();
+//}
 
 #endif /*CHASTE_ANGIOGENESIS_EXTENDED*/
