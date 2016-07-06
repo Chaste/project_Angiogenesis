@@ -8,3 +8,4 @@
 
 from _mesh import *
 from chaste.mesh.numpy_tools import *
+import NetworkToMesh

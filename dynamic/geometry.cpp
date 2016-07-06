@@ -45,7 +45,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Facet.hpp"
 #include "Part.hpp"
 #include "MappableGridGenerator.hpp"
-#include "converters.hpp"
 #include "VtkSurfaceCleaner.hpp"
 #include "VtkBoundaryExtractor.hpp"
 using namespace boost::python;

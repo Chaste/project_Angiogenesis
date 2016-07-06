@@ -36,6 +36,51 @@ class TriMeshToVtk(bases.SimpleIOBase):
         self.output.SetLines(new_vtk_lines)
         return self.output
     
+class TriMeshToVtkUnstructured(bases.SimpleIOBase):
+    
+    """
+    Conversion from a mesh description in the Tri format from Meshpy to
+    VTK polydata
+    @param self.input a mesh in Tri format from MeshPy
+    @return self.output VtkPolydata with element edges as lines
+    """
+    
+    def __init__(self):
+        super(TriMeshToVtkUnstructured, self).__init__()
+        self.dimension = 2
+        
+    def set_dimension(self, dimension):
+        self.dimension = dimension
+    
+    def update(self):
+        self.output = vtk.vtkUnstructuredGrid()
+        
+        # Add VTK points corresponding to mesh nodes
+        points = vtk.vtkPoints()
+        
+        locations = self.input[0]
+        points.SetNumberOfPoints(len(locations))
+        for idx, eachLocation in enumerate(locations):
+            loc = [eachLocation[0], eachLocation[1], 0.0]
+            args = [idx] + loc
+            points.InsertPoint(*args)
+        self.output.SetPoints(points)  
+
+        # Add VTK Tets or Triangles corresponding to mesh elements
+        connectivity = self.input[1]
+        num_elements = len(connectivity)
+        self.output.Allocate(num_elements, num_elements)
+        for idx in range(num_elements): 
+            if self.dimension == 3:  
+                vtkElement = vtk.vtkTetra()
+            else:
+                vtkElement = vtk.vtkTriangle()
+            num_nodes = len(connectivity[idx])
+            for jdx in range(num_nodes):  
+                vtkElement.GetPointIds().SetId(jdx, connectivity[idx][jdx])                       
+            self.output.InsertNextCell(vtkElement.GetCellType(), vtkElement.GetPointIds())
+        return self.output
+    
 class VtkToTriMesh(bases.SimpleIOBase):
     
     """
