@@ -140,10 +140,9 @@ class Solver1d():
         mu = Constant(self.parameters["effective_viscosity"])
     
             # Define function spaces
-        P2 = VectorElement("Lagrange", self.mesh.ufl_cell(), 2)
-        P1 = FiniteElement("Lagrange", self.mesh.ufl_cell(), 1)
-        TH = P2 * P1
-        W = FunctionSpace(self.mesh, TH)
+        P2 = VectorFunctionSpace(self.mesh, "Lagrange", 2)
+        P1 = FunctionSpace(self.mesh, "Lagrange", 1)
+        W = P2 * P1
         
         # No Slip Boundary Condition on vessel wall
         #if self.dimension == 2:
@@ -182,7 +181,8 @@ class Solver1d():
         
         # Compute solution
         w = Function(W)
-        solve(a == L, w, bcs, solver_parameters={"linear_solver": "mumps"})
+        #solve(a == L, w, bcs, solver_parameters={"linear_solver": "mumps"})
+        solve(a == L, w, bcs)#, solver_parameters={"linear_solver": "umfpack"})
         
         # Split the mixed solution using deepcopy
         u, p = w.split(True)

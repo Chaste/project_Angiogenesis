@@ -51,6 +51,7 @@
 #include <vtkContourFilter.h>
 #include <vtkKdTreePointLocator.h>
 #include <vtkImageCast.h>
+#include <vtkvmtkPolyDataSurfaceRemeshing.h>
 #include "ImageIO.hpp"
 #include "ImageToSkeleton.hpp"
 

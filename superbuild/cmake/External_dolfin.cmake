@@ -21,8 +21,7 @@ ExternalProject_Add(dolfin
         -DMPI_CXX_COMPILER=${MPI_DIR}/bin/mpicxx
         -DDOLFIN_ENABLE_SPHINX=0FF
         -DDOLFIN_ENABLE_SLEPC=0FF
-        -DDOLFIN_ENABLE_TILINOS=0FF
-        -DDOLFIN_ENABLE_HDF5=0FF
+        -DDOLFIN_ENABLE_TRILINOS=0FF
         -DDOLFIN_ENABLE_HDF5=0FF
         -DUFC_DIR=${UFC_DIR}
         -DMPI_CXX_COMPILER=${MPI_DIR}/bin/mpicxx

@@ -34,6 +34,10 @@
  */
 
 #include <boost/lexical_cast.hpp>
+#include <vtkIdList.h>
+#include <vtkCellArray.h>
+#include <vtkLine.h>
+#include <vtkPoints.h>
 #include "Exception.hpp"
 #include "Warnings.hpp"
 #include "Facet.hpp"
@@ -61,6 +65,52 @@ template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 HybridMesh<ELEMENT_DIM, SPACE_DIM>::~HybridMesh()
 {
 
+}
+
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+void HybridMesh<ELEMENT_DIM, SPACE_DIM>::GenerateTriMeshFromPolyData(vtkSmartPointer<vtkPolyData> pPolyData, double maxElementArea ,
+                                                                     std::vector<c_vector<double, SPACE_DIM> >)
+{
+    unsigned num_points = pPolyData->GetNumberOfPoints();
+    struct triangulateio mesher_input, mesher_output;
+    this->InitialiseTriangulateIo(mesher_input);
+    this->InitialiseTriangulateIo(mesher_output);
+
+    mesher_input.pointlist = (double *) malloc(num_points * 2 * sizeof(double));
+    mesher_input.numberofpoints = num_points;
+    for (unsigned idx = 0; idx < num_points; idx++)
+    {
+        for (unsigned jdx = 0; jdx < 2; jdx++)
+        {
+            mesher_input.pointlist[2 * idx + jdx] = pPolyData->GetPoints()->GetPoint(idx)[jdx];
+        }
+    }
+
+    unsigned num_segments = pPolyData->GetNumberOfLines();
+    pPolyData->GetLines()->InitTraversal();
+    mesher_input.segmentlist = (int *) malloc(num_segments * 2 * sizeof(int));
+    mesher_input.numberofsegments = num_segments;
+    vtkSmartPointer<vtkIdList> p_id_list = vtkSmartPointer<vtkIdList>::New();
+    for (unsigned idx = 0; idx < num_segments; idx++)
+    {
+        pPolyData->GetLines()->GetNextCell(p_id_list);
+        mesher_input.segmentlist[2 * idx] = int(p_id_list->GetId(0));
+        mesher_input.segmentlist[2 * idx + 1] = int(p_id_list->GetId(1));
+    }
+
+    std::string mesher_command = "pqQze";
+    if (maxElementArea > 0.0)
+    {
+        mesher_command += "a" + boost::lexical_cast<std::string>(maxElementArea);
+    }
+    triangulate((char*) mesher_command.c_str(), &mesher_input, &mesher_output, NULL);
+
+    this->ImportFromMesher(mesher_output, mesher_output.numberoftriangles, mesher_output.trianglelist,
+                           mesher_output.numberofedges, mesher_output.edgelist, mesher_output.edgemarkerlist);
+
+    //Tidy up triangle
+    this->FreeTriangulateIo(mesher_input);
+    this->FreeTriangulateIo(mesher_output);
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>

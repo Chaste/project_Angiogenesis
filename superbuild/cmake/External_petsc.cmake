@@ -9,7 +9,7 @@ set(petsc_url "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${p
 set(ENV{LD_LIBRARY_PATH} "${MPI_DIR}/lib:$ENV{LD_LIBRARY_PATH}")
 
 set(petsc_cmds
-CONFIGURE_COMMAND <SOURCE_DIR>/config/configure.py PETSC_DIR=<SOURCE_DIR> PETSC_ARCH=linux-gnu --download-f2cblaslapack --with-mpi-dir=${MPI_DIR} --download-hypre --download-sundials=yes --download-sundials-shared=1  --download-hdf5 --download-parmetis --download-metis --with-x=false --with-clanguage=cxx --with-shared-libraries
+CONFIGURE_COMMAND <SOURCE_DIR>/config/configure.py PETSC_DIR=<SOURCE_DIR> PETSC_ARCH=linux-gnu --download-f2cblaslapack --with-mpi-dir=${MPI_DIR} --download-hypre --download-sundials=yes --download-scalapack --download-mumps --download-superlu_dist --download-sundials-shared=1  --download-hdf5 --download-parmetis --download-metis --with-x=false --with-clanguage=cxx --with-shared-libraries --prefix=<INSTALL_DIR>
 BUILD_COMMAND make PETSC_DIR=<SOURCE_DIR> PETSC_ARCH=linux-gnu
 )
 
@@ -17,7 +17,7 @@ ExternalProject_Add(petsc
   DEPENDS openmpi
   URL ${petsc_url}
   ${petsc_cmds}
-  INSTALL_COMMAND ""
+  INSTALL_COMMAND make install DESTDIR=<INSTALL_DIR>
   BUILD_IN_SOURCE 1
 )
 

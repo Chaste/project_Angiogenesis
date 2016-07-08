@@ -11,6 +11,7 @@ mesh/TestHybridMesh.hpp
 mesh/TestRegularGrid.hpp
 mesh/utilities/TestDistanceMap.hpp
 mesh/utilities/TestDensityMap.hpp
+mesh/TestVesselNetworkToMesh.hpp
 population/cell/TestOwen2011OxygenBasedCellCycleModelWithOde.hpp
 population/cell/TestOwen2011OxygenBasedCellCycleOdeSystem.hpp
 population/vessel/TestVascularNode.hpp

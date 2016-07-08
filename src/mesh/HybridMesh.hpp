@@ -40,6 +40,9 @@
 #include "SmartPointers.hpp"
 #include "ChastePoint.hpp"
 #include "TetrahedralMesh.hpp"
+#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning
+#include <vtkPolyData.h>
+#include <vtkSmartPointer.h>
 #include "Part.hpp"
 #include "Cell.hpp"
 
@@ -86,6 +89,9 @@ public:
      * @param maxElementArea if greater than 0.0 quality meshing is used in Tetgen
      */
     void GenerateFromPart(boost::shared_ptr<Part<SPACE_DIM> > pPart, double maxElementArea = 0.0);
+
+    void GenerateTriMeshFromPolyData(vtkSmartPointer<vtkPolyData> pPolyData, double maxElementArea = 0.0, std::vector<c_vector<double, SPACE_DIM> > holes =
+            std::vector<c_vector<double, SPACE_DIM> >() );
 
     /**
      * Generate the mesh based on a STL description
