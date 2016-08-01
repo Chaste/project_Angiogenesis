@@ -1,5 +1,5 @@
 import vtk
-#import dolfin as df
+import dolfin as df
 import numpy as np
 import chaste.utility.bases as bases
 
@@ -158,6 +158,49 @@ class ChasteMeshToVtkUnstructured(bases.SimpleIOBase):
                 vtkElement.GetPointIds().SetId(jdx, connectivity[idx][jdx])                       
             self.output.InsertNextCell(vtkElement.GetCellType(), vtkElement.GetPointIds())
         return self.output
+    
+class VtkMeshToDolfin(bases.SimpleIOBase):
+    
+    """
+    Convert a 3d Vtk mesh to dolfin format. Cell labels in the VTK mesh will be converted to
+    a dolfin mesh function.
+    @param self.input a 3d vtk mesh
+    @return self.output a dolfin mesh and mesh function
+    """
+    
+    def __init__(self):
+        pass
+        
+    def update(self):
+        editor = df.MeshEditor()
+        dolfin_mesh = df.Mesh()
+        
+        points = self.input.GetPoints()
+        num_points = self.input.GetNumberOfPoints()
+        
+        cells = self.input.GetCells()
+        num_cells = self.input.GetNumberOfCells()
+        
+        editor.open(dolfin_mesh, 3, 3)
+        editor.init_vertices(num_points)
+        editor.init_cells(num_cells)
+        
+        for idx in range(num_points):
+            editor.add_vertex(idx, np.array(points.GetPoint(idx)))
+            
+        cells.InitTraversal()
+        segList = vtk.vtkIdList()
+        for idx in range(num_cells):
+            cells.GetNextCell(segList)
+            point_indices = []
+            for j in range(0, segList.GetNumberOfIds()):
+                seg_id = segList.GetId(j)
+                point_indices.append(int(seg_id))
+            reverse_lst = point_indices[::-1]
+            editor.add_cell(idx, np.array(reverse_lst, dtype=np.uintp))
+        editor.close()
+        dolfin_mesh.init()
+        return dolfin_mesh
     
 class DolfinConverter3d():
     
