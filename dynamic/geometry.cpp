@@ -124,23 +124,6 @@ BOOST_PYTHON_MODULE(_geometry)
         .def("GenerateHemisphere", &MappableGridGenerator::GenerateHemisphere)
     ;
 
-    class_<VtkSurfaceCleaner, boost::shared_ptr<VtkSurfaceCleaner> >("VtkSurfaceCleaner")
-        .def("SetInput",&VtkSurfaceCleaner::SetInput)
-        .def("SetDecimateTargetReduction",&VtkSurfaceCleaner::SetDecimateTargetReduction)
-        .def("SetDecimateFeatureAngle",&VtkSurfaceCleaner::SetDecimateFeatureAngle)
-        .def("SetLinearSubdivisionNumber",&VtkSurfaceCleaner::SetLinearSubdivisionNumber)
-        .def("Update",&VtkSurfaceCleaner::Update)
-        .def("GetOutput",&VtkSurfaceCleaner::GetOutput)
-    ;
-
-    class_<VtkBoundaryExtractor, boost::shared_ptr<VtkBoundaryExtractor> >("VtkBoundaryExtractor")
-        .def("SetInput",&VtkBoundaryExtractor::SetInput)
-        .def("SetSmoothingLength",&VtkBoundaryExtractor::SetSmoothingLength)
-        .def("SetDoSmoothing",&VtkBoundaryExtractor::SetDoSmoothing)
-        .def("Update",&VtkBoundaryExtractor::Update)
-        .def("GetOutput",&VtkBoundaryExtractor::GetOutput)
-    ;
-
     // Containers
     class_<std::vector<boost::shared_ptr<Vertex> > > ("VecVertexPtrs")
          .def(vector_ptr_indexing_suite<std::vector<boost::shared_ptr<Vertex> > >())
