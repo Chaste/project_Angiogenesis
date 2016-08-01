@@ -37,8 +37,6 @@
 
 find_package(Chaste COMPONENTS cell_based)
 chaste_do_project(Angiogenesis)
-
-add_definitions(-DCHASTE_ANGIOGENESIS_EXTENDED)
     
 set(BUILD_ANGIOGENESIS_PYTHON ON CACHE BOOL "Build Python Bindings for Angiogenesis component")
 if(${BUILD_ANGIOGENESIS_PYTHON})
