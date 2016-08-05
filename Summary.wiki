@@ -1,6 +1,6 @@
 = Angiogenesis Project =
 
-The Angiogenesis project is a Chaste add-on with functionality for modelling blood vessels. It is written in C++ and Python and is supported on Linux only.
+The Angiogenesis project is a Chaste add-on with functionality for modelling blood flow, angiogenesis and nutrient and drug transport in micro-vessels. 
 
 = Installation =
 The project can be used directly as a C++ library or else as a Python package.

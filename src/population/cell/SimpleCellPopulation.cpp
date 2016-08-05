@@ -214,7 +214,7 @@ void SimpleCellPopulation<DIM>::Write(const std::string& rFileName)
     p_part_data->SetPoints(GetVtk());
     vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
     writer->SetFileName(rFileName.c_str());
-    writer->SetInput(p_part_data);
+    writer->SetInputData(p_part_data);
     writer->Write();
 }
 

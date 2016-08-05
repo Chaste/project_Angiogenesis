@@ -4,7 +4,7 @@
 import unittest
 import math
 import numpy as np
-import chaste.geometry
+import angiogenesis.geometry
         
 class TestFacet(unittest.TestCase):
     
@@ -13,16 +13,16 @@ class TestFacet(unittest.TestCase):
     def test_all_methods(self):
         
         # Make some vertices
-        vertex1 = chaste.geometry.Vertex((0.0, 0.0, 0.0))
-        vertex2 = chaste.geometry.Vertex((1.0, 0.0, 0.0))
-        vertex3 = chaste.geometry.Vertex((1.0, 1.0, 0.0))
-        vertex4 = chaste.geometry.Vertex((0.0, 1.0, 0.0))
+        vertex1 = angiogenesis.geometry.Vertex((0.0, 0.0, 0.0))
+        vertex2 = angiogenesis.geometry.Vertex((1.0, 0.0, 0.0))
+        vertex3 = angiogenesis.geometry.Vertex((1.0, 1.0, 0.0))
+        vertex4 = angiogenesis.geometry.Vertex((0.0, 1.0, 0.0))
     
         # Make a polygon with several vertices
-        polygon = chaste.geometry.Polygon([vertex1, vertex2, vertex3, vertex4])
+        polygon = angiogenesis.geometry.Polygon([vertex1, vertex2, vertex3, vertex4])
 
         # Make a facet
-        facet = chaste.geometry.Facet(polygon)
+        facet = angiogenesis.geometry.Facet(polygon)
         self.assertEqual(len(facet.GetVertices()), 4)
         self.assertEqual(len(facet.GetPolygons()), 1)
 

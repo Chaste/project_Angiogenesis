@@ -343,7 +343,6 @@ std::vector<double> RegularGrid<ELEMENT_DIM, SPACE_DIM>::InterpolateGridValues(
             pPointData->SetValue(idx, values[idx]);
         }
         mpVtkGrid->GetPointData()->AddArray(pPointData);
-        mpVtkGrid->Update();
 
         // Sample the field at these locations
         vtkSmartPointer<vtkPolyData> p_polydata = vtkSmartPointer<vtkPolyData>::New();
@@ -361,11 +360,10 @@ std::vector<double> RegularGrid<ELEMENT_DIM, SPACE_DIM>::InterpolateGridValues(
             }
         }
         p_polydata->SetPoints(p_points);
-        p_polydata->Update();
 
         vtkSmartPointer<vtkProbeFilter> p_probe_filter = vtkSmartPointer<vtkProbeFilter>::New();
-        p_probe_filter->SetInput(p_polydata);
-        p_probe_filter->SetSource(mpVtkGrid);
+        p_probe_filter->SetInputData(p_polydata);
+        p_probe_filter->SetSourceData(mpVtkGrid);
         p_probe_filter->Update();
         vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetPolyDataOutput()->GetPointData();
 
@@ -736,7 +734,7 @@ void RegularGrid<ELEMENT_DIM, SPACE_DIM>::Write(boost::shared_ptr<OutputFileHand
 {
     vtkSmartPointer<vtkXMLImageDataWriter> pImageDataWriter = vtkSmartPointer<vtkXMLImageDataWriter>::New();
     pImageDataWriter->SetFileName((pFileHandler->GetOutputDirectoryFullPath() + "/grid.vti").c_str());
-    pImageDataWriter->SetInput(GetVtkGrid());
+    pImageDataWriter->SetInputData(GetVtkGrid());
     pImageDataWriter->Update();
     pImageDataWriter->Write();
 }

@@ -67,7 +67,7 @@ void translateMyCPPException(Exception const &e)
 }
 
 // Make the core module containing converters
-BOOST_PYTHON_MODULE(_core)
+BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_core)
 {
 	import_array();
 	numeric::array::set_module_and_type("numpy", "ndarray");

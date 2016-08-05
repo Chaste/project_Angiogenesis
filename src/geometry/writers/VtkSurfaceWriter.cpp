@@ -42,6 +42,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vtkLine.h>
 #include <vtkXMLPolyDataWriter.h>
 #include <vtkSTLWriter.h>
+#include <vtkVersion.h>
 #endif // CHASTE_VTK
 #include "SmartPointers.hpp"
 #include "Exception.hpp"
@@ -97,7 +98,11 @@ void VtkSurfaceWriter::Write()
     {
         vtkSmartPointer<vtkSTLWriter> writer = vtkSmartPointer<vtkSTLWriter>::New();
         writer->SetFileName(mFilename.c_str());
-        writer->SetInput(mpInputSurface);
+        #if VTK_MAJOR_VERSION <= 5
+            writer->SetInput(mpInputSurface);
+        #else
+            writer->SetInputData(mpInputSurface);
+        #endif
         writer->SetFileTypeToASCII();
         writer->Write();
     }
@@ -105,7 +110,11 @@ void VtkSurfaceWriter::Write()
     {
         vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
         writer->SetFileName(mFilename.c_str());
-        writer->SetInput(mpInputSurface);
+        #if VTK_MAJOR_VERSION <= 5
+            writer->SetInput(mpInputSurface);
+        #else
+            writer->SetInputData(mpInputSurface);
+        #endif
         writer->Write();
     }
 }

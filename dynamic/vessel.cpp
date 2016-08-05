@@ -79,7 +79,7 @@ void (VesselNetwork<3>::*VNet3_MergeCoincident)(double) = &VesselNetwork<3>::Mer
 void (VesselNetwork<3>::*VNet3_Translate)(const c_vector<double, 3>&) = &VesselNetwork<3>::Translate;
 
 // Make the module
-BOOST_PYTHON_MODULE(_vessel)
+BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel)
 {
     class_<AbstractVesselNetworkComponent<3>, boost::shared_ptr<AbstractVesselNetworkComponent<3> >, boost::noncopyable>("AbstractVesselNetworkComponent")
     .def("GetId", &AbstractVesselNetworkComponent<3>::GetId)

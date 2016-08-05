@@ -55,7 +55,7 @@ using namespace boost::python;
 
 
 // Make the module
-BOOST_PYTHON_MODULE(_pde)
+BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde)
 {
     class_<AbstractHybridSolverWrap, boost::shared_ptr<AbstractHybridSolverWrap>, boost::noncopyable>("AbstractHybridSolver")
         .def("Solve", pure_virtual(&AbstractHybridSolver<3>::Solve))

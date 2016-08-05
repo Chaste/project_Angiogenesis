@@ -450,7 +450,7 @@ void GreensFunctionSolver<DIM>::WriteSolution(std::map<std::string, std::vector<
     // Write the tissue point data
     vtkSmartPointer<vtkXMLImageDataWriter> pImageDataWriter = vtkSmartPointer<vtkXMLImageDataWriter>::New();
     pImageDataWriter->SetFileName((this->mpOutputFileHandler->GetOutputDirectoryFullPath() + "/pde_solution.vti").c_str());
-    pImageDataWriter->SetInput(this->mpVtkSolution);
+    pImageDataWriter->SetInputData(this->mpVtkSolution);
     pImageDataWriter->Update();
     pImageDataWriter->Write();
 
@@ -482,7 +482,7 @@ void GreensFunctionSolver<DIM>::WriteSolution(std::map<std::string, std::vector<
 
     vtkSmartPointer<vtkXMLPolyDataWriter> p_poldata_writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
     p_poldata_writer->SetFileName((this->mpOutputFileHandler->GetOutputDirectoryFullPath() + "/segments.vtp").c_str());
-    p_poldata_writer->SetInput(pPolyData);
+    p_poldata_writer->SetInputData(pPolyData);
     p_poldata_writer->Write();
 }
 

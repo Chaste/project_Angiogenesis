@@ -41,6 +41,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vtkPointData.h>
 #include <vtkLine.h>
 #include <vtkXMLPolyDataWriter.h>
+#include <vtkVersion.h>
 #endif // CHASTE_VTK
 #include "SmartPointers.hpp"
 #include "Exception.hpp"
@@ -208,7 +209,12 @@ void VtkVesselNetworkWriter<DIM>::Write()
 
     vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
     writer->SetFileName(mFilename.c_str());
-    writer->SetInput(this->GetOutput());
+
+    #if VTK_MAJOR_VERSION <= 5
+        writer->SetInput(this->GetOutput());
+    #else
+        writer->SetInputData(this->GetOutput());
+    #endif
     writer->Write();
 }
 

@@ -99,8 +99,8 @@ std::vector<double> AbstractRegularGridHybridSolver<DIM>::GetSolutionAtPoints(st
     p_polydata->SetPoints(p_points);
 
     vtkSmartPointer<vtkProbeFilter> p_probe_filter = vtkSmartPointer<vtkProbeFilter>::New();
-    p_probe_filter->SetInput(p_polydata);
-    p_probe_filter->SetSource(this->mpVtkSolution);
+    p_probe_filter->SetInputData(p_polydata);
+    p_probe_filter->SetSourceData(this->mpVtkSolution);
     p_probe_filter->Update();
     vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetOutput()->GetPointData();
 
@@ -264,7 +264,7 @@ void AbstractRegularGridHybridSolver<DIM>::Write()
         pImageDataWriter->SetFileName((this->mpOutputFileHandler->GetOutputDirectoryFullPath() + "/solution.vti").c_str());
     }
 
-    pImageDataWriter->SetInput(this->mpVtkSolution);
+    pImageDataWriter->SetInputData(this->mpVtkSolution);
     pImageDataWriter->Update();
     pImageDataWriter->Write();
 }

@@ -6,12 +6,10 @@ geometry/TestGeometryTools.hpp
 geometry/generators/TestMappableGridGenerator.hpp
 geometry/generators/TestVesselSurfaceGenerator.hpp
 geometry/generators/TestVoronoiGenerator.hpp
-geometry/surface_tools/TestSurfaceTools.hpp
 mesh/TestHybridMesh.hpp
 mesh/TestRegularGrid.hpp
 mesh/utilities/TestDistanceMap.hpp
 mesh/utilities/TestDensityMap.hpp
-mesh/TestVesselNetworkToMesh.hpp
 population/cell/TestOwen2011OxygenBasedCellCycleModelWithOde.hpp
 population/cell/TestOwen2011OxygenBasedCellCycleOdeSystem.hpp
 population/vessel/TestVascularNode.hpp
@@ -49,7 +47,3 @@ tutorials/TestLatticeBasedAngiogenesisLiteratePaper.hpp
 tutorials/TestBuildVesselNetworkLiteratePaper.hpp
 tutorials/TestBloodFlowLiteratePaper.hpp
 utility/TestUnitCollections.hpp
-image/TestImageToSurface.hpp
-image/TestImageToSkeleton.hpp
-image/TestImageIO.hpp
-image/TestNetworkToImage.hpp

@@ -5,20 +5,20 @@ class BinaryDistribution(Distribution):
         return False
 
 setup(
-    name = "chaste",
+    name = "chaste_project_Angiogenesis",
     version = "0.1.dev0",
     packages = find_packages(),
 #    install_requires = ['scipy', 'matplotlib', 'pandas', 'numpy', 'jupyter'],
     package_data={
-        'chaste': ['core/_core.so', 
-                  'geometry/_geometry.so',
-                  'mesh/_mesh.so',
-                  'pde/_pde.so',
-                  'population/vessel/_vessel.so',
-                  'population/cell/_cell.so',
-                  'simulation/_simulation.so',
-                  'simulation/_flow.so',
-                  'simulation/_angiogenesis.so',],},
+        'chaste_project_Angiogenesis': ['core/_chaste_project_Angiogenesis_core.so', 
+                  'geometry/_chaste_project_Angiogenesis_geometry.so',
+                  'mesh/_chaste_project_Angiogenesis_mesh.so',
+                  'pde/_chaste_project_Angiogenesis_pde.so',
+                  'population/vessel/_chaste_project_Angiogenesis_vessel.so',
+                  'population/cell/_chaste_project_Angiogenesis_cell.so',
+                  'simulation/_chaste_project_Angiogenesis_simulation.so',
+                  'simulation/_chaste_project_Angiogenesis_flow.so',
+                  'simulation/_chaste_project_Angiogenesis_angiogenesis.so',],},
     include_package_data=True,
 #    test_suite='nose.collector',
 #    tests_require=['nose'],
@@ -26,10 +26,9 @@ setup(
     # Project Metadata
     author = "James Grogan - WCMB, University of Oxford",
     author_email = "grogan@maths.ox.ac.uk",
-    description = "A cancer simulation environment",
+    description = "Python library for angiogenesis simulation",
     license = "BSD",
     keywords = "cancer simulation tumor computational",
-    url = "https://github.com/jmsgrogan/casie", 
 
     classifiers=[
         'Development Status :: 1 - Planning',

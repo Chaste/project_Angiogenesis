@@ -45,8 +45,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Facet.hpp"
 #include "Part.hpp"
 #include "MappableGridGenerator.hpp"
-#include "VtkSurfaceCleaner.hpp"
-#include "VtkBoundaryExtractor.hpp"
+#include "converters.hpp"
 using namespace boost::python;
 
 // Pointer to overloaded member functions
@@ -62,7 +61,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(PlcPartAddRectangleOverLoads, Part<3>::Ad
 //boost::shared_ptr<Polygon>(Part::*AddPolygonVertices)(std::vector<boost::shared_ptr<Vertex> >, bool) = &Part::AddPolygon;
 
 // Make the module
-BOOST_PYTHON_MODULE(_geometry)
+BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_geometry)
 {
     class_<Vertex, boost::shared_ptr<Vertex > >("Vertex", init<optional<double, double, double> >())
         .def(init<c_vector<double, 3> >())

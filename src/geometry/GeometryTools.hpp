@@ -176,7 +176,6 @@ bool IsPointInTetra(c_vector<double, DIM> start_point, std::vector<c_vector<doub
 
     vtkIdType ptIds[] = {0, 1, 2, 3};
     p_grid->InsertNextCell(VTK_TETRA, 4, ptIds);
-    p_grid->Update();
 
     vtkSmartPointer<vtkCellLocator> p_locator = vtkSmartPointer<vtkCellLocator>::New();
     p_locator->SetDataSet(p_grid);
@@ -285,7 +284,6 @@ double LengthOfLineInTetra(c_vector<double, DIM> start_point,
 
         vtkIdType ptIds[] = {0, 1, 2, 3};
         p_grid->InsertNextCell(VTK_TETRA, 4, ptIds);
-        p_grid->Update();
 
         double t;
         c_vector<double,DIM> intersection;

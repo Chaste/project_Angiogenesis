@@ -54,7 +54,7 @@ using namespace boost::python;
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(HyrbidMeshGenerateFromPartOverloads, HybridMesh<3>::GenerateFromPart, 1, 2);
 
 // Make the module
-BOOST_PYTHON_MODULE(_mesh)
+BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_mesh)
 {
     class_<RegularGrid<3>, boost::shared_ptr<RegularGrid<3> > >("RegularGrid")
         .def("GenerateFromPart", &RegularGrid<3>::GenerateFromPart)

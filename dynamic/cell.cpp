@@ -88,7 +88,7 @@ boost::shared_ptr<CaBasedCellPopulation<3> > GenerateCaBasedCellPopulation(boost
 
 
 // Make the module
-BOOST_PYTHON_MODULE(_cell)
+BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell)
 {
     class_<SimpleCell<3>, boost::shared_ptr<SimpleCell<3> > >("SimpleCell", init<double, double, double>())
        .def(init<c_vector<double, 3> >())

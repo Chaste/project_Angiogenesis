@@ -40,5 +40,5 @@ chaste_do_project(Angiogenesis)
     
 set(BUILD_ANGIOGENESIS_PYTHON ON CACHE BOOL "Build Python Bindings for Angiogenesis component")
 if(${BUILD_ANGIOGENESIS_PYTHON})
-    include(${CMAKE_CURRENT_SOURCE_DIR}/ProjectAngiogenesisPython.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/WrapPython.cmake)
 endif(${BUILD_ANGIOGENESIS_PYTHON})

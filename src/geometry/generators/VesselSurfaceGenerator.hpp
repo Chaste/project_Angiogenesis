@@ -101,11 +101,6 @@ public:
      */
     vtkSmartPointer<vtkPolyData> GetVtkSurface();
 
-    /**
-     * Write the surface to a vtk file
-     * @param rFileName the file to write the surface to
-     */
-    void Write(const std::string& rFileName);
 
 private:
 

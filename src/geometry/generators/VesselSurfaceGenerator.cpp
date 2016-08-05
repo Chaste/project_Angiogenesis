@@ -378,14 +378,5 @@ void VesselSurfaceGenerator<DIM>::Translate(std::vector<c_vector<double, DIM> >&
     }
 }
 
-template<unsigned DIM>
-void VesselSurfaceGenerator<DIM>::Write(const std::string& fileName)
-{
-    vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-    writer->SetFileName(fileName.c_str());
-    writer->SetInput(mpSurface);
-    writer->Write();
-}
-
 template class VesselSurfaceGenerator<2> ;
 template class VesselSurfaceGenerator<3> ;

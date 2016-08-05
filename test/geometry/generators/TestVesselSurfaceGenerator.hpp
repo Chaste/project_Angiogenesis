@@ -68,7 +68,7 @@ public:
         surface_generator.GetVtkSurface();
         OutputFileHandler output_file_handler("TestVesselSurfaceGenerator", false);
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("SingleSegmentVessel.vtp");
-        surface_generator.Write(output_filename);
+//        surface_generator.Write(output_filename);
     }
 
     void TestMultiSegmentVessel()
@@ -99,7 +99,7 @@ public:
         surface_generator.GetVtkSurface();
         OutputFileHandler output_file_handler("TestVesselSurfaceGenerator", false);
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("MultiSegmentVessel.vtp");
-        surface_generator.Write(output_filename);
+//        surface_generator.Write(output_filename);
     }
 
     void TestSinusoidVessel()
@@ -129,7 +129,7 @@ public:
         surface_generator.GetVtkSurface();
         OutputFileHandler output_file_handler("TestVesselSurfaceGenerator", false);
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("SinusoidalVessel.vtp");
-        surface_generator.Write(output_filename);
+//        surface_generator.Write(output_filename);
     }
 
     void TestMultiVessel()
@@ -178,7 +178,7 @@ public:
         surface_generator.GetVtkSurface();
         OutputFileHandler output_file_handler("TestVesselSurfaceGenerator", false);
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("MultiVessel.vtp");
-        surface_generator.Write(output_filename);
+//        surface_generator.Write(output_filename);
     }
 };
 

@@ -49,8 +49,6 @@
 #include "VtkMeshWriter.hpp"
 #include "FiniteElementSolver.hpp"
 #include "VtkMeshReader.hpp"
-#include "Debug.hpp"
-
 
 template<unsigned DIM>
 FiniteElementSolver<DIM>::FiniteElementSolver()
@@ -137,8 +135,8 @@ std::vector<double> FiniteElementSolver<DIM>::GetSolutionAtPoints(std::vector<c_
     p_polydata->SetPoints(p_points);
 
     vtkSmartPointer<vtkProbeFilter> p_probe_filter = vtkSmartPointer<vtkProbeFilter>::New();
-    p_probe_filter->SetInput(p_polydata);
-    p_probe_filter->SetSource(mFeVtkSolution);
+    p_probe_filter->SetInputData(p_polydata);
+    p_probe_filter->SetSourceData(mFeVtkSolution);
     p_probe_filter->Update();
 
     vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetOutput()->GetPointData();

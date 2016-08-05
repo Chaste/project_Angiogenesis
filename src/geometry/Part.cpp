@@ -40,6 +40,7 @@
 #include "vtkSelectEnclosedPoints.h"
 #include "vtkTriangleFilter.h"
 #include "vtkSTLWriter.h"
+#include <vtkVersion.h>
 #include <boost/random.hpp>
 #include <boost/generator_iterator.hpp>
 #include "VesselNode.hpp"
@@ -484,7 +485,7 @@ vtkSmartPointer<vtkPolyData> Part<DIM>::GetVtk(bool update)
     }
     p_part_data->SetPoints(p_vertices);
     vtkSmartPointer<vtkCleanPolyData> p_clean_data = vtkSmartPointer<vtkCleanPolyData>::New();
-    p_clean_data->SetInput(p_part_data);
+    p_clean_data->SetInputData(p_part_data);
     mVtkPart = p_clean_data->GetOutput();
     return mVtkPart;
 }
@@ -510,14 +511,14 @@ bool Part<DIM>::IsPointInPart(c_vector<double, DIM> location, bool update)
     //Points inside test
     vtkSmartPointer<vtkSelectEnclosedPoints> selectEnclosedPoints = vtkSmartPointer<vtkSelectEnclosedPoints>::New();
     #if VTK_MAJOR_VERSION <= 5
-    selectEnclosedPoints->SetInput(p_point_data);
+        selectEnclosedPoints->SetInput(p_point_data);
     #else
-    selectEnclosedPoints->SetInputData(p_point_data);
+        selectEnclosedPoints->SetInputData(p_point_data);
     #endif
     #if VTK_MAJOR_VERSION <= 5
-    selectEnclosedPoints->SetSurface(p_part);
+        selectEnclosedPoints->SetSurface(p_part);
     #else
-    selectEnclosedPoints->SetSurfaceData(p_part);
+        selectEnclosedPoints->SetSurfaceData(p_part);
     #endif
     selectEnclosedPoints->Update();
 
@@ -575,7 +576,7 @@ void Part<DIM>::Write(const std::string& fileName)
     GetVtk();
     vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
     writer->SetFileName(fileName.c_str());
-    writer->SetInput(mVtkPart);
+    writer->SetInputData(mVtkPart);
     writer->Write();
 }
 
@@ -583,11 +584,11 @@ template<unsigned DIM>
 void Part<DIM>::WriteStl(const std::string& rFilename)
 {
     vtkSmartPointer<vtkTriangleFilter> p_tri_filter = vtkSmartPointer<vtkTriangleFilter>::New();
-    p_tri_filter->SetInput(GetVtk());
+    p_tri_filter->SetInputData(GetVtk());
 
     vtkSmartPointer<vtkSTLWriter> stlWriter = vtkSmartPointer<vtkSTLWriter>::New();
     stlWriter->SetFileName(rFilename.c_str());
-    stlWriter->SetInput(p_tri_filter->GetOutput());
+    stlWriter->SetInputConnection(p_tri_filter->GetOutputPort());
     stlWriter->SetFileTypeToASCII();
     stlWriter->Write();
 }

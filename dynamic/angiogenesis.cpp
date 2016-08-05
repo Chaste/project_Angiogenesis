@@ -48,7 +48,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using namespace boost::python;
 
 // Make the module
-BOOST_PYTHON_MODULE(_angiogenesis)
+BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis)
 {
 
     class_<AngiogenesisSolver<3> >("AngiogenesisSolver")
