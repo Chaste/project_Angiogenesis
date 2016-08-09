@@ -1,7 +1,8 @@
-"""Casie (Cancer Simulation Environment).
+"""Chaste Angiogenesis Project
 
 .. moduleauthor:: James Grogan <grogan@maths.ox.ac.cuk>
 
 """
 
-import core
+# Need to load chaste on import to correctly set up the runtime environment
+import chaste

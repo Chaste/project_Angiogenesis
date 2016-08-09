@@ -36,7 +36,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef WallShearStressCalculator_hpp
 #define WallShearStressCalculator_hpp
 
-#include "boost/shared_ptr.hpp"
+#include "SmartPointers.hpp"
 #include "UnitCollection.hpp"
 #include "AbstractVesselNetworkCalculator.hpp"
 

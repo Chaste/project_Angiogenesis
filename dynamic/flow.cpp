@@ -33,7 +33,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#ifdef CHASTE_ANGIOGENESIS_PYTHON
 #include <vector>
 #include <boost/python.hpp>
 #include <boost/python/module.hpp>
@@ -42,22 +41,22 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "VesselImpedanceCalculator.hpp"
 #include "BetteridgeHaematocritSolver.hpp"
 
-using namespace boost::python;
+namespace bp = boost::python;
 
 // Make the module
 BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_flow)
 {
-    class_<FlowSolver<3>, boost::shared_ptr<FlowSolver<3u> > >("FlowSolver")
+    bp::class_<FlowSolver<3>, boost::shared_ptr<FlowSolver<3u> > >("FlowSolver")
         .def("SetVesselNetwork", &FlowSolver<3>::SetVesselNetwork)
         .def("Solve", &FlowSolver<3>::Solve)
     ;
 
-    class_<VesselImpedanceCalculator<3>, boost::shared_ptr<VesselImpedanceCalculator<3u> > >("VesselImpedanceCalculator")
+    bp::class_<VesselImpedanceCalculator<3>, boost::shared_ptr<VesselImpedanceCalculator<3u> > >("VesselImpedanceCalculator")
         .def("SetVesselNetwork", &VesselImpedanceCalculator<3>::SetVesselNetwork)
         .def("Calculate", &VesselImpedanceCalculator<3>::Calculate)
     ;
 
-    class_<BetteridgeHaematocritSolver<3>, boost::shared_ptr<BetteridgeHaematocritSolver<3u> > >("BetteridgeHaematocritSolver")
+    bp::class_<BetteridgeHaematocritSolver<3>, boost::shared_ptr<BetteridgeHaematocritSolver<3u> > >("BetteridgeHaematocritSolver")
         .def("SetVesselNetwork", &BetteridgeHaematocritSolver<3>::SetVesselNetwork)
         .def("Calculate", &BetteridgeHaematocritSolver<3>::Calculate)
         .def("SetTHR", &BetteridgeHaematocritSolver<3>::SetTHR)
@@ -65,5 +64,3 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_flow)
         .def("SetHaematocrit", &BetteridgeHaematocritSolver<3>::SetHaematocrit)
     ;
 }
-
-#endif // CHASTE_ANGIOGENESIS_PYTHON

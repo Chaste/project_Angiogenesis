@@ -33,7 +33,6 @@
 
  */
 
-#ifdef CHASTE_ANGIOGENESIS_PYTHON
 #ifndef BP_CONVERTERS_HPP_
 #define BP_CONVERTERS_HPP_
 
@@ -48,8 +47,6 @@
 #include <vtkSmartPointer.h>
 #include <vtkImageData.h>
 #include <vtkObjectBase.h>
-#include "Debug.hpp"
-//#include <vtkPythonUtil.h>
 
 #include "UblasIncludes.hpp"
 
@@ -58,100 +55,6 @@ using namespace boost::python;
 /* Collection of converters to and from Python objects
  */
 
-/******************************
- * To Python converters
- */
-
-/* VTK pointers to Python VTK objects
- */
-template<class T>
-struct VtkSmartPointerToPython
-{
-    static PyObject* convert(const vtkSmartPointer<T> &p)
-    {
-        std::ostringstream oss;
-        oss << (void*) p.GetPointer();
-        std::string address_str = oss.str();
-
-        boost::python::object obj = import("vtk").attr("vtkObjectBase")(address_str);
-        return incref(obj.ptr());
-    }
-};
-
-//#define VTK_PYTHON_CONVERSION(type) converter::registry::insert(&extract_vtk_wrapped_pointer, type_id<type>());
-
-//vtkObjectBase* GetImageDataPtr(PyObject *  obj)
-//{
-//    return vtkPythonUtil::GetPointerFromObject(PyObject *  obj, const char *    classname)
-//}
-
-//vtkObjectBase*
-
-void* extract_vtk_wrapped_pointer(PyObject* obj)
-{
-    char thisStr[] = "__this__";
-    //first we need to get the __this__ attribute from the Python Object
-    if (!PyObject_HasAttrString(obj, thisStr))
-    return NULL;
-
-    PyObject* thisAttr = PyObject_GetAttrString(obj, thisStr);
-    if (thisAttr == NULL)
-    return NULL;
-
-    const char* str = PyString_AsString(thisAttr);
-    if(str == 0 || strlen(str) < 1)
-    return NULL;
-
-    char hex_address[32], *pEnd;
-    const char *_p_ = strstr(str, "_p_vtk");
-    if(_p_ == NULL) return NULL;
-    const char *class_name = strstr(_p_, "vtk");
-    if(class_name == NULL) return NULL;
-    strcpy(hex_address, str+1);
-    hex_address[_p_-str-1] = '\0';
-    long address = strtol(hex_address, &pEnd, 16);
-
-    vtkObjectBase* vtk_object = (vtkObjectBase*)((void*)address);
-    if(vtk_object->IsA(class_name))
-    {
-        vtk_object->Register(NULL);
-        return vtk_object;
-    }
-    return NULL;
-}
-
-/* c_vector to numpy array
- */
-template<class T>
-struct CVectorToNumpyArray
-{
-    static PyObject* convert(T const& vec)
-    {
-        npy_intp size = vec.size();
-        double * data = size ? const_cast<double *>(&vec[0]) : static_cast<double *>(NULL);
-        PyObject * pyObj = PyArray_SimpleNewFromData(1, &size, NPY_DOUBLE, data);
-        boost::python::handle<> handle( pyObj );
-        boost::python::numeric::array arr( handle );
-        return incref(arr.ptr());
-    }
-};
-
-template<class T>
-struct StdVectorDoubleToNumpyArray
-{
-    static PyObject* convert(T const& vec)
-    {
-        npy_intp size = vec.size();
-        double * data = size ? const_cast<double *>(&vec[0]) : static_cast<double *>(NULL);
-        PyObject * pyObj = PyArray_SimpleNewFromData(1, &size, NPY_DOUBLE, data);
-        boost::python::handle<> handle( pyObj );
-        boost::python::numeric::array arr( handle );
-        return incref(arr.ptr());
-    }
-};
-
-/* STL Iterators to Python Iterators
- */
 template <class Container>
 class vector_ptr_indexing_suite : public vector_indexing_suite<Container, true, vector_ptr_indexing_suite<Container> >
 {
@@ -310,4 +213,3 @@ struct PythonIterableToStl
 };
 
 #endif /* BP_CONVERTERS_HPP_ */
-#endif // CHASTE_ANGIOGENESIS_PYTHON

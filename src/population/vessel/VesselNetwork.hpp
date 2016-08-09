@@ -194,7 +194,7 @@ public:
     /**
      Get the number of nodes near to a specified point
      */
-    unsigned NumberOfNodesNearLocation(const c_vector<double, DIM>&  rLocation, double radius = 0.0 * unit::metres);
+    unsigned NumberOfNodesNearLocation(const c_vector<double, DIM>&  rLocation, double radius = 0.0);
 
     /**
      Return the extents of the vessel network in the form ((xmin, xmax), (ymin, ymax), (zmin, zmax))

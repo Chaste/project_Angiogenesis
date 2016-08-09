@@ -48,14 +48,22 @@
 #include "FunctionMap.hpp"
 #include "AbstractRegularGridHybridSolver.hpp"
 #include "AbstractHybridSolver.hpp"
+#include "ChastePoint.hpp"
 
 using namespace boost::python;
+
+const c_vector<double, 3>& (ChastePoint<3>::*ChastePoint_rGetLocation_3)() const = &ChastePoint<3>::rGetLocation;
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(HyrbidMeshGenerateFromPartOverloads, HybridMesh<3>::GenerateFromPart, 1, 2);
 
 // Make the module
 BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_mesh)
 {
+    class_<ChastePoint<3> >("ChastePoint", init<double, double, double>())
+        .def(init<c_vector<double, 3> >())
+        .def("get_location", ChastePoint_rGetLocation_3, return_value_policy<copy_const_reference>())
+    ;
+
     class_<RegularGrid<3>, boost::shared_ptr<RegularGrid<3> > >("RegularGrid")
         .def("GenerateFromPart", &RegularGrid<3>::GenerateFromPart)
         .def("GetExtents", &RegularGrid<3>::GetExtents)
