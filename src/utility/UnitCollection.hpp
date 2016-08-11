@@ -35,7 +35,6 @@
 
 namespace units = boost::units;
 namespace unit
-
 {
     typedef units::si::dimensionless dimensionless;
 
@@ -87,6 +86,21 @@ namespace unit
     // Mass
     typedef units::si::mass mass;
     BOOST_UNITS_STATIC_CONSTANT(kg, units::si::mass);
-}
+};
+
+class UnitTester
+{
+    units::quantity<unit::mass> mMyMass;
+
+public:
+    UnitTester();
+
+    ~UnitTester();
+
+
+    void SetMass(units::quantity<unit::mass> inputMass);
+
+    units::quantity<unit::mass> GetMass();
+};
 
 #endif

@@ -41,20 +41,22 @@ set(PROJECT_ANGIO_LIB ${CMAKE_CURRENT_BINARY_DIR}/libchaste_project_Angiogenesis
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/population/vessel/properties/)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/dynamic/)
 
-SET(arguments vessel)
+SET(arguments utility)
 LIST(APPEND arguments ${CMAKE_CURRENT_SOURCE_DIR} )
-LIST(APPEND arguments ${CMAKE_CURRENT_SOURCE_DIR}/dynamic/header_collections/VesselWrapperHeaderCollection.hpp)
+LIST(APPEND arguments ${CMAKE_CURRENT_SOURCE_DIR}/dynamic/header_collections/UtilityWrapperHeaderCollection.hpp)
 LIST(APPEND arguments ${CMAKE_CURRENT_SOURCE_DIR}/src/population/vessel/properties/)
 LIST(APPEND arguments ${CMAKE_CURRENT_SOURCE_DIR}/src/utility)
 LIST(APPEND arguments ${CMAKE_CURRENT_SOURCE_DIR}/src/population/vessel)
 LIST(APPEND arguments ${Chaste_INCLUDE_DIRS})
 LIST(APPEND arguments ${Chaste_THIRD_PARTY_INCLUDE_DIRS})
 add_custom_target(project_Angiogenesis_Python_Bindings)
-add_custom_command(TARGET project_Angiogenesis_Python_Bindings COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/dynamic/binding_generators/generate_vessel_bindings.py ${arguments})
+add_custom_command(TARGET project_Angiogenesis_Python_Bindings COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/dynamic/binding_generators/generate_utility_bindings.py ${arguments})
 
 ######### Build the Python modules ###################### 
 set (ANGIOGENESIS_PYTHON_MODULES "")
 set (ANGIOGENESIS_PYTHON_MODULE_LOCATIONS "")
+list (APPEND ANGIOGENESIS_PYTHON_MODULES utility_auto)
+list (APPEND ANGIOGENESIS_PYTHON_MODULE_LOCATIONS ${CMAKE_CURRENT_BINARY_DIR}/python/angiogenesis/utility/)
 list (APPEND ANGIOGENESIS_PYTHON_MODULES geometry)
 list (APPEND ANGIOGENESIS_PYTHON_MODULE_LOCATIONS ${CMAKE_CURRENT_BINARY_DIR}/python/angiogenesis/geometry/)
 list (APPEND ANGIOGENESIS_PYTHON_MODULES vessel)
@@ -88,7 +90,8 @@ endforeach()
 add_custom_target(project_Angiogenesis_Python)
 add_dependencies(project_Angiogenesis_Python 
     _chaste_project_Angiogenesis_geometry 
-    _chaste_project_Angiogenesis_vessel 
+    _chaste_project_Angiogenesis_vessel
+    _chaste_project_Angiogenesis_utility_auto 
     _chaste_project_Angiogenesis_vessel_auto 
     _chaste_project_Angiogenesis_pde 
     _chaste_project_Angiogenesis_simulation 
