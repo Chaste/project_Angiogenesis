@@ -47,6 +47,7 @@
 #include "UblasVectorInclude.hpp"
 #include "AbstractTetrahedralMesh.hpp"
 #include "VtkMeshWriter.hpp"
+#include "Debug.hpp"
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 HybridMesh<ELEMENT_DIM, SPACE_DIM>::HybridMesh()
@@ -69,7 +70,7 @@ HybridMesh<ELEMENT_DIM, SPACE_DIM>::~HybridMesh()
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void HybridMesh<ELEMENT_DIM, SPACE_DIM>::GenerateTriMeshFromPolyData(vtkSmartPointer<vtkPolyData> pPolyData, double maxElementArea ,
-                                                                     std::vector<c_vector<double, SPACE_DIM> >)
+                                                                     std::vector<c_vector<double, SPACE_DIM> > holes)
 {
     unsigned num_points = pPolyData->GetNumberOfPoints();
     struct triangulateio mesher_input, mesher_output;
@@ -77,7 +78,7 @@ void HybridMesh<ELEMENT_DIM, SPACE_DIM>::GenerateTriMeshFromPolyData(vtkSmartPoi
     this->InitialiseTriangulateIo(mesher_output);
 
     mesher_input.pointlist = (double *) malloc(num_points * 2 * sizeof(double));
-    mesher_input.numberofpoints = num_points;
+    mesher_input.numberofpoints = int(num_points);
     for (unsigned idx = 0; idx < num_points; idx++)
     {
         for (unsigned jdx = 0; jdx < 2; jdx++)
@@ -86,10 +87,23 @@ void HybridMesh<ELEMENT_DIM, SPACE_DIM>::GenerateTriMeshFromPolyData(vtkSmartPoi
         }
     }
 
+    if (holes.size() > 0)
+    {
+        mesher_input.holelist = (double *) malloc(num_points * 2 * sizeof(double));
+        mesher_input.numberofholes = int(holes.size());
+        for (unsigned idx = 0; idx < holes.size(); idx++)
+        {
+            for (unsigned jdx = 0; jdx < 2; jdx++)
+            {
+                mesher_input.holelist[2 * idx + jdx] = holes[idx][jdx];
+            }
+        }
+    }
+
     unsigned num_segments = pPolyData->GetNumberOfLines();
     pPolyData->GetLines()->InitTraversal();
     mesher_input.segmentlist = (int *) malloc(num_segments * 2 * sizeof(int));
-    mesher_input.numberofsegments = num_segments;
+    mesher_input.numberofsegments = int(num_segments);
     vtkSmartPointer<vtkIdList> p_id_list = vtkSmartPointer<vtkIdList>::New();
     for (unsigned idx = 0; idx < num_segments; idx++)
     {
@@ -123,7 +137,7 @@ void HybridMesh<ELEMENT_DIM, SPACE_DIM>::Mesh2d(boost::shared_ptr<Part<SPACE_DIM
     this->InitialiseTriangulateIo(mesher_output);
 
     mesher_input.pointlist = (double *) malloc(num_vertices * 2 * sizeof(double));
-    mesher_input.numberofpoints = num_vertices;
+    mesher_input.numberofpoints = int(num_vertices);
     for (unsigned idx = 0; idx < num_vertices; idx++)
     {
         for (unsigned jdx = 0; jdx < 2; jdx++)
@@ -131,11 +145,12 @@ void HybridMesh<ELEMENT_DIM, SPACE_DIM>::Mesh2d(boost::shared_ptr<Part<SPACE_DIM
             mesher_input.pointlist[2 * idx + jdx] = vertex_locations[idx][jdx];
         }
     }
+
     std::vector<std::pair<unsigned, unsigned> > segments = pPart->GetSegmentIndices();
     unsigned num_segments = segments.size();
 
     mesher_input.segmentlist = (int *) malloc(num_segments * 2 * sizeof(int));
-    mesher_input.numberofsegments = num_segments;
+    mesher_input.numberofsegments = int(num_segments);
     for (unsigned idx = 0; idx < num_segments; idx++)
     {
         mesher_input.segmentlist[2 * idx] = int(segments[idx].first);

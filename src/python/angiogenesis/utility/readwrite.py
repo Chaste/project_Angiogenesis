@@ -5,7 +5,7 @@ except:
    import pickle
 import pandas
 import vtk
-import chaste_project_Angiogenesis.utility.recursion
+import recursion
 
 def dir_maker(file_path):
     if not os.path.exists(os.path.dirname(file_path)):
@@ -32,7 +32,7 @@ def write(feature, filename):
             feature = converter.GetOutput()
             writer = vtk.vtkTIFFWriter()
         else:
-            writer = chaste_project_Angiogenesis.utility.recursion.get_class("vtk.vtkXML" + feature.__class__.__name__[3:] + "Writer")()
+            writer = recursion.get_class("vtk.vtkXML" + feature.__class__.__name__[3:] + "Writer")()
         writer.SetFileName(filename)
         if vtk.VTK_MAJOR_VERSION <= 5:
             writer.SetInput(feature)
@@ -57,7 +57,7 @@ def read(filename):
     vtk_readers = ["vtkXMLPolyData", "vtkXMLUnstructuredGrid", "vtkXMLImageData", "vtkTIFF", "vtkTIFF"]
     
     if extension.upper() in (name.upper() for name in vtk_extensions):
-        reader = chaste_project_Angiogenesis.utility.recursion.get_class("vtk." + vtk_readers[vtk_extensions.index(extension)] + "Reader")()
+        reader = recursion.get_class("vtk." + vtk_readers[vtk_extensions.index(extension)] + "Reader")()
         reader.SetFileName(filename)
         reader.Update()
         return reader.GetOutput()
