@@ -2,11 +2,11 @@
 
 #include "boost/python.hpp"
 
-#include "/home/grogan/Chaste/projects/Angiogenesis/dynamic/header_collections/UtilityWrapperHeaderCollection.hpp"
+#include "/home/grogan/Chaste/projects/Angiogenesis/dynamic/wrapper_headers/utility_headers.hpp"
 
 namespace bp = boost::python;
 
-BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_utility_auto){
+BOOST_PYTHON_MODULE(_chaste_project_PyChaste_utility){
     bp::class_< UnitTester >( "UnitTester", bp::init< >() )    
         .def( 
             "GetMass"
@@ -18,16 +18,13 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_utility_auto){
 
     { //::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >
         typedef bp::class_< boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > > MassQuantity_exposer_t;
-        MassQuantity_exposer_t MassQuantity_exposer = MassQuantity_exposer_t( "MassQuantity" )
-        .def(str(bp::self))
-        .def(double() * bp::self);
+        MassQuantity_exposer_t MassQuantity_exposer = MassQuantity_exposer_t( "MassQuantity" );
         bp::scope MassQuantity_scope( MassQuantity_exposer );
     }
 
     { //::boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >
         typedef bp::class_< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void > > MassUnit_exposer_t;
-        MassUnit_exposer_t MassUnit_exposer = MassUnit_exposer_t( "MassUnit" )
-                .def(double() * bp::self);
+        MassUnit_exposer_t MassUnit_exposer = MassUnit_exposer_t( "MassUnit" );
         bp::scope MassUnit_scope( MassUnit_exposer );
     }
 

@@ -4,7 +4,7 @@
 
 #include "boost/python/suite/indexing/map_indexing_suite.hpp"
 
-#include "/home/grogan/Chaste/projects/Angiogenesis/dynamic/header_collections/VesselWrapperHeaderCollection.hpp"
+#include "/home/grogan/Chaste/projects/Angiogenesis/dynamic/wrapper_headers/vessel_auto_headers.hpp"
 
 namespace bp = boost::python;
 
@@ -38,7 +38,7 @@ struct NodeFlowProperties_less__3__greater__wrapper : NodeFlowProperties< 3 >, b
 
 };
 
-BOOST_PYTHON_MODULE(_chaste_project_PyChaste_vessel){
+BOOST_PYTHON_MODULE(_chaste_project_PyChaste_vessel_auto){
     bp::class_< std::map< std::string, double > >("map_less__std_scope_string_comma__double__greater_")    
         .def( bp::map_indexing_suite< ::std::map< std::string, double >, true >() );
 
