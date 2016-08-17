@@ -37,13 +37,14 @@
 #define VERTEX_HPP_
 
 #include <vector>
+#include <boost/enable_shared_from_this.hpp>
 #include "ChastePoint.hpp"
 #include "SmartPointers.hpp"
 #include "UblasVectorInclude.hpp"
 
 /* A point in 3d space.
  */
-class Vertex : public ChastePoint<3>
+class Vertex : public ChastePoint<3>, public boost::enable_shared_from_this<Vertex>
 {
     /* An optional index
     */

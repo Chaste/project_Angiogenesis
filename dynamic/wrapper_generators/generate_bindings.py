@@ -10,6 +10,10 @@ from pygccxml import parser
 import generate_flow
 import generate_utility
 import generate_vessel
+import generate_geometry
+import generate_pde
+import generate_mesh
+import generate_simulation
 
 def generate_wrappers(args):
     module_name = args[1]
@@ -21,13 +25,15 @@ def generate_wrappers(args):
     xml_generator_config = parser.xml_generator_configuration_t(xml_generator_path=castxml_binary, 
                                                                 xml_generator="castxml",
                                                                 compiler = "gnu",
-                                                                compiler_path="/usr/bin/gcc",
+                                                                compiler_path="/usr/bin/c++",
                                                                 include_paths=includes)
      
     builder = module_builder.module_builder_t([header_collection],
                                                 xml_generator_path = castxml_binary,
                                                 xml_generator_config = xml_generator_config,
-                                                include_paths = includes)
+                                                start_with_declarations = ['chaste'],
+                                                include_paths = includes,
+                                                indexing_suite_version=2)
     
     if("flow" in module_name):
         builder = generate_flow.update_builder(builder)
@@ -38,8 +44,20 @@ def generate_wrappers(args):
     if("vessel" in module_name):
         builder = generate_vessel.update_builder(builder)
 
-    builder.global_ns.namespace('std').exclude()
-    builder.build_code_creator(module_name="_chaste_project_PyChaste_" + module_name)
+    if("geometry" in module_name):
+        builder = generate_geometry.update_builder(builder)
+        
+    if("pde" in module_name):
+        builder = generate_pde.update_builder(builder)
+        
+    if("mesh" in module_name):
+        builder = generate_mesh.update_builder(builder)
+        
+    if("simulation" in module_name):
+        builder = generate_simulation.update_builder(builder)
+
+#    builder.global_ns.namespace('std').exclude()
+    builder.build_code_creator(module_name="_chaste_project_Angiogenesis_" + module_name)
     builder.write_module(work_dir + "/dynamic/" + module_name + ".cpp")
 
 if __name__=="__main__":

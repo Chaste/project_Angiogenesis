@@ -151,27 +151,6 @@ public:
     double GetFlowRateSI(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
 
     /**
-     * Return the segment flow velocity
-     *
-     * @return the segment velocity
-     */
-    double GetFlowVelocity(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
-
-    /**
-     * Return the segment flow velocity
-     *
-     * @return the segment velocity
-     */
-    units::quantity<unit::velocity> GetDimensionalFlowVelocity(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
-
-    /**
-     * Return the segment flow velocity
-     *
-     * @return the segment velocity
-     */
-    double GetFlowVelocitySI(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
-
-    /**
      * Return the segment viscosity
      *
      * @return the segment viscosity
@@ -383,22 +362,10 @@ public:
     void SetDimensionalGrowthStimulus(units::quantity<unit::rate> stimulus, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
 
     /**
-     * Set dimensionless time until removal of vessel from network.
-     * @param time the time until vessel removal
-     */
-    void SetTimeUntilRegression(double time);
-
-    /**
      * Set dimensional time until removal of vessel from network.
      * @param time the time until vessel removal
      */
     void SetDimensionalTimeUntilRegression(units::quantity<unit::time> time);
-
-    /**
-     * Set time until removal of vessel from network.
-     * @param time the time until vessel removal
-     */
-    void SetTimeUntilRegressionSI(double time);
 
 };
 

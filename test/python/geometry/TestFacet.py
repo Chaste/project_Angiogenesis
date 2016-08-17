@@ -4,7 +4,8 @@
 import unittest
 import math
 import numpy as np
-import angiogenesis.geometry
+import chaste.projects.angiogenesis as angiogenesis
+import chaste.projects.angiogenesis.geometry 
         
 class TestFacet(unittest.TestCase):
     

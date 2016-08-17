@@ -151,24 +151,6 @@ public:
     double GetFlowRateSI() const;
 
     /**
-     * Return the dimensionless segment flow velocity
-     * @return the segment velocity
-     */
-    double GetFlowVelocity() const;
-
-    /**
-     * Return the segment flow velocity
-     * @return the segment velocity
-     */
-    units::quantity<unit::velocity> GetDimensionalFlowVelocity() const;
-
-    /**
-     * Return the segment flow velocity in SI units
-     * @return the segment velocity
-     */
-    double GetFlowVelocitySI() const;
-
-    /**
      * Return the dimensionless segment viscosity
      * @return the segment viscosity
      */

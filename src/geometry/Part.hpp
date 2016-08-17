@@ -163,11 +163,6 @@ public:
     std::vector<unsigned> GetContainingGridIndices(unsigned num_x, unsigned num_y = 1, unsigned num_z = 1, double spacing = 1.0);
 
 
-    /* Return the dimension of the part
-     * @return the dimension of the part, either 2 if is planar or 3 otherwise
-     */
-    unsigned GetDimension();
-
     /* Return the hole marker locations
      * @return the hole marker locations
      */

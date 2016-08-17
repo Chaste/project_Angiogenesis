@@ -4,8 +4,9 @@
 import math
 import numpy as np
 import unittest
-import chaste.geometry
-import chaste.core
+import chaste
+import chaste.projects.angiogenesis as angiogenesis
+import chaste.projects.angiogenesis.geometry 
 
 class TestPart(unittest.TestCase):
     
@@ -16,10 +17,10 @@ class TestPart(unittest.TestCase):
         file_handler = chaste.core.OutputFileHandler("geometry/TestPart", True)
         
         # Make a composite Part, a circle in a square
-        part = chaste.geometry.Part()
-        part.AddRectangle(1.0, 1.0)
+        part = angiogenesis.geometry.Part3()
+        part.AddRectangle(1.0, 1.0, (0.0, 0.0, 0.0))
         centre = (0.5, 0.5 ,0.0)
-        part.AddCircle(0.33, centre)
+        part.AddCircle(0.33, centre, 24)
         
         # Get the VTK Representation
         part.Write(file_handler.GetOutputDirectoryFullPath() + "original_part.vtp")

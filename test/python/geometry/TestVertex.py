@@ -4,7 +4,8 @@
 import unittest
 import math
 import numpy as np
-import chaste.geometry
+import chaste.projects.angiogenesis as angiogenesis
+import chaste.projects.angiogenesis.geometry
 
 class TestVertex(unittest.TestCase):
     
@@ -14,7 +15,7 @@ class TestVertex(unittest.TestCase):
         
         # Make a vertex at the specified location
         input_location = np.array((0.0, 1.0, 2.0))
-        vertex = chaste.geometry.Vertex(input_location)
+        vertex = angiogenesis.geometry.Vertex(input_location)
         
         # Assert that the location is returned correctly
         

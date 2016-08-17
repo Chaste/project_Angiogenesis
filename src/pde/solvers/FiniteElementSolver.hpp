@@ -91,8 +91,6 @@ public:
      */
     std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints);
 
-    std::vector<double> GetSolutionAtPointsUsingVtk(std::vector<c_vector<double, DIM> > samplePoints);
-
     std::vector<double> GetSolutionAtGridPoints(boost::shared_ptr<RegularGrid<DIM, DIM> > pGrid);
 
     std::vector<double> GetNodalSolution();

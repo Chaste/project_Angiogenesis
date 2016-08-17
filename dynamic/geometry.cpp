@@ -63,59 +63,59 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(PlcPartAddRectangleOverLoads, Part<3>::Ad
 // Make the module
 BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_geometry)
 {
-    class_<Vertex, boost::shared_ptr<Vertex > >("Vertex", init<optional<double, double, double> >())
-        .def(init<c_vector<double, 3> >())
-        .add_property("id", &Vertex::GetIndex, &Vertex::SetIndex)
-        .def("GetLocation", Vertex_rGetLocation, return_value_policy<copy_const_reference>())
-        .def("Translate", &Vertex::Translate)
-        .def("RotateAboutAxis", &Vertex::RotateAboutAxis)
-    ;
+//    class_<Vertex, boost::shared_ptr<Vertex > >("Vertex", init<optional<double, double, double> >())
+//        .def(init<c_vector<double, 3> >())
+//        .add_property("id", &Vertex::GetIndex, &Vertex::SetIndex)
+//        .def("GetLocation", Vertex_rGetLocation, return_value_policy<copy_const_reference>())
+//        .def("Translate", &Vertex::Translate)
+//        .def("RotateAboutAxis", &Vertex::RotateAboutAxis)
+//    ;
+//
+//    class_<Polygon, boost::shared_ptr<Polygon> >("Polygon", init<std::vector<boost::shared_ptr<Vertex> > >())
+//        .def(init<boost::shared_ptr<Vertex> >())
+//        .def("AddVertices", &Polygon::AddVertices)
+//        .def("AddVertex", &Polygon::AddVertex)
+//        .def("GetVertices", &Polygon::GetVertices)
+//        .def("GetCentroid", &Polygon::GetCentroid)
+//        .def("GetNormal", &Polygon::GetNormal)
+//        .def("GetBoundingBox", &Polygon::GetBoundingBox)
+//        .def("GetDistanceToEdges", &Polygon::GetDistanceToEdges)
+//        .def("ContainsPoint", &Polygon::ContainsPoint)
+//        .def("Translate", &Polygon::Translate)
+//        .def("RotateAboutAxis", &Polygon::RotateAboutAxis)
+//    ;
+//
+//    class_<Facet, boost::shared_ptr<Facet> >("Facet", init<std::vector<boost::shared_ptr<Polygon> > >())
+//        .def(init<boost::shared_ptr<Polygon> >())
+//        .def("AddPolygons", &Facet::AddPolygons)
+//        .def("AddPolygon", &Facet::AddPolygon)
+//        .def("GetPolygons", &Facet::GetPolygons)
+//        .def("GetVertices", &Facet::GetVertices)
+//        .def("GetCentroid", &Facet::GetCentroid)
+//        .def("GetNormal", &Facet::GetNormal)
+//        .def("UpdateVertices", &Facet::UpdateVertices)
+//        .def("Translate", &Facet::Translate)
+//        .def("RotateAboutAxis", &Facet::RotateAboutAxis)
+//        .def("SetData", &Facet::SetData)
+//    ;
 
-    class_<Polygon, boost::shared_ptr<Polygon> >("Polygon", init<std::vector<boost::shared_ptr<Vertex> > >())
-        .def(init<boost::shared_ptr<Vertex> >())
-        .def("AddVertices", &Polygon::AddVertices)
-        .def("AddVertex", &Polygon::AddVertex)
-        .def("GetVertices", &Polygon::GetVertices)
-        .def("GetCentroid", &Polygon::GetCentroid)
-        .def("GetNormal", &Polygon::GetNormal)
-        .def("GetBoundingBox", &Polygon::GetBoundingBox)
-        .def("GetDistanceToEdges", &Polygon::GetDistanceToEdges)
-        .def("ContainsPoint", &Polygon::ContainsPoint)
-        .def("Translate", &Polygon::Translate)
-        .def("RotateAboutAxis", &Polygon::RotateAboutAxis)
-    ;
-
-    class_<Facet, boost::shared_ptr<Facet> >("Facet", init<std::vector<boost::shared_ptr<Polygon> > >())
-        .def(init<boost::shared_ptr<Polygon> >())
-        .def("AddPolygons", &Facet::AddPolygons)
-        .def("AddPolygon", &Facet::AddPolygon)
-        .def("GetPolygons", &Facet::GetPolygons)
-        .def("GetVertices", &Facet::GetVertices)
-        .def("GetCentroid", &Facet::GetCentroid)
-        .def("GetNormal", &Facet::GetNormal)
-        .def("UpdateVertices", &Facet::UpdateVertices)
-        .def("Translate", &Facet::Translate)
-        .def("RotateAboutAxis", &Facet::RotateAboutAxis)
-        .def("SetData", &Facet::SetData)
-    ;
-
-    class_<Part<3>, boost::shared_ptr<Part<3> > >("Part")
-        .def("AddCircle", &Part<3>::AddCircle, PlcPartAddCircleOverLoads())
-        .def("AddCuboid", &Part<3>::AddCuboid, PlcPartAddCuboidOverLoads())
-        //.def("add_polygon", f1)
-        .def("AddRectangle", &Part<3>::AddRectangle, PlcPartAddRectangleOverLoads())
-        .def("AddVesselNetwork", &Part<3>::AddVesselNetwork)
-        .def("Extrude", &Part<3>::Extrude)
-        .def("GetVertices", &Part<3>::GetVertices)
-        .def("GetPolygons", &Part<3>::GetPolygons)
-        .def("GetFacets", &Part<3>::GetFacets)
-        .def("GetBoundingBox", &Part<3>::GetBoundingBox)
-        .def("IsPointInPart", &Part<3>::IsPointInPart)
-        .def("GetVtk", &Part<3>::GetVtk)
-        .def("Translate", &Part<3>::Translate)
-        .def("AddCylinder", &Part<3>::AddCylinder)
-        .def("Write", &Part<3>::Write)
-    ;
+//    class_<Part<3>, boost::shared_ptr<Part<3> > >("Part")
+//        .def("AddCircle", &Part<3>::AddCircle, PlcPartAddCircleOverLoads())
+//        .def("AddCuboid", &Part<3>::AddCuboid, PlcPartAddCuboidOverLoads())
+//        //.def("add_polygon", f1)
+//        .def("AddRectangle", &Part<3>::AddRectangle, PlcPartAddRectangleOverLoads())
+//        .def("AddVesselNetwork", &Part<3>::AddVesselNetwork)
+//        .def("Extrude", &Part<3>::Extrude)
+//        .def("GetVertices", &Part<3>::GetVertices)
+//        .def("GetPolygons", &Part<3>::GetPolygons)
+//        .def("GetFacets", &Part<3>::GetFacets)
+//        .def("GetBoundingBox", &Part<3>::GetBoundingBox)
+//        .def("IsPointInPart", &Part<3>::IsPointInPart)
+//        .def("GetVtk", &Part<3>::GetVtk)
+//        .def("Translate", &Part<3>::Translate)
+//        .def("AddCylinder", &Part<3>::AddCylinder)
+//        .def("Write", &Part<3>::Write)
+//    ;
 
     class_<MappableGridGenerator>("MappableGridGenerator")
         .def("GeneratePlane", &MappableGridGenerator::GeneratePlane)
@@ -124,21 +124,19 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_geometry)
     ;
 
     // Containers
-    class_<std::vector<boost::shared_ptr<Vertex> > > ("VecVertexPtrs")
-         .def(vector_ptr_indexing_suite<std::vector<boost::shared_ptr<Vertex> > >())
-    ;
-    class_<std::vector<boost::shared_ptr<Polygon> > > ("VecPolygonPtrs")
-         .def(vector_ptr_indexing_suite<std::vector<boost::shared_ptr<Polygon> > >())
-    ;
-    class_<std::vector<boost::shared_ptr<Facet> > > ("VecFacetPtrs")
-         .def(vector_ptr_indexing_suite<std::vector<boost::shared_ptr<Facet> > >())
-    ;
+//    class_<std::vector<boost::shared_ptr<Vertex> > > ("VecVertexPtrs")
+//         .def(vector_ptr_indexing_suite<std::vector<boost::shared_ptr<Vertex> > >())
+//    ;
+//    class_<std::vector<boost::shared_ptr<Polygon> > > ("VecPolygonPtrs")
+//         .def(vector_ptr_indexing_suite<std::vector<boost::shared_ptr<Polygon> > >())
+//    ;
+//    class_<std::vector<boost::shared_ptr<Facet> > > ("VecFacetPtrs")
+//         .def(vector_ptr_indexing_suite<std::vector<boost::shared_ptr<Facet> > >())
+//    ;
 
-    PythonIterableToStl()
-      .from_python<std::vector<boost::shared_ptr<Vertex> > > ()
-      .from_python<std::vector<boost::shared_ptr<Polygon> > > ()
-      .from_python<std::vector<boost::shared_ptr<Facet> > > ()
-      ;
+//    PythonIterableToStl()
+
+//      ;
 }
 
 #endif // CHASTE_ANGIOGENESIS_PYTHON

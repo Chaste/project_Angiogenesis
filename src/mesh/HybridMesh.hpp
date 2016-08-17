@@ -111,38 +111,6 @@ public:
      */
     std::vector<std::vector<double> > GetNodeLocations();
 
-    /**
-     * Return the node cell map
-     * @bool update update the map
-     * @return the point cell map
-     */
-    std::vector<std::vector<CellPtr> > GetNodeCellMap(bool update = true);
-
-    /**
-     * Return the node cell map
-     * @bool update update the map
-     * @return the point cell map
-     */
-    std::vector<std::vector<CellPtr> > GetElementCellMap(bool update = true);
-
-    /**
-     * Return the node cell map
-     * @bool update update the map
-     * @return the point cell map
-     */
-    std::vector<std::vector<CellPtr> > GetElementSegmentMap(bool update = true);
-
-    /**
-     * Return the node cell map
-     * @bool update update the map
-     * @return the point cell map
-     */
-    std::vector<std::vector<CellPtr> > GetNodeSegmentMap(bool update = true);
-
-    std::vector<double> InterpolateGridValues(std::vector<c_vector<double, SPACE_DIM> > locations, std::vector<double> values, bool useVtk = false);
-
-
-	double VolumeAverageQuantity(std::vector<double> values);
 
 private:
 
