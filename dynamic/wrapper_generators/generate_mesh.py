@@ -7,17 +7,22 @@ import sys
 from pyplusplus import module_builder
 from pyplusplus.module_builder import call_policies
 from pygccxml import parser
+import generate_bindings
 
 def update_builder(builder):
 
-    include_classes = ["RegularGrid<3, 3>", "HybridMesh<3, 3>", "SharedPottsMeshGenerator<3>", "PottsMesh<3>" ]
+    include_classes = ["RegularGrid<3,3>", 
+                       "HybridMesh<3,3>", 
+                       "SharedPottsMeshGenerator<3>", 
+                       "PottsMesh<3>" ]
     for eachClass in include_classes:
-        builder.class_(eachClass).include()
+        builder.class_(eachClass).include()  
+        new_name = generate_bindings.template_replace(eachClass)
+        if(new_name != eachClass):
+            builder.class_(eachClass).rename(new_name) 
 
-    builder.class_('RegularGrid< 3, 3 >').rename('RegularGrid3')
-    builder.class_('HybridMesh< 3, 3 >').rename('HybridMesh3')
-    builder.class_('HybridMesh< 3, 3 >').member_functions("GenerateFromStl").exclude()
-    builder.class_('HybridMesh< 3, 3 >').member_functions("GenerateTriMeshFromPolyData").exclude()
+    builder.class_('HybridMesh<3,3>').member_functions("GenerateFromStl").exclude()
+    builder.class_('HybridMesh<3,3>').member_functions("GenerateTriMeshFromPolyData").exclude()
     builder.class_('PottsMesh<3>').member_functions("GetElement").exclude()
    
     return builder

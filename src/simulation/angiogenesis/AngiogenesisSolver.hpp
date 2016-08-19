@@ -135,7 +135,7 @@ public:
      * Has a vessel grid been set, used to check if this is an on-lattice solve
      * @return bool true if a vessel grid has been set
      */
-    bool IsVesselGridSet();
+//    bool IsVesselGridSet();
 
     /**
      * Run until the specified end time

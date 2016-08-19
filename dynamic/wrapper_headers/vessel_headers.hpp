@@ -8,6 +8,7 @@
 #include "VasculatureGenerator.hpp"
 #include "AbstractVesselNetworkComponent.hpp"
 #include "VtkVesselNetworkWriter.hpp"
+#include "VtkVesselNetworkReader.hpp"
 
 template class NodeFlowProperties<3>;
 template class SegmentFlowProperties<3>;
@@ -19,3 +20,4 @@ template class VesselNetwork<3>;
 template class VtkVesselNetworkWriter<3>;
 template class AbstractVesselNetworkComponent<3>;
 template class VasculatureGenerator<3>;
+template class VtkVesselNetworkReader<3>;

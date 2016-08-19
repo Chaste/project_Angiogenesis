@@ -11,10 +11,14 @@ import generate_bindings
 
 def update_builder(builder):
     
-    include_classes = ["FlowSolver<3>",
-                   "WallShearStressCalculator<3>",
-                   "VesselImpedanceCalculator<3>",
-                   "BetteridgeHaematocritSolver<3>"]
+    include_classes = ["AngiogenesisSolver<3>",
+                       "Owen2011MigrationRule<3>",
+                       "Owen2011SproutingRule<3>",
+                       "OffLatticeMigrationRule<3>",
+                       "OffLatticeMigrationRule<3>",
+                       "OffLatticeSproutingRule<3>",
+                       "AbstractMigrationRule<3>",
+                       "AbstractSproutingRule<3>"]
     
     for eachClass in include_classes:
         builder.class_(eachClass).include()  

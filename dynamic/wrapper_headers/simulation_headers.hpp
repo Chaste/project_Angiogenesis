@@ -6,4 +6,3 @@
 
 template class VascularTumourSolver<3>;
 template class VascularTumourModifier<3>;
-template class SimulationManager<3>;

@@ -392,11 +392,11 @@ void VesselFlowProperties<DIM>::SetDimensionalTimeUntilRegression(units::quantit
     this->mRegressionTime = SimulationTime::Instance()->GetTime()*this->mReferenceTime + time;
 }
 
-template<unsigned DIM>
-void VesselFlowProperties<DIM>::SetTimeUntilRegression(double time)
-{
-    this->SetDimensionalTimeUntilRegression(time*this->mReferenceTime);
-}
+//template<unsigned DIM>
+//void VesselFlowProperties<DIM>::SetTimeUntilRegression(double time)
+//{
+//    this->SetDimensionalTimeUntilRegression(time*this->mReferenceTime);
+//}
 
 template<unsigned DIM>
 bool VesselFlowProperties<DIM>::HasRegressionTimerStarted()

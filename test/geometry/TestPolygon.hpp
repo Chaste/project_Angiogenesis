@@ -61,8 +61,8 @@ public:
 
         Polygon polygon1 = Polygon(vertices);
         Polygon polygon2 = Polygon(vertices[0]);
-        TS_ASSERT_EQUALS(polygon1.GetVertices().size(), 3);
-        TS_ASSERT_EQUALS(polygon2.GetVertices().size(), 1);
+        TS_ASSERT_EQUALS(polygon1.GetVertices().size(), 3u);
+        TS_ASSERT_EQUALS(polygon2.GetVertices().size(), 1u);
     }
 
     void TestFactoryConstructor()
@@ -75,8 +75,8 @@ public:
         boost::shared_ptr<Polygon> p_polygon1 = Polygon::Create(vertices);
         boost::shared_ptr<Polygon> p_polygon2 = Polygon::Create(vertices[0]);
 
-        TS_ASSERT_EQUALS(p_polygon1->GetVertices().size(), 3);
-        TS_ASSERT_EQUALS(p_polygon2->GetVertices().size(), 1);
+        TS_ASSERT_EQUALS(p_polygon1->GetVertices().size(), 3u);
+        TS_ASSERT_EQUALS(p_polygon2->GetVertices().size(), 1u);
     }
 
     void TestAddingVertices()

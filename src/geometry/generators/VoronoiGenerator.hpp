@@ -42,8 +42,9 @@
 #include "Vertex.hpp"
 #include "Part.hpp"
 
-/*
- * Generate a voronoi tesselation in the bounding box of a given part using tetgen. 3D only.
+/**
+ * Generate a voronoi tesselation in the bounding box of a given part.
+ * If point seeds are not given generate them randomly.
  */
 template<unsigned DIM>
 class VoronoiGenerator

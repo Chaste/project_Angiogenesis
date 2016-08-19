@@ -7,38 +7,30 @@ import sys
 from pyplusplus import module_builder
 from pyplusplus.module_builder import call_policies
 from pygccxml import parser
+import generate_bindings
 
 def update_builder(builder):
+    
+    include_classes = ["DiscreteSource<3>", 
+                       "HybridBoundaryCondition<3>", 
+                       "HybridNonLinearEllipticPde<3,3>", 
+                       "HybridLinearEllipticPde<3,3>",
+                       "AbstractLinearEllipticPde<3,3>",
+                       "AbstractRegularGridHybridSolver<3>",
+                       "FiniteDifferenceSolver<3>",
+                       "FiniteElementSolver<3>",
+                       "FunctionMap<3>",
+                       "GreensFunctionSolver<3>",
+                       "CellStateDependentDiscreteSource<3>",
+                       "BoundaryConditionType",
+                       "BoundaryConditionSource",
+                       "SourceType",
+                       "SourceStrength"]
 
-    builder.class_("DiscreteSource< 3 >").include()
-    builder.class_("HybridBoundaryCondition< 3 >").include()
-    builder.class_("HybridNonLinearEllipticPde< 3, 3 >").include()
-    builder.class_("HybridLinearEllipticPde< 3, 3 >").include()
-    builder.class_("AbstractLinearEllipticPde< 3, 3 >").include()
-    builder.class_("AbstractHybridSolver< 3 >").include()
-    builder.class_("AbstractRegularGridHybridSolver< 3 >").include()
-    builder.class_("FiniteDifferenceSolver< 3 >").include()
-    builder.class_("FiniteElementSolver< 3 >").include()
-    builder.class_("FunctionMap< 3 >").include()
-    builder.class_("GreensFunctionSolver< 3 >").include()
-    builder.class_("CellStateDependentDiscreteSource< 3 >").include()
-    
-    builder.class_("DiscreteSource< 3 >").rename("DiscreteSource3")
-    builder.class_("HybridNonLinearEllipticPde< 3, 3 >").rename("HybridNonLinearEllipticPde3")
-    builder.class_("HybridLinearEllipticPde< 3, 3 >").rename("HybridLinearEllipticPde3")
-    builder.class_("AbstractLinearEllipticPde< 3, 3 >").rename("AbstractLinearEllipticPde3")
-    builder.class_("AbstractHybridSolver< 3 >").rename("AbstractHybridSolver3")
-    builder.class_("AbstractRegularGridHybridSolver< 3 >").rename("AbstractRegularGridHybridSolver3")
-    builder.class_("FiniteDifferenceSolver< 3 >").rename("FiniteDifferenceSolver3")
-    builder.class_("FiniteElementSolver< 3 >").rename("FiniteElementSolver3")
-    builder.class_("DistanceMap< 3 >").rename("DistanceMap3")
-    builder.class_("FunctionMap< 3 >").rename("FunctionMap3")
-    builder.class_("GreensFunctionSolver< 3 >").rename("GreensFunctionSolver3")
-    builder.class_("CellStateDependentDiscreteSource< 3 >").rename("CellStateDependentDiscreteSource3")
-    
-    builder.class_("BoundaryConditionType").include()
-    builder.class_("BoundaryConditionSource").include()
-    builder.class_("SourceType").include()
-    builder.class_("SourceStrength").include()  
+    for eachClass in include_classes:
+        builder.class_(eachClass).include()  
+        new_name = generate_bindings.template_replace(eachClass)
+        if(new_name != eachClass):
+            builder.class_(eachClass).rename(new_name) 
 
     return builder

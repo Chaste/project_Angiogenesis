@@ -161,8 +161,8 @@ public:
 
         // Delete the vessel
         pVessel1->Remove();
-        TS_ASSERT_EQUALS(p_node1->GetNumberOfSegments(), 0);
-        TS_ASSERT_EQUALS(p_node2->GetNumberOfSegments(), 0);
+        TS_ASSERT_EQUALS(p_node1->GetNumberOfSegments(), 0u);
+        TS_ASSERT_EQUALS(p_node2->GetNumberOfSegments(), 0u);
     }
 };
 

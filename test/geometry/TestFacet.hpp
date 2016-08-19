@@ -63,8 +63,8 @@ public:
         Facet facet1 = Facet(polygons);
         Facet facet2 = Facet(polygons[0]);
 
-        TS_ASSERT_EQUALS(facet1.GetPolygons().size(), 3);
-        TS_ASSERT_EQUALS(facet2.GetPolygons().size(), 1);
+        TS_ASSERT_EQUALS(facet1.GetPolygons().size(), 3u);
+        TS_ASSERT_EQUALS(facet2.GetPolygons().size(), 1u);
     }
 
     void TestFactoryConstructor()
@@ -83,8 +83,8 @@ public:
         boost::shared_ptr<Facet> p_facet1 = Facet::Create(polygons);
         boost::shared_ptr<Facet> p_facet2 = Facet::Create(polygons[0]);
 
-        TS_ASSERT_EQUALS(p_facet1->GetPolygons().size(), 3);
-        TS_ASSERT_EQUALS(p_facet2->GetPolygons().size(), 1);
+        TS_ASSERT_EQUALS(p_facet1->GetPolygons().size(), 3u);
+        TS_ASSERT_EQUALS(p_facet2->GetPolygons().size(), 1u);
     }
 
     void TestAddingPolygons()
@@ -108,8 +108,8 @@ public:
         p_facet1->AddPolygons(polygons);
         p_facet2->AddPolygon(polygons[0]);
 
-        TS_ASSERT_EQUALS(p_facet1->GetPolygons().size(), 3);
-        TS_ASSERT_EQUALS(p_facet2->GetPolygons().size(), 2);
+        TS_ASSERT_EQUALS(p_facet1->GetPolygons().size(), 3u);
+        TS_ASSERT_EQUALS(p_facet2->GetPolygons().size(), 2u);
     }
 
     void TestVtkMethods()

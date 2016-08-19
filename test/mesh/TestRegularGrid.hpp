@@ -65,9 +65,9 @@ public:
         extents[2] = 1;
         p_grid->SetExtents(extents);
 
-        TS_ASSERT_EQUALS(p_grid->Get1dGridIndex(0,0,0), 0)
-        TS_ASSERT_EQUALS(p_grid->Get1dGridIndex(3,1,0), 8)
-        TS_ASSERT_EQUALS(p_grid->Get1dGridIndex(0,3,0), 15)
+        TS_ASSERT_EQUALS(p_grid->Get1dGridIndex(0,0,0), 0u)
+        TS_ASSERT_EQUALS(p_grid->Get1dGridIndex(3,1,0), 8u)
+        TS_ASSERT_EQUALS(p_grid->Get1dGridIndex(0,3,0), 15u)
 
         // Set up a 3d grid
         boost::shared_ptr<RegularGrid<3> > p_grid_3d = RegularGrid<3>::Create();
@@ -77,9 +77,9 @@ public:
         extents_3d[2] = 4;
         p_grid_3d->SetExtents(extents_3d);
 
-        TS_ASSERT_EQUALS(p_grid_3d->Get1dGridIndex(0,0,0), 0)
-        TS_ASSERT_EQUALS(p_grid_3d->Get1dGridIndex(3,1,2), 78)
-        TS_ASSERT_EQUALS(p_grid_3d->Get1dGridIndex(0,3,3), 120)
+        TS_ASSERT_EQUALS(p_grid_3d->Get1dGridIndex(0,0,0), 0u)
+        TS_ASSERT_EQUALS(p_grid_3d->Get1dGridIndex(3,1,2), 78u)
+        TS_ASSERT_EQUALS(p_grid_3d->Get1dGridIndex(0,3,3), 120u)
     }
 
     void TestNeighbourCalculation()

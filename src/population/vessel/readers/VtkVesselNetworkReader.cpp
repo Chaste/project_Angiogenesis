@@ -64,6 +64,12 @@ boost::shared_ptr<VtkVesselNetworkReader<DIM> > VtkVesselNetworkReader<DIM>::Cre
     return pSelf;
 }
 
+template <unsigned DIM>
+void VtkVesselNetworkReader<DIM>::SetRadiusArrayName(const std::string& rRadius)
+{
+    mRadiusLabel = rRadius;
+}
+
 template<unsigned DIM>
 boost::shared_ptr<VesselNetwork<DIM> > VtkVesselNetworkReader<DIM>::Read()
 {

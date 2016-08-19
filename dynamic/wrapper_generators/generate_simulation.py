@@ -7,18 +7,20 @@ import sys
 from pyplusplus import module_builder
 from pyplusplus.module_builder import call_policies
 from pygccxml import parser
+import generate_bindings
 
 def update_builder(builder):
-
-    builder.class_("OnLatticeSimulationWrapper").include()
-    builder.class_("NodeBasedSimulationWrapper").include()
-    builder.class_("VascularTumourSolver< 3 >").include()
-    builder.class_("VascularTumourModifier< 3 >").include()  
-    builder.class_("SimulationManager< 3 >").include()
     
-    builder.class_("VascularTumourSolver< 3 >").rename("VascularTumourSolver3")
-    builder.class_("VascularTumourModifier< 3 >").rename("VascularTumourModifier3")
-    builder.class_("SimulationManager< 3 >").rename("SimulationManager3")
-    builder.class_("BetteridgeHaematocritSolver< 3 >").rename("BetteridgeHaematocritSolver3")
+    include_classes = ["OnLatticeSimulationWrapper",
+                       "NodeBasedSimulationWrapper",
+                       "VascularTumourSolver<3>",
+                       "VascularTumourModifier<3>",
+                       "SimulationManager"]
+    
+    for eachClass in include_classes:
+        builder.class_(eachClass).include()  
+        new_name = generate_bindings.template_replace(eachClass)
+        if(new_name != eachClass):
+            builder.class_(eachClass).rename(new_name) 
     
     return builder

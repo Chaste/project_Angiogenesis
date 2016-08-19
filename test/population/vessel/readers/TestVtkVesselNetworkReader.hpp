@@ -66,6 +66,25 @@ public:
         p_network->Write(output_filename);
     }
 
+    void TestRetinalNetworkFromFile() throw(Exception)
+    {
+        // Locate the input file
+//        FileFinder fileFinder("projects/Angiogenesis/test/data/tapmeier_network.vtp", RelativeTo::ChasteSourceRoot);
+//        TS_ASSERT(fileFinder.Exists());
+//        TS_ASSERT(fileFinder.IsFile());
+
+        // Generate the network
+        boost::shared_ptr<VtkVesselNetworkReader<3> > p_network_reader = VtkVesselNetworkReader<3>::Create();
+        p_network_reader->SetFileName("/home/grogan/test/TestImageToNetwork/distance.vtp");
+        boost::shared_ptr<VesselNetwork<3> > p_network = p_network_reader->Read();
+
+        // Write the network to file
+        OutputFileHandler output_file_handler("TestVesselNetworkReaders", false);
+        std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("RetinalVesselNetwork.vtp");
+        p_network->MergeCoincidentNodes();
+        p_network->Write(output_filename);
+    }
+
 };
 
 #endif /*TestVtkVesselNetworkReader_HPP_*/

@@ -45,6 +45,11 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Vertex.hpp"
 #include "Polygon.hpp"
 #include "Facet.hpp"
+#include "VesselNode.hpp"
+#include "VesselSegment.hpp"
+#include "Vessel.hpp"
+#include "Cell.hpp"
+#include "SimpleCell.hpp"
 
 namespace bp = boost::python;
 
@@ -61,5 +66,21 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_preload)
       .from_python<std::vector<boost::shared_ptr<Vertex> > > ()
       .from_python<std::vector<boost::shared_ptr<Polygon> > > ()
       .from_python<std::vector<boost::shared_ptr<Facet> > > ()
+      .from_python<std::vector<boost::shared_ptr<VesselNode<3> > > > ()
+      .from_python<std::vector<boost::shared_ptr<VesselSegment<3> > > >()
+      .from_python<std::vector<boost::shared_ptr<Vessel<3> > > >()
+      .from_python<std::vector<boost::shared_ptr<Cell > > >()
+      .from_python<std::vector<boost::shared_ptr<SimpleCell<3> > > >()
       ;
+
+    // Odds and ends
+    bp::class_<std::pair<boost::shared_ptr<VesselNode<3> >, boost::shared_ptr<VesselNode<3> > > > ("NodePair")
+    .def_readwrite("first", &std::pair<boost::shared_ptr<VesselNode<3> >, boost::shared_ptr<VesselNode<3> > >::first)
+    .def_readwrite("second", &std::pair<boost::shared_ptr<VesselNode<3> >, boost::shared_ptr<VesselNode<3> > >::second)
+    ;
+
+    bp::class_<std::pair<boost::shared_ptr<VesselSegment<3> >, double > > ("SegDistPair")
+    .def_readwrite("first", &std::pair<boost::shared_ptr<VesselSegment<3> >, double >::first)
+    .def_readwrite("second", &std::pair<boost::shared_ptr<VesselSegment<3> >, double >::second)
+    ;
 }

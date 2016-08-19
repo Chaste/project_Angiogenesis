@@ -86,18 +86,6 @@ public:
     /* Set the index
      */
     void SetIndex(unsigned index);
-
-    const std::string& GetCellCycleModel();
-
-    const std::string& GetCellMutationState();
-
-    const std::string& GetCellProliferativeType();
-
-    void SetCellCycleModel(std::string& modelName);
-
-    void SetCellMutationState(std::string& mutationState);
-
-    void SetCellProliferativeType(std::string& proliferativeType);
 };
 
 #endif /* SIMPLECELL_HPP_*/

@@ -104,9 +104,14 @@ boost::shared_ptr<Part<DIM> > VoronoiGenerator<DIM>::Generate(boost::shared_ptr<
     {
         for (unsigned jdx=0; jdx < DIM; jdx++)
         {
-            mesher_input.pointlist[DIM*idx + jdx] = seeds[idx]->rGetLocation()[jdx];
+            if(seeds[idx]->rGetLocation()[jdx]<=0.0)
+            {
+                std::cout << "LTZ" << std::endl;
+            }
+            mesher_input.pointlist[DIM*idx + jdx] = double(seeds[idx]->rGetLocation()[jdx]);
         }
     }
+
     tetgen::tetrahedralize((char*)"veeQ", &mesher_input, &mesher_output);
 
     // Create 2-point polygons corresponding to each edge
