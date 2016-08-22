@@ -42,7 +42,7 @@ template<unsigned DIM>
 LatticeBasedSproutingRule<DIM>::LatticeBasedSproutingRule()
     : AbstractSproutingRule<DIM>(),
       mpGrid(),
-      mTipExclusionRadius(0.0)
+      mTipExclusionRadius(0.0 * unit::metres)
 {
 
 }
@@ -86,7 +86,7 @@ std::vector<boost::shared_ptr<VesselNode<DIM> > > LatticeBasedSproutingRule<DIM>
         }
 
         // Check we are not too close to the end of the vessel
-        if(this->mVesselEndCutoff > 0.0)
+        if(this->mVesselEndCutoff > 0.0 * unit::metres)
         {
             if(rNodes[idx]->GetSegment(0)->GetVessel()->GetClosestEndNodeDistance(rNodes[idx]->rGetLocation())< this->mVesselEndCutoff)
             {
@@ -99,7 +99,7 @@ std::vector<boost::shared_ptr<VesselNode<DIM> > > LatticeBasedSproutingRule<DIM>
         }
 
         // Check we are not too close to an existing candidate
-        if(mTipExclusionRadius>0.0)
+        if(mTipExclusionRadius>0.0 * unit::metres)
         {
             bool too_close = false;
             for(unsigned jdx=0; jdx<sprouts.size(); jdx++)

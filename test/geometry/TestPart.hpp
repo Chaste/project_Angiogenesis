@@ -76,10 +76,10 @@ private:
         std::vector<boost::shared_ptr<Vessel<3> > > vessels;
         for(unsigned idx = 0; idx<start_nodes.size(); idx++)
         {
-            start_nodes[idx]->SetRadius(radius);
-            end_nodes[idx]->SetRadius(radius);
+            start_nodes[idx]->SetRadius(radius * 1.e-6 * unit::metres);
+            end_nodes[idx]->SetRadius(radius * 1.e-6 * unit::metres);
             vessels.push_back(Vessel<3>::Create(VesselSegment<3>::Create(start_nodes[idx], end_nodes[idx])));
-            vessels[idx]->GetSegments()[0]->SetRadius(10.0);
+            vessels[idx]->GetSegments()[0]->SetRadius(10.0 * 1.e-6 * unit::metres);
         }
 
         boost::shared_ptr<VesselNetwork<3> > p_network = boost::shared_ptr<VesselNetwork<3> >(new VesselNetwork<3>);
@@ -175,8 +175,8 @@ public:
         double vessel_length = 100.0;
         VasculatureGenerator<3> generator;
         boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length);
-        p_network->GetVessels()[0]->GetStartNode()->SetRadius(5.0);
-        p_network->GetVessels()[0]->GetEndNode()->SetRadius(5.0);
+        p_network->GetVessels()[0]->GetStartNode()->SetRadius(5.0e-6 * unit::metres);
+        p_network->GetVessels()[0]->GetEndNode()->SetRadius(5.0e-6 * unit::metres);
 
         Part<3> part = Part<3>();
         boost::shared_ptr<Polygon> p_circle = part.AddCircle(vessel_length);

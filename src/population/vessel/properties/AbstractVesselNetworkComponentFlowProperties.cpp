@@ -47,49 +47,22 @@ AbstractVesselNetworkComponentFlowProperties<DIM>::~AbstractVesselNetworkCompone
 }
 
 template<unsigned DIM>
-double AbstractVesselNetworkComponentFlowProperties<DIM>::GetPressure() const
-{
-    return mPressure/(this->mReferenceMass/(this->mReferenceLength*this->mReferenceTime*this->mReferenceTime));
-}
-
-template<unsigned DIM>
-units::quantity<unit::pressure> AbstractVesselNetworkComponentFlowProperties<DIM>::GetDimensionalPressure() const
+units::quantity<unit::pressure> AbstractVesselNetworkComponentFlowProperties<DIM>::GetPressure() const
 {
     return mPressure;
-}
-
-template<unsigned DIM>
-double AbstractVesselNetworkComponentFlowProperties<DIM>::GetPressureSI() const
-{
-    return mPressure/unit::pascals;
 }
 
 template<unsigned DIM>
 std::map<std::string, double> AbstractVesselNetworkComponentFlowProperties<DIM>::GetOutputData() const
 {
     std::map<std::string, double> output_data;
-    output_data["Reference Length m"] = this->GetReferenceLengthSI();
-    output_data["Reference Mass kg"] = this->GetReferenceMassSI();
-    output_data["Reference Time s"] = this->GetReferenceTimeSI();
     return output_data;
 }
 
 template<unsigned DIM>
-void AbstractVesselNetworkComponentFlowProperties<DIM>::SetPressure(double pressure)
-{
-    mPressure = pressure * (this->mReferenceMass/(this->mReferenceLength*this->mReferenceTime*this->mReferenceTime));
-}
-
-template<unsigned DIM>
-void AbstractVesselNetworkComponentFlowProperties<DIM>::SetDimensionalPressure(units::quantity<unit::pressure> pressure)
+void AbstractVesselNetworkComponentFlowProperties<DIM>::SetPressure(units::quantity<unit::pressure> pressure)
 {
     mPressure = pressure;
-}
-
-template<unsigned DIM>
-void AbstractVesselNetworkComponentFlowProperties<DIM>::SetPressureSI(double pressure)
-{
-    mPressure = pressure * unit::pascals;
 }
 
 // Explicit instantiation

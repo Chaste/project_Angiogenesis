@@ -92,15 +92,15 @@ void DistanceMap<DIM>::Solve()
                 {
                     unsigned grid_index = this->mpRegularGrid->Get1dGridIndex(k, j, i);
                     c_vector<double, DIM> location = this->mpRegularGrid->GetLocation(k ,j, i);
-                    double min_distance = 1.e6;
+                    units::quantity<unit::length> min_distance = DBL_MAX * unit::metres;
                     for (unsigned idx = 0; idx <  segments.size(); idx++)
                     {
-                        double seg_dist = segments[idx]->GetDistance(location);
+                        units::quantity<unit::length> seg_dist = segments[idx]->GetDistance(location);
                         if(this->mUseSegmentRadii)
                         {
                             if(seg_dist<=segments[idx]->GetRadius())
                             {
-                                seg_dist = 0.0;
+                                seg_dist = 0.0 * unit::metres;
                             }
                         }
 
@@ -109,7 +109,7 @@ void DistanceMap<DIM>::Solve()
                             min_distance = seg_dist;
                         }
                     }
-                    vessel_solution[grid_index] = min_distance;
+                    vessel_solution[grid_index] = min_distance/this->mpRegularGrid->GetReferenceLengthScale();
                 }
             }
         }

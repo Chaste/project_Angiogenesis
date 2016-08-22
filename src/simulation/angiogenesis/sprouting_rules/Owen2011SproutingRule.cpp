@@ -95,7 +95,7 @@ std::vector<boost::shared_ptr<VesselNode<DIM> > > Owen2011SproutingRule<DIM>::Ge
         }
 
         // Check we are not too close to the end of the vessel
-        if(this->mVesselEndCutoff > 0.0)
+        if(this->mVesselEndCutoff > 0.0 * unit::metres)
         {
             if(rNodes[idx]->GetSegment(0)->GetVessel()->GetClosestEndNodeDistance(rNodes[idx]->rGetLocation())< this->mVesselEndCutoff)
             {
@@ -108,7 +108,7 @@ std::vector<boost::shared_ptr<VesselNode<DIM> > > Owen2011SproutingRule<DIM>::Ge
         }
 
         // Check we are not too close to an existing candidate
-        if(this->mTipExclusionRadius>0.0)
+        if(this->mTipExclusionRadius>0.0 * unit::metres)
         {
             bool too_close = false;
             for(unsigned jdx=0; jdx<sprouts.size(); jdx++)

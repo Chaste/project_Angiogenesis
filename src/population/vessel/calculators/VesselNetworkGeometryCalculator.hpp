@@ -64,6 +64,8 @@ public:
 
     /**
      * Construct a new instance of the class and return a shared pointer to it.
+     *
+     * @return a pointer to a class instance
      */
     static boost::shared_ptr<VesselNetworkGeometryCalculator<DIM> > Create();
 
@@ -79,37 +81,37 @@ public:
     void SetVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pVesselNetwork);
 
     /**
-     Get the intercapillary distance using a 2d measure
+     * Get the intercapillary distance using a 2d measure
      */
     std::vector<units::quantity<unit::length> > GetInterCapillaryDistances();
 
     /**
-     Return the total length of the network
+     * Return the total length of the network
      */
     units::quantity<unit::length> GetTotalLength();
 
     /**
-     Return the total volume of the network
+     * Return the total volume of the network
      */
     units::quantity<unit::volume> GetTotalVolume();
 
     /**
-     Return the total surface area of the network
+     * Return the total surface area of the network
      */
     units::quantity<unit::area> GetTotalSurfaceArea();
 
     /**
-     Return the average distance between segments
+     * Return the average distance between segments
      */
     units::quantity<unit::length> GetAverageInterSegmentDistance();
 
     /**
-     Return the average vessel length
+     * Return the average vessel length
      */
     units::quantity<unit::length> GetAverageVesselLength();
 
     /**
-     Return a histogram of vessel length distributions
+     * Return a histogram of vessel length distributions
      */
     std::vector<unsigned> GetVesselLengthDistribution(double binSpacing = 10.0, unsigned numberOfBins = 10);
 

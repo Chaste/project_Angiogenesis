@@ -51,6 +51,7 @@
  * We start by introducing the necessary header files. The first contain functionality for setting up unit tests
  */
 #include <cxxtest/TestSuite.h>
+#include "VesselNetworkReader.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 /*
  * Boost shared pointers are used extensively in this component. This header contains some useful
@@ -74,10 +75,6 @@
 #include "VasculatureGenerator.hpp"
 /*
  * We use this to read in vessel networks in VTK format
- */
-#include "VtkVesselNetworkReader.hpp"
-/*
- * We need to include this when running in serial
  */
 #include "FakePetscSetup.hpp"
 /*
@@ -171,7 +168,7 @@ public:
         /*
          * We use a reader to read the network back in from the VTK file.
          */
-        VtkVesselNetworkReader<3> network_reader;
+        VesselNetworkReader<3> network_reader;
         network_reader.SetFileName(p_handler->GetOutputDirectoryFullPath() + "hexagonal_network.vtp");
         boost::shared_ptr<VesselNetwork<3> > p_network_from_file = network_reader.Read();
         /*

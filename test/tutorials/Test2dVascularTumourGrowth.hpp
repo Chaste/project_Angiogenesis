@@ -187,11 +187,11 @@ class Test2dVascularTumourGrowth : public AbstractCellBasedWithTimingsTestSuite
         boost::shared_ptr<VesselSegment<2> > p_segment(VesselSegment<2>::Create(nodes[0], nodes[1]));
 
         double initial_vessel_radius = 10.0e-6;
-        p_segment->SetRadius(initial_vessel_radius);
+        p_segment->SetRadius(initial_vessel_radius * unit::metres);
         double haematocrit = 0.45;
         p_segment->GetFlowProperties()->SetHaematocrit(haematocrit);
         double viscosity = 2e-3;
-        p_segment->GetFlowProperties()->SetViscosity(viscosity);
+        p_segment->GetFlowProperties()->SetViscosity(viscosity * unit::poiseuille);
         p_network->SetSegmentProperties(p_segment);
 
         std::vector<std::pair<double, double> > network_extents = p_network->GetExtents();
@@ -209,7 +209,7 @@ class Test2dVascularTumourGrowth : public AbstractCellBasedWithTimingsTestSuite
                     if ((*vessel_iterator)->GetStartNode()->rGetLocation()[0] > x_middle)
                     {
                         (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetIsInputNode(true);
-                        (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetPressure(3320);
+                        (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetPressure(3320 * unit::pascals);
                     }
                 }
             }
@@ -220,7 +220,7 @@ class Test2dVascularTumourGrowth : public AbstractCellBasedWithTimingsTestSuite
                     if ((*vessel_iterator)->GetStartNode()->rGetLocation()[0] > x_middle)
                     {
                         (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetIsInputNode(true);
-                        (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetPressure(3320);
+                        (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetPressure(3320 * unit::pascals);
                     }
                 }
             }
@@ -231,7 +231,7 @@ class Test2dVascularTumourGrowth : public AbstractCellBasedWithTimingsTestSuite
                     if ((*vessel_iterator)->GetStartNode()->rGetLocation()[0] < x_middle)
                     {
                         (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetIsOutputNode(true);
-                        (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetPressure(2090);
+                        (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetPressure(2090 * unit::pascals);
                     }
                 }
             }
@@ -242,7 +242,7 @@ class Test2dVascularTumourGrowth : public AbstractCellBasedWithTimingsTestSuite
                     if ((*vessel_iterator)->GetStartNode()->rGetLocation()[0] < x_middle)
                     {
                         (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetIsOutputNode(true);
-                        (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetPressure(2090);
+                        (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetPressure(2090 * unit::pascals);
                     }
                 }
             }

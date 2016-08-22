@@ -296,7 +296,7 @@ boost::shared_ptr<VesselNode<DIM> > Vessel<DIM>::DivideSegment(const c_vector<do
     boost::shared_ptr<VesselSegment<DIM> > pVesselSegment;
     for (unsigned i = 0; i < mSegments.size(); i++)
     {
-        if (mSegments[i]->GetDistance(location) <= distanceTolerance)
+        if (mSegments[i]->GetDistance(location)/pVesselSegment->GetNode(0)->GetReferenceLengthScale() <= distanceTolerance)
         {
             pVesselSegment = mSegments[i];
             if (pVesselSegment->GetNode(0)->IsCoincident(location))
@@ -330,8 +330,8 @@ boost::shared_ptr<VesselNode<DIM> > Vessel<DIM>::DivideSegment(const c_vector<do
 
     // The node's data is averaged from the original segments's nodes
     // Get the closest node
-    double distance0 = pVesselSegment->GetNode(0)->GetDistance(location);
-    double distance1 = pVesselSegment->GetNode(1)->GetDistance(location);
+    units::quantity<unit::length> distance0 = pVesselSegment->GetNode(0)->GetDistance(location);
+    units::quantity<unit::length> distance1 = pVesselSegment->GetNode(1)->GetDistance(location);
     unsigned closest_index;
 
     if (distance0 <= distance1)
@@ -440,16 +440,15 @@ std::map<std::string, double> Vessel<DIM>::GetOutputData()
     std::map<std::string, double> flow_data = this->mpFlowProperties->GetOutputData(GetSegments());
     this->mOutputData.insert(flow_data.begin(), flow_data.end());
     this->mOutputData["Vessel Id"] = double(this->GetId());
-    this->mOutputData["Dimensionless Vessel Radius"] = this->GetRadius();
-    this->mOutputData["Vessel Radius m"] = this->GetRadiusSI();
+    this->mOutputData["Vessel Radius m"] = this->GetRadius() / unit::metres;
     return this->mOutputData;
 }
 
 template<unsigned DIM>
-double Vessel<DIM>::GetClosestEndNodeDistance(c_vector<double, DIM> location)
+units::quantity<unit::length> Vessel<DIM>::GetClosestEndNodeDistance(c_vector<double, DIM> location)
 {
-    double distance_1 = this->GetStartNode()->GetDistance(location);
-    double distance_2 = this->GetEndNode()->GetDistance(location);
+    units::quantity<unit::length> distance_1 = this->GetStartNode()->GetDistance(location);
+    units::quantity<unit::length> distance_2 = this->GetEndNode()->GetDistance(location);
     if(distance_1 > distance_2)
     {
         return distance_2;
@@ -461,13 +460,13 @@ double Vessel<DIM>::GetClosestEndNodeDistance(c_vector<double, DIM> location)
 }
 
 template<unsigned DIM>
-double Vessel<DIM>::GetDistance(const c_vector<double, DIM>& location) const
+units::quantity<unit::length> Vessel<DIM>::GetDistance(const c_vector<double, DIM>& location) const
 {
     // Get the distance to the nearest segment in the vessel
-    double nearest_distance = DBL_MAX;
+    units::quantity<unit::length> nearest_distance = DBL_MAX * unit::metres;
     for(unsigned idx=0; idx<mSegments.size(); idx++)
     {
-        double seg_distance = mSegments[idx]->GetDistance(location);
+        units::quantity<unit::length> seg_distance = mSegments[idx]->GetDistance(location);
         if(seg_distance < nearest_distance)
         {
             nearest_distance = seg_distance;
@@ -536,9 +535,9 @@ boost::shared_ptr<VesselNode<DIM> > Vessel<DIM>::GetNodeAtOppositeEnd(
 }
 
 template<unsigned DIM>
-double Vessel<DIM>::GetLength() const
+units::quantity<unit::length> Vessel<DIM>::GetLength() const
 {
-    double length = 0.0;
+    units::quantity<unit::length> length = 0.0 * unit::metres;
     for (unsigned i = 0; i < mSegments.size(); i++)
     {
         length += mSegments[i]->GetLength();
@@ -547,30 +546,12 @@ double Vessel<DIM>::GetLength() const
 }
 
 template<unsigned DIM>
-units::quantity<unit::length> Vessel<DIM>::GetDimensionalLength() const
-{
-    return this->GetLength()*this->mReferenceLength;
-}
-
-template<unsigned DIM>
-double Vessel<DIM>::GetRadius() const
-{
-   return this->GetDimensionalRadius() / this->mReferenceLength;
-}
-
-template<unsigned DIM>
-double Vessel<DIM>::GetRadiusSI() const
-{
-   return this->GetDimensionalRadius() / unit::metres;
-}
-
-template<unsigned DIM>
-units::quantity<unit::length> Vessel<DIM>::GetDimensionalRadius() const
+units::quantity<unit::length> Vessel<DIM>::GetRadius() const
 {
     units::quantity<unit::length> radius = 0.0 * unit::metres;
     for (unsigned i = 0; i < mSegments.size(); i++)
     {
-        radius += mSegments[i]->GetDimensionalRadius();
+        radius += mSegments[i]->GetRadius();
     }
     return radius / (double(mSegments.size()));
 }
@@ -684,29 +665,11 @@ void Vessel<DIM>::SetFlowProperties(const VesselFlowProperties<DIM> & rFlowPrope
 }
 
 template<unsigned DIM>
-void Vessel<DIM>::SetRadius(double radius)
+void Vessel<DIM>::SetRadius(units::quantity<unit::length> radius)
 {
     for (unsigned i = 0; i < mSegments.size(); i++)
     {
         mSegments[i]->SetRadius(radius);
-    }
-}
-
-template<unsigned DIM>
-void Vessel<DIM>::SetRadiusSI(double radius)
-{
-    for (unsigned i = 0; i < mSegments.size(); i++)
-    {
-        mSegments[i]->SetRadiusSI(radius);
-    }
-}
-
-template<unsigned DIM>
-void Vessel<DIM>::SetDimensionalRadius(units::quantity<unit::length> radius)
-{
-    for (unsigned i = 0; i < mSegments.size(); i++)
-    {
-        mSegments[i]->SetDimensionalRadius(radius);
     }
 }
 

@@ -38,6 +38,7 @@
 
 #include "SmartPointers.hpp"
 #include "VesselNetwork.hpp"
+#include "UnitCollection.hpp"
 
 /**
  * This class is for simulating modifications to the vessel network due to regression.
@@ -52,6 +53,8 @@ protected:
      * The vessel network
      */
     boost::shared_ptr<VesselNetwork<DIM> > mpNetwork;
+
+    units::quantity<unit::time> mReferenceTime;
 
 public:
 

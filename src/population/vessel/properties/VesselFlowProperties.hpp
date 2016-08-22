@@ -39,11 +39,12 @@
 #include <string>
 #include <map>
 #include <boost/enable_shared_from_this.hpp>
+
+#include "DimensionalSimulationTime.hpp"
 #include "UnitCollection.hpp"
 #include "VesselSegment.hpp"
 #include "SmartPointers.hpp"
 #include "AbstractVesselNetworkComponentFlowProperties.hpp"
-#include "SimulationTime.hpp"
 
 /**
  * This is a class for vessel flow properties.
@@ -91,127 +92,45 @@ public:
     ~VesselFlowProperties();
 
     /**
-     * Return the dimensionless haematocrit
-     * @return the segment haematocrit
-     */
-    double GetHaematocrit(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
-
-    /**
      * Return the 'dimensional' haematocrit
      * @return the segment haematocrit
      */
-    units::quantity<unit::dimensionless> GetDimensionalHaematocrit(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
-
-    /**
-     * Return the haematocrit in SI units
-     * @return the segment haematocrit
-     */
-    double GetHaematocritSI(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
+    units::quantity<unit::dimensionless> GetHaematocrit(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
 
     /**
      * Return the impedance
      *
      * @return the segment impedance
      */
-    double GetImpedance(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
-
-    /**
-     * Return the impedance
-     *
-     * @return the segment impedance
-     */
-    units::quantity<unit::flow_impedance> GetDimensionalImpedance(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
-
-    /**
-     * Return the impedance
-     *
-     * @return the segment impedance
-     */
-    double GetImpedanceSI(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
+    units::quantity<unit::flow_impedance> GetImpedance(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
 
     /**
      * Return the flow rate
      *
      * @return the segment flow rate
      */
-    double GetFlowRate(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
-
-    /**
-     * Return the flow rate
-     *
-     * @return the segment flow rate
-     */
-    units::quantity<unit::flow_rate> GetDimensionalFlowRate(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
-
-    /**
-     * Return the flow rate
-     *
-     * @return the segment flow rate
-     */
-    double GetFlowRateSI(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
+    units::quantity<unit::flow_rate> GetFlowRate(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
 
     /**
      * Return the segment viscosity
      *
      * @return the segment viscosity
      */
-    double GetViscosity(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
-
-    /**
-     * Return the segment viscosity
-     *
-     * @return the segment viscosity
-     */
-    units::quantity<unit::dynamic_viscosity> GetDimensionalViscosity(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
-
-    /**
-     * Return the segment viscosity
-     *
-     * @return the segment viscosity
-     */
-    double GetViscositySI(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
+    units::quantity<unit::dynamic_viscosity> GetViscosity(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
 
     /**
      * Return the segment wall shear stress of this vessel segment
      *
      * @return the segment wall shear stress
      */
-    double GetWallShearStress(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
-
-    /**
-     * Return the segment wall shear stress of this vessel segment
-     *
-     * @return the segment wall shear stress
-     */
-    units::quantity<unit::pressure> GetDimensionalWallShearStress(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
-
-    /**
-     * Return the segment wall shear stress of this vessel segment
-     *
-     * @return the segment wall shear stress
-     */
-    double GetWallShearStressSI(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
+    units::quantity<unit::pressure> GetWallShearStress(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
 
     /**
      * Return the growth stimulus of this vessel segment
      *
      * @return the segment growth stimulus
      */
-    double GetGrowthStimulus(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
-
-    /**
-     * Return the growth stimulus of this vessel segment
-     *
-     * @return the segment growth stimulus
-     */
-    units::quantity<unit::rate> GetDimensionalGrowthStimulus(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
-
-    /**
-     * Return the growth stimulus of this vessel segment
-     *
-     * @return the segment growth stimulus
-     */
-    double GetGrowthStimulusSI(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
+    units::quantity<unit::rate> GetGrowthStimulus(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const;
 
     /**
      * Return a map of segment data for use by the vtk writer
@@ -228,7 +147,7 @@ public:
     /**
      * @return whether the vessel should regress (be removed).
      */
-    bool HasVesselRegressed();
+    bool HasVesselRegressed(units::quantity<unit::time> simulationReferenceTime);
 
     /**
      * Rescue vessel from regression.
@@ -240,132 +159,48 @@ public:
      *
      * @param haematocrit the haematocrit in the segment
      */
-    void SetDimensionalHaematocrit(units::quantity<unit::dimensionless> haematocrit, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
-
-    /**
-     * Set the haematocrit
-     *
-     * @param haematocrit the haematocrit in the segment
-     */
-    void SetHaematocrit(double haematocrit, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
-
-    /**
-     * Set the haematocrit
-     *
-     * @param haematocrit the haematocrit in the segment
-     */
-    void SetHaematocritSI(double haematocrit, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
+    void SetHaematocrit(units::quantity<unit::dimensionless> haematocrit, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
 
     /**
      * Set the flow rate
      *
      * @param flowRate the flow rate in the segment
      */
-    void SetFlowRate(double flowRate, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
-
-    /**
-     * Set the flow rate
-     *
-     * @param flowRate the flow rate in the segment
-     */
-    void SetDimensionalFlowRate(units::quantity<unit::flow_rate> flowRate, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
-
-    /**
-     * Set the flow rate
-     *
-     * @param flowRate the flow rate in the segment
-     */
-    void SetFlowRateSI(double flowRate, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
+    void SetFlowRate(units::quantity<unit::flow_rate> flowRate, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
 
     /**
      * Set the impedance
      *
      * @param impedance the impedance in the segment
      */
-    void SetImpedance(double impedance, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
-
-    /**
-     * Set the impedance
-     *
-     * @param impedance the impedance in the segment
-     */
-    void SetDimensionalImpedance(units::quantity<unit::flow_impedance> impedance, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
-
-    /**
-     * Set the impedance
-     *
-     * @param impedance the impedance in the segment
-     */
-    void SetImpedanceSI(double impedance, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
+    void SetImpedance(units::quantity<unit::flow_impedance> impedance, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
 
     /**
      * Set the viscosity
      *
      * @param viscosity the viscosity in the segment
      */
-    void SetDimensionalViscosity(units::quantity<unit::dynamic_viscosity> viscosity, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
-
-    /**
-     * Set the viscosity
-     *
-     * @param viscosity the viscosity in the segment
-     */
-    void SetViscosity(double viscosity, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
-
-    /**
-     * Set the viscosity
-     *
-     * @param viscosity the viscosity in the segment
-     */
-    void SetViscositySI(double viscosity, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
+    void SetViscosity(units::quantity<unit::dynamic_viscosity> viscosity, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
 
     /**
      * Set the wall shear stress of this vessel segment
      *
      * @param wallShear the wall shear stress in the segment
      */
-    void SetDimensionalWallShearStress(units::quantity<unit::pressure> wallShear, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
-
-    /**
-     * Set the wall shear stress of this vessel segment
-     *
-     * @param wallShear the wall shear stress in the segment
-     */
-    void SetWallShearStress(double wallShear, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
-
-    /**
-     * Set the wall shear stress of this vessel segment
-     *
-     * @param wallShear the wall shear stress in the segment
-     */
-    void SetWallShearStressSI(double wallShear, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
+    void SetWallShearStress(units::quantity<unit::pressure> wallShear, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
 
     /**
      * Set the growth stimulus of this vessel segment
      *
      * @param mechStimulus the growth stimulus in the segment
      */
-    void SetGrowthStimulus(double stimulus, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
-
-    /**
-     * Set the growth stimulus of this vessel segment
-     *
-     * @param mechStimulus the growth stimulus in the segment
-     */
-    void SetGrowthStimulusSI(double stimulus, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
-
-    /**
-     * Set the growth stimulus of this vessel segment
-     *
-     * @param mechStimulus the growth stimulus in the segment
-     */
-    void SetDimensionalGrowthStimulus(units::quantity<unit::rate> stimulus, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
+    void SetGrowthStimulus(units::quantity<unit::rate> stimulus, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments);
 
     /**
      * Set dimensional time until removal of vessel from network.
      * @param time the time until vessel removal
      */
-    void SetDimensionalTimeUntilRegression(units::quantity<unit::time> time);
+    void SetTimeUntilRegression(units::quantity<unit::time> time, units::quantity<unit::time> simulationReferenceTime);
 
 };
 

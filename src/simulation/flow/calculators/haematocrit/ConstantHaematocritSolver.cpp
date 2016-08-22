@@ -62,7 +62,7 @@ void ConstantHaematocritSolver<DIM>::Calculate()
 
     for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
     {
-        if (fabs(segments[segment_index]->GetFlowProperties()->GetFlowRate()) == 0.0)
+        if (fabs(segments[segment_index]->GetFlowProperties()->GetFlowRate()) == 0.0 *unit::unit_flow_rate)
         {
             segments[segment_index]->GetFlowProperties()->SetHaematocrit(0.0);
         }

@@ -150,7 +150,7 @@ boost::shared_ptr<VesselNode<DIM> > VesselNetwork<DIM>::DivideVessel(boost::shar
         std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = pVessel->GetSegments();
         for (unsigned idx = 0; idx < segments.size(); idx++)
         {
-            if (segments[idx]->GetDistance(location) <= 1e-6)
+            if (segments[idx]->GetDistance(location)/segments[idx]->GetNode(0)->GetReferenceLengthScale() <= 1e-6)
             {
                 locatedInsideVessel = true;
                 p_segment = segments[idx];
@@ -230,8 +230,8 @@ boost::shared_ptr<Vessel<DIM> > VesselNetwork<DIM>::FormSprout(const c_vector<do
                                                                  const c_vector<double, DIM>& sproutTipLocation)
 {
     // locate vessel at which the location of the sprout base exists
-    std::pair<boost::shared_ptr<VesselSegment<DIM> >, double > nearest_segment = GetNearestSegment(sproutBaseLocation);
-    if (nearest_segment.second > 1e-6)
+    std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> > nearest_segment = GetNearestSegment(sproutBaseLocation);
+    if (nearest_segment.second / nearest_segment.first->GetNode(0)->GetReferenceLengthScale()  > 1e-6)
     {
         EXCEPTION("No vessel located at sprout base.");
     }
@@ -256,7 +256,7 @@ void VesselNetwork<DIM>::SetNodeRadiiFromSegments()
     std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes = GetNodes();
     for(unsigned idx=0; idx<nodes.size(); idx++)
     {
-        double av_radius = 0;
+        units::quantity<unit::length> av_radius = 0.0 * unit::metres;
         for(unsigned jdx=0; jdx<nodes[idx]->GetNumberOfSegments(); jdx++)
         {
             av_radius += nodes[idx]->GetSegment(jdx)->GetRadius();
@@ -284,7 +284,7 @@ std::vector<std::pair<double, double> > VesselNetwork<DIM>::GetExtents(bool useR
             x_max = location[0];
             if(useRadii)
             {
-                x_max += (*it)->GetRadius();
+                x_max += (*it)->GetRadius()/(*it)->GetReferenceLengthScale();
             }
         }
         if(location[1] > y_max)
@@ -292,7 +292,7 @@ std::vector<std::pair<double, double> > VesselNetwork<DIM>::GetExtents(bool useR
             y_max = location[1];
             if(useRadii)
             {
-                y_max += (*it)->GetRadius();
+                y_max += (*it)->GetRadius()/(*it)->GetReferenceLengthScale();
             }
         }
         if(DIM > 2)
@@ -302,7 +302,7 @@ std::vector<std::pair<double, double> > VesselNetwork<DIM>::GetExtents(bool useR
                 z_max = location[2];
                 if(useRadii)
                 {
-                    z_max += (*it)->GetRadius();
+                    z_max += (*it)->GetRadius()/(*it)->GetReferenceLengthScale();
                 }
             }
         }
@@ -320,7 +320,7 @@ std::vector<std::pair<double, double> > VesselNetwork<DIM>::GetExtents(bool useR
             x_min = location[0];
             if(useRadii)
             {
-                x_min -= (*it)->GetRadius();
+                x_min -= (*it)->GetRadius()/(*it)->GetReferenceLengthScale();
             }
         }
         if(location[1] < y_min)
@@ -328,7 +328,7 @@ std::vector<std::pair<double, double> > VesselNetwork<DIM>::GetExtents(bool useR
             y_min = location[1];
             if(useRadii)
             {
-                y_min -= (*it)->GetRadius();
+                y_min -= (*it)->GetRadius()/(*it)->GetReferenceLengthScale();
             }
         }
         if(DIM > 2)
@@ -338,7 +338,7 @@ std::vector<std::pair<double, double> > VesselNetwork<DIM>::GetExtents(bool useR
                 z_min = location[2];
                 if(useRadii)
                 {
-                    z_min -= (*it)->GetRadius();
+                    z_min -= (*it)->GetRadius()/(*it)->GetReferenceLengthScale();
                 }
             }
         }
@@ -352,16 +352,16 @@ std::vector<std::pair<double, double> > VesselNetwork<DIM>::GetExtents(bool useR
 }
 
 template <unsigned DIM>
-double VesselNetwork<DIM>::GetDistanceToNearestNode(const c_vector<double, DIM>& rLocation)
+units::quantity<unit::length> VesselNetwork<DIM>::GetDistanceToNearestNode(const c_vector<double, DIM>& rLocation)
 {
     std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes = GetNodes();
     boost::shared_ptr<VesselNode<DIM> > nearest_node;
-    double min_distance = 1.e12;
+    units::quantity<unit::length> min_distance = DBL_MAX*unit::metres;
 
     typename std::vector<boost::shared_ptr<VesselNode<DIM> > >::iterator node_iter;
     for(node_iter = nodes.begin(); node_iter != nodes.end(); node_iter++)
     {
-        double node_distance = (*node_iter)->GetDistance(rLocation);
+        units::quantity<unit::length> node_distance = (*node_iter)->GetDistance(rLocation);
         if (node_distance < min_distance)
         {
             min_distance = node_distance;
@@ -376,14 +376,14 @@ boost::shared_ptr<VesselNode<DIM> > VesselNetwork<DIM>::GetNearestNode(boost::sh
 {
     std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes = GetNodes();
     boost::shared_ptr<VesselNode<DIM> > nearest_node;
-    double min_distance = 1.e6;
+    units::quantity<unit::length> min_distance = DBL_MAX*unit::metres;
 
     typename std::vector<boost::shared_ptr<VesselNode<DIM> > >::iterator node_iter;
     for(node_iter = nodes.begin(); node_iter != nodes.end(); node_iter++)
     {
         if((*node_iter) != pInputNode)
         {
-            double node_distance = (*node_iter)->GetDistance(pInputNode->rGetLocation());
+            units::quantity<unit::length> node_distance = (*node_iter)->GetDistance(pInputNode->rGetLocation());
             if (node_distance < min_distance)
             {
                 min_distance = node_distance;
@@ -399,12 +399,12 @@ boost::shared_ptr<VesselNode<DIM> > VesselNetwork<DIM>::GetNearestNode(const c_v
 {
     std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes = GetNodes();
     boost::shared_ptr<VesselNode<DIM> > nearest_node;
-    double min_distance = 1.e6;
+    units::quantity<unit::length> min_distance = DBL_MAX*unit::metres;
 
     typename std::vector<boost::shared_ptr<VesselNode<DIM> > >::iterator node_iter;
     for(node_iter = nodes.begin(); node_iter != nodes.end(); node_iter++)
     {
-        double node_distance = (*node_iter)->GetDistance(location);
+        units::quantity<unit::length> node_distance = (*node_iter)->GetDistance(location);
         if (node_distance < min_distance)
         {
             min_distance = node_distance;
@@ -416,12 +416,12 @@ boost::shared_ptr<VesselNode<DIM> > VesselNetwork<DIM>::GetNearestNode(const c_v
 }
 
 template <unsigned DIM>
-std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> VesselNetwork<DIM>::GetNearestSegment(boost::shared_ptr<VesselSegment<DIM> > pSegment)
+std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> > VesselNetwork<DIM>::GetNearestSegment(boost::shared_ptr<VesselSegment<DIM> > pSegment)
 {
     boost::shared_ptr<VesselSegment<DIM> > nearest_segment;
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = GetVesselSegments();
 
-    double min_distance = 1.e12;
+    double min_distance = DBL_MAX;
     typename std::vector<boost::shared_ptr<VesselSegment<DIM> > >::iterator segment_iter;
     for(segment_iter = segments.begin(); segment_iter != segments.end(); segment_iter++)
     {
@@ -515,23 +515,23 @@ std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> VesselNetwork<DIM>::Ge
         }
 
     }
-    std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> return_pair =
-            std::pair<boost::shared_ptr<VesselSegment<DIM> >, double>(nearest_segment, min_distance);
+    std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> > return_pair =
+            std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> >(nearest_segment, min_distance * segments[0]->GetNode(0)->GetReferenceLengthScale());
     return return_pair;
 }
 
 template <unsigned DIM>
-std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> VesselNetwork<DIM>::GetNearestSegment(boost::shared_ptr<VesselNode<DIM> > pNode,
+std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> > VesselNetwork<DIM>::GetNearestSegment(boost::shared_ptr<VesselNode<DIM> > pNode,
                                                                                                                           bool sameVessel)
 {
     boost::shared_ptr<VesselSegment<DIM> > nearest_segment;
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = GetVesselSegments();
 
-    double  min_distance = 1.e12;
+    units::quantity<unit::length>  min_distance = DBL_MAX * unit::metres;
     typename std::vector<boost::shared_ptr<VesselSegment<DIM> > >::iterator segment_iter;
     for(segment_iter = segments.begin(); segment_iter != segments.end(); segment_iter++)
     {
-        double segment_distance = (*segment_iter)->GetDistance(pNode->rGetLocation());
+        units::quantity<unit::length> segment_distance = (*segment_iter)->GetDistance(pNode->rGetLocation());
 
         if (segment_distance < min_distance && (*segment_iter)->GetNode(0) != pNode && (*segment_iter)->GetNode(1) != pNode)
         {
@@ -559,30 +559,30 @@ std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> VesselNetwork<DIM>::Ge
             }
         }
     }
-    std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> return_pair =
-            std::pair<boost::shared_ptr<VesselSegment<DIM> >, double>(nearest_segment, min_distance);
+    std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> > return_pair =
+            std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> >(nearest_segment, min_distance);
     return return_pair;
 }
 
 template <unsigned DIM>
-std::pair<boost::shared_ptr<VesselSegment<DIM> >, double>  VesselNetwork<DIM>::GetNearestSegment(const c_vector<double, DIM>& location)
+std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> >  VesselNetwork<DIM>::GetNearestSegment(const c_vector<double, DIM>& location)
 {
     boost::shared_ptr<VesselSegment<DIM> > nearest_segment;
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = GetVesselSegments();
 
-    double min_distance = 1.e12;
+    units::quantity<unit::length>  min_distance = DBL_MAX * unit::metres;
     typename std::vector<boost::shared_ptr<VesselSegment<DIM> > >::iterator segment_iter;
     for(segment_iter = segments.begin(); segment_iter != segments.end(); segment_iter++)
     {
-        double segment_distance = (*segment_iter)->GetDistance(location);
+        units::quantity<unit::length>  segment_distance = (*segment_iter)->GetDistance(location);
         if (segment_distance < min_distance)
         {
             min_distance = segment_distance;
             nearest_segment = (*segment_iter) ;
         }
     }
-    std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> return_pair =
-            std::pair<boost::shared_ptr<VesselSegment<DIM> >, double>(nearest_segment, min_distance);
+    std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> > return_pair =
+            std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> >(nearest_segment, min_distance);
     return return_pair;
 }
 
@@ -593,7 +593,7 @@ boost::shared_ptr<Vessel<DIM> > VesselNetwork<DIM>::GetNearestVessel(const c_vec
 }
 
 template <unsigned DIM>
-void VesselNetwork<DIM>::RemoveShortVessels(double cutoff, bool endsOnly)
+void VesselNetwork<DIM>::RemoveShortVessels(units::quantity<unit::length> cutoff, bool endsOnly)
 {
     std::vector<boost::shared_ptr<Vessel<DIM> > > vessels_to_remove;
 
@@ -619,7 +619,7 @@ void VesselNetwork<DIM>::RemoveShortVessels(double cutoff, bool endsOnly)
 }
 
 template <unsigned DIM>
-void VesselNetwork<DIM>::MergeShortVessels(double cutoff)
+void VesselNetwork<DIM>::MergeShortVessels(units::quantity<unit::length> cutoff)
 {
     std::vector<boost::shared_ptr<Vessel<DIM> > > vessels_to_merge;
     for(unsigned idx=0; idx<mVessels.size(); idx++)
@@ -644,14 +644,14 @@ void VesselNetwork<DIM>::MergeShortVessels(double cutoff)
 }
 
 template <unsigned DIM>
-unsigned VesselNetwork<DIM>::NumberOfNodesNearLocation(const c_vector<double, DIM>& rLocation, double radius)
+unsigned VesselNetwork<DIM>::NumberOfNodesNearLocation(const c_vector<double, DIM>& rLocation, double tolerance)
 {
     std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes = GetNodes();
     unsigned num_nodes = 0;
 
     for(unsigned idx = 0; idx < nodes.size(); idx++)
     {
-        if(nodes[idx]->GetDistance(rLocation) <= radius + 1.e-6)
+        if(nodes[idx]->GetDistance(rLocation)/nodes[idx]->GetReferenceLengthScale() <= tolerance + 1.e-6)
         {
             num_nodes++;
         }
@@ -865,7 +865,7 @@ void VesselNetwork<DIM>::MergeCoincidentNodes(std::vector<boost::shared_ptr<Vess
                 bool is_coincident = false;
                 if(tolerance >0.0)
                 {
-                    is_coincident = (*it)->GetDistance((*it2)->rGetLocation()) <= tolerance;
+                    is_coincident = (*it)->GetDistance((*it2)->rGetLocation())/(*it)->GetReferenceLengthScale() <= tolerance;
                 }
                 else
                 {
@@ -960,7 +960,7 @@ void VesselNetwork<DIM>::RemoveVessel(boost::shared_ptr<Vessel<DIM> > pVessel, b
 }
 
 template <unsigned DIM>
-void VesselNetwork<DIM>::SetNodeRadii(double radius)
+void VesselNetwork<DIM>::SetNodeRadii(units::quantity<unit::length> radius)
 {
     std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes = GetNodes();
 
@@ -972,7 +972,7 @@ void VesselNetwork<DIM>::SetNodeRadii(double radius)
 }
 
 template <unsigned DIM>
-void VesselNetwork<DIM>::SetSegmentRadii(double radius)
+void VesselNetwork<DIM>::SetSegmentRadii(units::quantity<unit::length> radius)
 {
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = GetVesselSegments();
 
@@ -1071,18 +1071,19 @@ void VesselNetwork<DIM>::UpdateVesselIds()
 }
 
 template<unsigned DIM>
-bool VesselNetwork<DIM>::VesselCrossesLineSegment(c_vector<double, DIM> coordinate_1, c_vector<double, DIM> coordinate_2, double radius)
+bool VesselNetwork<DIM>::VesselCrossesLineSegment(c_vector<double, DIM> coordinate_1, c_vector<double, DIM> coordinate_2, double tolerance)
 {
-
     boost::shared_ptr<VesselSegment<DIM> > temp_segment = VesselSegment<DIM>::Create(VesselNode<DIM>::Create(coordinate_1), VesselNode<DIM>::Create(coordinate_2));
-
-    std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> nearest_segment = GetNearestSegment(temp_segment);
+    std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> > nearest_segment = GetNearestSegment(temp_segment);
 
     // todo a false here does not necessarily guarantee that a vessel does not cross a line segment since get nearest
     // segment only returns one segment
-    bool crosses_segment = (nearest_segment.second <= radius) && (nearest_segment.first->GetDistance(coordinate_1) > radius) && (nearest_segment.first->GetDistance(coordinate_2) > radius);
-    return  crosses_segment;
+    double nearest_seg_dist = nearest_segment.second / nearest_segment.first->GetNode(0)->GetReferenceLengthScale();
+    double coord1_distance = nearest_segment.first->GetDistance(coordinate_1) / nearest_segment.first->GetNode(0)->GetReferenceLengthScale();
+    double coord2_distance = nearest_segment.first->GetDistance(coordinate_2) / nearest_segment.first->GetNode(0)->GetReferenceLengthScale();
 
+    bool crosses_segment = (nearest_seg_dist<= tolerance) && (coord1_distance > tolerance) && (coord2_distance > tolerance);
+    return  crosses_segment;
 }
 
 template<unsigned DIM>

@@ -81,6 +81,9 @@ private:
      */
     boost::weak_ptr<Vessel<DIM> > mVessel;
 
+    /**
+     * A flow property collection for the segment
+     */
     boost::shared_ptr<SegmentFlowProperties<DIM> > mpFlowProperties;
 
     /**
@@ -148,17 +151,7 @@ public:
      * @param location the point the get the distance from
      * @return the distance to the segment
      */
-    double GetDistance(const c_vector<double, DIM>& location) const;
-
-    /**
-     * Return the distance between the input point and the segment. If the projection of the
-     * point is within the segment the distance is the perpendicular distance to the segment.
-     * Otherwise it is the distance to the nearest node.
-     *
-     * @param location the point the get the distance from
-     * @return the distance to the segment
-     */
-    units::quantity<unit::length> GetDimensionalDistance(const c_vector<double, DIM>& location) const;
+    units::quantity<unit::length> GetDistance(const c_vector<double, DIM>& location) const;
 
     /**
      * Return the flow properties of the component
@@ -168,23 +161,16 @@ public:
     boost::shared_ptr<SegmentFlowProperties<DIM> > GetFlowProperties() const;
 
     /**
-     * Return the dimensionless length
-     *
-     * @return the segment length
-     */
-    double GetLength() const;
-
-    /**
      * Return the dimensional length
      *
      * @return the segment length
      */
-    units::quantity<unit::length> GetDimensionalLength() const;
+    units::quantity<unit::length> GetLength() const;
 
     /**
-     * Return a dimensionless point mid-way along the vessel segment
+     * Return a point mid-way along the vessel segment
      *
-     * @return a dimensionless point midway along the segment
+     * @return a point midway along the segment
      */
     c_vector<double, DIM> GetMidPoint() const;
 
@@ -211,7 +197,7 @@ public:
     std::pair<boost::shared_ptr<VesselNode<DIM> >, boost::shared_ptr<VesselNode<DIM> > > GetNodes() const;
 
     /**
-     * Return the dimensionless projection of a point onto the segment. If the projection is outside the segment an
+     * Return the projection of a point onto the segment. If the projection is outside the segment an
      * Exception is thrown.
      *
      * @param location the location to be projected
@@ -220,7 +206,7 @@ public:
     c_vector<double, DIM> GetPointProjection(const c_vector<double, DIM>& location, bool projectToEnds = false) const;
 
     /**
-     * Return a dimensionless unit vector pointing along the segment. The orientation along the segment is from node0 to node 1.
+     * Return a unit vector pointing along the segment. The orientation along the segment is from node0 to node 1.
      *
      * @return a unit vector pointing along the segment
      */

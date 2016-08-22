@@ -43,35 +43,37 @@
 #include <vtkXMLPolyDataReader.h>
 #include <vtkSmartPointer.h>
 #include "Exception.hpp"
-#include "VtkVesselNetworkReader.hpp"
+#include "VesselNetworkReader.hpp"
 
 template<unsigned DIM>
-VtkVesselNetworkReader<DIM>::VtkVesselNetworkReader()
+VesselNetworkReader<DIM>::VesselNetworkReader()
     : mFileName(),
-      mRadiusLabel("Node Radius")
+      mRadiusLabel("Node Radius"),
+      mReferenceLength(1.e-6 * unit::metres),
+      mRadiusConversionFactor(1.0)
 {
 }
 
 template<unsigned DIM>
-VtkVesselNetworkReader<DIM>::~VtkVesselNetworkReader()
+VesselNetworkReader<DIM>::~VesselNetworkReader()
 {
 }
 
 template <unsigned DIM>
-boost::shared_ptr<VtkVesselNetworkReader<DIM> > VtkVesselNetworkReader<DIM>::Create()
+boost::shared_ptr<VesselNetworkReader<DIM> > VesselNetworkReader<DIM>::Create()
 {
-    MAKE_PTR(VtkVesselNetworkReader<DIM>, pSelf);
+    MAKE_PTR(VesselNetworkReader<DIM>, pSelf);
     return pSelf;
 }
 
 template <unsigned DIM>
-void VtkVesselNetworkReader<DIM>::SetRadiusArrayName(const std::string& rRadius)
+void VesselNetworkReader<DIM>::SetRadiusArrayName(const std::string& rRadius)
 {
     mRadiusLabel = rRadius;
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VesselNetwork<DIM> > VtkVesselNetworkReader<DIM>::Read()
+boost::shared_ptr<VesselNetwork<DIM> > VesselNetworkReader<DIM>::Read()
 {
     if(mFileName.empty())
     {
@@ -103,6 +105,11 @@ boost::shared_ptr<VesselNetwork<DIM> > VtkVesselNetworkReader<DIM>::Read()
         {
             nodes.push_back(VesselNode<DIM>::Create(point_coords[0], point_coords[1], point_coords[2]));
         }
+    }
+
+    for(unsigned idx=0; idx<nodes.size(); idx++)
+    {
+        nodes[idx]->SetReferenceLengthScale(mReferenceLength);
     }
 
     // Extract radii corresponding to each node from the VTK Polydata and store them in a list.
@@ -138,7 +145,7 @@ boost::shared_ptr<VesselNetwork<DIM> > VtkVesselNetworkReader<DIM>::Read()
             boost::shared_ptr<VesselSegment<DIM> > p_segment = VesselSegment<DIM>::Create(nodes[pSegmentList[j - 1]],nodes[pSegmentList[j]]);
             if(unsigned(radii.size())> pSegmentList[j])
             {
-                p_segment->SetRadius(radii[pSegmentList[j]]);
+                p_segment->SetRadius(radii[pSegmentList[j]] * mReferenceLength);
             }
             segments.push_back(p_segment);
         }
@@ -149,11 +156,11 @@ boost::shared_ptr<VesselNetwork<DIM> > VtkVesselNetworkReader<DIM>::Read()
 }
 
 template<unsigned DIM>
-void VtkVesselNetworkReader<DIM>::SetFileName(const std::string& rFileName)
+void VesselNetworkReader<DIM>::SetFileName(const std::string& rFileName)
 {
     mFileName = rFileName;
 }
 
 //Explicit instantiation
-template class VtkVesselNetworkReader<2> ;
-template class VtkVesselNetworkReader<3> ;
+template class VesselNetworkReader<2> ;
+template class VesselNetworkReader<3> ;

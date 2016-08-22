@@ -43,7 +43,8 @@ VesselNode<DIM>::VesselNode(double v1, double v2, double v3) : AbstractVesselNet
         mSegments(std::vector<boost::weak_ptr<VesselSegment<DIM> > >()),
         mIsMigrating(false),
         mpFlowProperties(boost::shared_ptr<NodeFlowProperties<DIM> >(new NodeFlowProperties<DIM>())),
-        mPtrComparisonId(0)
+        mPtrComparisonId(0),
+        mReferenceLength(1.e-6 * unit::metres)
 {
     this->mpFlowProperties = boost::shared_ptr<NodeFlowProperties<DIM> >(new NodeFlowProperties<DIM>());
 }
@@ -54,7 +55,8 @@ VesselNode<DIM>::VesselNode(c_vector<double, DIM> location) : AbstractVesselNetw
         mSegments(std::vector<boost::weak_ptr<VesselSegment<DIM> > >()),
         mIsMigrating(false),
         mpFlowProperties(boost::shared_ptr<NodeFlowProperties<DIM> >(new NodeFlowProperties<DIM>())),
-        mPtrComparisonId(0)
+        mPtrComparisonId(0),
+        mReferenceLength(1.e-6 * unit::metres)
 {
     this->mpFlowProperties = boost::shared_ptr<NodeFlowProperties<DIM> >(new NodeFlowProperties<DIM>());
 }
@@ -66,7 +68,8 @@ VesselNode<DIM>::VesselNode(const VesselNode<DIM>& rExistingNode) :
         mSegments(std::vector<boost::weak_ptr<VesselSegment<DIM> > >()),
         mIsMigrating(false),
         mpFlowProperties(boost::shared_ptr<NodeFlowProperties<DIM> >(new NodeFlowProperties<DIM>())),
-        mPtrComparisonId(0)
+        mPtrComparisonId(0),
+        mReferenceLength(1.e-6 * unit::metres)
 {
     SetFlowProperties(*(rExistingNode.GetFlowProperties()));
     mIsMigrating = rExistingNode.IsMigrating();
@@ -111,18 +114,6 @@ boost::shared_ptr<VesselNode<DIM> > VesselNode<DIM>::Create(boost::shared_ptr<Ve
 }
 
 template<unsigned DIM>
-void VesselNode<DIM>::SetComparisonId(unsigned id)
-{
-    mPtrComparisonId = id;
-}
-
-template<unsigned DIM>
-unsigned VesselNode<DIM>::GetComparisonId()
-{
-    return mPtrComparisonId;
-}
-
-template<unsigned DIM>
 void VesselNode<DIM>::AddSegment(boost::shared_ptr<VesselSegment<DIM> > pVesselSegment)
 {
     // Vessel segments can only be attached to a node once. Note use of lock to get shared_ptr from
@@ -138,15 +129,15 @@ void VesselNode<DIM>::AddSegment(boost::shared_ptr<VesselSegment<DIM> > pVesselS
 }
 
 template<unsigned DIM>
-double VesselNode<DIM>::GetDistance(const c_vector<double, DIM>& rLocation) const
+unsigned VesselNode<DIM>::GetComparisonId()
 {
-    return norm_2(rLocation - mLocation.rGetLocation());
+    return mPtrComparisonId;
 }
 
 template<unsigned DIM>
-units::quantity<unit::length> VesselNode<DIM>::GetDimensionalDistance(const c_vector<double, DIM>& rLocation) const
+units::quantity<unit::length> VesselNode<DIM>::GetDistance(const c_vector<double, DIM>& rLocation) const
 {
-    return GetDistance(rLocation) * this->mReferenceLength;
+    return norm_2(rLocation - mLocation.rGetLocation()) * this->mReferenceLength;
 }
 
 template<unsigned DIM>
@@ -162,13 +153,6 @@ const c_vector<double, DIM>& VesselNode<DIM>::rGetLocation() const
 }
 
 template<unsigned DIM>
-const c_vector<double, DIM>& VesselNode<DIM>::rGetLocationSI() const
-{
-    double length_multiplier = this->mReferenceLength/unit::metres;
-    return mLocation.rGetLocation()*length_multiplier;
-}
-
-template<unsigned DIM>
 unsigned VesselNode<DIM>::GetNumberOfSegments() const
 {
     return mSegments.size();
@@ -180,10 +164,15 @@ std::map<std::string, double> VesselNode<DIM>::GetOutputData()
     std::map<std::string, double> flow_data = this->mpFlowProperties->GetOutputData();
     this->mOutputData.insert(flow_data.begin(), flow_data.end());
     this->mOutputData["Node Id"] = double(this->GetId());
-    this->mOutputData["Dimensionless Node Radius"] = this->GetRadius();
-    this->mOutputData["Node Radius m"] = this->GetRadiusSI();
+    this->mOutputData["Node Radius m"] = this->GetRadius() / unit::metres;
     this->mOutputData["Node Is Migrating"] = double(this->IsMigrating());
     return this->mOutputData;
+}
+
+template<unsigned DIM>
+units::quantity<unit::length> VesselNode<DIM>::GetReferenceLengthScale() const
+{
+    return mReferenceLength;
 }
 
 template<unsigned DIM>
@@ -255,6 +244,12 @@ void VesselNode<DIM>::RemoveSegment(boost::shared_ptr<VesselSegment<DIM> > pVess
 }
 
 template<unsigned DIM>
+void VesselNode<DIM>::SetComparisonId(unsigned id)
+{
+    mPtrComparisonId = id;
+}
+
+template<unsigned DIM>
 void VesselNode<DIM>::SetFlowProperties(const NodeFlowProperties<DIM>& rFlowProperties)
 {
     this->mpFlowProperties = boost::shared_ptr<NodeFlowProperties<DIM> >(new NodeFlowProperties<DIM>(rFlowProperties));
@@ -276,6 +271,13 @@ template<unsigned DIM>
 void VesselNode<DIM>::SetIsMigrating(bool isMigrating)
 {
     mIsMigrating = isMigrating;
+}
+
+template<unsigned DIM>
+void VesselNode<DIM>::SetReferenceLengthScale(units::quantity<unit::length> lenthScale)
+{
+    mLocation = ChastePoint<DIM>(mLocation.rGetLocation() * (mReferenceLength/lenthScale));
+    mReferenceLength = lenthScale;
 }
 
 // Explicit instantiation

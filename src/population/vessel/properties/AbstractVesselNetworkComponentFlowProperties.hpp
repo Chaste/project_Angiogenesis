@@ -73,25 +73,11 @@ public:
     virtual ~AbstractVesselNetworkComponentFlowProperties();
 
     /**
-     * Return the dimensionless pressure in the component
+     * Return the pressure in the component
      *
      * @return the pressure in the component
      */
-    virtual double GetPressure() const;
-
-    /**
-     * Return the dimensional pressure in the component
-     *
-     * @return the pressure in the component
-     */
-    units::quantity<unit::pressure> GetDimensionalPressure() const;
-
-    /**
-     * Return the pressure in the component in SI units
-     *
-     * @return the pressure in the component
-     */
-    virtual double GetPressureSI() const;
+    units::quantity<unit::pressure> GetPressure() const;
 
     /**
      * Return a map of output data for writing to file
@@ -101,25 +87,11 @@ public:
     virtual std::map<std::string, double> GetOutputData() const;
 
     /**
-     * Set the dimensionless pressure in the component
-     *
-     * @param pressure the dimensionless component pressure
-     */
-    virtual void SetPressure(double pressure);
-
-    /**
-     * Set the dimensionless pressure in the component
-     *
-     * @param pressure the dimensionless component pressure
-     */
-    virtual void SetDimensionalPressure(units::quantity<unit::pressure> pressure);
-
-    /**
-     * Set the pressure in the component in SI units
+     * Set the pressure in the component
      *
      * @param pressure the component pressure
      */
-    virtual void SetPressureSI(double pressure);
+    virtual void SetPressure(units::quantity<unit::pressure> pressure);
 
 };
 

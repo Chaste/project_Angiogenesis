@@ -115,15 +115,16 @@ std::vector<double> DiscreteSource<DIM>::GetVesselRegularGridValues()
         {
             if(mSourceStrength == SourceStrength::PRESCRIBED)
             {
-                double point_volume = mpRegularGrid->GetSpacing() * mpRegularGrid->GetSpacing();
+                double spacing = mpRegularGrid->GetSpacing()/mpRegularGrid->GetReferenceLengthScale();
+                double point_volume = spacing * spacing;
                 if(DIM == 3)
                 {
-                    point_volume *= mpRegularGrid->GetSpacing();
+                    point_volume *= spacing;
                 }
 
                 double length_in_box = LengthOfLineInBox<DIM>(point_segment_map[idx][jdx]->GetNode(0)->rGetLocation(),
                                                                              point_segment_map[idx][jdx]->GetNode(1)->rGetLocation(),
-                                                                             mpRegularGrid->GetLocationOf1dIndex(idx), mpRegularGrid->GetSpacing());
+                                                                             mpRegularGrid->GetLocationOf1dIndex(idx), spacing);
                 values[idx] += mValue * length_in_box/ point_volume;
             }
         }

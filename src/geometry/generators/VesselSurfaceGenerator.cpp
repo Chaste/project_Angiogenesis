@@ -94,8 +94,8 @@ std::vector<std::vector<boost::shared_ptr<Polygon> > > VesselSurfaceGenerator<DI
         c_vector<double, DIM> segment_tangent = segments[idx]->GetUnitTangent();
 
         // Create the precursor points
-        std::vector<c_vector<double, DIM> > start_points = MakeCircle(p_start_node->GetRadius());
-        std::vector<c_vector<double, DIM> > end_points = MakeCircle(p_end_node->GetRadius());
+        std::vector<c_vector<double, DIM> > start_points = MakeCircle(p_start_node->GetRadius()/p_start_node->GetReferenceLengthScale());
+        std::vector<c_vector<double, DIM> > end_points = MakeCircle(p_end_node->GetRadius()/p_start_node->GetReferenceLengthScale());
 
         double angle = std::acos(inner_prod(z_axis, segment_tangent));
         if (std::abs(inner_prod(z_axis, segment_tangent)) < 1.0 - 1.e-6)
@@ -190,13 +190,13 @@ std::vector<std::vector<boost::shared_ptr<Polygon> > > VesselSurfaceGenerator<DI
         {
             if (jdx == 0)
             {
-                ProjectOnPlane(projected_start_points, -segment_tangent, 2.0 * (segments[idx]->GetLength()),
+                ProjectOnPlane(projected_start_points, -segment_tangent, 2.0 * (segments[idx]->GetLength()/segments[idx]->GetNode(0)->GetReferenceLengthScale()),
                                start_planes[jdx]);
             }
             else
             {
                 std::vector<c_vector<double, DIM> > candidate_points = start_points;
-                ProjectOnPlane(candidate_points, -segment_tangent, 2.0 * (segments[idx]->GetLength()), start_planes[jdx]);
+                ProjectOnPlane(candidate_points, -segment_tangent, 2.0 * (segments[idx]->GetLength()/segments[idx]->GetNode(0)->GetReferenceLengthScale()), start_planes[jdx]);
                 for (unsigned mdx = 0; mdx < projected_start_points.size(); mdx++)
                 {
                     if (norm_2(candidate_points[mdx] - start_points[mdx])
@@ -212,12 +212,12 @@ std::vector<std::vector<boost::shared_ptr<Polygon> > > VesselSurfaceGenerator<DI
         {
             if (jdx == 0)
             {
-                ProjectOnPlane(projected_end_points, -segment_tangent, 2.0 * (segments[idx]->GetLength()),end_planes[jdx]);
+                ProjectOnPlane(projected_end_points, -segment_tangent, 2.0 * (segments[idx]->GetLength()/segments[idx]->GetNode(0)->GetReferenceLengthScale()),end_planes[jdx]);
             }
             else
             {
                 std::vector<c_vector<double, DIM> > candidate_points = end_points;
-                ProjectOnPlane(candidate_points, -segment_tangent, 2.0 * (segments[idx]->GetLength()), end_planes[jdx]);
+                ProjectOnPlane(candidate_points, -segment_tangent, 2.0 * (segments[idx]->GetLength()/segments[idx]->GetNode(0)->GetReferenceLengthScale()), end_planes[jdx]);
                 for (unsigned mdx = 0; mdx < projected_end_points.size(); mdx++)
                 {
                     if (norm_2(candidate_points[mdx] - end_points[mdx])

@@ -56,9 +56,9 @@ void VesselImpedanceCalculator<DIM>::Calculate()
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
     for (unsigned idx = 0; idx < segments.size(); idx++)
     {
-        units::quantity<unit::dynamic_viscosity> viscosity = segments[idx]->GetFlowProperties()->GetDimensionalViscosity();
-        units::quantity<unit::flow_impedance> impedance = 8.0 * viscosity * segments[idx]->GetDimensionalLength() / (M_PI * units::pow<4>(segments[idx]->GetDimensionalRadius()));
-        segments[idx]->GetFlowProperties()->SetDimensionalImpedance(impedance);
+        units::quantity<unit::dynamic_viscosity> viscosity = segments[idx]->GetFlowProperties()->GetViscosity();
+        units::quantity<unit::flow_impedance> impedance = 8.0 * viscosity * segments[idx]->GetLength() / (M_PI * units::pow<4>(segments[idx]->GetRadius()));
+        segments[idx]->GetFlowProperties()->SetImpedance(impedance);
     }
 }
 

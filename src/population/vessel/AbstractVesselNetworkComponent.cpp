@@ -40,11 +40,9 @@ template<unsigned DIM>
 AbstractVesselNetworkComponent<DIM>::AbstractVesselNetworkComponent() :
         mOutputData(),
         mId(0),
-        mRadius(10.0*unit::microns),
-        mReferenceLength(1.0*unit::microns),
-        mReferenceTime(60.0*unit::seconds),
-        mReferenceMass((36.0/1e4)*unit::kg) // This leads to a 'reference pressure' of 1 Pa for the above L and T choices.
+        mRadius(10.0*unit::microns)
 {
+
 }
 
 template<unsigned DIM>
@@ -79,8 +77,7 @@ template<unsigned DIM>
 std::map<std::string, double> AbstractVesselNetworkComponent<DIM>::GetOutputData()
 {
     mOutputData["VN Component Id"] = double(GetId());
-    mOutputData["Dimensionless VN Component Radius"] = GetRadius();
-    mOutputData["VN Component Radius: m"] = GetRadiusSI();
+    mOutputData["VN Component Radius: m"] = GetRadius() / unit::metres;
     return mOutputData;
 }
 
@@ -99,57 +96,9 @@ std::vector<std::string> AbstractVesselNetworkComponent<DIM>::GetOutputDataKeys(
 }
 
 template<unsigned DIM>
-double AbstractVesselNetworkComponent<DIM>::GetRadius() const
-{
-    return mRadius / mReferenceLength;
-}
-
-template<unsigned DIM>
-double AbstractVesselNetworkComponent<DIM>::GetRadiusSI() const
-{
-    return mRadius/unit::metres;
-}
-
-template<unsigned DIM>
-units::quantity<unit::length> AbstractVesselNetworkComponent<DIM>::GetDimensionalRadius() const
+units::quantity<unit::length> AbstractVesselNetworkComponent<DIM>::GetRadius() const
 {
     return mRadius;
-}
-
-template<unsigned DIM>
-units::quantity<unit::length> AbstractVesselNetworkComponent<DIM>::GetReferenceLength() const
-{
-    return mReferenceLength;
-}
-
-template<unsigned DIM>
-double AbstractVesselNetworkComponent<DIM>::GetReferenceLengthSI() const
-{
-    return mReferenceLength/unit::metres;
-}
-
-template<unsigned DIM>
-units::quantity<unit::time> AbstractVesselNetworkComponent<DIM>::GetReferenceTime() const
-{
-    return mReferenceTime;
-}
-
-template<unsigned DIM>
-double AbstractVesselNetworkComponent<DIM>::GetReferenceTimeSI() const
-{
-    return mReferenceTime/unit::seconds;
-}
-
-template<unsigned DIM>
-units::quantity<unit::mass> AbstractVesselNetworkComponent<DIM>::GetReferenceMass() const
-{
-    return mReferenceMass;
-}
-
-template<unsigned DIM>
-double AbstractVesselNetworkComponent<DIM>::GetReferenceMassSI() const
-{
-    return mReferenceMass/unit::kg;
 }
 
 template<unsigned DIM>
@@ -165,57 +114,9 @@ void AbstractVesselNetworkComponent<DIM>::SetId(unsigned id)
 }
 
 template<unsigned DIM>
-void AbstractVesselNetworkComponent<DIM>::SetDimensionalRadius(units::quantity<unit::length> radius)
+void AbstractVesselNetworkComponent<DIM>::SetRadius(units::quantity<unit::length> radius)
 {
     mRadius = radius;
-}
-
-template<unsigned DIM>
-void AbstractVesselNetworkComponent<DIM>::SetRadius(double radius)
-{
-    mRadius = radius * mReferenceLength;
-}
-
-template<unsigned DIM>
-void AbstractVesselNetworkComponent<DIM>::SetRadiusSI(double radius)
-{
-    mRadius = radius * unit::metres;
-}
-
-template<unsigned DIM>
-void AbstractVesselNetworkComponent<DIM>::SetReferenceLength(units::quantity<unit::length> referenceLength)
-{
-    mReferenceLength = referenceLength;
-}
-
-template<unsigned DIM>
-void AbstractVesselNetworkComponent<DIM>::SetReferenceLengthSI(double referenceLength)
-{
-    mReferenceLength = referenceLength * unit::metres;
-}
-
-template<unsigned DIM>
-void AbstractVesselNetworkComponent<DIM>::SetReferenceTime(units::quantity<unit::time> referenceTime)
-{
-    mReferenceTime = referenceTime;
-}
-
-template<unsigned DIM>
-void AbstractVesselNetworkComponent<DIM>::SetReferenceTimeSI(double referenceTime)
-{
-    mReferenceTime = referenceTime * unit::seconds;
-}
-
-template<unsigned DIM>
-void AbstractVesselNetworkComponent<DIM>::SetReferenceMass(units::quantity<unit::mass> referenceMass)
-{
-    mReferenceMass= referenceMass;
-}
-
-template<unsigned DIM>
-void AbstractVesselNetworkComponent<DIM>::SetReferenceMassSI(double referenceMass)
-{
-    mReferenceMass = referenceMass * unit::kg;
 }
 
 // Explicit instantiation

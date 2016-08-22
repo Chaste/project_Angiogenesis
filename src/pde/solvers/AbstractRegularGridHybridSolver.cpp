@@ -161,7 +161,8 @@ void AbstractRegularGridHybridSolver<DIM>::Setup()
         this->mpVtkSolution->SetDimensions(this->mpRegularGrid->GetExtents()[0], this->mpRegularGrid->GetExtents()[1], 1);
     }
 
-    this->mpVtkSolution->SetSpacing(this->mpRegularGrid->GetSpacing(), this->mpRegularGrid->GetSpacing(), this->mpRegularGrid->GetSpacing());
+    double spacing = this->mpRegularGrid->GetSpacing()/this->mpRegularGrid->GetReferenceLengthScale();
+    this->mpVtkSolution->SetSpacing(spacing, spacing, spacing);
 
     if(DIM==3)
     {

@@ -48,6 +48,7 @@
 #include "AbstractCellPopulation.hpp"
 #include "CaBasedCellPopulation.hpp"
 #include "Part.hpp"
+#include "UnitCollection.hpp"
 
 /**
  * A class for describing regular grids, calculating point and line to grid point relationships and
@@ -59,7 +60,7 @@ class RegularGrid
     /**
      *  The spacing between grid points
      */
-    double mSpacing;
+    units::quantity<unit::length> mSpacing;
 
     /**
      *  The number of grid points in each direction
@@ -121,6 +122,11 @@ class RegularGrid
      */
     bool mHasCellPopulation;
 
+    /**
+     * The reference length scale, default in microns.
+     */
+    units::quantity<unit::length> mReferenceLength;
+
 public:
 
     /**
@@ -149,7 +155,7 @@ public:
      * @param pPart the part from which to get the bounding box
      * @param gridSize the grid spacing
      */
-    void GenerateFromPart(boost::shared_ptr<Part<SPACE_DIM> > pPart, double gridSize);
+    void GenerateFromPart(boost::shared_ptr<Part<SPACE_DIM> > pPart, units::quantity<unit::length> gridSize);
 
     /**
      * Get the 1-D grid index for given x,y,z indices
@@ -165,7 +171,7 @@ public:
      * @param location the point to get the nearest index to
      * @return the 1-d index of the nearest grid point
      */
-    unsigned GetNearestGridIndex(c_vector<double, SPACE_DIM> location);
+    unsigned GetNearestGridIndex(const c_vector<double, SPACE_DIM>& rLocation);
 
     /**
      * Calculate neighbour indices for each grid point
@@ -244,10 +250,13 @@ public:
 
     /**
      * Return the grid spacing
+     *
      * @return the grid spacing
      */
-    double GetSpacing();
+    units::quantity<unit::length> GetSpacing();
 
+
+    units::quantity<unit::length> GetReferenceLengthScale();
 
     vtkSmartPointer<vtkImageData> GetVtkGrid();
 
@@ -315,7 +324,7 @@ public:
      * Set the grid spacing
      * @param spacing the grid spacing
      */
-    void SetSpacing(double spacing);
+    void SetSpacing(units::quantity<unit::length> spacing);
 
     /**
      * Set the internal vtk representation of the grid

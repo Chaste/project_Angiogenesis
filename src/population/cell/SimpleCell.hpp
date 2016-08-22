@@ -40,52 +40,108 @@
 #include "UblasIncludes.hpp"
 #include "SmartPointers.hpp"
 #include "AbstractCellProperty.hpp"
+#include "UnitCollection.hpp"
 
-/* A minimal cell class. Can be used to create Chaste cells of different types.
+/**
+ * A minimal cell class used to set up Chaste cell populations. It is particularly useful in combination with
+ * the Python interface.
  */
-
 template<unsigned DIM>
 class SimpleCell : public ChastePoint<DIM>
 {
+    /**
+     * An index for the cell
+     */
     unsigned mIndex;
 
+    /**
+     * The name of the cell cycle model
+     */
     std::string mCellCycleModel;
 
+    /**
+     * The name of the cell mutation state
+     */
     std::string mCellMutationState;
 
+    /**
+     * The name of the cell proliferative type
+     */
     std::string mCellProliferativeType;
+
+    /**
+     * The reference length scale for the cell, default in microns. This is needed as units can't be combined
+     * with c_vectors, which hold the cell's location.
+     */
+    units::quantity<unit::length> mReferenceLength;
 
 public:
 
-    /* Constructor
+    /**
+     * Constructor
+     *
+     * @param v1 x position
+     * @param v2 y position
+     * @param v3 z position
      */
     SimpleCell(double v1 = 0, double v2 = 0, double v3 = 0);
 
-    /* Constructor
+    /**
+     * Constructor
+     *
+     * @param location the location of the cell
      */
     SimpleCell(c_vector<double, DIM> location);
 
-    /* Factory constructor method
+    /**
+     * Factory constructor method
+     *
+     * @param v1 x position
+     * @param v2 y position
+     * @param v3 z position
      * @return a shared pointer to a new cell
      */
     static boost::shared_ptr<SimpleCell<DIM> > Create(double v1 = 0, double v2 = 0, double v3 = 0);
 
-    /* Factory constructor method
+    /**
+     * Factory constructor method
+     *
+     * @param location the location of the cell
+     *
      * @return a shared pointer to a new cell
      */
     static boost::shared_ptr<SimpleCell<DIM> > Create(c_vector<double, DIM> location);
 
-    /* Desctructor
+    /**
+     * Desctructor
      */
     ~SimpleCell();
 
-    /* Return the index
+    /**
+     * Return the cell index
+     *
+     * @return cell index
      */
     unsigned GetIndex();
 
-    /* Set the index
+    /**
+     * Return the reference length scale for the cell, default is micron
+     *
+     */
+    units::quantity<unit::length> GetReferenceLengthScale() const;
+
+    /**
+     * Set the cell index
+     *
+     * @param index the cell index
      */
     void SetIndex(unsigned index);
+
+    /**
+     * Set the length scale used to dimensionalize the location as stored in mLocation.
+     * @param lenthScale the reference length scale for node locations
+     */
+    void SetReferenceLengthScale(units::quantity<unit::length> lenthScale);
 };
 
 #endif /* SIMPLECELL_HPP_*/

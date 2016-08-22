@@ -43,6 +43,7 @@
 #include "SmartPointers.hpp"
 #include "RegularGrid.hpp"
 #include "AbstractHybridSolver.hpp"
+#include "UnitCollection.hpp"
 
 /**
  * Abstract class for implementing sprouting rules in angiogenesis solver.
@@ -72,7 +73,7 @@ protected:
     /**
      * How far from vessel ends can sprouts form
      */
-    double mVesselEndCutoff;
+    units::quantity<unit::length> mVesselEndCutoff;
 
 public:
 
@@ -108,7 +109,7 @@ public:
      * Set the minimum distance to a vessel end at which sprouting can occur
      * @param probability probability of sprouting per unit time
      */
-    void SetVesselEndCutoff(double cutoff);
+    void SetVesselEndCutoff(units::quantity<unit::length> cutoff);
 
     /**
      * Return the nodes which may form sprouts

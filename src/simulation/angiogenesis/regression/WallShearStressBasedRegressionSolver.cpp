@@ -82,12 +82,12 @@ void WallShearStressBasedRegressionSolver<DIM>::Increment()
     for(unsigned idx=0;idx<vessels.size(); idx++)
     {
         // if wall shear stress of vessel is below threshold then start regression timer, unless it has already been started
-        if (vessels[idx]->GetFlowProperties()->GetDimensionalWallShearStress(vessels[idx]->GetSegments()) < mThresholdWss)
+        if (vessels[idx]->GetFlowProperties()->GetWallShearStress(vessels[idx]->GetSegments()) < mThresholdWss)
         {
-            if (!(vessels[idx]->GetFlowProperties()->HasRegressionTimerStarted()) && !(vessels[idx]->GetFlowProperties()->HasVesselRegressed()))
+            if (!(vessels[idx]->GetFlowProperties()->HasRegressionTimerStarted()) && !(vessels[idx]->GetFlowProperties()->HasVesselRegressed(this->mReferenceTime)))
             {
                 // increment time that the vessel has had low wall shear stress
-                vessels[idx]->GetFlowProperties()->SetDimensionalTimeUntilRegression(mMaxTimeWithLowWss);
+                vessels[idx]->GetFlowProperties()->SetTimeUntilRegression(mMaxTimeWithLowWss, this->mReferenceTime);
             }
         }
         else // otherwise rescue vessel
@@ -100,7 +100,7 @@ void WallShearStressBasedRegressionSolver<DIM>::Increment()
     // iterate through all vessels and if regression flag is true then remove from the network
     for(unsigned idx=0;idx<vessels.size(); idx++)
     {
-        if (vessels[idx]->GetFlowProperties()->HasVesselRegressed())
+        if (vessels[idx]->GetFlowProperties()->HasVesselRegressed(this->mReferenceTime))
         {
             this->mpNetwork->RemoveVessel(vessels[idx], true);
         }

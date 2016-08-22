@@ -99,25 +99,26 @@ public:
         vessels.push_back(Vessel<2>::Create(nodes[1], nodes[3]));
         boost::shared_ptr<VesselNetwork<2> > p_network = VesselNetwork<2>::Create();
         p_network->AddVessels(vessels);
+
         /*
          * We specify which nodes will be the inlets and outlets of the network for the flow problem. This information, as well
          * as all other info related to the flow problem, is contained in a `NodeFlowProperties` instance. Then we set the inlet and
          * outlet pressures in Pa.
          */
         nodes[0]->GetFlowProperties()->SetIsInputNode(true);
-        nodes[0]->GetFlowProperties()->SetPressure(5000.0);
+        nodes[0]->GetFlowProperties()->SetPressure(5000.0 * unit::pascals);
         nodes[2]->GetFlowProperties()->SetIsOutputNode(true);
-        nodes[2]->GetFlowProperties()->SetPressure(3000.0);
+        nodes[2]->GetFlowProperties()->SetPressure(3000.0 * unit::pascals);
         nodes[3]->GetFlowProperties()->SetIsOutputNode(true);
-        nodes[3]->GetFlowProperties()->SetPressure(3000.0);
+        nodes[3]->GetFlowProperties()->SetPressure(3000.0 * unit::pascals);
         /*
          * Now we set the segment radii and viscosity values. Not that we use unit types from the Boost Unit library.
          */
-        p_network->SetSegmentRadii(10.0);
+        p_network->SetSegmentRadii(10.e-6 * unit::metres);
         std::vector<boost::shared_ptr<VesselSegment<2> > > segments = p_network->GetVesselSegments();
         for(unsigned idx=0; idx<segments.size(); idx++)
         {
-            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);
+            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3 * unit::poiseuille);
         }
         /*
          * We use a calculator to work out the impedance of each vessel based on assumptions of Poiseuille flow and cylindrical vessels. This
@@ -167,16 +168,16 @@ public:
         boost::shared_ptr<VesselNetwork<2> > p_network = VesselNetwork<2>::Create();
         p_network->AddVessels(vessels);
         nodes[0]->GetFlowProperties()->SetIsInputNode(true);
-        nodes[0]->GetFlowProperties()->SetPressure(5000.0);
+        nodes[0]->GetFlowProperties()->SetPressure(5000.0 * unit::pascals);
         nodes[2]->GetFlowProperties()->SetIsOutputNode(true);
-        nodes[2]->GetFlowProperties()->SetPressure(3000.0);
+        nodes[2]->GetFlowProperties()->SetPressure(3000.0 * unit::pascals);
         nodes[3]->GetFlowProperties()->SetIsOutputNode(true);
-        nodes[3]->GetFlowProperties()->SetPressure(3000.0);
-        p_network->SetSegmentRadii(10.0);
+        nodes[3]->GetFlowProperties()->SetPressure(3000.0 * unit::pascals);
+        p_network->SetSegmentRadii(10.e-6 * unit::metres);
         std::vector<boost::shared_ptr<VesselSegment<2> > > segments = p_network->GetVesselSegments();
         for(unsigned idx=0; idx<segments.size(); idx++)
         {
-            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);
+            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3 * unit::poiseuille);
         }
         VesselImpedanceCalculator<2> impedance_calculator = VesselImpedanceCalculator<2>();
         impedance_calculator.SetVesselNetwork(p_network);

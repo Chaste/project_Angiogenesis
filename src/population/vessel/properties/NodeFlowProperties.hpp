@@ -111,8 +111,16 @@ public:
      */
     void SetIsOutputNode(bool isOutput);
 
+    /**
+     * Set whether to use inlet velocity boundary conditions for flow calculations
+     * @param useVelocity whether to use inlet velocity boundary conditions for flow calculations
+     */
     void SetUseVelocityBoundaryCondition(bool useVelocity);
 
+    /**
+     * Whether to use inlet velocity boundary conditions for flow calculations
+     * @return whether inlet velocity conditions are used
+     */
     bool UseVelocityBoundaryCondition();
 };
 

@@ -36,10 +36,7 @@
 #include "AbstractVesselNetworkComponentProperties.hpp"
 
 template<unsigned DIM>
-AbstractVesselNetworkComponentProperties<DIM>::AbstractVesselNetworkComponentProperties() :
-        mReferenceLength(1.0*unit::microns),
-        mReferenceTime(60.0*unit::seconds),
-        mReferenceMass((36.0/1e4)*unit::kg) // This leads to a 'reference pressure' of 1 Pa for the above L and T choices, which is nice.
+AbstractVesselNetworkComponentProperties<DIM>::AbstractVesselNetworkComponentProperties()
 {
 }
 
@@ -48,87 +45,6 @@ AbstractVesselNetworkComponentProperties<DIM>::~AbstractVesselNetworkComponentPr
 {
 }
 
-template<unsigned DIM>
-std::map<std::string, double> AbstractVesselNetworkComponentProperties<DIM>::GetOutputData() const
-{
-    std::map<std::string, double> output_data;
-    output_data["Reference Length m"] = mReferenceLength/unit::metres;
-    output_data["Reference Mass s"] = mReferenceTime/unit::seconds;
-    output_data["Reference Time kg"] = mReferenceMass/unit::kg;
-    return output_data;
-}
-
-template<unsigned DIM>
-units::quantity<unit::length> AbstractVesselNetworkComponentProperties<DIM>::GetReferenceLength() const
-{
-    return mReferenceLength;
-}
-
-template<unsigned DIM>
-units::quantity<unit::time> AbstractVesselNetworkComponentProperties<DIM>::GetReferenceTime() const
-{
-    return mReferenceTime;
-}
-
-template<unsigned DIM>
-units::quantity<unit::mass> AbstractVesselNetworkComponentProperties<DIM>::GetReferenceMass() const
-{
-    return mReferenceMass;
-}
-
-template<unsigned DIM>
-double AbstractVesselNetworkComponentProperties<DIM>::GetReferenceLengthSI() const
-{
-    return mReferenceLength/unit::metres;
-}
-
-template<unsigned DIM>
-double AbstractVesselNetworkComponentProperties<DIM>::GetReferenceMassSI() const
-{
-    return mReferenceMass/unit::kg;
-}
-
-template<unsigned DIM>
-double AbstractVesselNetworkComponentProperties<DIM>::GetReferenceTimeSI() const
-{
-    return mReferenceTime/unit::seconds;
-}
-
-template<unsigned DIM>
-void AbstractVesselNetworkComponentProperties<DIM>::SetReferenceLength(units::quantity<unit::length> referenceLength)
-{
-    mReferenceLength = referenceLength;
-}
-
-template<unsigned DIM>
-void AbstractVesselNetworkComponentProperties<DIM>::SetReferenceTime(units::quantity<unit::time> referenceTime)
-{
-    mReferenceTime = referenceTime;
-}
-
-template<unsigned DIM>
-void AbstractVesselNetworkComponentProperties<DIM>::SetReferenceMass(units::quantity<unit::mass> referenceMass)
-{
-    mReferenceMass = referenceMass;
-}
-
-template<unsigned DIM>
-void AbstractVesselNetworkComponentProperties<DIM>::SetReferenceLengthSI(double referenceLength)
-{
-    mReferenceLength = referenceLength * unit::metres;
-}
-
-template<unsigned DIM>
-void AbstractVesselNetworkComponentProperties<DIM>::SetReferenceMassSI(double referenceMass)
-{
-    mReferenceMass = referenceMass * unit::kg;
-}
-
-template<unsigned DIM>
-void AbstractVesselNetworkComponentProperties<DIM>::SetReferenceTimeSI(double referenceTime)
-{
-    mReferenceTime= referenceTime * unit::seconds;
-}
 
 // Explicit instantiation
 template class AbstractVesselNetworkComponentProperties<2>;

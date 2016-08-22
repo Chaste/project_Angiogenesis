@@ -46,47 +46,117 @@
 #include "SimpleCell.hpp"
 #include "UnitCollection.hpp"
 
-/* A minimal cell population class.
+/**
+ * This class is used with the Python interface for generating and storing minimal cell population information.
+ * It avoids some of the complexity of interfacing with full Chaste cell populations.
  */
-
 template<unsigned DIM>
 class SimpleCellPopulation
 {
+    /**
+     * A collection of simple cells
+     */
     std::vector<boost::shared_ptr<SimpleCell<DIM> > > mCells;
+
+    /**
+     * The reference length scale for the population, default in microns. This is needed as units can't be combined
+     * with c_vectors, which hold the cell's location.
+     */
+    units::quantity<unit::length> mReferenceLength;
 
 public:
 
-    /* Constructor
+    /**
+     * Constructor
      */
-
     SimpleCellPopulation();
 
-    /* Factory constructor method
+    /**
+     * Factory constructor method
+     *
      * @return a shared pointer to a new population
      */
     static boost::shared_ptr<SimpleCellPopulation<DIM> > Create();
 
-    /* Desctructor
+    /**
+     * Desctructor
      */
     ~SimpleCellPopulation();
 
-    std::vector<boost::shared_ptr<SimpleCell<DIM> > > GetCells();
-
+    /**
+     * Add a single SimpleCell
+     *
+     * @param pCell a single SimpleCell
+     */
     void AddCell(boost::shared_ptr<SimpleCell<DIM> > pCell);
 
+    /**
+     * Add a vector of SimpleCells
+     *
+     * @param cells a vector of SimpleCells
+     */
     void AddCells(std::vector<boost::shared_ptr<SimpleCell<DIM> > > cells);
 
+    /**
+     * Remove cells where they overlap a vessel network
+     *
+     * @param pNetwork the vessel network
+     */
     void BooleanWithVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pNetwork);
 
+    /**
+     * Return the collection of cells
+     *
+     * @return a vector  of SimpleCells
+     */
+    std::vector<boost::shared_ptr<SimpleCell<DIM> > > GetCells();
+
+    /**
+     * Generate cells on a regular grid
+     *
+     * @param xDim number of lattice points in x
+     * @param xDim number of lattice points in y
+     * @param xDim number of lattice points in z
+     * @param spacing the grid spacing
+     * @param origin the origin in the same units as the spacing
+     */
     void GenerateCellsOnGrid(unsigned xDim = 10, unsigned yDim = 10, unsigned zDim = 10,
-                             double spacing =1.0, c_vector<double, DIM> origin = zero_vector<double>(DIM));
+                             units::quantity<unit::length> spacing = 1.0 * unit::microns,
+                             c_vector<double, DIM> origin = zero_vector<double>(DIM));
 
-    void GenerateCellsOnGrid(boost::shared_ptr<Part<DIM> > pPart, double spacing =1.0);
+    /**
+     * Generate cells on a regular grid inside a part
+     *
+     * @param pPart the part inside which to generate the cells
+     * @param spacing the grid spacing
+     */
+    void GenerateCellsOnGrid(boost::shared_ptr<Part<DIM> > pPart, units::quantity<unit::length> spacing = 1.0 * unit::microns);
 
+    /**
+     * Generate cells at specifc points
+     *
+     * @param points a vector of points at which to generate cells
+     */
     void GenerateCellsAtPoints(std::vector<c_vector<double, DIM> > points);
 
+    /**
+     * Return a vtk point representation of the cells
+     *
+     * @return a vtk point representation of the cells
+     */
     vtkSmartPointer<vtkPoints> GetVtk();
 
+    /**
+     * Set the length scale used to dimensionalize the location as stored in mLocation.
+     * @param lenthScale the reference length scale for node locations
+     */
+    void SetReferenceLengthScale(units::quantity<unit::length> lenthScale);
+
+    /**
+     * Write the population to file
+     *
+     * @param rFileName the full path to the file
+     */
     void Write(const std::string& rFileName);
 };
 

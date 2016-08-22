@@ -37,7 +37,7 @@
 #include <algorithm>
 #include <iostream>
 #include "AbstractStructuralAdaptationSolver.hpp"
-#include "SimulationTime.hpp"
+#include "DimensionalSimulationTime.hpp"
 
 template<unsigned DIM>
 AbstractStructuralAdaptationSolver<DIM>::AbstractStructuralAdaptationSolver()
@@ -118,7 +118,7 @@ void AbstractStructuralAdaptationSolver<DIM>::Solve()
 
     double max_radius_relative_change = 1.0;
     unsigned iteration = 0;
-    double time = 0.0;
+    units::quantity<unit::time> time = 0.0 * unit::seconds;
 
     if (mWriteOutput && !mOutputFileName.empty())
     {
@@ -128,15 +128,15 @@ void AbstractStructuralAdaptationSolver<DIM>::Solve()
     }
 
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = mpVesselNetwork->GetVesselSegments();
-    std::vector<double> previous_radii(segments.size());
+    std::vector<units::quantity<unit::length> > previous_radii(segments.size());
     for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
     {
         previous_radii[segment_index] = segments[segment_index]->GetRadius();
     }
 
-    while (max_radius_relative_change > mTolerance && time < (SimulationTime::Instance()->GetTimeStep()) && iteration < mMaxIterations)
+    while (max_radius_relative_change > mTolerance && time < (DimensionalSimulationTime::Instance()->GetTimeStep()*DimensionalSimulationTime::Instance()->GetReferenceTimeScale()) && iteration < mMaxIterations)
     {
-        time += mTimeIncrement/this->mpVesselNetwork->GetReferenceTime();
+        time += mTimeIncrement;
         iteration++;
 
         Iterate();
@@ -144,7 +144,7 @@ void AbstractStructuralAdaptationSolver<DIM>::Solve()
         std::vector<double> relative_change(segments.size());
         for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
         {
-            double current_radius = segments[segment_index]->GetRadius();
+            units::quantity<unit::length> current_radius = segments[segment_index]->GetRadius();
             relative_change[segment_index] = fabs(1.0 - current_radius / previous_radii[segment_index]);
             previous_radii[segment_index] = current_radius;
         }

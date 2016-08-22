@@ -97,103 +97,40 @@ public:
     ~SegmentFlowProperties();
 
     /**
-     * Return the dimensionless haematocrit
+     * Return the  haematocrit
      * @return the segment haematocrit
      */
-    double GetHaematocrit() const;
-
-    /**
-     * Return the 'dimensional' haematocrit
-     * @return the segment haematocrit
-     */
-    units::quantity<unit::dimensionless> GetDimensionalHaematocrit() const;
-
-    /**
-     * Return the haematocrit in SI units
-     * @return the segment haematocrit
-     */
-    double GetHaematocritSI() const;
-
-    /**
-     * Return the dimensionless impedance
-     * @return the segment impedance
-     */
-    double GetImpedance() const;
+    units::quantity<unit::dimensionless> GetHaematocrit() const;
 
     /**
      * Return the impedance
      * @return the segment impedance
      */
-    units::quantity<unit::flow_impedance> GetDimensionalImpedance() const;
-
-    /**
-     * Return the impedance in SI units
-     * @return the segment impedance
-     */
-    double GetImpedanceSI() const;
-
-    /**
-     * Return the dimensionless flow rate
-     * @return the segment flow rate
-     */
-    double GetFlowRate() const;
+    units::quantity<unit::flow_impedance> GetImpedance() const;
 
     /**
      * Return the flow rate
      * @return the segment flow rate
      */
-    units::quantity<unit::flow_rate> GetDimensionalFlowRate() const;
-
-    /**
-     * Return the flow rate in SI units
-     * @return the segment flow rate
-     */
-    double GetFlowRateSI() const;
-
-    /**
-     * Return the dimensionless segment viscosity
-     * @return the segment viscosity
-     */
-    double GetViscosity() const;
+    units::quantity<unit::flow_rate> GetFlowRate() const;
 
     /**
      * Return the segment viscosity
      * @return the segment viscosity
      */
-    units::quantity<unit::dynamic_viscosity> GetDimensionalViscosity() const;
-
-    /**
-     * Return the dimensionless segment viscosity in SI units
-     * @return the segment viscosity
-     */
-    double GetViscositySI() const;
-
-    /**
-     * Return the dimensionless segment wall shear stress
-     * @return the segment wall shear stress
-     */
-    double GetWallShearStress() const;
+    units::quantity<unit::dynamic_viscosity> GetViscosity() const;
 
     /**
      * Return the segment wall shear stress
      * @return the segment wall shear stress
      */
-    units::quantity<unit::pressure> GetDimensionalWallShearStress() const;
-
-    /**
-     * Return the segment wall shear stress in SI units
-     * @return the segment wall shear stress
-     */
-    double GetWallShearStressSI() const;
+    units::quantity<unit::pressure> GetWallShearStress() const;
 
     /**
      * Return the growth stimulus of this vessel segment
      * @return the segment growth stimulus
      */
-    double GetGrowthStimulus() const;
-    units::quantity<unit::rate> GetDimensionalGrowthStimulus() const;
-
-    double GetGrowthStimulusSI() const;
+    units::quantity<unit::rate> GetGrowthStimulus() const;
 
     /**
      * Return a map of segment data for use by the vtk writer
@@ -207,51 +144,42 @@ public:
      *
      * @param haematocrit the haematocrit in the segment
      */
-    void SetHaematocrit(double haematocrit);
-    void SetDimensionalHaematocrit(units::quantity<unit::dimensionless> haematocrit);
-    void SetHaematocritSI(double haematocrit);
+    void SetHaematocrit(units::quantity<unit::dimensionless> haematocrit);
 
     /**
      * Set the flow rate
      *
      * @param flowRate the flow rate in the segment
      */
-    void SetFlowRate(double flowRate);
-    void SetDimensionalFlowRate(units::quantity<unit::flow_rate> flowRate);
-    void SetFlowRateSI(double flowRate);
+    void SetFlowRate(units::quantity<unit::flow_rate> flowRate);
 
     /**
      * Set the impedance
      *
      * @param impedance the impedance in the segment
      */
-    void SetImpedance(double impedance);
-    void SetDimensionalImpedance(units::quantity<unit::flow_impedance> impedance);
-    void SetImpedanceSI(double impedance);
+    void SetImpedance(units::quantity<unit::flow_impedance> impedance);
+
     /**
      * Set the viscosity
      *
      * @param viscosity the viscosity in the segment
      */
-    void SetViscosity(double viscosity);
-    void SetDimensionalViscosity(units::quantity<unit::dynamic_viscosity> viscosity);
-    void SetViscositySI(double viscosity);
+    void SetViscosity(units::quantity<unit::dynamic_viscosity> viscosity);
+
     /**
      * Set the wall shear stress of this vessel segment
      *
      * @param wallShear the wall shear stress in the segment
      */
-    void SetWallShearStress(double wallShear);
-    void SetDimensionalWallShearStress(units::quantity<unit::pressure> wallShear);
-    void SetWallShearStressSI(double wallShear);
+    void SetWallShearStress(units::quantity<unit::pressure> wallShear);
+
     /**
      * Set the growth stimulus of this vessel segment
      *
      * @param mechStimulus the growth stimulus in the segment
      */
-    void SetGrowthStimulus(double stimulus);
-    void SetDimensionalGrowthStimulus(units::quantity<unit::rate> stimulus);
-    void SetGrowthStimulusSI(double stimulus);
+    void SetGrowthStimulus(units::quantity<unit::rate> stimulus);
 
 };
 

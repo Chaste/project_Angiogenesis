@@ -44,6 +44,7 @@
 #include "CellProliferativePhasesWriter.hpp"
 #include "ApoptoticCellKiller.hpp"
 #include "StalkCellMutationState.hpp"
+#include "UnitCollection.hpp"
 
 #include "OnLatticeSimulationWrapper.hpp"
 
@@ -56,7 +57,7 @@ OnLatticeSimulationWrapper::OnLatticeSimulationWrapper() :
     mOutputCellPopulations(),
     mUseRadiotherapyKiller(),
     mpNetwork(),
-    mVesselDistanceTolerance(0.75),
+    mVesselDistanceTolerance(0.75 * unit::microns),
     mRadiotherapyHitTimes(),
     mRadiotherapyDose(2.0),
     mOerAlphaMax(1.75),
@@ -126,7 +127,7 @@ void OnLatticeSimulationWrapper::UseOer(bool useOer)
     mUseOer = useOer;
 }
 
-void OnLatticeSimulationWrapper::SetVesselDistanceTolerance(double tolerance)
+void OnLatticeSimulationWrapper::SetVesselDistanceTolerance(units::quantity<unit::length> tolerance)
 {
     mVesselDistanceTolerance = tolerance;
 }
@@ -187,7 +188,7 @@ void OnLatticeSimulationWrapper::Solve(boost::shared_ptr<VascularTumourModifier<
         for (unsigned index=0; index < mpInputCellPopulation->rGetMesh().GetNumNodes(); index++)
         {
             c_vector<double, 3> grid_location = mpInputCellPopulation->rGetMesh().GetNode(index)->rGetLocation();
-            std::pair<boost::shared_ptr<VesselSegment<3> >, double> segment_distance_pair = mpNetwork->GetNearestSegment(grid_location);
+            std::pair<boost::shared_ptr<VesselSegment<3> >, units::quantity<unit::length> > segment_distance_pair = mpNetwork->GetNearestSegment(grid_location);
             if (segment_distance_pair.second < mVesselDistanceTolerance || mpNetwork->GetDistanceToNearestNode(grid_location) < mVesselDistanceTolerance)
             {
                 mpInputCellPopulation->GetCellUsingLocationIndex(index)->SetMutationState(p_ec_state);

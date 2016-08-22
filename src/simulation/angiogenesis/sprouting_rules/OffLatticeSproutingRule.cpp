@@ -42,7 +42,7 @@
 template<unsigned DIM>
 OffLatticeSproutingRule<DIM>::OffLatticeSproutingRule()
     : AbstractSproutingRule<DIM>(),
-      mTipExclusionRadius(0.0)
+      mTipExclusionRadius(0.0 * unit::metres)
 {
 
 }
@@ -75,7 +75,7 @@ std::vector<boost::shared_ptr<VesselNode<DIM> > > OffLatticeSproutingRule<DIM>::
     for(unsigned idx = 0; idx < rNodes.size(); idx++)
     {
         // Check we are not too close to the end of the vessel
-        if(this->mVesselEndCutoff > 0.0)
+        if(this->mVesselEndCutoff > 0.0 * unit::metres)
         {
             if(rNodes[idx]->GetSegment(0)->GetVessel()->GetClosestEndNodeDistance(rNodes[idx]->rGetLocation())< this->mVesselEndCutoff)
             {
@@ -88,7 +88,7 @@ std::vector<boost::shared_ptr<VesselNode<DIM> > > OffLatticeSproutingRule<DIM>::
         }
 
         // Check we are not too close to an existing candidate
-        if(mTipExclusionRadius>0.0)
+        if(mTipExclusionRadius>0.0 * unit::metres)
         {
             bool too_close = false;
             for(unsigned jdx=0; jdx<sprouts.size(); jdx++)

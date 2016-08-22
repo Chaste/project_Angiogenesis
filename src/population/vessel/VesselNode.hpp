@@ -57,19 +57,17 @@ class VesselSegment;
  * This is a class for vascular nodes, which are vessel network components.
  *
  * Nodes are point locations along a vessel. They are used for describing the end positions of
- * straight line vessel segments. Nodes are initialized in dimensionless units, however they can
- * be dimensionalized by setting a reference length scale.
+ * straight line vessel segments. Default length unit is micron.
  */
 template<unsigned DIM>
 class VesselNode : public boost::enable_shared_from_this<VesselNode<DIM> >, public AbstractVesselNetworkComponent<DIM>
 {
+private:
 
     /**
      * Allow segments to manage adding and removing themselves from nodes.
      */
     friend class VesselSegment<DIM> ;
-
-private:
 
     /**
      * Dimensionless location of a node in space.
@@ -86,15 +84,29 @@ private:
      */
     bool mIsMigrating;
 
-
+    /**
+     * A flow property collection for the node
+     */
     boost::shared_ptr<NodeFlowProperties<DIM> > mpFlowProperties;
 
-
+    /**
+     * This is used for comparing node pointers in some VesselNetwork methods.
+     * It should not be used otherwise.
+     */
     unsigned mPtrComparisonId;
 
     /**
-     * Constructor. Kept private as the Create factory method should be used.
-     *
+     * The reference length scale for the node, default in microns. This is needed as units can't be combined
+     * with c_vectors, which hold the node's location. If the length scale is changed the
+     * values in mLocation will be changed accordingly. i.e. if the reference length scale is changed
+     * from 1 micron to 40 micron, the value in mLocation will be divided by 40.
+     */
+    units::quantity<unit::length> mReferenceLength;
+
+public:
+
+    /**
+     * Constructor.
      * Create a node using xyz coordinates
      *
      * @param v1  the node's x-coordinate (defaults to 0)
@@ -104,8 +116,7 @@ private:
     VesselNode(double v1 = 0.0, double v2 = 0.0, double v3 = 0.0);
 
     /**
-     * Constructor. Kept private as the Create factory method should be used.
-     *
+     * Constructor.
      * Create a node using ublas c_vector
      *
      * @param location the node's location (defaults to 0.0)
@@ -113,32 +124,22 @@ private:
     VesselNode(c_vector<double, DIM> location);
 
     /**
-     * Copy constructor. Kept private as the Create factory method should be used.
-     *
+     * Copy constructor.
      * @param rExistingNode the node to copy from
      */
     VesselNode(const VesselNode<DIM>& rExistingNode);
-
-public:
 
     /**
      * Destructor
      */
     ~VesselNode();
 
-    void SetComparisonId(unsigned id);
-
-    unsigned GetComparisonId();
-
     /**
      * Construct a new instance of the class and return a shared pointer to it.
      *
-     * This method is included so that nodes can be created in a way that is consistent with
-     * other vasculature features
-     *
-     * @param v1  the node's x-coordinate (defaults to 0)
-     * @param v2  the node's y-coordinate (defaults to 0)
-     * @param v3  the node's z-coordinate (defaults to 0)
+     * @param v1  the node's x-coordinate (defaults to 0 micron)
+     * @param v2  the node's y-coordinate (defaults to 0 micron)
+     * @param v3  the node's z-coordinate (defaults to 0 micron)
      * @return a pointer to the newly created node
      */
     static boost::shared_ptr<VesselNode<DIM> > Create(double v1 = 0.0, double v2 = 0.0, double v3 = 0.0);
@@ -146,19 +147,13 @@ public:
     /**
      * Construct a new instance of the class and return a shared pointer to it.
      *
-     * This method is included so that nodes can be created in a way that is consistent with
-     * other vasculature features
-     *
-     * @param location the node's location (defaults to 0.0)
+     * @param location the node's location (defaults to 0.0  micron)
      * @return a pointer to the newly created node
      */
     static boost::shared_ptr<VesselNode<DIM> > Create(const c_vector<double, DIM>& location);
 
     /**
      * Construct a new instance of the class and return a shared pointer to it.
-     *
-     * This method is included so that nodes can be created in a way that is consistent with
-     * other vasculature features
      *
      * @param rExistingNode the node to copy from
      * @return a pointer to the newly created node
@@ -168,29 +163,25 @@ public:
     /**
      * Construct a new instance of the class and return a shared pointer to it.
      *
-     * This method is included so that nodes can be created in a way that is consistent with
-     * other vasculature features.
-     *
      * @param pExistingNode the node to copy from
      * @return a pointer to the newly created node
      */
     static boost::shared_ptr<VesselNode<DIM> > Create(boost::shared_ptr<VesselNode<DIM> > pExistingNode);
 
-    /**
-     * Return the non dimensional distance between the input location and the node
-     *
-     * @param rLocation the location to calculate the distance to
-     * @return the distance to the location
-     */
-    double GetDistance(const c_vector<double, DIM>& rLocation) const;
 
     /**
-     * Return the dimensional distance between the input location and the node
+     * Return the Id for comparing pointer contents
+     * @return the node id
+     */
+    unsigned GetComparisonId();
+
+    /**
+     * Return the distance between the input location and the node
      *
      * @param rLocation the location to calculate the distance to
      * @return the distance to the location
      */
-    units::quantity<unit::length> GetDimensionalDistance(const c_vector<double, DIM>& rLocation) const;
+    units::quantity<unit::length> GetDistance(const c_vector<double, DIM>& rLocation) const;
 
     /**
      * Return the flow properties of the component
@@ -200,18 +191,11 @@ public:
     boost::shared_ptr<NodeFlowProperties<DIM> > GetFlowProperties() const;
 
     /**
-     * Return a reference to the scaled location of the node.
+     * Return a reference to the location of the node, default is micron
      *
      * @return a ublas c_vector at the location of the node
      */
     const c_vector<double, DIM>& rGetLocation() const;
-
-    /**
-     * Return a reference to the location of the node in SI units.
-     *
-     * @return a ublas c_vector at the location of the node
-     */
-    const c_vector<double, DIM>& rGetLocationSI() const;
 
     /**
      * Return the number of attached segments
@@ -222,9 +206,17 @@ public:
 
     /**
      * Return a map of output data for writers
+     *
      * @return a map of component data for use by the vtk writer
      */
     std::map<std::string, double> GetOutputData();
+
+    /**
+     * Return the reference length scale for the node, default is micron
+     *
+     * @return a ublas c_vector at the location of the node
+     */
+    units::quantity<unit::length> GetReferenceLengthScale() const;
 
     /**
      * Return a pointer to the indexed vessel segment
@@ -256,7 +248,22 @@ public:
      */
     bool IsCoincident(const c_vector<double, DIM>& rLocation) const;
 
+    /**
+     * Has the node been designated as migrating. This is useful for keeping track of
+     * nodes in angiogenesis simulations.
+     *
+     * @return whether the node is marked as migrating.
+     */
     bool IsMigrating() const;
+
+    /**
+     * Set the id used for comparing the contents of pointers. This is only used
+     * by certain methods in the VesselNetwork class. Use SetId for generic node
+     * labelling.
+     *
+     * @param id for node comparison
+     */
+    void SetComparisonId(unsigned id);
 
     /**
      * Set the flow properties of the node
@@ -267,18 +274,22 @@ public:
 
     /**
      * Set that the node is migrating
+     *
      * @param isMigrating whether the node is migrating
      */
     void SetIsMigrating(bool isMigrating);
 
     /**
-     * Set the dimensionless location of the node.
+     * Set the location of the node. It is assumed that this location is consistent
+     * with the nodes reference length scale, default is micron.
+     *
      * @param rLocation a ublas c_vector specifying the location
      */
     void SetLocation(const c_vector<double, DIM>& rLocation);
 
     /**
-     * Set the dimensionless location of the node.
+     * Set the location of the node. It is assumed that this location is consistent
+     * with the nodes reference length scale, default is micron.
      *
      * @param x the x location
      * @param y the y location
@@ -286,6 +297,14 @@ public:
      */
     void SetLocation(double x, double y, double z=0.0);
 
+    /**
+     * Set the length scale used to dimensionalize the node location as stored in mLocation.
+     * If you want locations to be in metres, for example, set it to unit::metres. The node
+     * location values are changed accordingly when this value is changed.
+     *
+     * @param lenthScale the reference length scale for node locations
+     */
+    void SetReferenceLengthScale(units::quantity<unit::length> lenthScale);
 
 private:
 

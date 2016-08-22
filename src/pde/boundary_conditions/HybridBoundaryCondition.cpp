@@ -185,7 +185,7 @@ std::pair<bool, double> HybridBoundaryCondition<DIM>::GetValue(c_vector<double,D
             std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
             for (unsigned jdx = 0; jdx <  segments.size(); jdx++)
             {
-                if (segments[jdx]->GetDistance(location) <= tolerance)
+                if (segments[jdx]->GetDistance(location)/segments[jdx]->GetNode(0)->GetReferenceLengthScale()  <= tolerance)
                 {
                     if(BoundaryConditionSource::PRESCRIBED)
                     {
@@ -211,7 +211,7 @@ std::pair<bool, double> HybridBoundaryCondition<DIM>::GetValue(c_vector<double,D
             std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
             for (unsigned jdx = 0; jdx <  segments.size(); jdx++)
             {
-                if (segments[jdx]->GetDistance(location) <= segments[jdx]->GetRadius() + tolerance)
+                if (segments[jdx]->GetDistance(location)/segments[jdx]->GetNode(0)->GetReferenceLengthScale()  <= segments[jdx]->GetRadius()/segments[jdx]->GetNode(0)->GetReferenceLengthScale() + tolerance)
                 {
                     if(BoundaryConditionSource::PRESCRIBED)
                     {

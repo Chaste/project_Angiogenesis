@@ -61,7 +61,7 @@ protected:
     /**
      * Tip exclusion radius
      */
-    double mTipExclusionRadius;
+    units::quantity<unit::length> mTipExclusionRadius;
 
 public:
 

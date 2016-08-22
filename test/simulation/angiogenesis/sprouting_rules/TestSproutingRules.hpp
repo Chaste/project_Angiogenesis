@@ -91,7 +91,7 @@ public:
         // Set up the grid
         boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
         double spacing = 40.0; //um
-        p_grid->SetSpacing(spacing);
+        p_grid->SetSpacing(spacing * 1.e-6 * unit::metres);
         std::vector<unsigned> extents(3, 1);
         extents[0] = 101; // num x
         extents[1] = 11; // num_y

@@ -72,21 +72,6 @@ protected:
      */
     units::quantity<unit::length> mRadius;
 
-    /**
-     * Reference length scale for non-dimensionalizing units
-     */
-    units::quantity<unit::length> mReferenceLength;
-
-    /**
-     * Reference time scale for non-dimensionalizing units
-     */
-    units::quantity<unit::time> mReferenceTime;
-
-    /**
-     * Reference mass scale for non-dimensionalizing units
-     */
-    units::quantity<unit::mass> mReferenceMass;
-
 public:
 
     /**
@@ -129,63 +114,11 @@ public:
     virtual std::vector<std::string> GetOutputDataKeys();
 
     /**
-     * Return the dimensional radius of the component
+     * Return the radius of the component
      *
-     * @return the dimensional radius of the component
+     * @return the radius of the component
      */
-    virtual units::quantity<unit::length> GetDimensionalRadius() const;
-
-    /**
-     * Return the non-dimensional radius of the component
-     *
-     * @return the non-dimensional radius of the component
-     */
-    virtual double GetRadius() const;
-
-    /**
-     * Return the radius of the component in SI units
-     *
-     * @return the dimensional radius of the component
-     */
-    virtual double GetRadiusSI() const;
-    /**
-     * Return the reference length for the component
-     *
-     * @return the reference length for the component
-     */
-    virtual units::quantity<unit::length> GetReferenceLength() const;
-
-    /**
-     * Return the reference time for the component
-     *
-     * @return the reference time for the component
-     */
-    virtual units::quantity<unit::time> GetReferenceTime() const;
-
-    /**
-     * Return the reference mass for the component
-     *
-     * @return the reference mass for the component
-     */
-    virtual units::quantity<unit::mass> GetReferenceMass() const;
-
-    /**
-     * Return the reference length for the component in SI units
-     * @return the reference length in SI units
-     */
-    virtual double GetReferenceLengthSI() const;
-
-    /**
-     * Return the reference time for the component in SI units
-     * @return a pair containing the reference time value and unit as a string.
-     */
-    virtual double GetReferenceTimeSI() const;
-
-    /**
-     * Return the reference mass for the component in SI units
-     * @return a pair containing the reference mass value and unit as a string.
-     */
-    virtual double GetReferenceMassSI() const;
+    virtual units::quantity<unit::length> GetRadius() const;
 
     /**
      * Assign the Id
@@ -201,59 +134,10 @@ public:
     virtual void SetOutputData(const std::string& rKey, double value);
 
     /**
-     * Set the dimensionless component radius
-     * @param radius the component radius
-     */
-    virtual void SetRadius(double radius);
-
-    /**
      * Set the component radius
      * @param radius the component radius
      */
-    virtual void SetDimensionalRadius(units::quantity<unit::length> radius);
-
-    /**
-     * Set the component radius
-     * @param radius the component radius
-     */
-    virtual void SetRadiusSI(double radius);
-
-    /**
-     * Set the reference length for the component
-     *
-     * @param referenceLength the reference length
-     */
-    virtual void SetReferenceLength(units::quantity<unit::length> referenceLength);
-
-    /**
-     * Set the reference length for the component in SI units. This is used by the Python interface.
-     * @param referenceLength the reference length
-     */
-    virtual void SetReferenceLengthSI(double referenceLength);
-
-    /**
-     * Set the reference time for the component
-     * @param referenceTimethe reference time
-     */
-    virtual void SetReferenceTime(units::quantity<unit::time> referenceTime);
-
-    /**
-     * Set the reference time for the component in SI Units. This is used by the Python interface.
-     * @param referenceTime the reference time
-     */
-    virtual void SetReferenceTimeSI(double referenceTime);
-
-    /**
-     * Set the reference mass for the component
-     * @param referenceMass the reference mass
-     */
-    virtual void SetReferenceMass(units::quantity<unit::mass> referenceMass);
-
-    /**
-     * Set the reference mass for the component in SI Units. This is used by the Python interface.
-     * @param referenceMass the reference mass
-     */
-    virtual void SetReferenceMassSI(double referenceMass);
+    virtual void SetRadius(units::quantity<unit::length> radius);
 
 };
 

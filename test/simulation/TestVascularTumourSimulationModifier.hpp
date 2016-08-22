@@ -112,21 +112,21 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
         p_network->AddVessel(p_vessel_1);
         p_network->AddVessel(p_vessel_2);
         p_network->GetVessels()[0]->GetStartNode()->GetFlowProperties()->SetIsInputNode(true);
-        p_network->GetVessels()[0]->GetStartNode()->GetFlowProperties()->SetPressure(3000.0);
+        p_network->GetVessels()[0]->GetStartNode()->GetFlowProperties()->SetPressure(3000.0 * unit::pascals);
         p_network->GetVessels()[0]->GetEndNode()->GetFlowProperties()->SetIsOutputNode(true);
-        p_network->GetVessels()[0]->GetEndNode()->GetFlowProperties()->SetPressure(1000.0);
+        p_network->GetVessels()[0]->GetEndNode()->GetFlowProperties()->SetPressure(1000.0 * unit::pascals);
 
         p_network->GetVessels()[1]->GetStartNode()->GetFlowProperties()->SetIsInputNode(true);
-        p_network->GetVessels()[1]->GetStartNode()->GetFlowProperties()->SetPressure(3000.0);
+        p_network->GetVessels()[1]->GetStartNode()->GetFlowProperties()->SetPressure(3000.0 * unit::pascals);
         p_network->GetVessels()[1]->GetEndNode()->GetFlowProperties()->SetIsOutputNode(true);
-        p_network->GetVessels()[1]->GetEndNode()->GetFlowProperties()->SetPressure(1000.0);
+        p_network->GetVessels()[1]->GetEndNode()->GetFlowProperties()->SetPressure(1000.0 * unit::pascals);
 
         p_network->UpdateSegments();
-        p_network->SetSegmentRadii(10.0);
+        p_network->SetSegmentRadii(10.0 * 1.e-6 * unit::metres);
         std::vector<boost::shared_ptr<VesselSegment<3> > > segments = p_network->GetVesselSegments();
         for(unsigned idx=0; idx<segments.size(); idx++)
         {
-            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);
+            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3 * unit::poiseuille);
         }
         return p_network;
     }
@@ -165,7 +165,7 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
         p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
 
         boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
-        p_grid->GenerateFromPart(p_domain, 40.0);
+        p_grid->GenerateFromPart(p_domain, 40.0 * 1.e-6 * unit::metres);
 
         boost::shared_ptr<FiniteDifferenceSolver<3> > p_oxygen_solver = FiniteDifferenceSolver<3>::Create();
         p_oxygen_solver->SetGrid(p_grid);
@@ -190,7 +190,7 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
         p_vegf_pde->AddDiscreteSource(p_cell_vegf_source);
 
         boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
-        p_grid->GenerateFromPart(p_domain, 40.0);
+        p_grid->GenerateFromPart(p_domain, 40.0 * 1.e-6 * unit::metres);
 
         boost::shared_ptr<FiniteDifferenceSolver<3> > p_vegf_solver = FiniteDifferenceSolver<3>::Create();
         p_vegf_solver->SetGrid(p_grid);

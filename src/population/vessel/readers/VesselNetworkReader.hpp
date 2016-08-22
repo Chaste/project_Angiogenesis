@@ -33,53 +33,81 @@
 
  */
 
-#ifndef OFFLATTICESPROUTINGRULE_HPP_
-#define OFFLATTICESPROUTINGRULE_HPP_
+#ifndef VESSELNETWORKREADER_HPP_
+#define VESSELNETWORKREADER_HPP_
 
-#include <vector>
 #include <string>
-
-#include "AbstractSproutingRule.hpp"
-#include "VesselNode.hpp"
 #include "SmartPointers.hpp"
+#include "VesselNetwork.hpp"
+#include "UnitCollection.hpp"
 
 /**
- * A simple random lattice free sprouting rule, useful for code testing.
+ * Read vessel networks from file
  */
 template<unsigned DIM>
-class OffLatticeSproutingRule : public AbstractSproutingRule<DIM>
+class VesselNetworkReader
 {
+    /**
+     * The full path to the file
+     */
+    std::string mFileName;
 
     /**
-     * Tip exclusion radius
+     * The name of the array containing radius info
      */
-    units::quantity<unit::length> mTipExclusionRadius;
+    std::string mRadiusLabel;
+
+    /**
+     * The reference length scale for the vessel network, default in microns.
+     */
+    units::quantity<unit::length> mReferenceLength;
+
+    /**
+     * Radius conversion factor. Multiply radii by this factor, useful if the contents of the
+     * 'Radius' array in the vtk file is not in the form we want
+     */
+    double mRadiusConversionFactor;
 
 public:
 
     /**
-     * Constructor.
+     * Constructor
      */
-    OffLatticeSproutingRule();
+    VesselNetworkReader();
 
     /**
-     * Destructor.
+     * Destructor
      */
-    virtual ~OffLatticeSproutingRule();
+    ~VesselNetworkReader();
 
     /**
      * Construct a new instance of the class and return a shared pointer to it.
-     * @return a pointer to a new instance of the class
+     *
+     * @return a shared pointer to the class instance
      */
-    static boost::shared_ptr<OffLatticeSproutingRule<DIM> > Create();
+    static boost::shared_ptr<VesselNetworkReader<DIM> > Create();
 
     /**
-     * Overwritten method to return nodes which may sprout
-     * @param rNodes nodes to check for sprouting
-     * @return a vector of nodes which may sprout
+     * Set the name of the radius array
+     *
+     * @param rRadius the radius array name
      */
-    virtual std::vector<boost::shared_ptr<VesselNode<DIM> > > GetSprouts(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes);
+    void SetRadiusArrayName(const std::string& rRadius);
+
+    /**
+     * Set the full path the file
+     *
+     * @param rFileName the full path to the file
+     */
+    void SetFileName(const std::string& rFileName);
+
+    /**
+     * Do the read and return the vessel network
+     *
+     * @return the vessel network
+     */
+    boost::shared_ptr<VesselNetwork<DIM> > Read();
 
 };
 
-#endif /* OFFLATTICERANDOMNORMALSPROUTINGRULE_HPP_ */
+#endif /* VESSELNETWORKREADER_HPP_ */

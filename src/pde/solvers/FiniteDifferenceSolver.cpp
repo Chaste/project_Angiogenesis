@@ -171,7 +171,7 @@ void FiniteDifferenceSolver<DIM>::DoLinearSolve()
     unsigned extents_x = this->mpRegularGrid->GetExtents()[0];
     unsigned extents_y = this->mpRegularGrid->GetExtents()[1];
     unsigned extents_z = this->mpRegularGrid->GetExtents()[2];
-    double spacing = this->mpRegularGrid->GetSpacing();
+    double spacing = this->mpRegularGrid->GetSpacing() / this->mpRegularGrid->GetReferenceLengthScale();
     double diffusion_term = 0.0;
     if(this->mpPde)
     {
@@ -339,7 +339,7 @@ PetscErrorCode HyrbidFiniteDifference_ComputeResidual(SNES snes, Vec solution_gu
     unsigned extents_x = solver->GetGrid()->GetExtents()[0];
     unsigned extents_y = solver->GetGrid()->GetExtents()[1];
     unsigned extents_z = solver->GetGrid()->GetExtents()[2];
-    double spacing = solver->GetGrid()->GetSpacing();
+    double spacing = solver->GetGrid()->GetSpacing() / solver->GetGrid()->GetReferenceLengthScale();
     double diffusion_term = solver->GetNonLinearPde()->ComputeIsotropicDiffusionTerm() / (spacing * spacing);
 
     // Get the residual vector
@@ -462,7 +462,7 @@ PetscErrorCode HyrbidFiniteDifference_ComputeJacobian(SNES snes, Vec input, Mat*
     unsigned extents_x = solver->GetGrid()->GetExtents()[0];
     unsigned extents_y = solver->GetGrid()->GetExtents()[1];
     unsigned extents_z = solver->GetGrid()->GetExtents()[2];
-    double spacing = solver->GetGrid()->GetSpacing();
+    double spacing = solver->GetGrid()->GetSpacing() / solver->GetGrid()->GetReferenceLengthScale();
     double diffusion_term = solver->GetNonLinearPde()->ComputeIsotropicDiffusionTerm() / (spacing * spacing);
 
     // Get the residual vector

@@ -90,7 +90,7 @@ void LacunarityCalculator<DIM>::Solve()
     for (unsigned width_index = 0; width_index < width_factors.size(); width_index++)
     {
         double box_size = double(extents_x - 1) / double(width_factors[width_index])
-                * this->mpRegularGrid->GetSpacing();
+                * this->mpRegularGrid->GetSpacing()/this->mpRegularGrid->GetReferenceLengthScale();
         double q1 = 0.0;
         double q2 = 0.0;
 

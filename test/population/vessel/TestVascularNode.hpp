@@ -46,6 +46,7 @@
 #include "VesselSegment.hpp"
 #include "VesselNode.hpp"
 #include "NodeFlowProperties.hpp"
+#include "UnitCollection.hpp"
 #include "FakePetscSetup.hpp"
 
 class TestVesselNode : public AbstractCellBasedTestSuite
@@ -80,20 +81,20 @@ public:
 
         // Test simple Getters and Setters
         p_node->SetId(5u);
-        p_node->GetFlowProperties()->SetPressure(5.0);
-        p_node->SetRadius(10.0);
+        p_node->GetFlowProperties()->SetPressure(5.0 * unit::pascals);
+        p_node->SetRadius(10.e-6 * unit::metres);
         p_node->GetFlowProperties()->SetIsInputNode(true);
         p_node->GetFlowProperties()->SetIsOutputNode(true);
 
         TS_ASSERT_EQUALS(p_node->GetId(), 5u);
-        TS_ASSERT_DELTA(p_node->GetFlowProperties()->GetPressure(), 5.0, 1.e-6);
-        TS_ASSERT_DELTA(p_node->GetRadius(), 10.0, 1.e-6);
+        TS_ASSERT_DELTA(p_node->GetFlowProperties()->GetPressure() / unit::pascals, 5.0 , 1.e-6);
+        TS_ASSERT_DELTA(p_node->GetRadius()/(1.e-6 * unit::metres), 10.0, 1.e-6);
         TS_ASSERT(p_node->GetFlowProperties()->IsInputNode());
         TS_ASSERT(p_node->GetFlowProperties()->IsOutputNode());
 
         // Test setting node flow properties
         NodeFlowProperties<3> node_flow_properties;
-        node_flow_properties.SetPressure(12.0);
+        node_flow_properties.SetPressure(12.0 * unit::pascals);
         p_node->SetFlowProperties(node_flow_properties);
     }
 
@@ -114,8 +115,7 @@ public:
         TS_ASSERT(p_node_1->IsCoincident(location1));
 
         // Distance methods
-        TS_ASSERT_DELTA(p_node_1->GetDistance(p_node_3->rGetLocation()), std::sqrt(27.0), 1.e-6);
-        TS_ASSERT_DELTA(p_node_1->GetDistance(location1), std::sqrt(75.0), 1.e-6);
+        TS_ASSERT_DELTA(p_node_1->GetDistance(p_node_3->rGetLocation())/p_node_1->GetReferenceLengthScale(), std::sqrt(27.0), 1.e-6);
     }
 
     void TestAddingAndRemovingVesselSegments() throw (Exception)
@@ -138,7 +138,7 @@ public:
         // Check that the segments are correctly retrieved from the node.
         TS_ASSERT(p_node_2->IsCoincident(p_node_2->GetSegment(0)->GetNode(1)->rGetLocation()));
         TS_ASSERT(p_node_2->IsCoincident(p_node_2->GetSegments()[0]->GetNode(1)->rGetLocation()));
-        TS_ASSERT_THROWS_THIS(p_node_2->GetSegment(3), "Requested segment index out of range.");
+        TS_ASSERT_THROWS_THIS(p_node_2->GetSegment(3), "Requested segment index out of range");
 
         // Check that the vessel segment connectivity is updated when a node is replaced.
         p_segment2->ReplaceNode(1, p_node_1);

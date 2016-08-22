@@ -37,7 +37,8 @@
 
 template<unsigned DIM>
 RegressionSolver<DIM>::RegressionSolver() :
-    mpNetwork()
+    mpNetwork(),
+    mReferenceTime(60.0 * unit::seconds)
 {
 
 }

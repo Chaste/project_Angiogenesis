@@ -56,44 +56,44 @@ class VesselNetwork : public boost::enable_shared_from_this<VesselNetwork<DIM> >
 private:
 
     /**
-     Container for Vessels in the VesselNetwork.
+     * Container for Vessels in the VesselNetwork.
      */
     std::vector<boost::shared_ptr<Vessel<DIM> > > mVessels;
 
     /**
-     Container for vessel segments in the VesselNetwork.
+     * Container for vessel segments in the VesselNetwork.
      */
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > mSegments;
 
     /**
-     *  Is the data in mSegments up to date.
+     * Is the data in mSegments up to date.
      */
     bool mSegmentsUpToDate;
 
     /**
-     Container for nodes in the VesselNetwork.
+     * Container for nodes in the VesselNetwork.
      */
     std::vector<boost::shared_ptr<VesselNode<DIM> > > mNodes;
 
     /**
-     *  Is the data in mNodes up to date.
+     * Is the data in mNodes up to date.
      */
     bool mNodesUpToDate;
 
     /**
-     Container for vessel nodes in the VesselNetwork.
+     * Container for vessel nodes in the VesselNetwork.
      */
     std::vector<boost::shared_ptr<VesselNode<DIM> > > mVesselNodes;
 
     /**
-     *  Is the data in mVesselNodes up to date.
+     * Is the data in mVesselNodes up to date.
      */
     bool mVesselNodesUpToDate;
 
 public:
 
     /**
-     * Constructor. Use the create factory method instead
+     * Constructor.
      */
     VesselNetwork();
 
@@ -108,27 +108,27 @@ public:
     ~VesselNetwork();
 
     /**
-     Adds a vessel to the VesselNetwork.
+     * Adds a vessel to the VesselNetwork.
      */
     void AddVessel(boost::shared_ptr<Vessel<DIM> > pVessel);
 
     /**
-     Adds a collection of vessels to the VesselNetwork
+     * Adds a collection of vessels to the VesselNetwork
      */
     void AddVessels(std::vector<boost::shared_ptr<Vessel<DIM> > > vessels);
 
     /**
-     Copy flow properties from the specified segment to all other segments
+     * Copy flow properties from the specified segment to all other segments
      */
     void CopySegmentFlowProperties(unsigned index=0);
 
     /**
-     Make a copy of all vessels, but with new nodes and segments in each copy. Return the new vessels.
+     * Make a copy of all vessels, but with new nodes and segments in each copy. Return the new vessels.
      */
     std::vector<boost::shared_ptr<Vessel<DIM> > > CopyVessels();
 
     /**
-     Make a copy of the selected vessels, but with new nodes and segments in each copy. Return the new vessels.
+     * Make a copy of the selected vessels, but with new nodes and segments in each copy. Return the new vessels.
      */
     std::vector<boost::shared_ptr<Vessel<DIM> > > CopyVessels(std::vector<boost::shared_ptr<Vessel<DIM> > > vessels);
 
@@ -152,12 +152,12 @@ public:
                                                const c_vector<double, DIM>& sproutTipLocation);
 
     /**
-     Get distance to nearest node
+     * Get distance to nearest node
      */
-    double GetDistanceToNearestNode(const c_vector<double, DIM>& rLocation);
+    units::quantity<unit::length> GetDistanceToNearestNode(const c_vector<double, DIM>& rLocation);
 
     /**
-     Get the node nearest to the specified location
+     * Get the node nearest to the specified location
      */
     boost::shared_ptr<VesselNode<DIM> > GetNearestNode(const c_vector<double, DIM>& rLocation);
 
@@ -169,17 +169,17 @@ public:
     /**
      Get the segment nearest to the specified segment and the distance to it
      */
-    std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> GetNearestSegment(boost::shared_ptr<VesselSegment<DIM> > pSegment);
+    std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> > GetNearestSegment(boost::shared_ptr<VesselSegment<DIM> > pSegment);
 
     /**
      Get the segment nearest to the specified node and the distance to it
      */
-    std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> GetNearestSegment(boost::shared_ptr<VesselNode<DIM> > pNode, bool sameVessel = true);
+    std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> > GetNearestSegment(boost::shared_ptr<VesselNode<DIM> > pNode, bool sameVessel = true);
 
     /**
      Get the segment nearest to the specified location and the distance to it
      */
-    std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> GetNearestSegment(const c_vector<double, DIM>& location);
+    std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> > GetNearestSegment(const c_vector<double, DIM>& location);
 
     /**
      Get the segment nearest to the specified location
@@ -194,7 +194,7 @@ public:
     /**
      Get the number of nodes near to a specified point
      */
-    unsigned NumberOfNodesNearLocation(const c_vector<double, DIM>&  rLocation, double radius = 0.0);
+    unsigned NumberOfNodesNearLocation(const c_vector<double, DIM>&  rLocation, double tolerance = 0.0);
 
     /**
      Return the extents of the vessel network in the form ((xmin, xmax), (ymin, ymax), (zmin, zmax))
@@ -270,7 +270,7 @@ public:
     /**
      * Merge short vessels in the network
      */
-    void MergeShortVessels(double cutoff = 10.0e-6);
+    void MergeShortVessels(units::quantity<unit::length> cutoff = 10.0 * unit::microns);
 
     /**
      * Merge nodes with the same spatial location. Useful for
@@ -300,13 +300,16 @@ public:
      * Remove short vessels from the network
      *
      */
-    void RemoveShortVessels(double cutoff = 10.0, bool endsOnly = true);
+    void RemoveShortVessels(units::quantity<unit::length> cutoff = 10.0, bool endsOnly = true);
 
     /**
      * Set the nodal radii to the same value
      */
-    void SetNodeRadii(double radius);
+    void SetNodeRadii(units::quantity<unit::length> radius);
 
+    /**
+     * Get the node radius by averaging its segments
+     */
     void SetNodeRadiiFromSegments();
 
     /**
@@ -317,7 +320,7 @@ public:
     /**
      * Set the segment radii to the same value
      */
-    void SetSegmentRadii(double radius);
+    void SetSegmentRadii(units::quantity<unit::length> radius);
 
     /**
      * Translate the network along the provided vector
@@ -357,9 +360,11 @@ public:
     /**
      * Returns whether a vessel crosses a line segment.
      */
-    bool VesselCrossesLineSegment(c_vector<double, DIM> coordinate_1, c_vector<double, DIM> coordinate_2, double radius = 1e-6);
+    bool VesselCrossesLineSegment(c_vector<double, DIM> coordinate_1, c_vector<double, DIM> coordinate_2, double tolerance = 1e-6);
 
-
+    /**
+     * Write the network to file
+     */
     void Write(const std::string& rFileName);
 
 };

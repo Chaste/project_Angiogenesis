@@ -241,7 +241,7 @@ public:
 
         // Create a grid to solve PDEs on
         boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
-        p_grid->SetSpacing(1);
+        p_grid->SetSpacing(1.e-6 * unit::metres);
         std::vector<unsigned> extents;
         extents.push_back(41); //
         extents.push_back(41); //

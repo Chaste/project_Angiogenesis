@@ -67,7 +67,7 @@ void ViscosityCalculator<DIM>::Calculate()
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = this->mpNetwork->GetVesselSegments();
     for (unsigned segment_index = 0; segment_index < segments.size(); segment_index++)
     {
-        units::quantity<unit::length> radius = segments[segment_index]->GetDimensionalRadius();
+        units::quantity<unit::length> radius = segments[segment_index]->GetRadius();
         units::quantity<unit::dimensionless> haematocrit = segments[segment_index]->GetFlowProperties()->GetHaematocrit();
 
         // This equation assumes the radius is in micron so manually converted. No dimensional checking is done here, it may not
@@ -81,7 +81,7 @@ void ViscosityCalculator<DIM>::Calculate()
         double mu_rel = (1.0
                 + (mu_45 - 1.0) * (((pow((1.0 - haematocrit), c)) - 1) / ((pow((1.0 - 0.45), c)) - 1.0)) * power_term_2) * power_term_2;
 
-        segments[segment_index]->GetFlowProperties()->SetDimensionalViscosity(mPlasmaViscosity*mu_rel);
+        segments[segment_index]->GetFlowProperties()->SetViscosity(mPlasmaViscosity*mu_rel);
     }
 }
 

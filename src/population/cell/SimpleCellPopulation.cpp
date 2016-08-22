@@ -36,29 +36,11 @@
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning
 #include "vtkXMLPolyDataWriter.h"
 #include "vtkPolyData.h"
-
 #include "SimpleCellPopulation.hpp"
 
-template<unsigned DIM>
-SimpleCellPopulation<DIM>::SimpleCellPopulation() :
-        mCells()
-{
-
-}
-
-template<unsigned DIM>
-boost::shared_ptr<SimpleCellPopulation<DIM> > SimpleCellPopulation<DIM>::Create()
-{
-    MAKE_PTR(SimpleCellPopulation<DIM>, pSelf);
-    return pSelf;
-}
-
-template<unsigned DIM>
-SimpleCellPopulation<DIM>::~SimpleCellPopulation()
-{
-
-}
-
+/**
+ * Helper class to see if a cell exists in a vector
+ */
 template<unsigned DIM>
 class ExistsInVector
 {
@@ -79,14 +61,35 @@ public:
 };
 
 template<unsigned DIM>
+SimpleCellPopulation<DIM>::SimpleCellPopulation() :
+        mCells(),
+        mReferenceLength(1.e-6 * unit::metres)
+{
+
+}
+
+template<unsigned DIM>
+boost::shared_ptr<SimpleCellPopulation<DIM> > SimpleCellPopulation<DIM>::Create()
+{
+    MAKE_PTR(SimpleCellPopulation<DIM>, pSelf);
+    return pSelf;
+}
+
+template<unsigned DIM>
+SimpleCellPopulation<DIM>::~SimpleCellPopulation()
+{
+
+}
+
+template<unsigned DIM>
 void SimpleCellPopulation<DIM>::BooleanWithVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pNetwork)
 {
     std::vector<boost::shared_ptr<SimpleCell<DIM> > > remove_cells;
     double tolerance = 1.e-6;
     for(unsigned idx=0; idx<mCells.size();idx++)
     {
-        std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> seg_pair = pNetwork->GetNearestSegment(mCells[idx]->rGetLocation());
-        if(seg_pair.second < tolerance)
+        std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> > seg_pair = pNetwork->GetNearestSegment(mCells[idx]->rGetLocation());
+        if(seg_pair.second / seg_pair.first->GetNode(0)->GetReferenceLengthScale() < tolerance)
         {
             remove_cells.push_back(mCells[idx]);
         }
@@ -107,7 +110,8 @@ void SimpleCellPopulation<DIM>::GenerateCellsAtPoints(std::vector<c_vector<doubl
 }
 
 template<unsigned DIM>
-void SimpleCellPopulation<DIM>::GenerateCellsOnGrid(unsigned xDim, unsigned yDim, unsigned zDim, double spacing, c_vector<double, DIM> origin)
+void SimpleCellPopulation<DIM>::GenerateCellsOnGrid(unsigned xDim, unsigned yDim, unsigned zDim,
+                                                    units::quantity<unit::length> spacing, c_vector<double, DIM> origin)
 {
     std::vector<boost::shared_ptr<SimpleCell<DIM> > > cells;
     for (unsigned idx = 0; idx < zDim;idx++)
@@ -116,9 +120,9 @@ void SimpleCellPopulation<DIM>::GenerateCellsOnGrid(unsigned xDim, unsigned yDim
         {
             for (unsigned kdx = 0; kdx < xDim;kdx++)
             {
-                double x_coord = double(kdx) * spacing + origin[0];
-                double y_coord = double(jdx) * spacing + origin[1];
-                double z_coord = double(idx) * spacing + origin[2];
+                double x_coord = (double(kdx) * spacing + origin[0] * mReferenceLength)/mReferenceLength;
+                double y_coord = (double(jdx) * spacing + origin[1] * mReferenceLength)/mReferenceLength;
+                double z_coord = (double(idx) * spacing + origin[2] * mReferenceLength)/mReferenceLength;
                 cells.push_back(SimpleCell<DIM>::Create(x_coord, y_coord, z_coord));
             }
         }
@@ -127,18 +131,18 @@ void SimpleCellPopulation<DIM>::GenerateCellsOnGrid(unsigned xDim, unsigned yDim
 }
 
 template<unsigned DIM>
-void SimpleCellPopulation<DIM>::GenerateCellsOnGrid(boost::shared_ptr<Part<DIM> > pPart, double spacing)
+void SimpleCellPopulation<DIM>::GenerateCellsOnGrid(boost::shared_ptr<Part<DIM> > pPart, units::quantity<unit::length> spacing)
 {
     std::vector<boost::shared_ptr<SimpleCell<DIM> > > cells;
 
     // Get the bounding box of the part
     c_vector<double,2*DIM> bbox = pPart->GetBoundingBox();
-    unsigned num_x = double(bbox[1] - bbox[0]) / spacing + 1;
-    unsigned num_y = double(bbox[3] - bbox[2]) / spacing + 1;
+    unsigned num_x = double(bbox[1] - bbox[0]) * mReferenceLength  / spacing + 1;
+    unsigned num_y = double(bbox[3] - bbox[2]) * mReferenceLength  / spacing + 1;
     unsigned num_z = 1;
     if(DIM==3)
     {
-        num_z = double(bbox[5] - bbox[4]) / spacing + 1;
+        num_z = double(bbox[5] - bbox[4]) * mReferenceLength  / spacing + 1;
     }
 
     bool first_loop = true;
@@ -149,11 +153,11 @@ void SimpleCellPopulation<DIM>::GenerateCellsOnGrid(boost::shared_ptr<Part<DIM> 
             for (unsigned kdx = 0; kdx < num_x;kdx++)
             {
                 c_vector<double, DIM> location;
-                location[0] = bbox[0] + double(kdx) * spacing;
-                location[1] = bbox[2] + double(jdx) * spacing;
+                location[0] = (bbox[0] * mReferenceLength + double(kdx) * spacing)/mReferenceLength;
+                location[1] = (bbox[2] * mReferenceLength + double(jdx) * spacing)/mReferenceLength;
                 if(DIM==3)
                 {
-                    location[2] = bbox[4] + double(idx) * spacing;
+                    location[2] = (bbox[4] * mReferenceLength + double(idx) * spacing)/mReferenceLength;
                 }
 
                 if(pPart->IsPointInPart(location, first_loop))
@@ -205,6 +209,12 @@ vtkSmartPointer<vtkPoints> SimpleCellPopulation<DIM>::GetVtk()
     }
 
     return p_vertices;
+}
+
+template<unsigned DIM>
+void SimpleCellPopulation<DIM>::SetReferenceLengthScale(units::quantity<unit::length> lenthScale)
+{
+    mReferenceLength = lenthScale;
 }
 
 template<unsigned DIM>

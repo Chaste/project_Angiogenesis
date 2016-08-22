@@ -93,13 +93,13 @@ public:
         pSegment->SetId(5u);
         TS_ASSERT_EQUALS(pSegment->GetId(), 5u);
 
-        pSegment->SetRadius(5.0);
-        TS_ASSERT_DELTA(pSegment->GetRadius(), 5.0, 1.e-6);
+        pSegment->SetRadius(5.0e-6 * unit::metres);
+        TS_ASSERT_DELTA(pSegment->GetRadius()/unit::metres, 5.0, 1.e-6);
 
         pSegment->GetFlowProperties()->SetHaematocrit(10.0);
-        pSegment->GetFlowProperties()->SetFlowRate(15.0);
+        pSegment->GetFlowProperties()->SetFlowRate(15.0 * unit::unit_flow_rate);
         TS_ASSERT_DELTA(pSegment->GetFlowProperties()->GetHaematocrit(), 10.0, 1.e-6);
-        TS_ASSERT_DELTA(pSegment->GetFlowProperties()->GetFlowRate(), 15.0, 1.e-6);
+        TS_ASSERT_DELTA(pSegment->GetFlowProperties()->GetFlowRate()/unit::unit_flow_rate, 15.0, 1.e-6);
     }
 
     void TestGeometricFeatures() throw (Exception)
@@ -116,11 +116,11 @@ public:
         boost::shared_ptr<VesselSegment<2> > p_segment1 = VesselSegment<2>::Create(nodes[0], nodes[1]);
         boost::shared_ptr<VesselSegment<3> > p_segment2 = VesselSegment<3>::Create(nodes_3d[0], nodes_3d[1]);
 
-        TS_ASSERT_DELTA(p_segment1->GetLength(), std::sqrt(8.0), 1.e-6);
-        TS_ASSERT_DELTA(p_segment2->GetLength(), std::sqrt(27.0), 1.e-6);
+        TS_ASSERT_DELTA(p_segment1->GetLength()/p_segment1->GetNode(0)->GetReferenceLengthScale(), std::sqrt(8.0), 1.e-6);
+        TS_ASSERT_DELTA(p_segment2->GetLength()/p_segment2->GetNode(0)->GetReferenceLengthScale(), std::sqrt(27.0), 1.e-6);
 
         // Test point distance calculation
-        TS_ASSERT_DELTA(p_segment1->GetDistance(nodes[0]->rGetLocation()), 0, 1.e-6);
+        TS_ASSERT_DELTA(p_segment1->GetDistance(nodes[0]->rGetLocation())/p_segment1->GetNode(0)->GetReferenceLengthScale(), 0, 1.e-6);
 
         // Test Unit tangent and point projection
         ChastePoint<2> tangent(1.0 / std::sqrt(2.0), 1.0 / std::sqrt(2.0));
@@ -135,7 +135,7 @@ public:
         nodes.push_back(VesselNode<2>::Create(4.0, 5.0));
         nodes.push_back(VesselNode<2>::Create(5.0, 6.0));
 
-        // Make some vessel segments
+        // Make some vessel segments1
         boost::shared_ptr<VesselSegment<2> > pSegment = VesselSegment<2>::Create(nodes[0], nodes[1]);
         boost::shared_ptr<VesselSegment<2> > pSegment2 = VesselSegment<2>::Create(nodes[1], nodes[2]);
 
@@ -167,8 +167,8 @@ public:
 
         // Delete the segment
         pSegment1->Remove();
-        TS_ASSERT_EQUALS(p_node1->GetNumberOfSegments(), 0);
-        TS_ASSERT_EQUALS(p_node2->GetNumberOfSegments(), 0);
+        TS_ASSERT_EQUALS(p_node1->GetNumberOfSegments(), 0u);
+        TS_ASSERT_EQUALS(p_node2->GetNumberOfSegments(), 0u);
     }
 };
 

@@ -154,7 +154,7 @@ void DensityMap<DIM>::Solve()
     unsigned extents_x = this->mpRegularGrid->GetExtents()[0];
     unsigned extents_y = this->mpRegularGrid->GetExtents()[1];
     unsigned extents_z = this->mpRegularGrid->GetExtents()[2];
-    double spacing = this->mpRegularGrid->GetSpacing();
+    double spacing = this->mpRegularGrid->GetSpacing()/this->mpRegularGrid->GetReferenceLengthScale();
 
     std::vector<double> vessel_solution(number_of_points, 0.0);
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments;

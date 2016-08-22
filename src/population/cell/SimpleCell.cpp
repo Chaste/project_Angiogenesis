@@ -41,7 +41,8 @@ SimpleCell<DIM>::SimpleCell(double v1, double v2, double v3) :
         mIndex(0),
         mCellCycleModel("SinglePhaseCellCycleModel"),
         mCellMutationState("CancerCellMutationState"),
-        mCellProliferativeType("StemCellProliferativeType")
+        mCellProliferativeType("StemCellProliferativeType"),
+        mReferenceLength(1.e-6 * unit::metres)
 {
 
 }
@@ -49,7 +50,11 @@ SimpleCell<DIM>::SimpleCell(double v1, double v2, double v3) :
 template<unsigned DIM>
 SimpleCell<DIM>::SimpleCell(c_vector<double, DIM> location) :
         ChastePoint<DIM>(location),
-        mIndex(0)
+        mIndex(0),
+        mCellCycleModel("SinglePhaseCellCycleModel"),
+        mCellMutationState("CancerCellMutationState"),
+        mCellProliferativeType("StemCellProliferativeType"),
+        mReferenceLength(1.e-6 * unit::metres)
 {
 
 }
@@ -81,9 +86,21 @@ unsigned SimpleCell<DIM>::GetIndex()
 }
 
 template<unsigned DIM>
+units::quantity<unit::length> SimpleCell<DIM>::GetReferenceLengthScale() const
+{
+    return mReferenceLength;
+}
+
+template<unsigned DIM>
 void SimpleCell<DIM>::SetIndex(unsigned index)
 {
     mIndex = index;
+}
+
+template<unsigned DIM>
+void SimpleCell<DIM>::SetReferenceLengthScale(units::quantity<unit::length> lenthScale)
+{
+    mReferenceLength = lenthScale;
 }
 
 template class SimpleCell<2> ;

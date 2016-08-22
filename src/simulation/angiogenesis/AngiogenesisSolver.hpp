@@ -60,7 +60,7 @@ class AngiogenesisSolver
     /**
      * The radius in which anastamosis is allowed in angiogenesis simulations
      */
-    double mNodeAnastamosisRadius;
+    units::quantity<unit::length> mNodeAnastamosisRadius;
 
     /**
      * The migration rule for tip cells
@@ -147,7 +147,7 @@ public:
      * Set the radius within which anastamosis of vessels is allowed
      * @param radius the radius within which anastamosis of vessels is allowed
      */
-    void SetAnastamosisRadius(double radius);
+    void SetAnastamosisRadius(units::quantity<unit::length> radius);
 
     /**
      * A domain which vessels a not permitted to leave

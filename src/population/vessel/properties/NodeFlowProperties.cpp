@@ -54,8 +54,7 @@ template<unsigned DIM>
 std::map<std::string, double> NodeFlowProperties<DIM>::GetOutputData() const
 {
     std::map<std::string, double> output_data;
-    output_data["Node Dimensionless Pressure"] = this->GetPressure();
-    output_data["Node Pressure Pa"] = this->GetPressureSI();
+    output_data["Node Pressure Pa"] = this->GetPressure() / unit::pascals;
     output_data["Node Is Input"] = double(IsInputNode());
     output_data["Node Is Output"] = double(IsOutputNode());
     return output_data;

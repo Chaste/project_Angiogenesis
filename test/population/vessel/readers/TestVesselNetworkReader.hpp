@@ -33,44 +33,38 @@
 
  */
 
-#ifndef VTKVESSELNETWORKREADER_HPP_
-#define VTKVESSELNETWORKREADER_HPP_
+#ifndef TestVesselNetworkReader_HPP_
+#define TestVesselNetworkReader_HPP_
 
-#include <string>
+#include <cxxtest/TestSuite.h>
+#include "VesselNetworkReader.hpp"
+#include "FileFinder.hpp"
+#include "OutputFileHandler.hpp"
 #include "SmartPointers.hpp"
-#include "VesselNetwork.hpp"
+#include "FakePetscSetup.hpp"
 
-template<unsigned DIM>
-class VtkVesselNetworkReader
+class TestVesselNetworkReader : public CxxTest::TestSuite
 {
-
-    std::string mFileName;
-
-    std::string mRadiusLabel;
-
 public:
 
-    /**
-     * Constructor
-     */
-    VtkVesselNetworkReader();
+    void TestReadNetworkFromFile() throw(Exception)
+    {
+        // Locate the input file
+        FileFinder fileFinder("projects/Angiogenesis/test/data/tapmeier_network.vtp", RelativeTo::ChasteSourceRoot);
+        TS_ASSERT(fileFinder.Exists());
+        TS_ASSERT(fileFinder.IsFile());
 
-    /**
-     * Destructor
-     */
-    ~VtkVesselNetworkReader();
+        // Generate the network
+        boost::shared_ptr<VesselNetworkReader<3> > p_network_reader = VesselNetworkReader<3>::Create();
+        p_network_reader->SetFileName(fileFinder.GetAbsolutePath());
+        boost::shared_ptr<VesselNetwork<3> > p_network = p_network_reader->Read();
 
-    /**
-     * Construct a new instance of the class and return a shared pointer to it.
-     */
-    static boost::shared_ptr<VtkVesselNetworkReader<DIM> > Create();
-
-    void SetRadiusArrayName(const std::string& rRadius);
-
-    void SetFileName(const std::string& rFileName);
-
-    boost::shared_ptr<VesselNetwork<DIM> > Read();
-
+        // Write the network to file
+        OutputFileHandler output_file_handler("TestVesselNetworkReaders", false);
+        std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("VtkVesselNetwork.vtp");
+        p_network->MergeCoincidentNodes();
+        p_network->Write(output_filename);
+    }
 };
 
-#endif /* VTKVESSELNETWORKREADER_HPP_ */
+#endif /*TestVesselNetworkReader_HPP_*/

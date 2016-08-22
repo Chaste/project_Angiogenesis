@@ -45,7 +45,6 @@
  * Finite difference solver for linear elliptic PDEs which can include
  * discrete representations of cells and vessels.
  */
-
 template<unsigned DIM>
 class FiniteDifferenceSolver : public AbstractRegularGridHybridSolver<DIM>
 {

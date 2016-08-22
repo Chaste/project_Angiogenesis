@@ -110,13 +110,7 @@ void VesselSegment<DIM>::CopyDataFromExistingSegment(const boost::shared_ptr<Ves
 }
 
 template<unsigned DIM>
-units::quantity<unit::length> VesselSegment<DIM>::GetDimensionalDistance(const c_vector<double, DIM>& location) const
-{
-    return this->GetDistance(location)*this->mReferenceLength;
-}
-
-template<unsigned DIM>
-double VesselSegment<DIM>::GetDistance(const c_vector<double, DIM>& location) const
+units::quantity<unit::length> VesselSegment<DIM>::GetDistance(const c_vector<double, DIM>& location) const
 {
     c_vector<double, DIM> start_location = mNodes.first->rGetLocation();
     c_vector<double, DIM> segment_vector = mNodes.second->rGetLocation() - start_location;
@@ -137,13 +131,12 @@ double VesselSegment<DIM>::GetDistance(const c_vector<double, DIM>& location) co
 
     // Point projection is inside segment, get distance to point projection
     double projection_ratio = dp_segment_point / dp_segment_segment;
-    return norm_2(start_location + projection_ratio * segment_vector - location);
-}
 
-template<unsigned DIM>
-units::quantity<unit::length> VesselSegment<DIM>::GetDimensionalLength() const
-{
-    return this->GetLength()*this->mReferenceLength;
+    if(mNodes.first->GetReferenceLengthScale() != mNodes.second->GetReferenceLengthScale())
+    {
+        EXCEPTION("Segment nodes need the same length scale for performing distance calculations.");
+    }
+    return norm_2(start_location + projection_ratio * segment_vector - location) * mNodes.first->GetReferenceLengthScale();
 }
 
 template<unsigned DIM>
@@ -153,9 +146,14 @@ boost::shared_ptr<SegmentFlowProperties<DIM> > VesselSegment<DIM>::GetFlowProper
 }
 
 template<unsigned DIM>
-double VesselSegment<DIM>::GetLength() const
+units::quantity<unit::length> VesselSegment<DIM>::GetLength() const
 {
-    return norm_2(mNodes.second->rGetLocation() - mNodes.first->rGetLocation());
+    if(mNodes.first->GetReferenceLengthScale() != mNodes.second->GetReferenceLengthScale())
+    {
+        EXCEPTION("Segment nodes need the same length scale for performing length calculation.");
+    }
+
+    return norm_2(mNodes.second->rGetLocation() - mNodes.first->rGetLocation())* mNodes.first->GetReferenceLengthScale();
 }
 
 template<unsigned DIM>
@@ -164,8 +162,7 @@ std::map<std::string, double> VesselSegment<DIM>::GetOutputData()
     std::map<std::string, double> flow_data = this->mpFlowProperties->GetOutputData();
     this->mOutputData.insert(flow_data.begin(), flow_data.end());
     this->mOutputData["Segment Id"] = double(this->GetId());
-    this->mOutputData["Dimensionless Segment Radius"] = this->GetRadius();
-    this->mOutputData["Segment Radius m: "] = this->GetRadiusSI();
+    this->mOutputData["Segment Radius m: "] = this->GetRadius() / unit::metres;
     return this->mOutputData;
 }
 
@@ -257,7 +254,7 @@ c_vector<double, DIM> VesselSegment<DIM>::GetPointProjection(const c_vector<doub
 template<unsigned DIM>
 c_vector<double, DIM> VesselSegment<DIM>::GetUnitTangent() const
 {
-    return (mNodes.second->rGetLocation() - mNodes.first->rGetLocation()) / (this->GetLength());
+    return (mNodes.second->rGetLocation() - mNodes.first->rGetLocation()) / (this->GetLength()/mNodes.first->GetReferenceLengthScale());
 }
 
 template<unsigned DIM>

@@ -74,8 +74,8 @@ public:
         boost::shared_ptr<VesselNetwork<3> > p_vascular_network(new VesselNetwork<3>());
 
         p_vascular_network->AddVessel(p_vessel);
-        double viscosity = 2e-3;
-        double radius = 5e-6;
+        units::quantity<unit::dynamic_viscosity> viscosity = 2e-3 * unit::poiseuille;
+        units::quantity<unit::length> radius = 5e-6 * unit::metres;
 
         p_segment->SetRadius(radius);
         p_segment->GetFlowProperties()->SetViscosity(viscosity);
@@ -86,10 +86,10 @@ public:
         calculator.SetVesselNetwork(p_vascular_network);
         calculator.Calculate();
 
-        double expected_impedance = 8 * viscosity * 5 / (M_PI * SmallPow(radius, 4u));
+        units::quantity<unit::flow_impedance> expected_impedance = 8.0 * viscosity * 5.0 * nodes[0]->GetReferenceLengthScale() / (M_PI * boost::units::pow<4>(radius));
 
-        TS_ASSERT_DELTA(p_vessel->GetFlowProperties()->GetImpedance(p_vessel->GetSegments()), expected_impedance, 1e-6);
-        TS_ASSERT_DELTA(p_segment->GetFlowProperties()->GetImpedance(), expected_impedance, 1e-6);
+        TS_ASSERT_DELTA(p_vessel->GetFlowProperties()->GetImpedance(p_vessel->GetSegments())/expected_impedance, 1.0, 1e-6);
+        TS_ASSERT_DELTA(p_segment->GetFlowProperties()->GetImpedance()/expected_impedance, 1.0, 1e-6);
     }
 
 };

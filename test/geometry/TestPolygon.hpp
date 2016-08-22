@@ -92,11 +92,11 @@ public:
 
         boost::shared_ptr<Polygon> p_polygon = Polygon::Create(vertices);
         p_polygon->AddVertices(new_vertices);
-        TS_ASSERT_EQUALS(p_polygon->GetVertices().size(), 5);
+        TS_ASSERT_EQUALS(p_polygon->GetVertices().size(), 5u);
 
         boost::shared_ptr<Polygon> p_polygon2 = Polygon::Create(vertices);
         p_polygon2->AddVertex(new_vertices[0]);
-        TS_ASSERT_EQUALS(p_polygon2->GetVertices().size(), 4);
+        TS_ASSERT_EQUALS(p_polygon2->GetVertices().size(), 4u);
     }
 
     void TestVtkMethods()

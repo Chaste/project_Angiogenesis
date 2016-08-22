@@ -43,7 +43,7 @@ AbstractSproutingRule<DIM>::AbstractSproutingRule()
     :mpSolver(),
      mSproutingProbability(0.00025 * 60.0),
       mpVesselNetwork(),
-      mVesselEndCutoff(0.0)
+      mVesselEndCutoff(0.0 * unit::metres)
 {
 
 }
@@ -68,7 +68,7 @@ void AbstractSproutingRule<DIM>::SetSproutingProbability(double probability)
 }
 
 template<unsigned DIM>
-void AbstractSproutingRule<DIM>::SetVesselEndCutoff(double cutoff)
+void AbstractSproutingRule<DIM>::SetVesselEndCutoff(units::quantity<unit::length> cutoff)
 {
     mVesselEndCutoff = cutoff;
 }

@@ -65,7 +65,7 @@ public:
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
         p_domain->AddCuboid(4.0 * vessel_length, 2.0 * vessel_length, 2.0 * vessel_length);
         boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
-        p_grid->GenerateFromPart(p_domain, 20.0);
+        p_grid->GenerateFromPart(p_domain, 20.0e-6 * unit::metres);
 
         // Get the map
         DensityMap<3> solver;

@@ -64,7 +64,7 @@ class OnLatticeSimulationWrapper
 
     boost::shared_ptr<VesselNetwork<3> > mpNetwork;
 
-    double mVesselDistanceTolerance;
+    units::quantity<unit::length> mVesselDistanceTolerance;
 
     std::vector<double> mRadiotherapyHitTimes;
 
@@ -133,7 +133,7 @@ public:
 
     void Solve(boost::shared_ptr<VascularTumourModifier<3> > pVtModifier);
 
-    void SetVesselDistanceTolerance(double tolerance);
+    void SetVesselDistanceTolerance(units::quantity<unit::length> tolerance);
 
     std::vector<boost::shared_ptr<SimpleCellPopulation<3> > > GetOutputPopulations();
 

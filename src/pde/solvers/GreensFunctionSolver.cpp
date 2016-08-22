@@ -100,7 +100,7 @@ void GreensFunctionSolver<DIM>::Solve()
     // Get the sink rates
     unsigned number_of_sinks = mSinkCoordinates.size();
     double sink_rate = this->mpPde->ComputeConstantInUSourceTerm();
-    double sink_volume = pow(this->mpRegularGrid->GetSpacing(), 3);
+    double sink_volume = pow(this->mpRegularGrid->GetSpacing()/this->mpRegularGrid->GetReferenceLengthScale(), 3);
     mSinkRates = std::vector<double>(number_of_sinks, sink_rate * sink_volume);
     double total_sink_rate = std::accumulate(mSinkRates.begin(), mSinkRates.end(), 0.0);
 
@@ -240,7 +240,7 @@ void GreensFunctionSolver<DIM>::GenerateSubSegments()
         std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = (*vessel_iter)->GetSegments();
         for (segment_iter = segments.begin(); segment_iter != segments.end(); segment_iter++)
         {
-            double segment_length = (*segment_iter)->GetLength();
+            double segment_length = (*segment_iter)->GetLength()/(*segment_iter)->GetNode(0)->GetReferenceLengthScale();
 
             // If the segment is shorter than the max length just use its mid-point
             if (segment_length < 1.01 * max_subsegment_length)
@@ -325,9 +325,9 @@ boost::shared_ptr<boost::multi_array<double, 2> > GreensFunctionSolver<DIM>::Get
             {
                 double distance = norm_2(mSubSegmentCoordinates[iter2].rGetLocation() - mSubSegmentCoordinates[iter].rGetLocation());
                 double term;
-                if (distance < mSegmentPointMap[iter]->GetRadius())
+                if (distance < mSegmentPointMap[iter]->GetRadius()/mSegmentPointMap[iter]->GetNode(0)->GetReferenceLengthScale())
                 {
-                    double radius = mSegmentPointMap[iter]->GetRadius();
+                    double radius = mSegmentPointMap[iter]->GetRadius()/mSegmentPointMap[iter]->GetNode(0)->GetReferenceLengthScale();
                     double max_segment_length = std::max(mSubSegmentLengths[iter], mSubSegmentLengths[iter2]);
                     double green_correction = 0.6 * std::exp(-0.45 * max_segment_length /radius);
 
@@ -357,7 +357,7 @@ boost::shared_ptr<boost::multi_array<double, 2> > GreensFunctionSolver<DIM>::Get
     typedef boost::multi_array<double, 2>::index index;
     unsigned num_points = mSinkCoordinates.size();
     double coefficient = 1.0 / (4.0 * M_PI);
-    double tissue_point_volume = pow(this->mpRegularGrid->GetSpacing(), 3);
+    double tissue_point_volume = pow(this->mpRegularGrid->GetSpacing()/this->mpRegularGrid->GetReferenceLengthScale(), 3);
     double equivalent_tissue_point_radius = pow(tissue_point_volume * 0.75 / M_PI, 0.333333);
 
     boost::shared_ptr<boost::multi_array<double, 2> > p_interaction_matrix(new boost::multi_array<double, 2>(boost::extents[num_points][num_points]));
@@ -387,7 +387,7 @@ boost::shared_ptr<boost::multi_array<double, 2> > GreensFunctionSolver<DIM>::Get
     unsigned num_sinks = mSinkCoordinates.size();
     unsigned num_subsegments = mSubSegmentCoordinates.size();
 
-    double tissue_point_volume = pow(this->mpRegularGrid->GetSpacing(), 3);
+    double tissue_point_volume = pow(this->mpRegularGrid->GetSpacing()/this->mpRegularGrid->GetReferenceLengthScale(), 3);
     double equivalent_tissue_point_radius = pow(tissue_point_volume * 0.75 / M_PI, 0.333333);
     double coefficient = 1.0 / (4.0 * M_PI);
 
@@ -420,7 +420,7 @@ boost::shared_ptr<boost::multi_array<double, 2> > GreensFunctionSolver<DIM>::Get
     unsigned num_sinks = mSinkCoordinates.size();
     double coefficient = 1.0 / (4.0 * M_PI);
 
-    double tissue_point_volume = pow(this->mpRegularGrid->GetSpacing(), 3);
+    double tissue_point_volume = pow(this->mpRegularGrid->GetSpacing()/this->mpRegularGrid->GetReferenceLengthScale(), 3);
     double equivalent_tissue_point_radius = pow(tissue_point_volume * 0.75 / M_PI, 0.333333);
 
     boost::shared_ptr<boost::multi_array<double, 2> > p_interaction_matrix(new boost::multi_array<double, 2>(boost::extents[num_subsegments][num_sinks]));

@@ -47,7 +47,7 @@
 template<unsigned DIM>
 AngiogenesisSolver<DIM>::AngiogenesisSolver() :
         mpNetwork(),
-        mNodeAnastamosisRadius(5.0),
+        mNodeAnastamosisRadius(5.0 * unit::microns),
         mpMigrationRule(),
         mpSproutingRule(),
         mpBoundingDomain(),
@@ -80,7 +80,7 @@ bool AngiogenesisSolver<DIM>::IsSproutingRuleSet()
 }
 
 template<unsigned DIM>
-void AngiogenesisSolver<DIM>::SetAnastamosisRadius(double radius)
+void AngiogenesisSolver<DIM>::SetAnastamosisRadius(units::quantity<unit::length> radius)
 {
     mNodeAnastamosisRadius = radius;
 }
@@ -297,13 +297,13 @@ void AngiogenesisSolver<DIM>::DoAnastamosis()
             else
             {
                 // Get the nearest segment and check if it is close enough to the node for a merge
-                std::pair<boost::shared_ptr<VesselSegment<DIM> >, double> segment_pair = mpNetwork->GetNearestSegment(nodes[idx], false);
+                std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> > segment_pair = mpNetwork->GetNearestSegment(nodes[idx], false);
 
                 if(segment_pair.second <= mNodeAnastamosisRadius && nodes[idx]->GetSegment(0)->GetLength() > segment_pair.second)
                 {
                     // If there is a non-zero anastamosis radius move the tip onto the segment
                     c_vector<double, DIM> original_location = nodes[idx]->rGetLocation();
-                    if(mNodeAnastamosisRadius > 0.0)
+                    if(mNodeAnastamosisRadius > 0.0 * unit::metres)
                     {
                         c_vector<double, DIM> divide_location = segment_pair.first->GetPointProjection(original_location, true);
                         nodes[idx]->SetLocation(divide_location);

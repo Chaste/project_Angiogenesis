@@ -19,7 +19,7 @@ population/vessel/TestVascularNetwork.hpp
 population/vessel/properties/TestVasculatureData.hpp
 population/vessel/properties/TestSegmentFlowProperties.hpp
 population/vessel/generators/TestVasculatureGenerator.hpp
-population/vessel/readers/TestVtkVesselNetworkReader.hpp
+population/vessel/readers/TestVesselNetworkReader.hpp
 population/TestVesselNetworkCellPopulationInteractor.hpp
 pde/TestFiniteDifferenceSolver.hpp
 pde/TestGreensFunctionSolver.hpp

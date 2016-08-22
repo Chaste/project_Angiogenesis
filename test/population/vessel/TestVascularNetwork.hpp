@@ -95,8 +95,8 @@ public:
         VesselNetwork<3> vessel_network;
         vessel_network.AddVessels(vessels);
 
-        vessel_network.SetNodeRadii(10.0);
-        vessel_network.SetSegmentRadii(12.0);
+        vessel_network.SetNodeRadii(10.0e-6 * unit::metres);
+        vessel_network.SetSegmentRadii(12.0e-6 * unit::metres);
     }
 
     void TestCopyingAndMovingNetwork() throw(Exception)
@@ -163,7 +163,7 @@ public:
         VesselNetwork<3> vessel_network;
         vessel_network.AddVessels(vessels);
 
-        vessel_network.RemoveShortVessels(15.0, false);
+        vessel_network.RemoveShortVessels(15.0e-6 * unit::metres, false);
         TS_ASSERT_EQUALS(vessel_network.GetNumberOfVessels(), 2u);
     }
 
@@ -289,10 +289,10 @@ public:
         vessel_network.AddVessels(vessels);
 
         vessel_network.RemoveVessel(vessels[0]);
-        TS_ASSERT_EQUALS(vessel_network.GetNumberOfVessels(), 2);
+        TS_ASSERT_EQUALS(vessel_network.GetNumberOfVessels(), 2u);
 
         vessel_network.UpdateNodes();
-        TS_ASSERT_EQUALS(vessel_network.GetNumberOfNodes(), 3);
+        TS_ASSERT_EQUALS(vessel_network.GetNumberOfNodes(), 3u);
     }
 
     void TestMergeVessel() throw(Exception)
@@ -314,7 +314,7 @@ public:
         VesselNetwork<3> vessel_network;
         vessel_network.AddVessels(vessels);
 
-        vessel_network.MergeShortVessels(15.0);
+        vessel_network.MergeShortVessels(15.0e-6 * unit::metres);
         TS_ASSERT_EQUALS(vessel_network.GetNumberOfVessels(), 2u);
         TS_ASSERT_DELTA(vessels[0]->GetEndNode()->rGetLocation()[0], 20.0, 1.e-6);
         TS_ASSERT_DELTA(vessels[2]->GetStartNode()->rGetLocation()[0], 20.0, 1.e-6);
@@ -351,7 +351,7 @@ public:
         TS_ASSERT_EQUALS(vessels.size(), 3u);
         for(unsigned idx=0; idx<vessels.size(); idx++)
         {
-            TS_ASSERT_DELTA(vessels[idx]->GetLength(), 10.0, 1.e-6);
+            TS_ASSERT_DELTA(vessels[idx]->GetLength()/vessels[idx]->GetStartNode()->GetReferenceLengthScale(), 10.0, 1.e-6);
         }
         OutputFileHandler output_file_handler("TestVesselNetwork",false);
         p_network->Write(output_file_handler.GetOutputDirectoryFullPath() + "/multisprout.vtp");

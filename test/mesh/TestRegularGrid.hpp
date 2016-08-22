@@ -115,12 +115,12 @@ public:
          std::vector<std::vector<unsigned> > neighbours_3d =  p_grid_3d->GetNeighbourData();
          for(unsigned idx=0; idx<3; idx++)
          {
-             TS_ASSERT(neighbours_3d[0][idx] == 1 or neighbours_3d[0][idx] == 5 or neighbours_3d[0][idx] == 35)
+             TS_ASSERT(neighbours_3d[0][idx] == 1u or neighbours_3d[0][idx] == 5u or neighbours_3d[0][idx] == 35u)
          }
          for(unsigned idx=0; idx<6; idx++)
          {
-             TS_ASSERT(neighbours_3d[43][idx] == 8 or neighbours_3d[43][idx] == 42 or neighbours_3d[43][idx] == 44 or
-                       neighbours_3d[43][idx] == 78 or neighbours_3d[43][idx] == 38 or neighbours_3d[43][idx] == 48)
+             TS_ASSERT(neighbours_3d[43][idx] == 8u or neighbours_3d[43][idx] == 42u or neighbours_3d[43][idx] == 44u or
+                       neighbours_3d[43][idx] == 78u or neighbours_3d[43][idx] == 38u or neighbours_3d[43][idx] == 48u)
          }
     }
 
@@ -155,7 +155,7 @@ public:
         {
             sum += map[idx].size();
         }
-        TS_ASSERT_EQUALS(sum, 10000);
+        TS_ASSERT_EQUALS(sum, 10000u);
     }
 
     void TestPointCellMapGeneration()
@@ -167,7 +167,7 @@ public:
         extents[1] = 101;
         extents[2] = 1;
         p_grid->SetExtents(extents);
-        p_grid->SetSpacing(0.333);
+        p_grid->SetSpacing(0.333 * 1.e-6 * unit::metres);
 
         // Set up cells
         HoneycombMeshGenerator generator(10, 10);    // Parameters are: cells across, cells up
@@ -189,7 +189,7 @@ public:
         {
             sum += map[idx].size();
         }
-        TS_ASSERT_EQUALS(sum, 100);
+        TS_ASSERT_EQUALS(sum, 100u);
     }
 
     void TestInterpolateGridValues() throw (Exception)
@@ -203,7 +203,7 @@ public:
         extents[2] = 101;
         p_grid->SetExtents(extents);
         double spacing = 0.33;
-        p_grid->SetSpacing(spacing);
+        p_grid->SetSpacing(spacing* 1.e-6 * unit::metres);
 
         // Set up a function increasing quadratically from bottom front left to top back right
         std::vector<double> my_grid_func(extents[0] * extents[1] * extents[2]);
@@ -261,7 +261,7 @@ public:
         extents[2] = 101;
         p_grid->SetExtents(extents);
         double spacing = 0.33;
-        p_grid->SetSpacing(spacing);
+        p_grid->SetSpacing(spacing* 1.e-6 * unit::metres);
 
         // Set up a function increasing quadratically from bottom front left to top back right
         std::vector<double> my_grid_func(extents[0] * extents[1] * extents[2]);

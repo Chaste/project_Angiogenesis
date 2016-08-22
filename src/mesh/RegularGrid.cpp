@@ -44,11 +44,10 @@
 #include <vtkPolyData.h>
 #include <vtkPoints.h>
 #include <vtkSmartPointer.h>
-#include "UnitCollection.hpp"
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 RegularGrid<ELEMENT_DIM, SPACE_DIM>::RegularGrid() :
-        mSpacing(1.0),
+        mSpacing(1.e-6 * unit::metres),
         mExtents(std::vector<unsigned>(3, 10)),
         mOrigin(zero_vector<double>(SPACE_DIM)),
         mpNetwork(),
@@ -59,7 +58,8 @@ RegularGrid<ELEMENT_DIM, SPACE_DIM>::RegularGrid() :
         mpVtkGrid(),
         mVtkGridIsSetUp(false),
         mNeighbourData(),
-        mHasCellPopulation(false)
+        mHasCellPopulation(false),
+        mReferenceLength(1.e-6 * unit::metres)
 {
 
 }
@@ -129,28 +129,28 @@ const std::vector<std::vector<unsigned> >& RegularGrid<ELEMENT_DIM, SPACE_DIM>::
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-unsigned RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetNearestGridIndex(c_vector<double, SPACE_DIM> location)
+unsigned RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetNearestGridIndex(const c_vector<double, SPACE_DIM>& rLocation)
 {
-    unsigned x_index = round((location[0] - mOrigin[0]) / mSpacing);
-    unsigned y_index = round((location[1] - mOrigin[1]) / mSpacing);
+    unsigned x_index = round((rLocation[0] - mOrigin[0])*mReferenceLength / mSpacing);
+    unsigned y_index = round((rLocation[1] - mOrigin[1])*mReferenceLength / mSpacing);
     unsigned z_index = 0;
     if (SPACE_DIM == 3)
     {
-        z_index = round((location[2] - mOrigin[2]) / mSpacing);
+        z_index = round((rLocation[2] - mOrigin[2])*mReferenceLength / mSpacing);
     }
     return Get1dGridIndex(x_index, y_index, z_index);
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void RegularGrid<ELEMENT_DIM, SPACE_DIM>::GenerateFromPart(boost::shared_ptr<Part<SPACE_DIM> > pPart, double gridSize)
+void RegularGrid<ELEMENT_DIM, SPACE_DIM>::GenerateFromPart(boost::shared_ptr<Part<SPACE_DIM> > pPart, units::quantity<unit::length> gridSize)
 {
     mSpacing = gridSize;
     c_vector<double, 2 * SPACE_DIM> spatial_extents = pPart->GetBoundingBox();
-    mExtents[0] = unsigned((spatial_extents[1] - spatial_extents[0]) / gridSize) + 1u;
-    mExtents[1] = unsigned((spatial_extents[3] - spatial_extents[2]) / gridSize) + 1u;
+    mExtents[0] = unsigned((spatial_extents[1] - spatial_extents[0])*mReferenceLength / gridSize) + 1u;
+    mExtents[1] = unsigned((spatial_extents[3] - spatial_extents[2])*mReferenceLength / gridSize) + 1u;
     if (SPACE_DIM == 3)
     {
-        mExtents[2] = unsigned((spatial_extents[5] - spatial_extents[4]) / gridSize) + 1u;
+        mExtents[2] = unsigned((spatial_extents[5] - spatial_extents[4])*mReferenceLength / gridSize) + 1u;
     }
     else
     {
@@ -179,6 +179,12 @@ void RegularGrid<ELEMENT_DIM, SPACE_DIM>::SetPointValues(std::vector<double> poi
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+units::quantity<unit::length> RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetReferenceLengthScale()
+{
+    return mReferenceLength;
+}
+
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 std::vector<std::vector<unsigned> > RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetPointPointMap(
         std::vector<c_vector<double, SPACE_DIM> > inputPoints)
 {
@@ -193,12 +199,12 @@ std::vector<std::vector<unsigned> > RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetPoin
     std::vector<std::vector<unsigned> > point_point_map(GetNumberOfPoints());
     for (unsigned idx = 0; idx < inputPoints.size(); idx++)
     {
-        unsigned x_index = round((inputPoints[idx][0] - origin_x) / mSpacing);
-        unsigned y_index = round((inputPoints[idx][1] - origin_y) / mSpacing);
+        unsigned x_index = round((inputPoints[idx][0] - origin_x)*mReferenceLength / mSpacing);
+        unsigned y_index = round((inputPoints[idx][1] - origin_y)*mReferenceLength / mSpacing);
         unsigned z_index = 0;
         if (SPACE_DIM == 3)
         {
-            z_index = round((inputPoints[idx][2] - origin_z) / mSpacing);
+            z_index = round((inputPoints[idx][2] - origin_z)*mReferenceLength / mSpacing);
         }
 
         if (x_index <= mExtents[0] && y_index <= mExtents[1] && z_index <= mExtents[2])
@@ -230,16 +236,16 @@ std::vector<double> RegularGrid<ELEMENT_DIM, SPACE_DIM>::InterpolateGridValues(
         for (unsigned idx = 0; idx < locations.size(); idx++)
         {
             // Get the nearest front bottom left point and distances
-            unsigned x_index = unsigned((locations[idx][0] - origin_x) / mSpacing);
-            double del_x = locations[idx][0] - (double(x_index) * mSpacing + origin_x);
-            unsigned y_index = unsigned((locations[idx][1] - origin_y) / mSpacing);
-            double del_y = locations[idx][1] - (double(y_index) * mSpacing + origin_y);
+            unsigned x_index = unsigned((locations[idx][0] - origin_x)*mReferenceLength / mSpacing);
+            double del_x = locations[idx][0] - (double(x_index) * mSpacing/mReferenceLength + origin_x);
+            unsigned y_index = unsigned((locations[idx][1] - origin_y)*mReferenceLength / mSpacing);
+            double del_y = locations[idx][1] - (double(y_index) * mSpacing/mReferenceLength + origin_y);
             unsigned z_index = 0;
             double del_z = 0.0;
             if (SPACE_DIM == 3)
             {
-                z_index = unsigned((locations[idx][2] - origin_z) / mSpacing);
-                del_z = locations[idx][2] - (double(z_index) * mSpacing + origin_z);
+                z_index = unsigned((locations[idx][2] - origin_z)*mReferenceLength / mSpacing);
+                del_z = locations[idx][2] - (double(z_index) * mSpacing/mReferenceLength + origin_z);
             }
 
             if (x_index < mExtents[0] && y_index < mExtents[1] && z_index < mExtents[2])
@@ -405,12 +411,12 @@ const std::vector<std::vector<boost::shared_ptr<VesselNode<SPACE_DIM> > > >& Reg
     for (unsigned idx = 0; idx < nodes.size(); idx++)
     {
         c_vector<double, SPACE_DIM> location = nodes[idx]->rGetLocation();
-        unsigned x_index = round((location[0] - origin_x) / mSpacing);
-        unsigned y_index = round((location[1] - origin_y) / mSpacing);
+        unsigned x_index = round((location[0] - origin_x)*mReferenceLength / mSpacing);
+        unsigned y_index = round((location[1] - origin_y)*mReferenceLength / mSpacing);
         unsigned z_index = 0;
         if (SPACE_DIM == 3)
         {
-            z_index = round((location[2] - origin_z) / mSpacing);
+            z_index = round((location[2] - origin_z)*mReferenceLength / mSpacing);
         }
 
         if (x_index <= mExtents[0] && y_index <= mExtents[1] && z_index <= mExtents[2])
@@ -449,12 +455,12 @@ const std::vector<std::vector<CellPtr> >& RegularGrid<ELEMENT_DIM, SPACE_DIM>::G
             cell_iter != mpCellPopulation->End(); ++cell_iter)
     {
         c_vector<double, SPACE_DIM> location = mpCellPopulation->GetLocationOfCellCentre(*cell_iter);
-        unsigned x_index = round((location[0] - origin_x) / mSpacing);
-        unsigned y_index = round((location[1] - origin_y) / mSpacing);
+        unsigned x_index = round((location[0] - origin_x)*mReferenceLength / mSpacing);
+        unsigned y_index = round((location[1] - origin_y)*mReferenceLength / mSpacing);
         unsigned z_index = 0;
         if (SPACE_DIM == 3)
         {
-            z_index = round((location[2] - origin_z) / mSpacing);
+            z_index = round((location[2] - origin_z)*mReferenceLength/ mSpacing);
         }
 
         if (x_index <= mExtents[0] && y_index <= mExtents[1] && z_index <= mExtents[2])
@@ -520,11 +526,11 @@ c_vector<double, SPACE_DIM> RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetLocation(uns
                                                                              unsigned z_index)
 {
     c_vector<double, SPACE_DIM> location;
-    location[0] = double(x_index) * mSpacing + mOrigin[0];
-    location[1] = double(y_index) * mSpacing + mOrigin[1];
+    location[0] = (double(x_index) * mSpacing + mOrigin[0]*mReferenceLength)/mReferenceLength;
+    location[1] = (double(y_index) * mSpacing + mOrigin[1]*mReferenceLength)/mReferenceLength;
     if (SPACE_DIM == 3)
     {
-        location[2] = double(z_index) * mSpacing + mOrigin[2];
+        location[2] = (double(z_index) * mSpacing + mOrigin[2]*mReferenceLength)/mReferenceLength;
     }
     return location;
 }
@@ -564,7 +570,7 @@ c_vector<double, SPACE_DIM> RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetOrigin()
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-double RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetSpacing()
+units::quantity<unit::length> RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetSpacing()
 {
     return mSpacing;
 }
@@ -611,22 +617,22 @@ bool RegularGrid<ELEMENT_DIM, SPACE_DIM>::IsLocationInPointVolume(c_vector<doubl
     unsigned y_index = (mod_z - mod_y) / mExtents[0];
     unsigned x_index = mod_y;
 
-    double loc_x = double(x_index) * mSpacing + mOrigin[0];
-    double loc_y = double(y_index) * mSpacing + mOrigin[1];
+    double loc_x = (double(x_index) * mSpacing + mOrigin[0]*mReferenceLength)/ mReferenceLength;
+    double loc_y = (double(y_index) * mSpacing + mOrigin[1]*mReferenceLength)/ mReferenceLength;
     double loc_z = 0.0;
     if (SPACE_DIM == 3)
     {
-        loc_z = double(z_index) * mSpacing + mOrigin[2];
+        loc_z = (double(z_index) * mSpacing + mOrigin[2]*mReferenceLength)/ mReferenceLength;
     }
 
     c_vector<double, SPACE_DIM> location = GetLocation(x_index, y_index, z_index);
-    if (point[0] >= loc_x - mSpacing / 2.0 && point[0] <= loc_x + mSpacing / 2.0)
+    if (point[0] >= loc_x - (mSpacing/mReferenceLength) / 2.0 && point[0] <= loc_x + (mSpacing/mReferenceLength)  / 2.0)
     {
-        if (point[1] >= loc_y - mSpacing / 2.0 && point[1] <= loc_y + mSpacing / 2.0)
+        if (point[1] >= loc_y - (mSpacing/mReferenceLength)  / 2.0 && point[1] <= loc_y + (mSpacing/mReferenceLength)  / 2.0)
         {
             if (SPACE_DIM == 3)
             {
-                if (point[2] >= loc_z - mSpacing / 2.0 && point[2] <= loc_z + mSpacing / 2.0)
+                if (point[2] >= loc_z - (mSpacing/mReferenceLength)  / 2.0 && point[2] <= loc_z + (mSpacing/mReferenceLength)  / 2.0)
                 {
                     return true;
                 }
@@ -669,7 +675,7 @@ void RegularGrid<ELEMENT_DIM, SPACE_DIM>::SetOrigin(c_vector<double, SPACE_DIM> 
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void RegularGrid<ELEMENT_DIM, SPACE_DIM>::SetSpacing(double spacing)
+void RegularGrid<ELEMENT_DIM, SPACE_DIM>::SetSpacing(units::quantity<unit::length> spacing)
 {
     mSpacing = spacing;
 }
@@ -687,7 +693,7 @@ void RegularGrid<ELEMENT_DIM, SPACE_DIM>::SetUpVtkGrid()
     {
         mpVtkGrid->SetDimensions(mExtents[0], mExtents[1], 1);
     }
-    mpVtkGrid->SetSpacing(mSpacing, mSpacing, mSpacing);
+    mpVtkGrid->SetSpacing(mSpacing/mReferenceLength, mSpacing/mReferenceLength, mSpacing/mReferenceLength);
 
     if (SPACE_DIM == 3)
     {
@@ -740,5 +746,5 @@ void RegularGrid<ELEMENT_DIM, SPACE_DIM>::Write(boost::shared_ptr<OutputFileHand
 }
 
 // Explicit instantiation
-template class RegularGrid<2> ;
-template class RegularGrid<3> ;
+template class RegularGrid<2, 2> ;
+template class RegularGrid<3, 3> ;

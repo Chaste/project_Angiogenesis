@@ -60,8 +60,8 @@ public:
         double vessel_length = 100.0;
         VasculatureGenerator<3> generator;
         boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length);
-        p_network->GetVessels()[0]->GetStartNode()->SetRadius(10.0);
-        p_network->GetVessels()[0]->GetEndNode()->SetRadius(10.0);
+        p_network->GetVessels()[0]->GetStartNode()->SetRadius(10.0e-6 * unit::metres);
+        p_network->GetVessels()[0]->GetEndNode()->SetRadius(10.0e-6 * unit::metres);
 
         // Set up the surface generator
         VesselSurfaceGenerator<3> surface_generator(p_network);
@@ -79,10 +79,10 @@ public:
         boost::shared_ptr<VesselNode<3> > p_node3 = VesselNode<3> ::Create(2.0*vessel_length, vessel_length, 0);
         boost::shared_ptr<VesselNode<3> > p_node4 = VesselNode<3> ::Create(3.0*vessel_length, vessel_length, vessel_length);
 
-        p_node1->SetRadius(10.0);
-        p_node2->SetRadius(10.0);
-        p_node3->SetRadius(10.0);
-        p_node4->SetRadius(10.0);
+        p_node1->SetRadius(10.0e-6 * unit::metres);
+        p_node2->SetRadius(10.0e-6 * unit::metres);
+        p_node3->SetRadius(10.0e-6 * unit::metres);
+        p_node4->SetRadius(10.0e-6 * unit::metres);
 
         boost::shared_ptr<VesselSegment<3> > p_segment1 = VesselSegment<3>::Create(p_node1, p_node2);
         boost::shared_ptr<VesselSegment<3> > p_segment2 = VesselSegment<3>::Create(p_node2, p_node3);
@@ -110,16 +110,16 @@ public:
 
         std::vector<boost::shared_ptr<VesselNode<3> > > nodes;
         nodes.push_back(VesselNode<3>::Create(vessel_length/10.0, 0.0, 0.0));
-        nodes[0]->SetRadius(10.0);
+        nodes[0]->SetRadius(10.0e-6 * unit::metres);
         for(unsigned idx=0; idx<num_segments+1; idx++)
         {
             double x_position = vessel_length/10.0 * std::cos(double(idx) * segment_length * (2.0 * M_PI/vessel_length));
             double z_position = double(idx) * segment_length + segment_length;
             nodes.push_back(VesselNode<3>::Create(x_position, 0.0, z_position));
-            nodes[idx+1]->SetRadius(10.0);
+            nodes[idx+1]->SetRadius(10.0e-6 * unit::metres);
         }
         nodes.push_back(VesselNode<3>::Create(vessel_length/10.0, 0.0, (double(num_segments) + 1 ) * segment_length + segment_length));
-        nodes[nodes.size()-1]->SetRadius(10.0);
+        nodes[nodes.size()-1]->SetRadius(10.0e-6 * unit::metres);
 
         boost::shared_ptr<Vessel<3> > p_vessel1 = Vessel<3>::Create(nodes);
         boost::shared_ptr<VesselNetwork<3> > p_network = boost::shared_ptr<VesselNetwork<3> >(new VesselNetwork<3>());
@@ -143,13 +143,13 @@ public:
         boost::shared_ptr<VesselNode<3> > p_node6 = VesselNode<3> ::Create(0.0, 0.0, vessel_length);
         boost::shared_ptr<VesselNode<3> > p_node7 = VesselNode<3> ::Create(0.0, 0.0, -vessel_length);
 
-        p_node1->SetRadius(10.0);
-        p_node2->SetRadius(10.0);
-        p_node3->SetRadius(10.0);
-        p_node4->SetRadius(10.0);
-        p_node5->SetRadius(10.0);
-        p_node6->SetRadius(10.0);
-        p_node7->SetRadius(10.0);
+        p_node1->SetRadius(10.0e-6 * unit::metres);
+        p_node2->SetRadius(10.0e-6 * unit::metres);
+        p_node3->SetRadius(10.0e-6 * unit::metres);
+        p_node4->SetRadius(10.0e-6 * unit::metres);
+        p_node5->SetRadius(10.0e-6 * unit::metres);
+        p_node6->SetRadius(10.0e-6 * unit::metres);
+        p_node7->SetRadius(10.0e-6 * unit::metres);
 
         boost::shared_ptr<VesselSegment<3> > p_segment1 = VesselSegment<3>::Create(p_node2, p_node1);
         boost::shared_ptr<VesselSegment<3> > p_segment2 = VesselSegment<3>::Create(p_node2, p_node3);

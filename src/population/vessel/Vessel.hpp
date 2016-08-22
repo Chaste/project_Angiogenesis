@@ -84,9 +84,10 @@ private:
      */
     bool mNodesUpToDate;
 
+    /**
+     * A flow property collection for the vessel
+     */
     boost::shared_ptr<VesselFlowProperties<DIM> > mpFlowProperties;
-
-private:
 
     /**
      * Constructor. Kept private as the factory Create methods should be used instead.
@@ -181,13 +182,13 @@ public:
      *  Return the dimensionless distance to the vessel end node closest to the input location
      *  @param rLocation the location to probe
      */
-    double GetClosestEndNodeDistance(c_vector<double, DIM> rLocation);
+    units::quantity<unit::length> GetClosestEndNodeDistance(c_vector<double, DIM> rLocation);
 
     /**
-     *  Return the dimensionless distance from the vessel to the input location
+     *  Return the distance from the vessel to the input location
      *  @param rLocation the location to probe
      */
-    double GetDistance(const c_vector<double, DIM>& rLocation) const;
+    units::quantity<unit::length> GetDistance(const c_vector<double, DIM>& rLocation) const;
 
     /**
      * @return vector of vessels connected to this one
@@ -213,39 +214,18 @@ public:
     boost::shared_ptr<VesselNode<DIM> > GetNodeAtOppositeEnd(boost::shared_ptr<VesselNode<DIM> > pQueryNode);
 
     /**
-     *  Return the dimensionless length
+     *  Return the length
      *
-     *  @return the dimensionless length
+     *  @return the length
      */
-     double GetLength() const;
-
-    /**
-     *  Return the dimensional length
-     *
-     *  @return the dimensional length
-     */
-     units::quantity<unit::length> GetDimensionalLength() const;
-
-    /**
-     *  Return the dimensional radius
-     *
-     *  @return the dimensional radius
-     */
-    units::quantity<unit::length> GetDimensionalRadius() const;
-
-    /**
-     *  Return the dimensionless radius
-     *
-     *  @return the dimensionless radius
-     */
-    double GetRadius() const;
+    units::quantity<unit::length> GetLength() const;
 
     /**
      *  Return the radius
      *
      *  @return the radius
      */
-    double GetRadiusSI() const;
+    units::quantity<unit::length> GetRadius() const;
 
     /**
      *  Return the vessel's nodes
@@ -305,19 +285,9 @@ public:
     void RemoveSegments(SegmentLocation::Value location);
 
     /**
-     *  Set the radius
+     *  Set the  radius
      */
-    void SetRadius(double radius);
-
-    /**
-     *  Set the radius in SI
-     */
-    void SetRadiusSI(double radius);
-
-    /**
-     *  Set the dimensional radius
-     */
-    void SetDimensionalRadius(units::quantity<unit::length>  radius);
+    void SetRadius(units::quantity<unit::length>  radius);
 
     /**
      * Set the flow properties of the vessel

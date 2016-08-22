@@ -73,7 +73,7 @@ std::vector<units::quantity<unit::length> > VesselNetworkGeometryCalculator<DIM>
         {
             if(vessels[idx]!=vessels[jdx])
             {
-                units::quantity<unit::length> distance = vessels[idx]->GetStartNode()->GetDistance(vessels[jdx]->GetStartNode()->rGetLocation())*unit::metres;
+                units::quantity<unit::length> distance = vessels[idx]->GetStartNode()->GetDistance(vessels[jdx]->GetStartNode()->rGetLocation());
                 if(distance < min_distance)
                 {
                     min_distance = distance;
@@ -97,7 +97,7 @@ units::quantity<unit::length> VesselNetworkGeometryCalculator<DIM>::GetTotalLeng
     units::quantity<unit::length>  length = 0.0* unit::metres;
     for(unsigned idx=0; idx<vessels.size(); idx++)
     {
-        length += vessels[idx]->GetDimensionalLength();
+        length += vessels[idx]->GetLength();
     }
     return length;
 }
@@ -114,7 +114,7 @@ units::quantity<unit::volume> VesselNetworkGeometryCalculator<DIM>::GetTotalVolu
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = mpVesselNetwork->GetVesselSegments();
     for(unsigned idx=0; idx< segments.size(); idx++)
     {
-        volume += segments[idx]->GetDimensionalLength() * segments[idx]->GetDimensionalRadius() * segments[idx]->GetDimensionalRadius() * M_PI;
+        volume += segments[idx]->GetLength() * segments[idx]->GetRadius() * segments[idx]->GetRadius() * M_PI;
     }
     return volume;
 }
@@ -131,7 +131,7 @@ units::quantity<unit::area> VesselNetworkGeometryCalculator<DIM>::GetTotalSurfac
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = mpVesselNetwork->GetVesselSegments();
     for(unsigned idx=0; idx< segments.size(); idx++)
     {
-        area += segments[idx]->GetDimensionalLength() * 2.0 * segments[idx]->GetDimensionalRadius() * M_PI;
+        area += segments[idx]->GetLength() * 2.0 * segments[idx]->GetRadius() * M_PI;
     }
     return area;
 }
@@ -199,7 +199,7 @@ std::vector<unsigned> VesselNetworkGeometryCalculator<DIM>::GetVesselLengthDistr
     std::vector<boost::shared_ptr<Vessel<DIM> > > vessels = mpVesselNetwork->GetVessels();
     for(unsigned idx=0; idx<vessels.size(); idx++)
     {
-        unsigned bin_label = std::floor(vessels[idx]->GetDimensionalLength() / (binSpacing*unit::metres));
+        unsigned bin_label = std::floor(vessels[idx]->GetLength() / (binSpacing*unit::metres));
         if(bin_label > numberOfBins)
         {
             bin_label = numberOfBins;

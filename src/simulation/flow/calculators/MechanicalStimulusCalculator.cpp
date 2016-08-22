@@ -71,11 +71,11 @@ void MechanicalStimulusCalculator<DIM>::Calculate()
     for (unsigned idx = 0; idx < segments.size(); idx++)
     {
         // get average pressure in a segment. It is stored in pascal, so is converted to mmHg for the calculation.
-        double node0_pressure = segments[idx]->GetNode(0)->GetFlowProperties()->GetPressureSI();
-        double node1_pressure = segments[idx]->GetNode(1)->GetFlowProperties()->GetPressureSI();
+        units::quantity<unit::pressure> node0_pressure = segments[idx]->GetNode(0)->GetFlowProperties()->GetPressure();
+        units::quantity<unit::pressure> node1_pressure = segments[idx]->GetNode(1)->GetFlowProperties()->GetPressure();
 
-        // Conversion to mmHg
-        double average_pressure = (node0_pressure + node1_pressure) * 760.0 / (2.0 * 1.01 * pow(10.0, 5));
+        // Conversion to mmHg. DANGER: Stepping out of boost units framework
+        double average_pressure = (node0_pressure + node1_pressure) * 760.0 / (2.0 * 1.01 * pow(10.0, 5))/unit::pascals;
 
         // The calculation does not work for pressures less than 1 mmHg, so we specify a cut-off value of TauP for lower
         // pressures.
@@ -90,8 +90,8 @@ void MechanicalStimulusCalculator<DIM>::Calculate()
             mTauP = 0.1 * (100.0 - 86.0 * pow(exp(-5.0 * log10(log10(average_pressure))), 5.4)) * unit::pascals;
         }
 
-        units::quantity<unit::rate> mechanical_stimulus = log10((segments[idx]->GetFlowProperties()->GetDimensionalWallShearStress() + mTauRef) / mTauP) * unit::reciprocal_seconds;
-        segments[idx]->GetFlowProperties()->SetDimensionalGrowthStimulus(segments[idx]->GetFlowProperties()->GetDimensionalGrowthStimulus() + mechanical_stimulus);
+        units::quantity<unit::rate> mechanical_stimulus = log10((segments[idx]->GetFlowProperties()->GetWallShearStress() + mTauRef) / mTauP) * unit::reciprocal_seconds;
+        segments[idx]->GetFlowProperties()->SetGrowthStimulus(segments[idx]->GetFlowProperties()->GetGrowthStimulus() + mechanical_stimulus);
     }
 }
 
