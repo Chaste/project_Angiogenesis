@@ -65,6 +65,26 @@ public:
         p_network->MergeCoincidentNodes();
         p_network->Write(output_filename);
     }
+
+    void TestReadBioNetworkFromFile() throw(Exception)
+    {
+        // Locate the input file
+        FileFinder fileFinder("projects/Angiogenesis/test/data/retinal.vtp", RelativeTo::ChasteSourceRoot);
+        TS_ASSERT(fileFinder.Exists());
+        TS_ASSERT(fileFinder.IsFile());
+
+        // Generate the network
+        boost::shared_ptr<VesselNetworkReader<3> > p_network_reader = VesselNetworkReader<3>::Create();
+        p_network_reader->SetFileName(fileFinder.GetAbsolutePath());
+        p_network_reader->SetRadiusArrayName("Distance");
+        boost::shared_ptr<VesselNetwork<3> > p_network = p_network_reader->Read();
+
+        // Write the network to file
+        OutputFileHandler output_file_handler("TestVesselNetworkReaders", false);
+        std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("VtkRetinalNetwork.vtp");
+        p_network->MergeCoincidentNodes();
+        p_network->Write(output_filename);
+    }
 };
 
 #endif /*TestVesselNetworkReader_HPP_*/

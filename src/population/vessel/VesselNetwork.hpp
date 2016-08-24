@@ -270,7 +270,7 @@ public:
     /**
      * Merge short vessels in the network
      */
-    void MergeShortVessels(units::quantity<unit::length> cutoff = 10.0 * unit::microns);
+    void MergeShortVessels(units::quantity<unit::length> cutoff = 10.0 * 1.e-6 * unit::metres);
 
     /**
      * Merge nodes with the same spatial location. Useful for
@@ -300,7 +300,7 @@ public:
      * Remove short vessels from the network
      *
      */
-    void RemoveShortVessels(units::quantity<unit::length> cutoff = 10.0, bool endsOnly = true);
+    void RemoveShortVessels(units::quantity<unit::length> cutoff = 10.0* 1.e-6 * unit::metres, bool endsOnly = true);
 
     /**
      * Set the nodal radii to the same value

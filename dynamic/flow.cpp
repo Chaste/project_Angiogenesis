@@ -2,7 +2,7 @@
 
 #include "boost/python.hpp"
 
-#include "/home/grogan/Chaste/projects/Angiogenesis/dynamic/wrapper_headers/flow_headers.hpp"
+#include "flow_headers.hpp"
 
 namespace bp = boost::python;
 

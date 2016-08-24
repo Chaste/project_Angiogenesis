@@ -357,15 +357,15 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
     }
 
     { //::AbstractMigrationRule< 3 >
-        typedef bp::class_< AbstractMigrationRule_less__3__greater__wrapper > AbstractMigrationRule_less__3__greater__exposer_t;
-        AbstractMigrationRule_less__3__greater__exposer_t AbstractMigrationRule_less__3__greater__exposer = AbstractMigrationRule_less__3__greater__exposer_t( "AbstractMigrationRule_less__3__greater_", bp::init< >() );
-        bp::scope AbstractMigrationRule_less__3__greater__scope( AbstractMigrationRule_less__3__greater__exposer );
+        typedef bp::class_< AbstractMigrationRule_less__3__greater__wrapper > AbstractMigrationRule3_exposer_t;
+        AbstractMigrationRule3_exposer_t AbstractMigrationRule3_exposer = AbstractMigrationRule3_exposer_t( "AbstractMigrationRule3", bp::init< >() );
+        bp::scope AbstractMigrationRule3_scope( AbstractMigrationRule3_exposer );
         { //::AbstractMigrationRule< 3 >::Create
         
             typedef AbstractMigrationRule< 3 > exported_class_t;
             typedef ::boost::shared_ptr< AbstractMigrationRule< 3 > > ( *Create_function_type )(  );
             
-            AbstractMigrationRule_less__3__greater__exposer.def( 
+            AbstractMigrationRule3_exposer.def( 
                 "Create"
                 , Create_function_type( &::AbstractMigrationRule< 3 >::Create ) );
         
@@ -376,7 +376,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ( exported_class_t::*GetDirections_function_type)( ::std::vector< boost::shared_ptr<VesselNode<3> > > const & ) ;
             typedef ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ( AbstractMigrationRule_less__3__greater__wrapper::*default_GetDirections_function_type)( ::std::vector< boost::shared_ptr<VesselNode<3> > > const & ) ;
             
-            AbstractMigrationRule_less__3__greater__exposer.def( 
+            AbstractMigrationRule3_exposer.def( 
                 "GetDirections"
                 , GetDirections_function_type(&::AbstractMigrationRule< 3 >::GetDirections)
                 , default_GetDirections_function_type(&AbstractMigrationRule_less__3__greater__wrapper::default_GetDirections)
@@ -389,7 +389,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef ::std::vector< int > ( exported_class_t::*GetIndices_function_type)( ::std::vector< boost::shared_ptr<VesselNode<3> > > const & ) ;
             typedef ::std::vector< int > ( AbstractMigrationRule_less__3__greater__wrapper::*default_GetIndices_function_type)( ::std::vector< boost::shared_ptr<VesselNode<3> > > const & ) ;
             
-            AbstractMigrationRule_less__3__greater__exposer.def( 
+            AbstractMigrationRule3_exposer.def( 
                 "GetIndices"
                 , GetIndices_function_type(&::AbstractMigrationRule< 3 >::GetIndices)
                 , default_GetIndices_function_type(&AbstractMigrationRule_less__3__greater__wrapper::default_GetIndices)
@@ -401,7 +401,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef AbstractMigrationRule< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetCellPopulation_function_type)( ::boost::shared_ptr< AbstractCellPopulation< 3, 3 > > ) ;
             
-            AbstractMigrationRule_less__3__greater__exposer.def( 
+            AbstractMigrationRule3_exposer.def( 
                 "SetCellPopulation"
                 , SetCellPopulation_function_type( &::AbstractMigrationRule< 3 >::SetCellPopulation )
                 , ( bp::arg("pCellPopulation") ) );
@@ -412,7 +412,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef AbstractMigrationRule< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetGrid_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
             
-            AbstractMigrationRule_less__3__greater__exposer.def( 
+            AbstractMigrationRule3_exposer.def( 
                 "SetGrid"
                 , SetGrid_function_type( &::AbstractMigrationRule< 3 >::SetGrid )
                 , ( bp::arg("pGrid") ) );
@@ -423,7 +423,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef AbstractMigrationRule< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetHybridSolver_function_type)( ::boost::shared_ptr< AbstractHybridSolver< 3 > > ) ;
             
-            AbstractMigrationRule_less__3__greater__exposer.def( 
+            AbstractMigrationRule3_exposer.def( 
                 "SetHybridSolver"
                 , SetHybridSolver_function_type( &::AbstractMigrationRule< 3 >::SetHybridSolver )
                 , ( bp::arg("pSolver") ) );
@@ -434,7 +434,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef AbstractMigrationRule< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetIsSprouting_function_type)( bool ) ;
             
-            AbstractMigrationRule_less__3__greater__exposer.def( 
+            AbstractMigrationRule3_exposer.def( 
                 "SetIsSprouting"
                 , SetIsSprouting_function_type( &::AbstractMigrationRule< 3 >::SetIsSprouting )
                 , ( bp::arg("isSprouting")=(bool)(true) ) );
@@ -445,27 +445,27 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef AbstractMigrationRule< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetNetwork_function_type)( ::boost::shared_ptr< VesselNetwork< 3 > > ) ;
             
-            AbstractMigrationRule_less__3__greater__exposer.def( 
+            AbstractMigrationRule3_exposer.def( 
                 "SetNetwork"
                 , SetNetwork_function_type( &::AbstractMigrationRule< 3 >::SetNetwork )
                 , ( bp::arg("pNetwork") ) );
         
         }
-        AbstractMigrationRule_less__3__greater__exposer.staticmethod( "Create" );
+        AbstractMigrationRule3_exposer.staticmethod( "Create" );
         bp::register_ptr_to_python< boost::shared_ptr< AbstractMigrationRule<3> > >();
     }
 
     { //::AbstractSproutingRule< 3 >
-        typedef bp::class_< AbstractSproutingRule_less__3__greater__wrapper > AbstractSproutingRule_less__3__greater__exposer_t;
-        AbstractSproutingRule_less__3__greater__exposer_t AbstractSproutingRule_less__3__greater__exposer = AbstractSproutingRule_less__3__greater__exposer_t( "AbstractSproutingRule_less__3__greater_", bp::init< >() );
-        bp::scope AbstractSproutingRule_less__3__greater__scope( AbstractSproutingRule_less__3__greater__exposer );
+        typedef bp::class_< AbstractSproutingRule_less__3__greater__wrapper > AbstractSproutingRule3_exposer_t;
+        AbstractSproutingRule3_exposer_t AbstractSproutingRule3_exposer = AbstractSproutingRule3_exposer_t( "AbstractSproutingRule3", bp::init< >() );
+        bp::scope AbstractSproutingRule3_scope( AbstractSproutingRule3_exposer );
         { //::AbstractSproutingRule< 3 >::GetSprouts
         
             typedef AbstractSproutingRule< 3 > exported_class_t;
             typedef ::std::vector< boost::shared_ptr<VesselNode<3> > > ( exported_class_t::*GetSprouts_function_type)( ::std::vector< boost::shared_ptr<VesselNode<3> > > const & ) ;
             typedef ::std::vector< boost::shared_ptr<VesselNode<3> > > ( AbstractSproutingRule_less__3__greater__wrapper::*default_GetSprouts_function_type)( ::std::vector< boost::shared_ptr<VesselNode<3> > > const & ) ;
             
-            AbstractSproutingRule_less__3__greater__exposer.def( 
+            AbstractSproutingRule3_exposer.def( 
                 "GetSprouts"
                 , GetSprouts_function_type(&::AbstractSproutingRule< 3 >::GetSprouts)
                 , default_GetSprouts_function_type(&AbstractSproutingRule_less__3__greater__wrapper::default_GetSprouts)
@@ -478,7 +478,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef void ( exported_class_t::*SetGrid_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
             typedef void ( AbstractSproutingRule_less__3__greater__wrapper::*default_SetGrid_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
             
-            AbstractSproutingRule_less__3__greater__exposer.def( 
+            AbstractSproutingRule3_exposer.def( 
                 "SetGrid"
                 , SetGrid_function_type(&::AbstractSproutingRule< 3 >::SetGrid)
                 , default_SetGrid_function_type(&AbstractSproutingRule_less__3__greater__wrapper::default_SetGrid)
@@ -490,7 +490,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef AbstractSproutingRule< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetHybridSolver_function_type)( ::boost::shared_ptr< AbstractHybridSolver< 3 > > ) ;
             
-            AbstractSproutingRule_less__3__greater__exposer.def( 
+            AbstractSproutingRule3_exposer.def( 
                 "SetHybridSolver"
                 , SetHybridSolver_function_type( &::AbstractSproutingRule< 3 >::SetHybridSolver )
                 , ( bp::arg("pSolver") ) );
@@ -501,7 +501,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef AbstractSproutingRule< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetSproutingProbability_function_type)( double ) ;
             
-            AbstractSproutingRule_less__3__greater__exposer.def( 
+            AbstractSproutingRule3_exposer.def( 
                 "SetSproutingProbability"
                 , SetSproutingProbability_function_type( &::AbstractSproutingRule< 3 >::SetSproutingProbability )
                 , ( bp::arg("probability") ) );
@@ -510,9 +510,9 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
         { //::AbstractSproutingRule< 3 >::SetVesselEndCutoff
         
             typedef AbstractSproutingRule< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetVesselEndCutoff_function_type)( double ) ;
+            typedef void ( exported_class_t::*SetVesselEndCutoff_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
             
-            AbstractSproutingRule_less__3__greater__exposer.def( 
+            AbstractSproutingRule3_exposer.def( 
                 "SetVesselEndCutoff"
                 , SetVesselEndCutoff_function_type( &::AbstractSproutingRule< 3 >::SetVesselEndCutoff )
                 , ( bp::arg("cutoff") ) );
@@ -523,7 +523,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef AbstractSproutingRule< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetVesselNetwork_function_type)( ::boost::shared_ptr< VesselNetwork< 3 > > ) ;
             
-            AbstractSproutingRule_less__3__greater__exposer.def( 
+            AbstractSproutingRule3_exposer.def( 
                 "SetVesselNetwork"
                 , SetVesselNetwork_function_type( &::AbstractSproutingRule< 3 >::SetVesselNetwork )
                 , ( bp::arg("pVesselNetwork") ) );
@@ -533,15 +533,15 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
     }
 
     { //::AngiogenesisSolver< 3 >
-        typedef bp::class_< AngiogenesisSolver_less__3__greater__wrapper > AngiogenesisSolver_less__3__greater__exposer_t;
-        AngiogenesisSolver_less__3__greater__exposer_t AngiogenesisSolver_less__3__greater__exposer = AngiogenesisSolver_less__3__greater__exposer_t( "AngiogenesisSolver_less__3__greater_", bp::init< >() );
-        bp::scope AngiogenesisSolver_less__3__greater__scope( AngiogenesisSolver_less__3__greater__exposer );
+        typedef bp::class_< AngiogenesisSolver_less__3__greater__wrapper > AngiogenesisSolver3_exposer_t;
+        AngiogenesisSolver3_exposer_t AngiogenesisSolver3_exposer = AngiogenesisSolver3_exposer_t( "AngiogenesisSolver3", bp::init< >() );
+        bp::scope AngiogenesisSolver3_scope( AngiogenesisSolver3_exposer );
         { //::AngiogenesisSolver< 3 >::Create
         
             typedef AngiogenesisSolver< 3 > exported_class_t;
             typedef ::boost::shared_ptr< AngiogenesisSolver< 3 > > ( *Create_function_type )(  );
             
-            AngiogenesisSolver_less__3__greater__exposer.def( 
+            AngiogenesisSolver3_exposer.def( 
                 "Create"
                 , Create_function_type( &::AngiogenesisSolver< 3 >::Create ) );
         
@@ -551,7 +551,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef AngiogenesisSolver< 3 > exported_class_t;
             typedef void ( AngiogenesisSolver_less__3__greater__wrapper::*DoAnastamosis_function_type)(  ) ;
             
-            AngiogenesisSolver_less__3__greater__exposer.def( 
+            AngiogenesisSolver3_exposer.def( 
                 "DoAnastamosis"
                 , DoAnastamosis_function_type( &AngiogenesisSolver_less__3__greater__wrapper::DoAnastamosis ) );
         
@@ -561,7 +561,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef AngiogenesisSolver< 3 > exported_class_t;
             typedef void ( AngiogenesisSolver_less__3__greater__wrapper::*DoSprouting_function_type)(  ) ;
             
-            AngiogenesisSolver_less__3__greater__exposer.def( 
+            AngiogenesisSolver3_exposer.def( 
                 "DoSprouting"
                 , DoSprouting_function_type( &AngiogenesisSolver_less__3__greater__wrapper::DoSprouting ) );
         
@@ -572,7 +572,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef void ( exported_class_t::*Increment_function_type)(  ) ;
             typedef void ( AngiogenesisSolver_less__3__greater__wrapper::*default_Increment_function_type)(  ) ;
             
-            AngiogenesisSolver_less__3__greater__exposer.def( 
+            AngiogenesisSolver3_exposer.def( 
                 "Increment"
                 , Increment_function_type(&::AngiogenesisSolver< 3 >::Increment)
                 , default_Increment_function_type(&AngiogenesisSolver_less__3__greater__wrapper::default_Increment) );
@@ -583,7 +583,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef AngiogenesisSolver< 3 > exported_class_t;
             typedef bool ( exported_class_t::*IsSproutingRuleSet_function_type)(  ) ;
             
-            AngiogenesisSolver_less__3__greater__exposer.def( 
+            AngiogenesisSolver3_exposer.def( 
                 "IsSproutingRuleSet"
                 , IsSproutingRuleSet_function_type( &::AngiogenesisSolver< 3 >::IsSproutingRuleSet ) );
         
@@ -593,7 +593,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef AngiogenesisSolver< 3 > exported_class_t;
             typedef void ( exported_class_t::*Run_function_type)( bool ) ;
             
-            AngiogenesisSolver_less__3__greater__exposer.def( 
+            AngiogenesisSolver3_exposer.def( 
                 "Run"
                 , Run_function_type( &::AngiogenesisSolver< 3 >::Run )
                 , ( bp::arg("writeOutput")=(bool)(false) ) );
@@ -602,9 +602,9 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
         { //::AngiogenesisSolver< 3 >::SetAnastamosisRadius
         
             typedef AngiogenesisSolver< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetAnastamosisRadius_function_type)( double ) ;
+            typedef void ( exported_class_t::*SetAnastamosisRadius_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
             
-            AngiogenesisSolver_less__3__greater__exposer.def( 
+            AngiogenesisSolver3_exposer.def( 
                 "SetAnastamosisRadius"
                 , SetAnastamosisRadius_function_type( &::AngiogenesisSolver< 3 >::SetAnastamosisRadius )
                 , ( bp::arg("radius") ) );
@@ -615,7 +615,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef AngiogenesisSolver< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetBoundingDomain_function_type)( ::boost::shared_ptr< Part< 3 > > ) ;
             
-            AngiogenesisSolver_less__3__greater__exposer.def( 
+            AngiogenesisSolver3_exposer.def( 
                 "SetBoundingDomain"
                 , SetBoundingDomain_function_type( &::AngiogenesisSolver< 3 >::SetBoundingDomain )
                 , ( bp::arg("pDomain") ) );
@@ -626,7 +626,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef AngiogenesisSolver< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetCellPopulation_function_type)( ::boost::shared_ptr< AbstractCellPopulation< 3, 3 > > ) ;
             
-            AngiogenesisSolver_less__3__greater__exposer.def( 
+            AngiogenesisSolver3_exposer.def( 
                 "SetCellPopulation"
                 , SetCellPopulation_function_type( &::AngiogenesisSolver< 3 >::SetCellPopulation )
                 , ( bp::arg("pCellPopulation") ) );
@@ -637,7 +637,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef AngiogenesisSolver< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetMigrationRule_function_type)( ::boost::shared_ptr< AbstractMigrationRule< 3 > > ) ;
             
-            AngiogenesisSolver_less__3__greater__exposer.def( 
+            AngiogenesisSolver3_exposer.def( 
                 "SetMigrationRule"
                 , SetMigrationRule_function_type( &::AngiogenesisSolver< 3 >::SetMigrationRule )
                 , ( bp::arg("pMigrationRule") ) );
@@ -648,7 +648,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef AngiogenesisSolver< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetOutputFileHandler_function_type)( ::boost::shared_ptr< OutputFileHandler > ) ;
             
-            AngiogenesisSolver_less__3__greater__exposer.def( 
+            AngiogenesisSolver3_exposer.def( 
                 "SetOutputFileHandler"
                 , SetOutputFileHandler_function_type( &::AngiogenesisSolver< 3 >::SetOutputFileHandler )
                 , ( bp::arg("pHandler") ) );
@@ -659,7 +659,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef AngiogenesisSolver< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetSproutingRule_function_type)( ::boost::shared_ptr< AbstractSproutingRule< 3 > > ) ;
             
-            AngiogenesisSolver_less__3__greater__exposer.def( 
+            AngiogenesisSolver3_exposer.def( 
                 "SetSproutingRule"
                 , SetSproutingRule_function_type( &::AngiogenesisSolver< 3 >::SetSproutingRule )
                 , ( bp::arg("pSproutingRule") ) );
@@ -670,7 +670,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef AngiogenesisSolver< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetVesselGrid_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
             
-            AngiogenesisSolver_less__3__greater__exposer.def( 
+            AngiogenesisSolver3_exposer.def( 
                 "SetVesselGrid"
                 , SetVesselGrid_function_type( &::AngiogenesisSolver< 3 >::SetVesselGrid )
                 , ( bp::arg("pVesselGrid") ) );
@@ -681,7 +681,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef AngiogenesisSolver< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetVesselNetwork_function_type)( ::boost::shared_ptr< VesselNetwork< 3 > > ) ;
             
-            AngiogenesisSolver_less__3__greater__exposer.def( 
+            AngiogenesisSolver3_exposer.def( 
                 "SetVesselNetwork"
                 , SetVesselNetwork_function_type( &::AngiogenesisSolver< 3 >::SetVesselNetwork )
                 , ( bp::arg("pNetwork") ) );
@@ -692,26 +692,26 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef AngiogenesisSolver< 3 > exported_class_t;
             typedef void ( AngiogenesisSolver_less__3__greater__wrapper::*UpdateNodalPositions_function_type)( bool ) ;
             
-            AngiogenesisSolver_less__3__greater__exposer.def( 
+            AngiogenesisSolver3_exposer.def( 
                 "UpdateNodalPositions"
                 , UpdateNodalPositions_function_type( &AngiogenesisSolver_less__3__greater__wrapper::UpdateNodalPositions )
                 , ( bp::arg("sprouting")=(bool)(false) ) );
         
         }
-        AngiogenesisSolver_less__3__greater__exposer.staticmethod( "Create" );
+        AngiogenesisSolver3_exposer.staticmethod( "Create" );
         bp::register_ptr_to_python< boost::shared_ptr< AngiogenesisSolver<3> > >();
     }
 
     { //::OffLatticeMigrationRule< 3 >
-        typedef bp::class_< OffLatticeMigrationRule_less__3__greater__wrapper, bp::bases< AbstractMigrationRule< 3 > > > OffLatticeMigrationRule_less__3__greater__exposer_t;
-        OffLatticeMigrationRule_less__3__greater__exposer_t OffLatticeMigrationRule_less__3__greater__exposer = OffLatticeMigrationRule_less__3__greater__exposer_t( "OffLatticeMigrationRule_less__3__greater_", bp::init< >() );
-        bp::scope OffLatticeMigrationRule_less__3__greater__scope( OffLatticeMigrationRule_less__3__greater__exposer );
+        typedef bp::class_< OffLatticeMigrationRule_less__3__greater__wrapper, bp::bases< AbstractMigrationRule< 3 > > > OffLatticeMigrationRule3_exposer_t;
+        OffLatticeMigrationRule3_exposer_t OffLatticeMigrationRule3_exposer = OffLatticeMigrationRule3_exposer_t( "OffLatticeMigrationRule3", bp::init< >() );
+        bp::scope OffLatticeMigrationRule3_scope( OffLatticeMigrationRule3_exposer );
         { //::OffLatticeMigrationRule< 3 >::Create
         
             typedef OffLatticeMigrationRule< 3 > exported_class_t;
             typedef ::boost::shared_ptr< OffLatticeMigrationRule< 3 > > ( *Create_function_type )(  );
             
-            OffLatticeMigrationRule_less__3__greater__exposer.def( 
+            OffLatticeMigrationRule3_exposer.def( 
                 "Create"
                 , Create_function_type( &::OffLatticeMigrationRule< 3 >::Create ) );
         
@@ -722,7 +722,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ( exported_class_t::*GetDirections_function_type)( ::std::vector< boost::shared_ptr<VesselNode<3> > > const & ) ;
             typedef ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ( OffLatticeMigrationRule_less__3__greater__wrapper::*default_GetDirections_function_type)( ::std::vector< boost::shared_ptr<VesselNode<3> > > const & ) ;
             
-            OffLatticeMigrationRule_less__3__greater__exposer.def( 
+            OffLatticeMigrationRule3_exposer.def( 
                 "GetDirections"
                 , GetDirections_function_type(&::OffLatticeMigrationRule< 3 >::GetDirections)
                 , default_GetDirections_function_type(&OffLatticeMigrationRule_less__3__greater__wrapper::default_GetDirections)
@@ -734,7 +734,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef OffLatticeMigrationRule< 3 > exported_class_t;
             typedef ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ( exported_class_t::*GetDirectionsForSprouts_function_type)( ::std::vector< boost::shared_ptr<VesselNode<3> > > const & ) ;
             
-            OffLatticeMigrationRule_less__3__greater__exposer.def( 
+            OffLatticeMigrationRule3_exposer.def( 
                 "GetDirectionsForSprouts"
                 , GetDirectionsForSprouts_function_type( &::OffLatticeMigrationRule< 3 >::GetDirectionsForSprouts )
                 , ( bp::arg("rNodes") ) );
@@ -745,7 +745,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef OffLatticeMigrationRule< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetAttractionStrength_function_type)( double ) ;
             
-            OffLatticeMigrationRule_less__3__greater__exposer.def( 
+            OffLatticeMigrationRule3_exposer.def( 
                 "SetAttractionStrength"
                 , SetAttractionStrength_function_type( &::OffLatticeMigrationRule< 3 >::SetAttractionStrength )
                 , ( bp::arg("strength") ) );
@@ -756,7 +756,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef OffLatticeMigrationRule< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetChemotacticStrength_function_type)( double ) ;
             
-            OffLatticeMigrationRule_less__3__greater__exposer.def( 
+            OffLatticeMigrationRule3_exposer.def( 
                 "SetChemotacticStrength"
                 , SetChemotacticStrength_function_type( &::OffLatticeMigrationRule< 3 >::SetChemotacticStrength )
                 , ( bp::arg("strength") ) );
@@ -767,7 +767,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef OffLatticeMigrationRule< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetIsSprouting_function_type)( bool ) ;
             
-            OffLatticeMigrationRule_less__3__greater__exposer.def( 
+            OffLatticeMigrationRule3_exposer.def( 
                 "SetIsSprouting"
                 , SetIsSprouting_function_type( &::OffLatticeMigrationRule< 3 >::SetIsSprouting )
                 , ( bp::arg("isSprouting")=(bool)(true) ) );
@@ -778,7 +778,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef OffLatticeMigrationRule< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetSproutingVelocity_function_type)( double ) ;
             
-            OffLatticeMigrationRule_less__3__greater__exposer.def( 
+            OffLatticeMigrationRule3_exposer.def( 
                 "SetSproutingVelocity"
                 , SetSproutingVelocity_function_type( &::OffLatticeMigrationRule< 3 >::SetSproutingVelocity )
                 , ( bp::arg("velocity") ) );
@@ -790,28 +790,28 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef ::std::vector< int > ( exported_class_t::*GetIndices_function_type)( ::std::vector< boost::shared_ptr<VesselNode<3> > > const & ) ;
             typedef ::std::vector< int > ( OffLatticeMigrationRule_less__3__greater__wrapper::*default_GetIndices_function_type)( ::std::vector< boost::shared_ptr<VesselNode<3> > > const & ) ;
             
-            OffLatticeMigrationRule_less__3__greater__exposer.def( 
+            OffLatticeMigrationRule3_exposer.def( 
                 "GetIndices"
                 , GetIndices_function_type(&::AbstractMigrationRule< 3 >::GetIndices)
                 , default_GetIndices_function_type(&OffLatticeMigrationRule_less__3__greater__wrapper::default_GetIndices)
                 , ( bp::arg("rNodes") ) );
         
         }
-        OffLatticeMigrationRule_less__3__greater__exposer.staticmethod( "Create" );
+        OffLatticeMigrationRule3_exposer.staticmethod( "Create" );
         bp::register_ptr_to_python< boost::shared_ptr< OffLatticeMigrationRule<3> > >();
         bp::implicitly_convertible< boost::shared_ptr< OffLatticeMigrationRule< 3 > >, boost::shared_ptr< AbstractMigrationRule< 3 > > >();
     }
 
     { //::OffLatticeSproutingRule< 3 >
-        typedef bp::class_< OffLatticeSproutingRule_less__3__greater__wrapper, bp::bases< AbstractSproutingRule< 3 > > > OffLatticeSproutingRule_less__3__greater__exposer_t;
-        OffLatticeSproutingRule_less__3__greater__exposer_t OffLatticeSproutingRule_less__3__greater__exposer = OffLatticeSproutingRule_less__3__greater__exposer_t( "OffLatticeSproutingRule_less__3__greater_", bp::init< >() );
-        bp::scope OffLatticeSproutingRule_less__3__greater__scope( OffLatticeSproutingRule_less__3__greater__exposer );
+        typedef bp::class_< OffLatticeSproutingRule_less__3__greater__wrapper, bp::bases< AbstractSproutingRule< 3 > > > OffLatticeSproutingRule3_exposer_t;
+        OffLatticeSproutingRule3_exposer_t OffLatticeSproutingRule3_exposer = OffLatticeSproutingRule3_exposer_t( "OffLatticeSproutingRule3", bp::init< >() );
+        bp::scope OffLatticeSproutingRule3_scope( OffLatticeSproutingRule3_exposer );
         { //::OffLatticeSproutingRule< 3 >::Create
         
             typedef OffLatticeSproutingRule< 3 > exported_class_t;
             typedef ::boost::shared_ptr< OffLatticeSproutingRule< 3 > > ( *Create_function_type )(  );
             
-            OffLatticeSproutingRule_less__3__greater__exposer.def( 
+            OffLatticeSproutingRule3_exposer.def( 
                 "Create"
                 , Create_function_type( &::OffLatticeSproutingRule< 3 >::Create ) );
         
@@ -822,7 +822,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef ::std::vector< boost::shared_ptr<VesselNode<3> > > ( exported_class_t::*GetSprouts_function_type)( ::std::vector< boost::shared_ptr<VesselNode<3> > > const & ) ;
             typedef ::std::vector< boost::shared_ptr<VesselNode<3> > > ( OffLatticeSproutingRule_less__3__greater__wrapper::*default_GetSprouts_function_type)( ::std::vector< boost::shared_ptr<VesselNode<3> > > const & ) ;
             
-            OffLatticeSproutingRule_less__3__greater__exposer.def( 
+            OffLatticeSproutingRule3_exposer.def( 
                 "GetSprouts"
                 , GetSprouts_function_type(&::OffLatticeSproutingRule< 3 >::GetSprouts)
                 , default_GetSprouts_function_type(&OffLatticeSproutingRule_less__3__greater__wrapper::default_GetSprouts)
@@ -835,28 +835,28 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef void ( exported_class_t::*SetGrid_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
             typedef void ( OffLatticeSproutingRule_less__3__greater__wrapper::*default_SetGrid_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
             
-            OffLatticeSproutingRule_less__3__greater__exposer.def( 
+            OffLatticeSproutingRule3_exposer.def( 
                 "SetGrid"
                 , SetGrid_function_type(&::AbstractSproutingRule< 3 >::SetGrid)
                 , default_SetGrid_function_type(&OffLatticeSproutingRule_less__3__greater__wrapper::default_SetGrid)
                 , ( bp::arg("pGrid") ) );
         
         }
-        OffLatticeSproutingRule_less__3__greater__exposer.staticmethod( "Create" );
+        OffLatticeSproutingRule3_exposer.staticmethod( "Create" );
         bp::register_ptr_to_python< boost::shared_ptr< OffLatticeSproutingRule<3> > >();
         bp::implicitly_convertible< boost::shared_ptr< OffLatticeSproutingRule< 3 > >, boost::shared_ptr< AbstractSproutingRule< 3 > > >();
     }
 
     { //::Owen2011MigrationRule< 3 >
-        typedef bp::class_< Owen2011MigrationRule_less__3__greater__wrapper > Owen2011MigrationRule_less__3__greater__exposer_t;
-        Owen2011MigrationRule_less__3__greater__exposer_t Owen2011MigrationRule_less__3__greater__exposer = Owen2011MigrationRule_less__3__greater__exposer_t( "Owen2011MigrationRule_less__3__greater_", bp::init< >() );
-        bp::scope Owen2011MigrationRule_less__3__greater__scope( Owen2011MigrationRule_less__3__greater__exposer );
+        typedef bp::class_< Owen2011MigrationRule_less__3__greater__wrapper > Owen2011MigrationRule3_exposer_t;
+        Owen2011MigrationRule3_exposer_t Owen2011MigrationRule3_exposer = Owen2011MigrationRule3_exposer_t( "Owen2011MigrationRule3", bp::init< >() );
+        bp::scope Owen2011MigrationRule3_scope( Owen2011MigrationRule3_exposer );
         { //::Owen2011MigrationRule< 3 >::Create
         
             typedef Owen2011MigrationRule< 3 > exported_class_t;
             typedef ::boost::shared_ptr< Owen2011MigrationRule< 3 > > ( *Create_function_type )(  );
             
-            Owen2011MigrationRule_less__3__greater__exposer.def( 
+            Owen2011MigrationRule3_exposer.def( 
                 "Create"
                 , Create_function_type( &::Owen2011MigrationRule< 3 >::Create ) );
         
@@ -867,7 +867,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef ::std::vector< int > ( exported_class_t::*GetIndices_function_type)( ::std::vector< boost::shared_ptr<VesselNode<3> > > const & ) ;
             typedef ::std::vector< int > ( Owen2011MigrationRule_less__3__greater__wrapper::*default_GetIndices_function_type)( ::std::vector< boost::shared_ptr<VesselNode<3> > > const & ) ;
             
-            Owen2011MigrationRule_less__3__greater__exposer.def( 
+            Owen2011MigrationRule3_exposer.def( 
                 "GetIndices"
                 , GetIndices_function_type(&::Owen2011MigrationRule< 3 >::GetIndices)
                 , default_GetIndices_function_type(&Owen2011MigrationRule_less__3__greater__wrapper::default_GetIndices)
@@ -879,7 +879,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef Owen2011MigrationRule< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetCellChemotacticParameter_function_type)( double ) ;
             
-            Owen2011MigrationRule_less__3__greater__exposer.def( 
+            Owen2011MigrationRule3_exposer.def( 
                 "SetCellChemotacticParameter"
                 , SetCellChemotacticParameter_function_type( &::Owen2011MigrationRule< 3 >::SetCellChemotacticParameter )
                 , ( bp::arg("cellChemotacticParameter") ) );
@@ -890,7 +890,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef Owen2011MigrationRule< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetCellMotilityParameter_function_type)( double ) ;
             
-            Owen2011MigrationRule_less__3__greater__exposer.def( 
+            Owen2011MigrationRule3_exposer.def( 
                 "SetCellMotilityParameter"
                 , SetCellMotilityParameter_function_type( &::Owen2011MigrationRule< 3 >::SetCellMotilityParameter )
                 , ( bp::arg("cellMotility") ) );
@@ -902,29 +902,29 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ( exported_class_t::*GetDirections_function_type)( ::std::vector< boost::shared_ptr<VesselNode<3> > > const & ) ;
             typedef ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ( Owen2011MigrationRule_less__3__greater__wrapper::*default_GetDirections_function_type)( ::std::vector< boost::shared_ptr<VesselNode<3> > > const & ) ;
             
-            Owen2011MigrationRule_less__3__greater__exposer.def( 
+            Owen2011MigrationRule3_exposer.def( 
                 "GetDirections"
                 , GetDirections_function_type(&::AbstractMigrationRule< 3 >::GetDirections)
                 , default_GetDirections_function_type(&Owen2011MigrationRule_less__3__greater__wrapper::default_GetDirections)
                 , ( bp::arg("rNodes") ) );
         
         }
-        Owen2011MigrationRule_less__3__greater__exposer.staticmethod( "Create" );
+        Owen2011MigrationRule3_exposer.staticmethod( "Create" );
         bp::register_ptr_to_python< boost::shared_ptr< Owen2011MigrationRule<3> > >();
         bp::implicitly_convertible< boost::shared_ptr< Owen2011MigrationRule< 3 > >, boost::shared_ptr< LatticeBasedMigrationRule< 3 > > >();
         bp::implicitly_convertible< boost::shared_ptr< Owen2011MigrationRule< 3 > >, boost::shared_ptr< AbstractMigrationRule< 3 > > >();
     }
 
     { //::Owen2011SproutingRule< 3 >
-        typedef bp::class_< Owen2011SproutingRule_less__3__greater__wrapper > Owen2011SproutingRule_less__3__greater__exposer_t;
-        Owen2011SproutingRule_less__3__greater__exposer_t Owen2011SproutingRule_less__3__greater__exposer = Owen2011SproutingRule_less__3__greater__exposer_t( "Owen2011SproutingRule_less__3__greater_", bp::init< >() );
-        bp::scope Owen2011SproutingRule_less__3__greater__scope( Owen2011SproutingRule_less__3__greater__exposer );
+        typedef bp::class_< Owen2011SproutingRule_less__3__greater__wrapper > Owen2011SproutingRule3_exposer_t;
+        Owen2011SproutingRule3_exposer_t Owen2011SproutingRule3_exposer = Owen2011SproutingRule3_exposer_t( "Owen2011SproutingRule3", bp::init< >() );
+        bp::scope Owen2011SproutingRule3_scope( Owen2011SproutingRule3_exposer );
         { //::Owen2011SproutingRule< 3 >::Create
         
             typedef Owen2011SproutingRule< 3 > exported_class_t;
             typedef ::boost::shared_ptr< Owen2011SproutingRule< 3 > > ( *Create_function_type )(  );
             
-            Owen2011SproutingRule_less__3__greater__exposer.def( 
+            Owen2011SproutingRule3_exposer.def( 
                 "Create"
                 , Create_function_type( &::Owen2011SproutingRule< 3 >::Create ) );
         
@@ -935,7 +935,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef ::std::vector< boost::shared_ptr<VesselNode<3> > > ( exported_class_t::*GetSprouts_function_type)( ::std::vector< boost::shared_ptr<VesselNode<3> > > const & ) ;
             typedef ::std::vector< boost::shared_ptr<VesselNode<3> > > ( Owen2011SproutingRule_less__3__greater__wrapper::*default_GetSprouts_function_type)( ::std::vector< boost::shared_ptr<VesselNode<3> > > const & ) ;
             
-            Owen2011SproutingRule_less__3__greater__exposer.def( 
+            Owen2011SproutingRule3_exposer.def( 
                 "GetSprouts"
                 , GetSprouts_function_type(&::Owen2011SproutingRule< 3 >::GetSprouts)
                 , default_GetSprouts_function_type(&Owen2011SproutingRule_less__3__greater__wrapper::default_GetSprouts)
@@ -947,13 +947,13 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             typedef Owen2011SproutingRule< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetHalfMaxVegf_function_type)( double ) ;
             
-            Owen2011SproutingRule_less__3__greater__exposer.def( 
+            Owen2011SproutingRule3_exposer.def( 
                 "SetHalfMaxVegf"
                 , SetHalfMaxVegf_function_type( &::Owen2011SproutingRule< 3 >::SetHalfMaxVegf )
                 , ( bp::arg("halfMaxVegf") ) );
         
         }
-        Owen2011SproutingRule_less__3__greater__exposer.staticmethod( "Create" );
+        Owen2011SproutingRule3_exposer.staticmethod( "Create" );
         bp::register_ptr_to_python< boost::shared_ptr< Owen2011SproutingRule<3> > >();
         bp::implicitly_convertible< boost::shared_ptr< Owen2011SproutingRule< 3 > >, boost::shared_ptr< LatticeBasedSproutingRule< 3 > > >();
         bp::implicitly_convertible< boost::shared_ptr< Owen2011SproutingRule< 3 > >, boost::shared_ptr< AbstractSproutingRule< 3 > > >();

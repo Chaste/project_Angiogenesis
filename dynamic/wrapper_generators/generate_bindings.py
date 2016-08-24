@@ -25,7 +25,7 @@ def template_replace(class_name):
     if "<2>" in class_name[-3:]:
         new_name = class_name[:-3] + "2"       
     if "<3,3>" in class_name[-5:]:
-        new_name = class_name[:-3] + "3_3"        
+        new_name = class_name[:-5] + "3_3"        
     if "<2,2>" in class_name[-5:]:
         new_name = class_name[:-5] + "2_2"  
     return new_name

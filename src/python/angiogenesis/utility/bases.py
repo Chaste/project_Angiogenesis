@@ -1,6 +1,6 @@
 import argparse
 import logging
-import chaste_project_Angiogenesis.utility.readwrite
+import chaste.projects.angiogenesis.utility.readwrite
 
 class SimpleIOBase(object):
     
@@ -36,10 +36,10 @@ class SimpleIOBase(object):
         args = parser.parse_args()
         logging.info("Starting: " + self.tool_name)
         logging.info("Reading: " + args.input)
-        self.input = chaste_project_Angiogenesis.utility.readwrite.read(args.input)
+        self.input = chaste.projects.angiogenesis.utility.readwrite.read(args.input)
         logging.info("Running: " + self.tool_name)
         self.update()
         logging.info("Writing: " + args.output)
-        chaste_project_Angiogenesis.utility.readwrite.write(self.output, args.output)
+        chaste.projects.angiogenesis.utility.readwrite.write(self.output, args.output)
         logging.info("Finished: " + self.tool_name)
     

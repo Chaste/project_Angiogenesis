@@ -459,6 +459,7 @@ vtkSmartPointer<vtkPolyData> Part<DIM>::GetVtk(bool update)
 
     p_part_data->Allocate(1, 1);
     // Loop through each polygon, collect the vertices and set correct point ids
+
     std::vector<boost::shared_ptr<Polygon> > polygons = GetPolygons();
     unsigned vert_counter = 0;
     for (vtkIdType idx = 0; idx < vtkIdType(polygons.size()); idx++)
@@ -484,8 +485,11 @@ vtkSmartPointer<vtkPolyData> Part<DIM>::GetVtk(bool update)
         p_part_data->InsertNextCell(p_polygon->GetCellType(), p_polygon->GetPointIds());
     }
     p_part_data->SetPoints(p_vertices);
+
     vtkSmartPointer<vtkCleanPolyData> p_clean_data = vtkSmartPointer<vtkCleanPolyData>::New();
     p_clean_data->SetInputData(p_part_data);
+    p_clean_data->Update();
+
     mVtkPart = p_clean_data->GetOutput();
     return mVtkPart;
 }
@@ -573,7 +577,7 @@ void Part<DIM>::Translate(c_vector<double, DIM> vector)
 template<unsigned DIM>
 void Part<DIM>::Write(const std::string& fileName)
 {
-    GetVtk();
+    mVtkPart = GetVtk(true);
     vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
     writer->SetFileName(fileName.c_str());
     writer->SetInputData(mVtkPart);

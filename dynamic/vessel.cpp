@@ -30,18 +30,6 @@ struct AbstractVesselNetworkComponent_less__3__greater__wrapper : AbstractVessel
     
     }
 
-    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetDimensionalRadius(  ) const  {
-        if( bp::override func_GetDimensionalRadius = this->get_override( "GetDimensionalRadius" ) )
-            return func_GetDimensionalRadius(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetDimensionalRadius(  );
-        }
-    }
-    
-    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetDimensionalRadius(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetDimensionalRadius( );
-    }
-
     virtual unsigned int GetId(  ) const  {
         if( bp::override func_GetId = this->get_override( "GetId" ) )
             return func_GetId(  );
@@ -90,7 +78,7 @@ struct AbstractVesselNetworkComponent_less__3__greater__wrapper : AbstractVessel
         return AbstractVesselNetworkComponent< 3 >::GetOutputDataValue( rKey );
     }
 
-    virtual double GetRadius(  ) const  {
+    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetRadius(  ) const  {
         if( bp::override func_GetRadius = this->get_override( "GetRadius" ) )
             return func_GetRadius(  );
         else{
@@ -98,104 +86,8 @@ struct AbstractVesselNetworkComponent_less__3__greater__wrapper : AbstractVessel
         }
     }
     
-    double default_GetRadius(  ) const  {
+    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetRadius(  ) const  {
         return AbstractVesselNetworkComponent< 3 >::GetRadius( );
-    }
-
-    virtual double GetRadiusSI(  ) const  {
-        if( bp::override func_GetRadiusSI = this->get_override( "GetRadiusSI" ) )
-            return func_GetRadiusSI(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetRadiusSI(  );
-        }
-    }
-    
-    double default_GetRadiusSI(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetRadiusSI( );
-    }
-
-    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetReferenceLength(  ) const  {
-        if( bp::override func_GetReferenceLength = this->get_override( "GetReferenceLength" ) )
-            return func_GetReferenceLength(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceLength(  );
-        }
-    }
-    
-    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetReferenceLength(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceLength( );
-    }
-
-    virtual double GetReferenceLengthSI(  ) const  {
-        if( bp::override func_GetReferenceLengthSI = this->get_override( "GetReferenceLengthSI" ) )
-            return func_GetReferenceLengthSI(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceLengthSI(  );
-        }
-    }
-    
-    double default_GetReferenceLengthSI(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceLengthSI( );
-    }
-
-    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetReferenceMass(  ) const  {
-        if( bp::override func_GetReferenceMass = this->get_override( "GetReferenceMass" ) )
-            return func_GetReferenceMass(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceMass(  );
-        }
-    }
-    
-    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetReferenceMass(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceMass( );
-    }
-
-    virtual double GetReferenceMassSI(  ) const  {
-        if( bp::override func_GetReferenceMassSI = this->get_override( "GetReferenceMassSI" ) )
-            return func_GetReferenceMassSI(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceMassSI(  );
-        }
-    }
-    
-    double default_GetReferenceMassSI(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceMassSI( );
-    }
-
-    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetReferenceTime(  ) const  {
-        if( bp::override func_GetReferenceTime = this->get_override( "GetReferenceTime" ) )
-            return func_GetReferenceTime(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceTime(  );
-        }
-    }
-    
-    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetReferenceTime(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceTime( );
-    }
-
-    virtual double GetReferenceTimeSI(  ) const  {
-        if( bp::override func_GetReferenceTimeSI = this->get_override( "GetReferenceTimeSI" ) )
-            return func_GetReferenceTimeSI(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceTimeSI(  );
-        }
-    }
-    
-    double default_GetReferenceTimeSI(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceTimeSI( );
-    }
-
-    virtual void SetDimensionalRadius( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > radius ) {
-        if( bp::override func_SetDimensionalRadius = this->get_override( "SetDimensionalRadius" ) )
-            func_SetDimensionalRadius( radius );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetDimensionalRadius( radius );
-        }
-    }
-    
-    void default_SetDimensionalRadius( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > radius ) {
-        AbstractVesselNetworkComponent< 3 >::SetDimensionalRadius( radius );
     }
 
     virtual void SetId( unsigned int id ) {
@@ -222,7 +114,7 @@ struct AbstractVesselNetworkComponent_less__3__greater__wrapper : AbstractVessel
         AbstractVesselNetworkComponent< 3 >::SetOutputData( rKey, value );
     }
 
-    virtual void SetRadius( double radius ) {
+    virtual void SetRadius( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > radius ) {
         if( bp::override func_SetRadius = this->get_override( "SetRadius" ) )
             func_SetRadius( radius );
         else{
@@ -230,92 +122,8 @@ struct AbstractVesselNetworkComponent_less__3__greater__wrapper : AbstractVessel
         }
     }
     
-    void default_SetRadius( double radius ) {
+    void default_SetRadius( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > radius ) {
         AbstractVesselNetworkComponent< 3 >::SetRadius( radius );
-    }
-
-    virtual void SetRadiusSI( double radius ) {
-        if( bp::override func_SetRadiusSI = this->get_override( "SetRadiusSI" ) )
-            func_SetRadiusSI( radius );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetRadiusSI( radius );
-        }
-    }
-    
-    void default_SetRadiusSI( double radius ) {
-        AbstractVesselNetworkComponent< 3 >::SetRadiusSI( radius );
-    }
-
-    virtual void SetReferenceLength( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceLength ) {
-        if( bp::override func_SetReferenceLength = this->get_override( "SetReferenceLength" ) )
-            func_SetReferenceLength( referenceLength );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceLength( referenceLength );
-        }
-    }
-    
-    void default_SetReferenceLength( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceLength ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceLength( referenceLength );
-    }
-
-    virtual void SetReferenceLengthSI( double referenceLength ) {
-        if( bp::override func_SetReferenceLengthSI = this->get_override( "SetReferenceLengthSI" ) )
-            func_SetReferenceLengthSI( referenceLength );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceLengthSI( referenceLength );
-        }
-    }
-    
-    void default_SetReferenceLengthSI( double referenceLength ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceLengthSI( referenceLength );
-    }
-
-    virtual void SetReferenceMass( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceMass ) {
-        if( bp::override func_SetReferenceMass = this->get_override( "SetReferenceMass" ) )
-            func_SetReferenceMass( referenceMass );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceMass( referenceMass );
-        }
-    }
-    
-    void default_SetReferenceMass( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceMass ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceMass( referenceMass );
-    }
-
-    virtual void SetReferenceMassSI( double referenceMass ) {
-        if( bp::override func_SetReferenceMassSI = this->get_override( "SetReferenceMassSI" ) )
-            func_SetReferenceMassSI( referenceMass );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceMassSI( referenceMass );
-        }
-    }
-    
-    void default_SetReferenceMassSI( double referenceMass ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceMassSI( referenceMass );
-    }
-
-    virtual void SetReferenceTime( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceTime ) {
-        if( bp::override func_SetReferenceTime = this->get_override( "SetReferenceTime" ) )
-            func_SetReferenceTime( referenceTime );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceTime( referenceTime );
-        }
-    }
-    
-    void default_SetReferenceTime( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceTime ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceTime( referenceTime );
-    }
-
-    virtual void SetReferenceTimeSI( double referenceTime ) {
-        if( bp::override func_SetReferenceTimeSI = this->get_override( "SetReferenceTimeSI" ) )
-            func_SetReferenceTimeSI( referenceTime );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceTimeSI( referenceTime );
-        }
-    }
-    
-    void default_SetReferenceTimeSI( double referenceTime ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceTimeSI( referenceTime );
     }
 
 };
@@ -382,18 +190,6 @@ struct SegmentFlowProperties_less__3__greater__wrapper : SegmentFlowProperties< 
 
 struct Vessel_less__3__greater__wrapper : Vessel< 3 >, bp::wrapper< Vessel< 3 > > {
 
-    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetDimensionalRadius(  ) const  {
-        if( bp::override func_GetDimensionalRadius = this->get_override( "GetDimensionalRadius" ) )
-            return func_GetDimensionalRadius(  );
-        else{
-            return this->Vessel< 3 >::GetDimensionalRadius(  );
-        }
-    }
-    
-    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetDimensionalRadius(  ) const  {
-        return Vessel< 3 >::GetDimensionalRadius( );
-    }
-
     virtual ::std::map< std::string, double > GetOutputData(  ) {
         if( bp::override func_GetOutputData = this->get_override( "GetOutputData" ) )
             return func_GetOutputData(  );
@@ -406,7 +202,7 @@ struct Vessel_less__3__greater__wrapper : Vessel< 3 >, bp::wrapper< Vessel< 3 > 
         return Vessel< 3 >::GetOutputData( );
     }
 
-    virtual double GetRadius(  ) const  {
+    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetRadius(  ) const  {
         if( bp::override func_GetRadius = this->get_override( "GetRadius" ) )
             return func_GetRadius(  );
         else{
@@ -414,35 +210,11 @@ struct Vessel_less__3__greater__wrapper : Vessel< 3 >, bp::wrapper< Vessel< 3 > 
         }
     }
     
-    double default_GetRadius(  ) const  {
+    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetRadius(  ) const  {
         return Vessel< 3 >::GetRadius( );
     }
 
-    virtual double GetRadiusSI(  ) const  {
-        if( bp::override func_GetRadiusSI = this->get_override( "GetRadiusSI" ) )
-            return func_GetRadiusSI(  );
-        else{
-            return this->Vessel< 3 >::GetRadiusSI(  );
-        }
-    }
-    
-    double default_GetRadiusSI(  ) const  {
-        return Vessel< 3 >::GetRadiusSI( );
-    }
-
-    virtual void SetDimensionalRadius( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > radius ) {
-        if( bp::override func_SetDimensionalRadius = this->get_override( "SetDimensionalRadius" ) )
-            func_SetDimensionalRadius( radius );
-        else{
-            this->Vessel< 3 >::SetDimensionalRadius( radius );
-        }
-    }
-    
-    void default_SetDimensionalRadius( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > radius ) {
-        Vessel< 3 >::SetDimensionalRadius( radius );
-    }
-
-    virtual void SetRadius( double radius ) {
+    virtual void SetRadius( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > radius ) {
         if( bp::override func_SetRadius = this->get_override( "SetRadius" ) )
             func_SetRadius( radius );
         else{
@@ -450,20 +222,8 @@ struct Vessel_less__3__greater__wrapper : Vessel< 3 >, bp::wrapper< Vessel< 3 > 
         }
     }
     
-    void default_SetRadius( double radius ) {
+    void default_SetRadius( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > radius ) {
         Vessel< 3 >::SetRadius( radius );
-    }
-
-    virtual void SetRadiusSI( double radius ) {
-        if( bp::override func_SetRadiusSI = this->get_override( "SetRadiusSI" ) )
-            func_SetRadiusSI( radius );
-        else{
-            this->Vessel< 3 >::SetRadiusSI( radius );
-        }
-    }
-    
-    void default_SetRadiusSI( double radius ) {
-        Vessel< 3 >::SetRadiusSI( radius );
     }
 
     virtual unsigned int GetId(  ) const  {
@@ -502,78 +262,6 @@ struct Vessel_less__3__greater__wrapper : Vessel< 3 >, bp::wrapper< Vessel< 3 > 
         return AbstractVesselNetworkComponent< 3 >::GetOutputDataValue( rKey );
     }
 
-    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetReferenceLength(  ) const  {
-        if( bp::override func_GetReferenceLength = this->get_override( "GetReferenceLength" ) )
-            return func_GetReferenceLength(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceLength(  );
-        }
-    }
-    
-    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetReferenceLength(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceLength( );
-    }
-
-    virtual double GetReferenceLengthSI(  ) const  {
-        if( bp::override func_GetReferenceLengthSI = this->get_override( "GetReferenceLengthSI" ) )
-            return func_GetReferenceLengthSI(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceLengthSI(  );
-        }
-    }
-    
-    double default_GetReferenceLengthSI(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceLengthSI( );
-    }
-
-    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetReferenceMass(  ) const  {
-        if( bp::override func_GetReferenceMass = this->get_override( "GetReferenceMass" ) )
-            return func_GetReferenceMass(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceMass(  );
-        }
-    }
-    
-    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetReferenceMass(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceMass( );
-    }
-
-    virtual double GetReferenceMassSI(  ) const  {
-        if( bp::override func_GetReferenceMassSI = this->get_override( "GetReferenceMassSI" ) )
-            return func_GetReferenceMassSI(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceMassSI(  );
-        }
-    }
-    
-    double default_GetReferenceMassSI(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceMassSI( );
-    }
-
-    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetReferenceTime(  ) const  {
-        if( bp::override func_GetReferenceTime = this->get_override( "GetReferenceTime" ) )
-            return func_GetReferenceTime(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceTime(  );
-        }
-    }
-    
-    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetReferenceTime(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceTime( );
-    }
-
-    virtual double GetReferenceTimeSI(  ) const  {
-        if( bp::override func_GetReferenceTimeSI = this->get_override( "GetReferenceTimeSI" ) )
-            return func_GetReferenceTimeSI(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceTimeSI(  );
-        }
-    }
-    
-    double default_GetReferenceTimeSI(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceTimeSI( );
-    }
-
     virtual void SetId( unsigned int id ) {
         if( bp::override func_SetId = this->get_override( "SetId" ) )
             func_SetId( id );
@@ -598,78 +286,6 @@ struct Vessel_less__3__greater__wrapper : Vessel< 3 >, bp::wrapper< Vessel< 3 > 
         AbstractVesselNetworkComponent< 3 >::SetOutputData( rKey, value );
     }
 
-    virtual void SetReferenceLength( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceLength ) {
-        if( bp::override func_SetReferenceLength = this->get_override( "SetReferenceLength" ) )
-            func_SetReferenceLength( referenceLength );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceLength( referenceLength );
-        }
-    }
-    
-    void default_SetReferenceLength( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceLength ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceLength( referenceLength );
-    }
-
-    virtual void SetReferenceLengthSI( double referenceLength ) {
-        if( bp::override func_SetReferenceLengthSI = this->get_override( "SetReferenceLengthSI" ) )
-            func_SetReferenceLengthSI( referenceLength );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceLengthSI( referenceLength );
-        }
-    }
-    
-    void default_SetReferenceLengthSI( double referenceLength ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceLengthSI( referenceLength );
-    }
-
-    virtual void SetReferenceMass( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceMass ) {
-        if( bp::override func_SetReferenceMass = this->get_override( "SetReferenceMass" ) )
-            func_SetReferenceMass( referenceMass );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceMass( referenceMass );
-        }
-    }
-    
-    void default_SetReferenceMass( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceMass ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceMass( referenceMass );
-    }
-
-    virtual void SetReferenceMassSI( double referenceMass ) {
-        if( bp::override func_SetReferenceMassSI = this->get_override( "SetReferenceMassSI" ) )
-            func_SetReferenceMassSI( referenceMass );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceMassSI( referenceMass );
-        }
-    }
-    
-    void default_SetReferenceMassSI( double referenceMass ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceMassSI( referenceMass );
-    }
-
-    virtual void SetReferenceTime( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceTime ) {
-        if( bp::override func_SetReferenceTime = this->get_override( "SetReferenceTime" ) )
-            func_SetReferenceTime( referenceTime );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceTime( referenceTime );
-        }
-    }
-    
-    void default_SetReferenceTime( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceTime ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceTime( referenceTime );
-    }
-
-    virtual void SetReferenceTimeSI( double referenceTime ) {
-        if( bp::override func_SetReferenceTimeSI = this->get_override( "SetReferenceTimeSI" ) )
-            func_SetReferenceTimeSI( referenceTime );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceTimeSI( referenceTime );
-        }
-    }
-    
-    void default_SetReferenceTimeSI( double referenceTime ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceTimeSI( referenceTime );
-    }
-
 };
 
 struct VesselNetwork_less__3__greater__wrapper : VesselNetwork< 3 >, bp::wrapper< VesselNetwork< 3 > > {
@@ -686,18 +302,6 @@ struct VesselNetwork_less__3__greater__wrapper : VesselNetwork< 3 >, bp::wrapper
       , bp::wrapper< VesselNetwork< 3 > >(){
         // null constructor
     
-    }
-
-    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetDimensionalRadius(  ) const  {
-        if( bp::override func_GetDimensionalRadius = this->get_override( "GetDimensionalRadius" ) )
-            return func_GetDimensionalRadius(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetDimensionalRadius(  );
-        }
-    }
-    
-    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetDimensionalRadius(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetDimensionalRadius( );
     }
 
     virtual unsigned int GetId(  ) const  {
@@ -748,7 +352,7 @@ struct VesselNetwork_less__3__greater__wrapper : VesselNetwork< 3 >, bp::wrapper
         return AbstractVesselNetworkComponent< 3 >::GetOutputDataValue( rKey );
     }
 
-    virtual double GetRadius(  ) const  {
+    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetRadius(  ) const  {
         if( bp::override func_GetRadius = this->get_override( "GetRadius" ) )
             return func_GetRadius(  );
         else{
@@ -756,104 +360,8 @@ struct VesselNetwork_less__3__greater__wrapper : VesselNetwork< 3 >, bp::wrapper
         }
     }
     
-    double default_GetRadius(  ) const  {
+    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetRadius(  ) const  {
         return AbstractVesselNetworkComponent< 3 >::GetRadius( );
-    }
-
-    virtual double GetRadiusSI(  ) const  {
-        if( bp::override func_GetRadiusSI = this->get_override( "GetRadiusSI" ) )
-            return func_GetRadiusSI(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetRadiusSI(  );
-        }
-    }
-    
-    double default_GetRadiusSI(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetRadiusSI( );
-    }
-
-    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetReferenceLength(  ) const  {
-        if( bp::override func_GetReferenceLength = this->get_override( "GetReferenceLength" ) )
-            return func_GetReferenceLength(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceLength(  );
-        }
-    }
-    
-    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetReferenceLength(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceLength( );
-    }
-
-    virtual double GetReferenceLengthSI(  ) const  {
-        if( bp::override func_GetReferenceLengthSI = this->get_override( "GetReferenceLengthSI" ) )
-            return func_GetReferenceLengthSI(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceLengthSI(  );
-        }
-    }
-    
-    double default_GetReferenceLengthSI(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceLengthSI( );
-    }
-
-    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetReferenceMass(  ) const  {
-        if( bp::override func_GetReferenceMass = this->get_override( "GetReferenceMass" ) )
-            return func_GetReferenceMass(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceMass(  );
-        }
-    }
-    
-    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetReferenceMass(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceMass( );
-    }
-
-    virtual double GetReferenceMassSI(  ) const  {
-        if( bp::override func_GetReferenceMassSI = this->get_override( "GetReferenceMassSI" ) )
-            return func_GetReferenceMassSI(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceMassSI(  );
-        }
-    }
-    
-    double default_GetReferenceMassSI(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceMassSI( );
-    }
-
-    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetReferenceTime(  ) const  {
-        if( bp::override func_GetReferenceTime = this->get_override( "GetReferenceTime" ) )
-            return func_GetReferenceTime(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceTime(  );
-        }
-    }
-    
-    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetReferenceTime(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceTime( );
-    }
-
-    virtual double GetReferenceTimeSI(  ) const  {
-        if( bp::override func_GetReferenceTimeSI = this->get_override( "GetReferenceTimeSI" ) )
-            return func_GetReferenceTimeSI(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceTimeSI(  );
-        }
-    }
-    
-    double default_GetReferenceTimeSI(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceTimeSI( );
-    }
-
-    virtual void SetDimensionalRadius( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > radius ) {
-        if( bp::override func_SetDimensionalRadius = this->get_override( "SetDimensionalRadius" ) )
-            func_SetDimensionalRadius( radius );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetDimensionalRadius( radius );
-        }
-    }
-    
-    void default_SetDimensionalRadius( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > radius ) {
-        AbstractVesselNetworkComponent< 3 >::SetDimensionalRadius( radius );
     }
 
     virtual void SetId( unsigned int id ) {
@@ -880,7 +388,7 @@ struct VesselNetwork_less__3__greater__wrapper : VesselNetwork< 3 >, bp::wrapper
         AbstractVesselNetworkComponent< 3 >::SetOutputData( rKey, value );
     }
 
-    virtual void SetRadius( double radius ) {
+    virtual void SetRadius( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > radius ) {
         if( bp::override func_SetRadius = this->get_override( "SetRadius" ) )
             func_SetRadius( radius );
         else{
@@ -888,97 +396,34 @@ struct VesselNetwork_less__3__greater__wrapper : VesselNetwork< 3 >, bp::wrapper
         }
     }
     
-    void default_SetRadius( double radius ) {
+    void default_SetRadius( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > radius ) {
         AbstractVesselNetworkComponent< 3 >::SetRadius( radius );
-    }
-
-    virtual void SetRadiusSI( double radius ) {
-        if( bp::override func_SetRadiusSI = this->get_override( "SetRadiusSI" ) )
-            func_SetRadiusSI( radius );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetRadiusSI( radius );
-        }
-    }
-    
-    void default_SetRadiusSI( double radius ) {
-        AbstractVesselNetworkComponent< 3 >::SetRadiusSI( radius );
-    }
-
-    virtual void SetReferenceLength( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceLength ) {
-        if( bp::override func_SetReferenceLength = this->get_override( "SetReferenceLength" ) )
-            func_SetReferenceLength( referenceLength );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceLength( referenceLength );
-        }
-    }
-    
-    void default_SetReferenceLength( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceLength ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceLength( referenceLength );
-    }
-
-    virtual void SetReferenceLengthSI( double referenceLength ) {
-        if( bp::override func_SetReferenceLengthSI = this->get_override( "SetReferenceLengthSI" ) )
-            func_SetReferenceLengthSI( referenceLength );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceLengthSI( referenceLength );
-        }
-    }
-    
-    void default_SetReferenceLengthSI( double referenceLength ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceLengthSI( referenceLength );
-    }
-
-    virtual void SetReferenceMass( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceMass ) {
-        if( bp::override func_SetReferenceMass = this->get_override( "SetReferenceMass" ) )
-            func_SetReferenceMass( referenceMass );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceMass( referenceMass );
-        }
-    }
-    
-    void default_SetReferenceMass( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceMass ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceMass( referenceMass );
-    }
-
-    virtual void SetReferenceMassSI( double referenceMass ) {
-        if( bp::override func_SetReferenceMassSI = this->get_override( "SetReferenceMassSI" ) )
-            func_SetReferenceMassSI( referenceMass );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceMassSI( referenceMass );
-        }
-    }
-    
-    void default_SetReferenceMassSI( double referenceMass ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceMassSI( referenceMass );
-    }
-
-    virtual void SetReferenceTime( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceTime ) {
-        if( bp::override func_SetReferenceTime = this->get_override( "SetReferenceTime" ) )
-            func_SetReferenceTime( referenceTime );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceTime( referenceTime );
-        }
-    }
-    
-    void default_SetReferenceTime( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceTime ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceTime( referenceTime );
-    }
-
-    virtual void SetReferenceTimeSI( double referenceTime ) {
-        if( bp::override func_SetReferenceTimeSI = this->get_override( "SetReferenceTimeSI" ) )
-            func_SetReferenceTimeSI( referenceTime );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceTimeSI( referenceTime );
-        }
-    }
-    
-    void default_SetReferenceTimeSI( double referenceTime ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceTimeSI( referenceTime );
     }
 
 };
 
 struct VesselNode_less__3__greater__wrapper : VesselNode< 3 >, bp::wrapper< VesselNode< 3 > > {
+
+    VesselNode_less__3__greater__wrapper(double v1=0., double v2=0., double v3=0. )
+    : VesselNode<3>( v1, v2, v3 )
+      , bp::wrapper< VesselNode< 3 > >(){
+        // constructor
+    
+    }
+
+    VesselNode_less__3__greater__wrapper(::boost::numeric::ublas::c_vector< double, 3 > location )
+    : VesselNode<3>( location )
+      , bp::wrapper< VesselNode< 3 > >(){
+        // constructor
+    
+    }
+
+    VesselNode_less__3__greater__wrapper(::VesselNode< 3 > const & rExistingNode )
+    : VesselNode<3>( boost::ref(rExistingNode) )
+      , bp::wrapper< VesselNode< 3 > >(){
+        // copy constructor
+    
+    }
 
     virtual ::std::map< std::string, double > GetOutputData(  ) {
         if( bp::override func_GetOutputData = this->get_override( "GetOutputData" ) )
@@ -990,18 +435,6 @@ struct VesselNode_less__3__greater__wrapper : VesselNode< 3 >, bp::wrapper< Vess
     
     ::std::map< std::string, double > default_GetOutputData(  ) {
         return VesselNode< 3 >::GetOutputData( );
-    }
-
-    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetDimensionalRadius(  ) const  {
-        if( bp::override func_GetDimensionalRadius = this->get_override( "GetDimensionalRadius" ) )
-            return func_GetDimensionalRadius(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetDimensionalRadius(  );
-        }
-    }
-    
-    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetDimensionalRadius(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetDimensionalRadius( );
     }
 
     virtual unsigned int GetId(  ) const  {
@@ -1040,7 +473,7 @@ struct VesselNode_less__3__greater__wrapper : VesselNode< 3 >, bp::wrapper< Vess
         return AbstractVesselNetworkComponent< 3 >::GetOutputDataValue( rKey );
     }
 
-    virtual double GetRadius(  ) const  {
+    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetRadius(  ) const  {
         if( bp::override func_GetRadius = this->get_override( "GetRadius" ) )
             return func_GetRadius(  );
         else{
@@ -1048,104 +481,8 @@ struct VesselNode_less__3__greater__wrapper : VesselNode< 3 >, bp::wrapper< Vess
         }
     }
     
-    double default_GetRadius(  ) const  {
+    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetRadius(  ) const  {
         return AbstractVesselNetworkComponent< 3 >::GetRadius( );
-    }
-
-    virtual double GetRadiusSI(  ) const  {
-        if( bp::override func_GetRadiusSI = this->get_override( "GetRadiusSI" ) )
-            return func_GetRadiusSI(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetRadiusSI(  );
-        }
-    }
-    
-    double default_GetRadiusSI(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetRadiusSI( );
-    }
-
-    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetReferenceLength(  ) const  {
-        if( bp::override func_GetReferenceLength = this->get_override( "GetReferenceLength" ) )
-            return func_GetReferenceLength(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceLength(  );
-        }
-    }
-    
-    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetReferenceLength(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceLength( );
-    }
-
-    virtual double GetReferenceLengthSI(  ) const  {
-        if( bp::override func_GetReferenceLengthSI = this->get_override( "GetReferenceLengthSI" ) )
-            return func_GetReferenceLengthSI(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceLengthSI(  );
-        }
-    }
-    
-    double default_GetReferenceLengthSI(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceLengthSI( );
-    }
-
-    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetReferenceMass(  ) const  {
-        if( bp::override func_GetReferenceMass = this->get_override( "GetReferenceMass" ) )
-            return func_GetReferenceMass(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceMass(  );
-        }
-    }
-    
-    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetReferenceMass(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceMass( );
-    }
-
-    virtual double GetReferenceMassSI(  ) const  {
-        if( bp::override func_GetReferenceMassSI = this->get_override( "GetReferenceMassSI" ) )
-            return func_GetReferenceMassSI(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceMassSI(  );
-        }
-    }
-    
-    double default_GetReferenceMassSI(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceMassSI( );
-    }
-
-    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetReferenceTime(  ) const  {
-        if( bp::override func_GetReferenceTime = this->get_override( "GetReferenceTime" ) )
-            return func_GetReferenceTime(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceTime(  );
-        }
-    }
-    
-    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetReferenceTime(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceTime( );
-    }
-
-    virtual double GetReferenceTimeSI(  ) const  {
-        if( bp::override func_GetReferenceTimeSI = this->get_override( "GetReferenceTimeSI" ) )
-            return func_GetReferenceTimeSI(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceTimeSI(  );
-        }
-    }
-    
-    double default_GetReferenceTimeSI(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceTimeSI( );
-    }
-
-    virtual void SetDimensionalRadius( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > radius ) {
-        if( bp::override func_SetDimensionalRadius = this->get_override( "SetDimensionalRadius" ) )
-            func_SetDimensionalRadius( radius );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetDimensionalRadius( radius );
-        }
-    }
-    
-    void default_SetDimensionalRadius( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > radius ) {
-        AbstractVesselNetworkComponent< 3 >::SetDimensionalRadius( radius );
     }
 
     virtual void SetId( unsigned int id ) {
@@ -1172,7 +509,7 @@ struct VesselNode_less__3__greater__wrapper : VesselNode< 3 >, bp::wrapper< Vess
         AbstractVesselNetworkComponent< 3 >::SetOutputData( rKey, value );
     }
 
-    virtual void SetRadius( double radius ) {
+    virtual void SetRadius( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > radius ) {
         if( bp::override func_SetRadius = this->get_override( "SetRadius" ) )
             func_SetRadius( radius );
         else{
@@ -1180,92 +517,8 @@ struct VesselNode_less__3__greater__wrapper : VesselNode< 3 >, bp::wrapper< Vess
         }
     }
     
-    void default_SetRadius( double radius ) {
+    void default_SetRadius( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > radius ) {
         AbstractVesselNetworkComponent< 3 >::SetRadius( radius );
-    }
-
-    virtual void SetRadiusSI( double radius ) {
-        if( bp::override func_SetRadiusSI = this->get_override( "SetRadiusSI" ) )
-            func_SetRadiusSI( radius );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetRadiusSI( radius );
-        }
-    }
-    
-    void default_SetRadiusSI( double radius ) {
-        AbstractVesselNetworkComponent< 3 >::SetRadiusSI( radius );
-    }
-
-    virtual void SetReferenceLength( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceLength ) {
-        if( bp::override func_SetReferenceLength = this->get_override( "SetReferenceLength" ) )
-            func_SetReferenceLength( referenceLength );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceLength( referenceLength );
-        }
-    }
-    
-    void default_SetReferenceLength( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceLength ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceLength( referenceLength );
-    }
-
-    virtual void SetReferenceLengthSI( double referenceLength ) {
-        if( bp::override func_SetReferenceLengthSI = this->get_override( "SetReferenceLengthSI" ) )
-            func_SetReferenceLengthSI( referenceLength );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceLengthSI( referenceLength );
-        }
-    }
-    
-    void default_SetReferenceLengthSI( double referenceLength ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceLengthSI( referenceLength );
-    }
-
-    virtual void SetReferenceMass( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceMass ) {
-        if( bp::override func_SetReferenceMass = this->get_override( "SetReferenceMass" ) )
-            func_SetReferenceMass( referenceMass );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceMass( referenceMass );
-        }
-    }
-    
-    void default_SetReferenceMass( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceMass ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceMass( referenceMass );
-    }
-
-    virtual void SetReferenceMassSI( double referenceMass ) {
-        if( bp::override func_SetReferenceMassSI = this->get_override( "SetReferenceMassSI" ) )
-            func_SetReferenceMassSI( referenceMass );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceMassSI( referenceMass );
-        }
-    }
-    
-    void default_SetReferenceMassSI( double referenceMass ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceMassSI( referenceMass );
-    }
-
-    virtual void SetReferenceTime( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceTime ) {
-        if( bp::override func_SetReferenceTime = this->get_override( "SetReferenceTime" ) )
-            func_SetReferenceTime( referenceTime );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceTime( referenceTime );
-        }
-    }
-    
-    void default_SetReferenceTime( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceTime ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceTime( referenceTime );
-    }
-
-    virtual void SetReferenceTimeSI( double referenceTime ) {
-        if( bp::override func_SetReferenceTimeSI = this->get_override( "SetReferenceTimeSI" ) )
-            func_SetReferenceTimeSI( referenceTime );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceTimeSI( referenceTime );
-        }
-    }
-    
-    void default_SetReferenceTimeSI( double referenceTime ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceTimeSI( referenceTime );
     }
 
 };
@@ -1291,18 +544,6 @@ struct VesselSegment_less__3__greater__wrapper : VesselSegment< 3 >, bp::wrapper
         return VesselSegment< 3 >::GetOutputData( );
     }
 
-    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetDimensionalRadius(  ) const  {
-        if( bp::override func_GetDimensionalRadius = this->get_override( "GetDimensionalRadius" ) )
-            return func_GetDimensionalRadius(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetDimensionalRadius(  );
-        }
-    }
-    
-    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetDimensionalRadius(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetDimensionalRadius( );
-    }
-
     virtual unsigned int GetId(  ) const  {
         if( bp::override func_GetId = this->get_override( "GetId" ) )
             return func_GetId(  );
@@ -1339,7 +580,7 @@ struct VesselSegment_less__3__greater__wrapper : VesselSegment< 3 >, bp::wrapper
         return AbstractVesselNetworkComponent< 3 >::GetOutputDataValue( rKey );
     }
 
-    virtual double GetRadius(  ) const  {
+    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetRadius(  ) const  {
         if( bp::override func_GetRadius = this->get_override( "GetRadius" ) )
             return func_GetRadius(  );
         else{
@@ -1347,104 +588,8 @@ struct VesselSegment_less__3__greater__wrapper : VesselSegment< 3 >, bp::wrapper
         }
     }
     
-    double default_GetRadius(  ) const  {
+    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetRadius(  ) const  {
         return AbstractVesselNetworkComponent< 3 >::GetRadius( );
-    }
-
-    virtual double GetRadiusSI(  ) const  {
-        if( bp::override func_GetRadiusSI = this->get_override( "GetRadiusSI" ) )
-            return func_GetRadiusSI(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetRadiusSI(  );
-        }
-    }
-    
-    double default_GetRadiusSI(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetRadiusSI( );
-    }
-
-    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetReferenceLength(  ) const  {
-        if( bp::override func_GetReferenceLength = this->get_override( "GetReferenceLength" ) )
-            return func_GetReferenceLength(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceLength(  );
-        }
-    }
-    
-    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetReferenceLength(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceLength( );
-    }
-
-    virtual double GetReferenceLengthSI(  ) const  {
-        if( bp::override func_GetReferenceLengthSI = this->get_override( "GetReferenceLengthSI" ) )
-            return func_GetReferenceLengthSI(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceLengthSI(  );
-        }
-    }
-    
-    double default_GetReferenceLengthSI(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceLengthSI( );
-    }
-
-    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetReferenceMass(  ) const  {
-        if( bp::override func_GetReferenceMass = this->get_override( "GetReferenceMass" ) )
-            return func_GetReferenceMass(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceMass(  );
-        }
-    }
-    
-    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetReferenceMass(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceMass( );
-    }
-
-    virtual double GetReferenceMassSI(  ) const  {
-        if( bp::override func_GetReferenceMassSI = this->get_override( "GetReferenceMassSI" ) )
-            return func_GetReferenceMassSI(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceMassSI(  );
-        }
-    }
-    
-    double default_GetReferenceMassSI(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceMassSI( );
-    }
-
-    virtual ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > GetReferenceTime(  ) const  {
-        if( bp::override func_GetReferenceTime = this->get_override( "GetReferenceTime" ) )
-            return func_GetReferenceTime(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceTime(  );
-        }
-    }
-    
-    ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > default_GetReferenceTime(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceTime( );
-    }
-
-    virtual double GetReferenceTimeSI(  ) const  {
-        if( bp::override func_GetReferenceTimeSI = this->get_override( "GetReferenceTimeSI" ) )
-            return func_GetReferenceTimeSI(  );
-        else{
-            return this->AbstractVesselNetworkComponent< 3 >::GetReferenceTimeSI(  );
-        }
-    }
-    
-    double default_GetReferenceTimeSI(  ) const  {
-        return AbstractVesselNetworkComponent< 3 >::GetReferenceTimeSI( );
-    }
-
-    virtual void SetDimensionalRadius( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > radius ) {
-        if( bp::override func_SetDimensionalRadius = this->get_override( "SetDimensionalRadius" ) )
-            func_SetDimensionalRadius( radius );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetDimensionalRadius( radius );
-        }
-    }
-    
-    void default_SetDimensionalRadius( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > radius ) {
-        AbstractVesselNetworkComponent< 3 >::SetDimensionalRadius( radius );
     }
 
     virtual void SetId( unsigned int id ) {
@@ -1471,7 +616,7 @@ struct VesselSegment_less__3__greater__wrapper : VesselSegment< 3 >, bp::wrapper
         AbstractVesselNetworkComponent< 3 >::SetOutputData( rKey, value );
     }
 
-    virtual void SetRadius( double radius ) {
+    virtual void SetRadius( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > radius ) {
         if( bp::override func_SetRadius = this->get_override( "SetRadius" ) )
             func_SetRadius( radius );
         else{
@@ -1479,92 +624,8 @@ struct VesselSegment_less__3__greater__wrapper : VesselSegment< 3 >, bp::wrapper
         }
     }
     
-    void default_SetRadius( double radius ) {
+    void default_SetRadius( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > radius ) {
         AbstractVesselNetworkComponent< 3 >::SetRadius( radius );
-    }
-
-    virtual void SetRadiusSI( double radius ) {
-        if( bp::override func_SetRadiusSI = this->get_override( "SetRadiusSI" ) )
-            func_SetRadiusSI( radius );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetRadiusSI( radius );
-        }
-    }
-    
-    void default_SetRadiusSI( double radius ) {
-        AbstractVesselNetworkComponent< 3 >::SetRadiusSI( radius );
-    }
-
-    virtual void SetReferenceLength( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceLength ) {
-        if( bp::override func_SetReferenceLength = this->get_override( "SetReferenceLength" ) )
-            func_SetReferenceLength( referenceLength );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceLength( referenceLength );
-        }
-    }
-    
-    void default_SetReferenceLength( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceLength ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceLength( referenceLength );
-    }
-
-    virtual void SetReferenceLengthSI( double referenceLength ) {
-        if( bp::override func_SetReferenceLengthSI = this->get_override( "SetReferenceLengthSI" ) )
-            func_SetReferenceLengthSI( referenceLength );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceLengthSI( referenceLength );
-        }
-    }
-    
-    void default_SetReferenceLengthSI( double referenceLength ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceLengthSI( referenceLength );
-    }
-
-    virtual void SetReferenceMass( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceMass ) {
-        if( bp::override func_SetReferenceMass = this->get_override( "SetReferenceMass" ) )
-            func_SetReferenceMass( referenceMass );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceMass( referenceMass );
-        }
-    }
-    
-    void default_SetReferenceMass( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceMass ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceMass( referenceMass );
-    }
-
-    virtual void SetReferenceMassSI( double referenceMass ) {
-        if( bp::override func_SetReferenceMassSI = this->get_override( "SetReferenceMassSI" ) )
-            func_SetReferenceMassSI( referenceMass );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceMassSI( referenceMass );
-        }
-    }
-    
-    void default_SetReferenceMassSI( double referenceMass ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceMassSI( referenceMass );
-    }
-
-    virtual void SetReferenceTime( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceTime ) {
-        if( bp::override func_SetReferenceTime = this->get_override( "SetReferenceTime" ) )
-            func_SetReferenceTime( referenceTime );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceTime( referenceTime );
-        }
-    }
-    
-    void default_SetReferenceTime( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > referenceTime ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceTime( referenceTime );
-    }
-
-    virtual void SetReferenceTimeSI( double referenceTime ) {
-        if( bp::override func_SetReferenceTimeSI = this->get_override( "SetReferenceTimeSI" ) )
-            func_SetReferenceTimeSI( referenceTime );
-        else{
-            this->AbstractVesselNetworkComponent< 3 >::SetReferenceTimeSI( referenceTime );
-        }
-    }
-    
-    void default_SetReferenceTimeSI( double referenceTime ) {
-        AbstractVesselNetworkComponent< 3 >::SetReferenceTimeSI( referenceTime );
     }
 
 };
@@ -1649,7 +710,15 @@ struct value_traits< boost::shared_ptr< VesselSegment< 3 > > >{
 
 }/*indexing*/ } /*python*/ } /*boost*/
 
-boost::shared_ptr<VesselNode<3> > (*VN3_Doubles)(double, double, double) = &VesselNode<3>::Create;
+boost::shared_ptr<VesselSegment<3> > (*VS3_Nodes)(boost::shared_ptr<VesselNode<3> >, boost::shared_ptr<VesselNode<3> >) = &VesselSegment<3>::Create;
+
+boost::shared_ptr<VesselSegment<3> > (*VS3_Copy)(boost::shared_ptr<VesselSegment<3> >) = &VesselSegment<3>::Create;
+
+boost::shared_ptr<Vessel<3> > (*V3_SingleSegment)(boost::shared_ptr<VesselSegment<3> >) = &Vessel<3>::Create;
+
+boost::shared_ptr<Vessel<3> > (*V3_MultiSegment)(std::vector<boost::shared_ptr<VesselSegment<3> > >) = &Vessel<3>::Create;
+
+boost::shared_ptr<Vessel<3> > (*V3_Nodes)(std::vector<boost::shared_ptr<VesselNode<3> > >) = &Vessel<3>::Create;
 
 BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
     bp::class_< std::vector< unsigned int > >("vector_less__unsigned_int__greater_")    
@@ -1705,10 +774,6 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
 
     bp::class_< AbstractVesselNetworkComponent_less__3__greater__wrapper >( "AbstractVesselNetworkComponent3", bp::init< >() )    
         .def( 
-            "GetDimensionalRadius"
-            , (::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( ::AbstractVesselNetworkComponent<3>::* )(  )const)(&::AbstractVesselNetworkComponent< 3 >::GetDimensionalRadius)
-            , (::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( AbstractVesselNetworkComponent_less__3__greater__wrapper::* )(  )const)(&AbstractVesselNetworkComponent_less__3__greater__wrapper::default_GetDimensionalRadius) )    
-        .def( 
             "GetId"
             , (unsigned int ( ::AbstractVesselNetworkComponent<3>::* )(  )const)(&::AbstractVesselNetworkComponent< 3 >::GetId)
             , (unsigned int ( AbstractVesselNetworkComponent_less__3__greater__wrapper::* )(  )const)(&AbstractVesselNetworkComponent_less__3__greater__wrapper::default_GetId) )    
@@ -1727,41 +792,8 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
             , ( bp::arg("rKey") ) )    
         .def( 
             "GetRadius"
-            , (double ( ::AbstractVesselNetworkComponent<3>::* )(  )const)(&::AbstractVesselNetworkComponent< 3 >::GetRadius)
-            , (double ( AbstractVesselNetworkComponent_less__3__greater__wrapper::* )(  )const)(&AbstractVesselNetworkComponent_less__3__greater__wrapper::default_GetRadius) )    
-        .def( 
-            "GetRadiusSI"
-            , (double ( ::AbstractVesselNetworkComponent<3>::* )(  )const)(&::AbstractVesselNetworkComponent< 3 >::GetRadiusSI)
-            , (double ( AbstractVesselNetworkComponent_less__3__greater__wrapper::* )(  )const)(&AbstractVesselNetworkComponent_less__3__greater__wrapper::default_GetRadiusSI) )    
-        .def( 
-            "GetReferenceLength"
-            , (::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( ::AbstractVesselNetworkComponent<3>::* )(  )const)(&::AbstractVesselNetworkComponent< 3 >::GetReferenceLength)
-            , (::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( AbstractVesselNetworkComponent_less__3__greater__wrapper::* )(  )const)(&AbstractVesselNetworkComponent_less__3__greater__wrapper::default_GetReferenceLength) )    
-        .def( 
-            "GetReferenceLengthSI"
-            , (double ( ::AbstractVesselNetworkComponent<3>::* )(  )const)(&::AbstractVesselNetworkComponent< 3 >::GetReferenceLengthSI)
-            , (double ( AbstractVesselNetworkComponent_less__3__greater__wrapper::* )(  )const)(&AbstractVesselNetworkComponent_less__3__greater__wrapper::default_GetReferenceLengthSI) )    
-        .def( 
-            "GetReferenceMass"
-            , (::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( ::AbstractVesselNetworkComponent<3>::* )(  )const)(&::AbstractVesselNetworkComponent< 3 >::GetReferenceMass)
-            , (::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( AbstractVesselNetworkComponent_less__3__greater__wrapper::* )(  )const)(&AbstractVesselNetworkComponent_less__3__greater__wrapper::default_GetReferenceMass) )    
-        .def( 
-            "GetReferenceMassSI"
-            , (double ( ::AbstractVesselNetworkComponent<3>::* )(  )const)(&::AbstractVesselNetworkComponent< 3 >::GetReferenceMassSI)
-            , (double ( AbstractVesselNetworkComponent_less__3__greater__wrapper::* )(  )const)(&AbstractVesselNetworkComponent_less__3__greater__wrapper::default_GetReferenceMassSI) )    
-        .def( 
-            "GetReferenceTime"
-            , (::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( ::AbstractVesselNetworkComponent<3>::* )(  )const)(&::AbstractVesselNetworkComponent< 3 >::GetReferenceTime)
-            , (::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( AbstractVesselNetworkComponent_less__3__greater__wrapper::* )(  )const)(&AbstractVesselNetworkComponent_less__3__greater__wrapper::default_GetReferenceTime) )    
-        .def( 
-            "GetReferenceTimeSI"
-            , (double ( ::AbstractVesselNetworkComponent<3>::* )(  )const)(&::AbstractVesselNetworkComponent< 3 >::GetReferenceTimeSI)
-            , (double ( AbstractVesselNetworkComponent_less__3__greater__wrapper::* )(  )const)(&AbstractVesselNetworkComponent_less__3__greater__wrapper::default_GetReferenceTimeSI) )    
-        .def( 
-            "SetDimensionalRadius"
-            , (void ( ::AbstractVesselNetworkComponent<3>::* )( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ))(&::AbstractVesselNetworkComponent< 3 >::SetDimensionalRadius)
-            , (void ( AbstractVesselNetworkComponent_less__3__greater__wrapper::* )( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ))(&AbstractVesselNetworkComponent_less__3__greater__wrapper::default_SetDimensionalRadius)
-            , ( bp::arg("radius") ) )    
+            , (::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( ::AbstractVesselNetworkComponent<3>::* )(  )const)(&::AbstractVesselNetworkComponent< 3 >::GetRadius)
+            , (::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( AbstractVesselNetworkComponent_less__3__greater__wrapper::* )(  )const)(&AbstractVesselNetworkComponent_less__3__greater__wrapper::default_GetRadius) )    
         .def( 
             "SetId"
             , (void ( ::AbstractVesselNetworkComponent<3>::* )( unsigned int ))(&::AbstractVesselNetworkComponent< 3 >::SetId)
@@ -1774,44 +806,9 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
             , ( bp::arg("rKey"), bp::arg("value") ) )    
         .def( 
             "SetRadius"
-            , (void ( ::AbstractVesselNetworkComponent<3>::* )( double ))(&::AbstractVesselNetworkComponent< 3 >::SetRadius)
-            , (void ( AbstractVesselNetworkComponent_less__3__greater__wrapper::* )( double ))(&AbstractVesselNetworkComponent_less__3__greater__wrapper::default_SetRadius)
-            , ( bp::arg("radius") ) )    
-        .def( 
-            "SetRadiusSI"
-            , (void ( ::AbstractVesselNetworkComponent<3>::* )( double ))(&::AbstractVesselNetworkComponent< 3 >::SetRadiusSI)
-            , (void ( AbstractVesselNetworkComponent_less__3__greater__wrapper::* )( double ))(&AbstractVesselNetworkComponent_less__3__greater__wrapper::default_SetRadiusSI)
-            , ( bp::arg("radius") ) )    
-        .def( 
-            "SetReferenceLength"
-            , (void ( ::AbstractVesselNetworkComponent<3>::* )( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ))(&::AbstractVesselNetworkComponent< 3 >::SetReferenceLength)
-            , (void ( AbstractVesselNetworkComponent_less__3__greater__wrapper::* )( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ))(&AbstractVesselNetworkComponent_less__3__greater__wrapper::default_SetReferenceLength)
-            , ( bp::arg("referenceLength") ) )    
-        .def( 
-            "SetReferenceLengthSI"
-            , (void ( ::AbstractVesselNetworkComponent<3>::* )( double ))(&::AbstractVesselNetworkComponent< 3 >::SetReferenceLengthSI)
-            , (void ( AbstractVesselNetworkComponent_less__3__greater__wrapper::* )( double ))(&AbstractVesselNetworkComponent_less__3__greater__wrapper::default_SetReferenceLengthSI)
-            , ( bp::arg("referenceLength") ) )    
-        .def( 
-            "SetReferenceMass"
-            , (void ( ::AbstractVesselNetworkComponent<3>::* )( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ))(&::AbstractVesselNetworkComponent< 3 >::SetReferenceMass)
-            , (void ( AbstractVesselNetworkComponent_less__3__greater__wrapper::* )( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ))(&AbstractVesselNetworkComponent_less__3__greater__wrapper::default_SetReferenceMass)
-            , ( bp::arg("referenceMass") ) )    
-        .def( 
-            "SetReferenceMassSI"
-            , (void ( ::AbstractVesselNetworkComponent<3>::* )( double ))(&::AbstractVesselNetworkComponent< 3 >::SetReferenceMassSI)
-            , (void ( AbstractVesselNetworkComponent_less__3__greater__wrapper::* )( double ))(&AbstractVesselNetworkComponent_less__3__greater__wrapper::default_SetReferenceMassSI)
-            , ( bp::arg("referenceMass") ) )    
-        .def( 
-            "SetReferenceTime"
-            , (void ( ::AbstractVesselNetworkComponent<3>::* )( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ))(&::AbstractVesselNetworkComponent< 3 >::SetReferenceTime)
-            , (void ( AbstractVesselNetworkComponent_less__3__greater__wrapper::* )( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ))(&AbstractVesselNetworkComponent_less__3__greater__wrapper::default_SetReferenceTime)
-            , ( bp::arg("referenceTime") ) )    
-        .def( 
-            "SetReferenceTimeSI"
-            , (void ( ::AbstractVesselNetworkComponent<3>::* )( double ))(&::AbstractVesselNetworkComponent< 3 >::SetReferenceTimeSI)
-            , (void ( AbstractVesselNetworkComponent_less__3__greater__wrapper::* )( double ))(&AbstractVesselNetworkComponent_less__3__greater__wrapper::default_SetReferenceTimeSI)
-            , ( bp::arg("referenceTime") ) );
+            , (void ( ::AbstractVesselNetworkComponent<3>::* )( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ))(&::AbstractVesselNetworkComponent< 3 >::SetRadius)
+            , (void ( AbstractVesselNetworkComponent_less__3__greater__wrapper::* )( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ))(&AbstractVesselNetworkComponent_less__3__greater__wrapper::default_SetRadius)
+            , ( bp::arg("radius") ) );
 
     { //::NodeFlowProperties< 3 >
         typedef bp::class_< NodeFlowProperties_less__3__greater__wrapper > NodeFlowProperties3_exposer_t;
@@ -1904,144 +901,44 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
         typedef bp::class_< SegmentFlowProperties_less__3__greater__wrapper > SegmentFlowProperties3_exposer_t;
         SegmentFlowProperties3_exposer_t SegmentFlowProperties3_exposer = SegmentFlowProperties3_exposer_t( "SegmentFlowProperties3", bp::init< >() );
         bp::scope SegmentFlowProperties3_scope( SegmentFlowProperties3_exposer );
-        { //::SegmentFlowProperties< 3 >::GetDimensionalFlowRate
-        
-            typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 3, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDimensionalFlowRate_function_type)(  ) const;
-            
-            SegmentFlowProperties3_exposer.def( 
-                "GetDimensionalFlowRate"
-                , GetDimensionalFlowRate_function_type( &::SegmentFlowProperties< 3 >::GetDimensionalFlowRate ) );
-        
-        }
-        { //::SegmentFlowProperties< 3 >::GetDimensionalGrowthStimulus
-        
-            typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDimensionalGrowthStimulus_function_type)(  ) const;
-            
-            SegmentFlowProperties3_exposer.def( 
-                "GetDimensionalGrowthStimulus"
-                , GetDimensionalGrowthStimulus_function_type( &::SegmentFlowProperties< 3 >::GetDimensionalGrowthStimulus ) );
-        
-        }
-        { //::SegmentFlowProperties< 3 >::GetDimensionalHaematocrit
-        
-            typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::dimensionless_type, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDimensionalHaematocrit_function_type)(  ) const;
-            
-            SegmentFlowProperties3_exposer.def( 
-                "GetDimensionalHaematocrit"
-                , GetDimensionalHaematocrit_function_type( &::SegmentFlowProperties< 3 >::GetDimensionalHaematocrit ) );
-        
-        }
-        { //::SegmentFlowProperties< 3 >::GetDimensionalImpedance
-        
-            typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -4, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDimensionalImpedance_function_type)(  ) const;
-            
-            SegmentFlowProperties3_exposer.def( 
-                "GetDimensionalImpedance"
-                , GetDimensionalImpedance_function_type( &::SegmentFlowProperties< 3 >::GetDimensionalImpedance ) );
-        
-        }
-        { //::SegmentFlowProperties< 3 >::GetDimensionalViscosity
-        
-            typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDimensionalViscosity_function_type)(  ) const;
-            
-            SegmentFlowProperties3_exposer.def( 
-                "GetDimensionalViscosity"
-                , GetDimensionalViscosity_function_type( &::SegmentFlowProperties< 3 >::GetDimensionalViscosity ) );
-        
-        }
-        { //::SegmentFlowProperties< 3 >::GetDimensionalWallShearStress
-        
-            typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -2, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDimensionalWallShearStress_function_type)(  ) const;
-            
-            SegmentFlowProperties3_exposer.def( 
-                "GetDimensionalWallShearStress"
-                , GetDimensionalWallShearStress_function_type( &::SegmentFlowProperties< 3 >::GetDimensionalWallShearStress ) );
-        
-        }
         { //::SegmentFlowProperties< 3 >::GetFlowRate
         
             typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetFlowRate_function_type)(  ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 3, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetFlowRate_function_type)(  ) const;
             
             SegmentFlowProperties3_exposer.def( 
                 "GetFlowRate"
                 , GetFlowRate_function_type( &::SegmentFlowProperties< 3 >::GetFlowRate ) );
         
         }
-        { //::SegmentFlowProperties< 3 >::GetFlowRateSI
-        
-            typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetFlowRateSI_function_type)(  ) const;
-            
-            SegmentFlowProperties3_exposer.def( 
-                "GetFlowRateSI"
-                , GetFlowRateSI_function_type( &::SegmentFlowProperties< 3 >::GetFlowRateSI ) );
-        
-        }
         { //::SegmentFlowProperties< 3 >::GetGrowthStimulus
         
             typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetGrowthStimulus_function_type)(  ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetGrowthStimulus_function_type)(  ) const;
             
             SegmentFlowProperties3_exposer.def( 
                 "GetGrowthStimulus"
                 , GetGrowthStimulus_function_type( &::SegmentFlowProperties< 3 >::GetGrowthStimulus ) );
         
         }
-        { //::SegmentFlowProperties< 3 >::GetGrowthStimulusSI
-        
-            typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetGrowthStimulusSI_function_type)(  ) const;
-            
-            SegmentFlowProperties3_exposer.def( 
-                "GetGrowthStimulusSI"
-                , GetGrowthStimulusSI_function_type( &::SegmentFlowProperties< 3 >::GetGrowthStimulusSI ) );
-        
-        }
         { //::SegmentFlowProperties< 3 >::GetHaematocrit
         
             typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetHaematocrit_function_type)(  ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::dimensionless_type, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetHaematocrit_function_type)(  ) const;
             
             SegmentFlowProperties3_exposer.def( 
                 "GetHaematocrit"
                 , GetHaematocrit_function_type( &::SegmentFlowProperties< 3 >::GetHaematocrit ) );
         
         }
-        { //::SegmentFlowProperties< 3 >::GetHaematocritSI
-        
-            typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetHaematocritSI_function_type)(  ) const;
-            
-            SegmentFlowProperties3_exposer.def( 
-                "GetHaematocritSI"
-                , GetHaematocritSI_function_type( &::SegmentFlowProperties< 3 >::GetHaematocritSI ) );
-        
-        }
         { //::SegmentFlowProperties< 3 >::GetImpedance
         
             typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetImpedance_function_type)(  ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -4, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetImpedance_function_type)(  ) const;
             
             SegmentFlowProperties3_exposer.def( 
                 "GetImpedance"
                 , GetImpedance_function_type( &::SegmentFlowProperties< 3 >::GetImpedance ) );
-        
-        }
-        { //::SegmentFlowProperties< 3 >::GetImpedanceSI
-        
-            typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetImpedanceSI_function_type)(  ) const;
-            
-            SegmentFlowProperties3_exposer.def( 
-                "GetImpedanceSI"
-                , GetImpedanceSI_function_type( &::SegmentFlowProperties< 3 >::GetImpedanceSI ) );
         
         }
         { //::SegmentFlowProperties< 3 >::GetOutputData
@@ -2059,113 +956,27 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
         { //::SegmentFlowProperties< 3 >::GetViscosity
         
             typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetViscosity_function_type)(  ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetViscosity_function_type)(  ) const;
             
             SegmentFlowProperties3_exposer.def( 
                 "GetViscosity"
                 , GetViscosity_function_type( &::SegmentFlowProperties< 3 >::GetViscosity ) );
         
         }
-        { //::SegmentFlowProperties< 3 >::GetViscositySI
-        
-            typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetViscositySI_function_type)(  ) const;
-            
-            SegmentFlowProperties3_exposer.def( 
-                "GetViscositySI"
-                , GetViscositySI_function_type( &::SegmentFlowProperties< 3 >::GetViscositySI ) );
-        
-        }
         { //::SegmentFlowProperties< 3 >::GetWallShearStress
         
             typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetWallShearStress_function_type)(  ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -2, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetWallShearStress_function_type)(  ) const;
             
             SegmentFlowProperties3_exposer.def( 
                 "GetWallShearStress"
                 , GetWallShearStress_function_type( &::SegmentFlowProperties< 3 >::GetWallShearStress ) );
         
         }
-        { //::SegmentFlowProperties< 3 >::GetWallShearStressSI
-        
-            typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetWallShearStressSI_function_type)(  ) const;
-            
-            SegmentFlowProperties3_exposer.def( 
-                "GetWallShearStressSI"
-                , GetWallShearStressSI_function_type( &::SegmentFlowProperties< 3 >::GetWallShearStressSI ) );
-        
-        }
-        { //::SegmentFlowProperties< 3 >::SetDimensionalFlowRate
-        
-            typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetDimensionalFlowRate_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 3, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            
-            SegmentFlowProperties3_exposer.def( 
-                "SetDimensionalFlowRate"
-                , SetDimensionalFlowRate_function_type( &::SegmentFlowProperties< 3 >::SetDimensionalFlowRate )
-                , ( bp::arg("flowRate") ) );
-        
-        }
-        { //::SegmentFlowProperties< 3 >::SetDimensionalGrowthStimulus
-        
-            typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetDimensionalGrowthStimulus_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            
-            SegmentFlowProperties3_exposer.def( 
-                "SetDimensionalGrowthStimulus"
-                , SetDimensionalGrowthStimulus_function_type( &::SegmentFlowProperties< 3 >::SetDimensionalGrowthStimulus )
-                , ( bp::arg("stimulus") ) );
-        
-        }
-        { //::SegmentFlowProperties< 3 >::SetDimensionalHaematocrit
-        
-            typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetDimensionalHaematocrit_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::dimensionless_type, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            
-            SegmentFlowProperties3_exposer.def( 
-                "SetDimensionalHaematocrit"
-                , SetDimensionalHaematocrit_function_type( &::SegmentFlowProperties< 3 >::SetDimensionalHaematocrit )
-                , ( bp::arg("haematocrit") ) );
-        
-        }
-        { //::SegmentFlowProperties< 3 >::SetDimensionalImpedance
-        
-            typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetDimensionalImpedance_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -4, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            
-            SegmentFlowProperties3_exposer.def( 
-                "SetDimensionalImpedance"
-                , SetDimensionalImpedance_function_type( &::SegmentFlowProperties< 3 >::SetDimensionalImpedance )
-                , ( bp::arg("impedance") ) );
-        
-        }
-        { //::SegmentFlowProperties< 3 >::SetDimensionalViscosity
-        
-            typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetDimensionalViscosity_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            
-            SegmentFlowProperties3_exposer.def( 
-                "SetDimensionalViscosity"
-                , SetDimensionalViscosity_function_type( &::SegmentFlowProperties< 3 >::SetDimensionalViscosity )
-                , ( bp::arg("viscosity") ) );
-        
-        }
-        { //::SegmentFlowProperties< 3 >::SetDimensionalWallShearStress
-        
-            typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetDimensionalWallShearStress_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -2, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            
-            SegmentFlowProperties3_exposer.def( 
-                "SetDimensionalWallShearStress"
-                , SetDimensionalWallShearStress_function_type( &::SegmentFlowProperties< 3 >::SetDimensionalWallShearStress )
-                , ( bp::arg("wallShear") ) );
-        
-        }
         { //::SegmentFlowProperties< 3 >::SetFlowRate
         
             typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetFlowRate_function_type)( double ) ;
+            typedef void ( exported_class_t::*SetFlowRate_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 3, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
             
             SegmentFlowProperties3_exposer.def( 
                 "SetFlowRate"
@@ -2173,21 +984,10 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , ( bp::arg("flowRate") ) );
         
         }
-        { //::SegmentFlowProperties< 3 >::SetFlowRateSI
-        
-            typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetFlowRateSI_function_type)( double ) ;
-            
-            SegmentFlowProperties3_exposer.def( 
-                "SetFlowRateSI"
-                , SetFlowRateSI_function_type( &::SegmentFlowProperties< 3 >::SetFlowRateSI )
-                , ( bp::arg("flowRate") ) );
-        
-        }
         { //::SegmentFlowProperties< 3 >::SetGrowthStimulus
         
             typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetGrowthStimulus_function_type)( double ) ;
+            typedef void ( exported_class_t::*SetGrowthStimulus_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
             
             SegmentFlowProperties3_exposer.def( 
                 "SetGrowthStimulus"
@@ -2195,21 +995,10 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , ( bp::arg("stimulus") ) );
         
         }
-        { //::SegmentFlowProperties< 3 >::SetGrowthStimulusSI
-        
-            typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetGrowthStimulusSI_function_type)( double ) ;
-            
-            SegmentFlowProperties3_exposer.def( 
-                "SetGrowthStimulusSI"
-                , SetGrowthStimulusSI_function_type( &::SegmentFlowProperties< 3 >::SetGrowthStimulusSI )
-                , ( bp::arg("stimulus") ) );
-        
-        }
         { //::SegmentFlowProperties< 3 >::SetHaematocrit
         
             typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetHaematocrit_function_type)( double ) ;
+            typedef void ( exported_class_t::*SetHaematocrit_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::dimensionless_type, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
             
             SegmentFlowProperties3_exposer.def( 
                 "SetHaematocrit"
@@ -2217,21 +1006,10 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , ( bp::arg("haematocrit") ) );
         
         }
-        { //::SegmentFlowProperties< 3 >::SetHaematocritSI
-        
-            typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetHaematocritSI_function_type)( double ) ;
-            
-            SegmentFlowProperties3_exposer.def( 
-                "SetHaematocritSI"
-                , SetHaematocritSI_function_type( &::SegmentFlowProperties< 3 >::SetHaematocritSI )
-                , ( bp::arg("haematocrit") ) );
-        
-        }
         { //::SegmentFlowProperties< 3 >::SetImpedance
         
             typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetImpedance_function_type)( double ) ;
+            typedef void ( exported_class_t::*SetImpedance_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -4, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
             
             SegmentFlowProperties3_exposer.def( 
                 "SetImpedance"
@@ -2239,21 +1017,10 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , ( bp::arg("impedance") ) );
         
         }
-        { //::SegmentFlowProperties< 3 >::SetImpedanceSI
-        
-            typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetImpedanceSI_function_type)( double ) ;
-            
-            SegmentFlowProperties3_exposer.def( 
-                "SetImpedanceSI"
-                , SetImpedanceSI_function_type( &::SegmentFlowProperties< 3 >::SetImpedanceSI )
-                , ( bp::arg("impedance") ) );
-        
-        }
         { //::SegmentFlowProperties< 3 >::SetViscosity
         
             typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetViscosity_function_type)( double ) ;
+            typedef void ( exported_class_t::*SetViscosity_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
             
             SegmentFlowProperties3_exposer.def( 
                 "SetViscosity"
@@ -2261,36 +1028,14 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , ( bp::arg("viscosity") ) );
         
         }
-        { //::SegmentFlowProperties< 3 >::SetViscositySI
-        
-            typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetViscositySI_function_type)( double ) ;
-            
-            SegmentFlowProperties3_exposer.def( 
-                "SetViscositySI"
-                , SetViscositySI_function_type( &::SegmentFlowProperties< 3 >::SetViscositySI )
-                , ( bp::arg("viscosity") ) );
-        
-        }
         { //::SegmentFlowProperties< 3 >::SetWallShearStress
         
             typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetWallShearStress_function_type)( double ) ;
+            typedef void ( exported_class_t::*SetWallShearStress_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -2, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
             
             SegmentFlowProperties3_exposer.def( 
                 "SetWallShearStress"
                 , SetWallShearStress_function_type( &::SegmentFlowProperties< 3 >::SetWallShearStress )
-                , ( bp::arg("wallShear") ) );
-        
-        }
-        { //::SegmentFlowProperties< 3 >::SetWallShearStressSI
-        
-            typedef SegmentFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetWallShearStressSI_function_type)( double ) ;
-            
-            SegmentFlowProperties3_exposer.def( 
-                "SetWallShearStressSI"
-                , SetWallShearStressSI_function_type( &::SegmentFlowProperties< 3 >::SetWallShearStressSI )
                 , ( bp::arg("wallShear") ) );
         
         }
@@ -2463,7 +1208,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
         { //::Vessel< 3 >::GetClosestEndNodeDistance
         
             typedef Vessel< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetClosestEndNodeDistance_function_type)( ::boost::numeric::ublas::c_vector< double, 3 > ) ;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetClosestEndNodeDistance_function_type)( ::boost::numeric::ublas::c_vector< double, 3 > ) ;
             
             Vessel3_exposer.def( 
                 "GetClosestEndNodeDistance"
@@ -2481,32 +1226,10 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , GetConnectedVessels_function_type( &::Vessel< 3 >::GetConnectedVessels ) );
         
         }
-        { //::Vessel< 3 >::GetDimensionalLength
-        
-            typedef Vessel< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDimensionalLength_function_type)(  ) const;
-            
-            Vessel3_exposer.def( 
-                "GetDimensionalLength"
-                , GetDimensionalLength_function_type( &::Vessel< 3 >::GetDimensionalLength ) );
-        
-        }
-        { //::Vessel< 3 >::GetDimensionalRadius
-        
-            typedef Vessel< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDimensionalRadius_function_type)(  ) const;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( Vessel_less__3__greater__wrapper::*default_GetDimensionalRadius_function_type)(  ) const;
-            
-            Vessel3_exposer.def( 
-                "GetDimensionalRadius"
-                , GetDimensionalRadius_function_type(&::Vessel< 3 >::GetDimensionalRadius)
-                , default_GetDimensionalRadius_function_type(&Vessel_less__3__greater__wrapper::default_GetDimensionalRadius) );
-        
-        }
         { //::Vessel< 3 >::GetDistance
         
             typedef Vessel< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetDistance_function_type)( ::boost::numeric::ublas::c_vector< double, 3 > const & ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDistance_function_type)( ::boost::numeric::ublas::c_vector< double, 3 > const & ) const;
             
             Vessel3_exposer.def( 
                 "GetDistance"
@@ -2537,7 +1260,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
         { //::Vessel< 3 >::GetLength
         
             typedef Vessel< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetLength_function_type)(  ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetLength_function_type)(  ) const;
             
             Vessel3_exposer.def( 
                 "GetLength"
@@ -2600,25 +1323,13 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
         { //::Vessel< 3 >::GetRadius
         
             typedef Vessel< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetRadius_function_type)(  ) const;
-            typedef double ( Vessel_less__3__greater__wrapper::*default_GetRadius_function_type)(  ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetRadius_function_type)(  ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( Vessel_less__3__greater__wrapper::*default_GetRadius_function_type)(  ) const;
             
             Vessel3_exposer.def( 
                 "GetRadius"
                 , GetRadius_function_type(&::Vessel< 3 >::GetRadius)
                 , default_GetRadius_function_type(&Vessel_less__3__greater__wrapper::default_GetRadius) );
-        
-        }
-        { //::Vessel< 3 >::GetRadiusSI
-        
-            typedef Vessel< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetRadiusSI_function_type)(  ) const;
-            typedef double ( Vessel_less__3__greater__wrapper::*default_GetRadiusSI_function_type)(  ) const;
-            
-            Vessel3_exposer.def( 
-                "GetRadiusSI"
-                , GetRadiusSI_function_type(&::Vessel< 3 >::GetRadiusSI)
-                , default_GetRadiusSI_function_type(&Vessel_less__3__greater__wrapper::default_GetRadiusSI) );
         
         }
         { //::Vessel< 3 >::GetSegment
@@ -2684,19 +1395,6 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , ( bp::arg("location") ) );
         
         }
-        { //::Vessel< 3 >::SetDimensionalRadius
-        
-            typedef Vessel< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetDimensionalRadius_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            typedef void ( Vessel_less__3__greater__wrapper::*default_SetDimensionalRadius_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            
-            Vessel3_exposer.def( 
-                "SetDimensionalRadius"
-                , SetDimensionalRadius_function_type(&::Vessel< 3 >::SetDimensionalRadius)
-                , default_SetDimensionalRadius_function_type(&Vessel_less__3__greater__wrapper::default_SetDimensionalRadius)
-                , ( bp::arg("radius") ) );
-        
-        }
         { //::Vessel< 3 >::SetFlowProperties
         
             typedef Vessel< 3 > exported_class_t;
@@ -2711,26 +1409,13 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
         { //::Vessel< 3 >::SetRadius
         
             typedef Vessel< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetRadius_function_type)( double ) ;
-            typedef void ( Vessel_less__3__greater__wrapper::*default_SetRadius_function_type)( double ) ;
+            typedef void ( exported_class_t::*SetRadius_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
+            typedef void ( Vessel_less__3__greater__wrapper::*default_SetRadius_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
             
             Vessel3_exposer.def( 
                 "SetRadius"
                 , SetRadius_function_type(&::Vessel< 3 >::SetRadius)
                 , default_SetRadius_function_type(&Vessel_less__3__greater__wrapper::default_SetRadius)
-                , ( bp::arg("radius") ) );
-        
-        }
-        { //::Vessel< 3 >::SetRadiusSI
-        
-            typedef Vessel< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetRadiusSI_function_type)( double ) ;
-            typedef void ( Vessel_less__3__greater__wrapper::*default_SetRadiusSI_function_type)( double ) ;
-            
-            Vessel3_exposer.def( 
-                "SetRadiusSI"
-                , SetRadiusSI_function_type(&::Vessel< 3 >::SetRadiusSI)
-                , default_SetRadiusSI_function_type(&Vessel_less__3__greater__wrapper::default_SetRadiusSI)
                 , ( bp::arg("radius") ) );
         
         }
@@ -2781,78 +1466,6 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , ( bp::arg("rKey") ) );
         
         }
-        { //::AbstractVesselNetworkComponent< 3 >::GetReferenceLength
-        
-            typedef Vessel< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetReferenceLength_function_type)(  ) const;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( Vessel_less__3__greater__wrapper::*default_GetReferenceLength_function_type)(  ) const;
-            
-            Vessel3_exposer.def( 
-                "GetReferenceLength"
-                , GetReferenceLength_function_type(&::AbstractVesselNetworkComponent< 3 >::GetReferenceLength)
-                , default_GetReferenceLength_function_type(&Vessel_less__3__greater__wrapper::default_GetReferenceLength) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetReferenceLengthSI
-        
-            typedef Vessel< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetReferenceLengthSI_function_type)(  ) const;
-            typedef double ( Vessel_less__3__greater__wrapper::*default_GetReferenceLengthSI_function_type)(  ) const;
-            
-            Vessel3_exposer.def( 
-                "GetReferenceLengthSI"
-                , GetReferenceLengthSI_function_type(&::AbstractVesselNetworkComponent< 3 >::GetReferenceLengthSI)
-                , default_GetReferenceLengthSI_function_type(&Vessel_less__3__greater__wrapper::default_GetReferenceLengthSI) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetReferenceMass
-        
-            typedef Vessel< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetReferenceMass_function_type)(  ) const;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( Vessel_less__3__greater__wrapper::*default_GetReferenceMass_function_type)(  ) const;
-            
-            Vessel3_exposer.def( 
-                "GetReferenceMass"
-                , GetReferenceMass_function_type(&::AbstractVesselNetworkComponent< 3 >::GetReferenceMass)
-                , default_GetReferenceMass_function_type(&Vessel_less__3__greater__wrapper::default_GetReferenceMass) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetReferenceMassSI
-        
-            typedef Vessel< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetReferenceMassSI_function_type)(  ) const;
-            typedef double ( Vessel_less__3__greater__wrapper::*default_GetReferenceMassSI_function_type)(  ) const;
-            
-            Vessel3_exposer.def( 
-                "GetReferenceMassSI"
-                , GetReferenceMassSI_function_type(&::AbstractVesselNetworkComponent< 3 >::GetReferenceMassSI)
-                , default_GetReferenceMassSI_function_type(&Vessel_less__3__greater__wrapper::default_GetReferenceMassSI) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetReferenceTime
-        
-            typedef Vessel< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetReferenceTime_function_type)(  ) const;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( Vessel_less__3__greater__wrapper::*default_GetReferenceTime_function_type)(  ) const;
-            
-            Vessel3_exposer.def( 
-                "GetReferenceTime"
-                , GetReferenceTime_function_type(&::AbstractVesselNetworkComponent< 3 >::GetReferenceTime)
-                , default_GetReferenceTime_function_type(&Vessel_less__3__greater__wrapper::default_GetReferenceTime) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetReferenceTimeSI
-        
-            typedef Vessel< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetReferenceTimeSI_function_type)(  ) const;
-            typedef double ( Vessel_less__3__greater__wrapper::*default_GetReferenceTimeSI_function_type)(  ) const;
-            
-            Vessel3_exposer.def( 
-                "GetReferenceTimeSI"
-                , GetReferenceTimeSI_function_type(&::AbstractVesselNetworkComponent< 3 >::GetReferenceTimeSI)
-                , default_GetReferenceTimeSI_function_type(&Vessel_less__3__greater__wrapper::default_GetReferenceTimeSI) );
-        
-        }
         { //::AbstractVesselNetworkComponent< 3 >::SetId
         
             typedef Vessel< 3 > exported_class_t;
@@ -2879,164 +1492,23 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , ( bp::arg("rKey"), bp::arg("value") ) );
         
         }
-        { //::AbstractVesselNetworkComponent< 3 >::SetReferenceLength
-        
-            typedef Vessel< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetReferenceLength_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            typedef void ( Vessel_less__3__greater__wrapper::*default_SetReferenceLength_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            
-            Vessel3_exposer.def( 
-                "SetReferenceLength"
-                , SetReferenceLength_function_type(&::AbstractVesselNetworkComponent< 3 >::SetReferenceLength)
-                , default_SetReferenceLength_function_type(&Vessel_less__3__greater__wrapper::default_SetReferenceLength)
-                , ( bp::arg("referenceLength") ) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetReferenceLengthSI
-        
-            typedef Vessel< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetReferenceLengthSI_function_type)( double ) ;
-            typedef void ( Vessel_less__3__greater__wrapper::*default_SetReferenceLengthSI_function_type)( double ) ;
-            
-            Vessel3_exposer.def( 
-                "SetReferenceLengthSI"
-                , SetReferenceLengthSI_function_type(&::AbstractVesselNetworkComponent< 3 >::SetReferenceLengthSI)
-                , default_SetReferenceLengthSI_function_type(&Vessel_less__3__greater__wrapper::default_SetReferenceLengthSI)
-                , ( bp::arg("referenceLength") ) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetReferenceMass
-        
-            typedef Vessel< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetReferenceMass_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            typedef void ( Vessel_less__3__greater__wrapper::*default_SetReferenceMass_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            
-            Vessel3_exposer.def( 
-                "SetReferenceMass"
-                , SetReferenceMass_function_type(&::AbstractVesselNetworkComponent< 3 >::SetReferenceMass)
-                , default_SetReferenceMass_function_type(&Vessel_less__3__greater__wrapper::default_SetReferenceMass)
-                , ( bp::arg("referenceMass") ) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetReferenceMassSI
-        
-            typedef Vessel< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetReferenceMassSI_function_type)( double ) ;
-            typedef void ( Vessel_less__3__greater__wrapper::*default_SetReferenceMassSI_function_type)( double ) ;
-            
-            Vessel3_exposer.def( 
-                "SetReferenceMassSI"
-                , SetReferenceMassSI_function_type(&::AbstractVesselNetworkComponent< 3 >::SetReferenceMassSI)
-                , default_SetReferenceMassSI_function_type(&Vessel_less__3__greater__wrapper::default_SetReferenceMassSI)
-                , ( bp::arg("referenceMass") ) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetReferenceTime
-        
-            typedef Vessel< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetReferenceTime_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            typedef void ( Vessel_less__3__greater__wrapper::*default_SetReferenceTime_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            
-            Vessel3_exposer.def( 
-                "SetReferenceTime"
-                , SetReferenceTime_function_type(&::AbstractVesselNetworkComponent< 3 >::SetReferenceTime)
-                , default_SetReferenceTime_function_type(&Vessel_less__3__greater__wrapper::default_SetReferenceTime)
-                , ( bp::arg("referenceTime") ) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetReferenceTimeSI
-        
-            typedef Vessel< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetReferenceTimeSI_function_type)( double ) ;
-            typedef void ( Vessel_less__3__greater__wrapper::*default_SetReferenceTimeSI_function_type)( double ) ;
-            
-            Vessel3_exposer.def( 
-                "SetReferenceTimeSI"
-                , SetReferenceTimeSI_function_type(&::AbstractVesselNetworkComponent< 3 >::SetReferenceTimeSI)
-                , default_SetReferenceTimeSI_function_type(&Vessel_less__3__greater__wrapper::default_SetReferenceTimeSI)
-                , ( bp::arg("referenceTime") ) );
-        
-        }
         Vessel3_exposer.staticmethod( "Create" );
         bp::register_ptr_to_python< boost::shared_ptr< Vessel<3> > >();
         bp::implicitly_convertible< boost::shared_ptr< Vessel< 3 > >, boost::shared_ptr< AbstractVesselNetworkComponent< 3 > > >();
         bp::implicitly_convertible< boost::shared_ptr< Vessel< 3 > >, boost::shared_ptr< boost::enable_shared_from_this< Vessel< 3 > > > >();
+        Vessel3_exposer.def("__init__", bp::make_constructor(V3_SingleSegment));
+        Vessel3_exposer.def("__init__", bp::make_constructor(V3_MultiSegment));
+        Vessel3_exposer.def("__init__", bp::make_constructor(V3_Nodes));
     }
 
     { //::VesselFlowProperties< 3 >
         typedef bp::class_< VesselFlowProperties< 3 > > VesselFlowProperties3_exposer_t;
         VesselFlowProperties3_exposer_t VesselFlowProperties3_exposer = VesselFlowProperties3_exposer_t( "VesselFlowProperties3", bp::init< >() );
         bp::scope VesselFlowProperties3_scope( VesselFlowProperties3_exposer );
-        { //::VesselFlowProperties< 3 >::GetDimensionalFlowRate
-        
-            typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 3, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDimensionalFlowRate_function_type)( ::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) const;
-            
-            VesselFlowProperties3_exposer.def( 
-                "GetDimensionalFlowRate"
-                , GetDimensionalFlowRate_function_type( &::VesselFlowProperties< 3 >::GetDimensionalFlowRate )
-                , ( bp::arg("segments") ) );
-        
-        }
-        { //::VesselFlowProperties< 3 >::GetDimensionalGrowthStimulus
-        
-            typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDimensionalGrowthStimulus_function_type)( ::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) const;
-            
-            VesselFlowProperties3_exposer.def( 
-                "GetDimensionalGrowthStimulus"
-                , GetDimensionalGrowthStimulus_function_type( &::VesselFlowProperties< 3 >::GetDimensionalGrowthStimulus )
-                , ( bp::arg("segments") ) );
-        
-        }
-        { //::VesselFlowProperties< 3 >::GetDimensionalHaematocrit
-        
-            typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::dimensionless_type, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDimensionalHaematocrit_function_type)( ::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) const;
-            
-            VesselFlowProperties3_exposer.def( 
-                "GetDimensionalHaematocrit"
-                , GetDimensionalHaematocrit_function_type( &::VesselFlowProperties< 3 >::GetDimensionalHaematocrit )
-                , ( bp::arg("segments") ) );
-        
-        }
-        { //::VesselFlowProperties< 3 >::GetDimensionalImpedance
-        
-            typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -4, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDimensionalImpedance_function_type)( ::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) const;
-            
-            VesselFlowProperties3_exposer.def( 
-                "GetDimensionalImpedance"
-                , GetDimensionalImpedance_function_type( &::VesselFlowProperties< 3 >::GetDimensionalImpedance )
-                , ( bp::arg("segments") ) );
-        
-        }
-        { //::VesselFlowProperties< 3 >::GetDimensionalViscosity
-        
-            typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDimensionalViscosity_function_type)( ::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) const;
-            
-            VesselFlowProperties3_exposer.def( 
-                "GetDimensionalViscosity"
-                , GetDimensionalViscosity_function_type( &::VesselFlowProperties< 3 >::GetDimensionalViscosity )
-                , ( bp::arg("segments") ) );
-        
-        }
-        { //::VesselFlowProperties< 3 >::GetDimensionalWallShearStress
-        
-            typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -2, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDimensionalWallShearStress_function_type)( ::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) const;
-            
-            VesselFlowProperties3_exposer.def( 
-                "GetDimensionalWallShearStress"
-                , GetDimensionalWallShearStress_function_type( &::VesselFlowProperties< 3 >::GetDimensionalWallShearStress )
-                , ( bp::arg("segments") ) );
-        
-        }
         { //::VesselFlowProperties< 3 >::GetFlowRate
         
             typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetFlowRate_function_type)( ::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 3, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetFlowRate_function_type)( ::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) const;
             
             VesselFlowProperties3_exposer.def( 
                 "GetFlowRate"
@@ -3044,21 +1516,10 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , ( bp::arg("segments") ) );
         
         }
-        { //::VesselFlowProperties< 3 >::GetFlowRateSI
-        
-            typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetFlowRateSI_function_type)( ::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) const;
-            
-            VesselFlowProperties3_exposer.def( 
-                "GetFlowRateSI"
-                , GetFlowRateSI_function_type( &::VesselFlowProperties< 3 >::GetFlowRateSI )
-                , ( bp::arg("segments") ) );
-        
-        }
         { //::VesselFlowProperties< 3 >::GetGrowthStimulus
         
             typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetGrowthStimulus_function_type)( ::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetGrowthStimulus_function_type)( ::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) const;
             
             VesselFlowProperties3_exposer.def( 
                 "GetGrowthStimulus"
@@ -3066,21 +1527,10 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , ( bp::arg("segments") ) );
         
         }
-        { //::VesselFlowProperties< 3 >::GetGrowthStimulusSI
-        
-            typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetGrowthStimulusSI_function_type)( ::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) const;
-            
-            VesselFlowProperties3_exposer.def( 
-                "GetGrowthStimulusSI"
-                , GetGrowthStimulusSI_function_type( &::VesselFlowProperties< 3 >::GetGrowthStimulusSI )
-                , ( bp::arg("segments") ) );
-        
-        }
         { //::VesselFlowProperties< 3 >::GetHaematocrit
         
             typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetHaematocrit_function_type)( ::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::dimensionless_type, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetHaematocrit_function_type)( ::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) const;
             
             VesselFlowProperties3_exposer.def( 
                 "GetHaematocrit"
@@ -3088,36 +1538,14 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , ( bp::arg("segments") ) );
         
         }
-        { //::VesselFlowProperties< 3 >::GetHaematocritSI
-        
-            typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetHaematocritSI_function_type)( ::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) const;
-            
-            VesselFlowProperties3_exposer.def( 
-                "GetHaematocritSI"
-                , GetHaematocritSI_function_type( &::VesselFlowProperties< 3 >::GetHaematocritSI )
-                , ( bp::arg("segments") ) );
-        
-        }
         { //::VesselFlowProperties< 3 >::GetImpedance
         
             typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetImpedance_function_type)( ::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -4, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetImpedance_function_type)( ::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) const;
             
             VesselFlowProperties3_exposer.def( 
                 "GetImpedance"
                 , GetImpedance_function_type( &::VesselFlowProperties< 3 >::GetImpedance )
-                , ( bp::arg("segments") ) );
-        
-        }
-        { //::VesselFlowProperties< 3 >::GetImpedanceSI
-        
-            typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetImpedanceSI_function_type)( ::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) const;
-            
-            VesselFlowProperties3_exposer.def( 
-                "GetImpedanceSI"
-                , GetImpedanceSI_function_type( &::VesselFlowProperties< 3 >::GetImpedanceSI )
                 , ( bp::arg("segments") ) );
         
         }
@@ -3135,7 +1563,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
         { //::VesselFlowProperties< 3 >::GetViscosity
         
             typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetViscosity_function_type)( ::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetViscosity_function_type)( ::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) const;
             
             VesselFlowProperties3_exposer.def( 
                 "GetViscosity"
@@ -3143,36 +1571,14 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , ( bp::arg("segments") ) );
         
         }
-        { //::VesselFlowProperties< 3 >::GetViscositySI
-        
-            typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetViscositySI_function_type)( ::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) const;
-            
-            VesselFlowProperties3_exposer.def( 
-                "GetViscositySI"
-                , GetViscositySI_function_type( &::VesselFlowProperties< 3 >::GetViscositySI )
-                , ( bp::arg("segments") ) );
-        
-        }
         { //::VesselFlowProperties< 3 >::GetWallShearStress
         
             typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetWallShearStress_function_type)( ::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -2, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetWallShearStress_function_type)( ::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) const;
             
             VesselFlowProperties3_exposer.def( 
                 "GetWallShearStress"
                 , GetWallShearStress_function_type( &::VesselFlowProperties< 3 >::GetWallShearStress )
-                , ( bp::arg("segments") ) );
-        
-        }
-        { //::VesselFlowProperties< 3 >::GetWallShearStressSI
-        
-            typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetWallShearStressSI_function_type)( ::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) const;
-            
-            VesselFlowProperties3_exposer.def( 
-                "GetWallShearStressSI"
-                , GetWallShearStressSI_function_type( &::VesselFlowProperties< 3 >::GetWallShearStressSI )
                 , ( bp::arg("segments") ) );
         
         }
@@ -3189,11 +1595,12 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
         { //::VesselFlowProperties< 3 >::HasVesselRegressed
         
             typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef bool ( exported_class_t::*HasVesselRegressed_function_type)(  ) ;
+            typedef bool ( exported_class_t::*HasVesselRegressed_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
             
             VesselFlowProperties3_exposer.def( 
                 "HasVesselRegressed"
-                , HasVesselRegressed_function_type( &::VesselFlowProperties< 3 >::HasVesselRegressed ) );
+                , HasVesselRegressed_function_type( &::VesselFlowProperties< 3 >::HasVesselRegressed )
+                , ( bp::arg("simulationReferenceTime") ) );
         
         }
         { //::VesselFlowProperties< 3 >::ResetRegressionTimer
@@ -3206,87 +1613,10 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , ResetRegressionTimer_function_type( &::VesselFlowProperties< 3 >::ResetRegressionTimer ) );
         
         }
-        { //::VesselFlowProperties< 3 >::SetDimensionalFlowRate
-        
-            typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetDimensionalFlowRate_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 3, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >,::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) ;
-            
-            VesselFlowProperties3_exposer.def( 
-                "SetDimensionalFlowRate"
-                , SetDimensionalFlowRate_function_type( &::VesselFlowProperties< 3 >::SetDimensionalFlowRate )
-                , ( bp::arg("flowRate"), bp::arg("segments") ) );
-        
-        }
-        { //::VesselFlowProperties< 3 >::SetDimensionalGrowthStimulus
-        
-            typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetDimensionalGrowthStimulus_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >,::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) ;
-            
-            VesselFlowProperties3_exposer.def( 
-                "SetDimensionalGrowthStimulus"
-                , SetDimensionalGrowthStimulus_function_type( &::VesselFlowProperties< 3 >::SetDimensionalGrowthStimulus )
-                , ( bp::arg("stimulus"), bp::arg("segments") ) );
-        
-        }
-        { //::VesselFlowProperties< 3 >::SetDimensionalHaematocrit
-        
-            typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetDimensionalHaematocrit_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::dimensionless_type, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >,::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) ;
-            
-            VesselFlowProperties3_exposer.def( 
-                "SetDimensionalHaematocrit"
-                , SetDimensionalHaematocrit_function_type( &::VesselFlowProperties< 3 >::SetDimensionalHaematocrit )
-                , ( bp::arg("haematocrit"), bp::arg("segments") ) );
-        
-        }
-        { //::VesselFlowProperties< 3 >::SetDimensionalImpedance
-        
-            typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetDimensionalImpedance_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -4, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >,::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) ;
-            
-            VesselFlowProperties3_exposer.def( 
-                "SetDimensionalImpedance"
-                , SetDimensionalImpedance_function_type( &::VesselFlowProperties< 3 >::SetDimensionalImpedance )
-                , ( bp::arg("impedance"), bp::arg("segments") ) );
-        
-        }
-        { //::VesselFlowProperties< 3 >::SetDimensionalTimeUntilRegression
-        
-            typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetDimensionalTimeUntilRegression_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            
-            VesselFlowProperties3_exposer.def( 
-                "SetDimensionalTimeUntilRegression"
-                , SetDimensionalTimeUntilRegression_function_type( &::VesselFlowProperties< 3 >::SetDimensionalTimeUntilRegression )
-                , ( bp::arg("time") ) );
-        
-        }
-        { //::VesselFlowProperties< 3 >::SetDimensionalViscosity
-        
-            typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetDimensionalViscosity_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >,::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) ;
-            
-            VesselFlowProperties3_exposer.def( 
-                "SetDimensionalViscosity"
-                , SetDimensionalViscosity_function_type( &::VesselFlowProperties< 3 >::SetDimensionalViscosity )
-                , ( bp::arg("viscosity"), bp::arg("segments") ) );
-        
-        }
-        { //::VesselFlowProperties< 3 >::SetDimensionalWallShearStress
-        
-            typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetDimensionalWallShearStress_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -2, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >,::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) ;
-            
-            VesselFlowProperties3_exposer.def( 
-                "SetDimensionalWallShearStress"
-                , SetDimensionalWallShearStress_function_type( &::VesselFlowProperties< 3 >::SetDimensionalWallShearStress )
-                , ( bp::arg("wallShear"), bp::arg("segments") ) );
-        
-        }
         { //::VesselFlowProperties< 3 >::SetFlowRate
         
             typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetFlowRate_function_type)( double,::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) ;
+            typedef void ( exported_class_t::*SetFlowRate_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 3, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >,::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) ;
             
             VesselFlowProperties3_exposer.def( 
                 "SetFlowRate"
@@ -3294,21 +1624,10 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , ( bp::arg("flowRate"), bp::arg("segments") ) );
         
         }
-        { //::VesselFlowProperties< 3 >::SetFlowRateSI
-        
-            typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetFlowRateSI_function_type)( double,::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) ;
-            
-            VesselFlowProperties3_exposer.def( 
-                "SetFlowRateSI"
-                , SetFlowRateSI_function_type( &::VesselFlowProperties< 3 >::SetFlowRateSI )
-                , ( bp::arg("flowRate"), bp::arg("segments") ) );
-        
-        }
         { //::VesselFlowProperties< 3 >::SetGrowthStimulus
         
             typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetGrowthStimulus_function_type)( double,::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) ;
+            typedef void ( exported_class_t::*SetGrowthStimulus_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >,::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) ;
             
             VesselFlowProperties3_exposer.def( 
                 "SetGrowthStimulus"
@@ -3316,21 +1635,10 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , ( bp::arg("stimulus"), bp::arg("segments") ) );
         
         }
-        { //::VesselFlowProperties< 3 >::SetGrowthStimulusSI
-        
-            typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetGrowthStimulusSI_function_type)( double,::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) ;
-            
-            VesselFlowProperties3_exposer.def( 
-                "SetGrowthStimulusSI"
-                , SetGrowthStimulusSI_function_type( &::VesselFlowProperties< 3 >::SetGrowthStimulusSI )
-                , ( bp::arg("stimulus"), bp::arg("segments") ) );
-        
-        }
         { //::VesselFlowProperties< 3 >::SetHaematocrit
         
             typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetHaematocrit_function_type)( double,::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) ;
+            typedef void ( exported_class_t::*SetHaematocrit_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::dimensionless_type, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >,::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) ;
             
             VesselFlowProperties3_exposer.def( 
                 "SetHaematocrit"
@@ -3338,21 +1646,10 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , ( bp::arg("haematocrit"), bp::arg("segments") ) );
         
         }
-        { //::VesselFlowProperties< 3 >::SetHaematocritSI
-        
-            typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetHaematocritSI_function_type)( double,::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) ;
-            
-            VesselFlowProperties3_exposer.def( 
-                "SetHaematocritSI"
-                , SetHaematocritSI_function_type( &::VesselFlowProperties< 3 >::SetHaematocritSI )
-                , ( bp::arg("haematocrit"), bp::arg("segments") ) );
-        
-        }
         { //::VesselFlowProperties< 3 >::SetImpedance
         
             typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetImpedance_function_type)( double,::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) ;
+            typedef void ( exported_class_t::*SetImpedance_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -4, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >,::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) ;
             
             VesselFlowProperties3_exposer.def( 
                 "SetImpedance"
@@ -3360,21 +1657,21 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , ( bp::arg("impedance"), bp::arg("segments") ) );
         
         }
-        { //::VesselFlowProperties< 3 >::SetImpedanceSI
+        { //::VesselFlowProperties< 3 >::SetTimeUntilRegression
         
             typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetImpedanceSI_function_type)( double,::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) ;
+            typedef void ( exported_class_t::*SetTimeUntilRegression_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >,::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
             
             VesselFlowProperties3_exposer.def( 
-                "SetImpedanceSI"
-                , SetImpedanceSI_function_type( &::VesselFlowProperties< 3 >::SetImpedanceSI )
-                , ( bp::arg("impedance"), bp::arg("segments") ) );
+                "SetTimeUntilRegression"
+                , SetTimeUntilRegression_function_type( &::VesselFlowProperties< 3 >::SetTimeUntilRegression )
+                , ( bp::arg("time"), bp::arg("simulationReferenceTime") ) );
         
         }
         { //::VesselFlowProperties< 3 >::SetViscosity
         
             typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetViscosity_function_type)( double,::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) ;
+            typedef void ( exported_class_t::*SetViscosity_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >,::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) ;
             
             VesselFlowProperties3_exposer.def( 
                 "SetViscosity"
@@ -3382,36 +1679,14 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , ( bp::arg("viscosity"), bp::arg("segments") ) );
         
         }
-        { //::VesselFlowProperties< 3 >::SetViscositySI
-        
-            typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetViscositySI_function_type)( double,::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) ;
-            
-            VesselFlowProperties3_exposer.def( 
-                "SetViscositySI"
-                , SetViscositySI_function_type( &::VesselFlowProperties< 3 >::SetViscositySI )
-                , ( bp::arg("viscosity"), bp::arg("segments") ) );
-        
-        }
         { //::VesselFlowProperties< 3 >::SetWallShearStress
         
             typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetWallShearStress_function_type)( double,::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) ;
+            typedef void ( exported_class_t::*SetWallShearStress_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -2, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >,::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) ;
             
             VesselFlowProperties3_exposer.def( 
                 "SetWallShearStress"
                 , SetWallShearStress_function_type( &::VesselFlowProperties< 3 >::SetWallShearStress )
-                , ( bp::arg("wallShear"), bp::arg("segments") ) );
-        
-        }
-        { //::VesselFlowProperties< 3 >::SetWallShearStressSI
-        
-            typedef VesselFlowProperties< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetWallShearStressSI_function_type)( double,::std::vector< boost::shared_ptr<VesselSegment<3> > > const & ) ;
-            
-            VesselFlowProperties3_exposer.def( 
-                "SetWallShearStressSI"
-                , SetWallShearStressSI_function_type( &::VesselFlowProperties< 3 >::SetWallShearStressSI )
                 , ( bp::arg("wallShear"), bp::arg("segments") ) );
         
         }
@@ -3527,7 +1802,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
         { //::VesselNetwork< 3 >::GetDistanceToNearestNode
         
             typedef VesselNetwork< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetDistanceToNearestNode_function_type)( ::boost::numeric::ublas::c_vector< double, 3 > const & ) ;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDistanceToNearestNode_function_type)( ::boost::numeric::ublas::c_vector< double, 3 > const & ) ;
             
             VesselNetwork3_exposer.def( 
                 "GetDistanceToNearestNode"
@@ -3581,7 +1856,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
         { //::VesselNetwork< 3 >::GetNearestSegment
         
             typedef VesselNetwork< 3 > exported_class_t;
-            typedef ::std::pair< boost::shared_ptr< VesselSegment< 3 > >, double > ( exported_class_t::*GetNearestSegment_function_type)( ::boost::shared_ptr< VesselSegment< 3 > > ) ;
+            typedef ::std::pair< boost::shared_ptr< VesselSegment< 3 > >, boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > > ( exported_class_t::*GetNearestSegment_function_type)( ::boost::shared_ptr< VesselSegment< 3 > > ) ;
             
             VesselNetwork3_exposer.def( 
                 "GetNearestSegment"
@@ -3592,7 +1867,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
         { //::VesselNetwork< 3 >::GetNearestSegment
         
             typedef VesselNetwork< 3 > exported_class_t;
-            typedef ::std::pair< boost::shared_ptr< VesselSegment< 3 > >, double > ( exported_class_t::*GetNearestSegment_function_type)( ::boost::shared_ptr< VesselNode< 3 > >,bool ) ;
+            typedef ::std::pair< boost::shared_ptr< VesselSegment< 3 > >, boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > > ( exported_class_t::*GetNearestSegment_function_type)( ::boost::shared_ptr< VesselNode< 3 > >,bool ) ;
             
             VesselNetwork3_exposer.def( 
                 "GetNearestSegment"
@@ -3603,7 +1878,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
         { //::VesselNetwork< 3 >::GetNearestSegment
         
             typedef VesselNetwork< 3 > exported_class_t;
-            typedef ::std::pair< boost::shared_ptr< VesselSegment< 3 > >, double > ( exported_class_t::*GetNearestSegment_function_type)( ::boost::numeric::ublas::c_vector< double, 3 > const & ) ;
+            typedef ::std::pair< boost::shared_ptr< VesselSegment< 3 > >, boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > > ( exported_class_t::*GetNearestSegment_function_type)( ::boost::numeric::ublas::c_vector< double, 3 > const & ) ;
             
             VesselNetwork3_exposer.def( 
                 "GetNearestSegment"
@@ -3783,12 +2058,12 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
         { //::VesselNetwork< 3 >::MergeShortVessels
         
             typedef VesselNetwork< 3 > exported_class_t;
-            typedef void ( exported_class_t::*MergeShortVessels_function_type)( double ) ;
+            typedef void ( exported_class_t::*MergeShortVessels_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
             
             VesselNetwork3_exposer.def( 
                 "MergeShortVessels"
                 , MergeShortVessels_function_type( &::VesselNetwork< 3 >::MergeShortVessels )
-                , ( bp::arg("cutoff")=1.0000000000000001E-5 ) );
+                , ( bp::arg("cutoff")=10. * 9.9999999999999995E-7 * unit::metres ) );
         
         }
         { //::VesselNetwork< 3 >::NodeIsInNetwork
@@ -3810,18 +2085,18 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
             VesselNetwork3_exposer.def( 
                 "NumberOfNodesNearLocation"
                 , NumberOfNodesNearLocation_function_type( &::VesselNetwork< 3 >::NumberOfNodesNearLocation )
-                , ( bp::arg("rLocation"), bp::arg("radius")=0. ) );
+                , ( bp::arg("rLocation"), bp::arg("tolerance")=0. ) );
         
         }
         { //::VesselNetwork< 3 >::RemoveShortVessels
         
             typedef VesselNetwork< 3 > exported_class_t;
-            typedef void ( exported_class_t::*RemoveShortVessels_function_type)( double,bool ) ;
+            typedef void ( exported_class_t::*RemoveShortVessels_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >,bool ) ;
             
             VesselNetwork3_exposer.def( 
                 "RemoveShortVessels"
                 , RemoveShortVessels_function_type( &::VesselNetwork< 3 >::RemoveShortVessels )
-                , ( bp::arg("cutoff")=10., bp::arg("endsOnly")=(bool)(true) ) );
+                , ( bp::arg("cutoff")=10. * 9.9999999999999995E-7 * unit::metres, bp::arg("endsOnly")=(bool)(true) ) );
         
         }
         { //::VesselNetwork< 3 >::RemoveVessel
@@ -3838,7 +2113,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
         { //::VesselNetwork< 3 >::SetNodeRadii
         
             typedef VesselNetwork< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetNodeRadii_function_type)( double ) ;
+            typedef void ( exported_class_t::*SetNodeRadii_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
             
             VesselNetwork3_exposer.def( 
                 "SetNodeRadii"
@@ -3870,7 +2145,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
         { //::VesselNetwork< 3 >::SetSegmentRadii
         
             typedef VesselNetwork< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetSegmentRadii_function_type)( double ) ;
+            typedef void ( exported_class_t::*SetSegmentRadii_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
             
             VesselNetwork3_exposer.def( 
                 "SetSegmentRadii"
@@ -3959,7 +2234,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
             VesselNetwork3_exposer.def( 
                 "VesselCrossesLineSegment"
                 , VesselCrossesLineSegment_function_type( &::VesselNetwork< 3 >::VesselCrossesLineSegment )
-                , ( bp::arg("coordinate_1"), bp::arg("coordinate_2"), bp::arg("radius")=9.9999999999999995E-7 ) );
+                , ( bp::arg("coordinate_1"), bp::arg("coordinate_2"), bp::arg("tolerance")=9.9999999999999995E-7 ) );
         
         }
         { //::VesselNetwork< 3 >::Write
@@ -3971,18 +2246,6 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 "Write"
                 , Write_function_type( &::VesselNetwork< 3 >::Write )
                 , ( bp::arg("rFileName") ) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetDimensionalRadius
-        
-            typedef VesselNetwork< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDimensionalRadius_function_type)(  ) const;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( VesselNetwork_less__3__greater__wrapper::*default_GetDimensionalRadius_function_type)(  ) const;
-            
-            VesselNetwork3_exposer.def( 
-                "GetDimensionalRadius"
-                , GetDimensionalRadius_function_type(&::AbstractVesselNetworkComponent< 3 >::GetDimensionalRadius)
-                , default_GetDimensionalRadius_function_type(&VesselNetwork_less__3__greater__wrapper::default_GetDimensionalRadius) );
         
         }
         { //::AbstractVesselNetworkComponent< 3 >::GetId
@@ -4037,110 +2300,13 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
         { //::AbstractVesselNetworkComponent< 3 >::GetRadius
         
             typedef VesselNetwork< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetRadius_function_type)(  ) const;
-            typedef double ( VesselNetwork_less__3__greater__wrapper::*default_GetRadius_function_type)(  ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetRadius_function_type)(  ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( VesselNetwork_less__3__greater__wrapper::*default_GetRadius_function_type)(  ) const;
             
             VesselNetwork3_exposer.def( 
                 "GetRadius"
                 , GetRadius_function_type(&::AbstractVesselNetworkComponent< 3 >::GetRadius)
                 , default_GetRadius_function_type(&VesselNetwork_less__3__greater__wrapper::default_GetRadius) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetRadiusSI
-        
-            typedef VesselNetwork< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetRadiusSI_function_type)(  ) const;
-            typedef double ( VesselNetwork_less__3__greater__wrapper::*default_GetRadiusSI_function_type)(  ) const;
-            
-            VesselNetwork3_exposer.def( 
-                "GetRadiusSI"
-                , GetRadiusSI_function_type(&::AbstractVesselNetworkComponent< 3 >::GetRadiusSI)
-                , default_GetRadiusSI_function_type(&VesselNetwork_less__3__greater__wrapper::default_GetRadiusSI) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetReferenceLength
-        
-            typedef VesselNetwork< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetReferenceLength_function_type)(  ) const;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( VesselNetwork_less__3__greater__wrapper::*default_GetReferenceLength_function_type)(  ) const;
-            
-            VesselNetwork3_exposer.def( 
-                "GetReferenceLength"
-                , GetReferenceLength_function_type(&::AbstractVesselNetworkComponent< 3 >::GetReferenceLength)
-                , default_GetReferenceLength_function_type(&VesselNetwork_less__3__greater__wrapper::default_GetReferenceLength) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetReferenceLengthSI
-        
-            typedef VesselNetwork< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetReferenceLengthSI_function_type)(  ) const;
-            typedef double ( VesselNetwork_less__3__greater__wrapper::*default_GetReferenceLengthSI_function_type)(  ) const;
-            
-            VesselNetwork3_exposer.def( 
-                "GetReferenceLengthSI"
-                , GetReferenceLengthSI_function_type(&::AbstractVesselNetworkComponent< 3 >::GetReferenceLengthSI)
-                , default_GetReferenceLengthSI_function_type(&VesselNetwork_less__3__greater__wrapper::default_GetReferenceLengthSI) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetReferenceMass
-        
-            typedef VesselNetwork< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetReferenceMass_function_type)(  ) const;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( VesselNetwork_less__3__greater__wrapper::*default_GetReferenceMass_function_type)(  ) const;
-            
-            VesselNetwork3_exposer.def( 
-                "GetReferenceMass"
-                , GetReferenceMass_function_type(&::AbstractVesselNetworkComponent< 3 >::GetReferenceMass)
-                , default_GetReferenceMass_function_type(&VesselNetwork_less__3__greater__wrapper::default_GetReferenceMass) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetReferenceMassSI
-        
-            typedef VesselNetwork< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetReferenceMassSI_function_type)(  ) const;
-            typedef double ( VesselNetwork_less__3__greater__wrapper::*default_GetReferenceMassSI_function_type)(  ) const;
-            
-            VesselNetwork3_exposer.def( 
-                "GetReferenceMassSI"
-                , GetReferenceMassSI_function_type(&::AbstractVesselNetworkComponent< 3 >::GetReferenceMassSI)
-                , default_GetReferenceMassSI_function_type(&VesselNetwork_less__3__greater__wrapper::default_GetReferenceMassSI) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetReferenceTime
-        
-            typedef VesselNetwork< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetReferenceTime_function_type)(  ) const;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( VesselNetwork_less__3__greater__wrapper::*default_GetReferenceTime_function_type)(  ) const;
-            
-            VesselNetwork3_exposer.def( 
-                "GetReferenceTime"
-                , GetReferenceTime_function_type(&::AbstractVesselNetworkComponent< 3 >::GetReferenceTime)
-                , default_GetReferenceTime_function_type(&VesselNetwork_less__3__greater__wrapper::default_GetReferenceTime) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetReferenceTimeSI
-        
-            typedef VesselNetwork< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetReferenceTimeSI_function_type)(  ) const;
-            typedef double ( VesselNetwork_less__3__greater__wrapper::*default_GetReferenceTimeSI_function_type)(  ) const;
-            
-            VesselNetwork3_exposer.def( 
-                "GetReferenceTimeSI"
-                , GetReferenceTimeSI_function_type(&::AbstractVesselNetworkComponent< 3 >::GetReferenceTimeSI)
-                , default_GetReferenceTimeSI_function_type(&VesselNetwork_less__3__greater__wrapper::default_GetReferenceTimeSI) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetDimensionalRadius
-        
-            typedef VesselNetwork< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetDimensionalRadius_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            typedef void ( VesselNetwork_less__3__greater__wrapper::*default_SetDimensionalRadius_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            
-            VesselNetwork3_exposer.def( 
-                "SetDimensionalRadius"
-                , SetDimensionalRadius_function_type(&::AbstractVesselNetworkComponent< 3 >::SetDimensionalRadius)
-                , default_SetDimensionalRadius_function_type(&VesselNetwork_less__3__greater__wrapper::default_SetDimensionalRadius)
-                , ( bp::arg("radius") ) );
         
         }
         { //::AbstractVesselNetworkComponent< 3 >::SetId
@@ -4172,8 +2338,8 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
         { //::AbstractVesselNetworkComponent< 3 >::SetRadius
         
             typedef VesselNetwork< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetRadius_function_type)( double ) ;
-            typedef void ( VesselNetwork_less__3__greater__wrapper::*default_SetRadius_function_type)( double ) ;
+            typedef void ( exported_class_t::*SetRadius_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
+            typedef void ( VesselNetwork_less__3__greater__wrapper::*default_SetRadius_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
             
             VesselNetwork3_exposer.def( 
                 "SetRadius"
@@ -4182,107 +2348,70 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , ( bp::arg("radius") ) );
         
         }
-        { //::AbstractVesselNetworkComponent< 3 >::SetRadiusSI
-        
-            typedef VesselNetwork< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetRadiusSI_function_type)( double ) ;
-            typedef void ( VesselNetwork_less__3__greater__wrapper::*default_SetRadiusSI_function_type)( double ) ;
-            
-            VesselNetwork3_exposer.def( 
-                "SetRadiusSI"
-                , SetRadiusSI_function_type(&::AbstractVesselNetworkComponent< 3 >::SetRadiusSI)
-                , default_SetRadiusSI_function_type(&VesselNetwork_less__3__greater__wrapper::default_SetRadiusSI)
-                , ( bp::arg("radius") ) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetReferenceLength
-        
-            typedef VesselNetwork< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetReferenceLength_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            typedef void ( VesselNetwork_less__3__greater__wrapper::*default_SetReferenceLength_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            
-            VesselNetwork3_exposer.def( 
-                "SetReferenceLength"
-                , SetReferenceLength_function_type(&::AbstractVesselNetworkComponent< 3 >::SetReferenceLength)
-                , default_SetReferenceLength_function_type(&VesselNetwork_less__3__greater__wrapper::default_SetReferenceLength)
-                , ( bp::arg("referenceLength") ) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetReferenceLengthSI
-        
-            typedef VesselNetwork< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetReferenceLengthSI_function_type)( double ) ;
-            typedef void ( VesselNetwork_less__3__greater__wrapper::*default_SetReferenceLengthSI_function_type)( double ) ;
-            
-            VesselNetwork3_exposer.def( 
-                "SetReferenceLengthSI"
-                , SetReferenceLengthSI_function_type(&::AbstractVesselNetworkComponent< 3 >::SetReferenceLengthSI)
-                , default_SetReferenceLengthSI_function_type(&VesselNetwork_less__3__greater__wrapper::default_SetReferenceLengthSI)
-                , ( bp::arg("referenceLength") ) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetReferenceMass
-        
-            typedef VesselNetwork< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetReferenceMass_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            typedef void ( VesselNetwork_less__3__greater__wrapper::*default_SetReferenceMass_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            
-            VesselNetwork3_exposer.def( 
-                "SetReferenceMass"
-                , SetReferenceMass_function_type(&::AbstractVesselNetworkComponent< 3 >::SetReferenceMass)
-                , default_SetReferenceMass_function_type(&VesselNetwork_less__3__greater__wrapper::default_SetReferenceMass)
-                , ( bp::arg("referenceMass") ) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetReferenceMassSI
-        
-            typedef VesselNetwork< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetReferenceMassSI_function_type)( double ) ;
-            typedef void ( VesselNetwork_less__3__greater__wrapper::*default_SetReferenceMassSI_function_type)( double ) ;
-            
-            VesselNetwork3_exposer.def( 
-                "SetReferenceMassSI"
-                , SetReferenceMassSI_function_type(&::AbstractVesselNetworkComponent< 3 >::SetReferenceMassSI)
-                , default_SetReferenceMassSI_function_type(&VesselNetwork_less__3__greater__wrapper::default_SetReferenceMassSI)
-                , ( bp::arg("referenceMass") ) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetReferenceTime
-        
-            typedef VesselNetwork< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetReferenceTime_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            typedef void ( VesselNetwork_less__3__greater__wrapper::*default_SetReferenceTime_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            
-            VesselNetwork3_exposer.def( 
-                "SetReferenceTime"
-                , SetReferenceTime_function_type(&::AbstractVesselNetworkComponent< 3 >::SetReferenceTime)
-                , default_SetReferenceTime_function_type(&VesselNetwork_less__3__greater__wrapper::default_SetReferenceTime)
-                , ( bp::arg("referenceTime") ) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetReferenceTimeSI
-        
-            typedef VesselNetwork< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetReferenceTimeSI_function_type)( double ) ;
-            typedef void ( VesselNetwork_less__3__greater__wrapper::*default_SetReferenceTimeSI_function_type)( double ) ;
-            
-            VesselNetwork3_exposer.def( 
-                "SetReferenceTimeSI"
-                , SetReferenceTimeSI_function_type(&::AbstractVesselNetworkComponent< 3 >::SetReferenceTimeSI)
-                , default_SetReferenceTimeSI_function_type(&VesselNetwork_less__3__greater__wrapper::default_SetReferenceTimeSI)
-                , ( bp::arg("referenceTime") ) );
-        
-        }
         VesselNetwork3_exposer.staticmethod( "Create" );
         bp::register_ptr_to_python< boost::shared_ptr< VesselNetwork<3> > >();
         bp::implicitly_convertible< boost::shared_ptr< VesselNetwork< 3 > >, boost::shared_ptr< AbstractVesselNetworkComponent< 3 > > >();
         bp::implicitly_convertible< boost::shared_ptr< VesselNetwork< 3 > >, boost::shared_ptr< boost::enable_shared_from_this< VesselNetwork< 3 > > > >();
     }
 
+    { //::VesselNetworkReader< 3 >
+        typedef bp::class_< VesselNetworkReader< 3 > > VesselNetworkReader3_exposer_t;
+        VesselNetworkReader3_exposer_t VesselNetworkReader3_exposer = VesselNetworkReader3_exposer_t( "VesselNetworkReader3", bp::init< >() );
+        bp::scope VesselNetworkReader3_scope( VesselNetworkReader3_exposer );
+        { //::VesselNetworkReader< 3 >::Create
+        
+            typedef VesselNetworkReader< 3 > exported_class_t;
+            typedef ::boost::shared_ptr< VesselNetworkReader< 3 > > ( *Create_function_type )(  );
+            
+            VesselNetworkReader3_exposer.def( 
+                "Create"
+                , Create_function_type( &::VesselNetworkReader< 3 >::Create ) );
+        
+        }
+        { //::VesselNetworkReader< 3 >::Read
+        
+            typedef VesselNetworkReader< 3 > exported_class_t;
+            typedef ::boost::shared_ptr< VesselNetwork< 3 > > ( exported_class_t::*Read_function_type)(  ) ;
+            
+            VesselNetworkReader3_exposer.def( 
+                "Read"
+                , Read_function_type( &::VesselNetworkReader< 3 >::Read ) );
+        
+        }
+        { //::VesselNetworkReader< 3 >::SetFileName
+        
+            typedef VesselNetworkReader< 3 > exported_class_t;
+            typedef void ( exported_class_t::*SetFileName_function_type)( ::std::string const & ) ;
+            
+            VesselNetworkReader3_exposer.def( 
+                "SetFileName"
+                , SetFileName_function_type( &::VesselNetworkReader< 3 >::SetFileName )
+                , ( bp::arg("rFileName") ) );
+        
+        }
+        { //::VesselNetworkReader< 3 >::SetRadiusArrayName
+        
+            typedef VesselNetworkReader< 3 > exported_class_t;
+            typedef void ( exported_class_t::*SetRadiusArrayName_function_type)( ::std::string const & ) ;
+            
+            VesselNetworkReader3_exposer.def( 
+                "SetRadiusArrayName"
+                , SetRadiusArrayName_function_type( &::VesselNetworkReader< 3 >::SetRadiusArrayName )
+                , ( bp::arg("rRadius") ) );
+        
+        }
+        VesselNetworkReader3_exposer.staticmethod( "Create" );
+        bp::register_ptr_to_python< boost::shared_ptr< VesselNetworkReader<3> > >();
+    }
+
     { //::VesselNode< 3 >
-        typedef bp::class_< VesselNode_less__3__greater__wrapper, bp::bases< AbstractVesselNetworkComponent< 3 > >, boost::noncopyable > VesselNode3_exposer_t;
-        VesselNode3_exposer_t VesselNode3_exposer = VesselNode3_exposer_t( "VesselNode3", bp::no_init );
+        typedef bp::class_< VesselNode_less__3__greater__wrapper, bp::bases< AbstractVesselNetworkComponent< 3 > > > VesselNode3_exposer_t;
+        VesselNode3_exposer_t VesselNode3_exposer = VesselNode3_exposer_t( "VesselNode3", bp::init< bp::optional< double, double, double > >(( bp::arg("v1")=0., bp::arg("v2")=0., bp::arg("v3")=0. )) );
         bp::scope VesselNode3_scope( VesselNode3_exposer );
+        bp::implicitly_convertible< double, VesselNode< 3 > >();
+        VesselNode3_exposer.def( bp::init< boost::numeric::ublas::c_vector< double, 3 > >(( bp::arg("location") )) );
+        bp::implicitly_convertible< boost::numeric::ublas::c_vector< double, 3 >, VesselNode< 3 > >();
+        VesselNode3_exposer.def( bp::init< VesselNode< 3 > const & >(( bp::arg("rExistingNode") )) );
         { //::VesselNode< 3 >::Create
         
             typedef VesselNode< 3 > exported_class_t;
@@ -4337,21 +2466,10 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , GetComparisonId_function_type( &::VesselNode< 3 >::GetComparisonId ) );
         
         }
-        { //::VesselNode< 3 >::GetDimensionalDistance
-        
-            typedef VesselNode< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDimensionalDistance_function_type)( ::boost::numeric::ublas::c_vector< double, 3 > const & ) const;
-            
-            VesselNode3_exposer.def( 
-                "GetDimensionalDistance"
-                , GetDimensionalDistance_function_type( &::VesselNode< 3 >::GetDimensionalDistance )
-                , ( bp::arg("rLocation") ) );
-        
-        }
         { //::VesselNode< 3 >::GetDistance
         
             typedef VesselNode< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetDistance_function_type)( ::boost::numeric::ublas::c_vector< double, 3 > const & ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDistance_function_type)( ::boost::numeric::ublas::c_vector< double, 3 > const & ) const;
             
             VesselNode3_exposer.def( 
                 "GetDistance"
@@ -4389,6 +2507,16 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 "GetOutputData"
                 , GetOutputData_function_type(&::VesselNode< 3 >::GetOutputData)
                 , default_GetOutputData_function_type(&VesselNode_less__3__greater__wrapper::default_GetOutputData) );
+        
+        }
+        { //::VesselNode< 3 >::GetReferenceLengthScale
+        
+            typedef VesselNode< 3 > exported_class_t;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetReferenceLengthScale_function_type)(  ) const;
+            
+            VesselNode3_exposer.def( 
+                "GetReferenceLengthScale"
+                , GetReferenceLengthScale_function_type( &::VesselNode< 3 >::GetReferenceLengthScale ) );
         
         }
         { //::VesselNode< 3 >::GetSegment
@@ -4499,6 +2627,17 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , ( bp::arg("x"), bp::arg("y"), bp::arg("z")=0. ) );
         
         }
+        { //::VesselNode< 3 >::SetReferenceLengthScale
+        
+            typedef VesselNode< 3 > exported_class_t;
+            typedef void ( exported_class_t::*SetReferenceLengthScale_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
+            
+            VesselNode3_exposer.def( 
+                "SetReferenceLengthScale"
+                , SetReferenceLengthScale_function_type( &::VesselNode< 3 >::SetReferenceLengthScale )
+                , ( bp::arg("lenthScale") ) );
+        
+        }
         { //::VesselNode< 3 >::rGetLocation
         
             typedef VesselNode< 3 > exported_class_t;
@@ -4508,29 +2647,6 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 "rGetLocation"
                 , rGetLocation_function_type( &::VesselNode< 3 >::rGetLocation )
                 , bp::return_value_policy< bp::copy_const_reference >() );
-        
-        }
-        { //::VesselNode< 3 >::rGetLocationSI
-        
-            typedef VesselNode< 3 > exported_class_t;
-            typedef ::boost::numeric::ublas::c_vector< double, 3 > const & ( exported_class_t::*rGetLocationSI_function_type)(  ) const;
-            
-            VesselNode3_exposer.def( 
-                "rGetLocationSI"
-                , rGetLocationSI_function_type( &::VesselNode< 3 >::rGetLocationSI )
-                , bp::return_value_policy< bp::copy_const_reference >() );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetDimensionalRadius
-        
-            typedef VesselNode< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDimensionalRadius_function_type)(  ) const;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( VesselNode_less__3__greater__wrapper::*default_GetDimensionalRadius_function_type)(  ) const;
-            
-            VesselNode3_exposer.def( 
-                "GetDimensionalRadius"
-                , GetDimensionalRadius_function_type(&::AbstractVesselNetworkComponent< 3 >::GetDimensionalRadius)
-                , default_GetDimensionalRadius_function_type(&VesselNode_less__3__greater__wrapper::default_GetDimensionalRadius) );
         
         }
         { //::AbstractVesselNetworkComponent< 3 >::GetId
@@ -4573,110 +2689,13 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
         { //::AbstractVesselNetworkComponent< 3 >::GetRadius
         
             typedef VesselNode< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetRadius_function_type)(  ) const;
-            typedef double ( VesselNode_less__3__greater__wrapper::*default_GetRadius_function_type)(  ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetRadius_function_type)(  ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( VesselNode_less__3__greater__wrapper::*default_GetRadius_function_type)(  ) const;
             
             VesselNode3_exposer.def( 
                 "GetRadius"
                 , GetRadius_function_type(&::AbstractVesselNetworkComponent< 3 >::GetRadius)
                 , default_GetRadius_function_type(&VesselNode_less__3__greater__wrapper::default_GetRadius) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetRadiusSI
-        
-            typedef VesselNode< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetRadiusSI_function_type)(  ) const;
-            typedef double ( VesselNode_less__3__greater__wrapper::*default_GetRadiusSI_function_type)(  ) const;
-            
-            VesselNode3_exposer.def( 
-                "GetRadiusSI"
-                , GetRadiusSI_function_type(&::AbstractVesselNetworkComponent< 3 >::GetRadiusSI)
-                , default_GetRadiusSI_function_type(&VesselNode_less__3__greater__wrapper::default_GetRadiusSI) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetReferenceLength
-        
-            typedef VesselNode< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetReferenceLength_function_type)(  ) const;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( VesselNode_less__3__greater__wrapper::*default_GetReferenceLength_function_type)(  ) const;
-            
-            VesselNode3_exposer.def( 
-                "GetReferenceLength"
-                , GetReferenceLength_function_type(&::AbstractVesselNetworkComponent< 3 >::GetReferenceLength)
-                , default_GetReferenceLength_function_type(&VesselNode_less__3__greater__wrapper::default_GetReferenceLength) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetReferenceLengthSI
-        
-            typedef VesselNode< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetReferenceLengthSI_function_type)(  ) const;
-            typedef double ( VesselNode_less__3__greater__wrapper::*default_GetReferenceLengthSI_function_type)(  ) const;
-            
-            VesselNode3_exposer.def( 
-                "GetReferenceLengthSI"
-                , GetReferenceLengthSI_function_type(&::AbstractVesselNetworkComponent< 3 >::GetReferenceLengthSI)
-                , default_GetReferenceLengthSI_function_type(&VesselNode_less__3__greater__wrapper::default_GetReferenceLengthSI) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetReferenceMass
-        
-            typedef VesselNode< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetReferenceMass_function_type)(  ) const;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( VesselNode_less__3__greater__wrapper::*default_GetReferenceMass_function_type)(  ) const;
-            
-            VesselNode3_exposer.def( 
-                "GetReferenceMass"
-                , GetReferenceMass_function_type(&::AbstractVesselNetworkComponent< 3 >::GetReferenceMass)
-                , default_GetReferenceMass_function_type(&VesselNode_less__3__greater__wrapper::default_GetReferenceMass) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetReferenceMassSI
-        
-            typedef VesselNode< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetReferenceMassSI_function_type)(  ) const;
-            typedef double ( VesselNode_less__3__greater__wrapper::*default_GetReferenceMassSI_function_type)(  ) const;
-            
-            VesselNode3_exposer.def( 
-                "GetReferenceMassSI"
-                , GetReferenceMassSI_function_type(&::AbstractVesselNetworkComponent< 3 >::GetReferenceMassSI)
-                , default_GetReferenceMassSI_function_type(&VesselNode_less__3__greater__wrapper::default_GetReferenceMassSI) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetReferenceTime
-        
-            typedef VesselNode< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetReferenceTime_function_type)(  ) const;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( VesselNode_less__3__greater__wrapper::*default_GetReferenceTime_function_type)(  ) const;
-            
-            VesselNode3_exposer.def( 
-                "GetReferenceTime"
-                , GetReferenceTime_function_type(&::AbstractVesselNetworkComponent< 3 >::GetReferenceTime)
-                , default_GetReferenceTime_function_type(&VesselNode_less__3__greater__wrapper::default_GetReferenceTime) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetReferenceTimeSI
-        
-            typedef VesselNode< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetReferenceTimeSI_function_type)(  ) const;
-            typedef double ( VesselNode_less__3__greater__wrapper::*default_GetReferenceTimeSI_function_type)(  ) const;
-            
-            VesselNode3_exposer.def( 
-                "GetReferenceTimeSI"
-                , GetReferenceTimeSI_function_type(&::AbstractVesselNetworkComponent< 3 >::GetReferenceTimeSI)
-                , default_GetReferenceTimeSI_function_type(&VesselNode_less__3__greater__wrapper::default_GetReferenceTimeSI) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetDimensionalRadius
-        
-            typedef VesselNode< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetDimensionalRadius_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            typedef void ( VesselNode_less__3__greater__wrapper::*default_SetDimensionalRadius_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            
-            VesselNode3_exposer.def( 
-                "SetDimensionalRadius"
-                , SetDimensionalRadius_function_type(&::AbstractVesselNetworkComponent< 3 >::SetDimensionalRadius)
-                , default_SetDimensionalRadius_function_type(&VesselNode_less__3__greater__wrapper::default_SetDimensionalRadius)
-                , ( bp::arg("radius") ) );
         
         }
         { //::AbstractVesselNetworkComponent< 3 >::SetId
@@ -4708,8 +2727,8 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
         { //::AbstractVesselNetworkComponent< 3 >::SetRadius
         
             typedef VesselNode< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetRadius_function_type)( double ) ;
-            typedef void ( VesselNode_less__3__greater__wrapper::*default_SetRadius_function_type)( double ) ;
+            typedef void ( exported_class_t::*SetRadius_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
+            typedef void ( VesselNode_less__3__greater__wrapper::*default_SetRadius_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
             
             VesselNode3_exposer.def( 
                 "SetRadius"
@@ -4718,102 +2737,10 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , ( bp::arg("radius") ) );
         
         }
-        { //::AbstractVesselNetworkComponent< 3 >::SetRadiusSI
-        
-            typedef VesselNode< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetRadiusSI_function_type)( double ) ;
-            typedef void ( VesselNode_less__3__greater__wrapper::*default_SetRadiusSI_function_type)( double ) ;
-            
-            VesselNode3_exposer.def( 
-                "SetRadiusSI"
-                , SetRadiusSI_function_type(&::AbstractVesselNetworkComponent< 3 >::SetRadiusSI)
-                , default_SetRadiusSI_function_type(&VesselNode_less__3__greater__wrapper::default_SetRadiusSI)
-                , ( bp::arg("radius") ) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetReferenceLength
-        
-            typedef VesselNode< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetReferenceLength_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            typedef void ( VesselNode_less__3__greater__wrapper::*default_SetReferenceLength_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            
-            VesselNode3_exposer.def( 
-                "SetReferenceLength"
-                , SetReferenceLength_function_type(&::AbstractVesselNetworkComponent< 3 >::SetReferenceLength)
-                , default_SetReferenceLength_function_type(&VesselNode_less__3__greater__wrapper::default_SetReferenceLength)
-                , ( bp::arg("referenceLength") ) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetReferenceLengthSI
-        
-            typedef VesselNode< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetReferenceLengthSI_function_type)( double ) ;
-            typedef void ( VesselNode_less__3__greater__wrapper::*default_SetReferenceLengthSI_function_type)( double ) ;
-            
-            VesselNode3_exposer.def( 
-                "SetReferenceLengthSI"
-                , SetReferenceLengthSI_function_type(&::AbstractVesselNetworkComponent< 3 >::SetReferenceLengthSI)
-                , default_SetReferenceLengthSI_function_type(&VesselNode_less__3__greater__wrapper::default_SetReferenceLengthSI)
-                , ( bp::arg("referenceLength") ) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetReferenceMass
-        
-            typedef VesselNode< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetReferenceMass_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            typedef void ( VesselNode_less__3__greater__wrapper::*default_SetReferenceMass_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            
-            VesselNode3_exposer.def( 
-                "SetReferenceMass"
-                , SetReferenceMass_function_type(&::AbstractVesselNetworkComponent< 3 >::SetReferenceMass)
-                , default_SetReferenceMass_function_type(&VesselNode_less__3__greater__wrapper::default_SetReferenceMass)
-                , ( bp::arg("referenceMass") ) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetReferenceMassSI
-        
-            typedef VesselNode< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetReferenceMassSI_function_type)( double ) ;
-            typedef void ( VesselNode_less__3__greater__wrapper::*default_SetReferenceMassSI_function_type)( double ) ;
-            
-            VesselNode3_exposer.def( 
-                "SetReferenceMassSI"
-                , SetReferenceMassSI_function_type(&::AbstractVesselNetworkComponent< 3 >::SetReferenceMassSI)
-                , default_SetReferenceMassSI_function_type(&VesselNode_less__3__greater__wrapper::default_SetReferenceMassSI)
-                , ( bp::arg("referenceMass") ) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetReferenceTime
-        
-            typedef VesselNode< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetReferenceTime_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            typedef void ( VesselNode_less__3__greater__wrapper::*default_SetReferenceTime_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            
-            VesselNode3_exposer.def( 
-                "SetReferenceTime"
-                , SetReferenceTime_function_type(&::AbstractVesselNetworkComponent< 3 >::SetReferenceTime)
-                , default_SetReferenceTime_function_type(&VesselNode_less__3__greater__wrapper::default_SetReferenceTime)
-                , ( bp::arg("referenceTime") ) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetReferenceTimeSI
-        
-            typedef VesselNode< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetReferenceTimeSI_function_type)( double ) ;
-            typedef void ( VesselNode_less__3__greater__wrapper::*default_SetReferenceTimeSI_function_type)( double ) ;
-            
-            VesselNode3_exposer.def( 
-                "SetReferenceTimeSI"
-                , SetReferenceTimeSI_function_type(&::AbstractVesselNetworkComponent< 3 >::SetReferenceTimeSI)
-                , default_SetReferenceTimeSI_function_type(&VesselNode_less__3__greater__wrapper::default_SetReferenceTimeSI)
-                , ( bp::arg("referenceTime") ) );
-        
-        }
         VesselNode3_exposer.staticmethod( "Create" );
         bp::register_ptr_to_python< boost::shared_ptr< VesselNode<3> > >();
         bp::implicitly_convertible< boost::shared_ptr< VesselNode< 3 > >, boost::shared_ptr< AbstractVesselNetworkComponent< 3 > > >();
         bp::implicitly_convertible< boost::shared_ptr< VesselNode< 3 > >, boost::shared_ptr< boost::enable_shared_from_this< VesselNode< 3 > > > >();
-        VesselNode3_exposer.def("__init__", bp::make_constructor(VN3_Doubles));
     }
 
     { //::VesselSegment< 3 >
@@ -4854,31 +2781,10 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , ( bp::arg("pSegment") ) );
         
         }
-        { //::VesselSegment< 3 >::GetDimensionalDistance
-        
-            typedef VesselSegment< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDimensionalDistance_function_type)( ::boost::numeric::ublas::c_vector< double, 3 > const & ) const;
-            
-            VesselSegment3_exposer.def( 
-                "GetDimensionalDistance"
-                , GetDimensionalDistance_function_type( &::VesselSegment< 3 >::GetDimensionalDistance )
-                , ( bp::arg("location") ) );
-        
-        }
-        { //::VesselSegment< 3 >::GetDimensionalLength
-        
-            typedef VesselSegment< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDimensionalLength_function_type)(  ) const;
-            
-            VesselSegment3_exposer.def( 
-                "GetDimensionalLength"
-                , GetDimensionalLength_function_type( &::VesselSegment< 3 >::GetDimensionalLength ) );
-        
-        }
         { //::VesselSegment< 3 >::GetDistance
         
             typedef VesselSegment< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetDistance_function_type)( ::boost::numeric::ublas::c_vector< double, 3 > const & ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDistance_function_type)( ::boost::numeric::ublas::c_vector< double, 3 > const & ) const;
             
             VesselSegment3_exposer.def( 
                 "GetDistance"
@@ -4899,7 +2805,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
         { //::VesselSegment< 3 >::GetLength
         
             typedef VesselSegment< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetLength_function_type)(  ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetLength_function_type)(  ) const;
             
             VesselSegment3_exposer.def( 
                 "GetLength"
@@ -5045,18 +2951,6 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , ( bp::arg("rFlowProperties") ) );
         
         }
-        { //::AbstractVesselNetworkComponent< 3 >::GetDimensionalRadius
-        
-            typedef VesselSegment< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDimensionalRadius_function_type)(  ) const;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( VesselSegment_less__3__greater__wrapper::*default_GetDimensionalRadius_function_type)(  ) const;
-            
-            VesselSegment3_exposer.def( 
-                "GetDimensionalRadius"
-                , GetDimensionalRadius_function_type(&::AbstractVesselNetworkComponent< 3 >::GetDimensionalRadius)
-                , default_GetDimensionalRadius_function_type(&VesselSegment_less__3__greater__wrapper::default_GetDimensionalRadius) );
-        
-        }
         { //::AbstractVesselNetworkComponent< 3 >::GetId
         
             typedef VesselSegment< 3 > exported_class_t;
@@ -5097,110 +2991,13 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
         { //::AbstractVesselNetworkComponent< 3 >::GetRadius
         
             typedef VesselSegment< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetRadius_function_type)(  ) const;
-            typedef double ( VesselSegment_less__3__greater__wrapper::*default_GetRadius_function_type)(  ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetRadius_function_type)(  ) const;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( VesselSegment_less__3__greater__wrapper::*default_GetRadius_function_type)(  ) const;
             
             VesselSegment3_exposer.def( 
                 "GetRadius"
                 , GetRadius_function_type(&::AbstractVesselNetworkComponent< 3 >::GetRadius)
                 , default_GetRadius_function_type(&VesselSegment_less__3__greater__wrapper::default_GetRadius) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetRadiusSI
-        
-            typedef VesselSegment< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetRadiusSI_function_type)(  ) const;
-            typedef double ( VesselSegment_less__3__greater__wrapper::*default_GetRadiusSI_function_type)(  ) const;
-            
-            VesselSegment3_exposer.def( 
-                "GetRadiusSI"
-                , GetRadiusSI_function_type(&::AbstractVesselNetworkComponent< 3 >::GetRadiusSI)
-                , default_GetRadiusSI_function_type(&VesselSegment_less__3__greater__wrapper::default_GetRadiusSI) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetReferenceLength
-        
-            typedef VesselSegment< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetReferenceLength_function_type)(  ) const;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( VesselSegment_less__3__greater__wrapper::*default_GetReferenceLength_function_type)(  ) const;
-            
-            VesselSegment3_exposer.def( 
-                "GetReferenceLength"
-                , GetReferenceLength_function_type(&::AbstractVesselNetworkComponent< 3 >::GetReferenceLength)
-                , default_GetReferenceLength_function_type(&VesselSegment_less__3__greater__wrapper::default_GetReferenceLength) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetReferenceLengthSI
-        
-            typedef VesselSegment< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetReferenceLengthSI_function_type)(  ) const;
-            typedef double ( VesselSegment_less__3__greater__wrapper::*default_GetReferenceLengthSI_function_type)(  ) const;
-            
-            VesselSegment3_exposer.def( 
-                "GetReferenceLengthSI"
-                , GetReferenceLengthSI_function_type(&::AbstractVesselNetworkComponent< 3 >::GetReferenceLengthSI)
-                , default_GetReferenceLengthSI_function_type(&VesselSegment_less__3__greater__wrapper::default_GetReferenceLengthSI) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetReferenceMass
-        
-            typedef VesselSegment< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetReferenceMass_function_type)(  ) const;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( VesselSegment_less__3__greater__wrapper::*default_GetReferenceMass_function_type)(  ) const;
-            
-            VesselSegment3_exposer.def( 
-                "GetReferenceMass"
-                , GetReferenceMass_function_type(&::AbstractVesselNetworkComponent< 3 >::GetReferenceMass)
-                , default_GetReferenceMass_function_type(&VesselSegment_less__3__greater__wrapper::default_GetReferenceMass) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetReferenceMassSI
-        
-            typedef VesselSegment< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetReferenceMassSI_function_type)(  ) const;
-            typedef double ( VesselSegment_less__3__greater__wrapper::*default_GetReferenceMassSI_function_type)(  ) const;
-            
-            VesselSegment3_exposer.def( 
-                "GetReferenceMassSI"
-                , GetReferenceMassSI_function_type(&::AbstractVesselNetworkComponent< 3 >::GetReferenceMassSI)
-                , default_GetReferenceMassSI_function_type(&VesselSegment_less__3__greater__wrapper::default_GetReferenceMassSI) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetReferenceTime
-        
-            typedef VesselSegment< 3 > exported_class_t;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetReferenceTime_function_type)(  ) const;
-            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( VesselSegment_less__3__greater__wrapper::*default_GetReferenceTime_function_type)(  ) const;
-            
-            VesselSegment3_exposer.def( 
-                "GetReferenceTime"
-                , GetReferenceTime_function_type(&::AbstractVesselNetworkComponent< 3 >::GetReferenceTime)
-                , default_GetReferenceTime_function_type(&VesselSegment_less__3__greater__wrapper::default_GetReferenceTime) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::GetReferenceTimeSI
-        
-            typedef VesselSegment< 3 > exported_class_t;
-            typedef double ( exported_class_t::*GetReferenceTimeSI_function_type)(  ) const;
-            typedef double ( VesselSegment_less__3__greater__wrapper::*default_GetReferenceTimeSI_function_type)(  ) const;
-            
-            VesselSegment3_exposer.def( 
-                "GetReferenceTimeSI"
-                , GetReferenceTimeSI_function_type(&::AbstractVesselNetworkComponent< 3 >::GetReferenceTimeSI)
-                , default_GetReferenceTimeSI_function_type(&VesselSegment_less__3__greater__wrapper::default_GetReferenceTimeSI) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetDimensionalRadius
-        
-            typedef VesselSegment< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetDimensionalRadius_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            typedef void ( VesselSegment_less__3__greater__wrapper::*default_SetDimensionalRadius_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            
-            VesselSegment3_exposer.def( 
-                "SetDimensionalRadius"
-                , SetDimensionalRadius_function_type(&::AbstractVesselNetworkComponent< 3 >::SetDimensionalRadius)
-                , default_SetDimensionalRadius_function_type(&VesselSegment_less__3__greater__wrapper::default_SetDimensionalRadius)
-                , ( bp::arg("radius") ) );
         
         }
         { //::AbstractVesselNetworkComponent< 3 >::SetId
@@ -5232,8 +3029,8 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
         { //::AbstractVesselNetworkComponent< 3 >::SetRadius
         
             typedef VesselSegment< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetRadius_function_type)( double ) ;
-            typedef void ( VesselSegment_less__3__greater__wrapper::*default_SetRadius_function_type)( double ) ;
+            typedef void ( exported_class_t::*SetRadius_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
+            typedef void ( VesselSegment_less__3__greater__wrapper::*default_SetRadius_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
             
             VesselSegment3_exposer.def( 
                 "SetRadius"
@@ -5242,151 +3039,12 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
                 , ( bp::arg("radius") ) );
         
         }
-        { //::AbstractVesselNetworkComponent< 3 >::SetRadiusSI
-        
-            typedef VesselSegment< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetRadiusSI_function_type)( double ) ;
-            typedef void ( VesselSegment_less__3__greater__wrapper::*default_SetRadiusSI_function_type)( double ) ;
-            
-            VesselSegment3_exposer.def( 
-                "SetRadiusSI"
-                , SetRadiusSI_function_type(&::AbstractVesselNetworkComponent< 3 >::SetRadiusSI)
-                , default_SetRadiusSI_function_type(&VesselSegment_less__3__greater__wrapper::default_SetRadiusSI)
-                , ( bp::arg("radius") ) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetReferenceLength
-        
-            typedef VesselSegment< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetReferenceLength_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            typedef void ( VesselSegment_less__3__greater__wrapper::*default_SetReferenceLength_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            
-            VesselSegment3_exposer.def( 
-                "SetReferenceLength"
-                , SetReferenceLength_function_type(&::AbstractVesselNetworkComponent< 3 >::SetReferenceLength)
-                , default_SetReferenceLength_function_type(&VesselSegment_less__3__greater__wrapper::default_SetReferenceLength)
-                , ( bp::arg("referenceLength") ) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetReferenceLengthSI
-        
-            typedef VesselSegment< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetReferenceLengthSI_function_type)( double ) ;
-            typedef void ( VesselSegment_less__3__greater__wrapper::*default_SetReferenceLengthSI_function_type)( double ) ;
-            
-            VesselSegment3_exposer.def( 
-                "SetReferenceLengthSI"
-                , SetReferenceLengthSI_function_type(&::AbstractVesselNetworkComponent< 3 >::SetReferenceLengthSI)
-                , default_SetReferenceLengthSI_function_type(&VesselSegment_less__3__greater__wrapper::default_SetReferenceLengthSI)
-                , ( bp::arg("referenceLength") ) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetReferenceMass
-        
-            typedef VesselSegment< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetReferenceMass_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            typedef void ( VesselSegment_less__3__greater__wrapper::*default_SetReferenceMass_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            
-            VesselSegment3_exposer.def( 
-                "SetReferenceMass"
-                , SetReferenceMass_function_type(&::AbstractVesselNetworkComponent< 3 >::SetReferenceMass)
-                , default_SetReferenceMass_function_type(&VesselSegment_less__3__greater__wrapper::default_SetReferenceMass)
-                , ( bp::arg("referenceMass") ) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetReferenceMassSI
-        
-            typedef VesselSegment< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetReferenceMassSI_function_type)( double ) ;
-            typedef void ( VesselSegment_less__3__greater__wrapper::*default_SetReferenceMassSI_function_type)( double ) ;
-            
-            VesselSegment3_exposer.def( 
-                "SetReferenceMassSI"
-                , SetReferenceMassSI_function_type(&::AbstractVesselNetworkComponent< 3 >::SetReferenceMassSI)
-                , default_SetReferenceMassSI_function_type(&VesselSegment_less__3__greater__wrapper::default_SetReferenceMassSI)
-                , ( bp::arg("referenceMass") ) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetReferenceTime
-        
-            typedef VesselSegment< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetReferenceTime_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            typedef void ( VesselSegment_less__3__greater__wrapper::*default_SetReferenceTime_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
-            
-            VesselSegment3_exposer.def( 
-                "SetReferenceTime"
-                , SetReferenceTime_function_type(&::AbstractVesselNetworkComponent< 3 >::SetReferenceTime)
-                , default_SetReferenceTime_function_type(&VesselSegment_less__3__greater__wrapper::default_SetReferenceTime)
-                , ( bp::arg("referenceTime") ) );
-        
-        }
-        { //::AbstractVesselNetworkComponent< 3 >::SetReferenceTimeSI
-        
-            typedef VesselSegment< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetReferenceTimeSI_function_type)( double ) ;
-            typedef void ( VesselSegment_less__3__greater__wrapper::*default_SetReferenceTimeSI_function_type)( double ) ;
-            
-            VesselSegment3_exposer.def( 
-                "SetReferenceTimeSI"
-                , SetReferenceTimeSI_function_type(&::AbstractVesselNetworkComponent< 3 >::SetReferenceTimeSI)
-                , default_SetReferenceTimeSI_function_type(&VesselSegment_less__3__greater__wrapper::default_SetReferenceTimeSI)
-                , ( bp::arg("referenceTime") ) );
-        
-        }
         VesselSegment3_exposer.staticmethod( "Create" );
         bp::register_ptr_to_python< boost::shared_ptr< VesselSegment<3> > >();
         bp::implicitly_convertible< boost::shared_ptr< VesselSegment< 3 > >, boost::shared_ptr< AbstractVesselNetworkComponent< 3 > > >();
         bp::implicitly_convertible< boost::shared_ptr< VesselSegment< 3 > >, boost::shared_ptr< boost::enable_shared_from_this< VesselSegment< 3 > > > >();
-    }
-
-    { //::VtkVesselNetworkReader< 3 >
-        typedef bp::class_< VtkVesselNetworkReader< 3 > > VtkVesselNetworkReader3_exposer_t;
-        VtkVesselNetworkReader3_exposer_t VtkVesselNetworkReader3_exposer = VtkVesselNetworkReader3_exposer_t( "VtkVesselNetworkReader3", bp::init< >() );
-        bp::scope VtkVesselNetworkReader3_scope( VtkVesselNetworkReader3_exposer );
-        { //::VtkVesselNetworkReader< 3 >::Create
-        
-            typedef VtkVesselNetworkReader< 3 > exported_class_t;
-            typedef ::boost::shared_ptr< VtkVesselNetworkReader< 3 > > ( *Create_function_type )(  );
-            
-            VtkVesselNetworkReader3_exposer.def( 
-                "Create"
-                , Create_function_type( &::VtkVesselNetworkReader< 3 >::Create ) );
-        
-        }
-        { //::VtkVesselNetworkReader< 3 >::Read
-        
-            typedef VtkVesselNetworkReader< 3 > exported_class_t;
-            typedef ::boost::shared_ptr< VesselNetwork< 3 > > ( exported_class_t::*Read_function_type)(  ) ;
-            
-            VtkVesselNetworkReader3_exposer.def( 
-                "Read"
-                , Read_function_type( &::VtkVesselNetworkReader< 3 >::Read ) );
-        
-        }
-        { //::VtkVesselNetworkReader< 3 >::SetFileName
-        
-            typedef VtkVesselNetworkReader< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetFileName_function_type)( ::std::string const & ) ;
-            
-            VtkVesselNetworkReader3_exposer.def( 
-                "SetFileName"
-                , SetFileName_function_type( &::VtkVesselNetworkReader< 3 >::SetFileName )
-                , ( bp::arg("rFileName") ) );
-        
-        }
-        { //::VtkVesselNetworkReader< 3 >::SetRadiusArrayName
-        
-            typedef VtkVesselNetworkReader< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetRadiusArrayName_function_type)( ::std::string const & ) ;
-            
-            VtkVesselNetworkReader3_exposer.def( 
-                "SetRadiusArrayName"
-                , SetRadiusArrayName_function_type( &::VtkVesselNetworkReader< 3 >::SetRadiusArrayName )
-                , ( bp::arg("rRadius") ) );
-        
-        }
-        VtkVesselNetworkReader3_exposer.staticmethod( "Create" );
-        bp::register_ptr_to_python< boost::shared_ptr< VtkVesselNetworkReader<3> > >();
+        VesselSegment3_exposer.def("__init__", bp::make_constructor(VS3_Nodes));
+        VesselSegment3_exposer.def("__init__", bp::make_constructor(VS3_Copy));
     }
 
     { //::VtkVesselNetworkWriter< 3 >

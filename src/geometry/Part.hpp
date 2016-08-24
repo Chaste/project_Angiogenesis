@@ -52,7 +52,6 @@
  * (see the tetgen manual for details:http://wias-berlin.de/software/tetgen/).
  * These descriptions allow parts to be meshed using triangle or tetgen.
  */
-
 template<unsigned DIM>
 class Part
 {

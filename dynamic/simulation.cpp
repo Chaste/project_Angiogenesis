@@ -225,7 +225,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_simulation){
             , ( bp::arg("UseKiller") ) )    
         .def( 
             "SetVesselDistanceTolerance"
-            , (void ( ::OnLatticeSimulationWrapper::* )( double ))( &::OnLatticeSimulationWrapper::SetVesselDistanceTolerance )
+            , (void ( ::OnLatticeSimulationWrapper::* )( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ))( &::OnLatticeSimulationWrapper::SetVesselDistanceTolerance )
             , ( bp::arg("tolerance") ) )    
         .def( 
             "Solve"
@@ -249,15 +249,15 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_simulation){
             , (void ( ::SimulationManager::* )(  ))( &::SimulationManager::TearDown ) );
 
     { //::VascularTumourModifier< 3 >
-        typedef bp::class_< VascularTumourModifier_less__3__greater__wrapper > type_exposer_t;
-        type_exposer_t type_exposer = type_exposer_t( "type", bp::init< >() );
-        bp::scope type_scope( type_exposer );
+        typedef bp::class_< VascularTumourModifier_less__3__greater__wrapper > VascularTumourModifier3_exposer_t;
+        VascularTumourModifier3_exposer_t VascularTumourModifier3_exposer = VascularTumourModifier3_exposer_t( "VascularTumourModifier3", bp::init< >() );
+        bp::scope VascularTumourModifier3_scope( VascularTumourModifier3_exposer );
         { //::VascularTumourModifier< 3 >::Create
         
             typedef VascularTumourModifier< 3 > exported_class_t;
             typedef ::boost::shared_ptr< VascularTumourModifier< 3 > > ( *Create_function_type )(  );
             
-            type_exposer.def( 
+            VascularTumourModifier3_exposer.def( 
                 "Create"
                 , Create_function_type( &::VascularTumourModifier< 3 >::Create ) );
         
@@ -268,7 +268,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_simulation){
             typedef void ( exported_class_t::*OutputSimulationModifierParameters_function_type)( ::out_stream & ) ;
             typedef void ( VascularTumourModifier_less__3__greater__wrapper::*default_OutputSimulationModifierParameters_function_type)( ::out_stream & ) ;
             
-            type_exposer.def( 
+            VascularTumourModifier3_exposer.def( 
                 "OutputSimulationModifierParameters"
                 , OutputSimulationModifierParameters_function_type(&::VascularTumourModifier< 3 >::OutputSimulationModifierParameters)
                 , default_OutputSimulationModifierParameters_function_type(&VascularTumourModifier_less__3__greater__wrapper::default_OutputSimulationModifierParameters)
@@ -280,7 +280,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_simulation){
             typedef VascularTumourModifier< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetCellDataUpdateLabels_function_type)( ::std::vector< std::string > ) ;
             
-            type_exposer.def( 
+            VascularTumourModifier3_exposer.def( 
                 "SetCellDataUpdateLabels"
                 , SetCellDataUpdateLabels_function_type( &::VascularTumourModifier< 3 >::SetCellDataUpdateLabels )
                 , ( bp::arg("labels") ) );
@@ -291,7 +291,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_simulation){
             typedef VascularTumourModifier< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetVascularTumourSolver_function_type)( ::boost::shared_ptr< VascularTumourSolver< 3 > > ) ;
             
-            type_exposer.def( 
+            VascularTumourModifier3_exposer.def( 
                 "SetVascularTumourSolver"
                 , SetVascularTumourSolver_function_type( &::VascularTumourModifier< 3 >::SetVascularTumourSolver )
                 , ( bp::arg("pSolver") ) );
@@ -303,7 +303,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_simulation){
             typedef void ( exported_class_t::*SetupSolve_function_type)( ::AbstractCellPopulation< 3, 3 > &,::std::string ) ;
             typedef void ( VascularTumourModifier_less__3__greater__wrapper::*default_SetupSolve_function_type)( ::AbstractCellPopulation< 3, 3 > &,::std::string ) ;
             
-            type_exposer.def( 
+            VascularTumourModifier3_exposer.def( 
                 "SetupSolve"
                 , SetupSolve_function_type(&::VascularTumourModifier< 3 >::SetupSolve)
                 , default_SetupSolve_function_type(&VascularTumourModifier_less__3__greater__wrapper::default_SetupSolve)
@@ -316,7 +316,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_simulation){
             typedef void ( exported_class_t::*UpdateAtEndOfTimeStep_function_type)( ::AbstractCellPopulation< 3, 3 > & ) ;
             typedef void ( VascularTumourModifier_less__3__greater__wrapper::*default_UpdateAtEndOfTimeStep_function_type)( ::AbstractCellPopulation< 3, 3 > & ) ;
             
-            type_exposer.def( 
+            VascularTumourModifier3_exposer.def( 
                 "UpdateAtEndOfTimeStep"
                 , UpdateAtEndOfTimeStep_function_type(&::VascularTumourModifier< 3 >::UpdateAtEndOfTimeStep)
                 , default_UpdateAtEndOfTimeStep_function_type(&VascularTumourModifier_less__3__greater__wrapper::default_UpdateAtEndOfTimeStep)
@@ -328,28 +328,28 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_simulation){
             typedef VascularTumourModifier< 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateCellData_function_type)( ::AbstractCellPopulation< 3, 3 > & ) ;
             
-            type_exposer.def( 
+            VascularTumourModifier3_exposer.def( 
                 "UpdateCellData"
                 , UpdateCellData_function_type( &::VascularTumourModifier< 3 >::UpdateCellData )
                 , ( bp::arg("rCellPopulation") ) );
         
         }
-        type_exposer.staticmethod( "Create" );
+        VascularTumourModifier3_exposer.staticmethod( "Create" );
         bp::register_ptr_to_python< boost::shared_ptr< VascularTumourModifier<3> > >();
         bp::implicitly_convertible< boost::shared_ptr< VascularTumourModifier< 3 > >, boost::shared_ptr< AbstractCellBasedSimulationModifier< 3, 3 > > >();
         bp::implicitly_convertible< boost::shared_ptr< VascularTumourModifier< 3 > >, boost::shared_ptr< Identifiable > >();
     }
 
     { //::VascularTumourSolver< 3 >
-        typedef bp::class_< VascularTumourSolver< 3 > > VascularTumourSolver_less__3__greater__exposer_t;
-        VascularTumourSolver_less__3__greater__exposer_t VascularTumourSolver_less__3__greater__exposer = VascularTumourSolver_less__3__greater__exposer_t( "VascularTumourSolver_less__3__greater_", bp::init< >() );
-        bp::scope VascularTumourSolver_less__3__greater__scope( VascularTumourSolver_less__3__greater__exposer );
+        typedef bp::class_< VascularTumourSolver< 3 > > VascularTumourSolver3_exposer_t;
+        VascularTumourSolver3_exposer_t VascularTumourSolver3_exposer = VascularTumourSolver3_exposer_t( "VascularTumourSolver3", bp::init< >() );
+        bp::scope VascularTumourSolver3_scope( VascularTumourSolver3_exposer );
         { //::VascularTumourSolver< 3 >::AddHybridSolver
         
             typedef VascularTumourSolver< 3 > exported_class_t;
             typedef void ( exported_class_t::*AddHybridSolver_function_type)( ::boost::shared_ptr< AbstractHybridSolver< 3 > > ) ;
             
-            VascularTumourSolver_less__3__greater__exposer.def( 
+            VascularTumourSolver3_exposer.def( 
                 "AddHybridSolver"
                 , AddHybridSolver_function_type( &::VascularTumourSolver< 3 >::AddHybridSolver )
                 , ( bp::arg("pHybridSolver") ) );
@@ -360,7 +360,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_simulation){
             typedef VascularTumourSolver< 3 > exported_class_t;
             typedef ::boost::shared_ptr< VascularTumourSolver< 3 > > ( *Create_function_type )(  );
             
-            VascularTumourSolver_less__3__greater__exposer.def( 
+            VascularTumourSolver3_exposer.def( 
                 "Create"
                 , Create_function_type( &::VascularTumourSolver< 3 >::Create ) );
         
@@ -370,7 +370,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_simulation){
             typedef VascularTumourSolver< 3 > exported_class_t;
             typedef ::std::vector< boost::shared_ptr<AbstractHybridSolver<3> > > ( exported_class_t::*GetHybridSolvers_function_type)(  ) ;
             
-            VascularTumourSolver_less__3__greater__exposer.def( 
+            VascularTumourSolver3_exposer.def( 
                 "GetHybridSolvers"
                 , GetHybridSolvers_function_type( &::VascularTumourSolver< 3 >::GetHybridSolvers ) );
         
@@ -380,7 +380,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_simulation){
             typedef VascularTumourSolver< 3 > exported_class_t;
             typedef void ( exported_class_t::*Increment_function_type)(  ) ;
             
-            VascularTumourSolver_less__3__greater__exposer.def( 
+            VascularTumourSolver3_exposer.def( 
                 "Increment"
                 , Increment_function_type( &::VascularTumourSolver< 3 >::Increment ) );
         
@@ -390,7 +390,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_simulation){
             typedef VascularTumourSolver< 3 > exported_class_t;
             typedef void ( exported_class_t::*Run_function_type)(  ) ;
             
-            VascularTumourSolver_less__3__greater__exposer.def( 
+            VascularTumourSolver3_exposer.def( 
                 "Run"
                 , Run_function_type( &::VascularTumourSolver< 3 >::Run ) );
         
@@ -400,7 +400,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_simulation){
             typedef VascularTumourSolver< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetAngiogenesisSolver_function_type)( ::boost::shared_ptr< AngiogenesisSolver< 3 > > ) ;
             
-            VascularTumourSolver_less__3__greater__exposer.def( 
+            VascularTumourSolver3_exposer.def( 
                 "SetAngiogenesisSolver"
                 , SetAngiogenesisSolver_function_type( &::VascularTumourSolver< 3 >::SetAngiogenesisSolver )
                 , ( bp::arg("pAngiogenesisSolver") ) );
@@ -411,7 +411,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_simulation){
             typedef VascularTumourSolver< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetOutputFileHandler_function_type)( ::boost::shared_ptr< OutputFileHandler > ) ;
             
-            VascularTumourSolver_less__3__greater__exposer.def( 
+            VascularTumourSolver3_exposer.def( 
                 "SetOutputFileHandler"
                 , SetOutputFileHandler_function_type( &::VascularTumourSolver< 3 >::SetOutputFileHandler )
                 , ( bp::arg("pFileHandler") ) );
@@ -422,7 +422,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_simulation){
             typedef VascularTumourSolver< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetOutputFrequency_function_type)( unsigned int ) ;
             
-            VascularTumourSolver_less__3__greater__exposer.def( 
+            VascularTumourSolver3_exposer.def( 
                 "SetOutputFrequency"
                 , SetOutputFrequency_function_type( &::VascularTumourSolver< 3 >::SetOutputFrequency )
                 , ( bp::arg("frequency") ) );
@@ -433,7 +433,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_simulation){
             typedef VascularTumourSolver< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetRegressionSolver_function_type)( ::boost::shared_ptr< RegressionSolver< 3 > > ) ;
             
-            VascularTumourSolver_less__3__greater__exposer.def( 
+            VascularTumourSolver3_exposer.def( 
                 "SetRegressionSolver"
                 , SetRegressionSolver_function_type( &::VascularTumourSolver< 3 >::SetRegressionSolver )
                 , ( bp::arg("pRegressionSolver") ) );
@@ -444,7 +444,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_simulation){
             typedef VascularTumourSolver< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetStructuralAdaptationSolver_function_type)( ::boost::shared_ptr< StructuralAdaptationSolver< 3 > > ) ;
             
-            VascularTumourSolver_less__3__greater__exposer.def( 
+            VascularTumourSolver3_exposer.def( 
                 "SetStructuralAdaptationSolver"
                 , SetStructuralAdaptationSolver_function_type( &::VascularTumourSolver< 3 >::SetStructuralAdaptationSolver )
                 , ( bp::arg("pStructuralAdaptationSolver") ) );
@@ -455,7 +455,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_simulation){
             typedef VascularTumourSolver< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetVesselNetwork_function_type)( ::boost::shared_ptr< VesselNetwork< 3 > > ) ;
             
-            VascularTumourSolver_less__3__greater__exposer.def( 
+            VascularTumourSolver3_exposer.def( 
                 "SetVesselNetwork"
                 , SetVesselNetwork_function_type( &::VascularTumourSolver< 3 >::SetVesselNetwork )
                 , ( bp::arg("pNetwork") ) );
@@ -466,7 +466,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_simulation){
             typedef VascularTumourSolver< 3 > exported_class_t;
             typedef void ( exported_class_t::*Setup_function_type)(  ) ;
             
-            VascularTumourSolver_less__3__greater__exposer.def( 
+            VascularTumourSolver3_exposer.def( 
                 "Setup"
                 , Setup_function_type( &::VascularTumourSolver< 3 >::Setup ) );
         
@@ -476,7 +476,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_simulation){
             typedef VascularTumourSolver< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetupFromModifier_function_type)( ::AbstractCellPopulation< 3, 3 > &,::std::string const & ) ;
             
-            VascularTumourSolver_less__3__greater__exposer.def( 
+            VascularTumourSolver3_exposer.def( 
                 "SetupFromModifier"
                 , SetupFromModifier_function_type( &::VascularTumourSolver< 3 >::SetupFromModifier )
                 , ( bp::arg("rCellPopulation"), bp::arg("rDirectory") ) );
@@ -487,13 +487,13 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_simulation){
             typedef VascularTumourSolver< 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateCellData_function_type)( ::std::vector< std::string > ) ;
             
-            VascularTumourSolver_less__3__greater__exposer.def( 
+            VascularTumourSolver3_exposer.def( 
                 "UpdateCellData"
                 , UpdateCellData_function_type( &::VascularTumourSolver< 3 >::UpdateCellData )
                 , ( bp::arg("labels") ) );
         
         }
-        VascularTumourSolver_less__3__greater__exposer.staticmethod( "Create" );
+        VascularTumourSolver3_exposer.staticmethod( "Create" );
         bp::register_ptr_to_python< boost::shared_ptr< VascularTumourSolver<3> > >();
     }
 }

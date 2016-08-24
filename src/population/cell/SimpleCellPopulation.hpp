@@ -121,7 +121,7 @@ public:
      * @param origin the origin in the same units as the spacing
      */
     void GenerateCellsOnGrid(unsigned xDim = 10, unsigned yDim = 10, unsigned zDim = 10,
-                             units::quantity<unit::length> spacing = 1.0 * unit::microns,
+                             units::quantity<unit::length> spacing = 1.0 * 10.e-6 *unit::metres,
                              c_vector<double, DIM> origin = zero_vector<double>(DIM));
 
     /**
@@ -130,7 +130,7 @@ public:
      * @param pPart the part inside which to generate the cells
      * @param spacing the grid spacing
      */
-    void GenerateCellsOnGrid(boost::shared_ptr<Part<DIM> > pPart, units::quantity<unit::length> spacing = 1.0 * unit::microns);
+    void GenerateCellsOnGrid(boost::shared_ptr<Part<DIM> > pPart, units::quantity<unit::length> spacing = 1.0 * 10.e-6 *unit::metres);
 
     /**
      * Generate cells at specifc points

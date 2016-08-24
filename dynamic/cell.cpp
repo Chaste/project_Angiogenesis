@@ -419,10 +419,10 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
     }
 
     { //::CaBasedCellPopulation< 3 >
-        typedef bp::class_< CaBasedCellPopulation_less__3__greater__wrapper, boost::noncopyable > CaBasedCellPopulation_less__3__greater__exposer_t;
-        CaBasedCellPopulation_less__3__greater__exposer_t CaBasedCellPopulation_less__3__greater__exposer = CaBasedCellPopulation_less__3__greater__exposer_t( "CaBasedCellPopulation_less__3__greater_", bp::init< PottsMesh< 3 > &, std::vector< boost::shared_ptr<Cell> > &, std::vector< unsigned int >, bp::optional< unsigned int, bool, bool > >(( bp::arg("rMesh"), bp::arg("rCells"), bp::arg("locationIndices"), bp::arg("latticeCarryingCapacity")=(unsigned int)(1U), bp::arg("deleteMesh")=(bool)(false), bp::arg("validate")=(bool)(false) )) );
-        bp::scope CaBasedCellPopulation_less__3__greater__scope( CaBasedCellPopulation_less__3__greater__exposer );
-        CaBasedCellPopulation_less__3__greater__exposer.def( bp::init< PottsMesh< 3 > & >(( bp::arg("rMesh") )) );
+        typedef bp::class_< CaBasedCellPopulation_less__3__greater__wrapper, boost::noncopyable > CaBasedCellPopulation3_exposer_t;
+        CaBasedCellPopulation3_exposer_t CaBasedCellPopulation3_exposer = CaBasedCellPopulation3_exposer_t( "CaBasedCellPopulation3", bp::init< PottsMesh< 3 > &, std::vector< boost::shared_ptr<Cell> > &, std::vector< unsigned int >, bp::optional< unsigned int, bool, bool > >(( bp::arg("rMesh"), bp::arg("rCells"), bp::arg("locationIndices"), bp::arg("latticeCarryingCapacity")=(unsigned int)(1U), bp::arg("deleteMesh")=(bool)(false), bp::arg("validate")=(bool)(false) )) );
+        bp::scope CaBasedCellPopulation3_scope( CaBasedCellPopulation3_exposer );
+        CaBasedCellPopulation3_exposer.def( bp::init< PottsMesh< 3 > & >(( bp::arg("rMesh") )) );
         bp::implicitly_convertible< PottsMesh< 3 > &, CaBasedCellPopulation< 3 > >();
         { //::CaBasedCellPopulation< 3 >::AcceptCellWriter
         
@@ -430,7 +430,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef void ( exported_class_t::*AcceptCellWriter_function_type)( ::boost::shared_ptr< AbstractCellWriter< 3, 3 > >,::CellPtr ) ;
             typedef void ( CaBasedCellPopulation_less__3__greater__wrapper::*default_AcceptCellWriter_function_type)( ::boost::shared_ptr< AbstractCellWriter< 3, 3 > >,::CellPtr ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "AcceptCellWriter"
                 , AcceptCellWriter_function_type(&::CaBasedCellPopulation< 3 >::AcceptCellWriter)
                 , default_AcceptCellWriter_function_type(&CaBasedCellPopulation_less__3__greater__wrapper::default_AcceptCellWriter)
@@ -443,7 +443,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef void ( exported_class_t::*AcceptPopulationCountWriter_function_type)( ::boost::shared_ptr< AbstractCellPopulationCountWriter< 3, 3 > > ) ;
             typedef void ( CaBasedCellPopulation_less__3__greater__wrapper::*default_AcceptPopulationCountWriter_function_type)( ::boost::shared_ptr< AbstractCellPopulationCountWriter< 3, 3 > > ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "AcceptPopulationCountWriter"
                 , AcceptPopulationCountWriter_function_type(&::CaBasedCellPopulation< 3 >::AcceptPopulationCountWriter)
                 , default_AcceptPopulationCountWriter_function_type(&CaBasedCellPopulation_less__3__greater__wrapper::default_AcceptPopulationCountWriter)
@@ -456,7 +456,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef void ( exported_class_t::*AcceptPopulationWriter_function_type)( ::boost::shared_ptr< AbstractCellPopulationWriter< 3, 3 > > ) ;
             typedef void ( CaBasedCellPopulation_less__3__greater__wrapper::*default_AcceptPopulationWriter_function_type)( ::boost::shared_ptr< AbstractCellPopulationWriter< 3, 3 > > ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "AcceptPopulationWriter"
                 , AcceptPopulationWriter_function_type(&::CaBasedCellPopulation< 3 >::AcceptPopulationWriter)
                 , default_AcceptPopulationWriter_function_type(&CaBasedCellPopulation_less__3__greater__wrapper::default_AcceptPopulationWriter)
@@ -469,7 +469,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef ::CellPtr ( exported_class_t::*AddCell_function_type)( ::CellPtr,::boost::numeric::ublas::c_vector< double, 3 > const &,::CellPtr ) ;
             typedef ::CellPtr ( CaBasedCellPopulation_less__3__greater__wrapper::*default_AddCell_function_type)( ::CellPtr,::boost::numeric::ublas::c_vector< double, 3 > const &,::CellPtr ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "AddCell"
                 , AddCell_function_type(&::CaBasedCellPopulation< 3 >::AddCell)
                 , default_AddCell_function_type(&CaBasedCellPopulation_less__3__greater__wrapper::default_AddCell)
@@ -482,7 +482,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef void ( exported_class_t::*AddCellUsingLocationIndex_function_type)( unsigned int,::CellPtr ) ;
             typedef void ( CaBasedCellPopulation_less__3__greater__wrapper::*default_AddCellUsingLocationIndex_function_type)( unsigned int,::CellPtr ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "AddCellUsingLocationIndex"
                 , AddCellUsingLocationIndex_function_type(&::CaBasedCellPopulation< 3 >::AddCellUsingLocationIndex)
                 , default_AddCellUsingLocationIndex_function_type(&CaBasedCellPopulation_less__3__greater__wrapper::default_AddCellUsingLocationIndex)
@@ -494,7 +494,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef CaBasedCellPopulation< 3 > exported_class_t;
             typedef void ( exported_class_t::*AddSwitchingUpdateRule_function_type)( ::boost::shared_ptr< AbstractCaSwitchingUpdateRule< 3 > > ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "AddSwitchingUpdateRule"
                 , AddSwitchingUpdateRule_function_type( &::CaBasedCellPopulation< 3 >::AddSwitchingUpdateRule )
                 , ( bp::arg("pUpdateRule") ) );
@@ -505,7 +505,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef CaBasedCellPopulation< 3 > exported_class_t;
             typedef void ( exported_class_t::*AddUpdateRule_function_type)( ::boost::shared_ptr< AbstractCaUpdateRule< 3 > > ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "AddUpdateRule"
                 , AddUpdateRule_function_type( &::CaBasedCellPopulation< 3 >::AddUpdateRule )
                 , ( bp::arg("pUpdateRule") ) );
@@ -517,7 +517,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef double ( exported_class_t::*EvaluateDivisionPropensity_function_type)( unsigned int,unsigned int,::CellPtr ) ;
             typedef double ( CaBasedCellPopulation_less__3__greater__wrapper::*default_EvaluateDivisionPropensity_function_type)( unsigned int,unsigned int,::CellPtr ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "EvaluateDivisionPropensity"
                 , EvaluateDivisionPropensity_function_type(&::CaBasedCellPopulation< 3 >::EvaluateDivisionPropensity)
                 , default_EvaluateDivisionPropensity_function_type(&CaBasedCellPopulation_less__3__greater__wrapper::default_EvaluateDivisionPropensity)
@@ -529,7 +529,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef CaBasedCellPopulation< 3 > exported_class_t;
             typedef ::boost::shared_ptr< AbstractCaBasedDivisionRule< 3 > > ( exported_class_t::*GetCaBasedDivisionRule_function_type)(  ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "GetCaBasedDivisionRule"
                 , GetCaBasedDivisionRule_function_type( &::CaBasedCellPopulation< 3 >::GetCaBasedDivisionRule ) );
         
@@ -540,7 +540,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef ::boost::numeric::ublas::c_vector< double, 3 > ( exported_class_t::*GetLocationOfCellCentre_function_type)( ::CellPtr ) ;
             typedef ::boost::numeric::ublas::c_vector< double, 3 > ( CaBasedCellPopulation_less__3__greater__wrapper::*default_GetLocationOfCellCentre_function_type)( ::CellPtr ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "GetLocationOfCellCentre"
                 , GetLocationOfCellCentre_function_type(&::CaBasedCellPopulation< 3 >::GetLocationOfCellCentre)
                 , default_GetLocationOfCellCentre_function_type(&CaBasedCellPopulation_less__3__greater__wrapper::default_GetLocationOfCellCentre)
@@ -553,7 +553,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef ::std::set< unsigned int > ( exported_class_t::*GetNeighbouringLocationIndices_function_type)( ::CellPtr ) ;
             typedef ::std::set< unsigned int > ( CaBasedCellPopulation_less__3__greater__wrapper::*default_GetNeighbouringLocationIndices_function_type)( ::CellPtr ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "GetNeighbouringLocationIndices"
                 , GetNeighbouringLocationIndices_function_type(&::CaBasedCellPopulation< 3 >::GetNeighbouringLocationIndices)
                 , default_GetNeighbouringLocationIndices_function_type(&CaBasedCellPopulation_less__3__greater__wrapper::default_GetNeighbouringLocationIndices)
@@ -566,7 +566,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef unsigned int ( exported_class_t::*GetNumNodes_function_type)(  ) ;
             typedef unsigned int ( CaBasedCellPopulation_less__3__greater__wrapper::*default_GetNumNodes_function_type)(  ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "GetNumNodes"
                 , GetNumNodes_function_type(&::CaBasedCellPopulation< 3 >::GetNumNodes)
                 , default_GetNumNodes_function_type(&CaBasedCellPopulation_less__3__greater__wrapper::default_GetNumNodes) );
@@ -578,7 +578,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef double ( exported_class_t::*GetVolumeOfCell_function_type)( ::CellPtr ) ;
             typedef double ( CaBasedCellPopulation_less__3__greater__wrapper::*default_GetVolumeOfCell_function_type)( ::CellPtr ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "GetVolumeOfCell"
                 , GetVolumeOfCell_function_type(&::CaBasedCellPopulation< 3 >::GetVolumeOfCell)
                 , default_GetVolumeOfCell_function_type(&CaBasedCellPopulation_less__3__greater__wrapper::default_GetVolumeOfCell)
@@ -591,7 +591,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef double ( exported_class_t::*GetWidth_function_type)( unsigned int const & ) ;
             typedef double ( CaBasedCellPopulation_less__3__greater__wrapper::*default_GetWidth_function_type)( unsigned int const & ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "GetWidth"
                 , GetWidth_function_type(&::CaBasedCellPopulation< 3 >::GetWidth)
                 , default_GetWidth_function_type(&CaBasedCellPopulation_less__3__greater__wrapper::default_GetWidth)
@@ -604,7 +604,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef bool ( exported_class_t::*IsCellAssociatedWithADeletedLocation_function_type)( ::CellPtr ) ;
             typedef bool ( CaBasedCellPopulation_less__3__greater__wrapper::*default_IsCellAssociatedWithADeletedLocation_function_type)( ::CellPtr ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "IsCellAssociatedWithADeletedLocation"
                 , IsCellAssociatedWithADeletedLocation_function_type(&::CaBasedCellPopulation< 3 >::IsCellAssociatedWithADeletedLocation)
                 , default_IsCellAssociatedWithADeletedLocation_function_type(&CaBasedCellPopulation_less__3__greater__wrapper::default_IsCellAssociatedWithADeletedLocation)
@@ -617,7 +617,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef bool ( exported_class_t::*IsRoomToDivide_function_type)( ::CellPtr ) ;
             typedef bool ( CaBasedCellPopulation_less__3__greater__wrapper::*default_IsRoomToDivide_function_type)( ::CellPtr ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "IsRoomToDivide"
                 , IsRoomToDivide_function_type(&::CaBasedCellPopulation< 3 >::IsRoomToDivide)
                 , default_IsRoomToDivide_function_type(&CaBasedCellPopulation_less__3__greater__wrapper::default_IsRoomToDivide)
@@ -630,7 +630,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef bool ( exported_class_t::*IsSiteAvailable_function_type)( unsigned int,::CellPtr ) ;
             typedef bool ( CaBasedCellPopulation_less__3__greater__wrapper::*default_IsSiteAvailable_function_type)( unsigned int,::CellPtr ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "IsSiteAvailable"
                 , IsSiteAvailable_function_type(&::CaBasedCellPopulation< 3 >::IsSiteAvailable)
                 , default_IsSiteAvailable_function_type(&CaBasedCellPopulation_less__3__greater__wrapper::default_IsSiteAvailable)
@@ -643,7 +643,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef void ( exported_class_t::*OpenWritersFiles_function_type)( ::OutputFileHandler & ) ;
             typedef void ( CaBasedCellPopulation_less__3__greater__wrapper::*default_OpenWritersFiles_function_type)( ::OutputFileHandler & ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "OpenWritersFiles"
                 , OpenWritersFiles_function_type(&::CaBasedCellPopulation< 3 >::OpenWritersFiles)
                 , default_OpenWritersFiles_function_type(&CaBasedCellPopulation_less__3__greater__wrapper::default_OpenWritersFiles)
@@ -656,7 +656,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef void ( exported_class_t::*OutputCellPopulationParameters_function_type)( ::out_stream & ) ;
             typedef void ( CaBasedCellPopulation_less__3__greater__wrapper::*default_OutputCellPopulationParameters_function_type)( ::out_stream & ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "OutputCellPopulationParameters"
                 , OutputCellPopulationParameters_function_type(&::CaBasedCellPopulation< 3 >::OutputCellPopulationParameters)
                 , default_OutputCellPopulationParameters_function_type(&CaBasedCellPopulation_less__3__greater__wrapper::default_OutputCellPopulationParameters)
@@ -668,7 +668,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef CaBasedCellPopulation< 3 > exported_class_t;
             typedef void ( exported_class_t::*RemoveAllSwitchingUpdateRules_function_type)(  ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "RemoveAllSwitchingUpdateRules"
                 , RemoveAllSwitchingUpdateRules_function_type( &::CaBasedCellPopulation< 3 >::RemoveAllSwitchingUpdateRules ) );
         
@@ -678,7 +678,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef CaBasedCellPopulation< 3 > exported_class_t;
             typedef void ( exported_class_t::*RemoveAllUpdateRules_function_type)(  ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "RemoveAllUpdateRules"
                 , RemoveAllUpdateRules_function_type( &::CaBasedCellPopulation< 3 >::RemoveAllUpdateRules ) );
         
@@ -689,7 +689,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef void ( exported_class_t::*RemoveCellUsingLocationIndex_function_type)( unsigned int,::CellPtr ) ;
             typedef void ( CaBasedCellPopulation_less__3__greater__wrapper::*default_RemoveCellUsingLocationIndex_function_type)( unsigned int,::CellPtr ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "RemoveCellUsingLocationIndex"
                 , RemoveCellUsingLocationIndex_function_type(&::CaBasedCellPopulation< 3 >::RemoveCellUsingLocationIndex)
                 , default_RemoveCellUsingLocationIndex_function_type(&CaBasedCellPopulation_less__3__greater__wrapper::default_RemoveCellUsingLocationIndex)
@@ -702,7 +702,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef unsigned int ( exported_class_t::*RemoveDeadCells_function_type)(  ) ;
             typedef unsigned int ( CaBasedCellPopulation_less__3__greater__wrapper::*default_RemoveDeadCells_function_type)(  ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "RemoveDeadCells"
                 , RemoveDeadCells_function_type(&::CaBasedCellPopulation< 3 >::RemoveDeadCells)
                 , default_RemoveDeadCells_function_type(&CaBasedCellPopulation_less__3__greater__wrapper::default_RemoveDeadCells) );
@@ -713,7 +713,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef CaBasedCellPopulation< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetCaBasedDivisionRule_function_type)( ::boost::shared_ptr< AbstractCaBasedDivisionRule< 3 > > ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "SetCaBasedDivisionRule"
                 , SetCaBasedDivisionRule_function_type( &::CaBasedCellPopulation< 3 >::SetCaBasedDivisionRule )
                 , ( bp::arg("pCaBasedDivisionRule") ) );
@@ -725,7 +725,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef void ( exported_class_t::*Update_function_type)( bool ) ;
             typedef void ( CaBasedCellPopulation_less__3__greater__wrapper::*default_Update_function_type)( bool ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "Update"
                 , Update_function_type(&::CaBasedCellPopulation< 3 >::Update)
                 , default_Update_function_type(&CaBasedCellPopulation_less__3__greater__wrapper::default_Update)
@@ -738,7 +738,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef void ( exported_class_t::*UpdateCellLocations_function_type)( double ) ;
             typedef void ( CaBasedCellPopulation_less__3__greater__wrapper::*default_UpdateCellLocations_function_type)( double ) ;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "UpdateCellLocations"
                 , UpdateCellLocations_function_type(&::CaBasedCellPopulation< 3 >::UpdateCellLocations)
                 , default_UpdateCellLocations_function_type(&CaBasedCellPopulation_less__3__greater__wrapper::default_UpdateCellLocations)
@@ -750,7 +750,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef CaBasedCellPopulation< 3 > exported_class_t;
             typedef ::std::vector< boost::shared_ptr<AbstractCaSwitchingUpdateRule<3> > > const & ( exported_class_t::*rGetSwitchingUpdateRuleCollection_function_type)(  ) const;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "rGetSwitchingUpdateRuleCollection"
                 , rGetSwitchingUpdateRuleCollection_function_type( &::CaBasedCellPopulation< 3 >::rGetSwitchingUpdateRuleCollection )
                 , bp::return_value_policy< bp::copy_const_reference >() );
@@ -761,7 +761,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef CaBasedCellPopulation< 3 > exported_class_t;
             typedef ::std::vector< boost::shared_ptr<AbstractCaUpdateRule<3> > > const & ( exported_class_t::*rGetUpdateRuleCollection_function_type)(  ) const;
             
-            CaBasedCellPopulation_less__3__greater__exposer.def( 
+            CaBasedCellPopulation3_exposer.def( 
                 "rGetUpdateRuleCollection"
                 , rGetUpdateRuleCollection_function_type( &::CaBasedCellPopulation< 3 >::rGetUpdateRuleCollection )
                 , bp::return_value_policy< bp::copy_const_reference >() );
@@ -776,18 +776,18 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
     bp::class_< CancerCellMutationState >( "CancerCellMutationState", bp::init< >() );
 
     { //::SimpleCell< 3 >
-        typedef bp::class_< SimpleCell< 3 > > SimpleCell_less__3__greater__exposer_t;
-        SimpleCell_less__3__greater__exposer_t SimpleCell_less__3__greater__exposer = SimpleCell_less__3__greater__exposer_t( "SimpleCell_less__3__greater_", bp::init< bp::optional< double, double, double > >(( bp::arg("v1")=0, bp::arg("v2")=0, bp::arg("v3")=0 )) );
-        bp::scope SimpleCell_less__3__greater__scope( SimpleCell_less__3__greater__exposer );
+        typedef bp::class_< SimpleCell< 3 > > SimpleCell3_exposer_t;
+        SimpleCell3_exposer_t SimpleCell3_exposer = SimpleCell3_exposer_t( "SimpleCell3", bp::init< bp::optional< double, double, double > >(( bp::arg("v1")=0, bp::arg("v2")=0, bp::arg("v3")=0 )) );
+        bp::scope SimpleCell3_scope( SimpleCell3_exposer );
         bp::implicitly_convertible< double, SimpleCell< 3 > >();
-        SimpleCell_less__3__greater__exposer.def( bp::init< boost::numeric::ublas::c_vector< double, 3 > >(( bp::arg("location") )) );
+        SimpleCell3_exposer.def( bp::init< boost::numeric::ublas::c_vector< double, 3 > >(( bp::arg("location") )) );
         bp::implicitly_convertible< boost::numeric::ublas::c_vector< double, 3 >, SimpleCell< 3 > >();
         { //::SimpleCell< 3 >::Create
         
             typedef SimpleCell< 3 > exported_class_t;
             typedef ::boost::shared_ptr< SimpleCell< 3 > > ( *Create_function_type )( double,double,double );
             
-            SimpleCell_less__3__greater__exposer.def( 
+            SimpleCell3_exposer.def( 
                 "Create"
                 , Create_function_type( &::SimpleCell< 3 >::Create )
                 , ( bp::arg("v1")=0, bp::arg("v2")=0, bp::arg("v3")=0 ) );
@@ -798,7 +798,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef SimpleCell< 3 > exported_class_t;
             typedef ::boost::shared_ptr< SimpleCell< 3 > > ( *Create_function_type )( ::boost::numeric::ublas::c_vector< double, 3 > );
             
-            SimpleCell_less__3__greater__exposer.def( 
+            SimpleCell3_exposer.def( 
                 "Create"
                 , Create_function_type( &::SimpleCell< 3 >::Create )
                 , ( bp::arg("location") ) );
@@ -809,9 +809,19 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef SimpleCell< 3 > exported_class_t;
             typedef unsigned int ( exported_class_t::*GetIndex_function_type)(  ) ;
             
-            SimpleCell_less__3__greater__exposer.def( 
+            SimpleCell3_exposer.def( 
                 "GetIndex"
                 , GetIndex_function_type( &::SimpleCell< 3 >::GetIndex ) );
+        
+        }
+        { //::SimpleCell< 3 >::GetReferenceLengthScale
+        
+            typedef SimpleCell< 3 > exported_class_t;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetReferenceLengthScale_function_type)(  ) const;
+            
+            SimpleCell3_exposer.def( 
+                "GetReferenceLengthScale"
+                , GetReferenceLengthScale_function_type( &::SimpleCell< 3 >::GetReferenceLengthScale ) );
         
         }
         { //::SimpleCell< 3 >::SetIndex
@@ -819,27 +829,38 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef SimpleCell< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetIndex_function_type)( unsigned int ) ;
             
-            SimpleCell_less__3__greater__exposer.def( 
+            SimpleCell3_exposer.def( 
                 "SetIndex"
                 , SetIndex_function_type( &::SimpleCell< 3 >::SetIndex )
                 , ( bp::arg("index") ) );
         
         }
-        SimpleCell_less__3__greater__exposer.staticmethod( "Create" );
+        { //::SimpleCell< 3 >::SetReferenceLengthScale
+        
+            typedef SimpleCell< 3 > exported_class_t;
+            typedef void ( exported_class_t::*SetReferenceLengthScale_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
+            
+            SimpleCell3_exposer.def( 
+                "SetReferenceLengthScale"
+                , SetReferenceLengthScale_function_type( &::SimpleCell< 3 >::SetReferenceLengthScale )
+                , ( bp::arg("lenthScale") ) );
+        
+        }
+        SimpleCell3_exposer.staticmethod( "Create" );
         bp::register_ptr_to_python< boost::shared_ptr< SimpleCell<3> > >();
         bp::implicitly_convertible< boost::shared_ptr< SimpleCell< 3 > >, boost::shared_ptr< ChastePoint< 3 > > >();
     }
 
     { //::SimpleCellPopulation< 3 >
-        typedef bp::class_< SimpleCellPopulation< 3 > > SimpleCellPopulation_less__3__greater__exposer_t;
-        SimpleCellPopulation_less__3__greater__exposer_t SimpleCellPopulation_less__3__greater__exposer = SimpleCellPopulation_less__3__greater__exposer_t( "SimpleCellPopulation_less__3__greater_", bp::init< >() );
-        bp::scope SimpleCellPopulation_less__3__greater__scope( SimpleCellPopulation_less__3__greater__exposer );
+        typedef bp::class_< SimpleCellPopulation< 3 > > SimpleCellPopulation3_exposer_t;
+        SimpleCellPopulation3_exposer_t SimpleCellPopulation3_exposer = SimpleCellPopulation3_exposer_t( "SimpleCellPopulation3", bp::init< >() );
+        bp::scope SimpleCellPopulation3_scope( SimpleCellPopulation3_exposer );
         { //::SimpleCellPopulation< 3 >::AddCell
         
             typedef SimpleCellPopulation< 3 > exported_class_t;
             typedef void ( exported_class_t::*AddCell_function_type)( ::boost::shared_ptr< SimpleCell< 3 > > ) ;
             
-            SimpleCellPopulation_less__3__greater__exposer.def( 
+            SimpleCellPopulation3_exposer.def( 
                 "AddCell"
                 , AddCell_function_type( &::SimpleCellPopulation< 3 >::AddCell )
                 , ( bp::arg("pCell") ) );
@@ -850,7 +871,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef SimpleCellPopulation< 3 > exported_class_t;
             typedef void ( exported_class_t::*AddCells_function_type)( ::std::vector< boost::shared_ptr<SimpleCell<3> > > ) ;
             
-            SimpleCellPopulation_less__3__greater__exposer.def( 
+            SimpleCellPopulation3_exposer.def( 
                 "AddCells"
                 , AddCells_function_type( &::SimpleCellPopulation< 3 >::AddCells )
                 , ( bp::arg("cells") ) );
@@ -861,7 +882,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef SimpleCellPopulation< 3 > exported_class_t;
             typedef void ( exported_class_t::*BooleanWithVesselNetwork_function_type)( ::boost::shared_ptr< VesselNetwork< 3 > > ) ;
             
-            SimpleCellPopulation_less__3__greater__exposer.def( 
+            SimpleCellPopulation3_exposer.def( 
                 "BooleanWithVesselNetwork"
                 , BooleanWithVesselNetwork_function_type( &::SimpleCellPopulation< 3 >::BooleanWithVesselNetwork )
                 , ( bp::arg("pNetwork") ) );
@@ -872,7 +893,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef SimpleCellPopulation< 3 > exported_class_t;
             typedef ::boost::shared_ptr< SimpleCellPopulation< 3 > > ( *Create_function_type )(  );
             
-            SimpleCellPopulation_less__3__greater__exposer.def( 
+            SimpleCellPopulation3_exposer.def( 
                 "Create"
                 , Create_function_type( &::SimpleCellPopulation< 3 >::Create ) );
         
@@ -882,7 +903,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef SimpleCellPopulation< 3 > exported_class_t;
             typedef void ( exported_class_t::*GenerateCellsAtPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
             
-            SimpleCellPopulation_less__3__greater__exposer.def( 
+            SimpleCellPopulation3_exposer.def( 
                 "GenerateCellsAtPoints"
                 , GenerateCellsAtPoints_function_type( &::SimpleCellPopulation< 3 >::GenerateCellsAtPoints )
                 , ( bp::arg("points") ) );
@@ -891,9 +912,9 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
         { //::SimpleCellPopulation< 3 >::GenerateCellsOnGrid
         
             typedef SimpleCellPopulation< 3 > exported_class_t;
-            typedef void ( exported_class_t::*GenerateCellsOnGrid_function_type)( unsigned int,unsigned int,unsigned int,double,::boost::numeric::ublas::c_vector< double, 3 > ) ;
+            typedef void ( exported_class_t::*GenerateCellsOnGrid_function_type)( unsigned int,unsigned int,unsigned int,::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >,::boost::numeric::ublas::c_vector< double, 3 > ) ;
             
-            SimpleCellPopulation_less__3__greater__exposer.def( 
+            SimpleCellPopulation3_exposer.def( 
                 "GenerateCellsOnGrid"
                 , GenerateCellsOnGrid_function_type( &::SimpleCellPopulation< 3 >::GenerateCellsOnGrid )
                 , ( bp::arg("xDim"), bp::arg("yDim"), bp::arg("zDim"), bp::arg("spacing"), bp::arg("origin") ) );
@@ -902,9 +923,9 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
         { //::SimpleCellPopulation< 3 >::GenerateCellsOnGrid
         
             typedef SimpleCellPopulation< 3 > exported_class_t;
-            typedef void ( exported_class_t::*GenerateCellsOnGrid_function_type)( ::boost::shared_ptr< Part< 3 > >,double ) ;
+            typedef void ( exported_class_t::*GenerateCellsOnGrid_function_type)( ::boost::shared_ptr< Part< 3 > >,::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
             
-            SimpleCellPopulation_less__3__greater__exposer.def( 
+            SimpleCellPopulation3_exposer.def( 
                 "GenerateCellsOnGrid"
                 , GenerateCellsOnGrid_function_type( &::SimpleCellPopulation< 3 >::GenerateCellsOnGrid )
                 , ( bp::arg("pPart"), bp::arg("spacing") ) );
@@ -915,7 +936,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef SimpleCellPopulation< 3 > exported_class_t;
             typedef ::std::vector< boost::shared_ptr<SimpleCell<3> > > ( exported_class_t::*GetCells_function_type)(  ) ;
             
-            SimpleCellPopulation_less__3__greater__exposer.def( 
+            SimpleCellPopulation3_exposer.def( 
                 "GetCells"
                 , GetCells_function_type( &::SimpleCellPopulation< 3 >::GetCells ) );
         
@@ -925,9 +946,20 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef SimpleCellPopulation< 3 > exported_class_t;
             typedef ::vtkSmartPointer< vtkPoints > ( exported_class_t::*GetVtk_function_type)(  ) ;
             
-            SimpleCellPopulation_less__3__greater__exposer.def( 
+            SimpleCellPopulation3_exposer.def( 
                 "GetVtk"
                 , GetVtk_function_type( &::SimpleCellPopulation< 3 >::GetVtk ) );
+        
+        }
+        { //::SimpleCellPopulation< 3 >::SetReferenceLengthScale
+        
+            typedef SimpleCellPopulation< 3 > exported_class_t;
+            typedef void ( exported_class_t::*SetReferenceLengthScale_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
+            
+            SimpleCellPopulation3_exposer.def( 
+                "SetReferenceLengthScale"
+                , SetReferenceLengthScale_function_type( &::SimpleCellPopulation< 3 >::SetReferenceLengthScale )
+                , ( bp::arg("lenthScale") ) );
         
         }
         { //::SimpleCellPopulation< 3 >::Write
@@ -935,13 +967,13 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_cell){
             typedef SimpleCellPopulation< 3 > exported_class_t;
             typedef void ( exported_class_t::*Write_function_type)( ::std::string const & ) ;
             
-            SimpleCellPopulation_less__3__greater__exposer.def( 
+            SimpleCellPopulation3_exposer.def( 
                 "Write"
                 , Write_function_type( &::SimpleCellPopulation< 3 >::Write )
                 , ( bp::arg("rFileName") ) );
         
         }
-        SimpleCellPopulation_less__3__greater__exposer.staticmethod( "Create" );
+        SimpleCellPopulation3_exposer.staticmethod( "Create" );
         bp::register_ptr_to_python< boost::shared_ptr< SimpleCellPopulation<3> > >();
     }
 

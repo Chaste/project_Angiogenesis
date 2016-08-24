@@ -46,10 +46,7 @@
 #include "Part.hpp"
 #include "Cell.hpp"
 
-// Jonathan Shewchuk's triangle and Hang Si's tetgen. Tetgen 1.5 is used in place of 1.4.2 used in Chaste/mesh.
-// This allows more robust meshing of parts with floating segments. Note that the Tetgen 1.5 license is
-// incompatible with Chaste, #2486.
-
+// Jonathan Shewchuk's triangle and Hang Si's tetgen.
 #define REAL double
 #define VOID void
 #include "triangle.h"
@@ -60,11 +57,49 @@
 struct triangulateio;
 
 /**
- * A TetrahedralMesh which can be constructed through the input of PLC (piecewise linear complex) or STL info.
+ * This class is for generating 2d and 3d finite element meshes using triangle and tetgen. It inherits from
+ * TetrahedralMesh mesh as it needs to use functionality that is protected in that class. Some functionality from
+ * TetrahedralMesh (ImportFromTetgen, InitialiseTriangulateIo, FreeTriangulateIo) is duplicated here, the possibility of
+ * removing it and just using the TetrahedralMesh versions should be looked at.
  */
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM = ELEMENT_DIM>
 class HybridMesh : public TetrahedralMesh<ELEMENT_DIM, SPACE_DIM>
 {
+    /**
+     * Max area argument used in mesh generation.
+     */
+    double mMaxElementArea;
+
+    /**
+     * A part to be meshed. This may not be the final mesh geometry if extra vtk polydata is included.
+     */
+    boost::shared_ptr<Part<SPACE_DIM> > mpDomain;
+
+    /**
+     * A vtk surface to be meshed
+     */
+    vtkSmartPointer<vtkPolyData> mpVtkDomain;
+
+    /**
+     * A path to an stl surface to be meshed
+     */
+    std::string mStlFilePath;
+
+    /**
+     * A collection of hole location markers
+     */
+    std::vector<c_vector<double, SPACE_DIM> > mHoles;
+
+    /**
+     * A collection of region markers
+     */
+    std::vector<c_vector<double, SPACE_DIM> > mRegions;
+
+    /**
+     * Store element-wise region markers
+     */
+    std::vector<unsigned> mAttributes;
+
 public:
 
     /**
@@ -84,25 +119,48 @@ public:
     static boost::shared_ptr<HybridMesh<ELEMENT_DIM, SPACE_DIM> > Create();
 
     /**
-     * Generate the mesh based on a Part description
-     * @param pPart pointer to the part
-     * @param maxElementArea if greater than 0.0 quality meshing is used in Tetgen
+     * Set the domain for meshing
+     * @param pDomain the domain for meshing
      */
-    void GenerateFromPart(boost::shared_ptr<Part<SPACE_DIM> > pPart, double maxElementArea = 0.0);
-
-    void GenerateTriMeshFromPolyData(vtkSmartPointer<vtkPolyData> pPolyData, double maxElementArea = 0.0, std::vector<c_vector<double, SPACE_DIM> > holes =
-            std::vector<c_vector<double, SPACE_DIM> >() );
+    void SetDomain(boost::shared_ptr<Part<SPACE_DIM> > pDomain);
 
     /**
-     * Generate the mesh based on a STL description
-     * @param filename path to the STL file
-     * @param maxElementArea if greater than 0.0 quality meshing is used in Tetgen
+     * Set the domain for meshing
+     * @param pDomain the domain for meshing
      */
-    void GenerateFromStl(const std::string& filename, double maxElementArea = 0.0, std::vector<c_vector<double, SPACE_DIM> > holes =
-            std::vector<c_vector<double, SPACE_DIM> >());
+    void SetDomain(vtkSmartPointer<vtkPolyData> pDomain);
 
     /**
-     * Return the node connectivity
+     * Set the domain for meshing
+     * @param rPathToStl the path to the stl for meshing
+     */
+    void SetDomain(const std::string& rPathToStl);
+
+    /**
+     * Set the max element area
+     * @param maxElementArea the max element area
+     */
+    void SetMaxElementArea(double maxElementArea);
+
+    /**
+    * Set the hole locations
+    * @param holes hole locations
+    */
+    void SetHoles(std::vector<c_vector<double, SPACE_DIM> > holes);
+
+    /**
+    * Set the region marker locations
+    * @param regionMarkers region marker locations
+    */
+    void SetRegionMarkers(std::vector<c_vector<double, SPACE_DIM> > regionMarkers);
+
+    /**
+     * Do the meshing
+     */
+    void Update();
+
+    /**
+     * Return the element connectivity
      */
     std::vector<std::vector<unsigned> > GetConnectivity();
 
@@ -111,25 +169,36 @@ public:
      */
     std::vector<std::vector<double> > GetNodeLocations();
 
+    /**
+     * Return the element-wise region markers
+     */
+    std::vector<unsigned> GetElementRegionMarkers();
 
 private:
 
     /**
      * Use triangle for 2-D meshing
      */
-    void Mesh2d(boost::shared_ptr<Part<SPACE_DIM> > pPart, double maxElementArea = 0.0);
+    void Mesh2d();
 
     /**
      * Use tetgen for 3-D meshing
      */
-    void Mesh3d(boost::shared_ptr<Part<SPACE_DIM> > pPart, double maxElementArea = 0.0);
+    void Mesh3d();
 
-    // This is the same as the TetrahedralMesh implementation of ImportFromMesher but avoids a lot of templating hassle.
+    /**
+     * Use tetgen for 3-D meshing of an stl
+     */
+    void MeshStl3d();
+
+    // This is the same as the TetrahedralMesh implementation of ImportFromMesher but avoids some templating
     void ImportFromTetgen(tetgen::tetgenio& mesherOutput, unsigned numberOfElements, int *elementList,
                           unsigned numberOfFaces, int *faceList, int *edgeMarkerList);
 
+    // This is the same as the TetrahedralMesh implementation of InitialiseTriangulateIo but avoids some templating
     void InitialiseTriangulateIo(triangulateio& mesherIo);
 
+    // This is the same as the TetrahedralMesh implementation of FreeTriangulateIo but avoids some templating
     void FreeTriangulateIo(triangulateio& mesherIo);
 };
 

@@ -10,55 +10,9 @@
 
 #include "indexing_suite/map.hpp"
 
-#include "/home/grogan/Chaste/projects/Angiogenesis/dynamic/wrapper_headers/pde_headers.hpp"
+#include "pde_headers.hpp"
 
 namespace bp = boost::python;
-
-struct AbstractHybridSolver_less__3__greater__wrapper : AbstractHybridSolver< 3 >, bp::wrapper< AbstractHybridSolver< 3 > > {
-
-    AbstractHybridSolver_less__3__greater__wrapper( )
-    : AbstractHybridSolver<3>( )
-      , bp::wrapper< AbstractHybridSolver< 3 > >(){
-        // null constructor
-    
-    }
-
-    virtual ::std::vector< double > GetSolutionAtGridPoints( ::boost::shared_ptr< RegularGrid< 3, 3 > > pGrid ){
-        bp::override func_GetSolutionAtGridPoints = this->get_override( "GetSolutionAtGridPoints" );
-        return func_GetSolutionAtGridPoints( pGrid );
-    }
-
-    virtual ::std::vector< double > GetSolutionAtPoints( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > samplePoints ){
-        bp::override func_GetSolutionAtPoints = this->get_override( "GetSolutionAtPoints" );
-        return func_GetSolutionAtPoints( samplePoints );
-    }
-
-    virtual void Setup(  ){
-        bp::override func_Setup = this->get_override( "Setup" );
-        func_Setup(  );
-    }
-
-    virtual void Solve(  ){
-        bp::override func_Solve = this->get_override( "Solve" );
-        func_Solve(  );
-    }
-
-    virtual void Update(  ){
-        bp::override func_Update = this->get_override( "Update" );
-        func_Update(  );
-    }
-
-    virtual void UpdateCellData(  ){
-        bp::override func_UpdateCellData = this->get_override( "UpdateCellData" );
-        func_UpdateCellData(  );
-    }
-
-    virtual void Write(  ){
-        bp::override func_Write = this->get_override( "Write" );
-        func_Write(  );
-    }
-
-};
 
 struct AbstractLinearEllipticPde_less__3_comma__3__greater__wrapper : AbstractLinearEllipticPde< 3, 3 >, bp::wrapper< AbstractLinearEllipticPde< 3, 3 > > {
 
@@ -1095,81 +1049,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
         map_less__unsigned_int_comma__double__greater__exposer.def( bp::indexing::map_suite< std::map< unsigned int, double > >() );
     }
 
-    bp::class_< AbstractHybridSolver_less__3__greater__wrapper, boost::noncopyable >( "AbstractHybridSolver3", bp::init< >() )    
-        .def( 
-            "AddBoundaryCondition"
-            , (void ( ::AbstractHybridSolver<3>::* )( ::boost::shared_ptr< HybridBoundaryCondition< 3 > > ))( &::AbstractHybridSolver< 3 >::AddBoundaryCondition )
-            , ( bp::arg("pBoundaryCondition") ) )    
-        .def( 
-            "CellPopulationIsSet"
-            , (bool ( ::AbstractHybridSolver<3>::* )(  ))( &::AbstractHybridSolver< 3 >::CellPopulationIsSet ) )    
-        .def( 
-            "GetLabel"
-            , (::std::string const & ( ::AbstractHybridSolver<3>::* )(  ))( &::AbstractHybridSolver< 3 >::GetLabel )
-            , bp::return_value_policy< bp::copy_const_reference >() )    
-        .def( 
-            "GetNonLinearPde"
-            , (::boost::shared_ptr< HybridNonLinearEllipticPde< 3, 3 > > ( ::AbstractHybridSolver<3>::* )(  ))( &::AbstractHybridSolver< 3 >::GetNonLinearPde ) )    
-        .def( 
-            "GetPde"
-            , (::boost::shared_ptr< HybridLinearEllipticPde< 3, 3 > > ( ::AbstractHybridSolver<3>::* )(  ))( &::AbstractHybridSolver< 3 >::GetPde ) )    
-        .def( 
-            "GetSolutionAtGridPoints"
-            , bp::pure_virtual( (::std::vector< double > ( ::AbstractHybridSolver<3>::* )( ::boost::shared_ptr< RegularGrid< 3, 3 > > ))(&::AbstractHybridSolver< 3 >::GetSolutionAtGridPoints) )
-            , ( bp::arg("pGrid") ) )    
-        .def( 
-            "GetSolutionAtPoints"
-            , bp::pure_virtual( (::std::vector< double > ( ::AbstractHybridSolver<3>::* )( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ))(&::AbstractHybridSolver< 3 >::GetSolutionAtPoints) )
-            , ( bp::arg("samplePoints") ) )    
-        .def( 
-            "SetCellPopulation"
-            , (void ( ::AbstractHybridSolver<3>::* )( ::AbstractCellPopulation< 3, 3 > & ))( &::AbstractHybridSolver< 3 >::SetCellPopulation )
-            , ( bp::arg("rCellPopulation") ) )    
-        .def( 
-            "SetFileHandler"
-            , (void ( ::AbstractHybridSolver<3>::* )( ::boost::shared_ptr< OutputFileHandler > ))( &::AbstractHybridSolver< 3 >::SetFileHandler )
-            , ( bp::arg("pOutputFileHandler") ) )    
-        .def( 
-            "SetFileName"
-            , (void ( ::AbstractHybridSolver<3>::* )( ::std::string const & ))( &::AbstractHybridSolver< 3 >::SetFileName )
-            , ( bp::arg("rFilename") ) )    
-        .def( 
-            "SetLabel"
-            , (void ( ::AbstractHybridSolver<3>::* )( ::std::string const & ))( &::AbstractHybridSolver< 3 >::SetLabel )
-            , ( bp::arg("rLabel") ) )    
-        .def( 
-            "SetNonLinearPde"
-            , (void ( ::AbstractHybridSolver<3>::* )( ::boost::shared_ptr< HybridNonLinearEllipticPde< 3, 3 > > ))( &::AbstractHybridSolver< 3 >::SetNonLinearPde )
-            , ( bp::arg("pPde") ) )    
-        .def( 
-            "SetPde"
-            , (void ( ::AbstractHybridSolver<3>::* )( ::boost::shared_ptr< HybridLinearEllipticPde< 3, 3 > > ))( &::AbstractHybridSolver< 3 >::SetPde )
-            , ( bp::arg("pPde") ) )    
-        .def( 
-            "SetVesselNetwork"
-            , (void ( ::AbstractHybridSolver<3>::* )( ::boost::shared_ptr< VesselNetwork< 3 > > ))( &::AbstractHybridSolver< 3 >::SetVesselNetwork )
-            , ( bp::arg("pNetwork") ) )    
-        .def( 
-            "SetWriteSolution"
-            , (void ( ::AbstractHybridSolver<3>::* )( bool ))( &::AbstractHybridSolver< 3 >::SetWriteSolution )
-            , ( bp::arg("write")=(bool)(true) ) )    
-        .def( 
-            "Setup"
-            , bp::pure_virtual( (void ( ::AbstractHybridSolver<3>::* )(  ))(&::AbstractHybridSolver< 3 >::Setup) ) )    
-        .def( 
-            "Solve"
-            , bp::pure_virtual( (void ( ::AbstractHybridSolver<3>::* )(  ))(&::AbstractHybridSolver< 3 >::Solve) ) )    
-        .def( 
-            "Update"
-            , bp::pure_virtual( (void ( ::AbstractHybridSolver<3>::* )(  ))(&::AbstractHybridSolver< 3 >::Update) ) )    
-        .def( 
-            "UpdateCellData"
-            , bp::pure_virtual( (void ( ::AbstractHybridSolver<3>::* )(  ))(&::AbstractHybridSolver< 3 >::UpdateCellData) ) )    
-        .def( 
-            "Write"
-            , bp::pure_virtual( (void ( ::AbstractHybridSolver<3>::* )(  ))(&::AbstractHybridSolver< 3 >::Write) ) );
-
-    bp::class_< AbstractLinearEllipticPde_less__3_comma__3__greater__wrapper, boost::noncopyable >( "AbstractLinearEllipticPde3", bp::init< >() )    
+    bp::class_< AbstractLinearEllipticPde_less__3_comma__3__greater__wrapper, boost::noncopyable >( "AbstractLinearEllipticPde3_3", bp::init< >() )    
         .def( 
             "ComputeConstantInUSourceTerm"
             , bp::pure_virtual( (double ( ::AbstractLinearEllipticPde<3, 3>::* )( ::ChastePoint< 3 > const &,::Element< 3, 3 > * ))(&::AbstractLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm) )
@@ -1193,7 +1073,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             , (double ( AbstractLinearEllipticPde_less__3_comma__3__greater__wrapper::* )( ::Node< 3 > const & ))(&AbstractLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeLinearInUCoeffInSourceTermAtNode)
             , ( bp::arg("rNode") ) );
 
-    bp::class_< AbstractRegularGridHybridSolver_less__3__greater__wrapper, bp::bases< AbstractHybridSolver< 3 > >, boost::noncopyable >( "AbstractRegularGridHybridSolver3", bp::init< >() )    
+    bp::class_< AbstractRegularGridHybridSolver_less__3__greater__wrapper, boost::noncopyable >( "AbstractRegularGridHybridSolver3", bp::init< >() )    
         .def( 
             "GetGrid"
             , (::boost::shared_ptr< RegularGrid< 3, 3 > > ( ::AbstractRegularGridHybridSolver<3>::* )(  ))( &::AbstractRegularGridHybridSolver< 3 >::GetGrid ) )    
@@ -1754,7 +1634,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
     }
 
     { //::FiniteElementSolver< 3 >
-        typedef bp::class_< FiniteElementSolver_less__3__greater__wrapper, bp::bases< AbstractHybridSolver< 3 > > > FiniteElementSolver3_exposer_t;
+        typedef bp::class_< FiniteElementSolver_less__3__greater__wrapper > FiniteElementSolver3_exposer_t;
         FiniteElementSolver3_exposer_t FiniteElementSolver3_exposer = FiniteElementSolver3_exposer_t( "FiniteElementSolver3", bp::init< >() );
         bp::scope FiniteElementSolver3_scope( FiniteElementSolver3_exposer );
         { //::FiniteElementSolver< 3 >::Create
@@ -2103,15 +1983,15 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             , (void ( GreensFunctionSolver_less__3__greater__wrapper::* )(  ))(&GreensFunctionSolver_less__3__greater__wrapper::default_Write) );
 
     { //::HybridBoundaryCondition< 3 >
-        typedef bp::class_< HybridBoundaryCondition< 3 > > HybridBoundaryCondition_less__3__greater__exposer_t;
-        HybridBoundaryCondition_less__3__greater__exposer_t HybridBoundaryCondition_less__3__greater__exposer = HybridBoundaryCondition_less__3__greater__exposer_t( "HybridBoundaryCondition_less__3__greater_", bp::init< >() );
-        bp::scope HybridBoundaryCondition_less__3__greater__scope( HybridBoundaryCondition_less__3__greater__exposer );
+        typedef bp::class_< HybridBoundaryCondition< 3 > > HybridBoundaryCondition3_exposer_t;
+        HybridBoundaryCondition3_exposer_t HybridBoundaryCondition3_exposer = HybridBoundaryCondition3_exposer_t( "HybridBoundaryCondition3", bp::init< >() );
+        bp::scope HybridBoundaryCondition3_scope( HybridBoundaryCondition3_exposer );
         { //::HybridBoundaryCondition< 3 >::Create
         
             typedef HybridBoundaryCondition< 3 > exported_class_t;
             typedef ::boost::shared_ptr< HybridBoundaryCondition< 3 > > ( *Create_function_type )(  );
             
-            HybridBoundaryCondition_less__3__greater__exposer.def( 
+            HybridBoundaryCondition3_exposer.def( 
                 "Create"
                 , Create_function_type( &::HybridBoundaryCondition< 3 >::Create ) );
         
@@ -2121,7 +2001,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridBoundaryCondition< 3 > exported_class_t;
             typedef ::BoundaryConditionType::Value ( exported_class_t::*GetType_function_type)(  ) ;
             
-            HybridBoundaryCondition_less__3__greater__exposer.def( 
+            HybridBoundaryCondition3_exposer.def( 
                 "GetType"
                 , GetType_function_type( &::HybridBoundaryCondition< 3 >::GetType ) );
         
@@ -2131,7 +2011,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridBoundaryCondition< 3 > exported_class_t;
             typedef double ( exported_class_t::*GetValue_function_type)(  ) ;
             
-            HybridBoundaryCondition_less__3__greater__exposer.def( 
+            HybridBoundaryCondition3_exposer.def( 
                 "GetValue"
                 , GetValue_function_type( &::HybridBoundaryCondition< 3 >::GetValue ) );
         
@@ -2141,7 +2021,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridBoundaryCondition< 3 > exported_class_t;
             typedef ::std::pair< bool, double > ( exported_class_t::*GetValue_function_type)( ::boost::numeric::ublas::c_vector< double, 3 >,double ) ;
             
-            HybridBoundaryCondition_less__3__greater__exposer.def( 
+            HybridBoundaryCondition3_exposer.def( 
                 "GetValue"
                 , GetValue_function_type( &::HybridBoundaryCondition< 3 >::GetValue )
                 , ( bp::arg("location"), bp::arg("tolerance") ) );
@@ -2152,7 +2032,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetDomain_function_type)( ::boost::shared_ptr< Part< 3 > > ) ;
             
-            HybridBoundaryCondition_less__3__greater__exposer.def( 
+            HybridBoundaryCondition3_exposer.def( 
                 "SetDomain"
                 , SetDomain_function_type( &::HybridBoundaryCondition< 3 >::SetDomain )
                 , ( bp::arg("pDomain") ) );
@@ -2163,7 +2043,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetLabelName_function_type)( ::std::string const & ) ;
             
-            HybridBoundaryCondition_less__3__greater__exposer.def( 
+            HybridBoundaryCondition3_exposer.def( 
                 "SetLabelName"
                 , SetLabelName_function_type( &::HybridBoundaryCondition< 3 >::SetLabelName )
                 , ( bp::arg("label") ) );
@@ -2174,7 +2054,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetMesh_function_type)( ::boost::shared_ptr< HybridMesh< 3, 3 > > ) ;
             
-            HybridBoundaryCondition_less__3__greater__exposer.def( 
+            HybridBoundaryCondition3_exposer.def( 
                 "SetMesh"
                 , SetMesh_function_type( &::HybridBoundaryCondition< 3 >::SetMesh )
                 , ( bp::arg("pMesh") ) );
@@ -2185,7 +2065,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetNetwork_function_type)( ::boost::shared_ptr< VesselNetwork< 3 > > ) ;
             
-            HybridBoundaryCondition_less__3__greater__exposer.def( 
+            HybridBoundaryCondition3_exposer.def( 
                 "SetNetwork"
                 , SetNetwork_function_type( &::HybridBoundaryCondition< 3 >::SetNetwork )
                 , ( bp::arg("pNetwork") ) );
@@ -2196,7 +2076,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
             
-            HybridBoundaryCondition_less__3__greater__exposer.def( 
+            HybridBoundaryCondition3_exposer.def( 
                 "SetPoints"
                 , SetPoints_function_type( &::HybridBoundaryCondition< 3 >::SetPoints )
                 , ( bp::arg("points") ) );
@@ -2207,7 +2087,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetRegularGrid_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
             
-            HybridBoundaryCondition_less__3__greater__exposer.def( 
+            HybridBoundaryCondition3_exposer.def( 
                 "SetRegularGrid"
                 , SetRegularGrid_function_type( &::HybridBoundaryCondition< 3 >::SetRegularGrid )
                 , ( bp::arg("pRegularGrid") ) );
@@ -2218,7 +2098,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetSource_function_type)( ::BoundaryConditionSource::Value ) ;
             
-            HybridBoundaryCondition_less__3__greater__exposer.def( 
+            HybridBoundaryCondition3_exposer.def( 
                 "SetSource"
                 , SetSource_function_type( &::HybridBoundaryCondition< 3 >::SetSource )
                 , ( bp::arg("boundarySource") ) );
@@ -2229,7 +2109,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetType_function_type)( ::BoundaryConditionType::Value ) ;
             
-            HybridBoundaryCondition_less__3__greater__exposer.def( 
+            HybridBoundaryCondition3_exposer.def( 
                 "SetType"
                 , SetType_function_type( &::HybridBoundaryCondition< 3 >::SetType )
                 , ( bp::arg("boundaryType") ) );
@@ -2240,7 +2120,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetValue_function_type)( double ) ;
             
-            HybridBoundaryCondition_less__3__greater__exposer.def( 
+            HybridBoundaryCondition3_exposer.def( 
                 "SetValue"
                 , SetValue_function_type( &::HybridBoundaryCondition< 3 >::SetValue )
                 , ( bp::arg("value") ) );
@@ -2251,7 +2131,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateBoundaryConditionContainer_function_type)( ::boost::shared_ptr< BoundaryConditionsContainer< 3, 3, 1 > > ) ;
             
-            HybridBoundaryCondition_less__3__greater__exposer.def( 
+            HybridBoundaryCondition3_exposer.def( 
                 "UpdateBoundaryConditionContainer"
                 , UpdateBoundaryConditionContainer_function_type( &::HybridBoundaryCondition< 3 >::UpdateBoundaryConditionContainer )
                 , ( bp::arg("pContainer") ) );
@@ -2262,7 +2142,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateRegularGridBoundaryConditions_function_type)( ::boost::shared_ptr< std::vector< std::pair<bool, double> > > ) ;
             
-            HybridBoundaryCondition_less__3__greater__exposer.def( 
+            HybridBoundaryCondition3_exposer.def( 
                 "UpdateRegularGridBoundaryConditions"
                 , UpdateRegularGridBoundaryConditions_function_type( &::HybridBoundaryCondition< 3 >::UpdateRegularGridBoundaryConditions )
                 , ( bp::arg("pBoundaryConditions") ) );
@@ -2273,7 +2153,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateRegularGridCellBoundaryConditions_function_type)( ::boost::shared_ptr< std::vector< std::pair<bool, double> > > ) ;
             
-            HybridBoundaryCondition_less__3__greater__exposer.def( 
+            HybridBoundaryCondition3_exposer.def( 
                 "UpdateRegularGridCellBoundaryConditions"
                 , UpdateRegularGridCellBoundaryConditions_function_type( &::HybridBoundaryCondition< 3 >::UpdateRegularGridCellBoundaryConditions )
                 , ( bp::arg("pBoundaryConditions") ) );
@@ -2284,7 +2164,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateRegularGridFacetBoundaryConditions_function_type)( ::boost::shared_ptr< std::vector< std::pair<bool, double> > > ) ;
             
-            HybridBoundaryCondition_less__3__greater__exposer.def( 
+            HybridBoundaryCondition3_exposer.def( 
                 "UpdateRegularGridFacetBoundaryConditions"
                 , UpdateRegularGridFacetBoundaryConditions_function_type( &::HybridBoundaryCondition< 3 >::UpdateRegularGridFacetBoundaryConditions )
                 , ( bp::arg("pBoundaryConditions") ) );
@@ -2295,7 +2175,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateRegularGridPartBoundaryConditions_function_type)( ::boost::shared_ptr< std::vector< std::pair<bool, double> > > ) ;
             
-            HybridBoundaryCondition_less__3__greater__exposer.def( 
+            HybridBoundaryCondition3_exposer.def( 
                 "UpdateRegularGridPartBoundaryConditions"
                 , UpdateRegularGridPartBoundaryConditions_function_type( &::HybridBoundaryCondition< 3 >::UpdateRegularGridPartBoundaryConditions )
                 , ( bp::arg("pBoundaryConditions") ) );
@@ -2306,7 +2186,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateRegularGridPointBoundaryConditions_function_type)( ::boost::shared_ptr< std::vector< std::pair<bool, double> > > ) ;
             
-            HybridBoundaryCondition_less__3__greater__exposer.def( 
+            HybridBoundaryCondition3_exposer.def( 
                 "UpdateRegularGridPointBoundaryConditions"
                 , UpdateRegularGridPointBoundaryConditions_function_type( &::HybridBoundaryCondition< 3 >::UpdateRegularGridPointBoundaryConditions )
                 , ( bp::arg("pBoundaryConditions") ) );
@@ -2317,26 +2197,26 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateRegularGridSegmentBoundaryConditions_function_type)( ::boost::shared_ptr< std::vector< std::pair<bool, double> > > ) ;
             
-            HybridBoundaryCondition_less__3__greater__exposer.def( 
+            HybridBoundaryCondition3_exposer.def( 
                 "UpdateRegularGridSegmentBoundaryConditions"
                 , UpdateRegularGridSegmentBoundaryConditions_function_type( &::HybridBoundaryCondition< 3 >::UpdateRegularGridSegmentBoundaryConditions )
                 , ( bp::arg("pBoundaryConditions") ) );
         
         }
-        HybridBoundaryCondition_less__3__greater__exposer.staticmethod( "Create" );
+        HybridBoundaryCondition3_exposer.staticmethod( "Create" );
         bp::register_ptr_to_python< boost::shared_ptr< HybridBoundaryCondition<3> > >();
     }
 
     { //::HybridLinearEllipticPde< 3, 3 >
-        typedef bp::class_< HybridLinearEllipticPde_less__3_comma__3__greater__wrapper, bp::bases< AbstractLinearEllipticPde< 3, 3 > > > HybridLinearEllipticPde3_exposer_t;
-        HybridLinearEllipticPde3_exposer_t HybridLinearEllipticPde3_exposer = HybridLinearEllipticPde3_exposer_t( "HybridLinearEllipticPde3", bp::init< >() );
-        bp::scope HybridLinearEllipticPde3_scope( HybridLinearEllipticPde3_exposer );
+        typedef bp::class_< HybridLinearEllipticPde_less__3_comma__3__greater__wrapper, bp::bases< AbstractLinearEllipticPde< 3, 3 > > > HybridLinearEllipticPde3_3_exposer_t;
+        HybridLinearEllipticPde3_3_exposer_t HybridLinearEllipticPde3_3_exposer = HybridLinearEllipticPde3_3_exposer_t( "HybridLinearEllipticPde3_3", bp::init< >() );
+        bp::scope HybridLinearEllipticPde3_3_scope( HybridLinearEllipticPde3_3_exposer );
         { //::HybridLinearEllipticPde< 3, 3 >::AddDiscreteSource
         
             typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*AddDiscreteSource_function_type)( ::boost::shared_ptr< DiscreteSource< 3 > > ) ;
             
-            HybridLinearEllipticPde3_exposer.def( 
+            HybridLinearEllipticPde3_3_exposer.def( 
                 "AddDiscreteSource"
                 , AddDiscreteSource_function_type( &::HybridLinearEllipticPde< 3, 3 >::AddDiscreteSource )
                 , ( bp::arg("pDiscreteSource") ) );
@@ -2348,7 +2228,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef double ( exported_class_t::*ComputeConstantInUSourceTerm_function_type)( ::ChastePoint< 3 > const &,::Element< 3, 3 > * ) ;
             typedef double ( HybridLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeConstantInUSourceTerm_function_type)( ::ChastePoint< 3 > const &,::Element< 3, 3 > * ) ;
             
-            HybridLinearEllipticPde3_exposer.def( 
+            HybridLinearEllipticPde3_3_exposer.def( 
                 "ComputeConstantInUSourceTerm"
                 , ComputeConstantInUSourceTerm_function_type(&::HybridLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm)
                 , default_ComputeConstantInUSourceTerm_function_type(&HybridLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeConstantInUSourceTerm)
@@ -2360,7 +2240,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeConstantInUSourceTerm_function_type)( unsigned int ) ;
             
-            HybridLinearEllipticPde3_exposer.def( 
+            HybridLinearEllipticPde3_3_exposer.def( 
                 "ComputeConstantInUSourceTerm"
                 , ComputeConstantInUSourceTerm_function_type( &::HybridLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm )
                 , ( bp::arg("gridIndex")=(unsigned int)(0) ) );
@@ -2372,7 +2252,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef ::boost::numeric::ublas::c_matrix< double, 3, 3 > ( exported_class_t::*ComputeDiffusionTerm_function_type)( ::ChastePoint< 3 > const & ) ;
             typedef ::boost::numeric::ublas::c_matrix< double, 3, 3 > ( HybridLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeDiffusionTerm_function_type)( ::ChastePoint< 3 > const & ) ;
             
-            HybridLinearEllipticPde3_exposer.def( 
+            HybridLinearEllipticPde3_3_exposer.def( 
                 "ComputeDiffusionTerm"
                 , ComputeDiffusionTerm_function_type(&::HybridLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm)
                 , default_ComputeDiffusionTerm_function_type(&HybridLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeDiffusionTerm)
@@ -2384,7 +2264,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeIsotropicDiffusionTerm_function_type)(  ) ;
             
-            HybridLinearEllipticPde3_exposer.def( 
+            HybridLinearEllipticPde3_3_exposer.def( 
                 "ComputeIsotropicDiffusionTerm"
                 , ComputeIsotropicDiffusionTerm_function_type( &::HybridLinearEllipticPde< 3, 3 >::ComputeIsotropicDiffusionTerm ) );
         
@@ -2395,7 +2275,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef double ( exported_class_t::*ComputeLinearInUCoeffInSourceTerm_function_type)( ::ChastePoint< 3 > const &,::Element< 3, 3 > * ) ;
             typedef double ( HybridLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeLinearInUCoeffInSourceTerm_function_type)( ::ChastePoint< 3 > const &,::Element< 3, 3 > * ) ;
             
-            HybridLinearEllipticPde3_exposer.def( 
+            HybridLinearEllipticPde3_3_exposer.def( 
                 "ComputeLinearInUCoeffInSourceTerm"
                 , ComputeLinearInUCoeffInSourceTerm_function_type(&::HybridLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm)
                 , default_ComputeLinearInUCoeffInSourceTerm_function_type(&HybridLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeLinearInUCoeffInSourceTerm)
@@ -2407,7 +2287,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeLinearInUCoeffInSourceTerm_function_type)( unsigned int ) ;
             
-            HybridLinearEllipticPde3_exposer.def( 
+            HybridLinearEllipticPde3_3_exposer.def( 
                 "ComputeLinearInUCoeffInSourceTerm"
                 , ComputeLinearInUCoeffInSourceTerm_function_type( &::HybridLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm )
                 , ( bp::arg("gridIndex")=(unsigned int)(0) ) );
@@ -2418,7 +2298,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
             typedef ::boost::shared_ptr< HybridLinearEllipticPde< 3, 3 > > ( *Create_function_type )(  );
             
-            HybridLinearEllipticPde3_exposer.def( 
+            HybridLinearEllipticPde3_3_exposer.def( 
                 "Create"
                 , Create_function_type( &::HybridLinearEllipticPde< 3, 3 >::Create ) );
         
@@ -2428,7 +2308,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
             typedef ::std::vector< boost::shared_ptr<DiscreteSource<3> > > ( exported_class_t::*GetDiscreteSources_function_type)(  ) ;
             
-            HybridLinearEllipticPde3_exposer.def( 
+            HybridLinearEllipticPde3_3_exposer.def( 
                 "GetDiscreteSources"
                 , GetDiscreteSources_function_type( &::HybridLinearEllipticPde< 3, 3 >::GetDiscreteSources ) );
         
@@ -2438,7 +2318,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
             typedef ::std::string const & ( exported_class_t::*GetVariableName_function_type)(  ) ;
             
-            HybridLinearEllipticPde3_exposer.def( 
+            HybridLinearEllipticPde3_3_exposer.def( 
                 "GetVariableName"
                 , GetVariableName_function_type( &::HybridLinearEllipticPde< 3, 3 >::GetVariableName )
                 , bp::return_value_policy< bp::copy_const_reference >() );
@@ -2449,7 +2329,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetContinuumConstantInUTerm_function_type)( double ) ;
             
-            HybridLinearEllipticPde3_exposer.def( 
+            HybridLinearEllipticPde3_3_exposer.def( 
                 "SetContinuumConstantInUTerm"
                 , SetContinuumConstantInUTerm_function_type( &::HybridLinearEllipticPde< 3, 3 >::SetContinuumConstantInUTerm )
                 , ( bp::arg("constantInUTerm") ) );
@@ -2460,7 +2340,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetContinuumLinearInUTerm_function_type)( double ) ;
             
-            HybridLinearEllipticPde3_exposer.def( 
+            HybridLinearEllipticPde3_3_exposer.def( 
                 "SetContinuumLinearInUTerm"
                 , SetContinuumLinearInUTerm_function_type( &::HybridLinearEllipticPde< 3, 3 >::SetContinuumLinearInUTerm )
                 , ( bp::arg("linearInUTerm") ) );
@@ -2471,7 +2351,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetIsotropicDiffusionConstant_function_type)( double ) ;
             
-            HybridLinearEllipticPde3_exposer.def( 
+            HybridLinearEllipticPde3_3_exposer.def( 
                 "SetIsotropicDiffusionConstant"
                 , SetIsotropicDiffusionConstant_function_type( &::HybridLinearEllipticPde< 3, 3 >::SetIsotropicDiffusionConstant )
                 , ( bp::arg("diffusivity") ) );
@@ -2482,7 +2362,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetMesh_function_type)( ::boost::shared_ptr< TetrahedralMesh< 3, 3 > > ) ;
             
-            HybridLinearEllipticPde3_exposer.def( 
+            HybridLinearEllipticPde3_3_exposer.def( 
                 "SetMesh"
                 , SetMesh_function_type( &::HybridLinearEllipticPde< 3, 3 >::SetMesh )
                 , ( bp::arg("pMesh") ) );
@@ -2493,7 +2373,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetRegularGrid_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
             
-            HybridLinearEllipticPde3_exposer.def( 
+            HybridLinearEllipticPde3_3_exposer.def( 
                 "SetRegularGrid"
                 , SetRegularGrid_function_type( &::HybridLinearEllipticPde< 3, 3 >::SetRegularGrid )
                 , ( bp::arg("pRegularGrid") ) );
@@ -2504,7 +2384,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetUseRegularGrid_function_type)( bool ) ;
             
-            HybridLinearEllipticPde3_exposer.def( 
+            HybridLinearEllipticPde3_3_exposer.def( 
                 "SetUseRegularGrid"
                 , SetUseRegularGrid_function_type( &::HybridLinearEllipticPde< 3, 3 >::SetUseRegularGrid )
                 , ( bp::arg("useRegularGrid") ) );
@@ -2515,7 +2395,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetVariableName_function_type)( ::std::string const & ) ;
             
-            HybridLinearEllipticPde3_exposer.def( 
+            HybridLinearEllipticPde3_3_exposer.def( 
                 "SetVariableName"
                 , SetVariableName_function_type( &::HybridLinearEllipticPde< 3, 3 >::SetVariableName )
                 , ( bp::arg("rVariableName") ) );
@@ -2526,7 +2406,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateDiscreteSourceStrengths_function_type)(  ) ;
             
-            HybridLinearEllipticPde3_exposer.def( 
+            HybridLinearEllipticPde3_3_exposer.def( 
                 "UpdateDiscreteSourceStrengths"
                 , UpdateDiscreteSourceStrengths_function_type( &::HybridLinearEllipticPde< 3, 3 >::UpdateDiscreteSourceStrengths ) );
         
@@ -2537,7 +2417,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef double ( exported_class_t::*ComputeConstantInUSourceTermAtNode_function_type)( ::Node< 3 > const & ) ;
             typedef double ( HybridLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeConstantInUSourceTermAtNode_function_type)( ::Node< 3 > const & ) ;
             
-            HybridLinearEllipticPde3_exposer.def( 
+            HybridLinearEllipticPde3_3_exposer.def( 
                 "ComputeConstantInUSourceTermAtNode"
                 , ComputeConstantInUSourceTermAtNode_function_type(&::AbstractLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTermAtNode)
                 , default_ComputeConstantInUSourceTermAtNode_function_type(&HybridLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeConstantInUSourceTermAtNode)
@@ -2550,28 +2430,28 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef double ( exported_class_t::*ComputeLinearInUCoeffInSourceTermAtNode_function_type)( ::Node< 3 > const & ) ;
             typedef double ( HybridLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeLinearInUCoeffInSourceTermAtNode_function_type)( ::Node< 3 > const & ) ;
             
-            HybridLinearEllipticPde3_exposer.def( 
+            HybridLinearEllipticPde3_3_exposer.def( 
                 "ComputeLinearInUCoeffInSourceTermAtNode"
                 , ComputeLinearInUCoeffInSourceTermAtNode_function_type(&::AbstractLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTermAtNode)
                 , default_ComputeLinearInUCoeffInSourceTermAtNode_function_type(&HybridLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeLinearInUCoeffInSourceTermAtNode)
                 , ( bp::arg("rNode") ) );
         
         }
-        HybridLinearEllipticPde3_exposer.staticmethod( "Create" );
+        HybridLinearEllipticPde3_3_exposer.staticmethod( "Create" );
         bp::register_ptr_to_python< boost::shared_ptr< HybridLinearEllipticPde<3, 3> > >();
         bp::implicitly_convertible< boost::shared_ptr< HybridLinearEllipticPde< 3, 3 > >, boost::shared_ptr< AbstractLinearEllipticPde< 3, 3 > > >();
     }
 
     { //::HybridNonLinearEllipticPde< 3, 3 >
-        typedef bp::class_< HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper > HybridNonLinearEllipticPde3_exposer_t;
-        HybridNonLinearEllipticPde3_exposer_t HybridNonLinearEllipticPde3_exposer = HybridNonLinearEllipticPde3_exposer_t( "HybridNonLinearEllipticPde3", bp::init< >() );
-        bp::scope HybridNonLinearEllipticPde3_scope( HybridNonLinearEllipticPde3_exposer );
+        typedef bp::class_< HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper > HybridNonLinearEllipticPde3_3_exposer_t;
+        HybridNonLinearEllipticPde3_3_exposer_t HybridNonLinearEllipticPde3_3_exposer = HybridNonLinearEllipticPde3_3_exposer_t( "HybridNonLinearEllipticPde3_3", bp::init< >() );
+        bp::scope HybridNonLinearEllipticPde3_3_scope( HybridNonLinearEllipticPde3_3_exposer );
         { //::HybridNonLinearEllipticPde< 3, 3 >::AddDiscreteSource
         
             typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*AddDiscreteSource_function_type)( ::boost::shared_ptr< DiscreteSource< 3 > > ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "AddDiscreteSource"
                 , AddDiscreteSource_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::AddDiscreteSource )
                 , ( bp::arg("pDiscreteSource") ) );
@@ -2582,7 +2462,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeConstantInUSourceTerm_function_type)( ::ChastePoint< 3 > const &,::Element< 3, 3 > * ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "ComputeConstantInUSourceTerm"
                 , ComputeConstantInUSourceTerm_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm )
                 , ( bp::arg("rX"), bp::arg("pElement") ) );
@@ -2593,7 +2473,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeConstantInUSourceTerm_function_type)( unsigned int ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "ComputeConstantInUSourceTerm"
                 , ComputeConstantInUSourceTerm_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm )
                 , ( bp::arg("gridIndex")=(unsigned int)(0) ) );
@@ -2605,7 +2485,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef ::boost::numeric::ublas::c_matrix< double, 3, 3 > ( exported_class_t::*ComputeDiffusionTerm_function_type)( ::ChastePoint< 3 > const &,double ) ;
             typedef ::boost::numeric::ublas::c_matrix< double, 3, 3 > ( HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeDiffusionTerm_function_type)( ::ChastePoint< 3 > const &,double ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "ComputeDiffusionTerm"
                 , ComputeDiffusionTerm_function_type(&::HybridNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm)
                 , default_ComputeDiffusionTerm_function_type(&HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeDiffusionTerm)
@@ -2618,7 +2498,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef ::boost::numeric::ublas::c_matrix< double, 3, 3 > ( exported_class_t::*ComputeDiffusionTermPrime_function_type)( ::ChastePoint< 3 > const &,double ) ;
             typedef ::boost::numeric::ublas::c_matrix< double, 3, 3 > ( HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeDiffusionTermPrime_function_type)( ::ChastePoint< 3 > const &,double ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "ComputeDiffusionTermPrime"
                 , ComputeDiffusionTermPrime_function_type(&::HybridNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTermPrime)
                 , default_ComputeDiffusionTermPrime_function_type(&HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeDiffusionTermPrime)
@@ -2630,7 +2510,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeIsotropicDiffusionTerm_function_type)(  ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "ComputeIsotropicDiffusionTerm"
                 , ComputeIsotropicDiffusionTerm_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::ComputeIsotropicDiffusionTerm ) );
         
@@ -2640,7 +2520,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeLinearInUCoeffInSourceTerm_function_type)( ::ChastePoint< 3 > const &,::Element< 3, 3 > * ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "ComputeLinearInUCoeffInSourceTerm"
                 , ComputeLinearInUCoeffInSourceTerm_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm )
                 , ( bp::arg("rX"), bp::arg("pElement") ) );
@@ -2651,7 +2531,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeLinearInUCoeffInSourceTerm_function_type)( unsigned int ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "ComputeLinearInUCoeffInSourceTerm"
                 , ComputeLinearInUCoeffInSourceTerm_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm )
                 , ( bp::arg("gridIndex")=(unsigned int)(0) ) );
@@ -2663,7 +2543,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef double ( exported_class_t::*ComputeLinearSourceTerm_function_type)( ::ChastePoint< 3 > const & ) ;
             typedef double ( HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeLinearSourceTerm_function_type)( ::ChastePoint< 3 > const & ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "ComputeLinearSourceTerm"
                 , ComputeLinearSourceTerm_function_type(&::HybridNonLinearEllipticPde< 3, 3 >::ComputeLinearSourceTerm)
                 , default_ComputeLinearSourceTerm_function_type(&HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeLinearSourceTerm)
@@ -2676,7 +2556,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef double ( exported_class_t::*ComputeNonlinearSourceTerm_function_type)( ::ChastePoint< 3 > const &,double ) ;
             typedef double ( HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeNonlinearSourceTerm_function_type)( ::ChastePoint< 3 > const &,double ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "ComputeNonlinearSourceTerm"
                 , ComputeNonlinearSourceTerm_function_type(&::HybridNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTerm)
                 , default_ComputeNonlinearSourceTerm_function_type(&HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeNonlinearSourceTerm)
@@ -2688,7 +2568,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeNonlinearSourceTerm_function_type)( unsigned int,double ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "ComputeNonlinearSourceTerm"
                 , ComputeNonlinearSourceTerm_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTerm )
                 , ( bp::arg("gridIndex"), bp::arg("u") ) );
@@ -2700,7 +2580,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef double ( exported_class_t::*ComputeNonlinearSourceTermPrime_function_type)( ::ChastePoint< 3 > const &,double ) ;
             typedef double ( HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeNonlinearSourceTermPrime_function_type)( ::ChastePoint< 3 > const &,double ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "ComputeNonlinearSourceTermPrime"
                 , ComputeNonlinearSourceTermPrime_function_type(&::HybridNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTermPrime)
                 , default_ComputeNonlinearSourceTermPrime_function_type(&HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeNonlinearSourceTermPrime)
@@ -2712,7 +2592,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeNonlinearSourceTermPrime_function_type)( unsigned int,double ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "ComputeNonlinearSourceTermPrime"
                 , ComputeNonlinearSourceTermPrime_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTermPrime )
                 , ( bp::arg("gridIndex"), bp::arg("u") ) );
@@ -2723,7 +2603,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef ::boost::shared_ptr< HybridNonLinearEllipticPde< 3, 3 > > ( *Create_function_type )(  );
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "Create"
                 , Create_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::Create ) );
         
@@ -2733,7 +2613,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef ::std::vector< boost::shared_ptr<DiscreteSource<3> > > ( exported_class_t::*GetDiscreteSources_function_type)(  ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "GetDiscreteSources"
                 , GetDiscreteSources_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::GetDiscreteSources ) );
         
@@ -2743,7 +2623,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*GetThreshold_function_type)(  ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "GetThreshold"
                 , GetThreshold_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::GetThreshold ) );
         
@@ -2753,7 +2633,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef ::std::string const & ( exported_class_t::*GetVariableName_function_type)(  ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "GetVariableName"
                 , GetVariableName_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::GetVariableName )
                 , bp::return_value_policy< bp::copy_const_reference >() );
@@ -2764,7 +2644,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetContinuumConstantInUTerm_function_type)( double ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "SetContinuumConstantInUTerm"
                 , SetContinuumConstantInUTerm_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::SetContinuumConstantInUTerm )
                 , ( bp::arg("constantInUTerm") ) );
@@ -2775,7 +2655,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetContinuumLinearInUTerm_function_type)( double ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "SetContinuumLinearInUTerm"
                 , SetContinuumLinearInUTerm_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::SetContinuumLinearInUTerm )
                 , ( bp::arg("linearInUTerm") ) );
@@ -2786,7 +2666,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetIsotropicDiffusionConstant_function_type)( double ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "SetIsotropicDiffusionConstant"
                 , SetIsotropicDiffusionConstant_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::SetIsotropicDiffusionConstant )
                 , ( bp::arg("diffusivity") ) );
@@ -2797,7 +2677,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetMesh_function_type)( ::boost::shared_ptr< TetrahedralMesh< 3, 3 > > ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "SetMesh"
                 , SetMesh_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::SetMesh )
                 , ( bp::arg("pMesh") ) );
@@ -2808,7 +2688,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetRegularGrid_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "SetRegularGrid"
                 , SetRegularGrid_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::SetRegularGrid )
                 , ( bp::arg("pRegularGrid") ) );
@@ -2819,7 +2699,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetThreshold_function_type)( double ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "SetThreshold"
                 , SetThreshold_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::SetThreshold )
                 , ( bp::arg("threshold") ) );
@@ -2830,7 +2710,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetUseRegularGrid_function_type)( bool ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "SetUseRegularGrid"
                 , SetUseRegularGrid_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::SetUseRegularGrid )
                 , ( bp::arg("useRegularGrid") ) );
@@ -2841,7 +2721,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetVariableName_function_type)( ::std::string const & ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "SetVariableName"
                 , SetVariableName_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::SetVariableName )
                 , ( bp::arg("rVariableName") ) );
@@ -2852,12 +2732,12 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateDiscreteSourceStrengths_function_type)(  ) ;
             
-            HybridNonLinearEllipticPde3_exposer.def( 
+            HybridNonLinearEllipticPde3_3_exposer.def( 
                 "UpdateDiscreteSourceStrengths"
                 , UpdateDiscreteSourceStrengths_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::UpdateDiscreteSourceStrengths ) );
         
         }
-        HybridNonLinearEllipticPde3_exposer.staticmethod( "Create" );
+        HybridNonLinearEllipticPde3_3_exposer.staticmethod( "Create" );
         bp::register_ptr_to_python< boost::shared_ptr< HybridNonLinearEllipticPde<3, 3> > >();
         bp::implicitly_convertible< boost::shared_ptr< HybridNonLinearEllipticPde< 3, 3 > >, boost::shared_ptr< AbstractNonlinearEllipticPde< 3 > > >();
     }

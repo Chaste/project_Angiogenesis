@@ -1,4 +1,4 @@
-#include "../../src/population/vessel/readers/VesselNetworkReader.hpp"
+#include "VesselNetworkReader.hpp"
 #include "NodeFlowProperties.hpp"
 #include "SegmentFlowProperties.hpp"
 #include "VesselFlowProperties.hpp"
@@ -20,4 +20,4 @@ template class VesselNetwork<3>;
 template class VtkVesselNetworkWriter<3>;
 template class AbstractVesselNetworkComponent<3>;
 template class VasculatureGenerator<3>;
-template class VtkVesselNetworkReader<3>;
+template class VesselNetworkReader<3>;

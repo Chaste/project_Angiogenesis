@@ -50,7 +50,14 @@
 #include "Debug.hpp"
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-HybridMesh<ELEMENT_DIM, SPACE_DIM>::HybridMesh()
+HybridMesh<ELEMENT_DIM, SPACE_DIM>::HybridMesh() :
+    mMaxElementArea(0.0),
+    mpDomain(),
+    mpVtkDomain(),
+    mStlFilePath(),
+    mHoles(),
+    mRegions(),
+    mAttributes()
 {
 
 }
@@ -69,103 +76,261 @@ HybridMesh<ELEMENT_DIM, SPACE_DIM>::~HybridMesh()
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridMesh<ELEMENT_DIM, SPACE_DIM>::GenerateTriMeshFromPolyData(vtkSmartPointer<vtkPolyData> pPolyData, double maxElementArea ,
-                                                                     std::vector<c_vector<double, SPACE_DIM> > holes)
+void HybridMesh<ELEMENT_DIM, SPACE_DIM>::SetDomain(boost::shared_ptr<Part<SPACE_DIM> > pDomain)
 {
-    unsigned num_points = pPolyData->GetNumberOfPoints();
+    mpDomain = pDomain;
+}
+
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+void HybridMesh<ELEMENT_DIM, SPACE_DIM>::SetDomain(vtkSmartPointer<vtkPolyData> pDomain)
+{
+    mpVtkDomain = pDomain;
+}
+
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+void HybridMesh<ELEMENT_DIM, SPACE_DIM>::SetDomain(const std::string& rPathToStl)
+{
+    mStlFilePath = rPathToStl;
+}
+
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+void HybridMesh<ELEMENT_DIM, SPACE_DIM>::SetMaxElementArea(double maxElementArea)
+{
+    mMaxElementArea = maxElementArea;
+}
+
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+void HybridMesh<ELEMENT_DIM, SPACE_DIM>::SetHoles(std::vector<c_vector<double, SPACE_DIM> > holes)
+{
+    mHoles = holes;
+}
+
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+void HybridMesh<ELEMENT_DIM, SPACE_DIM>::SetRegionMarkers(std::vector<c_vector<double, SPACE_DIM> > regionMarkers)
+{
+    mRegions = regionMarkers;
+}
+
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+void HybridMesh<ELEMENT_DIM, SPACE_DIM>::Update()
+{
+    // For 2D parts use triangle
+    if (ELEMENT_DIM == 2)
+    {
+        if (SPACE_DIM == 2)
+        {
+            Mesh2d();
+        }
+        else
+        {
+            if(mpDomain)
+            {
+                c_vector<double, 2 * ELEMENT_DIM> bounding_box = mpDomain->GetBoundingBox();
+                if (std::abs(bounding_box[4]) < 1.e-6 && std::abs(bounding_box[5]) < 1.e-6)
+                {
+                   Mesh2d();
+                }
+                else
+                {
+                    EXCEPTION("2D meshing is only supported for parts with z=0.");
+                }
+            }
+            else if(mpVtkDomain)
+            {
+                Mesh2d();
+            }
+            else
+            {
+                EXCEPTION("2d meshing is not supported for STL files.");
+            }
+        }
+    }
+    // For 3d use tetgen
+    else
+    {
+        if(mpDomain)
+        {
+            c_vector<double, 2 * ELEMENT_DIM> bounding_box = mpDomain->GetBoundingBox();
+            if (std::abs(bounding_box[4]) < 1.e-6 && std::abs(bounding_box[5]) < 1.e-6)
+            {
+                EXCEPTION("The part is two-dimensional, use the 2D meshing functionality.");
+            }
+            else
+            {
+                Mesh3d();
+            }
+        }
+        else if(mpVtkDomain)
+        {
+            Mesh3d();
+        }
+        else
+        {
+            MeshStl3d();
+        }
+    }
+}
+
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+void HybridMesh<ELEMENT_DIM, SPACE_DIM>::Mesh2d()
+{
     struct triangulateio mesher_input, mesher_output;
     this->InitialiseTriangulateIo(mesher_input);
     this->InitialiseTriangulateIo(mesher_output);
 
-    mesher_input.pointlist = (double *) malloc(num_points * 2 * sizeof(double));
-    mesher_input.numberofpoints = int(num_points);
-    for (unsigned idx = 0; idx < num_points; idx++)
+    // Cases: have just domain, have just vtk domain, have vtk domain and domain
+    if(mpDomain and !mpVtkDomain)
     {
-        for (unsigned jdx = 0; jdx < 2; jdx++)
-        {
-            mesher_input.pointlist[2 * idx + jdx] = pPolyData->GetPoints()->GetPoint(idx)[jdx];
-        }
-    }
-
-    if (holes.size() > 0)
-    {
-        mesher_input.holelist = (double *) malloc(num_points * 2 * sizeof(double));
-        mesher_input.numberofholes = int(holes.size());
-        for (unsigned idx = 0; idx < holes.size(); idx++)
+        std::vector<c_vector<double, SPACE_DIM> > vertex_locations = mpDomain->GetVertexLocations();
+        unsigned num_vertices = vertex_locations.size();
+        mesher_input.pointlist = (double *) malloc(num_vertices * 2 * sizeof(double));
+        mesher_input.numberofpoints = int(num_vertices);
+        for (unsigned idx = 0; idx < num_vertices; idx++)
         {
             for (unsigned jdx = 0; jdx < 2; jdx++)
             {
-                mesher_input.holelist[2 * idx + jdx] = holes[idx][jdx];
+                mesher_input.pointlist[2 * idx + jdx] = vertex_locations[idx][jdx];
+            }
+        }
+
+        std::vector<std::pair<unsigned, unsigned> > segments = mpDomain->GetSegmentIndices();
+        unsigned num_segments = segments.size();
+        mesher_input.segmentlist = (int *) malloc(num_segments * 2 * sizeof(int));
+        mesher_input.numberofsegments = int(num_segments);
+        for (unsigned idx = 0; idx < num_segments; idx++)
+        {
+            mesher_input.segmentlist[2 * idx] = int(segments[idx].first);
+            mesher_input.segmentlist[2 * idx + 1] = int(segments[idx].second);
+        }
+    }
+    else if(!mpDomain and mpVtkDomain)
+    {
+        unsigned num_points = mpVtkDomain->GetNumberOfPoints();
+        mesher_input.pointlist = (double *) malloc(num_points * 2 * sizeof(double));
+        mesher_input.numberofpoints = int(num_points);
+        for (unsigned idx = 0; idx < num_points; idx++)
+        {
+            for (unsigned jdx = 0; jdx < 2; jdx++)
+            {
+                mesher_input.pointlist[2 * idx + jdx] = mpVtkDomain->GetPoints()->GetPoint(idx)[jdx];
+            }
+        }
+
+        unsigned num_segments = mpVtkDomain->GetNumberOfLines();
+        mpVtkDomain->GetLines()->InitTraversal();
+        mesher_input.segmentlist = (int *) malloc(num_segments * 2 * sizeof(int));
+        mesher_input.numberofsegments = int(num_segments);
+        vtkSmartPointer<vtkIdList> p_id_list = vtkSmartPointer<vtkIdList>::New();
+        for (unsigned idx = 0; idx < num_segments; idx++)
+        {
+            mpVtkDomain->GetLines()->GetNextCell(p_id_list);
+            mesher_input.segmentlist[2 * idx] = int(p_id_list->GetId(0));
+            mesher_input.segmentlist[2 * idx + 1] = int(p_id_list->GetId(1));
+        }
+    }
+    else if(mpDomain and mpVtkDomain)
+    {
+        unsigned num_points = mpVtkDomain->GetNumberOfPoints();
+        std::vector<c_vector<double, SPACE_DIM> > vertex_locations = mpDomain->GetVertexLocations();
+        unsigned num_vertices = vertex_locations.size();
+
+        mesher_input.pointlist = (double *) malloc((num_points+num_vertices) * 2 * sizeof(double));
+        mesher_input.numberofpoints = int(num_points+num_vertices);
+        for (unsigned idx = 0; idx < num_points; idx++)
+        {
+            for (unsigned jdx = 0; jdx < 2; jdx++)
+            {
+                mesher_input.pointlist[2 * idx + jdx] = mpVtkDomain->GetPoints()->GetPoint(idx)[jdx];
+            }
+        }
+        for (unsigned idx = 0; idx < num_vertices; idx++)
+        {
+            for (unsigned jdx = 0; jdx < 2; jdx++)
+            {
+                mesher_input.pointlist[2 * idx + jdx + 2*num_points] = vertex_locations[idx][jdx];
+            }
+        }
+
+        unsigned num_segments = mpVtkDomain->GetNumberOfLines();
+        std::vector<std::pair<unsigned, unsigned> > segments = mpDomain->GetSegmentIndices();
+        unsigned num_part_segments = segments.size();
+        mpVtkDomain->GetLines()->InitTraversal();
+
+        mesher_input.segmentlist = (int *) malloc((num_segments+num_part_segments) * 2 * sizeof(int));
+        mesher_input.numberofsegments = int(num_segments+num_part_segments);
+        vtkSmartPointer<vtkIdList> p_id_list = vtkSmartPointer<vtkIdList>::New();
+        for (unsigned idx = 0; idx < num_segments; idx++)
+        {
+            mpVtkDomain->GetLines()->GetNextCell(p_id_list);
+            mesher_input.segmentlist[2 * idx] = int(p_id_list->GetId(0));
+            mesher_input.segmentlist[2 * idx + 1] = int(p_id_list->GetId(1));
+        }
+        for (unsigned idx = 0; idx < num_part_segments; idx++)
+        {
+            mesher_input.segmentlist[2 * idx + 2 * num_segments] = int(segments[idx].first + num_points);
+            mesher_input.segmentlist[2 * idx + 1 + 2*num_segments] = int(segments[idx].second + num_points);
+        }
+
+    }
+    else
+    {
+        EXCEPTION("Either a part, vtk surface or both are required for 2d meshing");
+    }
+
+    if (mHoles.size() > 0)
+    {
+        mesher_input.holelist = (double *) malloc(mHoles.size() * 2 * sizeof(double));
+        mesher_input.numberofholes = int(mHoles.size());
+        for (unsigned idx = 0; idx < mHoles.size(); idx++)
+        {
+            for (unsigned jdx = 0; jdx < 2; jdx++)
+            {
+                mesher_input.holelist[2 * idx + jdx] = mHoles[idx][jdx];
             }
         }
     }
 
-    unsigned num_segments = pPolyData->GetNumberOfLines();
-    pPolyData->GetLines()->InitTraversal();
-    mesher_input.segmentlist = (int *) malloc(num_segments * 2 * sizeof(int));
-    mesher_input.numberofsegments = int(num_segments);
-    vtkSmartPointer<vtkIdList> p_id_list = vtkSmartPointer<vtkIdList>::New();
-    for (unsigned idx = 0; idx < num_segments; idx++)
+    if (mRegions.size() > 0)
     {
-        pPolyData->GetLines()->GetNextCell(p_id_list);
-        mesher_input.segmentlist[2 * idx] = int(p_id_list->GetId(0));
-        mesher_input.segmentlist[2 * idx + 1] = int(p_id_list->GetId(1));
-    }
-
-    std::string mesher_command = "pqQze";
-    if (maxElementArea > 0.0)
-    {
-        mesher_command += "a" + boost::lexical_cast<std::string>(maxElementArea);
-    }
-    triangulate((char*) mesher_command.c_str(), &mesher_input, &mesher_output, NULL);
-
-    this->ImportFromMesher(mesher_output, mesher_output.numberoftriangles, mesher_output.trianglelist,
-                           mesher_output.numberofedges, mesher_output.edgelist, mesher_output.edgemarkerlist);
-
-    //Tidy up triangle
-    this->FreeTriangulateIo(mesher_input);
-    this->FreeTriangulateIo(mesher_output);
-}
-
-template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridMesh<ELEMENT_DIM, SPACE_DIM>::Mesh2d(boost::shared_ptr<Part<SPACE_DIM> > pPart, double maxElementArea)
-{
-    std::vector<c_vector<double, SPACE_DIM> > vertex_locations = pPart->GetVertexLocations();
-    unsigned num_vertices = vertex_locations.size();
-    struct triangulateio mesher_input, mesher_output;
-    this->InitialiseTriangulateIo(mesher_input);
-    this->InitialiseTriangulateIo(mesher_output);
-
-    mesher_input.pointlist = (double *) malloc(num_vertices * 2 * sizeof(double));
-    mesher_input.numberofpoints = int(num_vertices);
-    for (unsigned idx = 0; idx < num_vertices; idx++)
-    {
-        for (unsigned jdx = 0; jdx < 2; jdx++)
+        mesher_input.regionlist = (double *) malloc(mRegions.size() * 4 * sizeof(double));
+        mesher_input.numberofregions = int(mRegions.size());
+        for (unsigned idx = 0; idx < mRegions.size(); idx++)
         {
-            mesher_input.pointlist[2 * idx + jdx] = vertex_locations[idx][jdx];
+            for (unsigned jdx = 0; jdx < 2; jdx++)
+            {
+                mesher_input.regionlist[4 * idx + jdx] = mRegions[idx][jdx];
+            }
+            mesher_input.regionlist[4 * idx + 2] = 1.0;
+            mesher_input.regionlist[4 * idx + 3] = mMaxElementArea;
         }
     }
 
-    std::vector<std::pair<unsigned, unsigned> > segments = pPart->GetSegmentIndices();
-    unsigned num_segments = segments.size();
-
-    mesher_input.segmentlist = (int *) malloc(num_segments * 2 * sizeof(int));
-    mesher_input.numberofsegments = int(num_segments);
-    for (unsigned idx = 0; idx < num_segments; idx++)
-    {
-        mesher_input.segmentlist[2 * idx] = int(segments[idx].first);
-        mesher_input.segmentlist[2 * idx + 1] = int(segments[idx].second);
-    }
-
     std::string mesher_command = "pqQze";
-    if (maxElementArea > 0.0)
+    if (mMaxElementArea > 0.0)
     {
-        mesher_command += "a" + boost::lexical_cast<std::string>(maxElementArea);
+        mesher_command += "a" + boost::lexical_cast<std::string>(mMaxElementArea);
     }
+    if(mRegions.size()>0)
+    {
+        if(mRegions.size()>0)
+        {
+            mesher_command += "A";
+        }
+    }
+
     triangulate((char*) mesher_command.c_str(), &mesher_input, &mesher_output, NULL);
 
     this->ImportFromMesher(mesher_output, mesher_output.numberoftriangles, mesher_output.trianglelist,
                            mesher_output.numberofedges, mesher_output.edgelist, mesher_output.edgemarkerlist);
+
+    if(mRegions.size()>0)
+    {
+        unsigned num_elements = mesher_output.numberoftriangles;
+        for(unsigned idx=0; idx< num_elements; idx++)
+        {
+            mAttributes.push_back(double(mesher_output.triangleattributelist[idx]));
+        }
+    }
 
     //Tidy up triangle
     this->FreeTriangulateIo(mesher_input);
@@ -173,13 +338,19 @@ void HybridMesh<ELEMENT_DIM, SPACE_DIM>::Mesh2d(boost::shared_ptr<Part<SPACE_DIM
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridMesh<ELEMENT_DIM, SPACE_DIM>::Mesh3d(boost::shared_ptr<Part<SPACE_DIM> > pPart, double maxElementArea)
+std::vector<unsigned> HybridMesh<ELEMENT_DIM, SPACE_DIM>::GetElementRegionMarkers()
 {
-    std::vector<c_vector<double, SPACE_DIM> > vertex_locations = pPart->GetVertexLocations();
-    std::vector<c_vector<double, SPACE_DIM> > hole_locations = pPart->GetHoleMarkers();
+    return mAttributes;
+}
+
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+void HybridMesh<ELEMENT_DIM, SPACE_DIM>::Mesh3d()
+{
+    std::vector<c_vector<double, SPACE_DIM> > vertex_locations = mpDomain->GetVertexLocations();
+    std::vector<c_vector<double, SPACE_DIM> > hole_locations = mpDomain->GetHoleMarkers();
     unsigned num_vertices = vertex_locations.size();
     unsigned num_holes = hole_locations.size();
-    std::vector<boost::shared_ptr<Facet> > facets = pPart->GetFacets();
+    std::vector<boost::shared_ptr<Facet> > facets = mpDomain->GetFacets();
     unsigned num_facets = facets.size();
 
     class tetgen::tetgenio mesher_input, mesher_output;
@@ -231,45 +402,61 @@ void HybridMesh<ELEMENT_DIM, SPACE_DIM>::Mesh3d(boost::shared_ptr<Part<SPACE_DIM
             }
         }
     }
-    std::string mesher_command = "pqQz";
-    if (maxElementArea > 0.0)
+
+    if(mHoles.size() > 0)
     {
-        mesher_command += "a" + boost::lexical_cast<std::string>(maxElementArea);
+        unsigned num_holes = mHoles.size();
+        mesher_input.holelist = new double[(num_holes) * 3];
+        mesher_input.numberofholes = num_holes;
+        for (unsigned idx = 0; idx < num_holes; idx++)
+        {
+            for (unsigned jdx = 0; jdx < 3; jdx++)
+            {
+                mesher_input.holelist[3 * idx + jdx] = mHoles[idx][jdx];
+            }
+        }
+    }
+
+    std::string mesher_command = "pqQz";
+    if (mMaxElementArea > 0.0)
+    {
+        mesher_command += "a" + boost::lexical_cast<std::string>(mMaxElementArea);
     }
 
     // Library call
     tetgen::tetrahedralize((char*) mesher_command.c_str(), &mesher_input, &mesher_output);
-
     this->ImportFromTetgen(mesher_output, mesher_output.numberoftetrahedra, mesher_output.tetrahedronlist,
                            mesher_output.numberoftrifaces, mesher_output.trifacelist, NULL);
 
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridMesh<ELEMENT_DIM, SPACE_DIM>::GenerateFromStl(const std::string& filename, double maxElementArea,
-                                                         std::vector<c_vector<double, SPACE_DIM> > holes)
+void HybridMesh<ELEMENT_DIM, SPACE_DIM>::MeshStl3d()
 {
     class tetgen::tetgenio mesher_input, mesher_output;
-    char * writable = new char[filename.size() + 1];
-    std::copy(filename.begin(), filename.end(), writable);
-    writable[filename.size()] = '\0';
+    char * writable = new char[mStlFilePath.size() + 1];
+    std::copy(mStlFilePath.begin(), mStlFilePath.end(), writable);
+    writable[mStlFilePath.size()] = '\0';
     mesher_input.load_stl(writable);
 
-    unsigned num_holes = holes.size();
-    mesher_input.holelist = new double[(num_holes) * 3];
-    mesher_input.numberofholes = num_holes;
-    for (unsigned idx = 0; idx < num_holes; idx++)
+    if(mHoles.size() > 0)
     {
-        for (unsigned jdx = 0; jdx < 3; jdx++)
+        unsigned num_holes = mHoles.size();
+        mesher_input.holelist = new double[(num_holes) * 3];
+        mesher_input.numberofholes = num_holes;
+        for (unsigned idx = 0; idx < num_holes; idx++)
         {
-            mesher_input.holelist[3 * idx + jdx] = holes[idx][jdx];
+            for (unsigned jdx = 0; jdx < 3; jdx++)
+            {
+                mesher_input.holelist[3 * idx + jdx] = mHoles[idx][jdx];
+            }
         }
     }
 
     std::string mesher_command = "pqQz";
-    if (maxElementArea > 0.0)
+    if (mMaxElementArea > 0.0)
     {
-        mesher_command += "a" + boost::lexical_cast<std::string>(maxElementArea);
+        mesher_command += "a" + boost::lexical_cast<std::string>(mMaxElementArea);
     }
 
     // Library call
@@ -408,42 +595,6 @@ void HybridMesh<ELEMENT_DIM, SPACE_DIM>::ImportFromTetgen(tetgen::tetgenio& mesh
     }
 
     this->RefreshJacobianCachedData();
-}
-
-template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridMesh<ELEMENT_DIM, SPACE_DIM>::GenerateFromPart(boost::shared_ptr<Part<SPACE_DIM> > pPart,
-                                                          double maxElementArea)
-{
-    // For 2D parts use triangle
-    if (ELEMENT_DIM == 2)
-    {
-        c_vector<double, 2 * ELEMENT_DIM> bounding_box = pPart->GetBoundingBox();
-        if (SPACE_DIM == 2)
-        {
-            Mesh2d(pPart, maxElementArea);
-        }
-        else if (std::abs(bounding_box[4]) < 1.e-6 && std::abs(bounding_box[5]) < 1.e-6)
-        {
-            Mesh2d(pPart, maxElementArea);
-        }
-        else
-        {
-            EXCEPTION("For now 2D meshing is only supported for parts with z=0.");
-        }
-    }
-    // Try to use tetgen
-    else
-    {
-        c_vector<double, 2 * ELEMENT_DIM> bounding_box = pPart->GetBoundingBox();
-        if (std::abs(bounding_box[4]) < 1.e-6 && std::abs(bounding_box[5]) < 1.e-6)
-        {
-            EXCEPTION("The part is two-dimensional, use the 2D meshing functionality.");
-        }
-        else
-        {
-            Mesh3d(pPart, maxElementArea);
-        }
-    }
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
