@@ -46,20 +46,21 @@ class TestVoronoiGenerator : public CxxTest::TestSuite
 {
 public:
 
+    // Voronoi generation with tetgen no longer supported
     void TestSquare()
     {
         boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
         p_part->AddCuboid(3000, 1500, 200);
 
         VoronoiGenerator<3> generator;
-        boost::shared_ptr<Part<3> > p_tesselation = generator.Generate(p_part, std::vector<boost::shared_ptr<Vertex> >(), 200);
-        std::vector<boost::shared_ptr<Vertex> > vertices = p_tesselation->GetVertices();
-        for(unsigned idx=0; idx < vertices.size(); idx++)
-        {
-            vertices[idx]->SetCoordinate(1, 2.0 * vertices[idx]->rGetLocation()[1]);
-        }
-        OutputFileHandler output_file_handler("TestVoronoiNetwork", false);
-        p_tesselation->Write(output_file_handler.GetOutputDirectoryFullPath() + "part.vtp");
+//        boost::shared_ptr<Part<3> > p_tesselation = generator.Generate(p_part, std::vector<boost::shared_ptr<Vertex> >(), 200);
+//        std::vector<boost::shared_ptr<Vertex> > vertices = p_tesselation->GetVertices();
+//        for(unsigned idx=0; idx < vertices.size(); idx++)
+//        {
+//            vertices[idx]->SetCoordinate(1, 2.0 * vertices[idx]->rGetLocation()[1]);
+//        }
+//        OutputFileHandler output_file_handler("TestVoronoiNetwork", false);
+//        p_tesselation->Write(output_file_handler.GetOutputDirectoryFullPath() + "part.vtp");
     }
 };
 

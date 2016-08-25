@@ -70,7 +70,7 @@ public:
         // Set a wall shear stress below the threshold
         double wss_threshold = 10.0;
         double vessel_wss = 5.0;
-        p_vessel->GetSegments()[0]->GetFlowProperties()->SetWallShearStress(vessel_wss);
+        p_vessel->GetSegments()[0]->GetFlowProperties()->SetWallShearStress(vessel_wss*unit::pascals);
 
         // Set up the regression solver
         WallShearStressBasedRegressionSolver<2> regression_solver = WallShearStressBasedRegressionSolver<2>();
@@ -86,7 +86,7 @@ public:
             TS_ASSERT(p_vessel->GetFlowProperties()->HasRegressionTimerStarted());
             SimulationTime::Instance()->IncrementTimeOneStep();
         }
-        TS_ASSERT(p_vessel->GetFlowProperties()->HasVesselRegressed());
+        TS_ASSERT(p_vessel->GetFlowProperties()->HasVesselRegressed(60.0*unit::seconds));
         TS_ASSERT_EQUALS(p_network->GetNumberOfVessels(), 0);
     }
 
@@ -103,7 +103,7 @@ public:
         // Make a dummy segment to set properties on
         boost::shared_ptr<VesselSegment<2> > p_segment1 = VesselSegment<2>::Create(VesselNode<2>::Create(0.0, 0.0),
                                                                                    VesselNode<2>::Create(1.0, 0.0));
-        p_segment1->GetFlowProperties()->SetImpedance(0.0001);
+        p_segment1->GetFlowProperties()->SetImpedance(0.0001*unit::unit_flow_impedance);
         p_network->SetSegmentProperties(p_segment1);
 
         // Get the nearest node to the inlet and outlet
@@ -117,9 +117,9 @@ public:
         boost::shared_ptr<VesselNode<2> > p_inlet_node = p_network->GetNearestNode(loc1);
         boost::shared_ptr<VesselNode<2> > p_outlet_node = p_network->GetNearestNode(loc2);
         p_inlet_node->GetFlowProperties()->SetIsInputNode(true);
-        p_inlet_node->GetFlowProperties()->SetPressure(3393);
+        p_inlet_node->GetFlowProperties()->SetPressure(3393*unit::pascals);
         p_outlet_node->GetFlowProperties()->SetIsOutputNode(true);
-        p_outlet_node->GetFlowProperties()->SetPressure(1993);
+        p_outlet_node->GetFlowProperties()->SetPressure(1993*unit::pascals);
 
         // Set up a structural adaptation solver
         boost::shared_ptr<StructuralAdaptationSolver<2> > p_adaptation_solver = StructuralAdaptationSolver<2>::Create();

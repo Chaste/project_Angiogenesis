@@ -56,7 +56,8 @@ class TestFiniteElementSolver : public CxxTest::TestSuite
 {
 public:
 
-    void Test3dKroghCylinderNetwork() throw(Exception)
+    // Vessel line meshing no longer supported
+    void DontTest3dKroghCylinderNetwork() throw(Exception)
     {
         // Set up the vessel network
         double vessel_length = 100;
@@ -71,7 +72,9 @@ public:
         p_domain->AddCuboid(vessel_length, vessel_length, vessel_length);
         p_domain->AddVesselNetwork(p_network);
         boost::shared_ptr<HybridMesh<3, 3> > p_mesh = HybridMesh<3, 3>::Create();
-        p_mesh->GenerateFromPart(p_domain, 500);
+        p_mesh->SetDomain(p_domain);
+        p_mesh->SetMaxElementArea(500.0);
+        p_mesh->Update();
 
         // Choose the PDE
         boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
@@ -111,7 +114,9 @@ public:
         p_domain->AddCuboid(vessel_length, vessel_length, vessel_length);
         p_domain->AddVesselNetwork(p_network, true);
         boost::shared_ptr<HybridMesh<3, 3> > p_mesh = HybridMesh<3, 3>::Create();
-        p_mesh->GenerateFromPart(p_domain, 500);
+        p_mesh->SetDomain(p_domain);
+        p_mesh->SetMaxElementArea(500.0);
+        p_mesh->Update();
 
         // Choose the PDE
         boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();

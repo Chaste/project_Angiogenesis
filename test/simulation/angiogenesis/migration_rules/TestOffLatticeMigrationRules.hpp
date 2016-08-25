@@ -68,7 +68,7 @@ public:
         // Set up the grid
         boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
         double spacing = 40.0; //um
-        p_grid->SetSpacing(spacing);
+        p_grid->SetSpacing(spacing*1.e-6*unit::metres);
 
         std::vector<unsigned> extents(3, 1);
         extents[0] = 25; // num x

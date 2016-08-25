@@ -66,7 +66,7 @@ public:
         p_domain->AddCuboid(4.0, 4.0, 4.0);
 
         boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
-        p_grid->GenerateFromPart(p_domain, 0.5);
+        p_grid->GenerateFromPart(p_domain, 0.5*1.e-6*unit::metres);
 
         // Choose the PDE
         boost::shared_ptr<HybridNonLinearEllipticPde<3> > p_non_linear_pde = HybridNonLinearEllipticPde<3>::Create();

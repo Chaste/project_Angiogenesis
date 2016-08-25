@@ -46,6 +46,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "UblasIncludes.hpp"
 #include "VasculatureGenerator.hpp"
 #include "UnitCollection.hpp"
+#include "Debug.hpp"
 
 class TestVesselNetwork : public CxxTest::TestSuite
 {
@@ -260,7 +261,7 @@ public:
         // form sprout
         c_vector<double, 2> sproutBaseLocation = zero_vector<double>(2);
         sproutBaseLocation[0] = 1.0;
-        c_vector<double, 2> sproutTipLocation = unit_vector<double>(2);
+        c_vector<double, 2> sproutTipLocation = unit_vector<double>(2, 1);
         boost::shared_ptr<Vessel<2> > newSprout = p_vessel_network->FormSprout(sproutBaseLocation, sproutTipLocation);
 
         p_vessel_network->UpdateAll(true);

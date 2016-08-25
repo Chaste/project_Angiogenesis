@@ -61,13 +61,13 @@ public:
         centre[2] = 0.0;
 
         boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre, 14.0);
-        p_network->SetSegmentRadii(0.05);
+        p_network->SetSegmentRadii(0.05*1.e-6*unit::metres);
 
         // Set up the grid
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
         p_domain->AddCuboid(1.0, 1.0, 2.0);
         boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
-        p_grid->GenerateFromPart(p_domain, 0.1);
+        p_grid->GenerateFromPart(p_domain, 0.1*1.e-6*unit::metres);
 
         // Choose the PDE
         boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();

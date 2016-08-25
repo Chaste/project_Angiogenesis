@@ -162,6 +162,7 @@ boost::shared_ptr<VesselNode<DIM> > VesselNetwork<DIM>::DivideVessel(boost::shar
             EXCEPTION("There is no segment at the requested division location.");
         }
     }
+
     boost::shared_ptr<VesselNode<DIM> > p_new_node = pVessel->DivideSegment(location); // network segments and nodes out of date
 
     // create two new vessels and assign them the old vessel's properties
@@ -187,6 +188,7 @@ boost::shared_ptr<VesselNode<DIM> > VesselNetwork<DIM>::DivideVessel(boost::shar
     {
         end_segments.push_back(segments[idx]);
     }
+
     boost::shared_ptr<Vessel<DIM> > p_new_vessel1 = Vessel<DIM>::Create(start_segments);
     boost::shared_ptr<Vessel<DIM> > p_new_vessel2 = Vessel<DIM>::Create(end_segments);
     p_new_vessel1->CopyDataFromExistingVessel(pVessel);
@@ -198,6 +200,7 @@ boost::shared_ptr<VesselNode<DIM> > VesselNetwork<DIM>::DivideVessel(boost::shar
     mSegmentsUpToDate = false;
     mNodesUpToDate = false;
     mVesselNodesUpToDate = false;
+
     return p_new_node;
 }
 

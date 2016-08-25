@@ -296,7 +296,7 @@ boost::shared_ptr<VesselNode<DIM> > Vessel<DIM>::DivideSegment(const c_vector<do
     boost::shared_ptr<VesselSegment<DIM> > pVesselSegment;
     for (unsigned i = 0; i < mSegments.size(); i++)
     {
-        if (mSegments[i]->GetDistance(location)/pVesselSegment->GetNode(0)->GetReferenceLengthScale() <= distanceTolerance)
+        if (mSegments[i]->GetDistance(location)/mSegments[i]->GetNode(0)->GetReferenceLengthScale() <= distanceTolerance)
         {
             pVesselSegment = mSegments[i];
             if (pVesselSegment->GetNode(0)->IsCoincident(location))
@@ -310,6 +310,7 @@ boost::shared_ptr<VesselNode<DIM> > Vessel<DIM>::DivideSegment(const c_vector<do
 
         }
     }
+
     if (!pVesselSegment)
     {
         EXCEPTION("Specified location is not on a segment in this vessel.");
@@ -390,6 +391,7 @@ boost::shared_ptr<VesselNode<DIM> > Vessel<DIM>::DivideSegment(const c_vector<do
         newSegments.push_back(p_new_segment1);
         newSegments.push_back(p_new_segment0);
     }
+
     mSegments.insert(it, newSegments.begin(), newSegments.end());
 
     // Remove old segment
@@ -404,6 +406,7 @@ boost::shared_ptr<VesselNode<DIM> > Vessel<DIM>::DivideSegment(const c_vector<do
     {
         EXCEPTION("Vessel segment is not contained inside vessel.");
     }
+
     for (unsigned i = 0; i < mSegments.size(); i++)
     {
         for (unsigned j = 0; j < mSegments.size(); j++)

@@ -35,31 +35,30 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <cassert>
 #include <cmath>
+
 #include "DimensionalSimulationTime.hpp"
 
 /** Pointer to the single instance */
 DimensionalSimulationTime* DimensionalSimulationTime::mpInstance = NULL;
-
-/** Shared pointer to the delegated class */
-boost::shared_ptr<TimeStepper> DimensionalSimulationTime::mpTimeStepper;
+SimulationTime* DimensionalSimulationTime::mpSimulationTimeInstance = NULL;
 
 DimensionalSimulationTime* DimensionalSimulationTime::Instance()
 {
     if (mpInstance == NULL)
     {
         mpInstance = new DimensionalSimulationTime;
-        mpTimeStepper.reset();
         std::atexit(Destroy);
     }
     return mpInstance;
 }
 
 DimensionalSimulationTime::DimensionalSimulationTime()
-    : SimulationTime(),
-        mReferenceTime(60.0 * unit::seconds)
+    : mReferenceTime(60.0 * unit::seconds)
 {
     // Make sure there's only one instance - enforces correct serialization
     assert(mpInstance == NULL);
+
+    mpSimulationTimeInstance = SimulationTime::Instance();
 }
 
 units::quantity<unit::time> DimensionalSimulationTime::GetReferenceTimeScale()
@@ -70,4 +69,25 @@ units::quantity<unit::time> DimensionalSimulationTime::GetReferenceTimeScale()
 void DimensionalSimulationTime::SetReferenceTimeScale(units::quantity<unit::time> referenceTimeScale)
 {
     mReferenceTime = referenceTimeScale;
+}
+
+SimulationTime* DimensionalSimulationTime::GetSimulationTime()
+{
+    return mpSimulationTimeInstance;
+}
+
+void DimensionalSimulationTime::Destroy()
+{
+
+    if(mpSimulationTimeInstance)
+    {
+        mpSimulationTimeInstance = NULL;
+        SimulationTime::Destroy();
+    }
+
+    if (mpInstance)
+    {
+        delete mpInstance;
+        mpInstance = NULL;
+    }
 }

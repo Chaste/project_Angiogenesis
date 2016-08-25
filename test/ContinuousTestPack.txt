@@ -16,7 +16,6 @@ population/vessel/TestVascularNode.hpp
 population/vessel/TestVesselSegment.hpp
 population/vessel/TestVessel.hpp
 population/vessel/TestVascularNetwork.hpp
-population/vessel/properties/TestVasculatureData.hpp
 population/vessel/properties/TestSegmentFlowProperties.hpp
 population/vessel/generators/TestVasculatureGenerator.hpp
 population/vessel/readers/TestVesselNetworkReader.hpp

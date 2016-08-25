@@ -107,7 +107,6 @@ void StructuralAdaptationSolver<DIM>::Iterate()
         {
             mPreFlowSolveCalculators[idx]->SetVesselNetwork(this->mpVesselNetwork);
         }
-        UpdateFlowSolver();
         for(unsigned idx=0; idx<mPostFlowSolveCalculators.size();idx++)
         {
             mPostFlowSolveCalculators[idx]->SetVesselNetwork(this->mpVesselNetwork);
@@ -123,6 +122,12 @@ void StructuralAdaptationSolver<DIM>::Iterate()
     {
         mPreFlowSolveCalculators[idx]->Calculate();
     }
+
+    if(SimulationTime::Instance()->GetTimeStepsElapsed()==0)
+    {
+        UpdateFlowSolver();
+    }
+
     mpFlowSolver->Update(false);
     mpFlowSolver->Solve();
     for(unsigned idx=0; idx<mPostFlowSolveCalculators.size();idx++)

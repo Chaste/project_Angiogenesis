@@ -65,8 +65,8 @@ public:
 
         boost::shared_ptr<Vessel<2> > p_vessel1(Vessel<2>::Create(p_segment1));
         boost::shared_ptr<Vessel<2> > p_vessel2(Vessel<2>::Create(p_segment2));
-        p_segment1->GetFlowProperties()->SetFlowRate(1.0);
-        p_segment2->GetFlowProperties()->SetFlowRate(2.0);
+        p_segment1->GetFlowProperties()->SetFlowRate(1.0*unit::unit_flow_rate);
+        p_segment2->GetFlowProperties()->SetFlowRate(2.0*unit::unit_flow_rate);
 
         boost::shared_ptr<VesselNetwork<2> > p_network = boost::shared_ptr<VesselNetwork<2> >(new VesselNetwork<2>);
         p_network->AddVessel(p_vessel1);
@@ -92,9 +92,9 @@ public:
         boost::shared_ptr<Vessel<2> > p_vessel1(Vessel<2>::Create(p_node1, p_node3));
         boost::shared_ptr<Vessel<2> > p_vessel2(Vessel<2>::Create(p_node2, p_node3));
         boost::shared_ptr<Vessel<2> > p_vessel3(Vessel<2>::Create(p_node3, p_node4));
-        p_vessel1->GetFlowProperties()->SetFlowRate(1.0, p_vessel1->GetSegments());
-        p_vessel2->GetFlowProperties()->SetFlowRate(1.0, p_vessel2->GetSegments());
-        p_vessel3->GetFlowProperties()->SetFlowRate(1.0, p_vessel3->GetSegments() );
+        p_vessel1->GetFlowProperties()->SetFlowRate(1.0*unit::unit_flow_rate, p_vessel1->GetSegments());
+        p_vessel2->GetFlowProperties()->SetFlowRate(1.0*unit::unit_flow_rate, p_vessel2->GetSegments());
+        p_vessel3->GetFlowProperties()->SetFlowRate(1.0*unit::unit_flow_rate, p_vessel3->GetSegments() );
 
         boost::shared_ptr<VesselNetwork<2> > p_network = boost::shared_ptr<VesselNetwork<2> >(new VesselNetwork<2>);
         p_network->AddVessel(p_vessel1);
@@ -125,9 +125,9 @@ public:
         boost::shared_ptr<Vessel<2> > p_vessel1(Vessel<2>::Create(p_segment1));
         boost::shared_ptr<Vessel<2> > p_vessel2(Vessel<2>::Create(p_segment2));
         boost::shared_ptr<Vessel<2> > p_vessel3(Vessel<2>::Create(p_segment3));
-        p_vessel1->GetFlowProperties()->SetFlowRate(-1.0, p_vessel1->GetSegments());
-        p_vessel2->GetFlowProperties()->SetFlowRate(-1.0, p_vessel2->GetSegments());
-        p_vessel3->GetFlowProperties()->SetFlowRate(-1.0, p_vessel3->GetSegments());
+        p_vessel1->GetFlowProperties()->SetFlowRate(-1.0*unit::unit_flow_rate, p_vessel1->GetSegments());
+        p_vessel2->GetFlowProperties()->SetFlowRate(-1.0*unit::unit_flow_rate, p_vessel2->GetSegments());
+        p_vessel3->GetFlowProperties()->SetFlowRate(-1.0*unit::unit_flow_rate, p_vessel3->GetSegments());
 
         boost::shared_ptr<VesselNetwork<2> > p_network = boost::shared_ptr<VesselNetwork<2> >(new VesselNetwork<2>);
         p_network->AddVessel(p_vessel1);
@@ -158,9 +158,9 @@ public:
         boost::shared_ptr<Vessel<2> > p_vessel1(Vessel<2>::Create(p_segment1));
         boost::shared_ptr<Vessel<2> > p_vessel2(Vessel<2>::Create(p_segment2));
         boost::shared_ptr<Vessel<2> > p_vessel3(Vessel<2>::Create(p_segment3));
-        p_vessel1->GetFlowProperties()->SetFlowRate(-1.0, p_vessel1->GetSegments());
-        p_vessel2->GetFlowProperties()->SetFlowRate(-3.0, p_vessel2->GetSegments());
-        p_vessel3->GetFlowProperties()->SetFlowRate(-1.0, p_vessel3->GetSegments());
+        p_vessel1->GetFlowProperties()->SetFlowRate(-1.0*unit::unit_flow_rate, p_vessel1->GetSegments());
+        p_vessel2->GetFlowProperties()->SetFlowRate(-3.0*unit::unit_flow_rate, p_vessel2->GetSegments());
+        p_vessel3->GetFlowProperties()->SetFlowRate(-1.0*unit::unit_flow_rate, p_vessel3->GetSegments());
 
         boost::shared_ptr<VesselNetwork<2> > p_network = boost::shared_ptr<VesselNetwork<2> >(new VesselNetwork<2>);
         p_network->AddVessel(p_vessel1);
@@ -192,7 +192,7 @@ public:
         boost::shared_ptr<VesselSegment<2> > p_segment(VesselSegment<2>::Create(nodes[0], nodes[1]));
 
         double radius = 10.0;
-        p_segment->SetRadius(radius);
+        p_segment->SetRadius(radius*1.e-6*unit::metres);
         double haematocrit = 0.45;
         p_segment->GetFlowProperties()->SetHaematocrit(haematocrit);
         vascular_network->SetSegmentProperties(p_segment);
@@ -214,7 +214,7 @@ public:
                     if((*vessel_iterator)->GetStartNode()->rGetLocation()[0] >  x_middle)
                     {
                         (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetIsInputNode(true);
-                        (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetPressure(3320);
+                        (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetPressure(3320*unit::pascals);
                     }
                 }
             }
@@ -225,7 +225,7 @@ public:
                     if((*vessel_iterator)->GetStartNode()->rGetLocation()[0] >  x_middle)
                     {
                         (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetIsInputNode(true);
-                        (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetPressure(3320);
+                        (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetPressure(3320*unit::pascals);
                     }
                 }
             }
@@ -236,7 +236,7 @@ public:
                     if((*vessel_iterator)->GetStartNode()->rGetLocation()[0] <  x_middle)
                     {
                         (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetIsOutputNode(true);
-                        (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetPressure(2090);
+                        (*vessel_iterator)->GetStartNode()->GetFlowProperties()->SetPressure(2090*unit::pascals);
                     }
                 }
             }
@@ -247,7 +247,7 @@ public:
                     if((*vessel_iterator)->GetStartNode()->rGetLocation()[0] <  x_middle)
                     {
                         (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetIsOutputNode(true);
-                        (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetPressure(2090);
+                        (*vessel_iterator)->GetEndNode()->GetFlowProperties()->SetPressure(2090*unit::pascals);
                     }
                 }
             }
@@ -256,7 +256,7 @@ public:
         std::vector<boost::shared_ptr<VesselSegment<2> > > segments = vascular_network->GetVesselSegments();
         for(unsigned idx=0; idx<segments.size(); idx++)
         {
-            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);
+            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3*unit::poiseuille);
         }
 
         VesselImpedanceCalculator<2> impedance_calculator;

@@ -56,14 +56,14 @@ public:
         nodes.push_back(VesselNode<3>::Create(0));
         nodes.push_back(VesselNode<3>::Create(100));
         double pressure = 3933.0;
-        nodes[0]->GetFlowProperties()->SetPressure(pressure);
-        nodes[1]->GetFlowProperties()->SetPressure(pressure);
+        nodes[0]->GetFlowProperties()->SetPressure(pressure*unit::pascals);
+        nodes[1]->GetFlowProperties()->SetPressure(pressure*unit::pascals);
 
         boost::shared_ptr<Vessel<3> > p_vessel(Vessel<3>::Create(VesselSegment<3>::Create(nodes[0], nodes[1])));
         boost::shared_ptr<VesselNetwork<3> > p_vascular_network = VesselNetwork<3>::Create();
         p_vascular_network->AddVessel(p_vessel);
         double wall_shear_stress = 25.0;
-        p_vessel->GetSegments()[0]->GetFlowProperties()->SetWallShearStress(wall_shear_stress);
+        p_vessel->GetSegments()[0]->GetFlowProperties()->SetWallShearStress(wall_shear_stress*unit::pascals);
 
         boost::shared_ptr<MechanicalStimulusCalculator<3> > calculator(new MechanicalStimulusCalculator<3>());
         calculator->SetVesselNetwork(p_vascular_network);
@@ -73,7 +73,7 @@ public:
         double converted_pressure = pressure * 760 / (1.01 * pow(10.0, 5));
         double Tau_P = 0.1 * (100.0 - 86.0 * pow(exp(-5.0 * log10(log10(converted_pressure))), 5.4));
         double expected_mechanical_stimulus = log10((wall_shear_stress + 0.05) / Tau_P);
-        TS_ASSERT_DELTA(p_vessel->GetSegments()[0]->GetFlowProperties()->GetGrowthStimulus(), expected_mechanical_stimulus, 1e-6);
+        TS_ASSERT_DELTA(p_vessel->GetSegments()[0]->GetFlowProperties()->GetGrowthStimulus()/unit::reciprocal_seconds, expected_mechanical_stimulus, 1e-6);
     }
 
     void TestMechanicalStimulusVsPressure()
@@ -83,14 +83,14 @@ public:
         nodes.push_back(VesselNode<3>::Create(0));
         nodes.push_back(VesselNode<3>::Create(100));
         double pressure = 3933.0;
-        nodes[0]->GetFlowProperties()->SetPressure(pressure);
-        nodes[1]->GetFlowProperties()->SetPressure(pressure);
+        nodes[0]->GetFlowProperties()->SetPressure(pressure*unit::pascals);
+        nodes[1]->GetFlowProperties()->SetPressure(pressure*unit::pascals);
 
         boost::shared_ptr<Vessel<3> > p_vessel(Vessel<3>::Create(VesselSegment<3>::Create(nodes[0], nodes[1])));
         boost::shared_ptr<VesselNetwork<3> > p_vascular_network = VesselNetwork<3>::Create();
         p_vascular_network->AddVessel(p_vessel);
         double wall_shear_stress = 25.0;
-        p_vessel->GetSegments()[0]->GetFlowProperties()->SetWallShearStress(wall_shear_stress);
+        p_vessel->GetSegments()[0]->GetFlowProperties()->SetWallShearStress(wall_shear_stress*unit::pascals);
 
         boost::shared_ptr<MechanicalStimulusCalculator<3> > calculator(new MechanicalStimulusCalculator<3>());
         calculator->SetVesselNetwork(p_vascular_network);
@@ -104,10 +104,10 @@ public:
 
         for (int mmHgPressure = 1; mmHgPressure < 101; mmHgPressure++)
         {
-            nodes[0]->GetFlowProperties()->SetPressure(double(mmHgPressure) * (1.01 * pow(10.0, 5) / 760));
-            nodes[1]->GetFlowProperties()->SetPressure(double(mmHgPressure) * (1.01 * pow(10.0, 5) / 760));
+            nodes[0]->GetFlowProperties()->SetPressure(double(mmHgPressure) * (1.01 * pow(10.0, 5) / 760)*unit::pascals);
+            nodes[1]->GetFlowProperties()->SetPressure(double(mmHgPressure) * (1.01 * pow(10.0, 5) / 760)*unit::pascals);
             calculator->Calculate();
-            out << mmHgPressure << " " << calculator->GetTauP() / (0.1) << "\n";
+            out << mmHgPressure << " " << (calculator->GetTauP()/unit::pascals) / (0.1) << "\n";
         }
         out.close();
     }

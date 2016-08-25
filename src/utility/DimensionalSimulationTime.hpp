@@ -40,25 +40,40 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ChasteSerialization.hpp"
 #include <boost/serialization/shared_ptr.hpp>
 #include "SerializableSingleton.hpp"
-#include "TimeStepper.hpp"
 #include "UnitCollection.hpp"
 #include "SimulationTime.hpp"
 
 /**
- * Simulation time object with extra information regarding the units of the time increment
+ * Drop in replacement for SimulationTime with units.
  */
-class DimensionalSimulationTime : public SimulationTime
+class DimensionalSimulationTime : public SerializableSingleton<DimensionalSimulationTime>
 {
 
+    /**
+     * A pointer to the singleton instance of this class.
+     */
+    static DimensionalSimulationTime* mpInstance;
+
+    /**
+     * A pointer to the SimulationTime singleton instance
+     */
+    static SimulationTime* mpSimulationTimeInstance;
+
+    /**
+     * The time unit for increments
+     */
     units::quantity<unit::time> mReferenceTime;
 
 public:
 
     /**
-     * @return a pointer to the simulation time object.
+     * @return a pointer to the dimensional simulation time object.
      * The first time this is called the simulation time object is created.
      */
     static DimensionalSimulationTime* Instance();
+
+
+    static SimulationTime* GetSimulationTime();
 
     /**
      * @return the reference time scale
@@ -70,8 +85,17 @@ public:
      */
     void SetReferenceTimeScale(units::quantity<unit::time> referenceTimeScale);
 
+    /**
+     * Destroy the current DimensionalSimulationTime instance AND the SimulationTime instance.
+     *
+     * This method *must* be called before program exit, to avoid a memory
+     * leak.
+     */
+    static void Destroy();
+
 
 protected:
+
     /**
      * Default simulation time constructor
      *
@@ -79,14 +103,6 @@ protected:
      * end time and number of time steps before using the object.
      */
     DimensionalSimulationTime();
-
-private:
-    /**
-     * A pointer to the singleton instance of this class.
-     */
-    static DimensionalSimulationTime* mpInstance;
-
-    static boost::shared_ptr<TimeStepper> mpTimeStepper;
 
 };
 

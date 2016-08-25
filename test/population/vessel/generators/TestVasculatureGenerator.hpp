@@ -85,7 +85,8 @@ public:
         vascular_network->Write(output_filename);
     }
 
-    void TestVoronoiNetwork() throw (Exception)
+    // Voronoi no longer supported
+    void DontTestVoronoiNetwork() throw (Exception)
     {
         // Generate the network
         VasculatureGenerator<3> vascular_network_generator;
@@ -139,7 +140,8 @@ public:
         p_network3->Write(output_filename5);
     }
 
-    void Test3dNetworks() throw (Exception)
+    //Expensive, problem with scaling
+    void DontTest3dNetworks() throw (Exception)
     {
         boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
         p_part->AddCuboid(2000.0, 2000.0, 2000.0);

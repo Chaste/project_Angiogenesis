@@ -134,7 +134,7 @@ void AbstractStructuralAdaptationSolver<DIM>::Solve()
         previous_radii[segment_index] = segments[segment_index]->GetRadius();
     }
 
-    while (max_radius_relative_change > mTolerance && time < (DimensionalSimulationTime::Instance()->GetTimeStep()*DimensionalSimulationTime::Instance()->GetReferenceTimeScale()) && iteration < mMaxIterations)
+    while (max_radius_relative_change > mTolerance && time < (SimulationTime::Instance()->GetTimeStep()*DimensionalSimulationTime::Instance()->GetReferenceTimeScale()) && iteration < mMaxIterations)
     {
         time += mTimeIncrement;
         iteration++;

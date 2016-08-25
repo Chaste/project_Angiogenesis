@@ -43,11 +43,12 @@
 #include "SmartPointers.hpp"
 #include "VasculatureGenerator.hpp"
 #include "FlowSolver.hpp"
-#include "SimulationTime.hpp"
+#include "DimensionalSimulationTime.hpp"
 #include "AlarconHaematocritSolver.hpp"
 #include "FakePetscSetup.hpp"
 #include "UnitCollection.hpp"
 #include "VesselImpedanceCalculator.hpp"
+#include "Debug.hpp"
 
 class TestStructuralAdaptationSolver : public CxxTest::TestSuite
 {
@@ -73,6 +74,7 @@ void TestMultiVesselNetwork() throw(Exception)
     {
         segments.push_back(VesselSegment<2>::Create(nodes[idx], nodes[idx+1]));
         segments[idx]->GetFlowProperties()->SetHaematocrit(haematocrit);
+        segments[idx]->GetFlowProperties()->SetViscosity(1.e-3 * unit::poiseuille);
         segments[idx]->SetRadius(10.0 * 1.e-6*unit::metres);
     }
 
@@ -85,9 +87,9 @@ void TestMultiVesselNetwork() throw(Exception)
     boost::shared_ptr<VesselNetwork<2> > p_network = VesselNetwork<2>::Create();
     p_network->AddVessels(vessels);
 
-    SimulationTime* p_simulation_time = SimulationTime::Instance();
-    p_simulation_time->SetStartTime(0.0);
-    p_simulation_time->SetEndTimeAndNumberOfTimeSteps(30, 1);
+    DimensionalSimulationTime* p_simulation_time = DimensionalSimulationTime::Instance();
+    SimulationTime::Instance()->SetStartTime(0.0);
+    SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(30, 1);
 
     // Write the network to file
     OutputFileHandler output_file_handler("TestStructuralAdaptationSolver", false);
@@ -103,6 +105,7 @@ void TestMultiVesselNetwork() throw(Exception)
     solver.SetTolerance(0.0001);
     solver.AddPreFlowSolveCalculator(p_impedance_calculator);
     solver.SetTimeIncrement(0.0001 * unit::seconds);
+
     solver.Solve();
 
     // Write the network to file
@@ -110,6 +113,7 @@ void TestMultiVesselNetwork() throw(Exception)
 
 //    TS_ASSERT_DELTA((nodes[3]->GetFlowProperties()->GetPressure() + nodes[4]->GetFlowProperties()->GetPressure())/2.0,((3322.0 + 1993.0) / 2.0)*unit::pascals, 1e-6);
 //    TS_ASSERT_DELTA(boost::units::fabs(segments[0]->GetFlowProperties()->GetFlowRate()),boost::units::fabs(segments[1]->GetFlowProperties()->GetFlowRate()),1e-6);
+
     p_simulation_time->Destroy();
 }
 

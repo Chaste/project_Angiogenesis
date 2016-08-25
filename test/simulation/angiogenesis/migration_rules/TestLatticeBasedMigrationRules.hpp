@@ -67,7 +67,7 @@ public:
         // Set the grid to move on
         boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
         double spacing = 100.0; //um
-        p_grid->SetSpacing(spacing);
+        p_grid->SetSpacing(spacing * 1.e-6*unit::metres);
         std::vector<unsigned> extents(3, 1);
         extents[0] = 7; // num x
         extents[1] = 5; // num_y
@@ -115,7 +115,7 @@ public:
         // Set the grid to move on
         boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
         double spacing = 100.0; //um
-        p_grid->SetSpacing(spacing);
+        p_grid->SetSpacing(spacing* 1.e-6*unit::metres);
         std::vector<unsigned> extents(3, 1);
         extents[0] = 7; // num x
         extents[1] = 5; // num_y
@@ -185,7 +185,7 @@ public:
         // Set the grid to move on
         boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
         double spacing = 100.0; //um
-        p_grid->SetSpacing(spacing);
+        p_grid->SetSpacing(spacing* 1.e-6*unit::metres);
         std::vector<unsigned> extents(3, 1);
         extents[0] = 7; // num x
         extents[1] = 5; // num_y
@@ -211,15 +211,15 @@ public:
         p_grid->SetVesselNetwork(p_network);
 
         p_node1->GetFlowProperties()->SetIsInputNode(true);
-        p_node1->GetFlowProperties()->SetPressure(3000);
+        p_node1->GetFlowProperties()->SetPressure(3000*unit::pascals);
         p_node5->GetFlowProperties()->SetIsOutputNode(true);
-        p_node5->GetFlowProperties()->SetPressure(1000);
+        p_node5->GetFlowProperties()->SetPressure(1000*unit::pascals);
 
-        p_network->SetSegmentRadii(10.0);
+        p_network->SetSegmentRadii(10.0*1.e-6*unit::metres);
         std::vector<boost::shared_ptr<VesselSegment<2> > > segments = p_network->GetVesselSegments();
         for(unsigned idx=0; idx<segments.size(); idx++)
         {
-            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3);
+            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3 * unit::poiseuille);
         }
 
         boost::shared_ptr<LatticeBasedMigrationRule<2> > p_migration_rule = LatticeBasedMigrationRule<2>::Create();

@@ -50,6 +50,7 @@
 #include "Vessel.hpp"
 #include "VesselSurfaceGenerator.hpp"
 #include "OutputFileHandler.hpp"
+#include "VtkSurfaceWriter.hpp"
 
 class TestGenerateVtkVesselSurface : public CxxTest::TestSuite
 {
@@ -65,10 +66,14 @@ public:
 
         // Set up the surface generator
         VesselSurfaceGenerator<3> surface_generator(p_network);
-        surface_generator.GetVtkSurface();
+
         OutputFileHandler output_file_handler("TestVesselSurfaceGenerator", false);
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("SingleSegmentVessel.vtp");
-//        surface_generator.Write(output_filename);
+
+        VtkSurfaceWriter writer;
+        writer.SetInput(surface_generator.GetVtkSurface());
+        writer.SetFileName(output_filename);
+        writer.Write();
     }
 
     void TestMultiSegmentVessel()
@@ -96,10 +101,13 @@ public:
         p_network->AddVessel(p_vessel1);
 
         VesselSurfaceGenerator<3> surface_generator(p_network);
-        surface_generator.GetVtkSurface();
         OutputFileHandler output_file_handler("TestVesselSurfaceGenerator", false);
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("MultiSegmentVessel.vtp");
-//        surface_generator.Write(output_filename);
+
+        VtkSurfaceWriter writer;
+        writer.SetInput(surface_generator.GetVtkSurface());
+        writer.SetFileName(output_filename);
+        writer.Write();
     }
 
     void TestSinusoidVessel()
@@ -126,10 +134,13 @@ public:
         p_network->AddVessel(p_vessel1);
 
         VesselSurfaceGenerator<3> surface_generator(p_network);
-        surface_generator.GetVtkSurface();
         OutputFileHandler output_file_handler("TestVesselSurfaceGenerator", false);
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("SinusoidalVessel.vtp");
-//        surface_generator.Write(output_filename);
+
+        VtkSurfaceWriter writer;
+        writer.SetInput(surface_generator.GetVtkSurface());
+        writer.SetFileName(output_filename);
+        writer.Write();
     }
 
     void TestMultiVessel()
@@ -175,10 +186,13 @@ public:
 
         //Set up the surface generator
         VesselSurfaceGenerator<3> surface_generator(p_network);
-        surface_generator.GetVtkSurface();
         OutputFileHandler output_file_handler("TestVesselSurfaceGenerator", false);
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("MultiVessel.vtp");
-//        surface_generator.Write(output_filename);
+
+        VtkSurfaceWriter writer;
+        writer.SetInput(surface_generator.GetVtkSurface());
+        writer.SetFileName(output_filename);
+        writer.Write();
     }
 };
 

@@ -98,13 +98,16 @@ public:
         p_part->Extrude(p_circle);
 
         boost::shared_ptr<HybridMesh<3> > p_mesh = HybridMesh<3>::Create();
-        p_mesh->GenerateFromPart(p_part, 20.0);
+        p_mesh->SetDomain(p_part);
+        p_mesh->SetMaxElementArea(20.0);
+        p_mesh->Update();
 
         VtkMeshWriter<3, 3> mesh_writer("TestHybridMesh", "Cylinder", false);
         mesh_writer.WriteFilesUsingMesh(*p_mesh);
     }
 
-    void TestMeshCylinderWithVesselLine()
+    // Not Supported With Tetgen <1.5
+    void DontTestMeshCylinderWithVesselLine()
     {
         double vessel_length = 100.0;
         VasculatureGenerator<3> generator;
@@ -118,7 +121,9 @@ public:
         p_part->AddVesselNetwork(p_network);
 
         boost::shared_ptr<HybridMesh<3> > p_mesh = HybridMesh<3>::Create();
-        p_mesh->GenerateFromPart(p_part, 100.0);
+        p_mesh->SetDomain(p_part);
+        p_mesh->SetMaxElementArea(100.0);
+        p_mesh->Update();
 
         VtkMeshWriter<3, 3> mesh_writer("TestHybridMesh", "CylinderWithVesselLine", false);
         mesh_writer.WriteFilesUsingMesh(*p_mesh);
@@ -138,13 +143,16 @@ public:
         p_part->AddVesselNetwork(p_network, true);
 
         boost::shared_ptr<HybridMesh<3> > p_mesh = HybridMesh<3>::Create();
-        p_mesh->GenerateFromPart(p_part, 100.0);
+        p_mesh->SetDomain(p_part);
+        p_mesh->SetMaxElementArea(100.0);
+        p_mesh->Update();
 
         VtkMeshWriter < 3, 3 > mesh_writer("TestHybridMesh", "CylinderWithVesselSurface", false);
         mesh_writer.WriteFilesUsingMesh(*p_mesh);
     }
 
-    void TestMeshCubeWithVesselLine()
+    // Not Supported With Tetgen <1.5
+    void DontTestMeshCubeWithVesselLine()
     {
         double vessel_length = 100.0;
         VasculatureGenerator<3> generator;
@@ -160,7 +168,9 @@ public:
         p_part->AddVesselNetwork(p_network);
 
         boost::shared_ptr<HybridMesh<3> > p_mesh = HybridMesh<3>::Create();
-        p_mesh->GenerateFromPart(p_part, 100.0);
+        p_mesh->SetDomain(p_part);
+        p_mesh->SetMaxElementArea(100.0);
+        p_mesh->Update();
         VtkMeshWriter <3, 3> mesh_writer("TestHybridMesh", "CubeWithVesselLine", false);
         mesh_writer.WriteFilesUsingMesh(*p_mesh);
     }
@@ -181,7 +191,9 @@ public:
         p_part->AddVesselNetwork(p_network, true);
 
         boost::shared_ptr<HybridMesh<3> > p_mesh = HybridMesh<3>::Create();
-        p_mesh->GenerateFromPart(p_part, 100.0);
+        p_mesh->SetDomain(p_part);
+        p_mesh->SetMaxElementArea(100.0);
+        p_mesh->Update();
         VtkMeshWriter<3, 3> mesh_writer("TestHybridMesh", "CubeWithVesselSurface", false);
         mesh_writer.WriteFilesUsingMesh(*p_mesh);
     }
@@ -206,7 +218,9 @@ public:
         p_part->AddVesselNetwork(p_network, true);
 
         boost::shared_ptr<HybridMesh<3> > p_mesh = HybridMesh<3>::Create();
-        p_mesh->GenerateFromPart(p_part, 100.0);
+        p_mesh->SetDomain(p_part);
+        p_mesh->SetMaxElementArea(100.0);
+        p_mesh->Update();
         VtkMeshWriter<3, 3> mesh_writer("TestHybridMesh", "CubeWithVesselSurface", false);
         mesh_writer.WriteFilesUsingMesh(*p_mesh);
     }
@@ -225,7 +239,9 @@ public:
         p_part->AddVesselNetwork(SetUpNetwork(), true);
 
         boost::shared_ptr<HybridMesh<3> > p_mesh = HybridMesh<3>::Create();
-        p_mesh->GenerateFromPart(p_part, 1000.0);
+        p_mesh->SetDomain(p_part);
+        p_mesh->SetMaxElementArea(1000.0);
+        p_mesh->Update();
         VtkMeshWriter < 3, 3 > mesh_writer("TestHybridMesh", "ParrallelVesselSurface", false);
         mesh_writer.WriteFilesUsingMesh(*p_mesh);
     }

@@ -92,7 +92,7 @@ void BetteridgeHaematocritSolver<DIM>::Calculate()
     if(lhsVectorSize > 6)
     {
         linearSystem.SetPcType("lu");
-        #ifndef PETSC_HAVE_HYPRE
+        #ifdef PETSC_HAVE_HYPRE
         linearSystem.SetPcType("hypre");
         #endif //PETSC_HAVE_HYPRE
         linearSystem.SetKspType("preonly");
@@ -185,15 +185,24 @@ void BetteridgeHaematocritSolver<DIM>::Calculate()
                     units::quantity<unit::velocity> my_velocity = units::fabs(flow_rate)/(M_PI * my_radius * my_radius);
                     units::quantity<unit::velocity> competitor_velocity = fabs(competitor0_flow_rate)/(M_PI * competitor_radius * competitor_radius);
 
-                    // Alpha now depends on haematocrit in the parent vessel, so system is non-linear. Will solve iteratively
                     units::quantity<unit::dimensionless> alpha = 1.0 - parent_vessels[0]->GetFlowProperties()->GetHaematocrit(parent_vessels[0]->GetSegments());
-                    units::quantity<unit::dimensionless> term = alpha * (my_velocity/competitor_velocity-1.0);
                     units::quantity<unit::dimensionless> flow_ratio_pm = fabs(parent0_flow_rate)/fabs(flow_rate);
                     units::quantity<unit::dimensionless> flow_ratio_cm = fabs(competitor0_flow_rate)/fabs(flow_rate);
-
                     double numer = flow_ratio_pm;
-                    double denom = 1.0+flow_ratio_cm*(1.0/(1.0+term));
-                    linearSystem.SetMatrixElement(idx, parent_vessels[0]->GetId(), -numer/denom);
+
+                    // Apply fungs rule to faster vessel
+                    if(my_velocity >= competitor_velocity)
+                    {
+                        units::quantity<unit::dimensionless> term = alpha * (my_velocity/competitor_velocity-1.0);
+                        double denom = 1.0+flow_ratio_cm*(1.0/(1.0+term));
+                        linearSystem.SetMatrixElement(idx, parent_vessels[0]->GetId(), -numer/denom);
+                    }
+                    else
+                    {
+                        units::quantity<unit::dimensionless> term = alpha * (competitor_velocity/my_velocity-1.0);
+                        double denom = 1.0+flow_ratio_cm*(1.0+term);
+                        linearSystem.SetMatrixElement(idx, parent_vessels[0]->GetId(), -numer/denom);
+                    }
 
                     // Save the indices for later updating
                     std::vector<unsigned> local_update_indics = std::vector<unsigned>(3);
@@ -230,13 +239,23 @@ void BetteridgeHaematocritSolver<DIM>::Calculate()
                 units::quantity<unit::velocity> competitor_velocity = fabs(competitor0_flow_rate)/(M_PI * competitor_radius * competitor_radius);
                 units::quantity<unit::dimensionless> alpha = 1.0 - vessels[update_indices[idx][1]]->GetFlowProperties()->GetHaematocrit(vessels[update_indices[idx][1]]->GetSegments());
 
-                double term = alpha * (my_velocity/competitor_velocity-1.0);
                 double flow_ratio_pm = fabs(parent0_flow_rate/self_flow_rate);
                 double flow_ratio_cm = fabs(competitor0_flow_rate/self_flow_rate);
                 double numer = flow_ratio_pm;
-                double denom = 1.0+flow_ratio_cm*(1.0/(1.0+term));
 
-                linearSystem.SetMatrixElement(update_indices[idx][0], update_indices[idx][1], -numer/denom);
+                // Apply fungs rule to faster vessel
+                if(my_velocity >= competitor_velocity)
+                {
+                    double term = alpha * (my_velocity/competitor_velocity-1.0);
+                    double denom = 1.0+flow_ratio_cm*(1.0/(1.0+term));
+                    linearSystem.SetMatrixElement(update_indices[idx][0], update_indices[idx][1], -numer/denom);
+                }
+                else
+                {
+                    double term = alpha * (competitor_velocity/my_velocity-1.0);
+                    double denom = 1.0+flow_ratio_cm*(1.0+term);
+                    linearSystem.SetMatrixElement(update_indices[idx][0], update_indices[idx][1], -numer/denom);
+                }
             }
         }
 
@@ -246,12 +265,12 @@ void BetteridgeHaematocritSolver<DIM>::Calculate()
         ReplicatableVector a(solution);
 
         // Get the residual
-        residual = 0;
+        residual = 0.0;
         for (unsigned i = 0; i < vessels.size(); i++)
         {
-            if(vessels[i]->GetFlowProperties()->GetHaematocrit(vessels[i]->GetSegments()) - a[i] > residual)
+            if(fabs(vessels[i]->GetFlowProperties()->GetHaematocrit(vessels[i]->GetSegments()) - a[i]) > residual)
             {
-                residual = vessels[i]->GetFlowProperties()->GetHaematocrit(vessels[i]->GetSegments()) - a[i];
+                residual = fabs(vessels[i]->GetFlowProperties()->GetHaematocrit(vessels[i]->GetSegments()) - a[i]);
             }
         }
 

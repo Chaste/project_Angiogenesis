@@ -61,7 +61,7 @@ public:
         boost::shared_ptr<Part<2> > p_domain = Part<2>::Create();
         p_domain->AddRectangle(1.0, 2.0);
         boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
-        p_grid->GenerateFromPart(p_domain, 0.1);
+        p_grid->GenerateFromPart(p_domain, 0.1*1.e-6*unit::metres);
 
         // Choose the PDE
         boost::shared_ptr<HybridLinearEllipticPde<2> > p_pde = HybridLinearEllipticPde<2>::Create();
@@ -89,7 +89,7 @@ public:
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
         p_domain->AddCuboid(1.0, 2.0, 1.0);
         boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
-        p_grid->GenerateFromPart(p_domain, 0.1);
+        p_grid->GenerateFromPart(p_domain, 0.1*1.e-6*unit::metres);
 
         // Choose the PDE
         boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
@@ -122,7 +122,7 @@ public:
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
         p_domain->AddCuboid(vessel_length, vessel_length, vessel_length);
         boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
-        p_grid->GenerateFromPart(p_domain, 10.0);
+        p_grid->GenerateFromPart(p_domain, 10.0*1.e-6*unit::metres);
 
         // Choose the PDE
         boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();

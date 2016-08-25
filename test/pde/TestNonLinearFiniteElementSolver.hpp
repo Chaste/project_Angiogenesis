@@ -65,7 +65,9 @@ public:
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
         p_domain->AddCuboid(4.0, 4.0, 4.0);
         boost::shared_ptr<HybridMesh<3, 3> > p_mesh = HybridMesh<3, 3>::Create();
-        p_mesh->GenerateFromPart(p_domain, 0.1);
+        p_mesh->SetDomain(p_domain);
+        p_mesh->SetMaxElementArea(0.1);
+        p_mesh->Update();
 
         // Choose the PDE
         boost::shared_ptr<HybridLinearEllipticPde<3> > p_linear_pde = HybridLinearEllipticPde<3>::Create();
