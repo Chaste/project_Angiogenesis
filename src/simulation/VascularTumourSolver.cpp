@@ -95,6 +95,7 @@ void VascularTumourSolver<DIM>::Increment()
         mpStructuralAdaptationSolver->Solve();
     }
 
+
     // If there are PDEs solve them
     if(mHybridSolvers.size()>0)
     {
@@ -117,13 +118,12 @@ void VascularTumourSolver<DIM>::Increment()
             if(mOutputFrequency > 0 && num_steps % mOutputFrequency == 0)
             {
                 mHybridSolvers[idx]->SetWriteSolution(true);
-                mHybridSolvers[idx]->Solve();
             }
             else
             {
                 mHybridSolvers[idx]->SetWriteSolution(false);
-                mHybridSolvers[idx]->Solve();
             }
+            mHybridSolvers[idx]->Solve();
         }
     }
 
@@ -202,6 +202,12 @@ void VascularTumourSolver<DIM>::SetupFromModifier(AbstractCellPopulation<DIM,DIM
     for(unsigned idx=0; idx<mHybridSolvers.size(); idx++)
     {
         mHybridSolvers[idx]->SetCellPopulation(rCellPopulation);
+        mHybridSolvers[idx]->SetFileHandler(mpOutputFileHandler);
+        if(mpNetwork)
+        {
+            mHybridSolvers[idx]->SetVesselNetwork(mpNetwork);
+        }
+        mHybridSolvers[idx]->Setup();
     }
 
     Setup();

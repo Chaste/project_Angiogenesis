@@ -348,11 +348,14 @@ public:
 //        boost::shared_ptr<QuiescentCancerCellMutationState> quiescent_cancer_mutation_state(new QuiescentCancerCellMutationState);
 //        boost::shared_ptr<StalkCellMutationState> stalk_mutation_state(new StalkCellMutationState);
 //        boost::shared_ptr<TipCellMutationState> tip_mutation_state(new TipCellMutationState);
-//        cell_population.SetVolumeFraction(wild_mutation_state, 0.6);
-//        cell_population.SetVolumeFraction(cancer_mutation_state, 0.6);
-//        cell_population.SetVolumeFraction(quiescent_cancer_mutation_state, 0.6);
-//        cell_population.SetVolumeFraction(stalk_mutation_state, 0.4);
-//        cell_population.SetVolumeFraction(tip_mutation_state, 0.4);
+//
+//
+//// Move to ca rule
+////        cell_population.SetVolumeFraction(wild_mutation_state, 0.6);
+////        cell_population.SetVolumeFraction(cancer_mutation_state, 0.6);
+////        cell_population.SetVolumeFraction(quiescent_cancer_mutation_state, 0.6);
+////        cell_population.SetVolumeFraction(stalk_mutation_state, 0.4);
+////        cell_population.SetVolumeFraction(tip_mutation_state, 0.4);
 //
 //        // Create a grid to solve PDEs on
 //        boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
@@ -419,7 +422,7 @@ public:
 //        simulator.SetDt(0.5);
 //        simulator.SetEndTime(200);
 //        simulator.Solve();
-//
+
     }
 };
 

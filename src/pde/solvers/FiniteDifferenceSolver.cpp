@@ -342,6 +342,10 @@ PetscErrorCode HyrbidFiniteDifference_ComputeResidual(SNES snes, Vec solution_gu
     double spacing = solver->GetGrid()->GetSpacing() / solver->GetGrid()->GetReferenceLengthScale();
     double diffusion_term = solver->GetNonLinearPde()->ComputeIsotropicDiffusionTerm() / (spacing * spacing);
 
+    // It used to be possible to work directly with the solution_guess Vec, but now it seems to give read only errors.
+    // Copy the vector for now.
+    ReplicatableVector soln_guess_repl(solution_guess);
+
     // Get the residual vector
     PetscVecTools::Zero(residual);
     for (unsigned i = 0; i < extents_z; i++) // Z
@@ -351,7 +355,7 @@ PetscErrorCode HyrbidFiniteDifference_ComputeResidual(SNES snes, Vec solution_gu
             for (unsigned k = 0; k < extents_x; k++) // X
             {
                 unsigned grid_index = solver->GetGrid()->Get1dGridIndex(k, j, i);
-                double grid_guess = PetscVecTools::GetElement(solution_guess, grid_index);
+                double grid_guess = soln_guess_repl[grid_index];
 
                 c_vector<double, DIM> location = solver->GetGrid()->GetLocation(k ,j, i);
                 PetscVecTools::AddToElement(residual, grid_index, grid_guess * (- 6.0 * diffusion_term) +
@@ -361,7 +365,7 @@ PetscErrorCode HyrbidFiniteDifference_ComputeResidual(SNES snes, Vec solution_gu
                 // No flux at x bottom
                 if (k > 0)
                 {
-                    double neighbour_guess = PetscVecTools::GetElement(solution_guess, grid_index - 1);
+                    double neighbour_guess = soln_guess_repl[grid_index-1];
                     PetscVecTools::AddToElement(residual, grid_index, neighbour_guess * diffusion_term);
                 }
                 else
@@ -372,7 +376,7 @@ PetscErrorCode HyrbidFiniteDifference_ComputeResidual(SNES snes, Vec solution_gu
                 // No flux at x top
                 if (k < extents_x - 1)
                 {
-                    double neighbour_guess = PetscVecTools::GetElement(solution_guess, grid_index + 1);
+                    double neighbour_guess = soln_guess_repl[grid_index+1];
                     PetscVecTools::AddToElement(residual, grid_index, diffusion_term * neighbour_guess);
                 }
                 else
@@ -383,7 +387,7 @@ PetscErrorCode HyrbidFiniteDifference_ComputeResidual(SNES snes, Vec solution_gu
                 // No flux at y bottom
                 if (j > 0)
                 {
-                    double neighbour_guess = PetscVecTools::GetElement(solution_guess, grid_index - extents_x);
+                    double neighbour_guess = soln_guess_repl[grid_index-extents_x];
                     PetscVecTools::AddToElement(residual, grid_index, diffusion_term* neighbour_guess);
                 }
                 else
@@ -394,7 +398,7 @@ PetscErrorCode HyrbidFiniteDifference_ComputeResidual(SNES snes, Vec solution_gu
                 // No flux at y top
                 if (j < extents_y - 1)
                 {
-                    double neighbour_guess = PetscVecTools::GetElement(solution_guess, grid_index + extents_x);
+                    double neighbour_guess = soln_guess_repl[grid_index+extents_x];
                     PetscVecTools::AddToElement(residual, grid_index, diffusion_term* neighbour_guess);
                 }
                 else
@@ -405,7 +409,7 @@ PetscErrorCode HyrbidFiniteDifference_ComputeResidual(SNES snes, Vec solution_gu
                 // No flux at z bottom
                 if (i > 0)
                 {
-                    double neighbour_guess = PetscVecTools::GetElement(solution_guess, grid_index - extents_x * extents_y);
+                    double neighbour_guess = soln_guess_repl[grid_index - extents_x * extents_y];
                     PetscVecTools::AddToElement(residual, grid_index, diffusion_term*neighbour_guess);
                 }
                 else
@@ -416,7 +420,7 @@ PetscErrorCode HyrbidFiniteDifference_ComputeResidual(SNES snes, Vec solution_gu
                 // No flux at z top
                 if (i < extents_z - 1)
                 {
-                    double neighbour_guess = PetscVecTools::GetElement(solution_guess, grid_index + extents_x * extents_y);
+                    double neighbour_guess = soln_guess_repl[grid_index + extents_x * extents_y];
                     PetscVecTools::AddToElement(residual, grid_index, diffusion_term * neighbour_guess);
                 }
                 else
@@ -426,7 +430,6 @@ PetscErrorCode HyrbidFiniteDifference_ComputeResidual(SNES snes, Vec solution_gu
             }
         }
     }
-
 
     PetscVecTools::Finalise(residual);
 
@@ -439,7 +442,6 @@ PetscErrorCode HyrbidFiniteDifference_ComputeResidual(SNES snes, Vec solution_gu
             PetscVecTools::SetElement(residual, idx, 0.0);
         }
     }
-
     PetscVecTools::Finalise(residual);
 
     return 0;
@@ -459,6 +461,8 @@ PetscErrorCode HyrbidFiniteDifference_ComputeJacobian(SNES snes, Vec input, Mat*
     PetscMatTools::Zero(jacobian);
     PetscMatTools::SwitchWriteMode(jacobian);
 
+    ReplicatableVector input_repl(input);
+
     unsigned extents_x = solver->GetGrid()->GetExtents()[0];
     unsigned extents_y = solver->GetGrid()->GetExtents()[1];
     unsigned extents_z = solver->GetGrid()->GetExtents()[2];
@@ -473,7 +477,7 @@ PetscErrorCode HyrbidFiniteDifference_ComputeJacobian(SNES snes, Vec input, Mat*
             for (unsigned k = 0; k < extents_x; k++) // X
             {
                 unsigned grid_index = solver->GetGrid()->Get1dGridIndex(k, j, i);
-                double grid_guess = PetscVecTools::GetElement(input, grid_index);
+                double grid_guess = input_repl[grid_index];
 
                 c_vector<double, DIM> location = solver->GetGrid()->GetLocation(k ,j, i);
                 PetscMatTools::AddToElement(jacobian, grid_index, grid_index, - 6.0 * diffusion_term +
@@ -552,6 +556,7 @@ PetscErrorCode HyrbidFiniteDifference_ComputeJacobian(SNES snes, Vec input, Mat*
             bc_indices.push_back(idx);
         }
     }
+
     PetscMatTools::ZeroRowsWithValueOnDiagonal(jacobian, bc_indices, 1.0);
 
     PetscMatTools::Finalise(jacobian);

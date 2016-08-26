@@ -37,6 +37,7 @@
 #include "HybridBoundaryCondition.hpp"
 #include "VesselSegment.hpp"
 #include "UnitCollection.hpp"
+#include "Debug.hpp"
 
 template<unsigned DIM>
 HybridBoundaryCondition<DIM>::HybridBoundaryCondition()

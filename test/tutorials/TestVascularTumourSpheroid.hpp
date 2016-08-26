@@ -71,7 +71,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "DiscreteSource.hpp"
 #include "CellLabelWriter.hpp"
 #include "Vessel.hpp"
-#include "VascularNode.hpp"
+#include "VesselNode.hpp"
 #include "GeometryTools.hpp"
 #include "RandomNumberGenerator.hpp"
 #include "VascularTumourModifier.hpp"

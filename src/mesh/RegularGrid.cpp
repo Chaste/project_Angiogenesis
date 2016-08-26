@@ -405,7 +405,14 @@ const std::vector<std::vector<boost::shared_ptr<VesselNode<SPACE_DIM> > > >& Reg
         origin_z = mOrigin[2];
     }
 
-    mPointNodeMap = std::vector<std::vector<boost::shared_ptr<VesselNode<SPACE_DIM> > > >(GetNumberOfPoints());
+    mPointNodeMap.clear();
+    for (unsigned idx = 0; idx < GetNumberOfPoints(); idx++)
+    {
+        std::vector<boost::shared_ptr<VesselNode<SPACE_DIM> > > empty_node_pointers;
+        mPointNodeMap.push_back(empty_node_pointers);
+    }
+
+
     std::vector<boost::shared_ptr<VesselNode<SPACE_DIM> > > nodes = mpNetwork->GetNodes();
 
     for (unsigned idx = 0; idx < nodes.size(); idx++)
@@ -450,7 +457,14 @@ const std::vector<std::vector<CellPtr> >& RegularGrid<ELEMENT_DIM, SPACE_DIM>::G
         origin_z = mOrigin[2];
     }
 
-    mPointCellMap = std::vector<std::vector<CellPtr> >(GetNumberOfPoints());
+    mPointCellMap.clear();
+    for (unsigned idx = 0; idx < GetNumberOfPoints(); idx++)
+    {
+        std::vector<CellPtr> empty_cell_pointers;
+        mPointCellMap.push_back(empty_cell_pointers);
+    }
+
+
     for (typename AbstractCellPopulation<SPACE_DIM>::Iterator cell_iter = mpCellPopulation->Begin();
             cell_iter != mpCellPopulation->End(); ++cell_iter)
     {
@@ -488,12 +502,19 @@ std::vector<std::vector<boost::shared_ptr<VesselSegment<SPACE_DIM> > > > Regular
     }
 
     // Loop over all points and segments and associate segments with the points
-    mPointSegmentMap = std::vector<std::vector<boost::shared_ptr<VesselSegment<SPACE_DIM> > > >(GetNumberOfPoints());
+    mPointSegmentMap.clear();
+    for (unsigned idx = 0; idx < GetNumberOfPoints(); idx++)
+    {
+        std::vector<boost::shared_ptr<VesselSegment<SPACE_DIM> > > empty_seg_pointers;
+        mPointSegmentMap.push_back(empty_seg_pointers);
+    }
     std::vector<boost::shared_ptr<VesselSegment<SPACE_DIM> > > segments = mpNetwork->GetVesselSegments();
+
     for (unsigned jdx = 0; jdx < segments.size(); jdx++)
     {
         for (unsigned idx = 0; idx < GetNumberOfPoints(); idx++)
         {
+
             if (!useVesselSurface)
             {
                 if (segments[jdx]->GetDistance(GetLocationOf1dIndex(idx)) < sqrt(1.0 / 2.0) * mSpacing)

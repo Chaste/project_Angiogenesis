@@ -292,7 +292,7 @@ public:
         simulator.SetOutputDirectory(resultsDirectoryName);
         simulator.SetSamplingTimestepMultiple(10);
         simulator.SetDt(1);
-        simulator.SetEndTime(300);
+        simulator.SetEndTime(30);
 
         simulator.Solve();
     }
