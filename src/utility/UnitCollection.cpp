@@ -1,4 +1,4 @@
-#include "UnitCollection.hpp";
+#include "UnitCollection.hpp"
 
 UnitTester::UnitTester() :
     mMyMass(10.0*unit::kg)

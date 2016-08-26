@@ -74,7 +74,7 @@ public:
 
         p_domain->Translate(translation_vector);
         boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
-        p_grid->GenerateFromPart(p_domain, 10.0);
+        p_grid->GenerateFromPart(p_domain, 10.0 * 1.e-6 * unit::metres);
 
         // Choose the PDE
         boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
@@ -126,7 +126,7 @@ public:
 
         p_domain->Translate(translation_vector);
         boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
-        p_grid->GenerateFromPart(p_domain, 10.0);
+        p_grid->GenerateFromPart(p_domain, 10.0 * 1.e-6 * unit::metres);
 
         // Choose the PDE
         boost::shared_ptr<HybridNonLinearEllipticPde<3> > p_pde = HybridNonLinearEllipticPde<3>::Create();

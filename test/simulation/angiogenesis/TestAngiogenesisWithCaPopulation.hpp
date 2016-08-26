@@ -47,8 +47,7 @@
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "DifferentiatedCellProliferativeType.hpp"
 #include "VesselNetworkCellPopulationInteractor.hpp"
-#include "UniformlyDistributedCellCycleModel.hpp"
-#include "Owen2011OxygenBasedCellCycleModel.hpp"
+#include "UniformCellCycleModel.hpp"
 #include "NodeLocationWriter.hpp"
 #include "CellLabelWriter.hpp"
 #include "CellMutationStatesWriter.hpp"
@@ -72,12 +71,17 @@ public:
 
     void TestGrowSingleVessel() throw (Exception)
     {
+        std::string output_directory = "TestAngiogenesisWithCaPopulation";
+        MAKE_PTR_ARGS(OutputFileHandler, p_file_handler, (output_directory, false));
+
+
         // Set up the vessel grid
         boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
         std::vector<unsigned> extents(3,1);
         extents[0] = 20;
         extents[1] = 20;
         p_grid->SetExtents(extents);
+        p_grid->Write(p_file_handler);
 
         // Create the vessel network: single vessel in middle of domain
         c_vector<double, 2> start_position;
@@ -87,8 +91,6 @@ public:
         boost::shared_ptr<VesselNetwork<2> > p_network = network_generator.GenerateSingleVessel(10, start_position);
 
         // Write the initial network to file
-        std::string output_directory = "TestAngiogenesisWithCaPopulation";
-        MAKE_PTR_ARGS(OutputFileHandler, p_file_handler, (output_directory, false));
         std::string output_filename = p_file_handler->GetOutputDirectoryFullPath().append("InitialVesselNetwork.vtp");
 
         c_vector<double, 2> tip_position;
@@ -110,7 +112,8 @@ public:
         MAKE_PTR(DefaultCellProliferativeType, p_diff_type);
         MAKE_PTR(StalkCellMutationState, p_EC_state);
         MAKE_PTR(TipCellMutationState, p_EC_Tip_state);
-        CellsGenerator<Owen2011OxygenBasedCellCycleModel, 2> cells_generator;
+
+        CellsGenerator<UniformCellCycleModel, 1> cells_generator;
         cells_generator.GenerateBasicRandom(cells, p_mesh->GetNumNodes(), p_diff_type);
         MAKE_PTR_ARGS(CaBasedCellPopulation<2>, p_cell_population, (*p_mesh, cells, location_indices));
 

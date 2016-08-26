@@ -33,8 +33,8 @@
 
  */
 
-#ifndef TestPoiseuilleImpedanceCalculator_HPP_
-#define TestPoiseuilleImpedanceCalculator_HPP_
+#ifndef TestVesselImpedanceCalculator_HPP_
+#define TestVesselImpedanceCalculator_HPP_
 
 #include <cxxtest/TestSuite.h>
 #include "VesselImpedanceCalculator.hpp"
@@ -94,4 +94,4 @@ public:
 
 };
 
-#endif /*TestPoiseuilleImpedanceCalculator_HPP_*/
+#endif /*TestVesselImpedanceCalculator_HPP_*/

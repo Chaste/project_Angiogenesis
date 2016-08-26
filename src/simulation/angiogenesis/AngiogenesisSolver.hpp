@@ -41,9 +41,9 @@
 #include "SmartPointers.hpp"
 #include "VesselNetwork.hpp"
 #include "Part.hpp"
+#include "RegularGrid.hpp"
 #include "AbstractSproutingRule.hpp"
 #include "AbstractMigrationRule.hpp"
-#include "RegularGrid.hpp"
 #include "AbstractCellPopulation.hpp"
 
 /**
@@ -118,7 +118,7 @@ public:
      * Factory constructor method
      * @return a shared pointer to a new solver
      */
-    static boost::shared_ptr<AngiogenesisSolver> Create();
+    static boost::shared_ptr<AngiogenesisSolver<DIM> > Create();
 
     /**
      * Increment the solver one step in time
@@ -130,12 +130,6 @@ public:
      * @return bool true if a sprouting rule has been set
      */
     bool IsSproutingRuleSet();
-
-    /**
-     * Has a vessel grid been set, used to check if this is an on-lattice solve
-     * @return bool true if a vessel grid has been set
-     */
-//    bool IsVesselGridSet();
 
     /**
      * Run until the specified end time
@@ -196,18 +190,18 @@ protected:
     /**
      * Identify and grow sprouts
      */
-    void DoSprouting();
+    virtual void DoSprouting();
 
     /**
      * Do the anastamosis step
      */
-    void DoAnastamosis();
+    virtual void DoAnastamosis();
 
     /**
      * Update the position of all nodes
      * @param sprouting whether to do sprouting during this call
      */
-    void UpdateNodalPositions(bool sprouting = false);
+    virtual void UpdateNodalPositions(bool sprouting = false);
 };
 
 #endif /* ANGIOGENESISSOLVER_HPP_ */

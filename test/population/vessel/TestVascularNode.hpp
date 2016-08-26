@@ -39,8 +39,6 @@
 #include "Exception.hpp"
 #include "AbstractCellBasedTestSuite.hpp"
 #include "ChastePoint.hpp"
-#include "CellsGenerator.hpp"
-#include "FixedDurationGenerationBasedCellCycleModel.hpp"
 #include "UblasIncludes.hpp"
 #include "SmartPointers.hpp"
 #include "VesselSegment.hpp"

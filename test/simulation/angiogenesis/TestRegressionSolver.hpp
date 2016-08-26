@@ -87,7 +87,7 @@ public:
             SimulationTime::Instance()->IncrementTimeOneStep();
         }
         TS_ASSERT(p_vessel->GetFlowProperties()->HasVesselRegressed(60.0*unit::seconds));
-        TS_ASSERT_EQUALS(p_network->GetNumberOfVessels(), 0);
+        TS_ASSERT_EQUALS(p_network->GetNumberOfVessels(), 0u);
     }
 
     void TestMultiVesselRegression() throw(Exception)
