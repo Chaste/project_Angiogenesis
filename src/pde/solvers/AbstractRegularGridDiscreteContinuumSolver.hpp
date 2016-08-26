@@ -33,8 +33,8 @@
 
  */
 
-#ifndef ABSTRACTREGULARGRIDHYBRIDSOLVER_HPP_
-#define ABSTRACTREGULARGRIDHYBRIDSOLVER_HPP_
+#ifndef ABSTRACTREGULARGRIDDiscreteContinuumSOLVER_HPP_
+#define ABSTRACTREGULARGRIDDiscreteContinuumSOLVER_HPP_
 
 #include <vector>
 #include <string>
@@ -43,16 +43,16 @@
 #include <vtkSmartPointer.h>
 #include "SmartPointers.hpp"
 #include "UblasIncludes.hpp"
-#include "AbstractHybridSolver.hpp"
+#include "AbstractDiscreteContinuumSolver.hpp"
 #include "RegularGrid.hpp"
 
 /**
- * An abstract solver class for hybrid continuum-discrete problems using structured grids.
+ * An abstract solver class for DiscreteContinuum continuum-discrete problems using structured grids.
  * Concrete classes can solve PDEs or perform other computations based on interpolation
  * of discrete entities (points/cells, lines/vessels) onto structured grids.
  */
 template<unsigned DIM>
-class AbstractRegularGridHybridSolver : public AbstractHybridSolver<DIM>
+class AbstractRegularGridDiscreteContinuumSolver : public AbstractDiscreteContinuumSolver<DIM>
 {
 
 protected:
@@ -78,12 +78,12 @@ public:
     /**
      * Constructor
      */
-    AbstractRegularGridHybridSolver();
+    AbstractRegularGridDiscreteContinuumSolver();
 
     /**
      * Destructor
      */
-    virtual ~AbstractRegularGridHybridSolver();
+    virtual ~AbstractRegularGridDiscreteContinuumSolver();
 
     /**
      * Return the grid
@@ -148,4 +148,4 @@ public:
     virtual void Write();
 };
 
-#endif /* ABSTRACTREGULARGRIDHYBRIDSOLVER_HPP_ */
+#endif /* ABSTRACTREGULARGRIDDiscreteContinuumSOLVER_HPP_ */

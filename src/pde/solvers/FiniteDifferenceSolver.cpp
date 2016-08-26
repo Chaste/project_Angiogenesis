@@ -36,7 +36,7 @@
 #include "LinearSystem.hpp"
 #include "ReplicatableVector.hpp"
 #include "VesselSegment.hpp"
-#include "HybridLinearEllipticPde.hpp"
+#include "DiscreteContinuumLinearEllipticPde.hpp"
 #include "FiniteDifferenceSolver.hpp"
 #include "SimplePetscNonlinearSolver.hpp"
 
@@ -53,7 +53,7 @@ PetscErrorCode HyrbidFiniteDifference_ComputeJacobian(SNES snes,Vec input,Mat* p
 
 template<unsigned DIM>
 FiniteDifferenceSolver<DIM>::FiniteDifferenceSolver()
-    :   AbstractRegularGridHybridSolver<DIM>(),
+    :   AbstractRegularGridDiscreteContinuumSolver<DIM>(),
         mpBoundaryConditions(),
         mUpdateBoundaryConditionsEachSolve(true),
         mBoundaryConditionsSet(false)
@@ -119,7 +119,7 @@ void FiniteDifferenceSolver<DIM>::Setup()
         this->mpNonLinearPde->SetRegularGrid(this->mpRegularGrid);
     }
 
-    // Set up the boundary conditions. Use a different description from normal hybrid BCs for efficiency.
+    // Set up the boundary conditions. Use a different description from normal DiscreteContinuum BCs for efficiency.
     mpBoundaryConditions = boost::shared_ptr<std::vector<std::pair<bool, double> > > (new std::vector<std::pair<bool, double> >(this->mpRegularGrid->GetNumberOfPoints()));
     for(unsigned idx=0; idx<this->mpRegularGrid->GetNumberOfPoints(); idx++)
     {
@@ -131,7 +131,7 @@ void FiniteDifferenceSolver<DIM>::Setup()
     }
 
     // Set up the vtk solution grid
-    AbstractRegularGridHybridSolver<DIM>::Setup();
+    AbstractRegularGridDiscreteContinuumSolver<DIM>::Setup();
 
     // Update the source strengths and boundary conditions;
     Update();

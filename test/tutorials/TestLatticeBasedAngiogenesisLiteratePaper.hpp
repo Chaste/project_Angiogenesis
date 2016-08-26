@@ -109,13 +109,13 @@ public:
 
         boost::shared_ptr<Owen2011MigrationRule<3> > p_migration_rule = Owen2011MigrationRule<3>::Create();
         p_migration_rule->SetGrid(p_grid);
-        p_migration_rule->SetHybridSolver(p_funciton_map); // This contains the vegf field
+        p_migration_rule->SetDiscreteContinuumSolver(p_funciton_map); // This contains the vegf field
         p_migration_rule->SetCellMotilityParameter(100.0);
         p_migration_rule->SetCellChemotacticParameter(80000.0);
         p_migration_rule->SetNetwork(p_network);
 
         boost::shared_ptr<Owen2011SproutingRule<3> > p_sprouting_rule = Owen2011SproutingRule<3>::Create();
-        p_sprouting_rule->SetHybridSolver(p_funciton_map); // This contains the vegf field
+        p_sprouting_rule->SetDiscreteContinuumSolver(p_funciton_map); // This contains the vegf field
         p_sprouting_rule->SetSproutingProbability(0.5);
         p_sprouting_rule->SetGrid(p_grid);
         p_sprouting_rule->SetVesselNetwork(p_network);
@@ -177,13 +177,13 @@ public:
 //
 //        boost::shared_ptr<Owen2011MigrationRule<3> > p_migration_rule = Owen2011MigrationRule<3>::Create();
 //        p_migration_rule->SetGrid(p_grid);
-//        p_migration_rule->SetHybridSolver(p_funciton_map); // This contains the vegf field
+//        p_migration_rule->SetDiscreteContinuumSolver(p_funciton_map); // This contains the vegf field
 //        p_migration_rule->SetCellMotilityParameter(100.0);
 //        p_migration_rule->SetCellChemotacticParameter(80000.0);
 //        p_migration_rule->SetNetwork(p_network);
 //
 //        boost::shared_ptr<Owen2011SproutingRule<3> > p_sprouting_rule = Owen2011SproutingRule<3>::Create();
-//        p_sprouting_rule->SetHybridSolver(p_funciton_map); // This contains the vegf field
+//        p_sprouting_rule->SetDiscreteContinuumSolver(p_funciton_map); // This contains the vegf field
 //        p_sprouting_rule->SetSproutingProbability(0.05); // reduce for 3d
 //        p_sprouting_rule->SetGrid(p_grid);
 //        p_sprouting_rule->SetVesselNetwork(p_network);
@@ -253,10 +253,10 @@ public:
 //        p_migration_rule->SetGrid(p_grid);
 //        p_migration_rule->SetCellMotilityParameter(0.001);
 //        p_migration_rule->SetNetwork(p_network);
-//        p_migration_rule->SetHybridSolver(p_funciton_map); // This contains the vegf field
+//        p_migration_rule->SetDiscreteContinuumSolver(p_funciton_map); // This contains the vegf field
 //
 //        boost::shared_ptr<Owen2011SproutingRule<3> > p_sprouting_rule = Owen2011SproutingRule<3>::Create();
-//        p_sprouting_rule->SetHybridSolver(p_funciton_map); // This contains the vegf field
+//        p_sprouting_rule->SetDiscreteContinuumSolver(p_funciton_map); // This contains the vegf field
 //        p_sprouting_rule->SetSproutingProbability(0.3);
 //        p_sprouting_rule->SetGrid(p_grid);
 //        p_sprouting_rule->SetVesselNetwork(p_network);

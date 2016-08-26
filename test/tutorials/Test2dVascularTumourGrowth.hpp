@@ -59,8 +59,8 @@
 #include "StemCellProliferativeType.hpp"
 #include "RegularGrid.hpp"
 #include "FiniteDifferenceSolver.hpp"
-#include "HybridLinearEllipticPde.hpp"
-#include "HybridBoundaryCondition.hpp"
+#include "DiscreteContinuumLinearEllipticPde.hpp"
+#include "DiscreteContinuumBoundaryCondition.hpp"
 #include "CellStateDependentDiscreteSource.hpp"
 #include "DiscreteSource.hpp"
 #include "VascularTumourModifier.hpp"
@@ -87,9 +87,9 @@
 
 class Test2dVascularTumourGrowth : public AbstractCellBasedWithTimingsTestSuite
 {
-    boost::shared_ptr<HybridLinearEllipticPde<2> > GetOxygenPde()
+    boost::shared_ptr<DiscreteContinuumLinearEllipticPde<2> > GetOxygenPde()
     {
-        boost::shared_ptr<HybridLinearEllipticPde<2> > p_pde = HybridLinearEllipticPde<2>::Create();
+        boost::shared_ptr<DiscreteContinuumLinearEllipticPde<2> > p_pde = DiscreteContinuumLinearEllipticPde<2>::Create();
         p_pde->SetIsotropicDiffusionConstant(8700000.0/400.0); // assume cell width is 20 microns
 
         // Add a cell state specific discrete source for cells consuming oxygen
@@ -129,9 +129,9 @@ class Test2dVascularTumourGrowth : public AbstractCellBasedWithTimingsTestSuite
     }
 
     // todo need to check parameters in sink/source terms in here
-    boost::shared_ptr<HybridLinearEllipticPde<2> > GetVegfPde()
+    boost::shared_ptr<DiscreteContinuumLinearEllipticPde<2> > GetVegfPde()
     {
-        boost::shared_ptr<HybridLinearEllipticPde<2> > p_pde = HybridLinearEllipticPde<2>::Create();
+        boost::shared_ptr<DiscreteContinuumLinearEllipticPde<2> > p_pde = DiscreteContinuumLinearEllipticPde<2>::Create();
         p_pde->SetIsotropicDiffusionConstant(60000 / 400.0); // assume cell width is 20 microns
         p_pde->SetContinuumLinearInUTerm(-0.8); //Vegf decay
 
@@ -382,8 +382,8 @@ public:
 //        // Create the vascular tumour solver, which manages all pde solves
 //        boost::shared_ptr<VascularTumourSolver<2> > p_vascular_tumour_solver = VascularTumourSolver<2>::Create();
 //        p_vascular_tumour_solver->SetVesselNetwork(p_network);
-//        p_vascular_tumour_solver->AddHybridSolver(p_oxygen_solver);
-//        p_vascular_tumour_solver->AddHybridSolver(p_vegf_solver);
+//        p_vascular_tumour_solver->AddDiscreteContinuumSolver(p_oxygen_solver);
+//        p_vascular_tumour_solver->AddDiscreteContinuumSolver(p_vegf_solver);
 //        p_vascular_tumour_solver->SetOutputFrequency(1);
 //
 //        // add angiogenesis solver to vascular tumour solver

@@ -33,10 +33,10 @@
 
  */
 
-#include "AbstractHybridSolver.hpp"
+#include "AbstractDiscreteContinuumSolver.hpp"
 
 template<unsigned DIM>
-AbstractHybridSolver<DIM>::AbstractHybridSolver()
+AbstractDiscreteContinuumSolver<DIM>::AbstractDiscreteContinuumSolver()
     :   mpNetwork(),
         mpCellPopulation(NULL),
         mCellPopulationIsSet(false),
@@ -53,25 +53,25 @@ AbstractHybridSolver<DIM>::AbstractHybridSolver()
 }
 
 template<unsigned DIM>
-AbstractHybridSolver<DIM>::~AbstractHybridSolver()
+AbstractDiscreteContinuumSolver<DIM>::~AbstractDiscreteContinuumSolver()
 {
 
 }
 
 template<unsigned DIM>
-void AbstractHybridSolver<DIM>::AddBoundaryCondition(boost::shared_ptr<HybridBoundaryCondition<DIM> > pBoundaryCondition)
+void AbstractDiscreteContinuumSolver<DIM>::AddBoundaryCondition(boost::shared_ptr<DiscreteContinuumBoundaryCondition<DIM> > pBoundaryCondition)
 {
     mBoundaryConditions.push_back(pBoundaryCondition);
 }
 
 template<unsigned DIM>
-const std::string& AbstractHybridSolver<DIM>::GetLabel()
+const std::string& AbstractDiscreteContinuumSolver<DIM>::GetLabel()
 {
     return mLabel;
 }
 
 template<unsigned DIM>
-boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > AbstractHybridSolver<DIM>::GetPde()
+boost::shared_ptr<DiscreteContinuumLinearEllipticPde<DIM, DIM> > AbstractDiscreteContinuumSolver<DIM>::GetPde()
 {
     if(!mpPde)
     {
@@ -81,7 +81,7 @@ boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > AbstractHybridSolver<DIM>:
 }
 
 template<unsigned DIM>
-boost::shared_ptr<HybridNonLinearEllipticPde<DIM, DIM> > AbstractHybridSolver<DIM>::GetNonLinearPde()
+boost::shared_ptr<DiscreteContinuumNonLinearEllipticPde<DIM, DIM> > AbstractDiscreteContinuumSolver<DIM>::GetNonLinearPde()
 {
     if(!mpNonLinearPde)
     {
@@ -92,61 +92,61 @@ boost::shared_ptr<HybridNonLinearEllipticPde<DIM, DIM> > AbstractHybridSolver<DI
 
 
 template<unsigned DIM>
-void AbstractHybridSolver<DIM>::SetCellPopulation(AbstractCellPopulation<DIM>& rCellPopulation)
+void AbstractDiscreteContinuumSolver<DIM>::SetCellPopulation(AbstractCellPopulation<DIM>& rCellPopulation)
 {
     mpCellPopulation = &rCellPopulation;
     mCellPopulationIsSet = true;
 }
 
 template<unsigned DIM>
-void AbstractHybridSolver<DIM>::SetFileHandler(boost::shared_ptr<OutputFileHandler> pOutputFileHandler)
+void AbstractDiscreteContinuumSolver<DIM>::SetFileHandler(boost::shared_ptr<OutputFileHandler> pOutputFileHandler)
 {
     mpOutputFileHandler = pOutputFileHandler;
 }
 
 template<unsigned DIM>
-void AbstractHybridSolver<DIM>::SetFileName(const std::string& rFilename)
+void AbstractDiscreteContinuumSolver<DIM>::SetFileName(const std::string& rFilename)
 {
     mFilename = rFilename;
 }
 
 template<unsigned DIM>
-void AbstractHybridSolver<DIM>::SetLabel(const std::string& label)
+void AbstractDiscreteContinuumSolver<DIM>::SetLabel(const std::string& label)
 {
     mLabel = label;
 }
 
 template<unsigned DIM>
-void AbstractHybridSolver<DIM>::SetPde(boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > pPde)
+void AbstractDiscreteContinuumSolver<DIM>::SetPde(boost::shared_ptr<DiscreteContinuumLinearEllipticPde<DIM, DIM> > pPde)
 {
     mpPde = pPde;
 }
 
 template<unsigned DIM>
-void AbstractHybridSolver<DIM>::SetNonLinearPde(boost::shared_ptr<HybridNonLinearEllipticPde<DIM, DIM> > pPde)
+void AbstractDiscreteContinuumSolver<DIM>::SetNonLinearPde(boost::shared_ptr<DiscreteContinuumNonLinearEllipticPde<DIM, DIM> > pPde)
 {
     mpNonLinearPde = pPde;
 }
 
 template<unsigned DIM>
-bool AbstractHybridSolver<DIM>::CellPopulationIsSet()
+bool AbstractDiscreteContinuumSolver<DIM>::CellPopulationIsSet()
 {
     return mCellPopulationIsSet;
 }
 
 
 template<unsigned DIM>
-void AbstractHybridSolver<DIM>::SetVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pNetwork)
+void AbstractDiscreteContinuumSolver<DIM>::SetVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pNetwork)
 {
     mpNetwork = pNetwork;
 }
 
 template<unsigned DIM>
-void AbstractHybridSolver<DIM>::SetWriteSolution(bool write)
+void AbstractDiscreteContinuumSolver<DIM>::SetWriteSolution(bool write)
 {
     mWriteSolution = write;
 }
 
 // Explicit instantiation
-template class AbstractHybridSolver<2> ;
-template class AbstractHybridSolver<3> ;
+template class AbstractDiscreteContinuumSolver<2> ;
+template class AbstractDiscreteContinuumSolver<3> ;

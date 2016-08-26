@@ -12,7 +12,7 @@ import generate_bindings
 def update_builder(builder):
 
     include_classes = ["RegularGrid<3,3>", 
-                       "HybridMesh<3,3>", 
+                       "DiscreteContinuumMesh<3,3>", 
                        "SharedPottsMeshGenerator<3>", 
                        "PottsMesh<3>" ]
     for eachClass in include_classes:
@@ -21,8 +21,8 @@ def update_builder(builder):
         if(new_name != eachClass):
             builder.class_(eachClass).rename(new_name) 
 
-    builder.class_('HybridMesh<3,3>').member_functions("GenerateFromStl").exclude()
-    builder.class_('HybridMesh<3,3>').member_functions("GenerateTriMeshFromPolyData").exclude()
+    builder.class_('DiscreteContinuumMesh<3,3>').member_functions("GenerateFromStl").exclude()
+    builder.class_('DiscreteContinuumMesh<3,3>').member_functions("GenerateTriMeshFromPolyData").exclude()
     builder.class_('PottsMesh<3>').member_functions("GetElement").exclude()
    
     return builder

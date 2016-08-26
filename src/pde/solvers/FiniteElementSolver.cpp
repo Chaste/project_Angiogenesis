@@ -52,7 +52,7 @@
 
 template<unsigned DIM>
 FiniteElementSolver<DIM>::FiniteElementSolver()
-    : AbstractHybridSolver<DIM>(),
+    : AbstractDiscreteContinuumSolver<DIM>(),
       mFeSolution(),
       mFeVtkSolution(),
       mpMesh(),
@@ -150,7 +150,7 @@ std::vector<double> FiniteElementSolver<DIM>::GetSolutionAtPoints(std::vector<c_
 }
 
 template<unsigned DIM>
-void FiniteElementSolver<DIM>::SetMesh(boost::shared_ptr<HybridMesh<DIM, DIM> > pMesh)
+void FiniteElementSolver<DIM>::SetMesh(boost::shared_ptr<DiscreteContinuumMesh<DIM, DIM> > pMesh)
 {
     mpMesh = pMesh;
 }

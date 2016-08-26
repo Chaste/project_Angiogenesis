@@ -386,56 +386,56 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_mesh){
         set_less__unsigned_int__greater__exposer.def( bp::indexing::set_suite< std::set< unsigned int > >() );
     }
 
-    { //::HybridMesh< 3, 3 >
-        typedef bp::class_< HybridMesh< 3, 3 >, boost::noncopyable > HybridMesh3_3_exposer_t;
-        HybridMesh3_3_exposer_t HybridMesh3_3_exposer = HybridMesh3_3_exposer_t( "HybridMesh3_3", bp::init< >() );
-        bp::scope HybridMesh3_3_scope( HybridMesh3_3_exposer );
-        { //::HybridMesh< 3, 3 >::Create
+    { //::DiscreteContinuumMesh< 3, 3 >
+        typedef bp::class_< DiscreteContinuumMesh< 3, 3 >, boost::noncopyable > DiscreteContinuumMesh3_3_exposer_t;
+        DiscreteContinuumMesh3_3_exposer_t DiscreteContinuumMesh3_3_exposer = DiscreteContinuumMesh3_3_exposer_t( "DiscreteContinuumMesh3_3", bp::init< >() );
+        bp::scope DiscreteContinuumMesh3_3_scope( DiscreteContinuumMesh3_3_exposer );
+        { //::DiscreteContinuumMesh< 3, 3 >::Create
         
-            typedef HybridMesh< 3, 3 > exported_class_t;
-            typedef ::boost::shared_ptr< HybridMesh< 3, 3 > > ( *Create_function_type )(  );
+            typedef DiscreteContinuumMesh< 3, 3 > exported_class_t;
+            typedef ::boost::shared_ptr< DiscreteContinuumMesh< 3, 3 > > ( *Create_function_type )(  );
             
-            HybridMesh3_3_exposer.def( 
+            DiscreteContinuumMesh3_3_exposer.def( 
                 "Create"
-                , Create_function_type( &::HybridMesh< 3, 3 >::Create ) );
+                , Create_function_type( &::DiscreteContinuumMesh< 3, 3 >::Create ) );
         
         }
-        { //::HybridMesh< 3, 3 >::GenerateFromPart
+        { //::DiscreteContinuumMesh< 3, 3 >::GenerateFromPart
         
-            typedef HybridMesh< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumMesh< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*GenerateFromPart_function_type)( ::boost::shared_ptr< Part< 3 > >,double ) ;
             
-            HybridMesh3_3_exposer.def( 
+            DiscreteContinuumMesh3_3_exposer.def( 
                 "GenerateFromPart"
-                , GenerateFromPart_function_type( &::HybridMesh< 3, 3 >::GenerateFromPart )
+                , GenerateFromPart_function_type( &::DiscreteContinuumMesh< 3, 3 >::GenerateFromPart )
                 , ( bp::arg("pPart"), bp::arg("maxElementArea")=0. ) );
         
         }
-        { //::HybridMesh< 3, 3 >::GetConnectivity
+        { //::DiscreteContinuumMesh< 3, 3 >::GetConnectivity
         
-            typedef HybridMesh< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumMesh< 3, 3 > exported_class_t;
             typedef ::std::vector< std::vector< unsigned int > > ( exported_class_t::*GetConnectivity_function_type)(  ) ;
             
-            HybridMesh3_3_exposer.def( 
+            DiscreteContinuumMesh3_3_exposer.def( 
                 "GetConnectivity"
-                , GetConnectivity_function_type( &::HybridMesh< 3, 3 >::GetConnectivity ) );
+                , GetConnectivity_function_type( &::DiscreteContinuumMesh< 3, 3 >::GetConnectivity ) );
         
         }
-        { //::HybridMesh< 3, 3 >::GetNodeLocations
+        { //::DiscreteContinuumMesh< 3, 3 >::GetNodeLocations
         
-            typedef HybridMesh< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumMesh< 3, 3 > exported_class_t;
             typedef ::std::vector< std::vector< double > > ( exported_class_t::*GetNodeLocations_function_type)(  ) ;
             
-            HybridMesh3_3_exposer.def( 
+            DiscreteContinuumMesh3_3_exposer.def( 
                 "GetNodeLocations"
-                , GetNodeLocations_function_type( &::HybridMesh< 3, 3 >::GetNodeLocations ) );
+                , GetNodeLocations_function_type( &::DiscreteContinuumMesh< 3, 3 >::GetNodeLocations ) );
         
         }
-        HybridMesh3_3_exposer.staticmethod( "Create" );
-        bp::register_ptr_to_python< boost::shared_ptr< HybridMesh<3, 3> > >();
-        bp::implicitly_convertible< boost::shared_ptr< HybridMesh< 3, 3 > >, boost::shared_ptr< TetrahedralMesh< 3, 3 > > >();
-        bp::implicitly_convertible< boost::shared_ptr< HybridMesh< 3, 3 > >, boost::shared_ptr< AbstractTetrahedralMesh< 3, 3 > > >();
-        bp::implicitly_convertible< boost::shared_ptr< HybridMesh< 3, 3 > >, boost::shared_ptr< AbstractMesh< 3, 3 > > >();
+        DiscreteContinuumMesh3_3_exposer.staticmethod( "Create" );
+        bp::register_ptr_to_python< boost::shared_ptr< DiscreteContinuumMesh<3, 3> > >();
+        bp::implicitly_convertible< boost::shared_ptr< DiscreteContinuumMesh< 3, 3 > >, boost::shared_ptr< TetrahedralMesh< 3, 3 > > >();
+        bp::implicitly_convertible< boost::shared_ptr< DiscreteContinuumMesh< 3, 3 > >, boost::shared_ptr< AbstractTetrahedralMesh< 3, 3 > > >();
+        bp::implicitly_convertible< boost::shared_ptr< DiscreteContinuumMesh< 3, 3 > >, boost::shared_ptr< AbstractMesh< 3, 3 > > >();
     }
 
     { //::PottsMesh< 3 >

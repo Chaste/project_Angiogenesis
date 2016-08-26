@@ -418,14 +418,14 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
                 , ( bp::arg("pGrid") ) );
         
         }
-        { //::AbstractMigrationRule< 3 >::SetHybridSolver
+        { //::AbstractMigrationRule< 3 >::SetDiscreteContinuumSolver
         
             typedef AbstractMigrationRule< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetHybridSolver_function_type)( ::boost::shared_ptr< AbstractHybridSolver< 3 > > ) ;
+            typedef void ( exported_class_t::*SetDiscreteContinuumSolver_function_type)( ::boost::shared_ptr< AbstractDiscreteContinuumSolver< 3 > > ) ;
             
             AbstractMigrationRule3_exposer.def( 
-                "SetHybridSolver"
-                , SetHybridSolver_function_type( &::AbstractMigrationRule< 3 >::SetHybridSolver )
+                "SetDiscreteContinuumSolver"
+                , SetDiscreteContinuumSolver_function_type( &::AbstractMigrationRule< 3 >::SetDiscreteContinuumSolver )
                 , ( bp::arg("pSolver") ) );
         
         }
@@ -485,14 +485,14 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
                 , ( bp::arg("pGrid") ) );
         
         }
-        { //::AbstractSproutingRule< 3 >::SetHybridSolver
+        { //::AbstractSproutingRule< 3 >::SetDiscreteContinuumSolver
         
             typedef AbstractSproutingRule< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetHybridSolver_function_type)( ::boost::shared_ptr< AbstractHybridSolver< 3 > > ) ;
+            typedef void ( exported_class_t::*SetDiscreteContinuumSolver_function_type)( ::boost::shared_ptr< AbstractDiscreteContinuumSolver< 3 > > ) ;
             
             AbstractSproutingRule3_exposer.def( 
-                "SetHybridSolver"
-                , SetHybridSolver_function_type( &::AbstractSproutingRule< 3 >::SetHybridSolver )
+                "SetDiscreteContinuumSolver"
+                , SetDiscreteContinuumSolver_function_type( &::AbstractSproutingRule< 3 >::SetDiscreteContinuumSolver )
                 , ( bp::arg("pSolver") ) );
         
         }

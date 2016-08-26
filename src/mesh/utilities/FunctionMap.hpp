@@ -37,10 +37,10 @@
 #define FunctionMap_HPP_
 
 #include "SmartPointers.hpp"
-#include "AbstractRegularGridHybridSolver.hpp"
+#include "AbstractRegularGridDiscreteContinuumSolver.hpp"
 
 template<unsigned DIM>
-class FunctionMap : public AbstractRegularGridHybridSolver<DIM>
+class FunctionMap : public AbstractRegularGridDiscreteContinuumSolver<DIM>
 {
 
 public:

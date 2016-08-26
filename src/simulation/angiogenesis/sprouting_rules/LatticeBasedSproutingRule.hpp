@@ -42,7 +42,7 @@
 #include "SmartPointers.hpp"
 #include "AbstractSproutingRule.hpp"
 #include "RegularGrid.hpp"
-#include "AbstractRegularGridHybridSolver.hpp"
+#include "AbstractRegularGridDiscreteContinuumSolver.hpp"
 
 /**
  * A simple random lattice based sprouting rule, useful for code testing.

@@ -41,7 +41,7 @@
 #include <map>
 #include "UblasIncludes.hpp"
 #include "RegularGrid.hpp"
-#include "HybridMesh.hpp"
+#include "DiscreteContinuumMesh.hpp"
 
 /**
  * Specify the type of source.
@@ -89,7 +89,7 @@ protected:
     /**
      * The mesh for the finite element solver
      */
-    boost::shared_ptr<HybridMesh<DIM, DIM> > mpMesh;
+    boost::shared_ptr<DiscreteContinuumMesh<DIM, DIM> > mpMesh;
 
     /**
      * A continuum field sampled on the regular grid points or mesh nodes
@@ -221,7 +221,7 @@ public:
      * Set the finite element mesh
      * @param pMesh the finite element mesh
      */
-    void SetMesh(boost::shared_ptr<HybridMesh<DIM, DIM> > pMesh);
+    void SetMesh(boost::shared_ptr<DiscreteContinuumMesh<DIM, DIM> > pMesh);
 
     /**
      * Set the sampled field from which to obtain a solution for SOLUTION type sources

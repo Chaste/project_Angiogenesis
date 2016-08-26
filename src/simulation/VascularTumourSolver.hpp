@@ -42,14 +42,14 @@
 #include "StructuralAdaptationSolver.hpp"
 #include "SmartPointers.hpp"
 #include "VesselNetwork.hpp"
-#include "AbstractHybridSolver.hpp"
+#include "AbstractDiscreteContinuumSolver.hpp"
 #include "AbstractCellPopulation.hpp"
 #include "AngiogenesisSolver.hpp"
 #include "RegressionSolver.hpp"
 
 /**
  * This class manages the solution of vascular tumour growth problems. It steps through time,
- * solves a collection of hybrid discrete-continuum PDEs and, if required, updates the vessel network. For linking
+ * solves a collection of DiscreteContinuum discrete-continuum PDEs and, if required, updates the vessel network. For linking
  * with discrete cell models it can be added to a VascularTumourGrowth simulation modifier.
  */
 template<unsigned DIM>
@@ -71,9 +71,9 @@ class VascularTumourSolver
     boost::shared_ptr<OutputFileHandler> mpOutputFileHandler;
 
     /**
-     * The collection of hybrid solvers
+     * The collection of DiscreteContinuum solvers
      */
-    std::vector<boost::shared_ptr<AbstractHybridSolver<DIM> > > mHybridSolvers;
+    std::vector<boost::shared_ptr<AbstractDiscreteContinuumSolver<DIM> > > mDiscreteContinuumSolvers;
 
     /**
      * The structural adaptation solver for the vessel network
@@ -109,16 +109,16 @@ public:
     static boost::shared_ptr<VascularTumourSolver> Create();
 
     /**
-     * Add a hybrid solver to the collection
-     * @param pHybridSolver a hybrid discrete-continuum solver
+     * Add a DiscreteContinuum solver to the collection
+     * @param pDiscreteContinuumSolver a DiscreteContinuum discrete-continuum solver
      */
-    void AddHybridSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pHybridSolver);
+    void AddDiscreteContinuumSolver(boost::shared_ptr<AbstractDiscreteContinuumSolver<DIM> > pDiscreteContinuumSolver);
 
     /**
-     * Return the current hybrid solvers
-     * @return the hybrid solvers
+     * Return the current DiscreteContinuum solvers
+     * @return the DiscreteContinuum solvers
      */
-    std::vector<boost::shared_ptr<AbstractHybridSolver<DIM> > > GetHybridSolvers();
+    std::vector<boost::shared_ptr<AbstractDiscreteContinuumSolver<DIM> > > GetDiscreteContinuumSolvers();
 
     /**
      * Increment one step in time

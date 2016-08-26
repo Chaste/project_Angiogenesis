@@ -44,26 +44,26 @@ class TestSnailTrail(unittest.TestCase):
         # Set up the sprouting and migration rules for angiogenesis
         # migration_rule = chaste.simulation.Owen2011MigrationRule()
         # migration_rule.SetGrid(grid)
-        # migration_rule.SetHybridSolver(field)
+        # migration_rule.SetDiscreteContinuumSolver(field)
         # migration_rule.SetCellMotilityParameter(100.0)
         # migration_rule.SetCellChemotacticParameter(80000.0)
         # migration_rule.SetNetwork(network)
         # # 
         # sprouting_rule = chaste.simulation.Owen2011SproutingRule()
-        # sprouting_rule.SetHybridSolver(field)
+        # sprouting_rule.SetDiscreteContinuumSolver(field)
         # sprouting_rule.SetGrid(grid)
         # sprouting_rule.SetVesselNetwork(network)
         # sprouting_rule.SetSproutingProbability(0.5);
         
         migration_rule = chaste.simulation.Owen2011MigrationRule()
         migration_rule.SetGrid(grid)
-        migration_rule.SetHybridSolver(field)
+        migration_rule.SetDiscreteContinuumSolver(field)
         migration_rule.SetCellMotilityParameter(100.0)
         migration_rule.SetCellChemotacticParameter(80000.0)
         migration_rule.SetNetwork(network)
         # 
         sprouting_rule = chaste.simulation.Owen2011SproutingRule()
-        sprouting_rule.SetHybridSolver(field)
+        sprouting_rule.SetDiscreteContinuumSolver(field)
         sprouting_rule.SetGrid(grid)
         sprouting_rule.SetVesselNetwork(network)
         sprouting_rule.SetSproutingProbability(0.5);

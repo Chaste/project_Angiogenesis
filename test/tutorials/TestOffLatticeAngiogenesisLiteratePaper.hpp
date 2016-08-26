@@ -49,12 +49,12 @@
 //#include "OutputFileHandler.hpp"
 //#include "MappableGridGenerator.hpp"
 //#include "Part.hpp"
-//#include "HybridMesh.hpp"
+//#include "DiscreteContinuumMesh.hpp"
 //#include "VtkMeshWriter.hpp"
 //#include "AbstractCellBasedWithTimingsTestSuite.hpp"
-//#include "HybridLinearEllipticPde.hpp"
+//#include "DiscreteContinuumLinearEllipticPde.hpp"
 //#include "FiniteElementSolver.hpp"
-//#include "HybridBoundaryCondition.hpp"
+//#include "DiscreteContinuumBoundaryCondition.hpp"
 //#include "PetscSetupAndFinalize.hpp"
 //#include "AngiogenesisSolver.hpp"
 //#include "Debug.hpp"
@@ -75,7 +75,7 @@
 //        MappableGridGenerator generator;
 //        boost::shared_ptr<Part<3> > p_part = generator.GenerateHemisphere(sphere_radius, sphere_thickness , 10, 10, sphere_azimuth_angle, sphere_polar_angle);
 //
-//        boost::shared_ptr<HybridMesh<3> > p_mesh = HybridMesh<3>::Create();
+//        boost::shared_ptr<DiscreteContinuumMesh<3> > p_mesh = DiscreteContinuumMesh<3>::Create();
 //        p_mesh->GenerateFromPart(p_part, 1.e6);
 //
 //        // Make the vessel network
@@ -136,7 +136,7 @@
 //            segments[idx]->GetFlowProperties()->SetViscosity(1.e-9);
 //        }
 //
-//        boost::shared_ptr<HybridLinearEllipticPde<3> > p_vegf_pde = HybridLinearEllipticPde<3>::Create();
+//        boost::shared_ptr<DiscreteContinuumLinearEllipticPde<3> > p_vegf_pde = DiscreteContinuumLinearEllipticPde<3>::Create();
 //        p_vegf_pde->SetIsotropicDiffusionConstant(0.0033);
 //        p_vegf_pde->SetVariableName("vegf");
 //        p_vegf_pde->SetContinuumLinearInUTerm(-1.e-8);
@@ -151,7 +151,7 @@
 //        translation_vector[1] = 1100.0;
 //        translation_vector[2] = 0.0;
 //        p_boundary_part->Translate(translation_vector);
-//        boost::shared_ptr<HybridBoundaryCondition<3> > p_vegf_boundary_condition = HybridBoundaryCondition<3>::Create();
+//        boost::shared_ptr<DiscreteContinuumBoundaryCondition<3> > p_vegf_boundary_condition = DiscreteContinuumBoundaryCondition<3>::Create();
 //        p_vegf_boundary_condition->SetValue(40.0);
 //        p_vegf_boundary_condition->SetType(BoundaryConditionType::IN_PART);
 //        p_vegf_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);

@@ -55,7 +55,7 @@ AbstractSproutingRule<DIM>::~AbstractSproutingRule()
 }
 
 template<unsigned DIM>
-void AbstractSproutingRule<DIM>::SetHybridSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pSolver)
+void AbstractSproutingRule<DIM>::SetDiscreteContinuumSolver(boost::shared_ptr<AbstractDiscreteContinuumSolver<DIM> > pSolver)
 {
     mpSolver = pSolver;
 }

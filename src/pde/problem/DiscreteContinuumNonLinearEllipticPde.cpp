@@ -34,11 +34,11 @@
  */
 
 #include <algorithm>
-#include "HybridNonLinearEllipticPde.hpp"
+#include "DiscreteContinuumNonLinearEllipticPde.hpp"
 #include "Debug.hpp"
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-HybridNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::HybridNonLinearEllipticPde() :
+DiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::DiscreteContinuumNonLinearEllipticPde() :
             AbstractNonlinearEllipticPde<SPACE_DIM>(),
             mDiffusionTensor(identity_matrix<double>(SPACE_DIM)),
             mDiffusivity(0.003),
@@ -57,26 +57,26 @@ HybridNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::HybridNonLinearEllipticPde()
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-boost::shared_ptr<HybridNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM> > HybridNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::Create()
+boost::shared_ptr<DiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM> > DiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::Create()
 {
-    MAKE_PTR(HybridNonLinearEllipticPde<ELEMENT_DIM>, pSelf);
+    MAKE_PTR(DiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM>, pSelf);
     return pSelf;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::AddDiscreteSource(boost::shared_ptr<DiscreteSource<SPACE_DIM> > pDiscreteSource)
+void DiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::AddDiscreteSource(boost::shared_ptr<DiscreteSource<SPACE_DIM> > pDiscreteSource)
 {
     mDiscreteSources.push_back(pDiscreteSource);
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-double HybridNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeConstantInUSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement)
+double DiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeConstantInUSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement)
 {
     return mConstantInUTerm;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-double HybridNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeConstantInUSourceTerm(unsigned gridIndex)
+double DiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeConstantInUSourceTerm(unsigned gridIndex)
 {
     if(gridIndex >= mDiscreteLinearSourceStrengths.size())
     {
@@ -86,19 +86,19 @@ double HybridNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeConstantInUSou
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-c_matrix<double, SPACE_DIM, SPACE_DIM> HybridNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeDiffusionTerm(const ChastePoint<SPACE_DIM>&, double u)
+c_matrix<double, SPACE_DIM, SPACE_DIM> DiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeDiffusionTerm(const ChastePoint<SPACE_DIM>&, double u)
 {
     return mDiffusionTensor;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-double HybridNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeLinearInUCoeffInSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement)
+double DiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeLinearInUCoeffInSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement)
 {
     return mLinearInUTerm;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-double HybridNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeLinearInUCoeffInSourceTerm(unsigned gridIndex)
+double DiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeLinearInUCoeffInSourceTerm(unsigned gridIndex)
 {
     if(gridIndex >= mDiscreteLinearSourceStrengths.size())
     {
@@ -108,68 +108,68 @@ double HybridNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeLinearInUCoeff
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-double HybridNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeIsotropicDiffusionTerm()
+double DiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeIsotropicDiffusionTerm()
 {
     return mDiffusivity;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-std::vector<boost::shared_ptr<DiscreteSource<SPACE_DIM> > > HybridNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::GetDiscreteSources()
+std::vector<boost::shared_ptr<DiscreteSource<SPACE_DIM> > > DiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::GetDiscreteSources()
 {
     return mDiscreteSources;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-const std::string& HybridNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::GetVariableName()
+const std::string& DiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::GetVariableName()
 {
     return mVariableName;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetContinuumConstantInUTerm(double constantInUTerm)
+void DiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetContinuumConstantInUTerm(double constantInUTerm)
 {
     mConstantInUTerm = constantInUTerm;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetIsotropicDiffusionConstant(double diffusivity)
+void DiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetIsotropicDiffusionConstant(double diffusivity)
 {
     mDiffusivity = diffusivity;
     mDiffusionTensor = identity_matrix<double>(SPACE_DIM)* mDiffusivity;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetContinuumLinearInUTerm(double linearInUTerm)
+void DiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetContinuumLinearInUTerm(double linearInUTerm)
 {
     mLinearInUTerm = linearInUTerm;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetRegularGrid(boost::shared_ptr<RegularGrid<ELEMENT_DIM, SPACE_DIM> > pRegularGrid)
+void DiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetRegularGrid(boost::shared_ptr<RegularGrid<ELEMENT_DIM, SPACE_DIM> > pRegularGrid)
 {
     mpRegularGrid = pRegularGrid;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetMesh(boost::shared_ptr<TetrahedralMesh<ELEMENT_DIM, SPACE_DIM> > pMesh)
+void DiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetMesh(boost::shared_ptr<TetrahedralMesh<ELEMENT_DIM, SPACE_DIM> > pMesh)
 {
     mpMesh = pMesh;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetUseRegularGrid(bool useRegularGrid)
+void DiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetUseRegularGrid(bool useRegularGrid)
 {
     mUseRegularGrid = useRegularGrid;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetVariableName(const std::string& rVariableName)
+void DiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetVariableName(const std::string& rVariableName)
 {
     mVariableName = rVariableName;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::UpdateDiscreteSourceStrengths()
+void DiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::UpdateDiscreteSourceStrengths()
 {
     if(mUseRegularGrid)
     {
@@ -211,5 +211,5 @@ void HybridNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::UpdateDiscreteSourceStr
 }
 
 // Explicit instantiation
-template class HybridNonLinearEllipticPde<2>;
-template class HybridNonLinearEllipticPde<3>;
+template class DiscreteContinuumNonLinearEllipticPde<2>;
+template class DiscreteContinuumNonLinearEllipticPde<3>;

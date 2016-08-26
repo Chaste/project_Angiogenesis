@@ -51,7 +51,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "AngiogenesisSolver.hpp"
 #include "VascularTumourSolver.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
-#include "HybridBoundaryCondition.hpp"
+#include "DiscreteContinuumBoundaryCondition.hpp"
 #include "SimulationTime.hpp"
 
 #include "PetscSetupAndFinalize.hpp"

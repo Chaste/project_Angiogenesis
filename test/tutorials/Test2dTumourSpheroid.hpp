@@ -62,8 +62,8 @@
 #include "StemCellProliferativeType.hpp"
 #include "RegularGrid.hpp"
 #include "FiniteDifferenceSolver.hpp"
-#include "HybridLinearEllipticPde.hpp"
-#include "HybridBoundaryCondition.hpp"
+#include "DiscreteContinuumLinearEllipticPde.hpp"
+#include "DiscreteContinuumBoundaryCondition.hpp"
 #include "CellStateDependentDiscreteSource.hpp"
 #include "DiscreteSource.hpp"
 #include "VascularTumourModifier.hpp"
@@ -78,9 +78,9 @@
 
 class Test2dTumourSpheroid : public AbstractCellBasedWithTimingsTestSuite
 {
-    boost::shared_ptr<HybridLinearEllipticPde<2> > GetOxygenPde()
+    boost::shared_ptr<DiscreteContinuumLinearEllipticPde<2> > GetOxygenPde()
         {
-            boost::shared_ptr<HybridLinearEllipticPde<2> > p_pde = HybridLinearEllipticPde<2>::Create();
+            boost::shared_ptr<DiscreteContinuumLinearEllipticPde<2> > p_pde = DiscreteContinuumLinearEllipticPde<2>::Create();
             p_pde->SetIsotropicDiffusionConstant(8700000 / (400.0)); // assume cell width is 20 microns
 
             // Add a cell state specific discrete source for cells consuming oxygen
@@ -201,20 +201,20 @@ public:
         p_grid->SetCellPopulation(cell_population);
         p_grid->SetVesselNetwork(p_network);
 
-        boost::shared_ptr<HybridBoundaryCondition<2> > p_vessel_ox_boundary_condition = HybridBoundaryCondition<2>::Create();
+        boost::shared_ptr<DiscreteContinuumBoundaryCondition<2> > p_vessel_ox_boundary_condition = DiscreteContinuumBoundaryCondition<2>::Create();
         p_vessel_ox_boundary_condition->SetValue(40.0);
         p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_LINE);
         p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
 
         // Add a dirichlet boundary condition for oxygen on the outer walls of the domain
-//        boost::shared_ptr<HybridBoundaryCondition<2> > p_domain_ox_boundary_condition = HybridBoundaryCondition<2>::Create();
+//        boost::shared_ptr<DiscreteContinuumBoundaryCondition<2> > p_domain_ox_boundary_condition = DiscreteContinuumBoundaryCondition<2>::Create();
 //        p_domain_ox_boundary_condition->SetValue(oxygen_concentration);
 //        p_oxygen_solver->AddBoundaryCondition(p_domain_ox_boundary_condition);
         p_oxygen_solver->AddBoundaryCondition(p_vessel_ox_boundary_condition);
 
         // Create the vascular tumour solver, which manages all pde solves
         boost::shared_ptr<VascularTumourSolver<2> > p_vascular_tumour_solver = VascularTumourSolver<2>::Create();
-        p_vascular_tumour_solver->AddHybridSolver(p_oxygen_solver);
+        p_vascular_tumour_solver->AddDiscreteContinuumSolver(p_oxygen_solver);
         p_vascular_tumour_solver->SetOutputFrequency(10);
         p_vascular_tumour_solver->SetVesselNetwork(p_network);
 

@@ -33,21 +33,21 @@
 
  */
 
-#ifndef ABSTRACTHYBRIDSOLVER_HPP_
-#define ABSTRACTHYBRIDSOLVER_HPP_
+#ifndef ABSTRACTDiscreteContinuumSOLVER_HPP_
+#define ABSTRACTDiscreteContinuumSOLVER_HPP_
 
 #include <vector>
 #include <string>
 #include "OutputFileHandler.hpp"
 #include "VesselNetwork.hpp"
 #include "AbstractCellPopulation.hpp"
-#include "HybridLinearEllipticPde.hpp"
-#include "HybridNonLinearEllipticPde.hpp"
-#include "HybridBoundaryCondition.hpp"
+#include "DiscreteContinuumLinearEllipticPde.hpp"
+#include "DiscreteContinuumNonLinearEllipticPde.hpp"
+#include "DiscreteContinuumBoundaryCondition.hpp"
 #include "RegularGrid.hpp"
 
 /**
- * An abstract solver class for hybrid continuum-discrete field problems.
+ * An abstract solver class for DiscreteContinuum continuum-discrete field problems.
  * The class is used by the VascularTumourSolver to provide a concentration field for a single,
  * labelled quantity for cells and/or vessels.
  * It is responsible for updating the values of data fields in cells
@@ -55,7 +55,7 @@
  * Methods can also be over-ridden by Python classes for use with external solvers.
  */
 template<unsigned DIM>
-class AbstractHybridSolver
+class AbstractDiscreteContinuumSolver
 {
 
 protected:
@@ -103,35 +103,35 @@ protected:
     /**
      * The PDE to be solved, optional
      */
-    boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > mpPde;
+    boost::shared_ptr<DiscreteContinuumLinearEllipticPde<DIM, DIM> > mpPde;
 
     /**
      * The non-linear PDE to be solved, optional
      */
-    boost::shared_ptr<HybridNonLinearEllipticPde<DIM, DIM> > mpNonLinearPde;
+    boost::shared_ptr<DiscreteContinuumNonLinearEllipticPde<DIM, DIM> > mpNonLinearPde;
 
     /**
-     * The Hybrid boundary conditions, optional
+     * The DiscreteContinuum boundary conditions, optional
      */
-    std::vector<boost::shared_ptr<HybridBoundaryCondition<DIM> > > mBoundaryConditions;
+    std::vector<boost::shared_ptr<DiscreteContinuumBoundaryCondition<DIM> > > mBoundaryConditions;
 
 public:
 
     /**
      * Constructor
      */
-    AbstractHybridSolver();
+    AbstractDiscreteContinuumSolver();
 
     /**
      * Destructor
      */
-    virtual ~AbstractHybridSolver();
+    virtual ~AbstractDiscreteContinuumSolver();
 
     /**
-     * Add a hybrid boundary condition for the domain
+     * Add a DiscreteContinuum boundary condition for the domain
      * @param pBoundaryCondition the boundary condition
      */
-    void AddBoundaryCondition(boost::shared_ptr<HybridBoundaryCondition<DIM> > pBoundaryCondition);
+    void AddBoundaryCondition(boost::shared_ptr<DiscreteContinuumBoundaryCondition<DIM> > pBoundaryCondition);
 
     /**
      * Return the name of the field being solved for
@@ -141,15 +141,15 @@ public:
 
     /**
      * Return the PDE
-     * @return the hybrid linear elliptic pde
+     * @return the DiscreteContinuum linear elliptic pde
      */
-    boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > GetPde();
+    boost::shared_ptr<DiscreteContinuumLinearEllipticPde<DIM, DIM> > GetPde();
 
     /**
      * Return the nonlinear PDE
-     * @return the hybrid nonlinear elliptic pde
+     * @return the DiscreteContinuum nonlinear elliptic pde
      */
-    boost::shared_ptr<HybridNonLinearEllipticPde<DIM, DIM> > GetNonLinearPde();
+    boost::shared_ptr<DiscreteContinuumNonLinearEllipticPde<DIM, DIM> > GetNonLinearPde();
 
     /**
      * Return the value of the field at the requested points
@@ -193,13 +193,13 @@ public:
      *  Set the PDE to be solved
      * @param pPde the pde to be solved
      */
-    void SetPde(boost::shared_ptr<HybridLinearEllipticPde<DIM, DIM> > pPde);
+    void SetPde(boost::shared_ptr<DiscreteContinuumLinearEllipticPde<DIM, DIM> > pPde);
 
     /**
      *  Set the nonlinear PDE to be solved
      * @param pPde the pde to be solved
      */
-    void SetNonLinearPde(boost::shared_ptr<HybridNonLinearEllipticPde<DIM, DIM> > pPde);
+    void SetNonLinearPde(boost::shared_ptr<DiscreteContinuumNonLinearEllipticPde<DIM, DIM> > pPde);
 
     /**
      * Operations to be performed prior to the first solve
@@ -239,4 +239,4 @@ public:
     virtual void Write() = 0;
 };
 
-#endif /* ABSTRACTHYBRIDSOLVER_HPP_ */
+#endif /* ABSTRACTDiscreteContinuumSOLVER_HPP_ */

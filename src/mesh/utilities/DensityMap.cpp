@@ -42,7 +42,7 @@
 
 template<unsigned DIM>
 DensityMap<DIM>::DensityMap()
-    :   AbstractRegularGridHybridSolver<DIM>()
+    :   AbstractRegularGridDiscreteContinuumSolver<DIM>()
 {
 
 }

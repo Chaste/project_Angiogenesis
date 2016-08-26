@@ -33,8 +33,8 @@
 
  */
 
-#ifndef HybridMesh_HPP_
-#define HybridMesh_HPP_
+#ifndef DiscreteContinuumMesh_HPP_
+#define DiscreteContinuumMesh_HPP_
 
 #include <vector>
 #include "SmartPointers.hpp"
@@ -63,7 +63,7 @@ struct triangulateio;
  * removing it and just using the TetrahedralMesh versions should be looked at.
  */
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM = ELEMENT_DIM>
-class HybridMesh : public TetrahedralMesh<ELEMENT_DIM, SPACE_DIM>
+class DiscreteContinuumMesh : public TetrahedralMesh<ELEMENT_DIM, SPACE_DIM>
 {
     /**
      * Max area argument used in mesh generation.
@@ -105,18 +105,18 @@ public:
     /**
      * Constructor
      */
-    HybridMesh();
+    DiscreteContinuumMesh();
 
     /**
      * Destructor
      */
-    ~HybridMesh();
+    ~DiscreteContinuumMesh();
 
     /**
      *  Factory constructor method
      * @return a shared pointer to a new mesh
      */
-    static boost::shared_ptr<HybridMesh<ELEMENT_DIM, SPACE_DIM> > Create();
+    static boost::shared_ptr<DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM> > Create();
 
     /**
      * Set the domain for meshing
@@ -202,4 +202,4 @@ private:
     void FreeTriangulateIo(triangulateio& mesherIo);
 };
 
-#endif /* HybridMesh_HPP_*/
+#endif /* DiscreteContinuumMesh_HPP_*/

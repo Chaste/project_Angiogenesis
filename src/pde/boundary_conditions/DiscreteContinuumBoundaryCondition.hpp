@@ -33,8 +33,8 @@
 
  */
 
-#ifndef HybridBoundaryCondition_HPP_
-#define HybridBoundaryCondition_HPP_
+#ifndef DiscreteContinuumBoundaryCondition_HPP_
+#define DiscreteContinuumBoundaryCondition_HPP_
 
 #include <vector>
 #include <string>
@@ -42,7 +42,7 @@
 #include "Part.hpp"
 #include "BoundaryConditionsContainer.hpp"
 #include "RegularGrid.hpp"
-#include "HybridMesh.hpp"
+#include "DiscreteContinuumMesh.hpp"
 
 /**
  * Helper struct for defining the type of boundary condition.
@@ -68,10 +68,10 @@ struct BoundaryConditionSource
 };
 
 /*
- * A class for describing boundary conditions for use with some hybrid solvers.
+ * A class for describing boundary conditions for use with some DiscreteContinuum solvers.
  */
 template<unsigned DIM>
-class HybridBoundaryCondition
+class DiscreteContinuumBoundaryCondition
 {
 
 protected:
@@ -115,7 +115,7 @@ protected:
     /**
      * The mesh for solvers using finite element meshes
      */
-    boost::shared_ptr<HybridMesh<DIM, DIM> > mpMesh;
+    boost::shared_ptr<DiscreteContinuumMesh<DIM, DIM> > mpMesh;
 
     boost::shared_ptr<VesselNetwork <DIM> > mpNetwork;
 
@@ -124,17 +124,17 @@ public:
     /**
      * Constructor
      */
-    HybridBoundaryCondition();
+    DiscreteContinuumBoundaryCondition();
 
     /**
      * Destructor
      */
-    virtual ~HybridBoundaryCondition();
+    virtual ~DiscreteContinuumBoundaryCondition();
 
     /**
      * Factory constructor method
      */
-    static boost::shared_ptr<HybridBoundaryCondition<DIM> > Create();
+    static boost::shared_ptr<DiscreteContinuumBoundaryCondition<DIM> > Create();
 
     /**
      * Return the type of boundary condition, POINT, FACET, OUTER etc.
@@ -197,7 +197,7 @@ public:
      * Set the finite element mesh
      * @param pMesh the finite element mesh
      */
-    void SetMesh(boost::shared_ptr<HybridMesh<DIM, DIM> > pMesh);
+    void SetMesh(boost::shared_ptr<DiscreteContinuumMesh<DIM, DIM> > pMesh);
 
     /**
      * Set the points for POINT type boundary conditions
@@ -230,4 +230,4 @@ public:
     void SetValue(double value);
 };
 
-#endif /* HybridBoundaryCondition_HPP_ */
+#endif /* DiscreteContinuumBoundaryCondition_HPP_ */

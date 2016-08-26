@@ -46,7 +46,7 @@ class TestSnailTrailOffLattice(unittest.TestCase):
         
         # Set up an off lattice tip cell migration rule
         migration_rule = chaste.simulation.OffLatticeMigrationRule()
-        migration_rule.SetHybridSolver(field)
+        migration_rule.SetDiscreteContinuumSolver(field)
         migration_rule.SetNetwork(network)
         migration_rule.SetSproutingVelocity(10.0) #um/hr
         migration_rule.SetChemotacticStrength(0.3)
@@ -55,7 +55,7 @@ class TestSnailTrailOffLattice(unittest.TestCase):
         #Set up a random sprouting rule
         sprouting_rule = chaste.simulation.OffLatticeSproutingRule()
         sprouting_rule.SetVesselNetwork(network)
-        sprouting_rule.SetHybridSolver(field)
+        sprouting_rule.SetDiscreteContinuumSolver(field)
         sprouting_rule.SetSproutingProbability(0.005) # prob nex sprout per hour
         
         # Set up an angiogenesis solver

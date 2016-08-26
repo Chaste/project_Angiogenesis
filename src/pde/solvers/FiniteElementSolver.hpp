@@ -37,19 +37,19 @@
 #define FINITEELEMENTSOLVER_HPP_
 
 #include "SmartPointers.hpp"
-#include "AbstractHybridSolver.hpp"
-#include "HybridMesh.hpp"
+#include "AbstractDiscreteContinuumSolver.hpp"
+#include "DiscreteContinuumMesh.hpp"
 #include "Part.hpp"
-#include "HybridLinearEllipticPde.hpp"
+#include "DiscreteContinuumLinearEllipticPde.hpp"
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the strstream deprecated warning for now (gcc4.3)
 #include <vtkSmartPointer.h>
 #include <vtkImageData.h>
 #include <vtkUnstructuredGrid.h>
 
 template<unsigned DIM>
-class FiniteElementSolver : public AbstractHybridSolver<DIM>
+class FiniteElementSolver : public AbstractDiscreteContinuumSolver<DIM>
 {
-    using AbstractHybridSolver<DIM>::Solve;
+    using AbstractDiscreteContinuumSolver<DIM>::Solve;
 
     // Keep the nodal solution
     std::vector<double> mFeSolution;
@@ -58,7 +58,7 @@ class FiniteElementSolver : public AbstractHybridSolver<DIM>
     vtkSmartPointer<vtkUnstructuredGrid> mFeVtkSolution;
 
     // The finite element mesh
-    boost::shared_ptr<HybridMesh<DIM, DIM> > mpMesh;
+    boost::shared_ptr<DiscreteContinuumMesh<DIM, DIM> > mpMesh;
 
     // Use the Chaste newton solver
     bool mUseNewton;
@@ -99,7 +99,7 @@ public:
 
     void Setup();
 
-    void SetMesh(boost::shared_ptr<HybridMesh<DIM, DIM> > pMesh);
+    void SetMesh(boost::shared_ptr<DiscreteContinuumMesh<DIM, DIM> > pMesh);
 
     void Solve();
 

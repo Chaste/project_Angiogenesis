@@ -45,7 +45,7 @@ VascularTumourSolver<DIM>::VascularTumourSolver() :
         mpNetwork(),
         mOutputFrequency(1),
         mpOutputFileHandler(),
-        mHybridSolvers(),
+        mDiscreteContinuumSolvers(),
         mpStructuralAdaptationSolver(),
         mpAngiogenesisSolver(),
         mpRegressionSolver()
@@ -73,15 +73,15 @@ void VascularTumourSolver<DIM>::SetVesselNetwork(boost::shared_ptr<VesselNetwork
 }
 
 template<unsigned DIM>
-void VascularTumourSolver<DIM>::AddHybridSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pHybridSolver)
+void VascularTumourSolver<DIM>::AddDiscreteContinuumSolver(boost::shared_ptr<AbstractDiscreteContinuumSolver<DIM> > pDiscreteContinuumSolver)
 {
-    mHybridSolvers.push_back(pHybridSolver);
+    mDiscreteContinuumSolvers.push_back(pDiscreteContinuumSolver);
 }
 
 template<unsigned DIM>
-std::vector<boost::shared_ptr<AbstractHybridSolver<DIM> > > VascularTumourSolver<DIM>::GetHybridSolvers()
+std::vector<boost::shared_ptr<AbstractDiscreteContinuumSolver<DIM> > > VascularTumourSolver<DIM>::GetDiscreteContinuumSolvers()
 {
-    return mHybridSolvers;
+    return mDiscreteContinuumSolvers;
 }
 template<unsigned DIM>
 void VascularTumourSolver<DIM>::Increment()
@@ -97,33 +97,33 @@ void VascularTumourSolver<DIM>::Increment()
 
 
     // If there are PDEs solve them
-    if(mHybridSolvers.size()>0)
+    if(mDiscreteContinuumSolvers.size()>0)
     {
-        for(unsigned idx=0; idx<mHybridSolvers.size(); idx++)
+        for(unsigned idx=0; idx<mDiscreteContinuumSolvers.size(); idx++)
         {
-            mHybridSolvers[idx]->Update();
-            mHybridSolvers[idx]->SetFileName("/" + mHybridSolvers[idx]->GetLabel() +"_solution_" + boost::lexical_cast<std::string>(num_steps)+".vti");
+            mDiscreteContinuumSolvers[idx]->Update();
+            mDiscreteContinuumSolvers[idx]->SetFileName("/" + mDiscreteContinuumSolvers[idx]->GetLabel() +"_solution_" + boost::lexical_cast<std::string>(num_steps)+".vti");
 
             // Transfer PDE solutions for coupled problems
-//            if(idx>0 and mHybridSolvers[idx]->GetPde())
+//            if(idx>0 and mDiscreteContinuumSolvers[idx]->GetPde())
 //            {
-//                for(unsigned jdx=0; jdx<mHybridSolvers[idx]->GetPde()->GetDiscreteSources().size(); jdx++)
+//                for(unsigned jdx=0; jdx<mDiscreteContinuumSolvers[idx]->GetPde()->GetDiscreteSources().size(); jdx++)
 //                {
-//                    if(mHybridSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->GetType()==SourceType::SOLUTION)
+//                    if(mDiscreteContinuumSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->GetType()==SourceType::SOLUTION)
 //                    {
-//                        mHybridSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->SetSolution(mHybridSolvers[idx-1]->GetSolutionAtGridPoints());
+//                        mDiscreteContinuumSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->SetSolution(mDiscreteContinuumSolvers[idx-1]->GetSolutionAtGridPoints());
 //                    }
 //                }
 //            }
             if(mOutputFrequency > 0 && num_steps % mOutputFrequency == 0)
             {
-                mHybridSolvers[idx]->SetWriteSolution(true);
+                mDiscreteContinuumSolvers[idx]->SetWriteSolution(true);
             }
             else
             {
-                mHybridSolvers[idx]->SetWriteSolution(false);
+                mDiscreteContinuumSolvers[idx]->SetWriteSolution(false);
             }
-            mHybridSolvers[idx]->Solve();
+            mDiscreteContinuumSolvers[idx]->Solve();
         }
     }
 
@@ -198,16 +198,16 @@ void VascularTumourSolver<DIM>::SetupFromModifier(AbstractCellPopulation<DIM,DIM
     // Set up an output file handler
     mpOutputFileHandler = boost::shared_ptr<OutputFileHandler>(new OutputFileHandler(rDirectory));
 
-    // Set up all the hybrid solvers
-    for(unsigned idx=0; idx<mHybridSolvers.size(); idx++)
+    // Set up all the DiscreteContinuum solvers
+    for(unsigned idx=0; idx<mDiscreteContinuumSolvers.size(); idx++)
     {
-        mHybridSolvers[idx]->SetCellPopulation(rCellPopulation);
-        mHybridSolvers[idx]->SetFileHandler(mpOutputFileHandler);
+        mDiscreteContinuumSolvers[idx]->SetCellPopulation(rCellPopulation);
+        mDiscreteContinuumSolvers[idx]->SetFileHandler(mpOutputFileHandler);
         if(mpNetwork)
         {
-            mHybridSolvers[idx]->SetVesselNetwork(mpNetwork);
+            mDiscreteContinuumSolvers[idx]->SetVesselNetwork(mpNetwork);
         }
-        mHybridSolvers[idx]->Setup();
+        mDiscreteContinuumSolvers[idx]->Setup();
     }
 
     Setup();
@@ -216,15 +216,15 @@ void VascularTumourSolver<DIM>::SetupFromModifier(AbstractCellPopulation<DIM,DIM
 template<unsigned DIM>
 void VascularTumourSolver<DIM>::Setup()
 {
-    // Set up all the hybrid solvers
-    for(unsigned idx=0; idx<mHybridSolvers.size(); idx++)
+    // Set up all the DiscreteContinuum solvers
+    for(unsigned idx=0; idx<mDiscreteContinuumSolvers.size(); idx++)
     {
-        mHybridSolvers[idx]->SetFileHandler(mpOutputFileHandler);
+        mDiscreteContinuumSolvers[idx]->SetFileHandler(mpOutputFileHandler);
         if(mpNetwork)
         {
-            mHybridSolvers[idx]->SetVesselNetwork(mpNetwork);
+            mDiscreteContinuumSolvers[idx]->SetVesselNetwork(mpNetwork);
         }
-        mHybridSolvers[idx]->Setup();
+        mDiscreteContinuumSolvers[idx]->Setup();
     }
 
     // Set up the flow and structural adaptation solvers
@@ -251,19 +251,19 @@ void VascularTumourSolver<DIM>::UpdateCellData(std::vector<std::string> labels)
     if(labels.size()==0)
     {
         //update everything
-        for(unsigned jdx=0; jdx<mHybridSolvers.size(); jdx++)
+        for(unsigned jdx=0; jdx<mDiscreteContinuumSolvers.size(); jdx++)
         {
-            mHybridSolvers[jdx]->UpdateCellData();
+            mDiscreteContinuumSolvers[jdx]->UpdateCellData();
         }
     }
 
     for(unsigned idx=0; idx<labels.size(); idx++)
     {
-        for(unsigned jdx=0; jdx<mHybridSolvers.size(); jdx++)
+        for(unsigned jdx=0; jdx<mDiscreteContinuumSolvers.size(); jdx++)
         {
-            if(labels[idx]==mHybridSolvers[idx]->GetPde()->GetVariableName())
+            if(labels[idx]==mDiscreteContinuumSolvers[idx]->GetPde()->GetVariableName())
             {
-                mHybridSolvers[jdx]->UpdateCellData();
+                mDiscreteContinuumSolvers[jdx]->UpdateCellData();
             }
         }
     }

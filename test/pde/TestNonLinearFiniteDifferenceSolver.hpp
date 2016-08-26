@@ -44,13 +44,13 @@
 #include "UblasIncludes.hpp"
 #include "Part.hpp"
 #include "Vertex.hpp"
-#include "HybridLinearEllipticPde.hpp"
-#include "HybridNonLinearEllipticPde.hpp"
+#include "DiscreteContinuumLinearEllipticPde.hpp"
+#include "DiscreteContinuumNonLinearEllipticPde.hpp"
 #include "VesselNetwork.hpp"
 #include "VasculatureGenerator.hpp"
 #include "SmartPointers.hpp"
-#include "HybridBoundaryCondition.hpp"
-#include "HybridMesh.hpp"
+#include "DiscreteContinuumBoundaryCondition.hpp"
+#include "DiscreteContinuumMesh.hpp"
 #include "PetscSetupAndFinalize.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "Debug.hpp"
@@ -69,13 +69,13 @@ public:
         p_grid->GenerateFromPart(p_domain, 0.5*1.e-6*unit::metres);
 
         // Choose the PDE
-        boost::shared_ptr<HybridNonLinearEllipticPde<3> > p_non_linear_pde = HybridNonLinearEllipticPde<3>::Create();
+        boost::shared_ptr<DiscreteContinuumNonLinearEllipticPde<3> > p_non_linear_pde = DiscreteContinuumNonLinearEllipticPde<3>::Create();
         p_non_linear_pde->SetIsotropicDiffusionConstant(1.0);
         p_non_linear_pde->SetContinuumConstantInUTerm(-2.0);
         p_non_linear_pde->SetThreshold(0.0625);
 
         // Choose the Boundary conditions
-        boost::shared_ptr<HybridBoundaryCondition<3> > p_outer_boundary_condition = HybridBoundaryCondition<3>::Create();
+        boost::shared_ptr<DiscreteContinuumBoundaryCondition<3> > p_outer_boundary_condition = DiscreteContinuumBoundaryCondition<3>::Create();
         p_outer_boundary_condition->SetValue(1.0);
 
         FiniteDifferenceSolver<3> solver;

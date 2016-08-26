@@ -34,13 +34,13 @@
  */
 
 #include "Facet.hpp"
-#include "HybridBoundaryCondition.hpp"
+#include "DiscreteContinuumBoundaryCondition.hpp"
 #include "VesselSegment.hpp"
 #include "UnitCollection.hpp"
 #include "Debug.hpp"
 
 template<unsigned DIM>
-HybridBoundaryCondition<DIM>::HybridBoundaryCondition()
+DiscreteContinuumBoundaryCondition<DIM>::DiscreteContinuumBoundaryCondition()
     :   mpDomain(),
         mPoints(),
         mType(BoundaryConditionType::OUTER),
@@ -55,38 +55,38 @@ HybridBoundaryCondition<DIM>::HybridBoundaryCondition()
 }
 
 template<unsigned DIM>
-HybridBoundaryCondition<DIM>::~HybridBoundaryCondition()
+DiscreteContinuumBoundaryCondition<DIM>::~DiscreteContinuumBoundaryCondition()
 {
 
 }
 
 template<unsigned DIM>
-void HybridBoundaryCondition<DIM>::SetNetwork(boost::shared_ptr<VesselNetwork <DIM> > pNetwork)
+void DiscreteContinuumBoundaryCondition<DIM>::SetNetwork(boost::shared_ptr<VesselNetwork <DIM> > pNetwork)
 {
 	mpNetwork = pNetwork;
 }
 
 template<unsigned DIM>
-boost::shared_ptr<HybridBoundaryCondition<DIM> > HybridBoundaryCondition<DIM>::Create()
+boost::shared_ptr<DiscreteContinuumBoundaryCondition<DIM> > DiscreteContinuumBoundaryCondition<DIM>::Create()
 {
-    MAKE_PTR(HybridBoundaryCondition<DIM>, pSelf);
+    MAKE_PTR(DiscreteContinuumBoundaryCondition<DIM>, pSelf);
     return pSelf;
 }
 
 template<unsigned DIM>
-double HybridBoundaryCondition<DIM>::GetValue()
+double DiscreteContinuumBoundaryCondition<DIM>::GetValue()
 {
     return mValue;
 }
 
 template<unsigned DIM>
-BoundaryConditionType::Value HybridBoundaryCondition<DIM>::GetType()
+BoundaryConditionType::Value DiscreteContinuumBoundaryCondition<DIM>::GetType()
 {
     return mType;
 }
 
 template<unsigned DIM>
-void HybridBoundaryCondition<DIM>::UpdateBoundaryConditionContainer(boost::shared_ptr<BoundaryConditionsContainer<DIM, DIM, 1> > pContainer)
+void DiscreteContinuumBoundaryCondition<DIM>::UpdateBoundaryConditionContainer(boost::shared_ptr<BoundaryConditionsContainer<DIM, DIM, 1> > pContainer)
 {
     double node_distance_tolerance = 1.e-3;
     bool apply_boundary = true;
@@ -106,7 +106,7 @@ void HybridBoundaryCondition<DIM>::UpdateBoundaryConditionContainer(boost::share
     {
         if(!use_boundry_nodes)
         {
-            typename HybridMesh<DIM, DIM>::NodeIterator iter = mpMesh->GetNodeIteratorBegin();
+            typename DiscreteContinuumMesh<DIM, DIM>::NodeIterator iter = mpMesh->GetNodeIteratorBegin();
             while (iter != mpMesh->GetNodeIteratorEnd())
             {
                 std::pair<bool,double> result = GetValue((*iter).GetPoint().rGetLocation(), node_distance_tolerance);
@@ -120,7 +120,7 @@ void HybridBoundaryCondition<DIM>::UpdateBoundaryConditionContainer(boost::share
         }
         else
         {
-            typename HybridMesh<DIM, DIM>::BoundaryNodeIterator iter = mpMesh->GetBoundaryNodeIteratorBegin();
+            typename DiscreteContinuumMesh<DIM, DIM>::BoundaryNodeIterator iter = mpMesh->GetBoundaryNodeIteratorBegin();
             while (iter < mpMesh->GetBoundaryNodeIteratorEnd())
             {
                 std::pair<bool,double> result = GetValue((*iter)->GetPoint().rGetLocation(), node_distance_tolerance);
@@ -136,7 +136,7 @@ void HybridBoundaryCondition<DIM>::UpdateBoundaryConditionContainer(boost::share
 }
 
 template<unsigned DIM>
-std::pair<bool, double> HybridBoundaryCondition<DIM>::GetValue(c_vector<double,DIM> location, double tolerance)
+std::pair<bool, double> DiscreteContinuumBoundaryCondition<DIM>::GetValue(c_vector<double,DIM> location, double tolerance)
 {
     std::pair<bool, double> result(false, 0.0);
     if(mType == BoundaryConditionType::POINT)
@@ -264,7 +264,7 @@ std::pair<bool, double> HybridBoundaryCondition<DIM>::GetValue(c_vector<double,D
 }
 
 template<unsigned DIM>
-void HybridBoundaryCondition<DIM>::UpdateRegularGridPointBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions)
+void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridPointBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions)
 {
     if(mPoints.size()==0)
     {
@@ -284,7 +284,7 @@ void HybridBoundaryCondition<DIM>::UpdateRegularGridPointBoundaryConditions(boos
 }
 
 template<unsigned DIM>
-void HybridBoundaryCondition<DIM>::UpdateRegularGridFacetBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions)
+void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridFacetBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions)
 {
     if(!mpDomain)
     {
@@ -316,7 +316,7 @@ void HybridBoundaryCondition<DIM>::UpdateRegularGridFacetBoundaryConditions(boos
 }
 
 template<unsigned DIM>
-void HybridBoundaryCondition<DIM>::UpdateRegularGridSegmentBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions)
+void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridSegmentBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions)
 {
     std::vector<std::vector<boost::shared_ptr<VesselSegment<DIM> > > > point_segment_map = mpRegularGrid->GetPointSegmentMap(true, !(mType == BoundaryConditionType::VESSEL_LINE));
     for(unsigned idx=0; idx<point_segment_map.size(); idx++)
@@ -336,7 +336,7 @@ void HybridBoundaryCondition<DIM>::UpdateRegularGridSegmentBoundaryConditions(bo
 }
 
 template<unsigned DIM>
-void HybridBoundaryCondition<DIM>::UpdateRegularGridCellBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions)
+void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridCellBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions)
 {
 //    std::vector<boost::shared_ptr<SimpleCell<DIM> > > cells = mpCellPopulation->GetCells();
 //    std::vector<std::vector<CellPtr> > point_cell_map = mpRegularGrid->GetPointCellMap();
@@ -347,7 +347,7 @@ void HybridBoundaryCondition<DIM>::UpdateRegularGridCellBoundaryConditions(boost
 }
 
 template<unsigned DIM>
-void HybridBoundaryCondition<DIM>::UpdateRegularGridPartBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions)
+void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridPartBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions)
 {
     if(!mpDomain)
     {
@@ -375,7 +375,7 @@ void HybridBoundaryCondition<DIM>::UpdateRegularGridPartBoundaryConditions(boost
 }
 
 template<unsigned DIM>
-void HybridBoundaryCondition<DIM>::UpdateRegularGridBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions)
+void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions)
 {
     if(! mpRegularGrid)
     {
@@ -413,53 +413,53 @@ void HybridBoundaryCondition<DIM>::UpdateRegularGridBoundaryConditions(boost::sh
 }
 
 template<unsigned DIM>
-void HybridBoundaryCondition<DIM>::SetDomain(boost::shared_ptr<Part<DIM> > pDomain)
+void DiscreteContinuumBoundaryCondition<DIM>::SetDomain(boost::shared_ptr<Part<DIM> > pDomain)
 {
     mpDomain = pDomain;
 }
 
 template<unsigned DIM>
-void HybridBoundaryCondition<DIM>::SetPoints(std::vector<c_vector<double, DIM> > points)
+void DiscreteContinuumBoundaryCondition<DIM>::SetPoints(std::vector<c_vector<double, DIM> > points)
 {
     mPoints = points;
 }
 
 template<unsigned DIM>
-void HybridBoundaryCondition<DIM>::SetSource(BoundaryConditionSource::Value boundarySource)
+void DiscreteContinuumBoundaryCondition<DIM>::SetSource(BoundaryConditionSource::Value boundarySource)
 {
     mSource = boundarySource;
 }
 
 template<unsigned DIM>
-void HybridBoundaryCondition<DIM>::SetType(BoundaryConditionType::Value boundaryType)
+void DiscreteContinuumBoundaryCondition<DIM>::SetType(BoundaryConditionType::Value boundaryType)
 {
     mType = boundaryType;
 }
 
 template<unsigned DIM>
-void HybridBoundaryCondition<DIM>::SetRegularGrid(boost::shared_ptr<RegularGrid<DIM, DIM> > pRegularGrid)
+void DiscreteContinuumBoundaryCondition<DIM>::SetRegularGrid(boost::shared_ptr<RegularGrid<DIM, DIM> > pRegularGrid)
 {
     mpRegularGrid = pRegularGrid;
 }
 
 template<unsigned DIM>
-void HybridBoundaryCondition<DIM>::SetMesh(boost::shared_ptr<HybridMesh<DIM, DIM> > pMesh)
+void DiscreteContinuumBoundaryCondition<DIM>::SetMesh(boost::shared_ptr<DiscreteContinuumMesh<DIM, DIM> > pMesh)
 {
     mpMesh = pMesh;
 }
 
 template<unsigned DIM>
-void HybridBoundaryCondition<DIM>::SetLabelName(const std::string& label)
+void DiscreteContinuumBoundaryCondition<DIM>::SetLabelName(const std::string& label)
 {
     mLabel = label;
 }
 
 template<unsigned DIM>
-void HybridBoundaryCondition<DIM>::SetValue(double value)
+void DiscreteContinuumBoundaryCondition<DIM>::SetValue(double value)
 {
     mValue = value;
 }
 
 // Explicit instantiation
-template class HybridBoundaryCondition<2>;
-template class HybridBoundaryCondition<3>;
+template class DiscreteContinuumBoundaryCondition<2>;
+template class DiscreteContinuumBoundaryCondition<3>;

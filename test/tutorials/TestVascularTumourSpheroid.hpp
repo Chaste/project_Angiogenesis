@@ -64,10 +64,10 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "GeneralisedLinearSpringForce.hpp"
 #include "FakePetscSetup.hpp"
 #include "FiniteDifferenceSolver.hpp"
-#include "HybridLinearEllipticPde.hpp"
+#include "DiscreteContinuumLinearEllipticPde.hpp"
 #include "VasculatureGenerator.hpp"
 #include "SimpleOxygenBasedCellCycleModel.hpp"
-#include "HybridBoundaryCondition.hpp"
+#include "DiscreteContinuumBoundaryCondition.hpp"
 #include "DiscreteSource.hpp"
 #include "CellLabelWriter.hpp"
 #include "Vessel.hpp"
@@ -125,8 +125,8 @@ public:
             // Create the angiogenesis solver
             boost::shared_ptr<VascularTumourSolver<3> > p_vascular_tumour_solver = VascularTumourSolver<3>::Create();
             p_vascular_tumour_solver->SetVesselNetwork(p_network);
-            p_vascular_tumour_solver->AddHybridSolver(p_oxygen_solver);
-            p_vascular_tumour_solver->AddHybridSolver(p_vegf_solver);
+            p_vascular_tumour_solver->AddDiscreteContinuumSolver(p_oxygen_solver);
+            p_vascular_tumour_solver->AddDiscreteContinuumSolver(p_vegf_solver);
 
             boost::shared_ptr<VascularTumourModifier<3> > p_simulation_modifier = boost::shared_ptr<VascularTumourModifier<3> >(new VascularTumourModifier<3>);
             p_simulation_modifier->SetVascularTumourSolver(p_vascular_tumour_solver);

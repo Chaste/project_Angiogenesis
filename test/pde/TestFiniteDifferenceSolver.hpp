@@ -41,7 +41,7 @@
 #include <string>
 #include "SmartPointers.hpp"
 #include "Part.hpp"
-#include "HybridLinearEllipticPde.hpp"
+#include "DiscreteContinuumLinearEllipticPde.hpp"
 #include "FiniteDifferenceSolver.hpp"
 #include "VesselNetwork.hpp"
 #include "VasculatureGenerator.hpp"
@@ -64,12 +64,12 @@ public:
         p_grid->GenerateFromPart(p_domain, 0.1*1.e-6*unit::metres);
 
         // Choose the PDE
-        boost::shared_ptr<HybridLinearEllipticPde<2> > p_pde = HybridLinearEllipticPde<2>::Create();
+        boost::shared_ptr<DiscreteContinuumLinearEllipticPde<2> > p_pde = DiscreteContinuumLinearEllipticPde<2>::Create();
         p_pde->SetIsotropicDiffusionConstant(1.e-6);
         p_pde->SetContinuumLinearInUTerm(-2.e-5);
 
         // Prescribe a value on the domain boundaries
-        boost::shared_ptr<HybridBoundaryCondition<2> > p_boundary_condition = HybridBoundaryCondition<2>::Create();
+        boost::shared_ptr<DiscreteContinuumBoundaryCondition<2> > p_boundary_condition = DiscreteContinuumBoundaryCondition<2>::Create();
         p_boundary_condition->SetValue(1.0);
 
         // Set up and run the solver
@@ -92,12 +92,12 @@ public:
         p_grid->GenerateFromPart(p_domain, 0.1*1.e-6*unit::metres);
 
         // Choose the PDE
-        boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
+        boost::shared_ptr<DiscreteContinuumLinearEllipticPde<3> > p_pde = DiscreteContinuumLinearEllipticPde<3>::Create();
         p_pde->SetIsotropicDiffusionConstant(1.e-6);
         p_pde->SetContinuumLinearInUTerm(-2.e-5);
 
         // Prescribe a value on the domain boundaries
-        boost::shared_ptr<HybridBoundaryCondition<3> > p_boundary_condition = HybridBoundaryCondition<3>::Create();
+        boost::shared_ptr<DiscreteContinuumBoundaryCondition<3> > p_boundary_condition = DiscreteContinuumBoundaryCondition<3>::Create();
         p_boundary_condition->SetValue(1.0);
 
         // Set up and run the solver
@@ -125,12 +125,12 @@ public:
         p_grid->GenerateFromPart(p_domain, 10.0*1.e-6*unit::metres);
 
         // Choose the PDE
-        boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
+        boost::shared_ptr<DiscreteContinuumLinearEllipticPde<3> > p_pde = DiscreteContinuumLinearEllipticPde<3>::Create();
         p_pde->SetIsotropicDiffusionConstant(0.0033);
         p_pde->SetContinuumLinearInUTerm(-2.e-7);
 
         // Set up the boundary condition
-        boost::shared_ptr<HybridBoundaryCondition<3> > p_vessel_boundary_condition = HybridBoundaryCondition<3>::Create();
+        boost::shared_ptr<DiscreteContinuumBoundaryCondition<3> > p_vessel_boundary_condition = DiscreteContinuumBoundaryCondition<3>::Create();
         p_vessel_boundary_condition->SetValue(40.0);
         p_vessel_boundary_condition->SetType(BoundaryConditionType::VESSEL_LINE);
         p_vessel_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);

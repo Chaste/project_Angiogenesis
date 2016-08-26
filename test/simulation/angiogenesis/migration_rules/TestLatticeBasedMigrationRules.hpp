@@ -147,7 +147,7 @@ public:
         p_migration_rule->SetGrid(p_grid);
         p_migration_rule->SetMovementProbability(0.1);
         p_migration_rule->SetNetwork(p_network);
-        p_migration_rule->SetHybridSolver(p_funciton_map);
+        p_migration_rule->SetDiscreteContinuumSolver(p_funciton_map);
 
         // Test that we move into the correct locations and that sometimes, but not always, we don't move.
         // Also check that we mostly move in the direction of the vegf gradient, but not always

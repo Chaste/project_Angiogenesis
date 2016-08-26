@@ -33,25 +33,25 @@
 
  */
 
-#ifndef HYBRIDLINEARELLIPTICPDE_HPP_
-#define HYBRIDLINEARELLIPTICPDE_HPP_
+#ifndef DiscreteContinuumNonLinearEllipticPde_HPP_
+#define DiscreteContinuumNonLinearEllipticPde_HPP_
 
 #include <string>
 #include "ChastePoint.hpp"
 #include "UblasIncludes.hpp"
 #include "SmartPointers.hpp"
 #include "UblasVectorInclude.hpp"
-#include "AbstractLinearEllipticPde.hpp"
 #include "DiscreteSource.hpp"
 #include "GeometryTools.hpp"
 #include "RegularGrid.hpp"
 #include "TetrahedralMesh.hpp"
+#include "AbstractNonlinearEllipticPde.hpp"
 
 /**
- * Linear Elliptic PDE with both continuum and discrete source terms.
+ * Non-Linear Elliptic PDE with both continuum and discrete source terms.
  */
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM = ELEMENT_DIM>
-class HybridLinearEllipticPde : public AbstractLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>
+class DiscreteContinuumNonLinearEllipticPde : public AbstractNonlinearEllipticPde<SPACE_DIM>
 {
     /**
      * The diffusion tensor
@@ -62,6 +62,8 @@ class HybridLinearEllipticPde : public AbstractLinearEllipticPde<ELEMENT_DIM, SP
      * The diffusion constant for isotropic diffusion
      */
     double mDiffusivity;
+
+    double mThreshold;
 
     /**
      * The continuum constant in U term, discrete terms are added to this.
@@ -113,13 +115,13 @@ public:
     /**
      * Constructor
      */
-    HybridLinearEllipticPde();
+    DiscreteContinuumNonLinearEllipticPde();
 
     /**
      * Factory Constructor
      * @return a pointer to an instance of the pde
      */
-    static boost::shared_ptr<HybridLinearEllipticPde<ELEMENT_DIM, SPACE_DIM> > Create();
+    static boost::shared_ptr<DiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM> > Create();
 
     /**
      * Add a discrete source to the pde
@@ -127,6 +129,109 @@ public:
      */
     void AddDiscreteSource(boost::shared_ptr<DiscreteSource<SPACE_DIM> > pDiscreteSource);
 
+
+    void SetThreshold(double threshold)
+    {
+        mThreshold = threshold;
+    }
+
+    double GetThreshold()
+    {
+        return mThreshold;
+    }
+
+    double ComputeLinearSourceTerm(const ChastePoint<SPACE_DIM>& rX)
+    {
+        return 0.0;
+    }
+
+    double ComputeNonlinearSourceTerm(const ChastePoint<SPACE_DIM>& rX, double u)
+    {
+//        if (u>mThreshold)
+//        {
+//            return mConstantInUTerm;
+//        }
+//        else
+//        {
+//            return mConstantInUTerm * (u/mThreshold);
+//        }
+        if(u<0.0)
+        {
+            return 0.0;
+        }
+        else
+        {
+            return mConstantInUTerm * u / (mThreshold + u);
+        }
+    }
+
+    double ComputeNonlinearSourceTermPrime(const ChastePoint<SPACE_DIM>& rX, double u)
+    {
+//        if (u>mThreshold)
+//        {
+//            return 0.0;
+//        }
+//        else
+//        {
+//            return mConstantInUTerm/mThreshold;
+//        }
+        if(u<0.0)
+        {
+            return mConstantInUTerm * mThreshold/((mThreshold+ 0.0)*(mThreshold + 0.0));
+        }
+        else
+        {
+            return mConstantInUTerm * mThreshold/((mThreshold + u)*(mThreshold + u));
+        }
+
+    }
+
+    double ComputeNonlinearSourceTerm(unsigned gridIndex, double u)
+    {
+//        if (u>mThreshold)
+//        {
+//            return mConstantInUTerm;
+//        }
+//        else
+//        {
+//            return mConstantInUTerm * (u/mThreshold);
+//        }
+
+        if(u<0.0)
+        {
+            return mDiscreteConstantSourceStrengths[gridIndex];
+        }
+        else
+        {
+            return mConstantInUTerm * u / (mThreshold + u) + mDiscreteConstantSourceStrengths[gridIndex] + mDiscreteLinearSourceStrengths[gridIndex]*u;
+        }
+    }
+
+    double ComputeNonlinearSourceTermPrime(unsigned gridIndex, double u)
+    {
+//        if (u>mThreshold)
+//        {
+//            return 0.0;
+//        }
+//        else
+//        {
+//            return mConstantInUTerm/mThreshold;
+//        }
+        if(u<0.0)
+        {
+            return mConstantInUTerm * mThreshold/((mThreshold + 0.0)*(mThreshold + 0.0)) + mDiscreteLinearSourceStrengths[gridIndex];
+        }
+        else
+        {
+            return mConstantInUTerm * mThreshold/((mThreshold + u)*(mThreshold + u)) + mDiscreteLinearSourceStrengths[gridIndex];
+        }
+
+    }
+
+    c_matrix<double, SPACE_DIM, SPACE_DIM> ComputeDiffusionTermPrime(const ChastePoint<SPACE_DIM>& rX, double u)
+    {
+        return zero_matrix<double>(SPACE_DIM);
+    }
     /**
      * Overwritten method to return the constant in U contribution to the Chaste FE solver
      * @param rX grid location
@@ -146,7 +251,7 @@ public:
      * Overwritten method to return the diffusion term to the Chaste FE solver
      * @return the diffusion matrix
      */
-    c_matrix<double, SPACE_DIM, SPACE_DIM> ComputeDiffusionTerm(const ChastePoint<SPACE_DIM>&);
+    c_matrix<double, SPACE_DIM, SPACE_DIM> ComputeDiffusionTerm(const ChastePoint<SPACE_DIM>&, double u);
 
     /**
      * Return the diffusion constant for isotropic diffusion
@@ -230,4 +335,4 @@ public:
 
 };
 
-#endif /*HYBRIDLINEARELLIPTICPDE_HPP_*/
+#endif /*DiscreteContinuumNonLinearEllipticPde_HPP_*/

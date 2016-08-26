@@ -42,7 +42,7 @@
 #include "SmartPointers.hpp"
 #include "LatticeBasedSproutingRule.hpp"
 #include "RegularGrid.hpp"
-#include "AbstractRegularGridHybridSolver.hpp"
+#include "AbstractRegularGridDiscreteContinuumSolver.hpp"
 
 /**
  * A sprouting rule based on the paper of Owen et al. 2011

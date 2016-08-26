@@ -32,7 +32,7 @@ class Frame(wx.Frame):
         
         #square = chaste.geometry.Part()
         #square.AddCuboid(100., 100., 1.0)
-        #mesh = chaste.mesh.HybridMesh()
+        #mesh = chaste.mesh.DiscreteContinuumMesh()
         #mesh.GenerateFromPart(square)
         #self.panel.choice.add_figure(mesh.get_fig())
 

@@ -64,11 +64,11 @@ struct AbstractLinearEllipticPde_less__3_comma__3__greater__wrapper : AbstractLi
 
 };
 
-struct AbstractRegularGridHybridSolver_less__3__greater__wrapper : AbstractRegularGridHybridSolver< 3 >, bp::wrapper< AbstractRegularGridHybridSolver< 3 > > {
+struct AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper : AbstractRegularGridDiscreteContinuumSolver< 3 >, bp::wrapper< AbstractRegularGridDiscreteContinuumSolver< 3 > > {
 
-    AbstractRegularGridHybridSolver_less__3__greater__wrapper( )
-    : AbstractRegularGridHybridSolver<3>( )
-      , bp::wrapper< AbstractRegularGridHybridSolver< 3 > >(){
+    AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper( )
+    : AbstractRegularGridDiscreteContinuumSolver<3>( )
+      , bp::wrapper< AbstractRegularGridDiscreteContinuumSolver< 3 > >(){
         // null constructor
     
     }
@@ -77,60 +77,60 @@ struct AbstractRegularGridHybridSolver_less__3__greater__wrapper : AbstractRegul
         if( bp::override func_GetPointSolution = this->get_override( "GetPointSolution" ) )
             return func_GetPointSolution(  );
         else{
-            return this->AbstractRegularGridHybridSolver< 3 >::GetPointSolution(  );
+            return this->AbstractRegularGridDiscreteContinuumSolver< 3 >::GetPointSolution(  );
         }
     }
     
     ::std::vector< double > default_GetPointSolution(  ) {
-        return AbstractRegularGridHybridSolver< 3 >::GetPointSolution( );
+        return AbstractRegularGridDiscreteContinuumSolver< 3 >::GetPointSolution( );
     }
 
     virtual ::std::vector< double > GetSolutionAtGridPoints( ::boost::shared_ptr< RegularGrid< 3, 3 > > pGrid ) {
         if( bp::override func_GetSolutionAtGridPoints = this->get_override( "GetSolutionAtGridPoints" ) )
             return func_GetSolutionAtGridPoints( pGrid );
         else{
-            return this->AbstractRegularGridHybridSolver< 3 >::GetSolutionAtGridPoints( pGrid );
+            return this->AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints( pGrid );
         }
     }
     
     ::std::vector< double > default_GetSolutionAtGridPoints( ::boost::shared_ptr< RegularGrid< 3, 3 > > pGrid ) {
-        return AbstractRegularGridHybridSolver< 3 >::GetSolutionAtGridPoints( pGrid );
+        return AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints( pGrid );
     }
 
     virtual ::std::vector< double > GetSolutionAtPoints( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > samplePoints ) {
         if( bp::override func_GetSolutionAtPoints = this->get_override( "GetSolutionAtPoints" ) )
             return func_GetSolutionAtPoints( samplePoints );
         else{
-            return this->AbstractRegularGridHybridSolver< 3 >::GetSolutionAtPoints( samplePoints );
+            return this->AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints( samplePoints );
         }
     }
     
     ::std::vector< double > default_GetSolutionAtPoints( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > samplePoints ) {
-        return AbstractRegularGridHybridSolver< 3 >::GetSolutionAtPoints( samplePoints );
+        return AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints( samplePoints );
     }
 
     virtual ::vtkSmartPointer< vtkImageData > GetVtkSolution(  ) {
         if( bp::override func_GetVtkSolution = this->get_override( "GetVtkSolution" ) )
             return func_GetVtkSolution(  );
         else{
-            return this->AbstractRegularGridHybridSolver< 3 >::GetVtkSolution(  );
+            return this->AbstractRegularGridDiscreteContinuumSolver< 3 >::GetVtkSolution(  );
         }
     }
     
     ::vtkSmartPointer< vtkImageData > default_GetVtkSolution(  ) {
-        return AbstractRegularGridHybridSolver< 3 >::GetVtkSolution( );
+        return AbstractRegularGridDiscreteContinuumSolver< 3 >::GetVtkSolution( );
     }
 
     virtual void Setup(  ) {
         if( bp::override func_Setup = this->get_override( "Setup" ) )
             func_Setup(  );
         else{
-            this->AbstractRegularGridHybridSolver< 3 >::Setup(  );
+            this->AbstractRegularGridDiscreteContinuumSolver< 3 >::Setup(  );
         }
     }
     
     void default_Setup(  ) {
-        AbstractRegularGridHybridSolver< 3 >::Setup( );
+        AbstractRegularGridDiscreteContinuumSolver< 3 >::Setup( );
     }
 
     virtual void Solve(  ){
@@ -142,48 +142,48 @@ struct AbstractRegularGridHybridSolver_less__3__greater__wrapper : AbstractRegul
         if( bp::override func_Update = this->get_override( "Update" ) )
             func_Update(  );
         else{
-            this->AbstractRegularGridHybridSolver< 3 >::Update(  );
+            this->AbstractRegularGridDiscreteContinuumSolver< 3 >::Update(  );
         }
     }
     
     void default_Update(  ) {
-        AbstractRegularGridHybridSolver< 3 >::Update( );
+        AbstractRegularGridDiscreteContinuumSolver< 3 >::Update( );
     }
 
     virtual void UpdateCellData(  ) {
         if( bp::override func_UpdateCellData = this->get_override( "UpdateCellData" ) )
             func_UpdateCellData(  );
         else{
-            this->AbstractRegularGridHybridSolver< 3 >::UpdateCellData(  );
+            this->AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateCellData(  );
         }
     }
     
     void default_UpdateCellData(  ) {
-        AbstractRegularGridHybridSolver< 3 >::UpdateCellData( );
+        AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateCellData( );
     }
 
     virtual void UpdateSolution( ::std::vector< double > data ) {
         if( bp::override func_UpdateSolution = this->get_override( "UpdateSolution" ) )
             func_UpdateSolution( data );
         else{
-            this->AbstractRegularGridHybridSolver< 3 >::UpdateSolution( data );
+            this->AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateSolution( data );
         }
     }
     
     void default_UpdateSolution( ::std::vector< double > data ) {
-        AbstractRegularGridHybridSolver< 3 >::UpdateSolution( data );
+        AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateSolution( data );
     }
 
     virtual void Write(  ) {
         if( bp::override func_Write = this->get_override( "Write" ) )
             func_Write(  );
         else{
-            this->AbstractRegularGridHybridSolver< 3 >::Write(  );
+            this->AbstractRegularGridDiscreteContinuumSolver< 3 >::Write(  );
         }
     }
     
     void default_Write(  ) {
-        AbstractRegularGridHybridSolver< 3 >::Write( );
+        AbstractRegularGridDiscreteContinuumSolver< 3 >::Write( );
     }
 
 };
@@ -376,84 +376,84 @@ struct FiniteDifferenceSolver_less__3__greater__wrapper : FiniteDifferenceSolver
         if( bp::override func_GetPointSolution = this->get_override( "GetPointSolution" ) )
             return func_GetPointSolution(  );
         else{
-            return this->AbstractRegularGridHybridSolver< 3 >::GetPointSolution(  );
+            return this->AbstractRegularGridDiscreteContinuumSolver< 3 >::GetPointSolution(  );
         }
     }
     
     ::std::vector< double > default_GetPointSolution(  ) {
-        return AbstractRegularGridHybridSolver< 3 >::GetPointSolution( );
+        return AbstractRegularGridDiscreteContinuumSolver< 3 >::GetPointSolution( );
     }
 
     virtual ::std::vector< double > GetSolutionAtGridPoints( ::boost::shared_ptr< RegularGrid< 3, 3 > > pGrid ) {
         if( bp::override func_GetSolutionAtGridPoints = this->get_override( "GetSolutionAtGridPoints" ) )
             return func_GetSolutionAtGridPoints( pGrid );
         else{
-            return this->AbstractRegularGridHybridSolver< 3 >::GetSolutionAtGridPoints( pGrid );
+            return this->AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints( pGrid );
         }
     }
     
     ::std::vector< double > default_GetSolutionAtGridPoints( ::boost::shared_ptr< RegularGrid< 3, 3 > > pGrid ) {
-        return AbstractRegularGridHybridSolver< 3 >::GetSolutionAtGridPoints( pGrid );
+        return AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints( pGrid );
     }
 
     virtual ::std::vector< double > GetSolutionAtPoints( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > samplePoints ) {
         if( bp::override func_GetSolutionAtPoints = this->get_override( "GetSolutionAtPoints" ) )
             return func_GetSolutionAtPoints( samplePoints );
         else{
-            return this->AbstractRegularGridHybridSolver< 3 >::GetSolutionAtPoints( samplePoints );
+            return this->AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints( samplePoints );
         }
     }
     
     ::std::vector< double > default_GetSolutionAtPoints( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > samplePoints ) {
-        return AbstractRegularGridHybridSolver< 3 >::GetSolutionAtPoints( samplePoints );
+        return AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints( samplePoints );
     }
 
     virtual ::vtkSmartPointer< vtkImageData > GetVtkSolution(  ) {
         if( bp::override func_GetVtkSolution = this->get_override( "GetVtkSolution" ) )
             return func_GetVtkSolution(  );
         else{
-            return this->AbstractRegularGridHybridSolver< 3 >::GetVtkSolution(  );
+            return this->AbstractRegularGridDiscreteContinuumSolver< 3 >::GetVtkSolution(  );
         }
     }
     
     ::vtkSmartPointer< vtkImageData > default_GetVtkSolution(  ) {
-        return AbstractRegularGridHybridSolver< 3 >::GetVtkSolution( );
+        return AbstractRegularGridDiscreteContinuumSolver< 3 >::GetVtkSolution( );
     }
 
     virtual void UpdateCellData(  ) {
         if( bp::override func_UpdateCellData = this->get_override( "UpdateCellData" ) )
             func_UpdateCellData(  );
         else{
-            this->AbstractRegularGridHybridSolver< 3 >::UpdateCellData(  );
+            this->AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateCellData(  );
         }
     }
     
     void default_UpdateCellData(  ) {
-        AbstractRegularGridHybridSolver< 3 >::UpdateCellData( );
+        AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateCellData( );
     }
 
     virtual void UpdateSolution( ::std::vector< double > data ) {
         if( bp::override func_UpdateSolution = this->get_override( "UpdateSolution" ) )
             func_UpdateSolution( data );
         else{
-            this->AbstractRegularGridHybridSolver< 3 >::UpdateSolution( data );
+            this->AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateSolution( data );
         }
     }
     
     void default_UpdateSolution( ::std::vector< double > data ) {
-        AbstractRegularGridHybridSolver< 3 >::UpdateSolution( data );
+        AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateSolution( data );
     }
 
     virtual void Write(  ) {
         if( bp::override func_Write = this->get_override( "Write" ) )
             func_Write(  );
         else{
-            this->AbstractRegularGridHybridSolver< 3 >::Write(  );
+            this->AbstractRegularGridDiscreteContinuumSolver< 3 >::Write(  );
         }
     }
     
     void default_Write(  ) {
-        AbstractRegularGridHybridSolver< 3 >::Write( );
+        AbstractRegularGridDiscreteContinuumSolver< 3 >::Write( );
     }
 
 };
@@ -580,108 +580,108 @@ struct FunctionMap_less__3__greater__wrapper : FunctionMap< 3 >, bp::wrapper< Fu
         if( bp::override func_GetPointSolution = this->get_override( "GetPointSolution" ) )
             return func_GetPointSolution(  );
         else{
-            return this->AbstractRegularGridHybridSolver< 3 >::GetPointSolution(  );
+            return this->AbstractRegularGridDiscreteContinuumSolver< 3 >::GetPointSolution(  );
         }
     }
     
     ::std::vector< double > default_GetPointSolution(  ) {
-        return AbstractRegularGridHybridSolver< 3 >::GetPointSolution( );
+        return AbstractRegularGridDiscreteContinuumSolver< 3 >::GetPointSolution( );
     }
 
     virtual ::std::vector< double > GetSolutionAtGridPoints( ::boost::shared_ptr< RegularGrid< 3, 3 > > pGrid ) {
         if( bp::override func_GetSolutionAtGridPoints = this->get_override( "GetSolutionAtGridPoints" ) )
             return func_GetSolutionAtGridPoints( pGrid );
         else{
-            return this->AbstractRegularGridHybridSolver< 3 >::GetSolutionAtGridPoints( pGrid );
+            return this->AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints( pGrid );
         }
     }
     
     ::std::vector< double > default_GetSolutionAtGridPoints( ::boost::shared_ptr< RegularGrid< 3, 3 > > pGrid ) {
-        return AbstractRegularGridHybridSolver< 3 >::GetSolutionAtGridPoints( pGrid );
+        return AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints( pGrid );
     }
 
     virtual ::std::vector< double > GetSolutionAtPoints( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > samplePoints ) {
         if( bp::override func_GetSolutionAtPoints = this->get_override( "GetSolutionAtPoints" ) )
             return func_GetSolutionAtPoints( samplePoints );
         else{
-            return this->AbstractRegularGridHybridSolver< 3 >::GetSolutionAtPoints( samplePoints );
+            return this->AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints( samplePoints );
         }
     }
     
     ::std::vector< double > default_GetSolutionAtPoints( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > samplePoints ) {
-        return AbstractRegularGridHybridSolver< 3 >::GetSolutionAtPoints( samplePoints );
+        return AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints( samplePoints );
     }
 
     virtual ::vtkSmartPointer< vtkImageData > GetVtkSolution(  ) {
         if( bp::override func_GetVtkSolution = this->get_override( "GetVtkSolution" ) )
             return func_GetVtkSolution(  );
         else{
-            return this->AbstractRegularGridHybridSolver< 3 >::GetVtkSolution(  );
+            return this->AbstractRegularGridDiscreteContinuumSolver< 3 >::GetVtkSolution(  );
         }
     }
     
     ::vtkSmartPointer< vtkImageData > default_GetVtkSolution(  ) {
-        return AbstractRegularGridHybridSolver< 3 >::GetVtkSolution( );
+        return AbstractRegularGridDiscreteContinuumSolver< 3 >::GetVtkSolution( );
     }
 
     virtual void Setup(  ) {
         if( bp::override func_Setup = this->get_override( "Setup" ) )
             func_Setup(  );
         else{
-            this->AbstractRegularGridHybridSolver< 3 >::Setup(  );
+            this->AbstractRegularGridDiscreteContinuumSolver< 3 >::Setup(  );
         }
     }
     
     void default_Setup(  ) {
-        AbstractRegularGridHybridSolver< 3 >::Setup( );
+        AbstractRegularGridDiscreteContinuumSolver< 3 >::Setup( );
     }
 
     virtual void Update(  ) {
         if( bp::override func_Update = this->get_override( "Update" ) )
             func_Update(  );
         else{
-            this->AbstractRegularGridHybridSolver< 3 >::Update(  );
+            this->AbstractRegularGridDiscreteContinuumSolver< 3 >::Update(  );
         }
     }
     
     void default_Update(  ) {
-        AbstractRegularGridHybridSolver< 3 >::Update( );
+        AbstractRegularGridDiscreteContinuumSolver< 3 >::Update( );
     }
 
     virtual void UpdateCellData(  ) {
         if( bp::override func_UpdateCellData = this->get_override( "UpdateCellData" ) )
             func_UpdateCellData(  );
         else{
-            this->AbstractRegularGridHybridSolver< 3 >::UpdateCellData(  );
+            this->AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateCellData(  );
         }
     }
     
     void default_UpdateCellData(  ) {
-        AbstractRegularGridHybridSolver< 3 >::UpdateCellData( );
+        AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateCellData( );
     }
 
     virtual void UpdateSolution( ::std::vector< double > data ) {
         if( bp::override func_UpdateSolution = this->get_override( "UpdateSolution" ) )
             func_UpdateSolution( data );
         else{
-            this->AbstractRegularGridHybridSolver< 3 >::UpdateSolution( data );
+            this->AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateSolution( data );
         }
     }
     
     void default_UpdateSolution( ::std::vector< double > data ) {
-        AbstractRegularGridHybridSolver< 3 >::UpdateSolution( data );
+        AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateSolution( data );
     }
 
     virtual void Write(  ) {
         if( bp::override func_Write = this->get_override( "Write" ) )
             func_Write(  );
         else{
-            this->AbstractRegularGridHybridSolver< 3 >::Write(  );
+            this->AbstractRegularGridDiscreteContinuumSolver< 3 >::Write(  );
         }
     }
     
     void default_Write(  ) {
-        AbstractRegularGridHybridSolver< 3 >::Write( );
+        AbstractRegularGridDiscreteContinuumSolver< 3 >::Write( );
     }
 
 };
@@ -718,124 +718,124 @@ struct GreensFunctionSolver_less__3__greater__wrapper : GreensFunctionSolver< 3 
         if( bp::override func_GetPointSolution = this->get_override( "GetPointSolution" ) )
             return func_GetPointSolution(  );
         else{
-            return this->AbstractRegularGridHybridSolver< 3 >::GetPointSolution(  );
+            return this->AbstractRegularGridDiscreteContinuumSolver< 3 >::GetPointSolution(  );
         }
     }
     
     ::std::vector< double > default_GetPointSolution(  ) {
-        return AbstractRegularGridHybridSolver< 3 >::GetPointSolution( );
+        return AbstractRegularGridDiscreteContinuumSolver< 3 >::GetPointSolution( );
     }
 
     virtual ::std::vector< double > GetSolutionAtGridPoints( ::boost::shared_ptr< RegularGrid< 3, 3 > > pGrid ) {
         if( bp::override func_GetSolutionAtGridPoints = this->get_override( "GetSolutionAtGridPoints" ) )
             return func_GetSolutionAtGridPoints( pGrid );
         else{
-            return this->AbstractRegularGridHybridSolver< 3 >::GetSolutionAtGridPoints( pGrid );
+            return this->AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints( pGrid );
         }
     }
     
     ::std::vector< double > default_GetSolutionAtGridPoints( ::boost::shared_ptr< RegularGrid< 3, 3 > > pGrid ) {
-        return AbstractRegularGridHybridSolver< 3 >::GetSolutionAtGridPoints( pGrid );
+        return AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints( pGrid );
     }
 
     virtual ::std::vector< double > GetSolutionAtPoints( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > samplePoints ) {
         if( bp::override func_GetSolutionAtPoints = this->get_override( "GetSolutionAtPoints" ) )
             return func_GetSolutionAtPoints( samplePoints );
         else{
-            return this->AbstractRegularGridHybridSolver< 3 >::GetSolutionAtPoints( samplePoints );
+            return this->AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints( samplePoints );
         }
     }
     
     ::std::vector< double > default_GetSolutionAtPoints( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > samplePoints ) {
-        return AbstractRegularGridHybridSolver< 3 >::GetSolutionAtPoints( samplePoints );
+        return AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints( samplePoints );
     }
 
     virtual ::vtkSmartPointer< vtkImageData > GetVtkSolution(  ) {
         if( bp::override func_GetVtkSolution = this->get_override( "GetVtkSolution" ) )
             return func_GetVtkSolution(  );
         else{
-            return this->AbstractRegularGridHybridSolver< 3 >::GetVtkSolution(  );
+            return this->AbstractRegularGridDiscreteContinuumSolver< 3 >::GetVtkSolution(  );
         }
     }
     
     ::vtkSmartPointer< vtkImageData > default_GetVtkSolution(  ) {
-        return AbstractRegularGridHybridSolver< 3 >::GetVtkSolution( );
+        return AbstractRegularGridDiscreteContinuumSolver< 3 >::GetVtkSolution( );
     }
 
     virtual void Setup(  ) {
         if( bp::override func_Setup = this->get_override( "Setup" ) )
             func_Setup(  );
         else{
-            this->AbstractRegularGridHybridSolver< 3 >::Setup(  );
+            this->AbstractRegularGridDiscreteContinuumSolver< 3 >::Setup(  );
         }
     }
     
     void default_Setup(  ) {
-        AbstractRegularGridHybridSolver< 3 >::Setup( );
+        AbstractRegularGridDiscreteContinuumSolver< 3 >::Setup( );
     }
 
     virtual void Update(  ) {
         if( bp::override func_Update = this->get_override( "Update" ) )
             func_Update(  );
         else{
-            this->AbstractRegularGridHybridSolver< 3 >::Update(  );
+            this->AbstractRegularGridDiscreteContinuumSolver< 3 >::Update(  );
         }
     }
     
     void default_Update(  ) {
-        AbstractRegularGridHybridSolver< 3 >::Update( );
+        AbstractRegularGridDiscreteContinuumSolver< 3 >::Update( );
     }
 
     virtual void UpdateCellData(  ) {
         if( bp::override func_UpdateCellData = this->get_override( "UpdateCellData" ) )
             func_UpdateCellData(  );
         else{
-            this->AbstractRegularGridHybridSolver< 3 >::UpdateCellData(  );
+            this->AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateCellData(  );
         }
     }
     
     void default_UpdateCellData(  ) {
-        AbstractRegularGridHybridSolver< 3 >::UpdateCellData( );
+        AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateCellData( );
     }
 
     virtual void UpdateSolution( ::std::vector< double > data ) {
         if( bp::override func_UpdateSolution = this->get_override( "UpdateSolution" ) )
             func_UpdateSolution( data );
         else{
-            this->AbstractRegularGridHybridSolver< 3 >::UpdateSolution( data );
+            this->AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateSolution( data );
         }
     }
     
     void default_UpdateSolution( ::std::vector< double > data ) {
-        AbstractRegularGridHybridSolver< 3 >::UpdateSolution( data );
+        AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateSolution( data );
     }
 
     virtual void Write(  ) {
         if( bp::override func_Write = this->get_override( "Write" ) )
             func_Write(  );
         else{
-            this->AbstractRegularGridHybridSolver< 3 >::Write(  );
+            this->AbstractRegularGridDiscreteContinuumSolver< 3 >::Write(  );
         }
     }
     
     void default_Write(  ) {
-        AbstractRegularGridHybridSolver< 3 >::Write( );
+        AbstractRegularGridDiscreteContinuumSolver< 3 >::Write( );
     }
 
 };
 
-struct HybridLinearEllipticPde_less__3_comma__3__greater__wrapper : HybridLinearEllipticPde< 3, 3 >, bp::wrapper< HybridLinearEllipticPde< 3, 3 > > {
+struct DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper : DiscreteContinuumLinearEllipticPde< 3, 3 >, bp::wrapper< DiscreteContinuumLinearEllipticPde< 3, 3 > > {
 
-    HybridLinearEllipticPde_less__3_comma__3__greater__wrapper(HybridLinearEllipticPde<3, 3> const & arg )
-    : HybridLinearEllipticPde<3, 3>( arg )
-      , bp::wrapper< HybridLinearEllipticPde< 3, 3 > >(){
+    DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper(DiscreteContinuumLinearEllipticPde<3, 3> const & arg )
+    : DiscreteContinuumLinearEllipticPde<3, 3>( arg )
+      , bp::wrapper< DiscreteContinuumLinearEllipticPde< 3, 3 > >(){
         // copy constructor
         
     }
 
-    HybridLinearEllipticPde_less__3_comma__3__greater__wrapper( )
-    : HybridLinearEllipticPde<3, 3>( )
-      , bp::wrapper< HybridLinearEllipticPde< 3, 3 > >(){
+    DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper( )
+    : DiscreteContinuumLinearEllipticPde<3, 3>( )
+      , bp::wrapper< DiscreteContinuumLinearEllipticPde< 3, 3 > >(){
         // null constructor
     
     }
@@ -844,36 +844,36 @@ struct HybridLinearEllipticPde_less__3_comma__3__greater__wrapper : HybridLinear
         if( bp::override func_ComputeConstantInUSourceTerm = this->get_override( "ComputeConstantInUSourceTerm" ) )
             return func_ComputeConstantInUSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
         else{
-            return this->HybridLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
+            return this->DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
         }
     }
     
     double default_ComputeConstantInUSourceTerm( ::ChastePoint< 3 > const & rX, ::Element< 3, 3 > * pElement ) {
-        return HybridLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
+        return DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
     }
 
     virtual ::boost::numeric::ublas::c_matrix< double, 3, 3 > ComputeDiffusionTerm( ::ChastePoint< 3 > const & arg0 ) {
         if( bp::override func_ComputeDiffusionTerm = this->get_override( "ComputeDiffusionTerm" ) )
             return func_ComputeDiffusionTerm( boost::ref(arg0) );
         else{
-            return this->HybridLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm( boost::ref(arg0) );
+            return this->DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm( boost::ref(arg0) );
         }
     }
     
     ::boost::numeric::ublas::c_matrix< double, 3, 3 > default_ComputeDiffusionTerm( ::ChastePoint< 3 > const & arg0 ) {
-        return HybridLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm( boost::ref(arg0) );
+        return DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm( boost::ref(arg0) );
     }
 
     virtual double ComputeLinearInUCoeffInSourceTerm( ::ChastePoint< 3 > const & rX, ::Element< 3, 3 > * pElement ) {
         if( bp::override func_ComputeLinearInUCoeffInSourceTerm = this->get_override( "ComputeLinearInUCoeffInSourceTerm" ) )
             return func_ComputeLinearInUCoeffInSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
         else{
-            return this->HybridLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
+            return this->DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
         }
     }
     
     double default_ComputeLinearInUCoeffInSourceTerm( ::ChastePoint< 3 > const & rX, ::Element< 3, 3 > * pElement ) {
-        return HybridLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
+        return DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
     }
 
     virtual double ComputeConstantInUSourceTermAtNode( ::Node< 3 > const & rNode ) {
@@ -902,18 +902,18 @@ struct HybridLinearEllipticPde_less__3_comma__3__greater__wrapper : HybridLinear
 
 };
 
-struct HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper : HybridNonLinearEllipticPde< 3, 3 >, bp::wrapper< HybridNonLinearEllipticPde< 3, 3 > > {
+struct DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper : DiscreteContinuumNonLinearEllipticPde< 3, 3 >, bp::wrapper< DiscreteContinuumNonLinearEllipticPde< 3, 3 > > {
 
-    HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper(HybridNonLinearEllipticPde<3, 3> const & arg )
-    : HybridNonLinearEllipticPde<3, 3>( arg )
-      , bp::wrapper< HybridNonLinearEllipticPde< 3, 3 > >(){
+    DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper(DiscreteContinuumNonLinearEllipticPde<3, 3> const & arg )
+    : DiscreteContinuumNonLinearEllipticPde<3, 3>( arg )
+      , bp::wrapper< DiscreteContinuumNonLinearEllipticPde< 3, 3 > >(){
         // copy constructor
         
     }
 
-    HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper( )
-    : HybridNonLinearEllipticPde<3, 3>( )
-      , bp::wrapper< HybridNonLinearEllipticPde< 3, 3 > >(){
+    DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper( )
+    : DiscreteContinuumNonLinearEllipticPde<3, 3>( )
+      , bp::wrapper< DiscreteContinuumNonLinearEllipticPde< 3, 3 > >(){
         // null constructor
     
     }
@@ -922,60 +922,60 @@ struct HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper : HybridNon
         if( bp::override func_ComputeDiffusionTerm = this->get_override( "ComputeDiffusionTerm" ) )
             return func_ComputeDiffusionTerm( boost::ref(arg0), u );
         else{
-            return this->HybridNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm( boost::ref(arg0), u );
+            return this->DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm( boost::ref(arg0), u );
         }
     }
     
     ::boost::numeric::ublas::c_matrix< double, 3, 3 > default_ComputeDiffusionTerm( ::ChastePoint< 3 > const & arg0, double u ) {
-        return HybridNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm( boost::ref(arg0), u );
+        return DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm( boost::ref(arg0), u );
     }
 
     virtual ::boost::numeric::ublas::c_matrix< double, 3, 3 > ComputeDiffusionTermPrime( ::ChastePoint< 3 > const & rX, double u ) {
         if( bp::override func_ComputeDiffusionTermPrime = this->get_override( "ComputeDiffusionTermPrime" ) )
             return func_ComputeDiffusionTermPrime( boost::ref(rX), u );
         else{
-            return this->HybridNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTermPrime( boost::ref(rX), u );
+            return this->DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTermPrime( boost::ref(rX), u );
         }
     }
     
     ::boost::numeric::ublas::c_matrix< double, 3, 3 > default_ComputeDiffusionTermPrime( ::ChastePoint< 3 > const & rX, double u ) {
-        return HybridNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTermPrime( boost::ref(rX), u );
+        return DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTermPrime( boost::ref(rX), u );
     }
 
     virtual double ComputeLinearSourceTerm( ::ChastePoint< 3 > const & rX ) {
         if( bp::override func_ComputeLinearSourceTerm = this->get_override( "ComputeLinearSourceTerm" ) )
             return func_ComputeLinearSourceTerm( boost::ref(rX) );
         else{
-            return this->HybridNonLinearEllipticPde< 3, 3 >::ComputeLinearSourceTerm( boost::ref(rX) );
+            return this->DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeLinearSourceTerm( boost::ref(rX) );
         }
     }
     
     double default_ComputeLinearSourceTerm( ::ChastePoint< 3 > const & rX ) {
-        return HybridNonLinearEllipticPde< 3, 3 >::ComputeLinearSourceTerm( boost::ref(rX) );
+        return DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeLinearSourceTerm( boost::ref(rX) );
     }
 
     virtual double ComputeNonlinearSourceTerm( ::ChastePoint< 3 > const & rX, double u ) {
         if( bp::override func_ComputeNonlinearSourceTerm = this->get_override( "ComputeNonlinearSourceTerm" ) )
             return func_ComputeNonlinearSourceTerm( boost::ref(rX), u );
         else{
-            return this->HybridNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTerm( boost::ref(rX), u );
+            return this->DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTerm( boost::ref(rX), u );
         }
     }
     
     double default_ComputeNonlinearSourceTerm( ::ChastePoint< 3 > const & rX, double u ) {
-        return HybridNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTerm( boost::ref(rX), u );
+        return DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTerm( boost::ref(rX), u );
     }
 
     virtual double ComputeNonlinearSourceTermPrime( ::ChastePoint< 3 > const & rX, double u ) {
         if( bp::override func_ComputeNonlinearSourceTermPrime = this->get_override( "ComputeNonlinearSourceTermPrime" ) )
             return func_ComputeNonlinearSourceTermPrime( boost::ref(rX), u );
         else{
-            return this->HybridNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTermPrime( boost::ref(rX), u );
+            return this->DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTermPrime( boost::ref(rX), u );
         }
     }
     
     double default_ComputeNonlinearSourceTermPrime( ::ChastePoint< 3 > const & rX, double u ) {
-        return HybridNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTermPrime( boost::ref(rX), u );
+        return DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTermPrime( boost::ref(rX), u );
     }
 
 };
@@ -1073,56 +1073,56 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             , (double ( AbstractLinearEllipticPde_less__3_comma__3__greater__wrapper::* )( ::Node< 3 > const & ))(&AbstractLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeLinearInUCoeffInSourceTermAtNode)
             , ( bp::arg("rNode") ) );
 
-    bp::class_< AbstractRegularGridHybridSolver_less__3__greater__wrapper, boost::noncopyable >( "AbstractRegularGridHybridSolver3", bp::init< >() )    
+    bp::class_< AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper, boost::noncopyable >( "AbstractRegularGridDiscreteContinuumSolver3", bp::init< >() )    
         .def( 
             "GetGrid"
-            , (::boost::shared_ptr< RegularGrid< 3, 3 > > ( ::AbstractRegularGridHybridSolver<3>::* )(  ))( &::AbstractRegularGridHybridSolver< 3 >::GetGrid ) )    
+            , (::boost::shared_ptr< RegularGrid< 3, 3 > > ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))( &::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetGrid ) )    
         .def( 
             "GetPointSolution"
-            , (::std::vector< double > ( ::AbstractRegularGridHybridSolver<3>::* )(  ))(&::AbstractRegularGridHybridSolver< 3 >::GetPointSolution)
-            , (::std::vector< double > ( AbstractRegularGridHybridSolver_less__3__greater__wrapper::* )(  ))(&AbstractRegularGridHybridSolver_less__3__greater__wrapper::default_GetPointSolution) )    
+            , (::std::vector< double > ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetPointSolution)
+            , (::std::vector< double > ( AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper::* )(  ))(&AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper::default_GetPointSolution) )    
         .def( 
             "GetSolutionAtGridPoints"
-            , (::std::vector< double > ( ::AbstractRegularGridHybridSolver<3>::* )( ::boost::shared_ptr< RegularGrid< 3, 3 > > ))(&::AbstractRegularGridHybridSolver< 3 >::GetSolutionAtGridPoints)
-            , (::std::vector< double > ( AbstractRegularGridHybridSolver_less__3__greater__wrapper::* )( ::boost::shared_ptr< RegularGrid< 3, 3 > > ))(&AbstractRegularGridHybridSolver_less__3__greater__wrapper::default_GetSolutionAtGridPoints)
+            , (::std::vector< double > ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )( ::boost::shared_ptr< RegularGrid< 3, 3 > > ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints)
+            , (::std::vector< double > ( AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper::* )( ::boost::shared_ptr< RegularGrid< 3, 3 > > ))(&AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper::default_GetSolutionAtGridPoints)
             , ( bp::arg("pGrid") ) )    
         .def( 
             "GetSolutionAtPoints"
-            , (::std::vector< double > ( ::AbstractRegularGridHybridSolver<3>::* )( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ))(&::AbstractRegularGridHybridSolver< 3 >::GetSolutionAtPoints)
-            , (::std::vector< double > ( AbstractRegularGridHybridSolver_less__3__greater__wrapper::* )( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ))(&AbstractRegularGridHybridSolver_less__3__greater__wrapper::default_GetSolutionAtPoints)
+            , (::std::vector< double > ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints)
+            , (::std::vector< double > ( AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper::* )( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ))(&AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper::default_GetSolutionAtPoints)
             , ( bp::arg("samplePoints") ) )    
         .def( 
             "GetVtkSolution"
-            , (::vtkSmartPointer< vtkImageData > ( ::AbstractRegularGridHybridSolver<3>::* )(  ))(&::AbstractRegularGridHybridSolver< 3 >::GetVtkSolution)
-            , (::vtkSmartPointer< vtkImageData > ( AbstractRegularGridHybridSolver_less__3__greater__wrapper::* )(  ))(&AbstractRegularGridHybridSolver_less__3__greater__wrapper::default_GetVtkSolution) )    
+            , (::vtkSmartPointer< vtkImageData > ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetVtkSolution)
+            , (::vtkSmartPointer< vtkImageData > ( AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper::* )(  ))(&AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper::default_GetVtkSolution) )    
         .def( 
             "SetGrid"
-            , (void ( ::AbstractRegularGridHybridSolver<3>::* )( ::boost::shared_ptr< RegularGrid< 3, 3 > > ))( &::AbstractRegularGridHybridSolver< 3 >::SetGrid )
+            , (void ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )( ::boost::shared_ptr< RegularGrid< 3, 3 > > ))( &::AbstractRegularGridDiscreteContinuumSolver< 3 >::SetGrid )
             , ( bp::arg("pRegularGrid") ) )    
         .def( 
             "Setup"
-            , (void ( ::AbstractRegularGridHybridSolver<3>::* )(  ))(&::AbstractRegularGridHybridSolver< 3 >::Setup)
-            , (void ( AbstractRegularGridHybridSolver_less__3__greater__wrapper::* )(  ))(&AbstractRegularGridHybridSolver_less__3__greater__wrapper::default_Setup) )    
+            , (void ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Setup)
+            , (void ( AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper::* )(  ))(&AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper::default_Setup) )    
         .def( 
             "Solve"
-            , bp::pure_virtual( (void ( ::AbstractRegularGridHybridSolver<3>::* )(  ))(&::AbstractRegularGridHybridSolver< 3 >::Solve) ) )    
+            , bp::pure_virtual( (void ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Solve) ) )    
         .def( 
             "Update"
-            , (void ( ::AbstractRegularGridHybridSolver<3>::* )(  ))(&::AbstractRegularGridHybridSolver< 3 >::Update)
-            , (void ( AbstractRegularGridHybridSolver_less__3__greater__wrapper::* )(  ))(&AbstractRegularGridHybridSolver_less__3__greater__wrapper::default_Update) )    
+            , (void ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Update)
+            , (void ( AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper::* )(  ))(&AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper::default_Update) )    
         .def( 
             "UpdateCellData"
-            , (void ( ::AbstractRegularGridHybridSolver<3>::* )(  ))(&::AbstractRegularGridHybridSolver< 3 >::UpdateCellData)
-            , (void ( AbstractRegularGridHybridSolver_less__3__greater__wrapper::* )(  ))(&AbstractRegularGridHybridSolver_less__3__greater__wrapper::default_UpdateCellData) )    
+            , (void ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateCellData)
+            , (void ( AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper::* )(  ))(&AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper::default_UpdateCellData) )    
         .def( 
             "UpdateSolution"
-            , (void ( ::AbstractRegularGridHybridSolver<3>::* )( ::std::vector< double > ))(&::AbstractRegularGridHybridSolver< 3 >::UpdateSolution)
-            , (void ( AbstractRegularGridHybridSolver_less__3__greater__wrapper::* )( ::std::vector< double > ))(&AbstractRegularGridHybridSolver_less__3__greater__wrapper::default_UpdateSolution)
+            , (void ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )( ::std::vector< double > ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateSolution)
+            , (void ( AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper::* )( ::std::vector< double > ))(&AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper::default_UpdateSolution)
             , ( bp::arg("data") ) )    
         .def( 
             "Write"
-            , (void ( ::AbstractRegularGridHybridSolver<3>::* )(  ))(&::AbstractRegularGridHybridSolver< 3 >::Write)
-            , (void ( AbstractRegularGridHybridSolver_less__3__greater__wrapper::* )(  ))(&AbstractRegularGridHybridSolver_less__3__greater__wrapper::default_Write) );
+            , (void ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Write)
+            , (void ( AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper::* )(  ))(&AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper::default_Write) );
 
     { //::BoundaryConditionSource
         typedef bp::class_< BoundaryConditionSource > BoundaryConditionSource_exposer_t;
@@ -1302,7 +1302,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
         { //::DiscreteSource< 3 >::SetMesh
         
             typedef DiscreteSource< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetMesh_function_type)( ::boost::shared_ptr< HybridMesh< 3, 3 > > ) ;
+            typedef void ( exported_class_t::*SetMesh_function_type)( ::boost::shared_ptr< DiscreteContinuumMesh< 3, 3 > > ) ;
             
             DiscreteSource3_exposer.def( 
                 "SetMesh"
@@ -1470,7 +1470,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
     }
 
     { //::FiniteDifferenceSolver< 3 >
-        typedef bp::class_< FiniteDifferenceSolver_less__3__greater__wrapper, bp::bases< AbstractRegularGridHybridSolver< 3 > > > FiniteDifferenceSolver3_exposer_t;
+        typedef bp::class_< FiniteDifferenceSolver_less__3__greater__wrapper, bp::bases< AbstractRegularGridDiscreteContinuumSolver< 3 > > > FiniteDifferenceSolver3_exposer_t;
         FiniteDifferenceSolver3_exposer_t FiniteDifferenceSolver3_exposer = FiniteDifferenceSolver3_exposer_t( "FiniteDifferenceSolver3", bp::init< >() );
         bp::scope FiniteDifferenceSolver3_scope( FiniteDifferenceSolver3_exposer );
         { //::FiniteDifferenceSolver< 3 >::Create
@@ -1540,7 +1540,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
                 , ( bp::arg("doUpdate") ) );
         
         }
-        { //::AbstractRegularGridHybridSolver< 3 >::GetPointSolution
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetPointSolution
         
             typedef FiniteDifferenceSolver< 3 > exported_class_t;
             typedef ::std::vector< double > ( exported_class_t::*GetPointSolution_function_type)(  ) ;
@@ -1548,11 +1548,11 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             
             FiniteDifferenceSolver3_exposer.def( 
                 "GetPointSolution"
-                , GetPointSolution_function_type(&::AbstractRegularGridHybridSolver< 3 >::GetPointSolution)
+                , GetPointSolution_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetPointSolution)
                 , default_GetPointSolution_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_GetPointSolution) );
         
         }
-        { //::AbstractRegularGridHybridSolver< 3 >::GetSolutionAtGridPoints
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints
         
             typedef FiniteDifferenceSolver< 3 > exported_class_t;
             typedef ::std::vector< double > ( exported_class_t::*GetSolutionAtGridPoints_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
@@ -1560,12 +1560,12 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             
             FiniteDifferenceSolver3_exposer.def( 
                 "GetSolutionAtGridPoints"
-                , GetSolutionAtGridPoints_function_type(&::AbstractRegularGridHybridSolver< 3 >::GetSolutionAtGridPoints)
+                , GetSolutionAtGridPoints_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints)
                 , default_GetSolutionAtGridPoints_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_GetSolutionAtGridPoints)
                 , ( bp::arg("pGrid") ) );
         
         }
-        { //::AbstractRegularGridHybridSolver< 3 >::GetSolutionAtPoints
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints
         
             typedef FiniteDifferenceSolver< 3 > exported_class_t;
             typedef ::std::vector< double > ( exported_class_t::*GetSolutionAtPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
@@ -1573,12 +1573,12 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             
             FiniteDifferenceSolver3_exposer.def( 
                 "GetSolutionAtPoints"
-                , GetSolutionAtPoints_function_type(&::AbstractRegularGridHybridSolver< 3 >::GetSolutionAtPoints)
+                , GetSolutionAtPoints_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints)
                 , default_GetSolutionAtPoints_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_GetSolutionAtPoints)
                 , ( bp::arg("samplePoints") ) );
         
         }
-        { //::AbstractRegularGridHybridSolver< 3 >::GetVtkSolution
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetVtkSolution
         
             typedef FiniteDifferenceSolver< 3 > exported_class_t;
             typedef ::vtkSmartPointer< vtkImageData > ( exported_class_t::*GetVtkSolution_function_type)(  ) ;
@@ -1586,11 +1586,11 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             
             FiniteDifferenceSolver3_exposer.def( 
                 "GetVtkSolution"
-                , GetVtkSolution_function_type(&::AbstractRegularGridHybridSolver< 3 >::GetVtkSolution)
+                , GetVtkSolution_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetVtkSolution)
                 , default_GetVtkSolution_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_GetVtkSolution) );
         
         }
-        { //::AbstractRegularGridHybridSolver< 3 >::UpdateCellData
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateCellData
         
             typedef FiniteDifferenceSolver< 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateCellData_function_type)(  ) ;
@@ -1598,11 +1598,11 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             
             FiniteDifferenceSolver3_exposer.def( 
                 "UpdateCellData"
-                , UpdateCellData_function_type(&::AbstractRegularGridHybridSolver< 3 >::UpdateCellData)
+                , UpdateCellData_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateCellData)
                 , default_UpdateCellData_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_UpdateCellData) );
         
         }
-        { //::AbstractRegularGridHybridSolver< 3 >::UpdateSolution
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateSolution
         
             typedef FiniteDifferenceSolver< 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateSolution_function_type)( ::std::vector< double > ) ;
@@ -1610,12 +1610,12 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             
             FiniteDifferenceSolver3_exposer.def( 
                 "UpdateSolution"
-                , UpdateSolution_function_type(&::AbstractRegularGridHybridSolver< 3 >::UpdateSolution)
+                , UpdateSolution_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateSolution)
                 , default_UpdateSolution_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_UpdateSolution)
                 , ( bp::arg("data") ) );
         
         }
-        { //::AbstractRegularGridHybridSolver< 3 >::Write
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::Write
         
             typedef FiniteDifferenceSolver< 3 > exported_class_t;
             typedef void ( exported_class_t::*Write_function_type)(  ) ;
@@ -1623,14 +1623,14 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             
             FiniteDifferenceSolver3_exposer.def( 
                 "Write"
-                , Write_function_type(&::AbstractRegularGridHybridSolver< 3 >::Write)
+                , Write_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Write)
                 , default_Write_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_Write) );
         
         }
         FiniteDifferenceSolver3_exposer.staticmethod( "Create" );
         bp::register_ptr_to_python< boost::shared_ptr< FiniteDifferenceSolver<3> > >();
-        bp::implicitly_convertible< boost::shared_ptr< FiniteDifferenceSolver< 3 > >, boost::shared_ptr< AbstractRegularGridHybridSolver< 3 > > >();
-        bp::implicitly_convertible< boost::shared_ptr< FiniteDifferenceSolver< 3 > >, boost::shared_ptr< AbstractHybridSolver< 3 > > >();
+        bp::implicitly_convertible< boost::shared_ptr< FiniteDifferenceSolver< 3 > >, boost::shared_ptr< AbstractRegularGridDiscreteContinuumSolver< 3 > > >();
+        bp::implicitly_convertible< boost::shared_ptr< FiniteDifferenceSolver< 3 > >, boost::shared_ptr< AbstractDiscreteContinuumSolver< 3 > > >();
     }
 
     { //::FiniteElementSolver< 3 >
@@ -1707,7 +1707,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
         { //::FiniteElementSolver< 3 >::SetMesh
         
             typedef FiniteElementSolver< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetMesh_function_type)( ::boost::shared_ptr< HybridMesh< 3, 3 > > ) ;
+            typedef void ( exported_class_t::*SetMesh_function_type)( ::boost::shared_ptr< DiscreteContinuumMesh< 3, 3 > > ) ;
             
             FiniteElementSolver3_exposer.def( 
                 "SetMesh"
@@ -1787,11 +1787,11 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
         }
         FiniteElementSolver3_exposer.staticmethod( "Create" );
         bp::register_ptr_to_python< boost::shared_ptr< FiniteElementSolver<3> > >();
-        bp::implicitly_convertible< boost::shared_ptr< FiniteElementSolver< 3 > >, boost::shared_ptr< AbstractHybridSolver< 3 > > >();
+        bp::implicitly_convertible< boost::shared_ptr< FiniteElementSolver< 3 > >, boost::shared_ptr< AbstractDiscreteContinuumSolver< 3 > > >();
     }
 
     { //::FunctionMap< 3 >
-        typedef bp::class_< FunctionMap_less__3__greater__wrapper, bp::bases< AbstractRegularGridHybridSolver< 3 > > > FunctionMap3_exposer_t;
+        typedef bp::class_< FunctionMap_less__3__greater__wrapper, bp::bases< AbstractRegularGridDiscreteContinuumSolver< 3 > > > FunctionMap3_exposer_t;
         FunctionMap3_exposer_t FunctionMap3_exposer = FunctionMap3_exposer_t( "FunctionMap3", bp::init< >() );
         bp::scope FunctionMap3_scope( FunctionMap3_exposer );
         { //::FunctionMap< 3 >::Create
@@ -1816,7 +1816,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
                 , default_Solve_function_type(&FunctionMap_less__3__greater__wrapper::default_Solve) );
         
         }
-        { //::AbstractRegularGridHybridSolver< 3 >::GetPointSolution
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetPointSolution
         
             typedef FunctionMap< 3 > exported_class_t;
             typedef ::std::vector< double > ( exported_class_t::*GetPointSolution_function_type)(  ) ;
@@ -1824,11 +1824,11 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             
             FunctionMap3_exposer.def( 
                 "GetPointSolution"
-                , GetPointSolution_function_type(&::AbstractRegularGridHybridSolver< 3 >::GetPointSolution)
+                , GetPointSolution_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetPointSolution)
                 , default_GetPointSolution_function_type(&FunctionMap_less__3__greater__wrapper::default_GetPointSolution) );
         
         }
-        { //::AbstractRegularGridHybridSolver< 3 >::GetSolutionAtGridPoints
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints
         
             typedef FunctionMap< 3 > exported_class_t;
             typedef ::std::vector< double > ( exported_class_t::*GetSolutionAtGridPoints_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
@@ -1836,12 +1836,12 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             
             FunctionMap3_exposer.def( 
                 "GetSolutionAtGridPoints"
-                , GetSolutionAtGridPoints_function_type(&::AbstractRegularGridHybridSolver< 3 >::GetSolutionAtGridPoints)
+                , GetSolutionAtGridPoints_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints)
                 , default_GetSolutionAtGridPoints_function_type(&FunctionMap_less__3__greater__wrapper::default_GetSolutionAtGridPoints)
                 , ( bp::arg("pGrid") ) );
         
         }
-        { //::AbstractRegularGridHybridSolver< 3 >::GetSolutionAtPoints
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints
         
             typedef FunctionMap< 3 > exported_class_t;
             typedef ::std::vector< double > ( exported_class_t::*GetSolutionAtPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
@@ -1849,12 +1849,12 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             
             FunctionMap3_exposer.def( 
                 "GetSolutionAtPoints"
-                , GetSolutionAtPoints_function_type(&::AbstractRegularGridHybridSolver< 3 >::GetSolutionAtPoints)
+                , GetSolutionAtPoints_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints)
                 , default_GetSolutionAtPoints_function_type(&FunctionMap_less__3__greater__wrapper::default_GetSolutionAtPoints)
                 , ( bp::arg("samplePoints") ) );
         
         }
-        { //::AbstractRegularGridHybridSolver< 3 >::GetVtkSolution
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetVtkSolution
         
             typedef FunctionMap< 3 > exported_class_t;
             typedef ::vtkSmartPointer< vtkImageData > ( exported_class_t::*GetVtkSolution_function_type)(  ) ;
@@ -1862,11 +1862,11 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             
             FunctionMap3_exposer.def( 
                 "GetVtkSolution"
-                , GetVtkSolution_function_type(&::AbstractRegularGridHybridSolver< 3 >::GetVtkSolution)
+                , GetVtkSolution_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetVtkSolution)
                 , default_GetVtkSolution_function_type(&FunctionMap_less__3__greater__wrapper::default_GetVtkSolution) );
         
         }
-        { //::AbstractRegularGridHybridSolver< 3 >::Setup
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::Setup
         
             typedef FunctionMap< 3 > exported_class_t;
             typedef void ( exported_class_t::*Setup_function_type)(  ) ;
@@ -1874,11 +1874,11 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             
             FunctionMap3_exposer.def( 
                 "Setup"
-                , Setup_function_type(&::AbstractRegularGridHybridSolver< 3 >::Setup)
+                , Setup_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Setup)
                 , default_Setup_function_type(&FunctionMap_less__3__greater__wrapper::default_Setup) );
         
         }
-        { //::AbstractRegularGridHybridSolver< 3 >::Update
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::Update
         
             typedef FunctionMap< 3 > exported_class_t;
             typedef void ( exported_class_t::*Update_function_type)(  ) ;
@@ -1886,11 +1886,11 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             
             FunctionMap3_exposer.def( 
                 "Update"
-                , Update_function_type(&::AbstractRegularGridHybridSolver< 3 >::Update)
+                , Update_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Update)
                 , default_Update_function_type(&FunctionMap_less__3__greater__wrapper::default_Update) );
         
         }
-        { //::AbstractRegularGridHybridSolver< 3 >::UpdateCellData
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateCellData
         
             typedef FunctionMap< 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateCellData_function_type)(  ) ;
@@ -1898,11 +1898,11 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             
             FunctionMap3_exposer.def( 
                 "UpdateCellData"
-                , UpdateCellData_function_type(&::AbstractRegularGridHybridSolver< 3 >::UpdateCellData)
+                , UpdateCellData_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateCellData)
                 , default_UpdateCellData_function_type(&FunctionMap_less__3__greater__wrapper::default_UpdateCellData) );
         
         }
-        { //::AbstractRegularGridHybridSolver< 3 >::UpdateSolution
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateSolution
         
             typedef FunctionMap< 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateSolution_function_type)( ::std::vector< double > ) ;
@@ -1910,12 +1910,12 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             
             FunctionMap3_exposer.def( 
                 "UpdateSolution"
-                , UpdateSolution_function_type(&::AbstractRegularGridHybridSolver< 3 >::UpdateSolution)
+                , UpdateSolution_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateSolution)
                 , default_UpdateSolution_function_type(&FunctionMap_less__3__greater__wrapper::default_UpdateSolution)
                 , ( bp::arg("data") ) );
         
         }
-        { //::AbstractRegularGridHybridSolver< 3 >::Write
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::Write
         
             typedef FunctionMap< 3 > exported_class_t;
             typedef void ( exported_class_t::*Write_function_type)(  ) ;
@@ -1923,17 +1923,17 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             
             FunctionMap3_exposer.def( 
                 "Write"
-                , Write_function_type(&::AbstractRegularGridHybridSolver< 3 >::Write)
+                , Write_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Write)
                 , default_Write_function_type(&FunctionMap_less__3__greater__wrapper::default_Write) );
         
         }
         FunctionMap3_exposer.staticmethod( "Create" );
         bp::register_ptr_to_python< boost::shared_ptr< FunctionMap<3> > >();
-        bp::implicitly_convertible< boost::shared_ptr< FunctionMap< 3 > >, boost::shared_ptr< AbstractRegularGridHybridSolver< 3 > > >();
-        bp::implicitly_convertible< boost::shared_ptr< FunctionMap< 3 > >, boost::shared_ptr< AbstractHybridSolver< 3 > > >();
+        bp::implicitly_convertible< boost::shared_ptr< FunctionMap< 3 > >, boost::shared_ptr< AbstractRegularGridDiscreteContinuumSolver< 3 > > >();
+        bp::implicitly_convertible< boost::shared_ptr< FunctionMap< 3 > >, boost::shared_ptr< AbstractDiscreteContinuumSolver< 3 > > >();
     }
 
-    bp::class_< GreensFunctionSolver_less__3__greater__wrapper, bp::bases< AbstractRegularGridHybridSolver< 3 > > >( "GreensFunctionSolver3", bp::init< >() )    
+    bp::class_< GreensFunctionSolver_less__3__greater__wrapper, bp::bases< AbstractRegularGridDiscreteContinuumSolver< 3 > > >( "GreensFunctionSolver3", bp::init< >() )    
         .def( 
             "SetSubSegmentCutoff"
             , (void ( ::GreensFunctionSolver<3>::* )( double ))( &::GreensFunctionSolver< 3 >::SetSubSegmentCutoff )
@@ -1944,802 +1944,802 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             , (void ( GreensFunctionSolver_less__3__greater__wrapper::* )(  ))(&GreensFunctionSolver_less__3__greater__wrapper::default_Solve) )    
         .def( 
             "GetPointSolution"
-            , (::std::vector< double > ( ::AbstractRegularGridHybridSolver<3>::* )(  ))(&::AbstractRegularGridHybridSolver< 3 >::GetPointSolution)
+            , (::std::vector< double > ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetPointSolution)
             , (::std::vector< double > ( GreensFunctionSolver_less__3__greater__wrapper::* )(  ))(&GreensFunctionSolver_less__3__greater__wrapper::default_GetPointSolution) )    
         .def( 
             "GetSolutionAtGridPoints"
-            , (::std::vector< double > ( ::AbstractRegularGridHybridSolver<3>::* )( ::boost::shared_ptr< RegularGrid< 3, 3 > > ))(&::AbstractRegularGridHybridSolver< 3 >::GetSolutionAtGridPoints)
+            , (::std::vector< double > ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )( ::boost::shared_ptr< RegularGrid< 3, 3 > > ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints)
             , (::std::vector< double > ( GreensFunctionSolver_less__3__greater__wrapper::* )( ::boost::shared_ptr< RegularGrid< 3, 3 > > ))(&GreensFunctionSolver_less__3__greater__wrapper::default_GetSolutionAtGridPoints)
             , ( bp::arg("pGrid") ) )    
         .def( 
             "GetSolutionAtPoints"
-            , (::std::vector< double > ( ::AbstractRegularGridHybridSolver<3>::* )( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ))(&::AbstractRegularGridHybridSolver< 3 >::GetSolutionAtPoints)
+            , (::std::vector< double > ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints)
             , (::std::vector< double > ( GreensFunctionSolver_less__3__greater__wrapper::* )( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ))(&GreensFunctionSolver_less__3__greater__wrapper::default_GetSolutionAtPoints)
             , ( bp::arg("samplePoints") ) )    
         .def( 
             "GetVtkSolution"
-            , (::vtkSmartPointer< vtkImageData > ( ::AbstractRegularGridHybridSolver<3>::* )(  ))(&::AbstractRegularGridHybridSolver< 3 >::GetVtkSolution)
+            , (::vtkSmartPointer< vtkImageData > ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetVtkSolution)
             , (::vtkSmartPointer< vtkImageData > ( GreensFunctionSolver_less__3__greater__wrapper::* )(  ))(&GreensFunctionSolver_less__3__greater__wrapper::default_GetVtkSolution) )    
         .def( 
             "Setup"
-            , (void ( ::AbstractRegularGridHybridSolver<3>::* )(  ))(&::AbstractRegularGridHybridSolver< 3 >::Setup)
+            , (void ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Setup)
             , (void ( GreensFunctionSolver_less__3__greater__wrapper::* )(  ))(&GreensFunctionSolver_less__3__greater__wrapper::default_Setup) )    
         .def( 
             "Update"
-            , (void ( ::AbstractRegularGridHybridSolver<3>::* )(  ))(&::AbstractRegularGridHybridSolver< 3 >::Update)
+            , (void ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Update)
             , (void ( GreensFunctionSolver_less__3__greater__wrapper::* )(  ))(&GreensFunctionSolver_less__3__greater__wrapper::default_Update) )    
         .def( 
             "UpdateCellData"
-            , (void ( ::AbstractRegularGridHybridSolver<3>::* )(  ))(&::AbstractRegularGridHybridSolver< 3 >::UpdateCellData)
+            , (void ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateCellData)
             , (void ( GreensFunctionSolver_less__3__greater__wrapper::* )(  ))(&GreensFunctionSolver_less__3__greater__wrapper::default_UpdateCellData) )    
         .def( 
             "UpdateSolution"
-            , (void ( ::AbstractRegularGridHybridSolver<3>::* )( ::std::vector< double > ))(&::AbstractRegularGridHybridSolver< 3 >::UpdateSolution)
+            , (void ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )( ::std::vector< double > ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateSolution)
             , (void ( GreensFunctionSolver_less__3__greater__wrapper::* )( ::std::vector< double > ))(&GreensFunctionSolver_less__3__greater__wrapper::default_UpdateSolution)
             , ( bp::arg("data") ) )    
         .def( 
             "Write"
-            , (void ( ::AbstractRegularGridHybridSolver<3>::* )(  ))(&::AbstractRegularGridHybridSolver< 3 >::Write)
+            , (void ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Write)
             , (void ( GreensFunctionSolver_less__3__greater__wrapper::* )(  ))(&GreensFunctionSolver_less__3__greater__wrapper::default_Write) );
 
-    { //::HybridBoundaryCondition< 3 >
-        typedef bp::class_< HybridBoundaryCondition< 3 > > HybridBoundaryCondition3_exposer_t;
-        HybridBoundaryCondition3_exposer_t HybridBoundaryCondition3_exposer = HybridBoundaryCondition3_exposer_t( "HybridBoundaryCondition3", bp::init< >() );
-        bp::scope HybridBoundaryCondition3_scope( HybridBoundaryCondition3_exposer );
-        { //::HybridBoundaryCondition< 3 >::Create
+    { //::DiscreteContinuumBoundaryCondition< 3 >
+        typedef bp::class_< DiscreteContinuumBoundaryCondition< 3 > > DiscreteContinuumBoundaryCondition3_exposer_t;
+        DiscreteContinuumBoundaryCondition3_exposer_t DiscreteContinuumBoundaryCondition3_exposer = DiscreteContinuumBoundaryCondition3_exposer_t( "DiscreteContinuumBoundaryCondition3", bp::init< >() );
+        bp::scope DiscreteContinuumBoundaryCondition3_scope( DiscreteContinuumBoundaryCondition3_exposer );
+        { //::DiscreteContinuumBoundaryCondition< 3 >::Create
         
-            typedef HybridBoundaryCondition< 3 > exported_class_t;
-            typedef ::boost::shared_ptr< HybridBoundaryCondition< 3 > > ( *Create_function_type )(  );
+            typedef DiscreteContinuumBoundaryCondition< 3 > exported_class_t;
+            typedef ::boost::shared_ptr< DiscreteContinuumBoundaryCondition< 3 > > ( *Create_function_type )(  );
             
-            HybridBoundaryCondition3_exposer.def( 
+            DiscreteContinuumBoundaryCondition3_exposer.def( 
                 "Create"
-                , Create_function_type( &::HybridBoundaryCondition< 3 >::Create ) );
+                , Create_function_type( &::DiscreteContinuumBoundaryCondition< 3 >::Create ) );
         
         }
-        { //::HybridBoundaryCondition< 3 >::GetType
+        { //::DiscreteContinuumBoundaryCondition< 3 >::GetType
         
-            typedef HybridBoundaryCondition< 3 > exported_class_t;
+            typedef DiscreteContinuumBoundaryCondition< 3 > exported_class_t;
             typedef ::BoundaryConditionType::Value ( exported_class_t::*GetType_function_type)(  ) ;
             
-            HybridBoundaryCondition3_exposer.def( 
+            DiscreteContinuumBoundaryCondition3_exposer.def( 
                 "GetType"
-                , GetType_function_type( &::HybridBoundaryCondition< 3 >::GetType ) );
+                , GetType_function_type( &::DiscreteContinuumBoundaryCondition< 3 >::GetType ) );
         
         }
-        { //::HybridBoundaryCondition< 3 >::GetValue
+        { //::DiscreteContinuumBoundaryCondition< 3 >::GetValue
         
-            typedef HybridBoundaryCondition< 3 > exported_class_t;
+            typedef DiscreteContinuumBoundaryCondition< 3 > exported_class_t;
             typedef double ( exported_class_t::*GetValue_function_type)(  ) ;
             
-            HybridBoundaryCondition3_exposer.def( 
+            DiscreteContinuumBoundaryCondition3_exposer.def( 
                 "GetValue"
-                , GetValue_function_type( &::HybridBoundaryCondition< 3 >::GetValue ) );
+                , GetValue_function_type( &::DiscreteContinuumBoundaryCondition< 3 >::GetValue ) );
         
         }
-        { //::HybridBoundaryCondition< 3 >::GetValue
+        { //::DiscreteContinuumBoundaryCondition< 3 >::GetValue
         
-            typedef HybridBoundaryCondition< 3 > exported_class_t;
+            typedef DiscreteContinuumBoundaryCondition< 3 > exported_class_t;
             typedef ::std::pair< bool, double > ( exported_class_t::*GetValue_function_type)( ::boost::numeric::ublas::c_vector< double, 3 >,double ) ;
             
-            HybridBoundaryCondition3_exposer.def( 
+            DiscreteContinuumBoundaryCondition3_exposer.def( 
                 "GetValue"
-                , GetValue_function_type( &::HybridBoundaryCondition< 3 >::GetValue )
+                , GetValue_function_type( &::DiscreteContinuumBoundaryCondition< 3 >::GetValue )
                 , ( bp::arg("location"), bp::arg("tolerance") ) );
         
         }
-        { //::HybridBoundaryCondition< 3 >::SetDomain
+        { //::DiscreteContinuumBoundaryCondition< 3 >::SetDomain
         
-            typedef HybridBoundaryCondition< 3 > exported_class_t;
+            typedef DiscreteContinuumBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetDomain_function_type)( ::boost::shared_ptr< Part< 3 > > ) ;
             
-            HybridBoundaryCondition3_exposer.def( 
+            DiscreteContinuumBoundaryCondition3_exposer.def( 
                 "SetDomain"
-                , SetDomain_function_type( &::HybridBoundaryCondition< 3 >::SetDomain )
+                , SetDomain_function_type( &::DiscreteContinuumBoundaryCondition< 3 >::SetDomain )
                 , ( bp::arg("pDomain") ) );
         
         }
-        { //::HybridBoundaryCondition< 3 >::SetLabelName
+        { //::DiscreteContinuumBoundaryCondition< 3 >::SetLabelName
         
-            typedef HybridBoundaryCondition< 3 > exported_class_t;
+            typedef DiscreteContinuumBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetLabelName_function_type)( ::std::string const & ) ;
             
-            HybridBoundaryCondition3_exposer.def( 
+            DiscreteContinuumBoundaryCondition3_exposer.def( 
                 "SetLabelName"
-                , SetLabelName_function_type( &::HybridBoundaryCondition< 3 >::SetLabelName )
+                , SetLabelName_function_type( &::DiscreteContinuumBoundaryCondition< 3 >::SetLabelName )
                 , ( bp::arg("label") ) );
         
         }
-        { //::HybridBoundaryCondition< 3 >::SetMesh
+        { //::DiscreteContinuumBoundaryCondition< 3 >::SetMesh
         
-            typedef HybridBoundaryCondition< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetMesh_function_type)( ::boost::shared_ptr< HybridMesh< 3, 3 > > ) ;
+            typedef DiscreteContinuumBoundaryCondition< 3 > exported_class_t;
+            typedef void ( exported_class_t::*SetMesh_function_type)( ::boost::shared_ptr< DiscreteContinuumMesh< 3, 3 > > ) ;
             
-            HybridBoundaryCondition3_exposer.def( 
+            DiscreteContinuumBoundaryCondition3_exposer.def( 
                 "SetMesh"
-                , SetMesh_function_type( &::HybridBoundaryCondition< 3 >::SetMesh )
+                , SetMesh_function_type( &::DiscreteContinuumBoundaryCondition< 3 >::SetMesh )
                 , ( bp::arg("pMesh") ) );
         
         }
-        { //::HybridBoundaryCondition< 3 >::SetNetwork
+        { //::DiscreteContinuumBoundaryCondition< 3 >::SetNetwork
         
-            typedef HybridBoundaryCondition< 3 > exported_class_t;
+            typedef DiscreteContinuumBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetNetwork_function_type)( ::boost::shared_ptr< VesselNetwork< 3 > > ) ;
             
-            HybridBoundaryCondition3_exposer.def( 
+            DiscreteContinuumBoundaryCondition3_exposer.def( 
                 "SetNetwork"
-                , SetNetwork_function_type( &::HybridBoundaryCondition< 3 >::SetNetwork )
+                , SetNetwork_function_type( &::DiscreteContinuumBoundaryCondition< 3 >::SetNetwork )
                 , ( bp::arg("pNetwork") ) );
         
         }
-        { //::HybridBoundaryCondition< 3 >::SetPoints
+        { //::DiscreteContinuumBoundaryCondition< 3 >::SetPoints
         
-            typedef HybridBoundaryCondition< 3 > exported_class_t;
+            typedef DiscreteContinuumBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
             
-            HybridBoundaryCondition3_exposer.def( 
+            DiscreteContinuumBoundaryCondition3_exposer.def( 
                 "SetPoints"
-                , SetPoints_function_type( &::HybridBoundaryCondition< 3 >::SetPoints )
+                , SetPoints_function_type( &::DiscreteContinuumBoundaryCondition< 3 >::SetPoints )
                 , ( bp::arg("points") ) );
         
         }
-        { //::HybridBoundaryCondition< 3 >::SetRegularGrid
+        { //::DiscreteContinuumBoundaryCondition< 3 >::SetRegularGrid
         
-            typedef HybridBoundaryCondition< 3 > exported_class_t;
+            typedef DiscreteContinuumBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetRegularGrid_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
             
-            HybridBoundaryCondition3_exposer.def( 
+            DiscreteContinuumBoundaryCondition3_exposer.def( 
                 "SetRegularGrid"
-                , SetRegularGrid_function_type( &::HybridBoundaryCondition< 3 >::SetRegularGrid )
+                , SetRegularGrid_function_type( &::DiscreteContinuumBoundaryCondition< 3 >::SetRegularGrid )
                 , ( bp::arg("pRegularGrid") ) );
         
         }
-        { //::HybridBoundaryCondition< 3 >::SetSource
+        { //::DiscreteContinuumBoundaryCondition< 3 >::SetSource
         
-            typedef HybridBoundaryCondition< 3 > exported_class_t;
+            typedef DiscreteContinuumBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetSource_function_type)( ::BoundaryConditionSource::Value ) ;
             
-            HybridBoundaryCondition3_exposer.def( 
+            DiscreteContinuumBoundaryCondition3_exposer.def( 
                 "SetSource"
-                , SetSource_function_type( &::HybridBoundaryCondition< 3 >::SetSource )
+                , SetSource_function_type( &::DiscreteContinuumBoundaryCondition< 3 >::SetSource )
                 , ( bp::arg("boundarySource") ) );
         
         }
-        { //::HybridBoundaryCondition< 3 >::SetType
+        { //::DiscreteContinuumBoundaryCondition< 3 >::SetType
         
-            typedef HybridBoundaryCondition< 3 > exported_class_t;
+            typedef DiscreteContinuumBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetType_function_type)( ::BoundaryConditionType::Value ) ;
             
-            HybridBoundaryCondition3_exposer.def( 
+            DiscreteContinuumBoundaryCondition3_exposer.def( 
                 "SetType"
-                , SetType_function_type( &::HybridBoundaryCondition< 3 >::SetType )
+                , SetType_function_type( &::DiscreteContinuumBoundaryCondition< 3 >::SetType )
                 , ( bp::arg("boundaryType") ) );
         
         }
-        { //::HybridBoundaryCondition< 3 >::SetValue
+        { //::DiscreteContinuumBoundaryCondition< 3 >::SetValue
         
-            typedef HybridBoundaryCondition< 3 > exported_class_t;
+            typedef DiscreteContinuumBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetValue_function_type)( double ) ;
             
-            HybridBoundaryCondition3_exposer.def( 
+            DiscreteContinuumBoundaryCondition3_exposer.def( 
                 "SetValue"
-                , SetValue_function_type( &::HybridBoundaryCondition< 3 >::SetValue )
+                , SetValue_function_type( &::DiscreteContinuumBoundaryCondition< 3 >::SetValue )
                 , ( bp::arg("value") ) );
         
         }
-        { //::HybridBoundaryCondition< 3 >::UpdateBoundaryConditionContainer
+        { //::DiscreteContinuumBoundaryCondition< 3 >::UpdateBoundaryConditionContainer
         
-            typedef HybridBoundaryCondition< 3 > exported_class_t;
+            typedef DiscreteContinuumBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateBoundaryConditionContainer_function_type)( ::boost::shared_ptr< BoundaryConditionsContainer< 3, 3, 1 > > ) ;
             
-            HybridBoundaryCondition3_exposer.def( 
+            DiscreteContinuumBoundaryCondition3_exposer.def( 
                 "UpdateBoundaryConditionContainer"
-                , UpdateBoundaryConditionContainer_function_type( &::HybridBoundaryCondition< 3 >::UpdateBoundaryConditionContainer )
+                , UpdateBoundaryConditionContainer_function_type( &::DiscreteContinuumBoundaryCondition< 3 >::UpdateBoundaryConditionContainer )
                 , ( bp::arg("pContainer") ) );
         
         }
-        { //::HybridBoundaryCondition< 3 >::UpdateRegularGridBoundaryConditions
+        { //::DiscreteContinuumBoundaryCondition< 3 >::UpdateRegularGridBoundaryConditions
         
-            typedef HybridBoundaryCondition< 3 > exported_class_t;
+            typedef DiscreteContinuumBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateRegularGridBoundaryConditions_function_type)( ::boost::shared_ptr< std::vector< std::pair<bool, double> > > ) ;
             
-            HybridBoundaryCondition3_exposer.def( 
+            DiscreteContinuumBoundaryCondition3_exposer.def( 
                 "UpdateRegularGridBoundaryConditions"
-                , UpdateRegularGridBoundaryConditions_function_type( &::HybridBoundaryCondition< 3 >::UpdateRegularGridBoundaryConditions )
+                , UpdateRegularGridBoundaryConditions_function_type( &::DiscreteContinuumBoundaryCondition< 3 >::UpdateRegularGridBoundaryConditions )
                 , ( bp::arg("pBoundaryConditions") ) );
         
         }
-        { //::HybridBoundaryCondition< 3 >::UpdateRegularGridCellBoundaryConditions
+        { //::DiscreteContinuumBoundaryCondition< 3 >::UpdateRegularGridCellBoundaryConditions
         
-            typedef HybridBoundaryCondition< 3 > exported_class_t;
+            typedef DiscreteContinuumBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateRegularGridCellBoundaryConditions_function_type)( ::boost::shared_ptr< std::vector< std::pair<bool, double> > > ) ;
             
-            HybridBoundaryCondition3_exposer.def( 
+            DiscreteContinuumBoundaryCondition3_exposer.def( 
                 "UpdateRegularGridCellBoundaryConditions"
-                , UpdateRegularGridCellBoundaryConditions_function_type( &::HybridBoundaryCondition< 3 >::UpdateRegularGridCellBoundaryConditions )
+                , UpdateRegularGridCellBoundaryConditions_function_type( &::DiscreteContinuumBoundaryCondition< 3 >::UpdateRegularGridCellBoundaryConditions )
                 , ( bp::arg("pBoundaryConditions") ) );
         
         }
-        { //::HybridBoundaryCondition< 3 >::UpdateRegularGridFacetBoundaryConditions
+        { //::DiscreteContinuumBoundaryCondition< 3 >::UpdateRegularGridFacetBoundaryConditions
         
-            typedef HybridBoundaryCondition< 3 > exported_class_t;
+            typedef DiscreteContinuumBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateRegularGridFacetBoundaryConditions_function_type)( ::boost::shared_ptr< std::vector< std::pair<bool, double> > > ) ;
             
-            HybridBoundaryCondition3_exposer.def( 
+            DiscreteContinuumBoundaryCondition3_exposer.def( 
                 "UpdateRegularGridFacetBoundaryConditions"
-                , UpdateRegularGridFacetBoundaryConditions_function_type( &::HybridBoundaryCondition< 3 >::UpdateRegularGridFacetBoundaryConditions )
+                , UpdateRegularGridFacetBoundaryConditions_function_type( &::DiscreteContinuumBoundaryCondition< 3 >::UpdateRegularGridFacetBoundaryConditions )
                 , ( bp::arg("pBoundaryConditions") ) );
         
         }
-        { //::HybridBoundaryCondition< 3 >::UpdateRegularGridPartBoundaryConditions
+        { //::DiscreteContinuumBoundaryCondition< 3 >::UpdateRegularGridPartBoundaryConditions
         
-            typedef HybridBoundaryCondition< 3 > exported_class_t;
+            typedef DiscreteContinuumBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateRegularGridPartBoundaryConditions_function_type)( ::boost::shared_ptr< std::vector< std::pair<bool, double> > > ) ;
             
-            HybridBoundaryCondition3_exposer.def( 
+            DiscreteContinuumBoundaryCondition3_exposer.def( 
                 "UpdateRegularGridPartBoundaryConditions"
-                , UpdateRegularGridPartBoundaryConditions_function_type( &::HybridBoundaryCondition< 3 >::UpdateRegularGridPartBoundaryConditions )
+                , UpdateRegularGridPartBoundaryConditions_function_type( &::DiscreteContinuumBoundaryCondition< 3 >::UpdateRegularGridPartBoundaryConditions )
                 , ( bp::arg("pBoundaryConditions") ) );
         
         }
-        { //::HybridBoundaryCondition< 3 >::UpdateRegularGridPointBoundaryConditions
+        { //::DiscreteContinuumBoundaryCondition< 3 >::UpdateRegularGridPointBoundaryConditions
         
-            typedef HybridBoundaryCondition< 3 > exported_class_t;
+            typedef DiscreteContinuumBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateRegularGridPointBoundaryConditions_function_type)( ::boost::shared_ptr< std::vector< std::pair<bool, double> > > ) ;
             
-            HybridBoundaryCondition3_exposer.def( 
+            DiscreteContinuumBoundaryCondition3_exposer.def( 
                 "UpdateRegularGridPointBoundaryConditions"
-                , UpdateRegularGridPointBoundaryConditions_function_type( &::HybridBoundaryCondition< 3 >::UpdateRegularGridPointBoundaryConditions )
+                , UpdateRegularGridPointBoundaryConditions_function_type( &::DiscreteContinuumBoundaryCondition< 3 >::UpdateRegularGridPointBoundaryConditions )
                 , ( bp::arg("pBoundaryConditions") ) );
         
         }
-        { //::HybridBoundaryCondition< 3 >::UpdateRegularGridSegmentBoundaryConditions
+        { //::DiscreteContinuumBoundaryCondition< 3 >::UpdateRegularGridSegmentBoundaryConditions
         
-            typedef HybridBoundaryCondition< 3 > exported_class_t;
+            typedef DiscreteContinuumBoundaryCondition< 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateRegularGridSegmentBoundaryConditions_function_type)( ::boost::shared_ptr< std::vector< std::pair<bool, double> > > ) ;
             
-            HybridBoundaryCondition3_exposer.def( 
+            DiscreteContinuumBoundaryCondition3_exposer.def( 
                 "UpdateRegularGridSegmentBoundaryConditions"
-                , UpdateRegularGridSegmentBoundaryConditions_function_type( &::HybridBoundaryCondition< 3 >::UpdateRegularGridSegmentBoundaryConditions )
+                , UpdateRegularGridSegmentBoundaryConditions_function_type( &::DiscreteContinuumBoundaryCondition< 3 >::UpdateRegularGridSegmentBoundaryConditions )
                 , ( bp::arg("pBoundaryConditions") ) );
         
         }
-        HybridBoundaryCondition3_exposer.staticmethod( "Create" );
-        bp::register_ptr_to_python< boost::shared_ptr< HybridBoundaryCondition<3> > >();
+        DiscreteContinuumBoundaryCondition3_exposer.staticmethod( "Create" );
+        bp::register_ptr_to_python< boost::shared_ptr< DiscreteContinuumBoundaryCondition<3> > >();
     }
 
-    { //::HybridLinearEllipticPde< 3, 3 >
-        typedef bp::class_< HybridLinearEllipticPde_less__3_comma__3__greater__wrapper, bp::bases< AbstractLinearEllipticPde< 3, 3 > > > HybridLinearEllipticPde3_3_exposer_t;
-        HybridLinearEllipticPde3_3_exposer_t HybridLinearEllipticPde3_3_exposer = HybridLinearEllipticPde3_3_exposer_t( "HybridLinearEllipticPde3_3", bp::init< >() );
-        bp::scope HybridLinearEllipticPde3_3_scope( HybridLinearEllipticPde3_3_exposer );
-        { //::HybridLinearEllipticPde< 3, 3 >::AddDiscreteSource
+    { //::DiscreteContinuumLinearEllipticPde< 3, 3 >
+        typedef bp::class_< DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper, bp::bases< AbstractLinearEllipticPde< 3, 3 > > > DiscreteContinuumLinearEllipticPde3_3_exposer_t;
+        DiscreteContinuumLinearEllipticPde3_3_exposer_t DiscreteContinuumLinearEllipticPde3_3_exposer = DiscreteContinuumLinearEllipticPde3_3_exposer_t( "DiscreteContinuumLinearEllipticPde3_3", bp::init< >() );
+        bp::scope DiscreteContinuumLinearEllipticPde3_3_scope( DiscreteContinuumLinearEllipticPde3_3_exposer );
+        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::AddDiscreteSource
         
-            typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*AddDiscreteSource_function_type)( ::boost::shared_ptr< DiscreteSource< 3 > > ) ;
             
-            HybridLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
                 "AddDiscreteSource"
-                , AddDiscreteSource_function_type( &::HybridLinearEllipticPde< 3, 3 >::AddDiscreteSource )
+                , AddDiscreteSource_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::AddDiscreteSource )
                 , ( bp::arg("pDiscreteSource") ) );
         
         }
-        { //::HybridLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm
+        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm
         
-            typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeConstantInUSourceTerm_function_type)( ::ChastePoint< 3 > const &,::Element< 3, 3 > * ) ;
-            typedef double ( HybridLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeConstantInUSourceTerm_function_type)( ::ChastePoint< 3 > const &,::Element< 3, 3 > * ) ;
+            typedef double ( DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeConstantInUSourceTerm_function_type)( ::ChastePoint< 3 > const &,::Element< 3, 3 > * ) ;
             
-            HybridLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
                 "ComputeConstantInUSourceTerm"
-                , ComputeConstantInUSourceTerm_function_type(&::HybridLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm)
-                , default_ComputeConstantInUSourceTerm_function_type(&HybridLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeConstantInUSourceTerm)
+                , ComputeConstantInUSourceTerm_function_type(&::DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm)
+                , default_ComputeConstantInUSourceTerm_function_type(&DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeConstantInUSourceTerm)
                 , ( bp::arg("rX"), bp::arg("pElement") ) );
         
         }
-        { //::HybridLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm
+        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm
         
-            typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeConstantInUSourceTerm_function_type)( unsigned int ) ;
             
-            HybridLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
                 "ComputeConstantInUSourceTerm"
-                , ComputeConstantInUSourceTerm_function_type( &::HybridLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm )
+                , ComputeConstantInUSourceTerm_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm )
                 , ( bp::arg("gridIndex")=(unsigned int)(0) ) );
         
         }
-        { //::HybridLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm
+        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm
         
-            typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
             typedef ::boost::numeric::ublas::c_matrix< double, 3, 3 > ( exported_class_t::*ComputeDiffusionTerm_function_type)( ::ChastePoint< 3 > const & ) ;
-            typedef ::boost::numeric::ublas::c_matrix< double, 3, 3 > ( HybridLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeDiffusionTerm_function_type)( ::ChastePoint< 3 > const & ) ;
+            typedef ::boost::numeric::ublas::c_matrix< double, 3, 3 > ( DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeDiffusionTerm_function_type)( ::ChastePoint< 3 > const & ) ;
             
-            HybridLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
                 "ComputeDiffusionTerm"
-                , ComputeDiffusionTerm_function_type(&::HybridLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm)
-                , default_ComputeDiffusionTerm_function_type(&HybridLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeDiffusionTerm)
+                , ComputeDiffusionTerm_function_type(&::DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm)
+                , default_ComputeDiffusionTerm_function_type(&DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeDiffusionTerm)
                 , ( bp::arg("arg0") ) );
         
         }
-        { //::HybridLinearEllipticPde< 3, 3 >::ComputeIsotropicDiffusionTerm
+        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeIsotropicDiffusionTerm
         
-            typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeIsotropicDiffusionTerm_function_type)(  ) ;
             
-            HybridLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
                 "ComputeIsotropicDiffusionTerm"
-                , ComputeIsotropicDiffusionTerm_function_type( &::HybridLinearEllipticPde< 3, 3 >::ComputeIsotropicDiffusionTerm ) );
+                , ComputeIsotropicDiffusionTerm_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeIsotropicDiffusionTerm ) );
         
         }
-        { //::HybridLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm
+        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm
         
-            typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeLinearInUCoeffInSourceTerm_function_type)( ::ChastePoint< 3 > const &,::Element< 3, 3 > * ) ;
-            typedef double ( HybridLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeLinearInUCoeffInSourceTerm_function_type)( ::ChastePoint< 3 > const &,::Element< 3, 3 > * ) ;
+            typedef double ( DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeLinearInUCoeffInSourceTerm_function_type)( ::ChastePoint< 3 > const &,::Element< 3, 3 > * ) ;
             
-            HybridLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
                 "ComputeLinearInUCoeffInSourceTerm"
-                , ComputeLinearInUCoeffInSourceTerm_function_type(&::HybridLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm)
-                , default_ComputeLinearInUCoeffInSourceTerm_function_type(&HybridLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeLinearInUCoeffInSourceTerm)
+                , ComputeLinearInUCoeffInSourceTerm_function_type(&::DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm)
+                , default_ComputeLinearInUCoeffInSourceTerm_function_type(&DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeLinearInUCoeffInSourceTerm)
                 , ( bp::arg("rX"), bp::arg("pElement") ) );
         
         }
-        { //::HybridLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm
+        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm
         
-            typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeLinearInUCoeffInSourceTerm_function_type)( unsigned int ) ;
             
-            HybridLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
                 "ComputeLinearInUCoeffInSourceTerm"
-                , ComputeLinearInUCoeffInSourceTerm_function_type( &::HybridLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm )
+                , ComputeLinearInUCoeffInSourceTerm_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm )
                 , ( bp::arg("gridIndex")=(unsigned int)(0) ) );
         
         }
-        { //::HybridLinearEllipticPde< 3, 3 >::Create
+        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::Create
         
-            typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
-            typedef ::boost::shared_ptr< HybridLinearEllipticPde< 3, 3 > > ( *Create_function_type )(  );
+            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef ::boost::shared_ptr< DiscreteContinuumLinearEllipticPde< 3, 3 > > ( *Create_function_type )(  );
             
-            HybridLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
                 "Create"
-                , Create_function_type( &::HybridLinearEllipticPde< 3, 3 >::Create ) );
+                , Create_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::Create ) );
         
         }
-        { //::HybridLinearEllipticPde< 3, 3 >::GetDiscreteSources
+        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::GetDiscreteSources
         
-            typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
             typedef ::std::vector< boost::shared_ptr<DiscreteSource<3> > > ( exported_class_t::*GetDiscreteSources_function_type)(  ) ;
             
-            HybridLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
                 "GetDiscreteSources"
-                , GetDiscreteSources_function_type( &::HybridLinearEllipticPde< 3, 3 >::GetDiscreteSources ) );
+                , GetDiscreteSources_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::GetDiscreteSources ) );
         
         }
-        { //::HybridLinearEllipticPde< 3, 3 >::GetVariableName
+        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::GetVariableName
         
-            typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
             typedef ::std::string const & ( exported_class_t::*GetVariableName_function_type)(  ) ;
             
-            HybridLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
                 "GetVariableName"
-                , GetVariableName_function_type( &::HybridLinearEllipticPde< 3, 3 >::GetVariableName )
+                , GetVariableName_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::GetVariableName )
                 , bp::return_value_policy< bp::copy_const_reference >() );
         
         }
-        { //::HybridLinearEllipticPde< 3, 3 >::SetContinuumConstantInUTerm
+        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetContinuumConstantInUTerm
         
-            typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetContinuumConstantInUTerm_function_type)( double ) ;
             
-            HybridLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
                 "SetContinuumConstantInUTerm"
-                , SetContinuumConstantInUTerm_function_type( &::HybridLinearEllipticPde< 3, 3 >::SetContinuumConstantInUTerm )
+                , SetContinuumConstantInUTerm_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetContinuumConstantInUTerm )
                 , ( bp::arg("constantInUTerm") ) );
         
         }
-        { //::HybridLinearEllipticPde< 3, 3 >::SetContinuumLinearInUTerm
+        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetContinuumLinearInUTerm
         
-            typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetContinuumLinearInUTerm_function_type)( double ) ;
             
-            HybridLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
                 "SetContinuumLinearInUTerm"
-                , SetContinuumLinearInUTerm_function_type( &::HybridLinearEllipticPde< 3, 3 >::SetContinuumLinearInUTerm )
+                , SetContinuumLinearInUTerm_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetContinuumLinearInUTerm )
                 , ( bp::arg("linearInUTerm") ) );
         
         }
-        { //::HybridLinearEllipticPde< 3, 3 >::SetIsotropicDiffusionConstant
+        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetIsotropicDiffusionConstant
         
-            typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetIsotropicDiffusionConstant_function_type)( double ) ;
             
-            HybridLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
                 "SetIsotropicDiffusionConstant"
-                , SetIsotropicDiffusionConstant_function_type( &::HybridLinearEllipticPde< 3, 3 >::SetIsotropicDiffusionConstant )
+                , SetIsotropicDiffusionConstant_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetIsotropicDiffusionConstant )
                 , ( bp::arg("diffusivity") ) );
         
         }
-        { //::HybridLinearEllipticPde< 3, 3 >::SetMesh
+        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetMesh
         
-            typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetMesh_function_type)( ::boost::shared_ptr< TetrahedralMesh< 3, 3 > > ) ;
             
-            HybridLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
                 "SetMesh"
-                , SetMesh_function_type( &::HybridLinearEllipticPde< 3, 3 >::SetMesh )
+                , SetMesh_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetMesh )
                 , ( bp::arg("pMesh") ) );
         
         }
-        { //::HybridLinearEllipticPde< 3, 3 >::SetRegularGrid
+        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetRegularGrid
         
-            typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetRegularGrid_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
             
-            HybridLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
                 "SetRegularGrid"
-                , SetRegularGrid_function_type( &::HybridLinearEllipticPde< 3, 3 >::SetRegularGrid )
+                , SetRegularGrid_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetRegularGrid )
                 , ( bp::arg("pRegularGrid") ) );
         
         }
-        { //::HybridLinearEllipticPde< 3, 3 >::SetUseRegularGrid
+        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetUseRegularGrid
         
-            typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetUseRegularGrid_function_type)( bool ) ;
             
-            HybridLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
                 "SetUseRegularGrid"
-                , SetUseRegularGrid_function_type( &::HybridLinearEllipticPde< 3, 3 >::SetUseRegularGrid )
+                , SetUseRegularGrid_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetUseRegularGrid )
                 , ( bp::arg("useRegularGrid") ) );
         
         }
-        { //::HybridLinearEllipticPde< 3, 3 >::SetVariableName
+        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetVariableName
         
-            typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetVariableName_function_type)( ::std::string const & ) ;
             
-            HybridLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
                 "SetVariableName"
-                , SetVariableName_function_type( &::HybridLinearEllipticPde< 3, 3 >::SetVariableName )
+                , SetVariableName_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetVariableName )
                 , ( bp::arg("rVariableName") ) );
         
         }
-        { //::HybridLinearEllipticPde< 3, 3 >::UpdateDiscreteSourceStrengths
+        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::UpdateDiscreteSourceStrengths
         
-            typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateDiscreteSourceStrengths_function_type)(  ) ;
             
-            HybridLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
                 "UpdateDiscreteSourceStrengths"
-                , UpdateDiscreteSourceStrengths_function_type( &::HybridLinearEllipticPde< 3, 3 >::UpdateDiscreteSourceStrengths ) );
+                , UpdateDiscreteSourceStrengths_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::UpdateDiscreteSourceStrengths ) );
         
         }
         { //::AbstractLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTermAtNode
         
-            typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeConstantInUSourceTermAtNode_function_type)( ::Node< 3 > const & ) ;
-            typedef double ( HybridLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeConstantInUSourceTermAtNode_function_type)( ::Node< 3 > const & ) ;
+            typedef double ( DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeConstantInUSourceTermAtNode_function_type)( ::Node< 3 > const & ) ;
             
-            HybridLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
                 "ComputeConstantInUSourceTermAtNode"
                 , ComputeConstantInUSourceTermAtNode_function_type(&::AbstractLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTermAtNode)
-                , default_ComputeConstantInUSourceTermAtNode_function_type(&HybridLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeConstantInUSourceTermAtNode)
+                , default_ComputeConstantInUSourceTermAtNode_function_type(&DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeConstantInUSourceTermAtNode)
                 , ( bp::arg("rNode") ) );
         
         }
         { //::AbstractLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTermAtNode
         
-            typedef HybridLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeLinearInUCoeffInSourceTermAtNode_function_type)( ::Node< 3 > const & ) ;
-            typedef double ( HybridLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeLinearInUCoeffInSourceTermAtNode_function_type)( ::Node< 3 > const & ) ;
+            typedef double ( DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeLinearInUCoeffInSourceTermAtNode_function_type)( ::Node< 3 > const & ) ;
             
-            HybridLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
                 "ComputeLinearInUCoeffInSourceTermAtNode"
                 , ComputeLinearInUCoeffInSourceTermAtNode_function_type(&::AbstractLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTermAtNode)
-                , default_ComputeLinearInUCoeffInSourceTermAtNode_function_type(&HybridLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeLinearInUCoeffInSourceTermAtNode)
+                , default_ComputeLinearInUCoeffInSourceTermAtNode_function_type(&DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeLinearInUCoeffInSourceTermAtNode)
                 , ( bp::arg("rNode") ) );
         
         }
-        HybridLinearEllipticPde3_3_exposer.staticmethod( "Create" );
-        bp::register_ptr_to_python< boost::shared_ptr< HybridLinearEllipticPde<3, 3> > >();
-        bp::implicitly_convertible< boost::shared_ptr< HybridLinearEllipticPde< 3, 3 > >, boost::shared_ptr< AbstractLinearEllipticPde< 3, 3 > > >();
+        DiscreteContinuumLinearEllipticPde3_3_exposer.staticmethod( "Create" );
+        bp::register_ptr_to_python< boost::shared_ptr< DiscreteContinuumLinearEllipticPde<3, 3> > >();
+        bp::implicitly_convertible< boost::shared_ptr< DiscreteContinuumLinearEllipticPde< 3, 3 > >, boost::shared_ptr< AbstractLinearEllipticPde< 3, 3 > > >();
     }
 
-    { //::HybridNonLinearEllipticPde< 3, 3 >
-        typedef bp::class_< HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper > HybridNonLinearEllipticPde3_3_exposer_t;
-        HybridNonLinearEllipticPde3_3_exposer_t HybridNonLinearEllipticPde3_3_exposer = HybridNonLinearEllipticPde3_3_exposer_t( "HybridNonLinearEllipticPde3_3", bp::init< >() );
-        bp::scope HybridNonLinearEllipticPde3_3_scope( HybridNonLinearEllipticPde3_3_exposer );
-        { //::HybridNonLinearEllipticPde< 3, 3 >::AddDiscreteSource
+    { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >
+        typedef bp::class_< DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper > DiscreteContinuumNonLinearEllipticPde3_3_exposer_t;
+        DiscreteContinuumNonLinearEllipticPde3_3_exposer_t DiscreteContinuumNonLinearEllipticPde3_3_exposer = DiscreteContinuumNonLinearEllipticPde3_3_exposer_t( "DiscreteContinuumNonLinearEllipticPde3_3", bp::init< >() );
+        bp::scope DiscreteContinuumNonLinearEllipticPde3_3_scope( DiscreteContinuumNonLinearEllipticPde3_3_exposer );
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::AddDiscreteSource
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*AddDiscreteSource_function_type)( ::boost::shared_ptr< DiscreteSource< 3 > > ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "AddDiscreteSource"
-                , AddDiscreteSource_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::AddDiscreteSource )
+                , AddDiscreteSource_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::AddDiscreteSource )
                 , ( bp::arg("pDiscreteSource") ) );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeConstantInUSourceTerm_function_type)( ::ChastePoint< 3 > const &,::Element< 3, 3 > * ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "ComputeConstantInUSourceTerm"
-                , ComputeConstantInUSourceTerm_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm )
+                , ComputeConstantInUSourceTerm_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm )
                 , ( bp::arg("rX"), bp::arg("pElement") ) );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeConstantInUSourceTerm_function_type)( unsigned int ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "ComputeConstantInUSourceTerm"
-                , ComputeConstantInUSourceTerm_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm )
+                , ComputeConstantInUSourceTerm_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm )
                 , ( bp::arg("gridIndex")=(unsigned int)(0) ) );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef ::boost::numeric::ublas::c_matrix< double, 3, 3 > ( exported_class_t::*ComputeDiffusionTerm_function_type)( ::ChastePoint< 3 > const &,double ) ;
-            typedef ::boost::numeric::ublas::c_matrix< double, 3, 3 > ( HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeDiffusionTerm_function_type)( ::ChastePoint< 3 > const &,double ) ;
+            typedef ::boost::numeric::ublas::c_matrix< double, 3, 3 > ( DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeDiffusionTerm_function_type)( ::ChastePoint< 3 > const &,double ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "ComputeDiffusionTerm"
-                , ComputeDiffusionTerm_function_type(&::HybridNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm)
-                , default_ComputeDiffusionTerm_function_type(&HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeDiffusionTerm)
+                , ComputeDiffusionTerm_function_type(&::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm)
+                , default_ComputeDiffusionTerm_function_type(&DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeDiffusionTerm)
                 , ( bp::arg("arg0"), bp::arg("u") ) );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTermPrime
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTermPrime
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef ::boost::numeric::ublas::c_matrix< double, 3, 3 > ( exported_class_t::*ComputeDiffusionTermPrime_function_type)( ::ChastePoint< 3 > const &,double ) ;
-            typedef ::boost::numeric::ublas::c_matrix< double, 3, 3 > ( HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeDiffusionTermPrime_function_type)( ::ChastePoint< 3 > const &,double ) ;
+            typedef ::boost::numeric::ublas::c_matrix< double, 3, 3 > ( DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeDiffusionTermPrime_function_type)( ::ChastePoint< 3 > const &,double ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "ComputeDiffusionTermPrime"
-                , ComputeDiffusionTermPrime_function_type(&::HybridNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTermPrime)
-                , default_ComputeDiffusionTermPrime_function_type(&HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeDiffusionTermPrime)
+                , ComputeDiffusionTermPrime_function_type(&::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTermPrime)
+                , default_ComputeDiffusionTermPrime_function_type(&DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeDiffusionTermPrime)
                 , ( bp::arg("rX"), bp::arg("u") ) );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::ComputeIsotropicDiffusionTerm
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeIsotropicDiffusionTerm
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeIsotropicDiffusionTerm_function_type)(  ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "ComputeIsotropicDiffusionTerm"
-                , ComputeIsotropicDiffusionTerm_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::ComputeIsotropicDiffusionTerm ) );
+                , ComputeIsotropicDiffusionTerm_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeIsotropicDiffusionTerm ) );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeLinearInUCoeffInSourceTerm_function_type)( ::ChastePoint< 3 > const &,::Element< 3, 3 > * ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "ComputeLinearInUCoeffInSourceTerm"
-                , ComputeLinearInUCoeffInSourceTerm_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm )
+                , ComputeLinearInUCoeffInSourceTerm_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm )
                 , ( bp::arg("rX"), bp::arg("pElement") ) );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeLinearInUCoeffInSourceTerm_function_type)( unsigned int ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "ComputeLinearInUCoeffInSourceTerm"
-                , ComputeLinearInUCoeffInSourceTerm_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm )
+                , ComputeLinearInUCoeffInSourceTerm_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm )
                 , ( bp::arg("gridIndex")=(unsigned int)(0) ) );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::ComputeLinearSourceTerm
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeLinearSourceTerm
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeLinearSourceTerm_function_type)( ::ChastePoint< 3 > const & ) ;
-            typedef double ( HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeLinearSourceTerm_function_type)( ::ChastePoint< 3 > const & ) ;
+            typedef double ( DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeLinearSourceTerm_function_type)( ::ChastePoint< 3 > const & ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "ComputeLinearSourceTerm"
-                , ComputeLinearSourceTerm_function_type(&::HybridNonLinearEllipticPde< 3, 3 >::ComputeLinearSourceTerm)
-                , default_ComputeLinearSourceTerm_function_type(&HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeLinearSourceTerm)
+                , ComputeLinearSourceTerm_function_type(&::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeLinearSourceTerm)
+                , default_ComputeLinearSourceTerm_function_type(&DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeLinearSourceTerm)
                 , ( bp::arg("rX") ) );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTerm
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTerm
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeNonlinearSourceTerm_function_type)( ::ChastePoint< 3 > const &,double ) ;
-            typedef double ( HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeNonlinearSourceTerm_function_type)( ::ChastePoint< 3 > const &,double ) ;
+            typedef double ( DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeNonlinearSourceTerm_function_type)( ::ChastePoint< 3 > const &,double ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "ComputeNonlinearSourceTerm"
-                , ComputeNonlinearSourceTerm_function_type(&::HybridNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTerm)
-                , default_ComputeNonlinearSourceTerm_function_type(&HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeNonlinearSourceTerm)
+                , ComputeNonlinearSourceTerm_function_type(&::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTerm)
+                , default_ComputeNonlinearSourceTerm_function_type(&DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeNonlinearSourceTerm)
                 , ( bp::arg("rX"), bp::arg("u") ) );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTerm
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTerm
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeNonlinearSourceTerm_function_type)( unsigned int,double ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "ComputeNonlinearSourceTerm"
-                , ComputeNonlinearSourceTerm_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTerm )
+                , ComputeNonlinearSourceTerm_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTerm )
                 , ( bp::arg("gridIndex"), bp::arg("u") ) );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTermPrime
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTermPrime
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeNonlinearSourceTermPrime_function_type)( ::ChastePoint< 3 > const &,double ) ;
-            typedef double ( HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeNonlinearSourceTermPrime_function_type)( ::ChastePoint< 3 > const &,double ) ;
+            typedef double ( DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeNonlinearSourceTermPrime_function_type)( ::ChastePoint< 3 > const &,double ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "ComputeNonlinearSourceTermPrime"
-                , ComputeNonlinearSourceTermPrime_function_type(&::HybridNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTermPrime)
-                , default_ComputeNonlinearSourceTermPrime_function_type(&HybridNonLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeNonlinearSourceTermPrime)
+                , ComputeNonlinearSourceTermPrime_function_type(&::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTermPrime)
+                , default_ComputeNonlinearSourceTermPrime_function_type(&DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeNonlinearSourceTermPrime)
                 , ( bp::arg("rX"), bp::arg("u") ) );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTermPrime
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTermPrime
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeNonlinearSourceTermPrime_function_type)( unsigned int,double ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "ComputeNonlinearSourceTermPrime"
-                , ComputeNonlinearSourceTermPrime_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTermPrime )
+                , ComputeNonlinearSourceTermPrime_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTermPrime )
                 , ( bp::arg("gridIndex"), bp::arg("u") ) );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::Create
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::Create
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
-            typedef ::boost::shared_ptr< HybridNonLinearEllipticPde< 3, 3 > > ( *Create_function_type )(  );
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef ::boost::shared_ptr< DiscreteContinuumNonLinearEllipticPde< 3, 3 > > ( *Create_function_type )(  );
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "Create"
-                , Create_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::Create ) );
+                , Create_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::Create ) );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::GetDiscreteSources
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::GetDiscreteSources
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef ::std::vector< boost::shared_ptr<DiscreteSource<3> > > ( exported_class_t::*GetDiscreteSources_function_type)(  ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "GetDiscreteSources"
-                , GetDiscreteSources_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::GetDiscreteSources ) );
+                , GetDiscreteSources_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::GetDiscreteSources ) );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::GetThreshold
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::GetThreshold
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*GetThreshold_function_type)(  ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "GetThreshold"
-                , GetThreshold_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::GetThreshold ) );
+                , GetThreshold_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::GetThreshold ) );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::GetVariableName
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::GetVariableName
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef ::std::string const & ( exported_class_t::*GetVariableName_function_type)(  ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "GetVariableName"
-                , GetVariableName_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::GetVariableName )
+                , GetVariableName_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::GetVariableName )
                 , bp::return_value_policy< bp::copy_const_reference >() );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::SetContinuumConstantInUTerm
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetContinuumConstantInUTerm
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetContinuumConstantInUTerm_function_type)( double ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "SetContinuumConstantInUTerm"
-                , SetContinuumConstantInUTerm_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::SetContinuumConstantInUTerm )
+                , SetContinuumConstantInUTerm_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetContinuumConstantInUTerm )
                 , ( bp::arg("constantInUTerm") ) );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::SetContinuumLinearInUTerm
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetContinuumLinearInUTerm
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetContinuumLinearInUTerm_function_type)( double ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "SetContinuumLinearInUTerm"
-                , SetContinuumLinearInUTerm_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::SetContinuumLinearInUTerm )
+                , SetContinuumLinearInUTerm_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetContinuumLinearInUTerm )
                 , ( bp::arg("linearInUTerm") ) );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::SetIsotropicDiffusionConstant
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetIsotropicDiffusionConstant
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetIsotropicDiffusionConstant_function_type)( double ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "SetIsotropicDiffusionConstant"
-                , SetIsotropicDiffusionConstant_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::SetIsotropicDiffusionConstant )
+                , SetIsotropicDiffusionConstant_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetIsotropicDiffusionConstant )
                 , ( bp::arg("diffusivity") ) );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::SetMesh
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetMesh
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetMesh_function_type)( ::boost::shared_ptr< TetrahedralMesh< 3, 3 > > ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "SetMesh"
-                , SetMesh_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::SetMesh )
+                , SetMesh_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetMesh )
                 , ( bp::arg("pMesh") ) );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::SetRegularGrid
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetRegularGrid
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetRegularGrid_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "SetRegularGrid"
-                , SetRegularGrid_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::SetRegularGrid )
+                , SetRegularGrid_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetRegularGrid )
                 , ( bp::arg("pRegularGrid") ) );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::SetThreshold
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetThreshold
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetThreshold_function_type)( double ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "SetThreshold"
-                , SetThreshold_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::SetThreshold )
+                , SetThreshold_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetThreshold )
                 , ( bp::arg("threshold") ) );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::SetUseRegularGrid
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetUseRegularGrid
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetUseRegularGrid_function_type)( bool ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "SetUseRegularGrid"
-                , SetUseRegularGrid_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::SetUseRegularGrid )
+                , SetUseRegularGrid_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetUseRegularGrid )
                 , ( bp::arg("useRegularGrid") ) );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::SetVariableName
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetVariableName
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetVariableName_function_type)( ::std::string const & ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "SetVariableName"
-                , SetVariableName_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::SetVariableName )
+                , SetVariableName_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetVariableName )
                 , ( bp::arg("rVariableName") ) );
         
         }
-        { //::HybridNonLinearEllipticPde< 3, 3 >::UpdateDiscreteSourceStrengths
+        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::UpdateDiscreteSourceStrengths
         
-            typedef HybridNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateDiscreteSourceStrengths_function_type)(  ) ;
             
-            HybridNonLinearEllipticPde3_3_exposer.def( 
+            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
                 "UpdateDiscreteSourceStrengths"
-                , UpdateDiscreteSourceStrengths_function_type( &::HybridNonLinearEllipticPde< 3, 3 >::UpdateDiscreteSourceStrengths ) );
+                , UpdateDiscreteSourceStrengths_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::UpdateDiscreteSourceStrengths ) );
         
         }
-        HybridNonLinearEllipticPde3_3_exposer.staticmethod( "Create" );
-        bp::register_ptr_to_python< boost::shared_ptr< HybridNonLinearEllipticPde<3, 3> > >();
-        bp::implicitly_convertible< boost::shared_ptr< HybridNonLinearEllipticPde< 3, 3 > >, boost::shared_ptr< AbstractNonlinearEllipticPde< 3 > > >();
+        DiscreteContinuumNonLinearEllipticPde3_3_exposer.staticmethod( "Create" );
+        bp::register_ptr_to_python< boost::shared_ptr< DiscreteContinuumNonLinearEllipticPde<3, 3> > >();
+        bp::implicitly_convertible< boost::shared_ptr< DiscreteContinuumNonLinearEllipticPde< 3, 3 > >, boost::shared_ptr< AbstractNonlinearEllipticPde< 3 > > >();
     }
 
     { //::chaste::pde::Instantiation

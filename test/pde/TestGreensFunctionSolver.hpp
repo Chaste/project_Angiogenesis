@@ -40,7 +40,7 @@
 #include "GreensFunctionSolver.hpp"
 #include "VesselNetwork.hpp"
 #include "VasculatureGenerator.hpp"
-#include "HybridLinearEllipticPde.hpp"
+#include "DiscreteContinuumLinearEllipticPde.hpp"
 #include "RegularGrid.hpp"
 #include "UnitCollection.hpp"
 
@@ -70,7 +70,7 @@ public:
         p_grid->GenerateFromPart(p_domain, 0.1*1.e-6*unit::metres);
 
         // Choose the PDE
-        boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
+        boost::shared_ptr<DiscreteContinuumLinearEllipticPde<3> > p_pde = DiscreteContinuumLinearEllipticPde<3>::Create();
         p_pde->SetIsotropicDiffusionConstant(1);
         p_pde->SetContinuumConstantInUTerm(-2.0);
 

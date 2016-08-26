@@ -42,7 +42,7 @@
 #include "Warnings.hpp"
 #include "Facet.hpp"
 #include "Polygon.hpp"
-#include "HybridMesh.hpp"
+#include "DiscreteContinuumMesh.hpp"
 #include "Element.hpp"
 #include "UblasVectorInclude.hpp"
 #include "AbstractTetrahedralMesh.hpp"
@@ -50,7 +50,7 @@
 #include "Debug.hpp"
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-HybridMesh<ELEMENT_DIM, SPACE_DIM>::HybridMesh() :
+DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::DiscreteContinuumMesh() :
     mMaxElementArea(0.0),
     mpDomain(),
     mpVtkDomain(),
@@ -63,56 +63,56 @@ HybridMesh<ELEMENT_DIM, SPACE_DIM>::HybridMesh() :
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-boost::shared_ptr<HybridMesh<ELEMENT_DIM, SPACE_DIM> > HybridMesh<ELEMENT_DIM, SPACE_DIM>::Create()
+boost::shared_ptr<DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM> > DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::Create()
 {
-    MAKE_PTR(HybridMesh<ELEMENT_DIM>, pSelf);
+    MAKE_PTR(DiscreteContinuumMesh<ELEMENT_DIM>, pSelf);
     return pSelf;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-HybridMesh<ELEMENT_DIM, SPACE_DIM>::~HybridMesh()
+DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::~DiscreteContinuumMesh()
 {
 
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridMesh<ELEMENT_DIM, SPACE_DIM>::SetDomain(boost::shared_ptr<Part<SPACE_DIM> > pDomain)
+void DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::SetDomain(boost::shared_ptr<Part<SPACE_DIM> > pDomain)
 {
     mpDomain = pDomain;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridMesh<ELEMENT_DIM, SPACE_DIM>::SetDomain(vtkSmartPointer<vtkPolyData> pDomain)
+void DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::SetDomain(vtkSmartPointer<vtkPolyData> pDomain)
 {
     mpVtkDomain = pDomain;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridMesh<ELEMENT_DIM, SPACE_DIM>::SetDomain(const std::string& rPathToStl)
+void DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::SetDomain(const std::string& rPathToStl)
 {
     mStlFilePath = rPathToStl;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridMesh<ELEMENT_DIM, SPACE_DIM>::SetMaxElementArea(double maxElementArea)
+void DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::SetMaxElementArea(double maxElementArea)
 {
     mMaxElementArea = maxElementArea;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridMesh<ELEMENT_DIM, SPACE_DIM>::SetHoles(std::vector<c_vector<double, SPACE_DIM> > holes)
+void DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::SetHoles(std::vector<c_vector<double, SPACE_DIM> > holes)
 {
     mHoles = holes;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridMesh<ELEMENT_DIM, SPACE_DIM>::SetRegionMarkers(std::vector<c_vector<double, SPACE_DIM> > regionMarkers)
+void DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::SetRegionMarkers(std::vector<c_vector<double, SPACE_DIM> > regionMarkers)
 {
     mRegions = regionMarkers;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridMesh<ELEMENT_DIM, SPACE_DIM>::Update()
+void DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::Update()
 {
     // For 2D parts use triangle
     if (ELEMENT_DIM == 2)
@@ -172,7 +172,7 @@ void HybridMesh<ELEMENT_DIM, SPACE_DIM>::Update()
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridMesh<ELEMENT_DIM, SPACE_DIM>::Mesh2d()
+void DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::Mesh2d()
 {
     struct triangulateio mesher_input, mesher_output;
     this->InitialiseTriangulateIo(mesher_input);
@@ -338,13 +338,13 @@ void HybridMesh<ELEMENT_DIM, SPACE_DIM>::Mesh2d()
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-std::vector<unsigned> HybridMesh<ELEMENT_DIM, SPACE_DIM>::GetElementRegionMarkers()
+std::vector<unsigned> DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::GetElementRegionMarkers()
 {
     return mAttributes;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridMesh<ELEMENT_DIM, SPACE_DIM>::Mesh3d()
+void DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::Mesh3d()
 {
     std::vector<c_vector<double, SPACE_DIM> > vertex_locations = mpDomain->GetVertexLocations();
     std::vector<c_vector<double, SPACE_DIM> > hole_locations = mpDomain->GetHoleMarkers();
@@ -431,7 +431,7 @@ void HybridMesh<ELEMENT_DIM, SPACE_DIM>::Mesh3d()
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridMesh<ELEMENT_DIM, SPACE_DIM>::MeshStl3d()
+void DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::MeshStl3d()
 {
     class tetgen::tetgenio mesher_input, mesher_output;
     char * writable = new char[mStlFilePath.size() + 1];
@@ -469,7 +469,7 @@ void HybridMesh<ELEMENT_DIM, SPACE_DIM>::MeshStl3d()
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridMesh<ELEMENT_DIM, SPACE_DIM>::ImportFromTetgen(tetgen::tetgenio& mesherOutput, unsigned numberOfElements,
+void DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::ImportFromTetgen(tetgen::tetgenio& mesherOutput, unsigned numberOfElements,
                                                           int *elementList, unsigned numberOfFaces, int *faceList,
                                                           int *edgeMarkerList)
 {
@@ -598,7 +598,7 @@ void HybridMesh<ELEMENT_DIM, SPACE_DIM>::ImportFromTetgen(tetgen::tetgenio& mesh
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-std::vector<std::vector<unsigned> > HybridMesh<ELEMENT_DIM, SPACE_DIM>::GetConnectivity()
+std::vector<std::vector<unsigned> > DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::GetConnectivity()
 {
     std::vector<std::vector<unsigned> > connectivity;
     unsigned num_elements = AbstractTetrahedralMesh<ELEMENT_DIM, SPACE_DIM>::GetNumElements();
@@ -617,7 +617,7 @@ std::vector<std::vector<unsigned> > HybridMesh<ELEMENT_DIM, SPACE_DIM>::GetConne
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-std::vector<std::vector<double> > HybridMesh<ELEMENT_DIM, SPACE_DIM>::GetNodeLocations()
+std::vector<std::vector<double> > DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::GetNodeLocations()
 {
     std::vector<std::vector<double> > locations;
     unsigned num_nodes = AbstractTetrahedralMesh<ELEMENT_DIM, SPACE_DIM>::GetNumNodes();
@@ -636,7 +636,7 @@ std::vector<std::vector<double> > HybridMesh<ELEMENT_DIM, SPACE_DIM>::GetNodeLoc
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridMesh<ELEMENT_DIM, SPACE_DIM>::InitialiseTriangulateIo(triangulateio& mesherIo)
+void DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::InitialiseTriangulateIo(triangulateio& mesherIo)
 {
     mesherIo.numberofpoints = 0;
     mesherIo.pointlist = NULL;
@@ -656,7 +656,7 @@ void HybridMesh<ELEMENT_DIM, SPACE_DIM>::InitialiseTriangulateIo(triangulateio& 
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void HybridMesh<ELEMENT_DIM, SPACE_DIM>::FreeTriangulateIo(triangulateio& mesherIo)
+void DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::FreeTriangulateIo(triangulateio& mesherIo)
 {
     if (mesherIo.numberofpoints != 0)
     {
@@ -681,5 +681,5 @@ void HybridMesh<ELEMENT_DIM, SPACE_DIM>::FreeTriangulateIo(triangulateio& mesher
 }
 
 // Explicit instantiation
-template class HybridMesh<2> ;
-template class HybridMesh<3> ;
+template class DiscreteContinuumMesh<2> ;
+template class DiscreteContinuumMesh<3> ;

@@ -216,7 +216,7 @@ void DiscreteSource<DIM>::SetPoints(std::vector<c_vector<double, DIM> > points)
 }
 
 template<unsigned DIM>
-void DiscreteSource<DIM>::SetMesh(boost::shared_ptr<HybridMesh<DIM, DIM> > pMesh)
+void DiscreteSource<DIM>::SetMesh(boost::shared_ptr<DiscreteContinuumMesh<DIM, DIM> > pMesh)
 {
     mpMesh = pMesh;
 }

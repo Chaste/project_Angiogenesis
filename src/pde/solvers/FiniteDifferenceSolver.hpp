@@ -39,14 +39,14 @@
 #include "SmartPointers.hpp"
 #include "LinearSystem.hpp"
 #include "SimplePetscNonlinearSolver.hpp"
-#include "AbstractRegularGridHybridSolver.hpp"
+#include "AbstractRegularGridDiscreteContinuumSolver.hpp"
 
 /*
  * Finite difference solver for linear elliptic PDEs which can include
  * discrete representations of cells and vessels.
  */
 template<unsigned DIM>
-class FiniteDifferenceSolver : public AbstractRegularGridHybridSolver<DIM>
+class FiniteDifferenceSolver : public AbstractRegularGridDiscreteContinuumSolver<DIM>
 {
 
     /* Description of boundary conditions for this grid

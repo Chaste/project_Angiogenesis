@@ -37,7 +37,7 @@
 
 template<unsigned DIM>
 FunctionMap<DIM>::FunctionMap()
-    :   AbstractRegularGridHybridSolver<DIM>()
+    :   AbstractRegularGridDiscreteContinuumSolver<DIM>()
 {
 
 }

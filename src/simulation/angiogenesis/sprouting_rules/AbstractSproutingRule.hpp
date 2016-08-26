@@ -42,7 +42,7 @@
 #include "VesselNode.hpp"
 #include "SmartPointers.hpp"
 #include "RegularGrid.hpp"
-#include "AbstractHybridSolver.hpp"
+#include "AbstractDiscreteContinuumSolver.hpp"
 #include "UnitCollection.hpp"
 
 /**
@@ -56,9 +56,9 @@ class AbstractSproutingRule
 protected:
 
     /**
-     * A hybrid solver containing a solution field of interest
+     * A DiscreteContinuum solver containing a solution field of interest
      */
-    boost::shared_ptr<AbstractHybridSolver<DIM> > mpSolver;
+    boost::shared_ptr<AbstractDiscreteContinuumSolver<DIM> > mpSolver;
 
     /**
      * The probability that a sprout will form per unit time
@@ -88,10 +88,10 @@ public:
     virtual ~AbstractSproutingRule();
 
     /**
-     * Set the hybrid solver containing the VEGF field
-     * @param pSolver the hybrid solver containing the VEGF field
+     * Set the DiscreteContinuum solver containing the VEGF field
+     * @param pSolver the DiscreteContinuum solver containing the VEGF field
      */
-    void SetHybridSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pSolver);
+    void SetDiscreteContinuumSolver(boost::shared_ptr<AbstractDiscreteContinuumSolver<DIM> > pSolver);
 
     /**
      * Set the vessel network

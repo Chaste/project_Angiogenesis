@@ -44,12 +44,12 @@
 #include "UblasIncludes.hpp"
 #include "Part.hpp"
 #include "Vertex.hpp"
-#include "HybridLinearEllipticPde.hpp"
+#include "DiscreteContinuumLinearEllipticPde.hpp"
 #include "VesselNetwork.hpp"
 #include "VasculatureGenerator.hpp"
 #include "SmartPointers.hpp"
-#include "HybridBoundaryCondition.hpp"
-#include "HybridMesh.hpp"
+#include "DiscreteContinuumBoundaryCondition.hpp"
+#include "DiscreteContinuumMesh.hpp"
 #include "PetscSetupAndFinalize.hpp"
 
 class TestFiniteElementSolver : public CxxTest::TestSuite
@@ -71,18 +71,18 @@ public:
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
         p_domain->AddCuboid(vessel_length, vessel_length, vessel_length);
         p_domain->AddVesselNetwork(p_network);
-        boost::shared_ptr<HybridMesh<3, 3> > p_mesh = HybridMesh<3, 3>::Create();
+        boost::shared_ptr<DiscreteContinuumMesh<3, 3> > p_mesh = DiscreteContinuumMesh<3, 3>::Create();
         p_mesh->SetDomain(p_domain);
         p_mesh->SetMaxElementArea(500.0);
         p_mesh->Update();
 
         // Choose the PDE
-        boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
+        boost::shared_ptr<DiscreteContinuumLinearEllipticPde<3> > p_pde = DiscreteContinuumLinearEllipticPde<3>::Create();
         p_pde->SetIsotropicDiffusionConstant(0.0033);
         p_pde->SetContinuumLinearInUTerm(-2.e-7);
 
         // Choose the Boundary conditions
-        boost::shared_ptr<HybridBoundaryCondition<3> > p_vessel_ox_boundary_condition = HybridBoundaryCondition<3>::Create();
+        boost::shared_ptr<DiscreteContinuumBoundaryCondition<3> > p_vessel_ox_boundary_condition = DiscreteContinuumBoundaryCondition<3>::Create();
         p_vessel_ox_boundary_condition->SetValue(40.0);
         p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_LINE);
         p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
@@ -113,18 +113,18 @@ public:
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
         p_domain->AddCuboid(vessel_length, vessel_length, vessel_length);
         p_domain->AddVesselNetwork(p_network, true);
-        boost::shared_ptr<HybridMesh<3, 3> > p_mesh = HybridMesh<3, 3>::Create();
+        boost::shared_ptr<DiscreteContinuumMesh<3, 3> > p_mesh = DiscreteContinuumMesh<3, 3>::Create();
         p_mesh->SetDomain(p_domain);
         p_mesh->SetMaxElementArea(500.0);
         p_mesh->Update();
 
         // Choose the PDE
-        boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
+        boost::shared_ptr<DiscreteContinuumLinearEllipticPde<3> > p_pde = DiscreteContinuumLinearEllipticPde<3>::Create();
         p_pde->SetIsotropicDiffusionConstant(0.0033);
         p_pde->SetContinuumLinearInUTerm(-2.e-7);
 
         // Choose the Boundary conditions
-        boost::shared_ptr<HybridBoundaryCondition<3> > p_vessel_ox_boundary_condition = HybridBoundaryCondition<3>::Create();
+        boost::shared_ptr<DiscreteContinuumBoundaryCondition<3> > p_vessel_ox_boundary_condition = DiscreteContinuumBoundaryCondition<3>::Create();
         p_vessel_ox_boundary_condition->SetValue(40.0);
         p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_VOLUME);
         p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);

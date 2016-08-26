@@ -40,7 +40,7 @@
 
 template<unsigned DIM>
 LacunarityCalculator<DIM>::LacunarityCalculator() :
-        AbstractRegularGridHybridSolver<DIM>(), mpNetwork()
+        AbstractRegularGridDiscreteContinuumSolver<DIM>(), mpNetwork()
 {
 
 }

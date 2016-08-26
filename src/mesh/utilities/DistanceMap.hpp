@@ -37,11 +37,11 @@
 #define DistanceMap_HPP_
 
 #include "SmartPointers.hpp"
-#include "AbstractRegularGridHybridSolver.hpp"
+#include "AbstractRegularGridDiscreteContinuumSolver.hpp"
 #include "UnitCollection.hpp"
 
 template<unsigned DIM>
-class DistanceMap : public AbstractRegularGridHybridSolver<DIM>
+class DistanceMap : public AbstractRegularGridDiscreteContinuumSolver<DIM>
 {
     bool mUseSegmentRadii;
 

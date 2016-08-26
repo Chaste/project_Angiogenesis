@@ -37,10 +37,10 @@
 #define DENSITYMAP_HPP_
 
 #include "SmartPointers.hpp"
-#include "AbstractRegularGridHybridSolver.hpp"
+#include "AbstractRegularGridDiscreteContinuumSolver.hpp"
 
 template<unsigned DIM>
-class DensityMap : public AbstractRegularGridHybridSolver<DIM>
+class DensityMap : public AbstractRegularGridDiscreteContinuumSolver<DIM>
 {
 
 public:

@@ -40,7 +40,7 @@
 #include <string>
 #include "VesselNode.hpp"
 #include "SmartPointers.hpp"
-#include "AbstractHybridSolver.hpp"
+#include "AbstractDiscreteContinuumSolver.hpp"
 #include "AbstractCellPopulation.hpp"
 
 /**
@@ -54,9 +54,9 @@ class AbstractMigrationRule
 protected:
 
     /**
-     * A hybrid solver containing a solution field of interest
+     * A DiscreteContinuum solver containing a solution field of interest
      */
-    boost::shared_ptr<AbstractHybridSolver<DIM> > mpSolver;
+    boost::shared_ptr<AbstractDiscreteContinuumSolver<DIM> > mpSolver;
 
     /**
      * The vessel network
@@ -103,10 +103,10 @@ public:
      void SetIsSprouting(bool isSprouting = true);
 
     /**
-     * Set the hybrid solver containing the stimulus field
-     * @param pSolver the hybrid solver containing the stimulus field
+     * Set the DiscreteContinuum solver containing the stimulus field
+     * @param pSolver the DiscreteContinuum solver containing the stimulus field
      */
-    void SetHybridSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pSolver);
+    void SetDiscreteContinuumSolver(boost::shared_ptr<AbstractDiscreteContinuumSolver<DIM> > pSolver);
 
     /**
      * Set the vessel network

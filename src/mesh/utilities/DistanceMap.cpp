@@ -40,7 +40,7 @@
 template<unsigned DIM>
 DistanceMap<DIM>::DistanceMap()
 
-    :   AbstractRegularGridHybridSolver<DIM>(),
+    :   AbstractRegularGridDiscreteContinuumSolver<DIM>(),
         mUseSegmentRadii(false)
 {
 

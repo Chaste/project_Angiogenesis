@@ -65,7 +65,7 @@ void AbstractMigrationRule<DIM>::SetGrid(boost::shared_ptr<RegularGrid<DIM> > pG
 }
 
 template<unsigned DIM>
-void AbstractMigrationRule<DIM>::SetHybridSolver(boost::shared_ptr<AbstractHybridSolver<DIM> > pSolver)
+void AbstractMigrationRule<DIM>::SetDiscreteContinuumSolver(boost::shared_ptr<AbstractDiscreteContinuumSolver<DIM> > pSolver)
 {
     mpSolver = pSolver;
 }

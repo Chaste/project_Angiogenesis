@@ -64,10 +64,10 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "GeneralisedLinearSpringForce.hpp"
 #include "FakePetscSetup.hpp"
 #include "FiniteDifferenceSolver.hpp"
-#include "HybridLinearEllipticPde.hpp"
+#include "DiscreteContinuumLinearEllipticPde.hpp"
 #include "VasculatureGenerator.hpp"
 #include "SimpleOxygenBasedCellCycleModel.hpp"
-#include "HybridBoundaryCondition.hpp"
+#include "DiscreteContinuumBoundaryCondition.hpp"
 #include "DiscreteSource.hpp"
 #include "CellLabelWriter.hpp"
 #include "Vessel.hpp"
@@ -147,7 +147,7 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
     boost::shared_ptr<FiniteDifferenceSolver<3> > GetOxygenSolver(boost::shared_ptr<Part<3> > p_domain,
                                                                   boost::shared_ptr<VesselNetwork<3> > p_network)
     {
-        boost::shared_ptr<HybridLinearEllipticPde<3> > p_oxygen_pde = HybridLinearEllipticPde<3>::Create();
+        boost::shared_ptr<DiscreteContinuumLinearEllipticPde<3> > p_oxygen_pde = DiscreteContinuumLinearEllipticPde<3>::Create();
         p_oxygen_pde->SetIsotropicDiffusionConstant(0.0033);
         p_oxygen_pde->SetVariableName("oxygen");
 
@@ -158,7 +158,7 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
         p_cell_oxygen_sink->SetIsLinearInSolution(true);
         p_oxygen_pde->AddDiscreteSource(p_cell_oxygen_sink);
 
-        boost::shared_ptr<HybridBoundaryCondition<3> > p_vessel_ox_boundary_condition = HybridBoundaryCondition<3>::Create();
+        boost::shared_ptr<DiscreteContinuumBoundaryCondition<3> > p_vessel_ox_boundary_condition = DiscreteContinuumBoundaryCondition<3>::Create();
         p_vessel_ox_boundary_condition->SetValue(40.0);
         p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_LINE);
         p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
@@ -177,7 +177,7 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
     boost::shared_ptr<FiniteDifferenceSolver<3> > GetVegfSolver(boost::shared_ptr<Part<3> > p_domain,
                                                                   boost::shared_ptr<VesselNetwork<3> > p_network)
     {
-        boost::shared_ptr<HybridLinearEllipticPde<3> > p_vegf_pde = HybridLinearEllipticPde<3>::Create();
+        boost::shared_ptr<DiscreteContinuumLinearEllipticPde<3> > p_vegf_pde = DiscreteContinuumLinearEllipticPde<3>::Create();
         p_vegf_pde->SetIsotropicDiffusionConstant(0.0033);
         p_vegf_pde->SetVariableName("vegf");
         p_vegf_pde->SetContinuumLinearInUTerm(-1.e-7);
@@ -244,8 +244,8 @@ public:
         // Create the angiogenesis solver
         boost::shared_ptr<VascularTumourSolver<3> > p_vascular_tumour_solver = VascularTumourSolver<3>::Create();
         p_vascular_tumour_solver->SetVesselNetwork(p_network);
-        p_vascular_tumour_solver->AddHybridSolver(p_oxygen_solver);
-        p_vascular_tumour_solver->AddHybridSolver(p_vegf_solver);
+        p_vascular_tumour_solver->AddDiscreteContinuumSolver(p_oxygen_solver);
+        p_vascular_tumour_solver->AddDiscreteContinuumSolver(p_vegf_solver);
 
         boost::shared_ptr<VascularTumourModifier<3> > p_simulation_modifier = boost::shared_ptr<VascularTumourModifier<3> >(new VascularTumourModifier<3>);
         p_simulation_modifier->SetVascularTumourSolver(p_vascular_tumour_solver);
@@ -311,8 +311,8 @@ public:
         // Create the angiogenesis solver
         boost::shared_ptr<VascularTumourSolver<3> > p_vascular_tumour_solver = VascularTumourSolver<3>::Create();
         p_vascular_tumour_solver->SetVesselNetwork(p_network);
-        p_vascular_tumour_solver->AddHybridSolver(p_oxygen_solver);
-        p_vascular_tumour_solver->AddHybridSolver(p_vegf_solver);
+        p_vascular_tumour_solver->AddDiscreteContinuumSolver(p_oxygen_solver);
+        p_vascular_tumour_solver->AddDiscreteContinuumSolver(p_vegf_solver);
 
         boost::shared_ptr<VascularTumourModifier<3> > p_simulation_modifier = boost::shared_ptr<VascularTumourModifier<3> >(new VascularTumourModifier<3>);
         p_simulation_modifier->SetVascularTumourSolver(p_vascular_tumour_solver);

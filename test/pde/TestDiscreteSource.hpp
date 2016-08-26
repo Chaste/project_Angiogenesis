@@ -41,8 +41,8 @@
 #include <string>
 #include "SmartPointers.hpp"
 #include "Part.hpp"
-#include "HybridLinearEllipticPde.hpp"
-#include "HybridNonLinearEllipticPde.hpp"
+#include "DiscreteContinuumLinearEllipticPde.hpp"
+#include "DiscreteContinuumNonLinearEllipticPde.hpp"
 #include "FiniteDifferenceSolver.hpp"
 #include "VesselNetwork.hpp"
 #include "VasculatureGenerator.hpp"
@@ -77,7 +77,7 @@ public:
         p_grid->GenerateFromPart(p_domain, 10.0 * 1.e-6 * unit::metres);
 
         // Choose the PDE
-        boost::shared_ptr<HybridLinearEllipticPde<3> > p_pde = HybridLinearEllipticPde<3>::Create();
+        boost::shared_ptr<DiscreteContinuumLinearEllipticPde<3> > p_pde = DiscreteContinuumLinearEllipticPde<3>::Create();
         p_pde->SetIsotropicDiffusionConstant(0.0033);
         p_pde->SetContinuumConstantInUTerm(-2.e-6);
 
@@ -129,7 +129,7 @@ public:
         p_grid->GenerateFromPart(p_domain, 10.0 * 1.e-6 * unit::metres);
 
         // Choose the PDE
-        boost::shared_ptr<HybridNonLinearEllipticPde<3> > p_pde = HybridNonLinearEllipticPde<3>::Create();
+        boost::shared_ptr<DiscreteContinuumNonLinearEllipticPde<3> > p_pde = DiscreteContinuumNonLinearEllipticPde<3>::Create();
         p_pde->SetIsotropicDiffusionConstant(0.0033);
         p_pde->SetContinuumConstantInUTerm(-2.e-6);
         p_pde->SetThreshold(2.5);

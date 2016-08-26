@@ -44,10 +44,10 @@
 #include "SmartPointers.hpp"
 #include "VesselSegment.hpp"
 #include "Part.hpp"
-#include "AbstractRegularGridHybridSolver.hpp"
+#include "AbstractRegularGridDiscreteContinuumSolver.hpp"
 
 template<unsigned DIM>
-class GreensFunctionSolver : public AbstractRegularGridHybridSolver<DIM>
+class GreensFunctionSolver : public AbstractRegularGridDiscreteContinuumSolver<DIM>
 {
     boost::shared_ptr<Part<DIM> > mpDomain;
     std::vector<ChastePoint<DIM> > mSinkCoordinates;

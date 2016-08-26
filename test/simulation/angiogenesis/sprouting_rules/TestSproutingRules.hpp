@@ -122,7 +122,7 @@ public:
         p_sprouting_rule->SetSproutingProbability(0.2);
         p_sprouting_rule->SetGrid(p_grid);
         p_sprouting_rule->SetVesselNetwork(p_network);
-        p_sprouting_rule->SetHybridSolver(p_funciton_map);
+        p_sprouting_rule->SetDiscreteContinuumSolver(p_funciton_map);
 
         // Test that we get some, but not all, sprouts
         RandomNumberGenerator::Instance()->Reseed(522525);

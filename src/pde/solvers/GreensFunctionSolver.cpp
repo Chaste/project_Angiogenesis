@@ -55,7 +55,7 @@
 
 template<unsigned DIM>
 GreensFunctionSolver<DIM>::GreensFunctionSolver()
-    : AbstractRegularGridHybridSolver<DIM>(),
+    : AbstractRegularGridDiscreteContinuumSolver<DIM>(),
       mpDomain(),
       mSinkCoordinates(),
       mSinkPointMap(),

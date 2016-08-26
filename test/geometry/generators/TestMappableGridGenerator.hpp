@@ -44,7 +44,7 @@
 #include "OutputFileHandler.hpp"
 #include "MappableGridGenerator.hpp"
 #include "Part.hpp"
-#include "HybridMesh.hpp"
+#include "DiscreteContinuumMesh.hpp"
 #include "Vertex.hpp"
 #include "VtkMeshWriter.hpp"
 
@@ -66,7 +66,7 @@ public:
         TS_ASSERT_EQUALS(p_part_no_caps->GetPolygons().size(), 180u);
 
         // Make sure the resulting part can be meshed
-        boost::shared_ptr<HybridMesh<3> > p_mesh = HybridMesh<3>::Create();
+        boost::shared_ptr<DiscreteContinuumMesh<3> > p_mesh = DiscreteContinuumMesh<3>::Create();
         p_mesh->SetDomain(p_part);
         p_mesh->Update();
         VtkMeshWriter<3, 3> mesh_writer("TestMappableGridGenerator", "Plane", false);
@@ -93,7 +93,7 @@ public:
         }
 
         // Make sure the part can be meshed
-        boost::shared_ptr<HybridMesh<3> > p_mesh = HybridMesh<3>::Create();
+        boost::shared_ptr<DiscreteContinuumMesh<3> > p_mesh = DiscreteContinuumMesh<3>::Create();
         p_mesh->SetDomain(p_part);
         p_mesh->Update();
         VtkMeshWriter<3, 3> mesh_writer("TestMappableGridGenerator", "Closed_Cylinder", false);
@@ -118,7 +118,7 @@ public:
         }
 
         // Make sure the part can be meshed
-        boost::shared_ptr<HybridMesh<3> > p_mesh = HybridMesh<3>::Create();
+        boost::shared_ptr<DiscreteContinuumMesh<3> > p_mesh = DiscreteContinuumMesh<3>::Create();
         p_mesh->SetDomain(p_part);
         p_mesh->Update();
         VtkMeshWriter<3, 3> mesh_writer("TestMappableGridGenerator", "Hemisphere", false);

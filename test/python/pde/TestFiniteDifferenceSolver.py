@@ -1,4 +1,4 @@
-''' Tests for the hybrid solver module.
+''' Tests for the DiscreteContinuum solver module.
 '''
 
 import unittest
@@ -19,11 +19,11 @@ class TestFiniteDifferenceSolver(unittest.TestCase):
         grid = chaste.mesh.RegularGrid()
         grid.GenerateFromPart(domain, 10.0)
         
-        pde = chaste.pde.HybridLinearEllipticPde()
+        pde = chaste.pde.DiscreteContinuumLinearEllipticPde()
         pde.SetIsotropicDiffusionConstant(0.003)
         pde.SetContinuumLinearInUTerm(-1.e-5)
         
-        bc = chaste.pde.HybridBoundaryCondition()
+        bc = chaste.pde.DiscreteContinuumBoundaryCondition()
         bc.SetValue(30.0)
         
 #         file_handler = chaste.core.OutputFileHandler("chaste/TestFiniteDifferenceSolver")
@@ -44,7 +44,7 @@ class TestFiniteDifferenceSolver(unittest.TestCase):
         grid = chaste.mesh.RegularGrid()
         grid.GenerateFromPart(domain, 10.0)
         
-        pde = chaste.pde.HybridLinearEllipticPde()
+        pde = chaste.pde.DiscreteContinuumLinearEllipticPde()
         pde.SetIsotropicDiffusionConstant(0.003)
         pde.SetContinuumLinearInUTerm(-1.e-5)
         
@@ -52,7 +52,7 @@ class TestFiniteDifferenceSolver(unittest.TestCase):
             if eachFacet.GetCentroid()[0] == 0.0:
                 eachFacet.SetData("Boundary", 30.0)
         
-        bc = chaste.pde.HybridBoundaryCondition()
+        bc = chaste.pde.DiscreteContinuumBoundaryCondition()
         bc.SetType(chaste.pde.BoundaryConditionType.FACET)
         bc.SetSource(chaste.pde.BoundaryConditionSource.LABEL_BASED)
         bc.SetLabelName("Boundary")
@@ -71,7 +71,7 @@ class TestFiniteDifferenceSolver(unittest.TestCase):
         grid = chaste.mesh.RegularGrid()
         grid.GenerateFromPart(domain, 10.0)
         
-        pde = chaste.pde.HybridLinearEllipticPde()
+        pde = chaste.pde.DiscreteContinuumLinearEllipticPde()
         pde.SetIsotropicDiffusionConstant(0.003)
         pde.SetContinuumLinearInUTerm(-1.e-5)
         
@@ -83,13 +83,13 @@ class TestFiniteDifferenceSolver(unittest.TestCase):
             if eachFacet.GetCentroid()[0] == 100.0:
                 eachFacet.SetData("RightBoundary", 15.0)
         
-        left_bc = chaste.pde.HybridBoundaryCondition()
+        left_bc = chaste.pde.DiscreteContinuumBoundaryCondition()
         left_bc.SetType(chaste.pde.BoundaryConditionType.FACET)
         left_bc.SetSource(chaste.pde.BoundaryConditionSource.LABEL_BASED)
         left_bc.SetLabelName("LeftBoundary")
         left_bc.SetDomain(domain)
         
-        right_bc = chaste.pde.HybridBoundaryCondition()
+        right_bc = chaste.pde.DiscreteContinuumBoundaryCondition()
         right_bc.SetType(chaste.pde.BoundaryConditionType.FACET)
         right_bc.SetSource(chaste.pde.BoundaryConditionSource.LABEL_BASED)
         right_bc.SetLabelName("RightBoundary")

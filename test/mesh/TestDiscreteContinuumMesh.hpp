@@ -33,15 +33,15 @@
 
  */
 
-#ifndef TESTHybridMesh_HPP_
-#define TESTHybridMesh_HPP_
+#ifndef TESTDiscreteContinuumMesh_HPP_
+#define TESTDiscreteContinuumMesh_HPP_
 
 #include <cxxtest/TestSuite.h>
 #include <vector>
 #include "SmartPointers.hpp"
 #include "Polygon.hpp"
 #include "Part.hpp"
-#include "HybridMesh.hpp"
+#include "DiscreteContinuumMesh.hpp"
 #include "VtkMeshWriter.hpp"
 #include "OutputFileHandler.hpp"
 #include "VasculatureGenerator.hpp"
@@ -51,7 +51,7 @@
 #include "VesselNetwork.hpp"
 #include "UnitCollection.hpp"
 
-class TestHybridMesh : public CxxTest::TestSuite
+class TestDiscreteContinuumMesh : public CxxTest::TestSuite
 {
 private:
 
@@ -97,12 +97,12 @@ public:
         boost::shared_ptr<Polygon> p_circle = p_part->AddCircle();
         p_part->Extrude(p_circle);
 
-        boost::shared_ptr<HybridMesh<3> > p_mesh = HybridMesh<3>::Create();
+        boost::shared_ptr<DiscreteContinuumMesh<3> > p_mesh = DiscreteContinuumMesh<3>::Create();
         p_mesh->SetDomain(p_part);
         p_mesh->SetMaxElementArea(20.0);
         p_mesh->Update();
 
-        VtkMeshWriter<3, 3> mesh_writer("TestHybridMesh", "Cylinder", false);
+        VtkMeshWriter<3, 3> mesh_writer("TestDiscreteContinuumMesh", "Cylinder", false);
         mesh_writer.WriteFilesUsingMesh(*p_mesh);
     }
 
@@ -120,12 +120,12 @@ public:
         p_part->Extrude(p_circle, 100.0);
         p_part->AddVesselNetwork(p_network);
 
-        boost::shared_ptr<HybridMesh<3> > p_mesh = HybridMesh<3>::Create();
+        boost::shared_ptr<DiscreteContinuumMesh<3> > p_mesh = DiscreteContinuumMesh<3>::Create();
         p_mesh->SetDomain(p_part);
         p_mesh->SetMaxElementArea(100.0);
         p_mesh->Update();
 
-        VtkMeshWriter<3, 3> mesh_writer("TestHybridMesh", "CylinderWithVesselLine", false);
+        VtkMeshWriter<3, 3> mesh_writer("TestDiscreteContinuumMesh", "CylinderWithVesselLine", false);
         mesh_writer.WriteFilesUsingMesh(*p_mesh);
     }
 
@@ -142,12 +142,12 @@ public:
         p_part->Extrude(p_circle, 100.0);
         p_part->AddVesselNetwork(p_network, true);
 
-        boost::shared_ptr<HybridMesh<3> > p_mesh = HybridMesh<3>::Create();
+        boost::shared_ptr<DiscreteContinuumMesh<3> > p_mesh = DiscreteContinuumMesh<3>::Create();
         p_mesh->SetDomain(p_part);
         p_mesh->SetMaxElementArea(100.0);
         p_mesh->Update();
 
-        VtkMeshWriter < 3, 3 > mesh_writer("TestHybridMesh", "CylinderWithVesselSurface", false);
+        VtkMeshWriter < 3, 3 > mesh_writer("TestDiscreteContinuumMesh", "CylinderWithVesselSurface", false);
         mesh_writer.WriteFilesUsingMesh(*p_mesh);
     }
 
@@ -167,11 +167,11 @@ public:
         p_part->AddCuboid(vessel_length, vessel_length, vessel_length);
         p_part->AddVesselNetwork(p_network);
 
-        boost::shared_ptr<HybridMesh<3> > p_mesh = HybridMesh<3>::Create();
+        boost::shared_ptr<DiscreteContinuumMesh<3> > p_mesh = DiscreteContinuumMesh<3>::Create();
         p_mesh->SetDomain(p_part);
         p_mesh->SetMaxElementArea(100.0);
         p_mesh->Update();
-        VtkMeshWriter <3, 3> mesh_writer("TestHybridMesh", "CubeWithVesselLine", false);
+        VtkMeshWriter <3, 3> mesh_writer("TestDiscreteContinuumMesh", "CubeWithVesselLine", false);
         mesh_writer.WriteFilesUsingMesh(*p_mesh);
     }
 
@@ -190,11 +190,11 @@ public:
         p_part->AddCuboid(2.0 * vessel_length, 2.0 * vessel_length, vessel_length);
         p_part->AddVesselNetwork(p_network, true);
 
-        boost::shared_ptr<HybridMesh<3> > p_mesh = HybridMesh<3>::Create();
+        boost::shared_ptr<DiscreteContinuumMesh<3> > p_mesh = DiscreteContinuumMesh<3>::Create();
         p_mesh->SetDomain(p_part);
         p_mesh->SetMaxElementArea(100.0);
         p_mesh->Update();
-        VtkMeshWriter<3, 3> mesh_writer("TestHybridMesh", "CubeWithVesselSurface", false);
+        VtkMeshWriter<3, 3> mesh_writer("TestDiscreteContinuumMesh", "CubeWithVesselSurface", false);
         mesh_writer.WriteFilesUsingMesh(*p_mesh);
     }
 
@@ -217,11 +217,11 @@ public:
         p_part->Translate(translate);
         p_part->AddVesselNetwork(p_network, true);
 
-        boost::shared_ptr<HybridMesh<3> > p_mesh = HybridMesh<3>::Create();
+        boost::shared_ptr<DiscreteContinuumMesh<3> > p_mesh = DiscreteContinuumMesh<3>::Create();
         p_mesh->SetDomain(p_part);
         p_mesh->SetMaxElementArea(100.0);
         p_mesh->Update();
-        VtkMeshWriter<3, 3> mesh_writer("TestHybridMesh", "CubeWithVesselSurface", false);
+        VtkMeshWriter<3, 3> mesh_writer("TestDiscreteContinuumMesh", "CubeWithVesselSurface", false);
         mesh_writer.WriteFilesUsingMesh(*p_mesh);
     }
 
@@ -238,13 +238,13 @@ public:
         p_part->AddCuboid(domain_width, domain_height, vessel_length);
         p_part->AddVesselNetwork(SetUpNetwork(), true);
 
-        boost::shared_ptr<HybridMesh<3> > p_mesh = HybridMesh<3>::Create();
+        boost::shared_ptr<DiscreteContinuumMesh<3> > p_mesh = DiscreteContinuumMesh<3>::Create();
         p_mesh->SetDomain(p_part);
         p_mesh->SetMaxElementArea(1000.0);
         p_mesh->Update();
-        VtkMeshWriter < 3, 3 > mesh_writer("TestHybridMesh", "ParrallelVesselSurface", false);
+        VtkMeshWriter < 3, 3 > mesh_writer("TestDiscreteContinuumMesh", "ParrallelVesselSurface", false);
         mesh_writer.WriteFilesUsingMesh(*p_mesh);
     }
 };
 
-#endif /*TESTHybridMesh_HPP_*/
+#endif /*TESTDiscreteContinuumMesh_HPP_*/

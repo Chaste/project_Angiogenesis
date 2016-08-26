@@ -44,13 +44,13 @@
 #include "UblasIncludes.hpp"
 #include "Part.hpp"
 #include "Vertex.hpp"
-#include "HybridLinearEllipticPde.hpp"
-#include "HybridNonLinearEllipticPde.hpp"
+#include "DiscreteContinuumLinearEllipticPde.hpp"
+#include "DiscreteContinuumNonLinearEllipticPde.hpp"
 #include "VesselNetwork.hpp"
 #include "VasculatureGenerator.hpp"
 #include "SmartPointers.hpp"
-#include "HybridBoundaryCondition.hpp"
-#include "HybridMesh.hpp"
+#include "DiscreteContinuumBoundaryCondition.hpp"
+#include "DiscreteContinuumMesh.hpp"
 #include "PetscSetupAndFinalize.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "Debug.hpp"
@@ -64,22 +64,22 @@ public:
         // Set up the mesh
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
         p_domain->AddCuboid(4.0, 4.0, 4.0);
-        boost::shared_ptr<HybridMesh<3, 3> > p_mesh = HybridMesh<3, 3>::Create();
+        boost::shared_ptr<DiscreteContinuumMesh<3, 3> > p_mesh = DiscreteContinuumMesh<3, 3>::Create();
         p_mesh->SetDomain(p_domain);
         p_mesh->SetMaxElementArea(0.1);
         p_mesh->Update();
 
         // Choose the PDE
-        boost::shared_ptr<HybridLinearEllipticPde<3> > p_linear_pde = HybridLinearEllipticPde<3>::Create();
+        boost::shared_ptr<DiscreteContinuumLinearEllipticPde<3> > p_linear_pde = DiscreteContinuumLinearEllipticPde<3>::Create();
         p_linear_pde->SetIsotropicDiffusionConstant(1.0);
         p_linear_pde->SetContinuumLinearInUTerm(-2.0);
 
-        boost::shared_ptr<HybridNonLinearEllipticPde<3> > p_non_linear_pde = HybridNonLinearEllipticPde<3>::Create();
+        boost::shared_ptr<DiscreteContinuumNonLinearEllipticPde<3> > p_non_linear_pde = DiscreteContinuumNonLinearEllipticPde<3>::Create();
         p_non_linear_pde->SetIsotropicDiffusionConstant(1.0);
         p_non_linear_pde->SetContinuumConstantInUTerm(-2.0);
 
         // Choose the Boundary conditions
-        boost::shared_ptr<HybridBoundaryCondition<3> > p_outer_boundary_condition = HybridBoundaryCondition<3>::Create();
+        boost::shared_ptr<DiscreteContinuumBoundaryCondition<3> > p_outer_boundary_condition = DiscreteContinuumBoundaryCondition<3>::Create();
         p_outer_boundary_condition->SetValue(1.0);
 
         FiniteElementSolver<3> solver;

@@ -42,11 +42,11 @@
 #include <vtkImageData.h>
 #include <vtkSmartPointer.h>
 
-#include "AbstractRegularGridHybridSolver.hpp"
+#include "AbstractRegularGridDiscreteContinuumSolver.hpp"
 
 template<unsigned DIM>
-AbstractRegularGridHybridSolver<DIM>::AbstractRegularGridHybridSolver()
-    :   AbstractHybridSolver<DIM>(),
+AbstractRegularGridDiscreteContinuumSolver<DIM>::AbstractRegularGridDiscreteContinuumSolver()
+    :   AbstractDiscreteContinuumSolver<DIM>(),
         mpVtkSolution(vtkSmartPointer<vtkImageData>::New()),
         mpRegularGrid(),
         mPointSolution()
@@ -55,13 +55,13 @@ AbstractRegularGridHybridSolver<DIM>::AbstractRegularGridHybridSolver()
 }
 
 template<unsigned DIM>
-AbstractRegularGridHybridSolver<DIM>::~AbstractRegularGridHybridSolver()
+AbstractRegularGridDiscreteContinuumSolver<DIM>::~AbstractRegularGridDiscreteContinuumSolver()
 {
 
 }
 
 template<unsigned DIM>
-boost::shared_ptr<RegularGrid<DIM> > AbstractRegularGridHybridSolver<DIM>::GetGrid()
+boost::shared_ptr<RegularGrid<DIM> > AbstractRegularGridDiscreteContinuumSolver<DIM>::GetGrid()
 {
     if(!this->mpRegularGrid)
     {
@@ -72,7 +72,7 @@ boost::shared_ptr<RegularGrid<DIM> > AbstractRegularGridHybridSolver<DIM>::GetGr
 }
 
 template<unsigned DIM>
-std::vector<double> AbstractRegularGridHybridSolver<DIM>::GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints)
+std::vector<double> AbstractRegularGridDiscreteContinuumSolver<DIM>::GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints)
 {
     if(!this->mpVtkSolution)
     {
@@ -112,7 +112,7 @@ std::vector<double> AbstractRegularGridHybridSolver<DIM>::GetSolutionAtPoints(st
     return sampled_solution;
 }
 template<unsigned DIM>
-std::vector<double> AbstractRegularGridHybridSolver<DIM>::GetSolutionAtGridPoints(boost::shared_ptr<RegularGrid<DIM> > pGrid)
+std::vector<double> AbstractRegularGridDiscreteContinuumSolver<DIM>::GetSolutionAtGridPoints(boost::shared_ptr<RegularGrid<DIM> > pGrid)
 {
     if(this->mpRegularGrid == pGrid)
     {
@@ -125,7 +125,7 @@ std::vector<double> AbstractRegularGridHybridSolver<DIM>::GetSolutionAtGridPoint
 }
 
 template<unsigned DIM>
-vtkSmartPointer<vtkImageData> AbstractRegularGridHybridSolver<DIM>::GetVtkSolution()
+vtkSmartPointer<vtkImageData> AbstractRegularGridDiscreteContinuumSolver<DIM>::GetVtkSolution()
 {
     if(!this->mpVtkSolution)
     {
@@ -136,17 +136,17 @@ vtkSmartPointer<vtkImageData> AbstractRegularGridHybridSolver<DIM>::GetVtkSoluti
 }
 
 template<unsigned DIM>
-void AbstractRegularGridHybridSolver<DIM>::SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid)
+void AbstractRegularGridDiscreteContinuumSolver<DIM>::SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid)
 {
     this->mpRegularGrid = pGrid;
 }
 
 template<unsigned DIM>
-void AbstractRegularGridHybridSolver<DIM>::Setup()
+void AbstractRegularGridDiscreteContinuumSolver<DIM>::Setup()
 {
     if(!this->mpRegularGrid)
     {
-        EXCEPTION("Regular grid hybrid solvers need a grid before Setup can be called.");
+        EXCEPTION("Regular grid DiscreteContinuum solvers need a grid before Setup can be called.");
     }
 
     // Set up the VTK solution
@@ -177,7 +177,7 @@ void AbstractRegularGridHybridSolver<DIM>::Setup()
 }
 
 template<unsigned DIM>
-void AbstractRegularGridHybridSolver<DIM>::UpdateSolution(std::vector<double> data)
+void AbstractRegularGridDiscreteContinuumSolver<DIM>::UpdateSolution(std::vector<double> data)
 {
     if(!this->mpVtkSolution)
     {
@@ -203,7 +203,7 @@ void AbstractRegularGridHybridSolver<DIM>::UpdateSolution(std::vector<double> da
 }
 
 template<unsigned DIM>
-void AbstractRegularGridHybridSolver<DIM>::UpdateCellData()
+void AbstractRegularGridDiscreteContinuumSolver<DIM>::UpdateCellData()
 {
     if(!this->mpVtkSolution)
     {
@@ -212,7 +212,7 @@ void AbstractRegularGridHybridSolver<DIM>::UpdateCellData()
 
     if(!this->CellPopulationIsSet())
     {
-        EXCEPTION("The hybrid solver needs a cell population for this operation.");
+        EXCEPTION("The DiscreteContinuum solver needs a cell population for this operation.");
     }
 
     this->mpRegularGrid->SetCellPopulation(*(this->mpCellPopulation));
@@ -227,13 +227,13 @@ void AbstractRegularGridHybridSolver<DIM>::UpdateCellData()
 }
 
 template<unsigned DIM>
-void AbstractRegularGridHybridSolver<DIM>::Update()
+void AbstractRegularGridDiscreteContinuumSolver<DIM>::Update()
 {
 
 }
 
 template<unsigned DIM>
-std::vector<double> AbstractRegularGridHybridSolver<DIM>::GetPointSolution()
+std::vector<double> AbstractRegularGridDiscreteContinuumSolver<DIM>::GetPointSolution()
 {
     if(!this->mpVtkSolution)
     {
@@ -243,7 +243,7 @@ std::vector<double> AbstractRegularGridHybridSolver<DIM>::GetPointSolution()
 }
 
 template<unsigned DIM>
-void AbstractRegularGridHybridSolver<DIM>::Write()
+void AbstractRegularGridDiscreteContinuumSolver<DIM>::Write()
 {
     if(!this->mpVtkSolution)
     {
@@ -252,7 +252,7 @@ void AbstractRegularGridHybridSolver<DIM>::Write()
 
     if(!this->mpOutputFileHandler)
     {
-        EXCEPTION("An output file handler has not been set for the hybrid solver.");
+        EXCEPTION("An output file handler has not been set for the DiscreteContinuum solver.");
     }
 
     vtkSmartPointer<vtkXMLImageDataWriter> pImageDataWriter = vtkSmartPointer<vtkXMLImageDataWriter>::New();
@@ -271,5 +271,5 @@ void AbstractRegularGridHybridSolver<DIM>::Write()
 }
 
 // Explicit instantiation
-template class AbstractRegularGridHybridSolver<2> ;
-template class AbstractRegularGridHybridSolver<3> ;
+template class AbstractRegularGridDiscreteContinuumSolver<2> ;
+template class AbstractRegularGridDiscreteContinuumSolver<3> ;

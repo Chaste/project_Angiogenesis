@@ -69,7 +69,7 @@ struct VascularTumourModifier_less__3__greater__wrapper : VascularTumourModifier
 namespace boost { namespace python { namespace indexing {
 
 template<>
-struct value_traits< boost::shared_ptr< AbstractHybridSolver< 3 > > >{
+struct value_traits< boost::shared_ptr< AbstractDiscreteContinuumSolver< 3 > > >{
 
     static bool const equality_comparable = false;
     
@@ -128,11 +128,11 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_simulation){
         __type_exposer.def( bp::indexing::vector_suite< std::vector< boost::shared_ptr<SimpleCellPopulation<3> > > >() );
     }
 
-    { //::std::vector< boost::shared_ptr<AbstractHybridSolver<3> > >
-        typedef bp::class_< std::vector< boost::shared_ptr<AbstractHybridSolver<3> > > > __type_exposer_t;
+    { //::std::vector< boost::shared_ptr<AbstractDiscreteContinuumSolver<3> > >
+        typedef bp::class_< std::vector< boost::shared_ptr<AbstractDiscreteContinuumSolver<3> > > > __type_exposer_t;
         __type_exposer_t __type_exposer = __type_exposer_t( "__type" );
         bp::scope __type_scope( __type_exposer );
-        __type_exposer.def( bp::indexing::vector_suite< std::vector< boost::shared_ptr<AbstractHybridSolver<3> > > >() );
+        __type_exposer.def( bp::indexing::vector_suite< std::vector< boost::shared_ptr<AbstractDiscreteContinuumSolver<3> > > >() );
     }
 
     bp::class_< NodeBasedSimulationWrapper >( "NodeBasedSimulationWrapper", bp::init< >() )    
@@ -344,15 +344,15 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_simulation){
         typedef bp::class_< VascularTumourSolver< 3 > > VascularTumourSolver3_exposer_t;
         VascularTumourSolver3_exposer_t VascularTumourSolver3_exposer = VascularTumourSolver3_exposer_t( "VascularTumourSolver3", bp::init< >() );
         bp::scope VascularTumourSolver3_scope( VascularTumourSolver3_exposer );
-        { //::VascularTumourSolver< 3 >::AddHybridSolver
+        { //::VascularTumourSolver< 3 >::AddDiscreteContinuumSolver
         
             typedef VascularTumourSolver< 3 > exported_class_t;
-            typedef void ( exported_class_t::*AddHybridSolver_function_type)( ::boost::shared_ptr< AbstractHybridSolver< 3 > > ) ;
+            typedef void ( exported_class_t::*AddDiscreteContinuumSolver_function_type)( ::boost::shared_ptr< AbstractDiscreteContinuumSolver< 3 > > ) ;
             
             VascularTumourSolver3_exposer.def( 
-                "AddHybridSolver"
-                , AddHybridSolver_function_type( &::VascularTumourSolver< 3 >::AddHybridSolver )
-                , ( bp::arg("pHybridSolver") ) );
+                "AddDiscreteContinuumSolver"
+                , AddDiscreteContinuumSolver_function_type( &::VascularTumourSolver< 3 >::AddDiscreteContinuumSolver )
+                , ( bp::arg("pDiscreteContinuumSolver") ) );
         
         }
         { //::VascularTumourSolver< 3 >::Create
@@ -365,14 +365,14 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_simulation){
                 , Create_function_type( &::VascularTumourSolver< 3 >::Create ) );
         
         }
-        { //::VascularTumourSolver< 3 >::GetHybridSolvers
+        { //::VascularTumourSolver< 3 >::GetDiscreteContinuumSolvers
         
             typedef VascularTumourSolver< 3 > exported_class_t;
-            typedef ::std::vector< boost::shared_ptr<AbstractHybridSolver<3> > > ( exported_class_t::*GetHybridSolvers_function_type)(  ) ;
+            typedef ::std::vector< boost::shared_ptr<AbstractDiscreteContinuumSolver<3> > > ( exported_class_t::*GetDiscreteContinuumSolvers_function_type)(  ) ;
             
             VascularTumourSolver3_exposer.def( 
-                "GetHybridSolvers"
-                , GetHybridSolvers_function_type( &::VascularTumourSolver< 3 >::GetHybridSolvers ) );
+                "GetDiscreteContinuumSolvers"
+                , GetDiscreteContinuumSolvers_function_type( &::VascularTumourSolver< 3 >::GetDiscreteContinuumSolvers ) );
         
         }
         { //::VascularTumourSolver< 3 >::Increment

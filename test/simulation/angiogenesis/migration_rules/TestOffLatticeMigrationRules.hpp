@@ -106,11 +106,11 @@ public:
                                                                                             divisions, alignment_axis);
 
         boost::shared_ptr<OffLatticeMigrationRule<3> > p_migration_rule = OffLatticeMigrationRule<3>::Create();
-        p_migration_rule->SetHybridSolver(p_funciton_map); // This contains the vegf field
+        p_migration_rule->SetDiscreteContinuumSolver(p_funciton_map); // This contains the vegf field
         p_migration_rule->SetNetwork(p_network);
 
         boost::shared_ptr<OffLatticeSproutingRule<3> > p_sprouting_rule = OffLatticeSproutingRule<3>::Create();
-        p_sprouting_rule->SetHybridSolver(p_funciton_map); // This contains the vegf field
+        p_sprouting_rule->SetDiscreteContinuumSolver(p_funciton_map); // This contains the vegf field
         p_sprouting_rule->SetSproutingProbability(0.01);
         p_sprouting_rule->SetVesselNetwork(p_network);
 

@@ -37,7 +37,7 @@
 #include "VesselSegment.hpp"
 #include "Vessel.hpp"
 #include "Owen2011MigrationRule.hpp"
-#include "AbstractRegularGridHybridSolver.hpp"
+#include "AbstractRegularGridDiscreteContinuumSolver.hpp"
 
 template<unsigned DIM>
 Owen2011MigrationRule<DIM>::Owen2011MigrationRule()
@@ -79,7 +79,7 @@ std::vector<int> Owen2011MigrationRule<DIM>::GetIndices(const std::vector<boost:
 {
     if(!this->mpSolver)
     {
-        EXCEPTION("A hybrid solver is required for this type of sprouting rule.");
+        EXCEPTION("A DiscreteContinuum solver is required for this type of sprouting rule.");
     }
 
     mVegfField = this->mpSolver->GetSolutionAtGridPoints(this->mpGrid);
