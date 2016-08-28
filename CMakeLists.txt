@@ -42,3 +42,20 @@ set(BUILD_ANGIOGENESIS_PYTHON ON CACHE BOOL "Build Python Bindings for Angiogene
 if(${BUILD_ANGIOGENESIS_PYTHON})
     include(${CMAKE_CURRENT_SOURCE_DIR}/WrapPython.cmake)
 endif(${BUILD_ANGIOGENESIS_PYTHON})
+
+# Add some custom test targets so we can just run on Angiogenesis code
+if (Chaste_PROFILE_GPROF OR Chaste_PROFILE_GPERFTOOLS)
+    if (Chaste_PROFILE_GPERFTOOLS)
+        set(extension gif)
+    else()
+        set(extension gmon)
+    endif()
+    
+    set(CTEST_COMMAND ctest)
+    add_custom_target(profile_project_Angiogenesis
+        COMMAND ${CTEST_COMMAND} "-L" "project_Angiogenesis" "--output-on-failure"
+        COMMAND ${PYTHON_EXECUTABLE} "${Chaste_SOURCE_DIR}/cmake/process_profile.py" "${Chaste_PROFILE_OUTPUT_DIR}" ${extension}
+        DEPENDS Profile 
+        WORKING_DIRECTORY ${Chaste_BINARY_DIR}
+        VERBATIM)
+endif()
