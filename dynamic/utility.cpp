@@ -6,7 +6,122 @@
 
 namespace bp = boost::python;
 
+struct DimensionalSimulationTime_wrapper : DimensionalSimulationTime, bp::wrapper< DimensionalSimulationTime > {
+
+    DimensionalSimulationTime_wrapper( )
+    : DimensionalSimulationTime( )
+      , bp::wrapper< DimensionalSimulationTime >(){
+        // null constructor
+    
+    }
+
+};
+
+struct ParameterCollection_wrapper : ParameterCollection, bp::wrapper< ParameterCollection > {
+
+    ParameterCollection_wrapper( )
+    : ParameterCollection( )
+      , bp::wrapper< ParameterCollection >(){
+        // null constructor
+    
+    }
+
+};
+
 BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_utility){
+    { //::BaseParameterInstance
+        typedef bp::class_< BaseParameterInstance > BaseParameterInstance_exposer_t;
+        BaseParameterInstance_exposer_t BaseParameterInstance_exposer = BaseParameterInstance_exposer_t( "BaseParameterInstance", bp::init< >() );
+        bp::scope BaseParameterInstance_scope( BaseParameterInstance_exposer );
+        { //::BaseParameterInstance::GetBibliographicInformation
+        
+            typedef ::std::string ( ::BaseParameterInstance::*GetBibliographicInformation_function_type)(  ) ;
+            
+            BaseParameterInstance_exposer.def( 
+                "GetBibliographicInformation"
+                , GetBibliographicInformation_function_type( &::BaseParameterInstance::GetBibliographicInformation ) );
+        
+        }
+        { //::BaseParameterInstance::GetName
+        
+            typedef ::std::string ( ::BaseParameterInstance::*GetName_function_type)(  ) ;
+            
+            BaseParameterInstance_exposer.def( 
+                "GetName"
+                , GetName_function_type( &::BaseParameterInstance::GetName ) );
+        
+        }
+        { //::BaseParameterInstance::GetShortDescription
+        
+            typedef ::std::string ( ::BaseParameterInstance::*GetShortDescription_function_type)(  ) ;
+            
+            BaseParameterInstance_exposer.def( 
+                "GetShortDescription"
+                , GetShortDescription_function_type( &::BaseParameterInstance::GetShortDescription ) );
+        
+        }
+        { //::BaseParameterInstance::SetBibliographicInformation
+        
+            typedef void ( ::BaseParameterInstance::*SetBibliographicInformation_function_type)( ::std::string const & ) ;
+            
+            BaseParameterInstance_exposer.def( 
+                "SetBibliographicInformation"
+                , SetBibliographicInformation_function_type( &::BaseParameterInstance::SetBibliographicInformation )
+                , ( bp::arg("rSourceInformation") ) );
+        
+        }
+        { //::BaseParameterInstance::SetName
+        
+            typedef void ( ::BaseParameterInstance::*SetName_function_type)( ::std::string const & ) ;
+            
+            BaseParameterInstance_exposer.def( 
+                "SetName"
+                , SetName_function_type( &::BaseParameterInstance::SetName )
+                , ( bp::arg("rName") ) );
+        
+        }
+        { //::BaseParameterInstance::SetShortDescription
+        
+            typedef void ( ::BaseParameterInstance::*SetShortDescription_function_type)( ::std::string const & ) ;
+            
+            BaseParameterInstance_exposer.def( 
+                "SetShortDescription"
+                , SetShortDescription_function_type( &::BaseParameterInstance::SetShortDescription )
+                , ( bp::arg("rShortDescription") ) );
+        
+        }
+        bp::register_ptr_to_python< boost::shared_ptr< BaseParameterInstance > >();
+    }
+
+    bp::class_< DimensionalSimulationTime_wrapper, boost::noncopyable >( "DimensionalSimulationTime", bp::no_init )    
+        .def( bp::init< >() )    
+        .def( 
+            "Destroy"
+            , (void (*)(  ))( &::DimensionalSimulationTime::Destroy ) )    
+        .def( 
+            "GetReferenceTimeScale"
+            , (::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( ::DimensionalSimulationTime::* )(  ))( &::DimensionalSimulationTime::GetReferenceTimeScale ) )    
+        .def( 
+            "SetReferenceTimeScale"
+            , (void ( ::DimensionalSimulationTime::* )( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ))( &::DimensionalSimulationTime::SetReferenceTimeScale )
+            , ( bp::arg("referenceTimeScale") ) )    
+        .staticmethod( "Destroy" );
+
+    bp::class_< ParameterCollection_wrapper, boost::noncopyable >( "ParameterCollection", bp::no_init )    
+        .def( bp::init< >() )    
+        .def( 
+            "AddParameter"
+            , (void ( ::ParameterCollection::* )( ::boost::shared_ptr< BaseParameterInstance > ))( &::ParameterCollection::AddParameter )
+            , ( bp::arg("pParameter") ) )    
+        .def( 
+            "Destroy"
+            , (void (*)(  ))( &::ParameterCollection::Destroy ) )    
+        .def( 
+            "DumpToFile"
+            , (void ( ::ParameterCollection::* )( ::std::string const & ))( &::ParameterCollection::DumpToFile )
+            , ( bp::arg("rFilename") ) )
+        .staticmethod( "Destroy" );
+
     bp::class_< UnitTester >( "UnitTester", bp::init< >() )    
         .def( 
             "GetMass"
@@ -56,8 +171,6 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_utility){
         typedef bp::class_< boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > > MassQuantity_exposer_t;
         MassQuantity_exposer_t MassQuantity_exposer = MassQuantity_exposer_t( "MassQuantity" );
         bp::scope MassQuantity_scope( MassQuantity_exposer );
-//        MassQuantity_exposer.def(float() * bp::self);
-//        MassQuantity_exposer.def(bp::self * float());
     }
 
     { //::boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >

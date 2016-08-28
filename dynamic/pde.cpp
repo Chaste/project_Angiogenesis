@@ -320,6 +320,162 @@ struct CellStateDependentDiscreteSource_less__3__greater__wrapper : CellStateDep
 
 };
 
+struct DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper : DiscreteContinuumLinearEllipticPde< 3, 3 >, bp::wrapper< DiscreteContinuumLinearEllipticPde< 3, 3 > > {
+
+    DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper(DiscreteContinuumLinearEllipticPde<3, 3> const & arg )
+    : DiscreteContinuumLinearEllipticPde<3, 3>( arg )
+      , bp::wrapper< DiscreteContinuumLinearEllipticPde< 3, 3 > >(){
+        // copy constructor
+        
+    }
+
+    DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper( )
+    : DiscreteContinuumLinearEllipticPde<3, 3>( )
+      , bp::wrapper< DiscreteContinuumLinearEllipticPde< 3, 3 > >(){
+        // null constructor
+    
+    }
+
+    virtual double ComputeConstantInUSourceTerm( ::ChastePoint< 3 > const & rX, ::Element< 3, 3 > * pElement ) {
+        if( bp::override func_ComputeConstantInUSourceTerm = this->get_override( "ComputeConstantInUSourceTerm" ) )
+            return func_ComputeConstantInUSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
+        else{
+            return this->DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
+        }
+    }
+    
+    double default_ComputeConstantInUSourceTerm( ::ChastePoint< 3 > const & rX, ::Element< 3, 3 > * pElement ) {
+        return DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
+    }
+
+    virtual ::boost::numeric::ublas::c_matrix< double, 3, 3 > ComputeDiffusionTerm( ::ChastePoint< 3 > const & arg0 ) {
+        if( bp::override func_ComputeDiffusionTerm = this->get_override( "ComputeDiffusionTerm" ) )
+            return func_ComputeDiffusionTerm( boost::ref(arg0) );
+        else{
+            return this->DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm( boost::ref(arg0) );
+        }
+    }
+    
+    ::boost::numeric::ublas::c_matrix< double, 3, 3 > default_ComputeDiffusionTerm( ::ChastePoint< 3 > const & arg0 ) {
+        return DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm( boost::ref(arg0) );
+    }
+
+    virtual double ComputeLinearInUCoeffInSourceTerm( ::ChastePoint< 3 > const & rX, ::Element< 3, 3 > * pElement ) {
+        if( bp::override func_ComputeLinearInUCoeffInSourceTerm = this->get_override( "ComputeLinearInUCoeffInSourceTerm" ) )
+            return func_ComputeLinearInUCoeffInSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
+        else{
+            return this->DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
+        }
+    }
+    
+    double default_ComputeLinearInUCoeffInSourceTerm( ::ChastePoint< 3 > const & rX, ::Element< 3, 3 > * pElement ) {
+        return DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
+    }
+
+    virtual double ComputeConstantInUSourceTermAtNode( ::Node< 3 > const & rNode ) {
+        if( bp::override func_ComputeConstantInUSourceTermAtNode = this->get_override( "ComputeConstantInUSourceTermAtNode" ) )
+            return func_ComputeConstantInUSourceTermAtNode( boost::ref(rNode) );
+        else{
+            return this->AbstractLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTermAtNode( boost::ref(rNode) );
+        }
+    }
+    
+    double default_ComputeConstantInUSourceTermAtNode( ::Node< 3 > const & rNode ) {
+        return AbstractLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTermAtNode( boost::ref(rNode) );
+    }
+
+    virtual double ComputeLinearInUCoeffInSourceTermAtNode( ::Node< 3 > const & rNode ) {
+        if( bp::override func_ComputeLinearInUCoeffInSourceTermAtNode = this->get_override( "ComputeLinearInUCoeffInSourceTermAtNode" ) )
+            return func_ComputeLinearInUCoeffInSourceTermAtNode( boost::ref(rNode) );
+        else{
+            return this->AbstractLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTermAtNode( boost::ref(rNode) );
+        }
+    }
+    
+    double default_ComputeLinearInUCoeffInSourceTermAtNode( ::Node< 3 > const & rNode ) {
+        return AbstractLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTermAtNode( boost::ref(rNode) );
+    }
+
+};
+
+struct DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper : DiscreteContinuumNonLinearEllipticPde< 3, 3 >, bp::wrapper< DiscreteContinuumNonLinearEllipticPde< 3, 3 > > {
+
+    DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper(DiscreteContinuumNonLinearEllipticPde<3, 3> const & arg )
+    : DiscreteContinuumNonLinearEllipticPde<3, 3>( arg )
+      , bp::wrapper< DiscreteContinuumNonLinearEllipticPde< 3, 3 > >(){
+        // copy constructor
+        
+    }
+
+    DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper( )
+    : DiscreteContinuumNonLinearEllipticPde<3, 3>( )
+      , bp::wrapper< DiscreteContinuumNonLinearEllipticPde< 3, 3 > >(){
+        // null constructor
+    
+    }
+
+    virtual ::boost::numeric::ublas::c_matrix< double, 3, 3 > ComputeDiffusionTerm( ::ChastePoint< 3 > const & arg0, double u ) {
+        if( bp::override func_ComputeDiffusionTerm = this->get_override( "ComputeDiffusionTerm" ) )
+            return func_ComputeDiffusionTerm( boost::ref(arg0), u );
+        else{
+            return this->DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm( boost::ref(arg0), u );
+        }
+    }
+    
+    ::boost::numeric::ublas::c_matrix< double, 3, 3 > default_ComputeDiffusionTerm( ::ChastePoint< 3 > const & arg0, double u ) {
+        return DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm( boost::ref(arg0), u );
+    }
+
+    virtual ::boost::numeric::ublas::c_matrix< double, 3, 3 > ComputeDiffusionTermPrime( ::ChastePoint< 3 > const & rX, double u ) {
+        if( bp::override func_ComputeDiffusionTermPrime = this->get_override( "ComputeDiffusionTermPrime" ) )
+            return func_ComputeDiffusionTermPrime( boost::ref(rX), u );
+        else{
+            return this->DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTermPrime( boost::ref(rX), u );
+        }
+    }
+    
+    ::boost::numeric::ublas::c_matrix< double, 3, 3 > default_ComputeDiffusionTermPrime( ::ChastePoint< 3 > const & rX, double u ) {
+        return DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTermPrime( boost::ref(rX), u );
+    }
+
+    virtual double ComputeLinearSourceTerm( ::ChastePoint< 3 > const & rX ) {
+        if( bp::override func_ComputeLinearSourceTerm = this->get_override( "ComputeLinearSourceTerm" ) )
+            return func_ComputeLinearSourceTerm( boost::ref(rX) );
+        else{
+            return this->DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeLinearSourceTerm( boost::ref(rX) );
+        }
+    }
+    
+    double default_ComputeLinearSourceTerm( ::ChastePoint< 3 > const & rX ) {
+        return DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeLinearSourceTerm( boost::ref(rX) );
+    }
+
+    virtual double ComputeNonlinearSourceTerm( ::ChastePoint< 3 > const & rX, double u ) {
+        if( bp::override func_ComputeNonlinearSourceTerm = this->get_override( "ComputeNonlinearSourceTerm" ) )
+            return func_ComputeNonlinearSourceTerm( boost::ref(rX), u );
+        else{
+            return this->DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTerm( boost::ref(rX), u );
+        }
+    }
+    
+    double default_ComputeNonlinearSourceTerm( ::ChastePoint< 3 > const & rX, double u ) {
+        return DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTerm( boost::ref(rX), u );
+    }
+
+    virtual double ComputeNonlinearSourceTermPrime( ::ChastePoint< 3 > const & rX, double u ) {
+        if( bp::override func_ComputeNonlinearSourceTermPrime = this->get_override( "ComputeNonlinearSourceTermPrime" ) )
+            return func_ComputeNonlinearSourceTermPrime( boost::ref(rX), u );
+        else{
+            return this->DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTermPrime( boost::ref(rX), u );
+        }
+    }
+    
+    double default_ComputeNonlinearSourceTermPrime( ::ChastePoint< 3 > const & rX, double u ) {
+        return DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTermPrime( boost::ref(rX), u );
+    }
+
+};
+
 struct FiniteDifferenceSolver_less__3__greater__wrapper : FiniteDifferenceSolver< 3 >, bp::wrapper< FiniteDifferenceSolver< 3 > > {
 
     FiniteDifferenceSolver_less__3__greater__wrapper(FiniteDifferenceSolver<3> const & arg )
@@ -824,162 +980,6 @@ struct GreensFunctionSolver_less__3__greater__wrapper : GreensFunctionSolver< 3 
 
 };
 
-struct DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper : DiscreteContinuumLinearEllipticPde< 3, 3 >, bp::wrapper< DiscreteContinuumLinearEllipticPde< 3, 3 > > {
-
-    DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper(DiscreteContinuumLinearEllipticPde<3, 3> const & arg )
-    : DiscreteContinuumLinearEllipticPde<3, 3>( arg )
-      , bp::wrapper< DiscreteContinuumLinearEllipticPde< 3, 3 > >(){
-        // copy constructor
-        
-    }
-
-    DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper( )
-    : DiscreteContinuumLinearEllipticPde<3, 3>( )
-      , bp::wrapper< DiscreteContinuumLinearEllipticPde< 3, 3 > >(){
-        // null constructor
-    
-    }
-
-    virtual double ComputeConstantInUSourceTerm( ::ChastePoint< 3 > const & rX, ::Element< 3, 3 > * pElement ) {
-        if( bp::override func_ComputeConstantInUSourceTerm = this->get_override( "ComputeConstantInUSourceTerm" ) )
-            return func_ComputeConstantInUSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
-        else{
-            return this->DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
-        }
-    }
-    
-    double default_ComputeConstantInUSourceTerm( ::ChastePoint< 3 > const & rX, ::Element< 3, 3 > * pElement ) {
-        return DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
-    }
-
-    virtual ::boost::numeric::ublas::c_matrix< double, 3, 3 > ComputeDiffusionTerm( ::ChastePoint< 3 > const & arg0 ) {
-        if( bp::override func_ComputeDiffusionTerm = this->get_override( "ComputeDiffusionTerm" ) )
-            return func_ComputeDiffusionTerm( boost::ref(arg0) );
-        else{
-            return this->DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm( boost::ref(arg0) );
-        }
-    }
-    
-    ::boost::numeric::ublas::c_matrix< double, 3, 3 > default_ComputeDiffusionTerm( ::ChastePoint< 3 > const & arg0 ) {
-        return DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm( boost::ref(arg0) );
-    }
-
-    virtual double ComputeLinearInUCoeffInSourceTerm( ::ChastePoint< 3 > const & rX, ::Element< 3, 3 > * pElement ) {
-        if( bp::override func_ComputeLinearInUCoeffInSourceTerm = this->get_override( "ComputeLinearInUCoeffInSourceTerm" ) )
-            return func_ComputeLinearInUCoeffInSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
-        else{
-            return this->DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
-        }
-    }
-    
-    double default_ComputeLinearInUCoeffInSourceTerm( ::ChastePoint< 3 > const & rX, ::Element< 3, 3 > * pElement ) {
-        return DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
-    }
-
-    virtual double ComputeConstantInUSourceTermAtNode( ::Node< 3 > const & rNode ) {
-        if( bp::override func_ComputeConstantInUSourceTermAtNode = this->get_override( "ComputeConstantInUSourceTermAtNode" ) )
-            return func_ComputeConstantInUSourceTermAtNode( boost::ref(rNode) );
-        else{
-            return this->AbstractLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTermAtNode( boost::ref(rNode) );
-        }
-    }
-    
-    double default_ComputeConstantInUSourceTermAtNode( ::Node< 3 > const & rNode ) {
-        return AbstractLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTermAtNode( boost::ref(rNode) );
-    }
-
-    virtual double ComputeLinearInUCoeffInSourceTermAtNode( ::Node< 3 > const & rNode ) {
-        if( bp::override func_ComputeLinearInUCoeffInSourceTermAtNode = this->get_override( "ComputeLinearInUCoeffInSourceTermAtNode" ) )
-            return func_ComputeLinearInUCoeffInSourceTermAtNode( boost::ref(rNode) );
-        else{
-            return this->AbstractLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTermAtNode( boost::ref(rNode) );
-        }
-    }
-    
-    double default_ComputeLinearInUCoeffInSourceTermAtNode( ::Node< 3 > const & rNode ) {
-        return AbstractLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTermAtNode( boost::ref(rNode) );
-    }
-
-};
-
-struct DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper : DiscreteContinuumNonLinearEllipticPde< 3, 3 >, bp::wrapper< DiscreteContinuumNonLinearEllipticPde< 3, 3 > > {
-
-    DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper(DiscreteContinuumNonLinearEllipticPde<3, 3> const & arg )
-    : DiscreteContinuumNonLinearEllipticPde<3, 3>( arg )
-      , bp::wrapper< DiscreteContinuumNonLinearEllipticPde< 3, 3 > >(){
-        // copy constructor
-        
-    }
-
-    DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper( )
-    : DiscreteContinuumNonLinearEllipticPde<3, 3>( )
-      , bp::wrapper< DiscreteContinuumNonLinearEllipticPde< 3, 3 > >(){
-        // null constructor
-    
-    }
-
-    virtual ::boost::numeric::ublas::c_matrix< double, 3, 3 > ComputeDiffusionTerm( ::ChastePoint< 3 > const & arg0, double u ) {
-        if( bp::override func_ComputeDiffusionTerm = this->get_override( "ComputeDiffusionTerm" ) )
-            return func_ComputeDiffusionTerm( boost::ref(arg0), u );
-        else{
-            return this->DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm( boost::ref(arg0), u );
-        }
-    }
-    
-    ::boost::numeric::ublas::c_matrix< double, 3, 3 > default_ComputeDiffusionTerm( ::ChastePoint< 3 > const & arg0, double u ) {
-        return DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm( boost::ref(arg0), u );
-    }
-
-    virtual ::boost::numeric::ublas::c_matrix< double, 3, 3 > ComputeDiffusionTermPrime( ::ChastePoint< 3 > const & rX, double u ) {
-        if( bp::override func_ComputeDiffusionTermPrime = this->get_override( "ComputeDiffusionTermPrime" ) )
-            return func_ComputeDiffusionTermPrime( boost::ref(rX), u );
-        else{
-            return this->DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTermPrime( boost::ref(rX), u );
-        }
-    }
-    
-    ::boost::numeric::ublas::c_matrix< double, 3, 3 > default_ComputeDiffusionTermPrime( ::ChastePoint< 3 > const & rX, double u ) {
-        return DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTermPrime( boost::ref(rX), u );
-    }
-
-    virtual double ComputeLinearSourceTerm( ::ChastePoint< 3 > const & rX ) {
-        if( bp::override func_ComputeLinearSourceTerm = this->get_override( "ComputeLinearSourceTerm" ) )
-            return func_ComputeLinearSourceTerm( boost::ref(rX) );
-        else{
-            return this->DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeLinearSourceTerm( boost::ref(rX) );
-        }
-    }
-    
-    double default_ComputeLinearSourceTerm( ::ChastePoint< 3 > const & rX ) {
-        return DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeLinearSourceTerm( boost::ref(rX) );
-    }
-
-    virtual double ComputeNonlinearSourceTerm( ::ChastePoint< 3 > const & rX, double u ) {
-        if( bp::override func_ComputeNonlinearSourceTerm = this->get_override( "ComputeNonlinearSourceTerm" ) )
-            return func_ComputeNonlinearSourceTerm( boost::ref(rX), u );
-        else{
-            return this->DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTerm( boost::ref(rX), u );
-        }
-    }
-    
-    double default_ComputeNonlinearSourceTerm( ::ChastePoint< 3 > const & rX, double u ) {
-        return DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTerm( boost::ref(rX), u );
-    }
-
-    virtual double ComputeNonlinearSourceTermPrime( ::ChastePoint< 3 > const & rX, double u ) {
-        if( bp::override func_ComputeNonlinearSourceTermPrime = this->get_override( "ComputeNonlinearSourceTermPrime" ) )
-            return func_ComputeNonlinearSourceTermPrime( boost::ref(rX), u );
-        else{
-            return this->DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTermPrime( boost::ref(rX), u );
-        }
-    }
-    
-    double default_ComputeNonlinearSourceTermPrime( ::ChastePoint< 3 > const & rX, double u ) {
-        return DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTermPrime( boost::ref(rX), u );
-    }
-
-};
-
 namespace boost { namespace python { namespace indexing {
 
 template<>
@@ -1468,519 +1468,6 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
         bp::register_ptr_to_python< boost::shared_ptr< CellStateDependentDiscreteSource<3> > >();
         bp::implicitly_convertible< boost::shared_ptr< CellStateDependentDiscreteSource< 3 > >, boost::shared_ptr< DiscreteSource< 3 > > >();
     }
-
-    { //::FiniteDifferenceSolver< 3 >
-        typedef bp::class_< FiniteDifferenceSolver_less__3__greater__wrapper, bp::bases< AbstractRegularGridDiscreteContinuumSolver< 3 > > > FiniteDifferenceSolver3_exposer_t;
-        FiniteDifferenceSolver3_exposer_t FiniteDifferenceSolver3_exposer = FiniteDifferenceSolver3_exposer_t( "FiniteDifferenceSolver3", bp::init< >() );
-        bp::scope FiniteDifferenceSolver3_scope( FiniteDifferenceSolver3_exposer );
-        { //::FiniteDifferenceSolver< 3 >::Create
-        
-            typedef FiniteDifferenceSolver< 3 > exported_class_t;
-            typedef ::boost::shared_ptr< FiniteDifferenceSolver< 3 > > ( *Create_function_type )(  );
-            
-            FiniteDifferenceSolver3_exposer.def( 
-                "Create"
-                , Create_function_type( &::FiniteDifferenceSolver< 3 >::Create ) );
-        
-        }
-        { //::FiniteDifferenceSolver< 3 >::GetRGBoundaryConditions
-        
-            typedef FiniteDifferenceSolver< 3 > exported_class_t;
-            typedef ::boost::shared_ptr< std::vector< std::pair<bool, double> > > ( exported_class_t::*GetRGBoundaryConditions_function_type)(  ) ;
-            
-            FiniteDifferenceSolver3_exposer.def( 
-                "GetRGBoundaryConditions"
-                , GetRGBoundaryConditions_function_type( &::FiniteDifferenceSolver< 3 >::GetRGBoundaryConditions ) );
-        
-        }
-        { //::FiniteDifferenceSolver< 3 >::Setup
-        
-            typedef FiniteDifferenceSolver< 3 > exported_class_t;
-            typedef void ( exported_class_t::*Setup_function_type)(  ) ;
-            typedef void ( FiniteDifferenceSolver_less__3__greater__wrapper::*default_Setup_function_type)(  ) ;
-            
-            FiniteDifferenceSolver3_exposer.def( 
-                "Setup"
-                , Setup_function_type(&::FiniteDifferenceSolver< 3 >::Setup)
-                , default_Setup_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_Setup) );
-        
-        }
-        { //::FiniteDifferenceSolver< 3 >::Solve
-        
-            typedef FiniteDifferenceSolver< 3 > exported_class_t;
-            typedef void ( exported_class_t::*Solve_function_type)(  ) ;
-            typedef void ( FiniteDifferenceSolver_less__3__greater__wrapper::*default_Solve_function_type)(  ) ;
-            
-            FiniteDifferenceSolver3_exposer.def( 
-                "Solve"
-                , Solve_function_type(&::FiniteDifferenceSolver< 3 >::Solve)
-                , default_Solve_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_Solve) );
-        
-        }
-        { //::FiniteDifferenceSolver< 3 >::Update
-        
-            typedef FiniteDifferenceSolver< 3 > exported_class_t;
-            typedef void ( exported_class_t::*Update_function_type)(  ) ;
-            typedef void ( FiniteDifferenceSolver_less__3__greater__wrapper::*default_Update_function_type)(  ) ;
-            
-            FiniteDifferenceSolver3_exposer.def( 
-                "Update"
-                , Update_function_type(&::FiniteDifferenceSolver< 3 >::Update)
-                , default_Update_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_Update) );
-        
-        }
-        { //::FiniteDifferenceSolver< 3 >::UpdateBoundaryConditionsEachSolve
-        
-            typedef FiniteDifferenceSolver< 3 > exported_class_t;
-            typedef void ( exported_class_t::*UpdateBoundaryConditionsEachSolve_function_type)( bool ) ;
-            
-            FiniteDifferenceSolver3_exposer.def( 
-                "UpdateBoundaryConditionsEachSolve"
-                , UpdateBoundaryConditionsEachSolve_function_type( &::FiniteDifferenceSolver< 3 >::UpdateBoundaryConditionsEachSolve )
-                , ( bp::arg("doUpdate") ) );
-        
-        }
-        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetPointSolution
-        
-            typedef FiniteDifferenceSolver< 3 > exported_class_t;
-            typedef ::std::vector< double > ( exported_class_t::*GetPointSolution_function_type)(  ) ;
-            typedef ::std::vector< double > ( FiniteDifferenceSolver_less__3__greater__wrapper::*default_GetPointSolution_function_type)(  ) ;
-            
-            FiniteDifferenceSolver3_exposer.def( 
-                "GetPointSolution"
-                , GetPointSolution_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetPointSolution)
-                , default_GetPointSolution_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_GetPointSolution) );
-        
-        }
-        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints
-        
-            typedef FiniteDifferenceSolver< 3 > exported_class_t;
-            typedef ::std::vector< double > ( exported_class_t::*GetSolutionAtGridPoints_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
-            typedef ::std::vector< double > ( FiniteDifferenceSolver_less__3__greater__wrapper::*default_GetSolutionAtGridPoints_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
-            
-            FiniteDifferenceSolver3_exposer.def( 
-                "GetSolutionAtGridPoints"
-                , GetSolutionAtGridPoints_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints)
-                , default_GetSolutionAtGridPoints_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_GetSolutionAtGridPoints)
-                , ( bp::arg("pGrid") ) );
-        
-        }
-        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints
-        
-            typedef FiniteDifferenceSolver< 3 > exported_class_t;
-            typedef ::std::vector< double > ( exported_class_t::*GetSolutionAtPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
-            typedef ::std::vector< double > ( FiniteDifferenceSolver_less__3__greater__wrapper::*default_GetSolutionAtPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
-            
-            FiniteDifferenceSolver3_exposer.def( 
-                "GetSolutionAtPoints"
-                , GetSolutionAtPoints_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints)
-                , default_GetSolutionAtPoints_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_GetSolutionAtPoints)
-                , ( bp::arg("samplePoints") ) );
-        
-        }
-        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetVtkSolution
-        
-            typedef FiniteDifferenceSolver< 3 > exported_class_t;
-            typedef ::vtkSmartPointer< vtkImageData > ( exported_class_t::*GetVtkSolution_function_type)(  ) ;
-            typedef ::vtkSmartPointer< vtkImageData > ( FiniteDifferenceSolver_less__3__greater__wrapper::*default_GetVtkSolution_function_type)(  ) ;
-            
-            FiniteDifferenceSolver3_exposer.def( 
-                "GetVtkSolution"
-                , GetVtkSolution_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetVtkSolution)
-                , default_GetVtkSolution_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_GetVtkSolution) );
-        
-        }
-        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateCellData
-        
-            typedef FiniteDifferenceSolver< 3 > exported_class_t;
-            typedef void ( exported_class_t::*UpdateCellData_function_type)(  ) ;
-            typedef void ( FiniteDifferenceSolver_less__3__greater__wrapper::*default_UpdateCellData_function_type)(  ) ;
-            
-            FiniteDifferenceSolver3_exposer.def( 
-                "UpdateCellData"
-                , UpdateCellData_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateCellData)
-                , default_UpdateCellData_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_UpdateCellData) );
-        
-        }
-        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateSolution
-        
-            typedef FiniteDifferenceSolver< 3 > exported_class_t;
-            typedef void ( exported_class_t::*UpdateSolution_function_type)( ::std::vector< double > ) ;
-            typedef void ( FiniteDifferenceSolver_less__3__greater__wrapper::*default_UpdateSolution_function_type)( ::std::vector< double > ) ;
-            
-            FiniteDifferenceSolver3_exposer.def( 
-                "UpdateSolution"
-                , UpdateSolution_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateSolution)
-                , default_UpdateSolution_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_UpdateSolution)
-                , ( bp::arg("data") ) );
-        
-        }
-        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::Write
-        
-            typedef FiniteDifferenceSolver< 3 > exported_class_t;
-            typedef void ( exported_class_t::*Write_function_type)(  ) ;
-            typedef void ( FiniteDifferenceSolver_less__3__greater__wrapper::*default_Write_function_type)(  ) ;
-            
-            FiniteDifferenceSolver3_exposer.def( 
-                "Write"
-                , Write_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Write)
-                , default_Write_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_Write) );
-        
-        }
-        FiniteDifferenceSolver3_exposer.staticmethod( "Create" );
-        bp::register_ptr_to_python< boost::shared_ptr< FiniteDifferenceSolver<3> > >();
-        bp::implicitly_convertible< boost::shared_ptr< FiniteDifferenceSolver< 3 > >, boost::shared_ptr< AbstractRegularGridDiscreteContinuumSolver< 3 > > >();
-        bp::implicitly_convertible< boost::shared_ptr< FiniteDifferenceSolver< 3 > >, boost::shared_ptr< AbstractDiscreteContinuumSolver< 3 > > >();
-    }
-
-    { //::FiniteElementSolver< 3 >
-        typedef bp::class_< FiniteElementSolver_less__3__greater__wrapper > FiniteElementSolver3_exposer_t;
-        FiniteElementSolver3_exposer_t FiniteElementSolver3_exposer = FiniteElementSolver3_exposer_t( "FiniteElementSolver3", bp::init< >() );
-        bp::scope FiniteElementSolver3_scope( FiniteElementSolver3_exposer );
-        { //::FiniteElementSolver< 3 >::Create
-        
-            typedef FiniteElementSolver< 3 > exported_class_t;
-            typedef ::boost::shared_ptr< FiniteElementSolver< 3 > > ( *Create_function_type )(  );
-            
-            FiniteElementSolver3_exposer.def( 
-                "Create"
-                , Create_function_type( &::FiniteElementSolver< 3 >::Create ) );
-        
-        }
-        { //::FiniteElementSolver< 3 >::GetNodalSolution
-        
-            typedef FiniteElementSolver< 3 > exported_class_t;
-            typedef ::std::vector< double > ( exported_class_t::*GetNodalSolution_function_type)(  ) ;
-            
-            FiniteElementSolver3_exposer.def( 
-                "GetNodalSolution"
-                , GetNodalSolution_function_type( &::FiniteElementSolver< 3 >::GetNodalSolution ) );
-        
-        }
-        { //::FiniteElementSolver< 3 >::GetSolutionAtGridPoints
-        
-            typedef FiniteElementSolver< 3 > exported_class_t;
-            typedef ::std::vector< double > ( exported_class_t::*GetSolutionAtGridPoints_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
-            typedef ::std::vector< double > ( FiniteElementSolver_less__3__greater__wrapper::*default_GetSolutionAtGridPoints_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
-            
-            FiniteElementSolver3_exposer.def( 
-                "GetSolutionAtGridPoints"
-                , GetSolutionAtGridPoints_function_type(&::FiniteElementSolver< 3 >::GetSolutionAtGridPoints)
-                , default_GetSolutionAtGridPoints_function_type(&FiniteElementSolver_less__3__greater__wrapper::default_GetSolutionAtGridPoints)
-                , ( bp::arg("pGrid") ) );
-        
-        }
-        { //::FiniteElementSolver< 3 >::GetSolutionAtPoints
-        
-            typedef FiniteElementSolver< 3 > exported_class_t;
-            typedef ::std::vector< double > ( exported_class_t::*GetSolutionAtPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
-            typedef ::std::vector< double > ( FiniteElementSolver_less__3__greater__wrapper::*default_GetSolutionAtPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
-            
-            FiniteElementSolver3_exposer.def( 
-                "GetSolutionAtPoints"
-                , GetSolutionAtPoints_function_type(&::FiniteElementSolver< 3 >::GetSolutionAtPoints)
-                , default_GetSolutionAtPoints_function_type(&FiniteElementSolver_less__3__greater__wrapper::default_GetSolutionAtPoints)
-                , ( bp::arg("samplePoints") ) );
-        
-        }
-        { //::FiniteElementSolver< 3 >::ReadSolution
-        
-            typedef FiniteElementSolver< 3 > exported_class_t;
-            typedef void ( exported_class_t::*ReadSolution_function_type)(  ) ;
-            
-            FiniteElementSolver3_exposer.def( 
-                "ReadSolution"
-                , ReadSolution_function_type( &::FiniteElementSolver< 3 >::ReadSolution ) );
-        
-        }
-        { //::FiniteElementSolver< 3 >::SetGuess
-        
-            typedef FiniteElementSolver< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetGuess_function_type)( ::std::vector< double > ) ;
-            
-            FiniteElementSolver3_exposer.def( 
-                "SetGuess"
-                , SetGuess_function_type( &::FiniteElementSolver< 3 >::SetGuess )
-                , ( bp::arg("guess") ) );
-        
-        }
-        { //::FiniteElementSolver< 3 >::SetMesh
-        
-            typedef FiniteElementSolver< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetMesh_function_type)( ::boost::shared_ptr< DiscreteContinuumMesh< 3, 3 > > ) ;
-            
-            FiniteElementSolver3_exposer.def( 
-                "SetMesh"
-                , SetMesh_function_type( &::FiniteElementSolver< 3 >::SetMesh )
-                , ( bp::arg("pMesh") ) );
-        
-        }
-        { //::FiniteElementSolver< 3 >::SetUseLinearSolveForGuess
-        
-            typedef FiniteElementSolver< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetUseLinearSolveForGuess_function_type)( bool ) ;
-            
-            FiniteElementSolver3_exposer.def( 
-                "SetUseLinearSolveForGuess"
-                , SetUseLinearSolveForGuess_function_type( &::FiniteElementSolver< 3 >::SetUseLinearSolveForGuess )
-                , ( bp::arg("useLinearSolve")=(bool)(true) ) );
-        
-        }
-        { //::FiniteElementSolver< 3 >::SetUseSimpleNetonSolver
-        
-            typedef FiniteElementSolver< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetUseSimpleNetonSolver_function_type)( bool ) ;
-            
-            FiniteElementSolver3_exposer.def( 
-                "SetUseSimpleNetonSolver"
-                , SetUseSimpleNetonSolver_function_type( &::FiniteElementSolver< 3 >::SetUseSimpleNetonSolver )
-                , ( bp::arg("useNewton")=(bool)(true) ) );
-        
-        }
-        { //::FiniteElementSolver< 3 >::Setup
-        
-            typedef FiniteElementSolver< 3 > exported_class_t;
-            typedef void ( exported_class_t::*Setup_function_type)(  ) ;
-            typedef void ( FiniteElementSolver_less__3__greater__wrapper::*default_Setup_function_type)(  ) ;
-            
-            FiniteElementSolver3_exposer.def( 
-                "Setup"
-                , Setup_function_type(&::FiniteElementSolver< 3 >::Setup)
-                , default_Setup_function_type(&FiniteElementSolver_less__3__greater__wrapper::default_Setup) );
-        
-        }
-        { //::FiniteElementSolver< 3 >::Solve
-        
-            typedef FiniteElementSolver< 3 > exported_class_t;
-            typedef void ( exported_class_t::*Solve_function_type)(  ) ;
-            typedef void ( FiniteElementSolver_less__3__greater__wrapper::*default_Solve_function_type)(  ) ;
-            
-            FiniteElementSolver3_exposer.def( 
-                "Solve"
-                , Solve_function_type(&::FiniteElementSolver< 3 >::Solve)
-                , default_Solve_function_type(&FiniteElementSolver_less__3__greater__wrapper::default_Solve) );
-        
-        }
-        { //::FiniteElementSolver< 3 >::Update
-        
-            typedef FiniteElementSolver< 3 > exported_class_t;
-            typedef void ( exported_class_t::*Update_function_type)(  ) ;
-            typedef void ( FiniteElementSolver_less__3__greater__wrapper::*default_Update_function_type)(  ) ;
-            
-            FiniteElementSolver3_exposer.def( 
-                "Update"
-                , Update_function_type(&::FiniteElementSolver< 3 >::Update)
-                , default_Update_function_type(&FiniteElementSolver_less__3__greater__wrapper::default_Update) );
-        
-        }
-        { //::FiniteElementSolver< 3 >::UpdateCellData
-        
-            typedef FiniteElementSolver< 3 > exported_class_t;
-            typedef void ( exported_class_t::*UpdateCellData_function_type)(  ) ;
-            typedef void ( FiniteElementSolver_less__3__greater__wrapper::*default_UpdateCellData_function_type)(  ) ;
-            
-            FiniteElementSolver3_exposer.def( 
-                "UpdateCellData"
-                , UpdateCellData_function_type(&::FiniteElementSolver< 3 >::UpdateCellData)
-                , default_UpdateCellData_function_type(&FiniteElementSolver_less__3__greater__wrapper::default_UpdateCellData) );
-        
-        }
-        FiniteElementSolver3_exposer.staticmethod( "Create" );
-        bp::register_ptr_to_python< boost::shared_ptr< FiniteElementSolver<3> > >();
-        bp::implicitly_convertible< boost::shared_ptr< FiniteElementSolver< 3 > >, boost::shared_ptr< AbstractDiscreteContinuumSolver< 3 > > >();
-    }
-
-    { //::FunctionMap< 3 >
-        typedef bp::class_< FunctionMap_less__3__greater__wrapper, bp::bases< AbstractRegularGridDiscreteContinuumSolver< 3 > > > FunctionMap3_exposer_t;
-        FunctionMap3_exposer_t FunctionMap3_exposer = FunctionMap3_exposer_t( "FunctionMap3", bp::init< >() );
-        bp::scope FunctionMap3_scope( FunctionMap3_exposer );
-        { //::FunctionMap< 3 >::Create
-        
-            typedef FunctionMap< 3 > exported_class_t;
-            typedef ::boost::shared_ptr< FunctionMap< 3 > > ( *Create_function_type )(  );
-            
-            FunctionMap3_exposer.def( 
-                "Create"
-                , Create_function_type( &::FunctionMap< 3 >::Create ) );
-        
-        }
-        { //::FunctionMap< 3 >::Solve
-        
-            typedef FunctionMap< 3 > exported_class_t;
-            typedef void ( exported_class_t::*Solve_function_type)(  ) ;
-            typedef void ( FunctionMap_less__3__greater__wrapper::*default_Solve_function_type)(  ) ;
-            
-            FunctionMap3_exposer.def( 
-                "Solve"
-                , Solve_function_type(&::FunctionMap< 3 >::Solve)
-                , default_Solve_function_type(&FunctionMap_less__3__greater__wrapper::default_Solve) );
-        
-        }
-        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetPointSolution
-        
-            typedef FunctionMap< 3 > exported_class_t;
-            typedef ::std::vector< double > ( exported_class_t::*GetPointSolution_function_type)(  ) ;
-            typedef ::std::vector< double > ( FunctionMap_less__3__greater__wrapper::*default_GetPointSolution_function_type)(  ) ;
-            
-            FunctionMap3_exposer.def( 
-                "GetPointSolution"
-                , GetPointSolution_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetPointSolution)
-                , default_GetPointSolution_function_type(&FunctionMap_less__3__greater__wrapper::default_GetPointSolution) );
-        
-        }
-        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints
-        
-            typedef FunctionMap< 3 > exported_class_t;
-            typedef ::std::vector< double > ( exported_class_t::*GetSolutionAtGridPoints_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
-            typedef ::std::vector< double > ( FunctionMap_less__3__greater__wrapper::*default_GetSolutionAtGridPoints_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
-            
-            FunctionMap3_exposer.def( 
-                "GetSolutionAtGridPoints"
-                , GetSolutionAtGridPoints_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints)
-                , default_GetSolutionAtGridPoints_function_type(&FunctionMap_less__3__greater__wrapper::default_GetSolutionAtGridPoints)
-                , ( bp::arg("pGrid") ) );
-        
-        }
-        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints
-        
-            typedef FunctionMap< 3 > exported_class_t;
-            typedef ::std::vector< double > ( exported_class_t::*GetSolutionAtPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
-            typedef ::std::vector< double > ( FunctionMap_less__3__greater__wrapper::*default_GetSolutionAtPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
-            
-            FunctionMap3_exposer.def( 
-                "GetSolutionAtPoints"
-                , GetSolutionAtPoints_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints)
-                , default_GetSolutionAtPoints_function_type(&FunctionMap_less__3__greater__wrapper::default_GetSolutionAtPoints)
-                , ( bp::arg("samplePoints") ) );
-        
-        }
-        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetVtkSolution
-        
-            typedef FunctionMap< 3 > exported_class_t;
-            typedef ::vtkSmartPointer< vtkImageData > ( exported_class_t::*GetVtkSolution_function_type)(  ) ;
-            typedef ::vtkSmartPointer< vtkImageData > ( FunctionMap_less__3__greater__wrapper::*default_GetVtkSolution_function_type)(  ) ;
-            
-            FunctionMap3_exposer.def( 
-                "GetVtkSolution"
-                , GetVtkSolution_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetVtkSolution)
-                , default_GetVtkSolution_function_type(&FunctionMap_less__3__greater__wrapper::default_GetVtkSolution) );
-        
-        }
-        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::Setup
-        
-            typedef FunctionMap< 3 > exported_class_t;
-            typedef void ( exported_class_t::*Setup_function_type)(  ) ;
-            typedef void ( FunctionMap_less__3__greater__wrapper::*default_Setup_function_type)(  ) ;
-            
-            FunctionMap3_exposer.def( 
-                "Setup"
-                , Setup_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Setup)
-                , default_Setup_function_type(&FunctionMap_less__3__greater__wrapper::default_Setup) );
-        
-        }
-        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::Update
-        
-            typedef FunctionMap< 3 > exported_class_t;
-            typedef void ( exported_class_t::*Update_function_type)(  ) ;
-            typedef void ( FunctionMap_less__3__greater__wrapper::*default_Update_function_type)(  ) ;
-            
-            FunctionMap3_exposer.def( 
-                "Update"
-                , Update_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Update)
-                , default_Update_function_type(&FunctionMap_less__3__greater__wrapper::default_Update) );
-        
-        }
-        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateCellData
-        
-            typedef FunctionMap< 3 > exported_class_t;
-            typedef void ( exported_class_t::*UpdateCellData_function_type)(  ) ;
-            typedef void ( FunctionMap_less__3__greater__wrapper::*default_UpdateCellData_function_type)(  ) ;
-            
-            FunctionMap3_exposer.def( 
-                "UpdateCellData"
-                , UpdateCellData_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateCellData)
-                , default_UpdateCellData_function_type(&FunctionMap_less__3__greater__wrapper::default_UpdateCellData) );
-        
-        }
-        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateSolution
-        
-            typedef FunctionMap< 3 > exported_class_t;
-            typedef void ( exported_class_t::*UpdateSolution_function_type)( ::std::vector< double > ) ;
-            typedef void ( FunctionMap_less__3__greater__wrapper::*default_UpdateSolution_function_type)( ::std::vector< double > ) ;
-            
-            FunctionMap3_exposer.def( 
-                "UpdateSolution"
-                , UpdateSolution_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateSolution)
-                , default_UpdateSolution_function_type(&FunctionMap_less__3__greater__wrapper::default_UpdateSolution)
-                , ( bp::arg("data") ) );
-        
-        }
-        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::Write
-        
-            typedef FunctionMap< 3 > exported_class_t;
-            typedef void ( exported_class_t::*Write_function_type)(  ) ;
-            typedef void ( FunctionMap_less__3__greater__wrapper::*default_Write_function_type)(  ) ;
-            
-            FunctionMap3_exposer.def( 
-                "Write"
-                , Write_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Write)
-                , default_Write_function_type(&FunctionMap_less__3__greater__wrapper::default_Write) );
-        
-        }
-        FunctionMap3_exposer.staticmethod( "Create" );
-        bp::register_ptr_to_python< boost::shared_ptr< FunctionMap<3> > >();
-        bp::implicitly_convertible< boost::shared_ptr< FunctionMap< 3 > >, boost::shared_ptr< AbstractRegularGridDiscreteContinuumSolver< 3 > > >();
-        bp::implicitly_convertible< boost::shared_ptr< FunctionMap< 3 > >, boost::shared_ptr< AbstractDiscreteContinuumSolver< 3 > > >();
-    }
-
-    bp::class_< GreensFunctionSolver_less__3__greater__wrapper, bp::bases< AbstractRegularGridDiscreteContinuumSolver< 3 > > >( "GreensFunctionSolver3", bp::init< >() )    
-        .def( 
-            "SetSubSegmentCutoff"
-            , (void ( ::GreensFunctionSolver<3>::* )( double ))( &::GreensFunctionSolver< 3 >::SetSubSegmentCutoff )
-            , ( bp::arg("value") ) )    
-        .def( 
-            "Solve"
-            , (void ( ::GreensFunctionSolver<3>::* )(  ))(&::GreensFunctionSolver< 3 >::Solve)
-            , (void ( GreensFunctionSolver_less__3__greater__wrapper::* )(  ))(&GreensFunctionSolver_less__3__greater__wrapper::default_Solve) )    
-        .def( 
-            "GetPointSolution"
-            , (::std::vector< double > ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetPointSolution)
-            , (::std::vector< double > ( GreensFunctionSolver_less__3__greater__wrapper::* )(  ))(&GreensFunctionSolver_less__3__greater__wrapper::default_GetPointSolution) )    
-        .def( 
-            "GetSolutionAtGridPoints"
-            , (::std::vector< double > ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )( ::boost::shared_ptr< RegularGrid< 3, 3 > > ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints)
-            , (::std::vector< double > ( GreensFunctionSolver_less__3__greater__wrapper::* )( ::boost::shared_ptr< RegularGrid< 3, 3 > > ))(&GreensFunctionSolver_less__3__greater__wrapper::default_GetSolutionAtGridPoints)
-            , ( bp::arg("pGrid") ) )    
-        .def( 
-            "GetSolutionAtPoints"
-            , (::std::vector< double > ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints)
-            , (::std::vector< double > ( GreensFunctionSolver_less__3__greater__wrapper::* )( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ))(&GreensFunctionSolver_less__3__greater__wrapper::default_GetSolutionAtPoints)
-            , ( bp::arg("samplePoints") ) )    
-        .def( 
-            "GetVtkSolution"
-            , (::vtkSmartPointer< vtkImageData > ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetVtkSolution)
-            , (::vtkSmartPointer< vtkImageData > ( GreensFunctionSolver_less__3__greater__wrapper::* )(  ))(&GreensFunctionSolver_less__3__greater__wrapper::default_GetVtkSolution) )    
-        .def( 
-            "Setup"
-            , (void ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Setup)
-            , (void ( GreensFunctionSolver_less__3__greater__wrapper::* )(  ))(&GreensFunctionSolver_less__3__greater__wrapper::default_Setup) )    
-        .def( 
-            "Update"
-            , (void ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Update)
-            , (void ( GreensFunctionSolver_less__3__greater__wrapper::* )(  ))(&GreensFunctionSolver_less__3__greater__wrapper::default_Update) )    
-        .def( 
-            "UpdateCellData"
-            , (void ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateCellData)
-            , (void ( GreensFunctionSolver_less__3__greater__wrapper::* )(  ))(&GreensFunctionSolver_less__3__greater__wrapper::default_UpdateCellData) )    
-        .def( 
-            "UpdateSolution"
-            , (void ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )( ::std::vector< double > ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateSolution)
-            , (void ( GreensFunctionSolver_less__3__greater__wrapper::* )( ::std::vector< double > ))(&GreensFunctionSolver_less__3__greater__wrapper::default_UpdateSolution)
-            , ( bp::arg("data") ) )    
-        .def( 
-            "Write"
-            , (void ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Write)
-            , (void ( GreensFunctionSolver_less__3__greater__wrapper::* )(  ))(&GreensFunctionSolver_less__3__greater__wrapper::default_Write) );
 
     { //::DiscreteContinuumBoundaryCondition< 3 >
         typedef bp::class_< DiscreteContinuumBoundaryCondition< 3 > > DiscreteContinuumBoundaryCondition3_exposer_t;
@@ -2741,6 +2228,519 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
         bp::register_ptr_to_python< boost::shared_ptr< DiscreteContinuumNonLinearEllipticPde<3, 3> > >();
         bp::implicitly_convertible< boost::shared_ptr< DiscreteContinuumNonLinearEllipticPde< 3, 3 > >, boost::shared_ptr< AbstractNonlinearEllipticPde< 3 > > >();
     }
+
+    { //::FiniteDifferenceSolver< 3 >
+        typedef bp::class_< FiniteDifferenceSolver_less__3__greater__wrapper, bp::bases< AbstractRegularGridDiscreteContinuumSolver< 3 > > > FiniteDifferenceSolver3_exposer_t;
+        FiniteDifferenceSolver3_exposer_t FiniteDifferenceSolver3_exposer = FiniteDifferenceSolver3_exposer_t( "FiniteDifferenceSolver3", bp::init< >() );
+        bp::scope FiniteDifferenceSolver3_scope( FiniteDifferenceSolver3_exposer );
+        { //::FiniteDifferenceSolver< 3 >::Create
+        
+            typedef FiniteDifferenceSolver< 3 > exported_class_t;
+            typedef ::boost::shared_ptr< FiniteDifferenceSolver< 3 > > ( *Create_function_type )(  );
+            
+            FiniteDifferenceSolver3_exposer.def( 
+                "Create"
+                , Create_function_type( &::FiniteDifferenceSolver< 3 >::Create ) );
+        
+        }
+        { //::FiniteDifferenceSolver< 3 >::GetRGBoundaryConditions
+        
+            typedef FiniteDifferenceSolver< 3 > exported_class_t;
+            typedef ::boost::shared_ptr< std::vector< std::pair<bool, double> > > ( exported_class_t::*GetRGBoundaryConditions_function_type)(  ) ;
+            
+            FiniteDifferenceSolver3_exposer.def( 
+                "GetRGBoundaryConditions"
+                , GetRGBoundaryConditions_function_type( &::FiniteDifferenceSolver< 3 >::GetRGBoundaryConditions ) );
+        
+        }
+        { //::FiniteDifferenceSolver< 3 >::Setup
+        
+            typedef FiniteDifferenceSolver< 3 > exported_class_t;
+            typedef void ( exported_class_t::*Setup_function_type)(  ) ;
+            typedef void ( FiniteDifferenceSolver_less__3__greater__wrapper::*default_Setup_function_type)(  ) ;
+            
+            FiniteDifferenceSolver3_exposer.def( 
+                "Setup"
+                , Setup_function_type(&::FiniteDifferenceSolver< 3 >::Setup)
+                , default_Setup_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_Setup) );
+        
+        }
+        { //::FiniteDifferenceSolver< 3 >::Solve
+        
+            typedef FiniteDifferenceSolver< 3 > exported_class_t;
+            typedef void ( exported_class_t::*Solve_function_type)(  ) ;
+            typedef void ( FiniteDifferenceSolver_less__3__greater__wrapper::*default_Solve_function_type)(  ) ;
+            
+            FiniteDifferenceSolver3_exposer.def( 
+                "Solve"
+                , Solve_function_type(&::FiniteDifferenceSolver< 3 >::Solve)
+                , default_Solve_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_Solve) );
+        
+        }
+        { //::FiniteDifferenceSolver< 3 >::Update
+        
+            typedef FiniteDifferenceSolver< 3 > exported_class_t;
+            typedef void ( exported_class_t::*Update_function_type)(  ) ;
+            typedef void ( FiniteDifferenceSolver_less__3__greater__wrapper::*default_Update_function_type)(  ) ;
+            
+            FiniteDifferenceSolver3_exposer.def( 
+                "Update"
+                , Update_function_type(&::FiniteDifferenceSolver< 3 >::Update)
+                , default_Update_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_Update) );
+        
+        }
+        { //::FiniteDifferenceSolver< 3 >::UpdateBoundaryConditionsEachSolve
+        
+            typedef FiniteDifferenceSolver< 3 > exported_class_t;
+            typedef void ( exported_class_t::*UpdateBoundaryConditionsEachSolve_function_type)( bool ) ;
+            
+            FiniteDifferenceSolver3_exposer.def( 
+                "UpdateBoundaryConditionsEachSolve"
+                , UpdateBoundaryConditionsEachSolve_function_type( &::FiniteDifferenceSolver< 3 >::UpdateBoundaryConditionsEachSolve )
+                , ( bp::arg("doUpdate") ) );
+        
+        }
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetPointSolution
+        
+            typedef FiniteDifferenceSolver< 3 > exported_class_t;
+            typedef ::std::vector< double > ( exported_class_t::*GetPointSolution_function_type)(  ) ;
+            typedef ::std::vector< double > ( FiniteDifferenceSolver_less__3__greater__wrapper::*default_GetPointSolution_function_type)(  ) ;
+            
+            FiniteDifferenceSolver3_exposer.def( 
+                "GetPointSolution"
+                , GetPointSolution_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetPointSolution)
+                , default_GetPointSolution_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_GetPointSolution) );
+        
+        }
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints
+        
+            typedef FiniteDifferenceSolver< 3 > exported_class_t;
+            typedef ::std::vector< double > ( exported_class_t::*GetSolutionAtGridPoints_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
+            typedef ::std::vector< double > ( FiniteDifferenceSolver_less__3__greater__wrapper::*default_GetSolutionAtGridPoints_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
+            
+            FiniteDifferenceSolver3_exposer.def( 
+                "GetSolutionAtGridPoints"
+                , GetSolutionAtGridPoints_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints)
+                , default_GetSolutionAtGridPoints_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_GetSolutionAtGridPoints)
+                , ( bp::arg("pGrid") ) );
+        
+        }
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints
+        
+            typedef FiniteDifferenceSolver< 3 > exported_class_t;
+            typedef ::std::vector< double > ( exported_class_t::*GetSolutionAtPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
+            typedef ::std::vector< double > ( FiniteDifferenceSolver_less__3__greater__wrapper::*default_GetSolutionAtPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
+            
+            FiniteDifferenceSolver3_exposer.def( 
+                "GetSolutionAtPoints"
+                , GetSolutionAtPoints_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints)
+                , default_GetSolutionAtPoints_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_GetSolutionAtPoints)
+                , ( bp::arg("samplePoints") ) );
+        
+        }
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetVtkSolution
+        
+            typedef FiniteDifferenceSolver< 3 > exported_class_t;
+            typedef ::vtkSmartPointer< vtkImageData > ( exported_class_t::*GetVtkSolution_function_type)(  ) ;
+            typedef ::vtkSmartPointer< vtkImageData > ( FiniteDifferenceSolver_less__3__greater__wrapper::*default_GetVtkSolution_function_type)(  ) ;
+            
+            FiniteDifferenceSolver3_exposer.def( 
+                "GetVtkSolution"
+                , GetVtkSolution_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetVtkSolution)
+                , default_GetVtkSolution_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_GetVtkSolution) );
+        
+        }
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateCellData
+        
+            typedef FiniteDifferenceSolver< 3 > exported_class_t;
+            typedef void ( exported_class_t::*UpdateCellData_function_type)(  ) ;
+            typedef void ( FiniteDifferenceSolver_less__3__greater__wrapper::*default_UpdateCellData_function_type)(  ) ;
+            
+            FiniteDifferenceSolver3_exposer.def( 
+                "UpdateCellData"
+                , UpdateCellData_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateCellData)
+                , default_UpdateCellData_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_UpdateCellData) );
+        
+        }
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateSolution
+        
+            typedef FiniteDifferenceSolver< 3 > exported_class_t;
+            typedef void ( exported_class_t::*UpdateSolution_function_type)( ::std::vector< double > ) ;
+            typedef void ( FiniteDifferenceSolver_less__3__greater__wrapper::*default_UpdateSolution_function_type)( ::std::vector< double > ) ;
+            
+            FiniteDifferenceSolver3_exposer.def( 
+                "UpdateSolution"
+                , UpdateSolution_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateSolution)
+                , default_UpdateSolution_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_UpdateSolution)
+                , ( bp::arg("data") ) );
+        
+        }
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::Write
+        
+            typedef FiniteDifferenceSolver< 3 > exported_class_t;
+            typedef void ( exported_class_t::*Write_function_type)(  ) ;
+            typedef void ( FiniteDifferenceSolver_less__3__greater__wrapper::*default_Write_function_type)(  ) ;
+            
+            FiniteDifferenceSolver3_exposer.def( 
+                "Write"
+                , Write_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Write)
+                , default_Write_function_type(&FiniteDifferenceSolver_less__3__greater__wrapper::default_Write) );
+        
+        }
+        FiniteDifferenceSolver3_exposer.staticmethod( "Create" );
+        bp::register_ptr_to_python< boost::shared_ptr< FiniteDifferenceSolver<3> > >();
+        bp::implicitly_convertible< boost::shared_ptr< FiniteDifferenceSolver< 3 > >, boost::shared_ptr< AbstractRegularGridDiscreteContinuumSolver< 3 > > >();
+        bp::implicitly_convertible< boost::shared_ptr< FiniteDifferenceSolver< 3 > >, boost::shared_ptr< AbstractDiscreteContinuumSolver< 3 > > >();
+    }
+
+    { //::FiniteElementSolver< 3 >
+        typedef bp::class_< FiniteElementSolver_less__3__greater__wrapper > FiniteElementSolver3_exposer_t;
+        FiniteElementSolver3_exposer_t FiniteElementSolver3_exposer = FiniteElementSolver3_exposer_t( "FiniteElementSolver3", bp::init< >() );
+        bp::scope FiniteElementSolver3_scope( FiniteElementSolver3_exposer );
+        { //::FiniteElementSolver< 3 >::Create
+        
+            typedef FiniteElementSolver< 3 > exported_class_t;
+            typedef ::boost::shared_ptr< FiniteElementSolver< 3 > > ( *Create_function_type )(  );
+            
+            FiniteElementSolver3_exposer.def( 
+                "Create"
+                , Create_function_type( &::FiniteElementSolver< 3 >::Create ) );
+        
+        }
+        { //::FiniteElementSolver< 3 >::GetNodalSolution
+        
+            typedef FiniteElementSolver< 3 > exported_class_t;
+            typedef ::std::vector< double > ( exported_class_t::*GetNodalSolution_function_type)(  ) ;
+            
+            FiniteElementSolver3_exposer.def( 
+                "GetNodalSolution"
+                , GetNodalSolution_function_type( &::FiniteElementSolver< 3 >::GetNodalSolution ) );
+        
+        }
+        { //::FiniteElementSolver< 3 >::GetSolutionAtGridPoints
+        
+            typedef FiniteElementSolver< 3 > exported_class_t;
+            typedef ::std::vector< double > ( exported_class_t::*GetSolutionAtGridPoints_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
+            typedef ::std::vector< double > ( FiniteElementSolver_less__3__greater__wrapper::*default_GetSolutionAtGridPoints_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
+            
+            FiniteElementSolver3_exposer.def( 
+                "GetSolutionAtGridPoints"
+                , GetSolutionAtGridPoints_function_type(&::FiniteElementSolver< 3 >::GetSolutionAtGridPoints)
+                , default_GetSolutionAtGridPoints_function_type(&FiniteElementSolver_less__3__greater__wrapper::default_GetSolutionAtGridPoints)
+                , ( bp::arg("pGrid") ) );
+        
+        }
+        { //::FiniteElementSolver< 3 >::GetSolutionAtPoints
+        
+            typedef FiniteElementSolver< 3 > exported_class_t;
+            typedef ::std::vector< double > ( exported_class_t::*GetSolutionAtPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
+            typedef ::std::vector< double > ( FiniteElementSolver_less__3__greater__wrapper::*default_GetSolutionAtPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
+            
+            FiniteElementSolver3_exposer.def( 
+                "GetSolutionAtPoints"
+                , GetSolutionAtPoints_function_type(&::FiniteElementSolver< 3 >::GetSolutionAtPoints)
+                , default_GetSolutionAtPoints_function_type(&FiniteElementSolver_less__3__greater__wrapper::default_GetSolutionAtPoints)
+                , ( bp::arg("samplePoints") ) );
+        
+        }
+        { //::FiniteElementSolver< 3 >::ReadSolution
+        
+            typedef FiniteElementSolver< 3 > exported_class_t;
+            typedef void ( exported_class_t::*ReadSolution_function_type)(  ) ;
+            
+            FiniteElementSolver3_exposer.def( 
+                "ReadSolution"
+                , ReadSolution_function_type( &::FiniteElementSolver< 3 >::ReadSolution ) );
+        
+        }
+        { //::FiniteElementSolver< 3 >::SetGuess
+        
+            typedef FiniteElementSolver< 3 > exported_class_t;
+            typedef void ( exported_class_t::*SetGuess_function_type)( ::std::vector< double > ) ;
+            
+            FiniteElementSolver3_exposer.def( 
+                "SetGuess"
+                , SetGuess_function_type( &::FiniteElementSolver< 3 >::SetGuess )
+                , ( bp::arg("guess") ) );
+        
+        }
+        { //::FiniteElementSolver< 3 >::SetMesh
+        
+            typedef FiniteElementSolver< 3 > exported_class_t;
+            typedef void ( exported_class_t::*SetMesh_function_type)( ::boost::shared_ptr< DiscreteContinuumMesh< 3, 3 > > ) ;
+            
+            FiniteElementSolver3_exposer.def( 
+                "SetMesh"
+                , SetMesh_function_type( &::FiniteElementSolver< 3 >::SetMesh )
+                , ( bp::arg("pMesh") ) );
+        
+        }
+        { //::FiniteElementSolver< 3 >::SetUseLinearSolveForGuess
+        
+            typedef FiniteElementSolver< 3 > exported_class_t;
+            typedef void ( exported_class_t::*SetUseLinearSolveForGuess_function_type)( bool ) ;
+            
+            FiniteElementSolver3_exposer.def( 
+                "SetUseLinearSolveForGuess"
+                , SetUseLinearSolveForGuess_function_type( &::FiniteElementSolver< 3 >::SetUseLinearSolveForGuess )
+                , ( bp::arg("useLinearSolve")=(bool)(true) ) );
+        
+        }
+        { //::FiniteElementSolver< 3 >::SetUseSimpleNetonSolver
+        
+            typedef FiniteElementSolver< 3 > exported_class_t;
+            typedef void ( exported_class_t::*SetUseSimpleNetonSolver_function_type)( bool ) ;
+            
+            FiniteElementSolver3_exposer.def( 
+                "SetUseSimpleNetonSolver"
+                , SetUseSimpleNetonSolver_function_type( &::FiniteElementSolver< 3 >::SetUseSimpleNetonSolver )
+                , ( bp::arg("useNewton")=(bool)(true) ) );
+        
+        }
+        { //::FiniteElementSolver< 3 >::Setup
+        
+            typedef FiniteElementSolver< 3 > exported_class_t;
+            typedef void ( exported_class_t::*Setup_function_type)(  ) ;
+            typedef void ( FiniteElementSolver_less__3__greater__wrapper::*default_Setup_function_type)(  ) ;
+            
+            FiniteElementSolver3_exposer.def( 
+                "Setup"
+                , Setup_function_type(&::FiniteElementSolver< 3 >::Setup)
+                , default_Setup_function_type(&FiniteElementSolver_less__3__greater__wrapper::default_Setup) );
+        
+        }
+        { //::FiniteElementSolver< 3 >::Solve
+        
+            typedef FiniteElementSolver< 3 > exported_class_t;
+            typedef void ( exported_class_t::*Solve_function_type)(  ) ;
+            typedef void ( FiniteElementSolver_less__3__greater__wrapper::*default_Solve_function_type)(  ) ;
+            
+            FiniteElementSolver3_exposer.def( 
+                "Solve"
+                , Solve_function_type(&::FiniteElementSolver< 3 >::Solve)
+                , default_Solve_function_type(&FiniteElementSolver_less__3__greater__wrapper::default_Solve) );
+        
+        }
+        { //::FiniteElementSolver< 3 >::Update
+        
+            typedef FiniteElementSolver< 3 > exported_class_t;
+            typedef void ( exported_class_t::*Update_function_type)(  ) ;
+            typedef void ( FiniteElementSolver_less__3__greater__wrapper::*default_Update_function_type)(  ) ;
+            
+            FiniteElementSolver3_exposer.def( 
+                "Update"
+                , Update_function_type(&::FiniteElementSolver< 3 >::Update)
+                , default_Update_function_type(&FiniteElementSolver_less__3__greater__wrapper::default_Update) );
+        
+        }
+        { //::FiniteElementSolver< 3 >::UpdateCellData
+        
+            typedef FiniteElementSolver< 3 > exported_class_t;
+            typedef void ( exported_class_t::*UpdateCellData_function_type)(  ) ;
+            typedef void ( FiniteElementSolver_less__3__greater__wrapper::*default_UpdateCellData_function_type)(  ) ;
+            
+            FiniteElementSolver3_exposer.def( 
+                "UpdateCellData"
+                , UpdateCellData_function_type(&::FiniteElementSolver< 3 >::UpdateCellData)
+                , default_UpdateCellData_function_type(&FiniteElementSolver_less__3__greater__wrapper::default_UpdateCellData) );
+        
+        }
+        FiniteElementSolver3_exposer.staticmethod( "Create" );
+        bp::register_ptr_to_python< boost::shared_ptr< FiniteElementSolver<3> > >();
+        bp::implicitly_convertible< boost::shared_ptr< FiniteElementSolver< 3 > >, boost::shared_ptr< AbstractDiscreteContinuumSolver< 3 > > >();
+    }
+
+    { //::FunctionMap< 3 >
+        typedef bp::class_< FunctionMap_less__3__greater__wrapper, bp::bases< AbstractRegularGridDiscreteContinuumSolver< 3 > > > FunctionMap3_exposer_t;
+        FunctionMap3_exposer_t FunctionMap3_exposer = FunctionMap3_exposer_t( "FunctionMap3", bp::init< >() );
+        bp::scope FunctionMap3_scope( FunctionMap3_exposer );
+        { //::FunctionMap< 3 >::Create
+        
+            typedef FunctionMap< 3 > exported_class_t;
+            typedef ::boost::shared_ptr< FunctionMap< 3 > > ( *Create_function_type )(  );
+            
+            FunctionMap3_exposer.def( 
+                "Create"
+                , Create_function_type( &::FunctionMap< 3 >::Create ) );
+        
+        }
+        { //::FunctionMap< 3 >::Solve
+        
+            typedef FunctionMap< 3 > exported_class_t;
+            typedef void ( exported_class_t::*Solve_function_type)(  ) ;
+            typedef void ( FunctionMap_less__3__greater__wrapper::*default_Solve_function_type)(  ) ;
+            
+            FunctionMap3_exposer.def( 
+                "Solve"
+                , Solve_function_type(&::FunctionMap< 3 >::Solve)
+                , default_Solve_function_type(&FunctionMap_less__3__greater__wrapper::default_Solve) );
+        
+        }
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetPointSolution
+        
+            typedef FunctionMap< 3 > exported_class_t;
+            typedef ::std::vector< double > ( exported_class_t::*GetPointSolution_function_type)(  ) ;
+            typedef ::std::vector< double > ( FunctionMap_less__3__greater__wrapper::*default_GetPointSolution_function_type)(  ) ;
+            
+            FunctionMap3_exposer.def( 
+                "GetPointSolution"
+                , GetPointSolution_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetPointSolution)
+                , default_GetPointSolution_function_type(&FunctionMap_less__3__greater__wrapper::default_GetPointSolution) );
+        
+        }
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints
+        
+            typedef FunctionMap< 3 > exported_class_t;
+            typedef ::std::vector< double > ( exported_class_t::*GetSolutionAtGridPoints_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
+            typedef ::std::vector< double > ( FunctionMap_less__3__greater__wrapper::*default_GetSolutionAtGridPoints_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
+            
+            FunctionMap3_exposer.def( 
+                "GetSolutionAtGridPoints"
+                , GetSolutionAtGridPoints_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints)
+                , default_GetSolutionAtGridPoints_function_type(&FunctionMap_less__3__greater__wrapper::default_GetSolutionAtGridPoints)
+                , ( bp::arg("pGrid") ) );
+        
+        }
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints
+        
+            typedef FunctionMap< 3 > exported_class_t;
+            typedef ::std::vector< double > ( exported_class_t::*GetSolutionAtPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
+            typedef ::std::vector< double > ( FunctionMap_less__3__greater__wrapper::*default_GetSolutionAtPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
+            
+            FunctionMap3_exposer.def( 
+                "GetSolutionAtPoints"
+                , GetSolutionAtPoints_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints)
+                , default_GetSolutionAtPoints_function_type(&FunctionMap_less__3__greater__wrapper::default_GetSolutionAtPoints)
+                , ( bp::arg("samplePoints") ) );
+        
+        }
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetVtkSolution
+        
+            typedef FunctionMap< 3 > exported_class_t;
+            typedef ::vtkSmartPointer< vtkImageData > ( exported_class_t::*GetVtkSolution_function_type)(  ) ;
+            typedef ::vtkSmartPointer< vtkImageData > ( FunctionMap_less__3__greater__wrapper::*default_GetVtkSolution_function_type)(  ) ;
+            
+            FunctionMap3_exposer.def( 
+                "GetVtkSolution"
+                , GetVtkSolution_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetVtkSolution)
+                , default_GetVtkSolution_function_type(&FunctionMap_less__3__greater__wrapper::default_GetVtkSolution) );
+        
+        }
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::Setup
+        
+            typedef FunctionMap< 3 > exported_class_t;
+            typedef void ( exported_class_t::*Setup_function_type)(  ) ;
+            typedef void ( FunctionMap_less__3__greater__wrapper::*default_Setup_function_type)(  ) ;
+            
+            FunctionMap3_exposer.def( 
+                "Setup"
+                , Setup_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Setup)
+                , default_Setup_function_type(&FunctionMap_less__3__greater__wrapper::default_Setup) );
+        
+        }
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::Update
+        
+            typedef FunctionMap< 3 > exported_class_t;
+            typedef void ( exported_class_t::*Update_function_type)(  ) ;
+            typedef void ( FunctionMap_less__3__greater__wrapper::*default_Update_function_type)(  ) ;
+            
+            FunctionMap3_exposer.def( 
+                "Update"
+                , Update_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Update)
+                , default_Update_function_type(&FunctionMap_less__3__greater__wrapper::default_Update) );
+        
+        }
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateCellData
+        
+            typedef FunctionMap< 3 > exported_class_t;
+            typedef void ( exported_class_t::*UpdateCellData_function_type)(  ) ;
+            typedef void ( FunctionMap_less__3__greater__wrapper::*default_UpdateCellData_function_type)(  ) ;
+            
+            FunctionMap3_exposer.def( 
+                "UpdateCellData"
+                , UpdateCellData_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateCellData)
+                , default_UpdateCellData_function_type(&FunctionMap_less__3__greater__wrapper::default_UpdateCellData) );
+        
+        }
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateSolution
+        
+            typedef FunctionMap< 3 > exported_class_t;
+            typedef void ( exported_class_t::*UpdateSolution_function_type)( ::std::vector< double > ) ;
+            typedef void ( FunctionMap_less__3__greater__wrapper::*default_UpdateSolution_function_type)( ::std::vector< double > ) ;
+            
+            FunctionMap3_exposer.def( 
+                "UpdateSolution"
+                , UpdateSolution_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateSolution)
+                , default_UpdateSolution_function_type(&FunctionMap_less__3__greater__wrapper::default_UpdateSolution)
+                , ( bp::arg("data") ) );
+        
+        }
+        { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::Write
+        
+            typedef FunctionMap< 3 > exported_class_t;
+            typedef void ( exported_class_t::*Write_function_type)(  ) ;
+            typedef void ( FunctionMap_less__3__greater__wrapper::*default_Write_function_type)(  ) ;
+            
+            FunctionMap3_exposer.def( 
+                "Write"
+                , Write_function_type(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Write)
+                , default_Write_function_type(&FunctionMap_less__3__greater__wrapper::default_Write) );
+        
+        }
+        FunctionMap3_exposer.staticmethod( "Create" );
+        bp::register_ptr_to_python< boost::shared_ptr< FunctionMap<3> > >();
+        bp::implicitly_convertible< boost::shared_ptr< FunctionMap< 3 > >, boost::shared_ptr< AbstractRegularGridDiscreteContinuumSolver< 3 > > >();
+        bp::implicitly_convertible< boost::shared_ptr< FunctionMap< 3 > >, boost::shared_ptr< AbstractDiscreteContinuumSolver< 3 > > >();
+    }
+
+    bp::class_< GreensFunctionSolver_less__3__greater__wrapper, bp::bases< AbstractRegularGridDiscreteContinuumSolver< 3 > > >( "GreensFunctionSolver3", bp::init< >() )    
+        .def( 
+            "SetSubSegmentCutoff"
+            , (void ( ::GreensFunctionSolver<3>::* )( double ))( &::GreensFunctionSolver< 3 >::SetSubSegmentCutoff )
+            , ( bp::arg("value") ) )    
+        .def( 
+            "Solve"
+            , (void ( ::GreensFunctionSolver<3>::* )(  ))(&::GreensFunctionSolver< 3 >::Solve)
+            , (void ( GreensFunctionSolver_less__3__greater__wrapper::* )(  ))(&GreensFunctionSolver_less__3__greater__wrapper::default_Solve) )    
+        .def( 
+            "GetPointSolution"
+            , (::std::vector< double > ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetPointSolution)
+            , (::std::vector< double > ( GreensFunctionSolver_less__3__greater__wrapper::* )(  ))(&GreensFunctionSolver_less__3__greater__wrapper::default_GetPointSolution) )    
+        .def( 
+            "GetSolutionAtGridPoints"
+            , (::std::vector< double > ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )( ::boost::shared_ptr< RegularGrid< 3, 3 > > ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints)
+            , (::std::vector< double > ( GreensFunctionSolver_less__3__greater__wrapper::* )( ::boost::shared_ptr< RegularGrid< 3, 3 > > ))(&GreensFunctionSolver_less__3__greater__wrapper::default_GetSolutionAtGridPoints)
+            , ( bp::arg("pGrid") ) )    
+        .def( 
+            "GetSolutionAtPoints"
+            , (::std::vector< double > ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints)
+            , (::std::vector< double > ( GreensFunctionSolver_less__3__greater__wrapper::* )( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ))(&GreensFunctionSolver_less__3__greater__wrapper::default_GetSolutionAtPoints)
+            , ( bp::arg("samplePoints") ) )    
+        .def( 
+            "GetVtkSolution"
+            , (::vtkSmartPointer< vtkImageData > ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetVtkSolution)
+            , (::vtkSmartPointer< vtkImageData > ( GreensFunctionSolver_less__3__greater__wrapper::* )(  ))(&GreensFunctionSolver_less__3__greater__wrapper::default_GetVtkSolution) )    
+        .def( 
+            "Setup"
+            , (void ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Setup)
+            , (void ( GreensFunctionSolver_less__3__greater__wrapper::* )(  ))(&GreensFunctionSolver_less__3__greater__wrapper::default_Setup) )    
+        .def( 
+            "Update"
+            , (void ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Update)
+            , (void ( GreensFunctionSolver_less__3__greater__wrapper::* )(  ))(&GreensFunctionSolver_less__3__greater__wrapper::default_Update) )    
+        .def( 
+            "UpdateCellData"
+            , (void ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateCellData)
+            , (void ( GreensFunctionSolver_less__3__greater__wrapper::* )(  ))(&GreensFunctionSolver_less__3__greater__wrapper::default_UpdateCellData) )    
+        .def( 
+            "UpdateSolution"
+            , (void ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )( ::std::vector< double > ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::UpdateSolution)
+            , (void ( GreensFunctionSolver_less__3__greater__wrapper::* )( ::std::vector< double > ))(&GreensFunctionSolver_less__3__greater__wrapper::default_UpdateSolution)
+            , ( bp::arg("data") ) )    
+        .def( 
+            "Write"
+            , (void ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )(  ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::Write)
+            , (void ( GreensFunctionSolver_less__3__greater__wrapper::* )(  ))(&GreensFunctionSolver_less__3__greater__wrapper::default_Write) );
 
     { //::chaste::pde::Instantiation
     

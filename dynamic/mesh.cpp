@@ -400,17 +400,6 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_mesh){
                 , Create_function_type( &::DiscreteContinuumMesh< 3, 3 >::Create ) );
         
         }
-        { //::DiscreteContinuumMesh< 3, 3 >::GenerateFromPart
-        
-            typedef DiscreteContinuumMesh< 3, 3 > exported_class_t;
-            typedef void ( exported_class_t::*GenerateFromPart_function_type)( ::boost::shared_ptr< Part< 3 > >,double ) ;
-            
-            DiscreteContinuumMesh3_3_exposer.def( 
-                "GenerateFromPart"
-                , GenerateFromPart_function_type( &::DiscreteContinuumMesh< 3, 3 >::GenerateFromPart )
-                , ( bp::arg("pPart"), bp::arg("maxElementArea")=0. ) );
-        
-        }
         { //::DiscreteContinuumMesh< 3, 3 >::GetConnectivity
         
             typedef DiscreteContinuumMesh< 3, 3 > exported_class_t;
@@ -421,6 +410,16 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_mesh){
                 , GetConnectivity_function_type( &::DiscreteContinuumMesh< 3, 3 >::GetConnectivity ) );
         
         }
+        { //::DiscreteContinuumMesh< 3, 3 >::GetElementRegionMarkers
+        
+            typedef DiscreteContinuumMesh< 3, 3 > exported_class_t;
+            typedef ::std::vector< unsigned int > ( exported_class_t::*GetElementRegionMarkers_function_type)(  ) ;
+            
+            DiscreteContinuumMesh3_3_exposer.def( 
+                "GetElementRegionMarkers"
+                , GetElementRegionMarkers_function_type( &::DiscreteContinuumMesh< 3, 3 >::GetElementRegionMarkers ) );
+        
+        }
         { //::DiscreteContinuumMesh< 3, 3 >::GetNodeLocations
         
             typedef DiscreteContinuumMesh< 3, 3 > exported_class_t;
@@ -429,6 +428,82 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_mesh){
             DiscreteContinuumMesh3_3_exposer.def( 
                 "GetNodeLocations"
                 , GetNodeLocations_function_type( &::DiscreteContinuumMesh< 3, 3 >::GetNodeLocations ) );
+        
+        }
+        { //::DiscreteContinuumMesh< 3, 3 >::SetDomain
+        
+            typedef DiscreteContinuumMesh< 3, 3 > exported_class_t;
+            typedef void ( exported_class_t::*SetDomain_function_type)( ::boost::shared_ptr< Part< 3 > > ) ;
+            
+            DiscreteContinuumMesh3_3_exposer.def( 
+                "SetDomain"
+                , SetDomain_function_type( &::DiscreteContinuumMesh< 3, 3 >::SetDomain )
+                , ( bp::arg("pDomain") ) );
+        
+        }
+        { //::DiscreteContinuumMesh< 3, 3 >::SetDomain
+        
+            typedef DiscreteContinuumMesh< 3, 3 > exported_class_t;
+            typedef void ( exported_class_t::*SetDomain_function_type)( ::vtkSmartPointer< vtkPolyData > ) ;
+            
+            DiscreteContinuumMesh3_3_exposer.def( 
+                "SetDomain"
+                , SetDomain_function_type( &::DiscreteContinuumMesh< 3, 3 >::SetDomain )
+                , ( bp::arg("pDomain") ) );
+        
+        }
+        { //::DiscreteContinuumMesh< 3, 3 >::SetDomain
+        
+            typedef DiscreteContinuumMesh< 3, 3 > exported_class_t;
+            typedef void ( exported_class_t::*SetDomain_function_type)( ::std::string const & ) ;
+            
+            DiscreteContinuumMesh3_3_exposer.def( 
+                "SetDomain"
+                , SetDomain_function_type( &::DiscreteContinuumMesh< 3, 3 >::SetDomain )
+                , ( bp::arg("rPathToStl") ) );
+        
+        }
+        { //::DiscreteContinuumMesh< 3, 3 >::SetHoles
+        
+            typedef DiscreteContinuumMesh< 3, 3 > exported_class_t;
+            typedef void ( exported_class_t::*SetHoles_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
+            
+            DiscreteContinuumMesh3_3_exposer.def( 
+                "SetHoles"
+                , SetHoles_function_type( &::DiscreteContinuumMesh< 3, 3 >::SetHoles )
+                , ( bp::arg("holes") ) );
+        
+        }
+        { //::DiscreteContinuumMesh< 3, 3 >::SetMaxElementArea
+        
+            typedef DiscreteContinuumMesh< 3, 3 > exported_class_t;
+            typedef void ( exported_class_t::*SetMaxElementArea_function_type)( double ) ;
+            
+            DiscreteContinuumMesh3_3_exposer.def( 
+                "SetMaxElementArea"
+                , SetMaxElementArea_function_type( &::DiscreteContinuumMesh< 3, 3 >::SetMaxElementArea )
+                , ( bp::arg("maxElementArea") ) );
+        
+        }
+        { //::DiscreteContinuumMesh< 3, 3 >::SetRegionMarkers
+        
+            typedef DiscreteContinuumMesh< 3, 3 > exported_class_t;
+            typedef void ( exported_class_t::*SetRegionMarkers_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
+            
+            DiscreteContinuumMesh3_3_exposer.def( 
+                "SetRegionMarkers"
+                , SetRegionMarkers_function_type( &::DiscreteContinuumMesh< 3, 3 >::SetRegionMarkers )
+                , ( bp::arg("regionMarkers") ) );
+        
+        }
+        { //::DiscreteContinuumMesh< 3, 3 >::Update
+        
+            typedef DiscreteContinuumMesh< 3, 3 > exported_class_t;
+            typedef void ( exported_class_t::*Update_function_type)(  ) ;
+            
+            DiscreteContinuumMesh3_3_exposer.def( 
+                "Update"
+                , Update_function_type( &::DiscreteContinuumMesh< 3, 3 >::Update ) );
         
         }
         DiscreteContinuumMesh3_3_exposer.staticmethod( "Create" );

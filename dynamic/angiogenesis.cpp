@@ -112,12 +112,28 @@ struct AngiogenesisSolver_less__3__greater__wrapper : AngiogenesisSolver< 3 >, b
     
     }
 
-    void DoAnastamosis(  ){
-        AngiogenesisSolver< 3 >::DoAnastamosis(  );
+    virtual void DoAnastamosis(  ){
+        if( bp::override func_DoAnastamosis = this->get_override( "DoAnastamosis" ) )
+            func_DoAnastamosis(  );
+        else{
+            this->AngiogenesisSolver< 3 >::DoAnastamosis(  );
+        }
+    }
+    
+    virtual void default_DoAnastamosis(  ){
+        AngiogenesisSolver< 3 >::DoAnastamosis( );
     }
 
-    void DoSprouting(  ){
-        AngiogenesisSolver< 3 >::DoSprouting(  );
+    virtual void DoSprouting(  ){
+        if( bp::override func_DoSprouting = this->get_override( "DoSprouting" ) )
+            func_DoSprouting(  );
+        else{
+            this->AngiogenesisSolver< 3 >::DoSprouting(  );
+        }
+    }
+    
+    virtual void default_DoSprouting(  ){
+        AngiogenesisSolver< 3 >::DoSprouting( );
     }
 
     virtual void Increment(  ) {
@@ -132,7 +148,15 @@ struct AngiogenesisSolver_less__3__greater__wrapper : AngiogenesisSolver< 3 >, b
         AngiogenesisSolver< 3 >::Increment( );
     }
 
-    void UpdateNodalPositions( bool sprouting=false ){
+    virtual void UpdateNodalPositions( bool sprouting=false ){
+        if( bp::override func_UpdateNodalPositions = this->get_override( "UpdateNodalPositions" ) )
+            func_UpdateNodalPositions( sprouting );
+        else{
+            this->AngiogenesisSolver< 3 >::UpdateNodalPositions( sprouting );
+        }
+    }
+    
+    virtual void default_UpdateNodalPositions( bool sprouting=false ){
         AngiogenesisSolver< 3 >::UpdateNodalPositions( sprouting );
     }
 
@@ -407,17 +431,6 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
                 , ( bp::arg("pCellPopulation") ) );
         
         }
-        { //::AbstractMigrationRule< 3 >::SetGrid
-        
-            typedef AbstractMigrationRule< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetGrid_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
-            
-            AbstractMigrationRule3_exposer.def( 
-                "SetGrid"
-                , SetGrid_function_type( &::AbstractMigrationRule< 3 >::SetGrid )
-                , ( bp::arg("pGrid") ) );
-        
-        }
         { //::AbstractMigrationRule< 3 >::SetDiscreteContinuumSolver
         
             typedef AbstractMigrationRule< 3 > exported_class_t;
@@ -427,6 +440,17 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
                 "SetDiscreteContinuumSolver"
                 , SetDiscreteContinuumSolver_function_type( &::AbstractMigrationRule< 3 >::SetDiscreteContinuumSolver )
                 , ( bp::arg("pSolver") ) );
+        
+        }
+        { //::AbstractMigrationRule< 3 >::SetGrid
+        
+            typedef AbstractMigrationRule< 3 > exported_class_t;
+            typedef void ( exported_class_t::*SetGrid_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
+            
+            AbstractMigrationRule3_exposer.def( 
+                "SetGrid"
+                , SetGrid_function_type( &::AbstractMigrationRule< 3 >::SetGrid )
+                , ( bp::arg("pGrid") ) );
         
         }
         { //::AbstractMigrationRule< 3 >::SetIsSprouting
@@ -472,6 +496,17 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
                 , ( bp::arg("rNodes") ) );
         
         }
+        { //::AbstractSproutingRule< 3 >::SetDiscreteContinuumSolver
+        
+            typedef AbstractSproutingRule< 3 > exported_class_t;
+            typedef void ( exported_class_t::*SetDiscreteContinuumSolver_function_type)( ::boost::shared_ptr< AbstractDiscreteContinuumSolver< 3 > > ) ;
+            
+            AbstractSproutingRule3_exposer.def( 
+                "SetDiscreteContinuumSolver"
+                , SetDiscreteContinuumSolver_function_type( &::AbstractSproutingRule< 3 >::SetDiscreteContinuumSolver )
+                , ( bp::arg("pSolver") ) );
+        
+        }
         { //::AbstractSproutingRule< 3 >::SetGrid
         
             typedef AbstractSproutingRule< 3 > exported_class_t;
@@ -483,17 +518,6 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
                 , SetGrid_function_type(&::AbstractSproutingRule< 3 >::SetGrid)
                 , default_SetGrid_function_type(&AbstractSproutingRule_less__3__greater__wrapper::default_SetGrid)
                 , ( bp::arg("pGrid") ) );
-        
-        }
-        { //::AbstractSproutingRule< 3 >::SetDiscreteContinuumSolver
-        
-            typedef AbstractSproutingRule< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetDiscreteContinuumSolver_function_type)( ::boost::shared_ptr< AbstractDiscreteContinuumSolver< 3 > > ) ;
-            
-            AbstractSproutingRule3_exposer.def( 
-                "SetDiscreteContinuumSolver"
-                , SetDiscreteContinuumSolver_function_type( &::AbstractSproutingRule< 3 >::SetDiscreteContinuumSolver )
-                , ( bp::arg("pSolver") ) );
         
         }
         { //::AbstractSproutingRule< 3 >::SetSproutingProbability
@@ -553,7 +577,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             
             AngiogenesisSolver3_exposer.def( 
                 "DoAnastamosis"
-                , DoAnastamosis_function_type( &AngiogenesisSolver_less__3__greater__wrapper::DoAnastamosis ) );
+                , DoAnastamosis_function_type( &AngiogenesisSolver_less__3__greater__wrapper::default_DoAnastamosis ) );
         
         }
         { //::AngiogenesisSolver< 3 >::DoSprouting
@@ -563,7 +587,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             
             AngiogenesisSolver3_exposer.def( 
                 "DoSprouting"
-                , DoSprouting_function_type( &AngiogenesisSolver_less__3__greater__wrapper::DoSprouting ) );
+                , DoSprouting_function_type( &AngiogenesisSolver_less__3__greater__wrapper::default_DoSprouting ) );
         
         }
         { //::AngiogenesisSolver< 3 >::Increment
@@ -694,7 +718,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_angiogenesis){
             
             AngiogenesisSolver3_exposer.def( 
                 "UpdateNodalPositions"
-                , UpdateNodalPositions_function_type( &AngiogenesisSolver_less__3__greater__wrapper::UpdateNodalPositions )
+                , UpdateNodalPositions_function_type( &AngiogenesisSolver_less__3__greater__wrapper::default_UpdateNodalPositions )
                 , ( bp::arg("sprouting")=(bool)(false) ) );
         
         }

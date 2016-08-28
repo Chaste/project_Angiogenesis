@@ -29,6 +29,7 @@ def update_builder(builder):
     builder.class_("CaBasedCellPopulation<3>").member_functions("GetNodeCorrespondingToCell").exclude()
     builder.class_("CaBasedCellPopulation<3>").member_functions("rGetAvailableSpaces").exclude()
     builder.class_("CaBasedCellPopulation<3>").member_functions("GetNodeCorrespondingToCell").exclude()
+    builder.class_("CaBasedCellPopulation<3>").member_functions("GetTetrahedralMeshForPdeModifier").exclude()
     builder.class_("CaBasedCellPopulation<3>").member_functions(lambda decl: decl.name.startswith( "rGetMesh")).exclude()
     
     builder.class_('SimpleCellPopulation<3>').calldefs().use_default_arguments=False  

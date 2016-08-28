@@ -5,6 +5,7 @@ chaste.init()
 import chaste.projects.angiogenesis as angiogenesis
 import chaste.projects.angiogenesis.population
 import chaste.projects.angiogenesis.simulation
+import chaste.projects.angiogenesis.utility
 
 class TestBetteridgeCalculator(unittest.TestCase):
     
@@ -12,6 +13,10 @@ class TestBetteridgeCalculator(unittest.TestCase):
     
     # Set up a vessel network
     length = 100.0 # um
+    pascals = chaste.projects.angiogenesis.utility.PressureQuantity()
+    metres = chaste.projects.angiogenesis.utility.LengthQuantity()
+    pa_s = chaste.projects.angiogenesis.utility.ViscosityQuantity()
+    
     network = angiogenesis.population.VesselNetwork3()
     n1 = angiogenesis.population.vessel.VesselNode3((0.0, 0.0, 0.0))
     n2 = angiogenesis.population.vessel.VesselNode3((length, 0.0, 0.0))
@@ -22,9 +27,9 @@ class TestBetteridgeCalculator(unittest.TestCase):
     n7 = angiogenesis.population.vessel.VesselNode3((3.0 * length + 2.0*math.cos(math.pi/6.0)*length, 0.0, 0.0))
     
     n1.GetFlowProperties().SetIsInputNode(True)#
-    n1.GetFlowProperties().SetPressure(5000.0) # pa ?
+    n1.GetFlowProperties().SetPressure(5000.0 * pascals) # pa ?
     n7.GetFlowProperties().SetIsOutputNode(True)
-    n7.GetFlowProperties().SetPressure(3000.0) #pa ?
+    n7.GetFlowProperties().SetPressure(3000.0 * pascals) #pa ?
     
     v1 = angiogenesis.population.vessel.Vessel3([n1, n2])
     network.AddVessel(v1)
@@ -41,16 +46,16 @@ class TestBetteridgeCalculator(unittest.TestCase):
     v7 = angiogenesis.population.vessel.Vessel3([n6, n7])
     network.AddVessel(v7)
     
-    network.SetSegmentRadii(10.0)
+    network.SetSegmentRadii(10.0 * 1.e-6 * metres)
     viscosity = 1.e-3 # units ?
     initial_haematocrit = 0.1
     for eachVessel in network.GetVessels():
         for eachSegment in eachVessel.GetSegments():
-            eachSegment.GetFlowProperties().SetViscosity(viscosity)
+            eachSegment.GetFlowProperties().SetViscosity(viscosity * pa_s)
             eachSegment.GetFlowProperties().SetHaematocrit(initial_haematocrit)
             
-    v2.GetSegments()[0].SetRadius(5.0)
-    v4.GetSegments()[0].SetRadius(5.0)
+    v2.GetSegments()[0].SetRadius(5.0 * 1.e-6 * metres)
+    v4.GetSegments()[0].SetRadius(5.0 * 1.e-6 * metres)
     
     impedance_calculator = angiogenesis.simulation.VesselImpedanceCalculator3()
     impedance_calculator.SetVesselNetwork(network)
