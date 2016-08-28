@@ -36,6 +36,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef BaseParameterInstance_HPP_
 #define BaseParameterInstance_HPP_
 
+#include "ChasteSerialization.hpp"
 #include "SmartPointers.hpp"
 #include "UnitCollection.hpp"
 
@@ -46,6 +47,18 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 class BaseParameterInstance
 {
+    /**
+     * Archiving
+     */
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & mName;
+        ar & mShortDescription;
+        ar & mSourceInformation;
+    }
+
     /**
      * A name to distinguish it in a ParameterCollection
      */
@@ -73,13 +86,41 @@ public:
      */
     virtual ~BaseParameterInstance();
 
-    void SetShortDescription(const std::string& rShortDescription);
+    /**
+     * Return the parameter name
+     * @return the parameter name as a string
+     */
+    std::string GetName();
 
+    /**
+     * Return the bibliographic information
+     * @return the bibliographic information
+     */
+    std::string GetBibliographicInformation();
+
+    /**
+     * Return the short description
+     * @return the short description
+     */
+    std::string GetShortDescription();
+
+    /**
+     * Set the bibliographic information
+     * @param rSourceInformation the bibliographic information
+     */
     void SetBibliographicInformation(const std::string& rSourceInformation);
 
+    /**
+     * Set the parameter name, this is used to distinguish it in the ParameterCollection map
+     * @param rShortDescription the short description
+     */
     void SetName(const std::string& rName);
 
-    std::string GetName();
+    /**
+     * Set the short description of the parameter
+     * @param rShortDescription the short description
+     */
+    void SetShortDescription(const std::string& rShortDescription);
 
 };
 

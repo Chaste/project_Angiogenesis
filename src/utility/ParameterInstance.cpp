@@ -70,3 +70,13 @@ template class ParameterInstance<unit::dimensionless>;
 template class ParameterInstance<unit::rate>;
 template class ParameterInstance<unit::flow_impedance>;
 template class ParameterInstance<unit::flow_rate>;
+
+#include "SerializationExportWrapperForCpp.hpp"
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::time)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::length)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::mass)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::pressure)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::dimensionless)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::rate)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::flow_impedance)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::flow_rate)

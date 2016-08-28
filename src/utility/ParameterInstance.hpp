@@ -36,6 +36,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef ParameterInstance_HPP_
 #define ParameterInstance_HPP_
 
+#include "ChasteSerialization.hpp"
+#include <boost/serialization/base_object.hpp>
 #include "SmartPointers.hpp"
 #include "UnitCollection.hpp"
 #include "BaseParameterInstance.hpp"
@@ -48,8 +50,20 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 template<class UNIT>
 class ParameterInstance : public BaseParameterInstance
 {
+
     /**
-     * The value of the parameter, including units
+     * Archiving
+     */
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & boost::serialization::base_object<BaseParameterInstance>(*this);
+        ar & mValue;
+    }
+
+    /**
+     * The value of the parameter, template over unit type
      */
     units::quantity<UNIT> mValue;
 
@@ -74,5 +88,15 @@ public:
     units::quantity<UNIT> GetValue();
 
 };
+
+#include "SerializationExportWrapper.hpp"
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::time)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::length)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::mass)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::pressure)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::dimensionless)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::rate)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::flow_impedance)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::flow_rate)
 
 #endif /*ParameterInstance_HPP_*/

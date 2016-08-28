@@ -51,6 +51,7 @@ tutorials/TestBuildVesselNetworkLiteratePaper.hpp
 tutorials/TestBloodFlowLiteratePaper.hpp
 utility/TestUnitCollections.hpp
 utility/TestParameterCollection.hpp
+utility/TestAngiogenesisParallelMethods.hpp
 python/flow/TestHaematocritCalculators.py
 python/flow/TestStraightVesselFlow.py
 python/geometry/TestPart.py

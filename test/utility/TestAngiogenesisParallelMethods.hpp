@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2016, University of Oxford.
+Copyright (c) 2005-2015, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -31,50 +31,49 @@ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-*/
+ */
 
+#ifndef TestAngiogenesisParallelMethods_hpp
+#define TestAngiogenesisParallelMethods_hpp
+
+#include <boost/lexical_cast.hpp>
+#include "PetscTools.hpp"
+#include "ObjectCommunicator.hpp"
 #include "BaseParameterInstance.hpp"
 
-BaseParameterInstance::BaseParameterInstance()
-    : mName("DefaultParameter"),
-      mShortDescription("A short description of the parameter"),
-      mSourceInformation("WARNING: No source information given for parameter.")
+#include "PetscSetupAndFinalize.hpp"
+
+class TestAngiogenesisParallelMethods : public CxxTest::TestSuite
 {
 
-}
+public:
 
-BaseParameterInstance::~BaseParameterInstance()
-{
+    void TestSendReceiveParameterInstance()
+    {
+        // Send and receive a parameter instance
+        boost::shared_ptr<BaseParameterInstance> p_my_parameter = boost::shared_ptr<BaseParameterInstance>(new BaseParameterInstance);
+        p_my_parameter->SetShortDescription("Base Parameter");
+        p_my_parameter->SetName("Base_" + boost::lexical_cast<std::string>(PetscTools::GetMyRank()));
+        p_my_parameter->SetBibliographicInformation("J. Smith et al., (2003).");
 
-}
+        MPI_Status status;
+        ObjectCommunicator<BaseParameterInstance> communicator;
+        unsigned com_tag = 456;
+        boost::shared_ptr<BaseParameterInstance> p_neighour_parameter;
 
+        if (!PetscTools::AmTopMost())
+        {
+            p_neighour_parameter = communicator.SendRecvObject(p_my_parameter, PetscTools::GetMyRank() + 1, com_tag, PetscTools::GetMyRank() + 1, com_tag, status);
+        }
+        if (!PetscTools::AmMaster())
+        {
+            p_neighour_parameter = communicator.SendRecvObject(p_my_parameter, PetscTools::GetMyRank() - 1, com_tag, PetscTools::GetMyRank() - 1, com_tag, status);
+        }
 
-std::string BaseParameterInstance::GetBibliographicInformation()
-{
-    return mSourceInformation;
-}
+        std::cout << "Proc: " << PetscTools::GetMyRank() << " received param: " << p_neighour_parameter->GetName() << std::endl;
 
-std::string BaseParameterInstance::GetName()
-{
-    return mName;
-}
+    }
 
-std::string BaseParameterInstance::GetShortDescription()
-{
-    return mShortDescription;
-}
+};
 
-void BaseParameterInstance::SetBibliographicInformation(const std::string& rSourceInformation)
-{
-    mSourceInformation = rSourceInformation;
-}
-
-void BaseParameterInstance::SetName(const std::string& rName)
-{
-    mName = rName;
-}
-
-void BaseParameterInstance::SetShortDescription(const std::string& rShortDescription)
-{
-    mShortDescription = rShortDescription;
-}
+#endif // TestAngiogenesisParallelMethods_hpp

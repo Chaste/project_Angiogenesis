@@ -40,9 +40,11 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <boost/units/quantity.hpp>
 #include <boost/units/systems/si/time.hpp>
 #include <boost/units/base_units/metric/hour.hpp>
-#include <SmartPointers.hpp>
+#include "CheckpointArchiveTypes.hpp"
+#include "ArchiveLocationInfo.hpp"
+#include "SmartPointers.hpp"
 #include "UnitCollection.hpp"
-#include "UblasVectorInclude.hpp"
+#include "OutputFileHandler.hpp"
 #include "BaseParameterInstance.hpp"
 #include "ParameterInstance.hpp"
 #include "ParameterCollection.hpp"
@@ -53,6 +55,96 @@ class TestParameterCollection : public CxxTest::TestSuite
 public:
 
     void TestBaseInstance()
+    {
+        boost::shared_ptr<BaseParameterInstance> p_my_parameter = boost::shared_ptr<BaseParameterInstance>(new BaseParameterInstance);
+        p_my_parameter->SetShortDescription("Base Parameter");
+        p_my_parameter->SetName("Base");
+        p_my_parameter->SetBibliographicInformation("J. Smith et al., (2003).");
+
+        TS_ASSERT_EQUALS("Base Parameter", p_my_parameter->GetShortDescription());
+        TS_ASSERT_EQUALS("Base", p_my_parameter->GetName());
+        TS_ASSERT_EQUALS("J. Smith et al., (2003).", p_my_parameter->GetBibliographicInformation());
+
+        // Test Archiving
+        OutputFileHandler handler("archive", false);
+        ArchiveLocationInfo::SetArchiveDirectory(handler.FindFile(""));
+        std::string archive_filename = ArchiveLocationInfo::GetProcessUniqueFilePath("BaseParameterInstance.arch");
+
+        // Save archive
+        {
+            std::ofstream ofs(archive_filename.c_str());
+            boost::archive::text_oarchive output_arch(ofs);
+            output_arch << p_my_parameter;
+        }
+
+        // Load archive
+        {
+            boost::shared_ptr<BaseParameterInstance> p_my_parameter_from_archive;
+
+            // Read from this input file
+            std::ifstream ifs(archive_filename.c_str(), std::ios::binary);
+            boost::archive::text_iarchive input_arch(ifs);
+
+            // restore from the archive
+            input_arch >> p_my_parameter_from_archive;
+            TS_ASSERT_EQUALS("Base Parameter", p_my_parameter_from_archive->GetShortDescription());
+            TS_ASSERT_EQUALS("Base", p_my_parameter_from_archive->GetName());
+            TS_ASSERT_EQUALS("J. Smith et al., (2003).", p_my_parameter_from_archive->GetBibliographicInformation());
+        }
+
+    }
+
+    void TestParameterInstance()
+    {
+        boost::shared_ptr<ParameterInstance<unit::time> > p_my_parameter = boost::shared_ptr<ParameterInstance<unit::time> >(new ParameterInstance<unit::time>);
+        units::quantity<unit::time> few_seconds = 5.0*unit::seconds;
+        p_my_parameter->SetShortDescription("My Description For Time Parameter");
+        p_my_parameter->SetValue(few_seconds);
+        p_my_parameter->SetName("Derived");
+
+        TS_ASSERT_EQUALS("Derived", p_my_parameter->GetName());
+        TS_ASSERT_EQUALS("My Description For Time Parameter", p_my_parameter->GetShortDescription());
+        TS_ASSERT_DELTA(p_my_parameter->GetValue()/unit::seconds, 5.0, 1.e-6);
+
+        // Test Archiving
+        OutputFileHandler handler("archive", false);
+        ArchiveLocationInfo::SetArchiveDirectory(handler.FindFile(""));
+        std::string archive_filename = ArchiveLocationInfo::GetProcessUniqueFilePath("ParameterInstance.arch");
+
+        // Save archive
+        {
+            boost::shared_ptr<BaseParameterInstance> p_my_parameter_for_archive = boost::shared_ptr<BaseParameterInstance>(new ParameterInstance<unit::time>);
+            units::quantity<unit::time> few_seconds = 5.0*unit::seconds;
+            p_my_parameter_for_archive->SetShortDescription("My Description For Time Parameter");
+            p_my_parameter_for_archive->SetName("Derived");
+
+            boost::shared_ptr<ParameterInstance<unit::time> > p_my_cast_parameter_for_archive = boost::static_pointer_cast<ParameterInstance<unit::time> >(p_my_parameter_for_archive);
+            p_my_cast_parameter_for_archive->SetValue(few_seconds);
+
+            std::ofstream ofs(archive_filename.c_str());
+            boost::archive::text_oarchive output_arch(ofs);
+            output_arch << p_my_parameter_for_archive;
+        }
+
+        // Load archive
+        {
+            boost::shared_ptr<BaseParameterInstance> p_my_parameter_from_archive;
+
+            // Read from this input file
+            std::ifstream ifs(archive_filename.c_str(), std::ios::binary);
+            boost::archive::text_iarchive input_arch(ifs);
+
+            // restore from the archive
+            input_arch >> p_my_parameter_from_archive;
+            TS_ASSERT_EQUALS("My Description For Time Parameter", p_my_parameter_from_archive->GetShortDescription());
+            TS_ASSERT_EQUALS("Derived", p_my_parameter_from_archive->GetName());
+
+            boost::shared_ptr<ParameterInstance<unit::time> > p_my_cast_parameter_from_archive = boost::static_pointer_cast<ParameterInstance<unit::time> >(p_my_parameter_from_archive);
+            TS_ASSERT_DELTA(p_my_cast_parameter_from_archive->GetValue()/unit::seconds, 5.0, 1.e-6);
+        }
+    }
+
+    void TestMixedParameterCollection()
     {
         boost::shared_ptr<BaseParameterInstance> my_parameter = boost::shared_ptr<BaseParameterInstance>(new BaseParameterInstance);
         my_parameter->SetShortDescription("My Description");

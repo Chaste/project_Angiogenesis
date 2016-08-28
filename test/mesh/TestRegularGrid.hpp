@@ -49,6 +49,7 @@
 #include "UniformCellCycleModel.hpp"
 #include "MeshBasedCellPopulation.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
+#include "PetscSetupAndFinalize.hpp"
 
 class TestRegularGrid : public AbstractCellBasedWithTimingsTestSuite
 {

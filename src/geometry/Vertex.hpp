@@ -42,29 +42,34 @@
 #include "SmartPointers.hpp"
 #include "UblasVectorInclude.hpp"
 
-/* A point in 3d space.
+/**
+ * A point in 3d space.
  */
 class Vertex : public ChastePoint<3>, public boost::enable_shared_from_this<Vertex>
 {
-    /* An optional index
-    */
+    /**
+     *  An optional index
+     */
     unsigned mIndex;
 
 public:
 
-    /* Constructor
+    /**
+     * Constructor
      * @param x x position of vertex
      * @param y y position of vertex
      * @param z z position of vertex
      */
     Vertex(double x = 0.0, double y = 0.0, double z = 0.0);
 
-    /* Constructor
+    /**
+     * Constructor
      * @param a vector of x, y, z coordinates
      */
     Vertex(c_vector<double, 3> coords);
 
-    /* Factory constructor method
+    /**
+     * Factory constructor method
      * @param x x position of vertex
      * @param y y position of vertex
      * @param z z position of vertex
@@ -72,33 +77,39 @@ public:
      */
     static boost::shared_ptr<Vertex> Create(double x = 0.0, double y = 0.0, double z = 0.0);
 
-    /* Factory constructor method
+    /**
+     * Factory constructor method
      * @param a vector of x, y, z coordinates
      * @return a shared pointer to a new vertex
      */
     static boost::shared_ptr<Vertex> Create(c_vector<double, 3> coords);
 
-    /* Desctructor
+    /**
+     * Desctructor
      */
     ~Vertex();
 
-    /* Return the index
+    /**
+     * Return the index
      * @return the vertex index
      */
     unsigned GetIndex();
 
-    /* Rotate about the specified axis by the specified angle
+    /**
+     * Rotate about the specified axis by the specified angle
      * @param axis the rotation axis
      * @param angle the rotation angle
      */
     void RotateAboutAxis(c_vector<double, 3> axis, double angle);
 
-    /* Set the index
+    /**
+     * Set the index
      * @param index the vertex index
      */
     void SetIndex(unsigned index);
 
-    /* Move the vertex along the translation vector
+    /**
+     * Move the vertex along the translation vector
      * @param translationVector the new location is the original + the translationVector
      */
     void Translate(c_vector<double, 3> translationVector);
