@@ -46,9 +46,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif // CHASTE_VTK
 #include "SmartPointers.hpp"
 #include "Exception.hpp"
-#include "VtkSurfaceWriter.hpp"
+#include "GeometryWriter.hpp"
 
-VtkSurfaceWriter::VtkSurfaceWriter() :
+GeometryWriter::GeometryWriter() :
     mpInputSurface(),
     mFilename(),
     mWriteStl(false)
@@ -56,33 +56,33 @@ VtkSurfaceWriter::VtkSurfaceWriter() :
 
 }
 
-VtkSurfaceWriter::~VtkSurfaceWriter()
+GeometryWriter::~GeometryWriter()
 {
 
 }
 
-boost::shared_ptr<VtkSurfaceWriter > VtkSurfaceWriter::Create()
+boost::shared_ptr<GeometryWriter > GeometryWriter::Create()
 {
-    MAKE_PTR(VtkSurfaceWriter, pSelf);
+    MAKE_PTR(GeometryWriter, pSelf);
     return pSelf;
 }
 
-void VtkSurfaceWriter::SetInput(vtkSmartPointer<vtkPolyData> pSurface)
+void GeometryWriter::SetInput(vtkSmartPointer<vtkPolyData> pSurface)
 {
     mpInputSurface = pSurface;
 }
 
-void VtkSurfaceWriter::SetWriteStl(bool writeStl)
+void GeometryWriter::SetWriteStl(bool writeStl)
 {
     mWriteStl = writeStl;
 }
 
-void VtkSurfaceWriter::SetFileName(const std::string& rFileName)
+void GeometryWriter::SetFileName(const std::string& rFileName)
 {
     mFilename = rFileName;
 }
 
-void VtkSurfaceWriter::Write()
+void GeometryWriter::Write()
 {
     if(!mpInputSurface)
     {

@@ -33,8 +33,8 @@
 
  */
 
-#ifndef VtkSurfaceWriter_HPP_
-#define VtkSurfaceWriter_HPP_
+#ifndef GeometryWriter_HPP_
+#define GeometryWriter_HPP_
 
 #include <string>
 #ifdef CHASTE_VTK
@@ -46,7 +46,7 @@
 /**
  * This class writes vtk polydata to file in VTK XML or ASCII STL format
  */
-class VtkSurfaceWriter
+class GeometryWriter
 {
 
 private:
@@ -68,18 +68,18 @@ public:
     /**
      * Constructor
      */
-    VtkSurfaceWriter();
+    GeometryWriter();
 
     /**
      * Construct a new instance of the class and return a shared pointer to it.
      * @return a shared pointer to the class
      */
-    static boost::shared_ptr<VtkSurfaceWriter> Create();
+    static boost::shared_ptr<GeometryWriter> Create();
 
     /**
      * Destructor
      */
-    ~VtkSurfaceWriter();
+    ~GeometryWriter();
 
     /**
      * Set the polydata to be written
@@ -101,4 +101,4 @@ public:
 
 };
 
-#endif /* VtkSurfaceWriter_HPP_ */
+#endif /* GeometryWriter_HPP_ */

@@ -50,7 +50,7 @@
 #include "Vessel.hpp"
 #include "VesselSurfaceGenerator.hpp"
 #include "OutputFileHandler.hpp"
-#include "VtkSurfaceWriter.hpp"
+#include "GeometryWriter.hpp"
 
 class TestGenerateVtkVesselSurface : public CxxTest::TestSuite
 {
@@ -70,7 +70,7 @@ public:
         OutputFileHandler output_file_handler("TestVesselSurfaceGenerator", false);
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("SingleSegmentVessel.vtp");
 
-        VtkSurfaceWriter writer;
+        GeometryWriter writer;
         writer.SetInput(surface_generator.GetVtkSurface());
         writer.SetFileName(output_filename);
         writer.Write();
@@ -104,7 +104,7 @@ public:
         OutputFileHandler output_file_handler("TestVesselSurfaceGenerator", false);
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("MultiSegmentVessel.vtp");
 
-        VtkSurfaceWriter writer;
+        GeometryWriter writer;
         writer.SetInput(surface_generator.GetVtkSurface());
         writer.SetFileName(output_filename);
         writer.Write();
@@ -137,7 +137,7 @@ public:
         OutputFileHandler output_file_handler("TestVesselSurfaceGenerator", false);
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("SinusoidalVessel.vtp");
 
-        VtkSurfaceWriter writer;
+        GeometryWriter writer;
         writer.SetInput(surface_generator.GetVtkSurface());
         writer.SetFileName(output_filename);
         writer.Write();
@@ -189,7 +189,7 @@ public:
         OutputFileHandler output_file_handler("TestVesselSurfaceGenerator", false);
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("MultiVessel.vtp");
 
-        VtkSurfaceWriter writer;
+        GeometryWriter writer;
         writer.SetInput(surface_generator.GetVtkSurface());
         writer.SetFileName(output_filename);
         writer.Write();
