@@ -33,8 +33,8 @@
 
  */
 
-#ifndef VtkVesselNetworkWriter_HPP_
-#define VtkVesselNetworkWriter_HPP_
+#ifndef VesselNetworkWriter_HPP_
+#define VesselNetworkWriter_HPP_
 
 #include <string>
 #ifdef CHASTE_VTK
@@ -48,7 +48,7 @@
  * This class converts a vessel network to a vtk polydata representation, which can be return or written to file.
  */
 template<unsigned DIM>
-class VtkVesselNetworkWriter
+class VesselNetworkWriter
 {
 
 private:
@@ -78,18 +78,18 @@ public:
     /**
      * Constructor
      */
-    VtkVesselNetworkWriter();
+    VesselNetworkWriter();
 
     /**
      * Construct a new instance of the class and return a shared pointer to it.
      * @return a shared pointer to the class
      */
-    static boost::shared_ptr<VtkVesselNetworkWriter<DIM> > Create();
+    static boost::shared_ptr<VesselNetworkWriter<DIM> > Create();
 
     /**
      * Destructor
      */
-    ~VtkVesselNetworkWriter();
+    ~VesselNetworkWriter();
 
     /**
      * Set the vessel network
@@ -115,4 +115,4 @@ public:
 
 };
 
-#endif /* VtkVesselNetworkWriter_HPP_ */
+#endif /* VesselNetworkWriter_HPP_ */

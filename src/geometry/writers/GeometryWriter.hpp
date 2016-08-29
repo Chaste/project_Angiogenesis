@@ -37,14 +37,24 @@
 #define GeometryWriter_HPP_
 
 #include <string>
-#ifdef CHASTE_VTK
 #define _BACKWARD_BACKWARD_WARNING_H 1
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
-#endif // CHASTE_VTK
 
 /**
- * This class writes vtk polydata to file in VTK XML or ASCII STL format
+ * Helper struct for specifying the output geometry format
+ */
+struct GeometryFormat
+{
+    enum Value
+    {
+        VTP, STL
+    };
+};
+
+/**
+ * This class writes geometry information stored as vtk polydata to file in VTP or ascci STL format.
+ * For the latter it is assume that the geometry is triangulated.
  */
 class GeometryWriter
 {
@@ -52,16 +62,19 @@ class GeometryWriter
 private:
 
     /**
-     * A vtk representation of the network
+     * The geometry to be written
      */
-    vtkSmartPointer<vtkPolyData> mpInputSurface;
+    vtkSmartPointer<vtkPolyData> mpInputGeometry;
 
     /**
      * The output file name
      */
     std::string mFilename;
 
-    bool mWriteStl;
+    /**
+     * The output format
+     */
+    GeometryFormat::Value mFormat;
 
 public:
 
@@ -82,17 +95,22 @@ public:
     ~GeometryWriter();
 
     /**
-     * Set the polydata to be written
+     * Set the geometry to be written in vtk format
+     * @param pSurface the geometry to be written
      */
     void SetInput(vtkSmartPointer<vtkPolyData> pSurface);
 
     /**
-     * Adds a collection of vessels to the VesselNetwork
-     * @param rFileName the full output path
+     * Set the output filename, without extension
+     * @param rFileName the full output path without extension
      */
     void SetFileName(const std::string& rFileName);
 
-    void SetWriteStl(bool writeStl);
+    /**
+     * Set the output format, VTP or STL
+     * @param format the output format, VTP or STL
+     */
+    void SetOutputFormat(GeometryFormat::Value format);
 
     /**
      * Do the write

@@ -37,13 +37,13 @@
 #include "RegularGrid.hpp"
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning for now (gcc4.3)
 #include <vtkImageData.h>
-#include <vtkXMLImageDataWriter.h>
 #include <vtkDoubleArray.h>
 #include <vtkPointData.h>
 #include <vtkProbeFilter.h>
 #include <vtkPolyData.h>
 #include <vtkPoints.h>
 #include <vtkSmartPointer.h>
+#include "ImageWriter.hpp"
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 RegularGrid<ELEMENT_DIM, SPACE_DIM>::RegularGrid() :
@@ -759,11 +759,10 @@ vtkSmartPointer<vtkImageData> RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetVtkGrid()
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void RegularGrid<ELEMENT_DIM, SPACE_DIM>::Write(boost::shared_ptr<OutputFileHandler> pFileHandler)
 {
-    vtkSmartPointer<vtkXMLImageDataWriter> pImageDataWriter = vtkSmartPointer<vtkXMLImageDataWriter>::New();
-    pImageDataWriter->SetFileName((pFileHandler->GetOutputDirectoryFullPath() + "/grid.vti").c_str());
-    pImageDataWriter->SetInputData(GetVtkGrid());
-    pImageDataWriter->Update();
-    pImageDataWriter->Write();
+    ImageWriter writer;
+    writer.SetFilename(pFileHandler->GetOutputDirectoryFullPath() + "/grid.vti");
+    writer.SetImage(GetVtkGrid());
+    writer.Write();
 }
 
 // Explicit instantiation

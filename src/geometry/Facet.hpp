@@ -47,54 +47,64 @@
 #include "Polygon.hpp"
 #include "Vertex.hpp"
 
-/* A collection of planar polygons
+/**
+ * A collection of planar polygons
  */
 
 class Facet
 {
-    /* The polygons making up the facet
+    /**
+     * The polygons making up the facet
      */
     std::vector<boost::shared_ptr<Polygon> > mPolygons;
 
-    /* Unique vertices in the facet. This is not always up-to-date.
+    /**
+     * Unique vertices in the facet. This is not always up-to-date.
      * Use GetVertices() to ensure up-to-date vertices are used.
      */
     std::vector<boost::shared_ptr<Vertex> > mVertices;
 
-    /* Whether mVertices is up-to-date. This should be set false when new
+    /**
+     * Whether mVertices is up-to-date. This should be set false when new
      * polygons are added.
      */
     bool mVerticesUpToDate;
 
-    /* Arbitary data container, useful for specifying boundary conditions on facets
+    /**
+     * Data container, useful for specifying boundary conditions on facets
      */
     std::map<std::string, double> mData;
 
 public:
 
-    /* Constructor
+    /**
+     * Constructor
      * @param planar polygons
      */
     Facet(std::vector<boost::shared_ptr<Polygon> > polygons);
 
-    /* Constructor
+    /**
+     * Constructor
      * @param a single polygon
      */
     Facet(boost::shared_ptr<Polygon> pPolygon);
 
-    /* Factory constructor method
+    /**
+     * Factory constructor method
      * @param polygons planar polygons
      * @return a shared pointer to a new facet
      */
     static boost::shared_ptr<Facet> Create(std::vector<boost::shared_ptr<Polygon> > polygons);
 
-    /* Factory constructor method
+    /**
+     * Factory constructor method
      * @param pPolygon a polygon
      * @return a smart pointer to a new facet
      */
     static boost::shared_ptr<Facet> Create(boost::shared_ptr<Polygon> pPolygon);
 
-    /* Desctructor
+    /**
+     * Desctructor
      */
     ~Facet();
 

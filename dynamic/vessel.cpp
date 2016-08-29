@@ -3047,63 +3047,63 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
         VesselSegment3_exposer.def("__init__", bp::make_constructor(VS3_Copy));
     }
 
-    { //::VtkVesselNetworkWriter< 3 >
-        typedef bp::class_< VtkVesselNetworkWriter< 3 > > VtkVesselNetworkWriter3_exposer_t;
-        VtkVesselNetworkWriter3_exposer_t VtkVesselNetworkWriter3_exposer = VtkVesselNetworkWriter3_exposer_t( "VtkVesselNetworkWriter3", bp::init< >() );
-        bp::scope VtkVesselNetworkWriter3_scope( VtkVesselNetworkWriter3_exposer );
-        { //::VtkVesselNetworkWriter< 3 >::Create
+    { //::VesselNetworkWriter< 3 >
+        typedef bp::class_< VesselNetworkWriter< 3 > > VesselNetworkWriter3_exposer_t;
+        VesselNetworkWriter3_exposer_t VesselNetworkWriter3_exposer = VesselNetworkWriter3_exposer_t( "VesselNetworkWriter3", bp::init< >() );
+        bp::scope VesselNetworkWriter3_scope( VesselNetworkWriter3_exposer );
+        { //::VesselNetworkWriter< 3 >::Create
         
-            typedef VtkVesselNetworkWriter< 3 > exported_class_t;
-            typedef ::boost::shared_ptr< VtkVesselNetworkWriter< 3 > > ( *Create_function_type )(  );
+            typedef VesselNetworkWriter< 3 > exported_class_t;
+            typedef ::boost::shared_ptr< VesselNetworkWriter< 3 > > ( *Create_function_type )(  );
             
-            VtkVesselNetworkWriter3_exposer.def( 
+            VesselNetworkWriter3_exposer.def( 
                 "Create"
-                , Create_function_type( &::VtkVesselNetworkWriter< 3 >::Create ) );
+                , Create_function_type( &::VesselNetworkWriter< 3 >::Create ) );
         
         }
-        { //::VtkVesselNetworkWriter< 3 >::GetOutput
+        { //::VesselNetworkWriter< 3 >::GetOutput
         
-            typedef VtkVesselNetworkWriter< 3 > exported_class_t;
+            typedef VesselNetworkWriter< 3 > exported_class_t;
             typedef ::vtkSmartPointer< vtkPolyData > ( exported_class_t::*GetOutput_function_type)(  ) ;
             
-            VtkVesselNetworkWriter3_exposer.def( 
+            VesselNetworkWriter3_exposer.def( 
                 "GetOutput"
-                , GetOutput_function_type( &::VtkVesselNetworkWriter< 3 >::GetOutput ) );
+                , GetOutput_function_type( &::VesselNetworkWriter< 3 >::GetOutput ) );
         
         }
-        { //::VtkVesselNetworkWriter< 3 >::SetFileName
+        { //::VesselNetworkWriter< 3 >::SetFileName
         
-            typedef VtkVesselNetworkWriter< 3 > exported_class_t;
+            typedef VesselNetworkWriter< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetFileName_function_type)( ::std::string const & ) ;
             
-            VtkVesselNetworkWriter3_exposer.def( 
+            VesselNetworkWriter3_exposer.def( 
                 "SetFileName"
-                , SetFileName_function_type( &::VtkVesselNetworkWriter< 3 >::SetFileName )
+                , SetFileName_function_type( &::VesselNetworkWriter< 3 >::SetFileName )
                 , ( bp::arg("rFileName") ) );
         
         }
-        { //::VtkVesselNetworkWriter< 3 >::SetVesselNetwork
+        { //::VesselNetworkWriter< 3 >::SetVesselNetwork
         
-            typedef VtkVesselNetworkWriter< 3 > exported_class_t;
+            typedef VesselNetworkWriter< 3 > exported_class_t;
             typedef void ( exported_class_t::*SetVesselNetwork_function_type)( ::boost::shared_ptr< VesselNetwork< 3 > > ) ;
             
-            VtkVesselNetworkWriter3_exposer.def( 
+            VesselNetworkWriter3_exposer.def( 
                 "SetVesselNetwork"
-                , SetVesselNetwork_function_type( &::VtkVesselNetworkWriter< 3 >::SetVesselNetwork )
+                , SetVesselNetwork_function_type( &::VesselNetworkWriter< 3 >::SetVesselNetwork )
                 , ( bp::arg("pNetwork") ) );
         
         }
-        { //::VtkVesselNetworkWriter< 3 >::Write
+        { //::VesselNetworkWriter< 3 >::Write
         
-            typedef VtkVesselNetworkWriter< 3 > exported_class_t;
+            typedef VesselNetworkWriter< 3 > exported_class_t;
             typedef void ( exported_class_t::*Write_function_type)(  ) ;
             
-            VtkVesselNetworkWriter3_exposer.def( 
+            VesselNetworkWriter3_exposer.def( 
                 "Write"
-                , Write_function_type( &::VtkVesselNetworkWriter< 3 >::Write ) );
+                , Write_function_type( &::VesselNetworkWriter< 3 >::Write ) );
         
         }
-        VtkVesselNetworkWriter3_exposer.staticmethod( "Create" );
-        bp::register_ptr_to_python< boost::shared_ptr< VtkVesselNetworkWriter<3> > >();
+        VesselNetworkWriter3_exposer.staticmethod( "Create" );
+        bp::register_ptr_to_python< boost::shared_ptr< VesselNetworkWriter<3> > >();
     }
 }

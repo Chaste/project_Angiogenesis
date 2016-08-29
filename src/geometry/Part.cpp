@@ -35,11 +35,8 @@
 
 #include <math.h>
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning
-#include "vtkXMLPolyDataWriter.h"
 #include "vtkCleanPolyData.h"
 #include "vtkSelectEnclosedPoints.h"
-#include "vtkTriangleFilter.h"
-#include "vtkSTLWriter.h"
 #include <vtkVersion.h>
 #include <boost/random.hpp>
 #include <boost/generator_iterator.hpp>
@@ -47,10 +44,7 @@
 #include "VesselSegment.hpp"
 #include "Vessel.hpp"
 #include "VesselSurfaceGenerator.hpp"
-
 #include "Part.hpp"
-
-struct triangulateio;
 
 template<unsigned DIM>
 Part<DIM>::Part() :
@@ -575,26 +569,15 @@ void Part<DIM>::Translate(c_vector<double, DIM> vector)
 }
 
 template<unsigned DIM>
-void Part<DIM>::Write(const std::string& fileName)
+void Part<DIM>::Write(const std::string& fileName, GeometryFormat::Value format)
 {
     mVtkPart = GetVtk(true);
-    vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-    writer->SetFileName(fileName.c_str());
-    writer->SetInputData(mVtkPart);
-    writer->Write();
-}
 
-template<unsigned DIM>
-void Part<DIM>::WriteStl(const std::string& rFilename)
-{
-    vtkSmartPointer<vtkTriangleFilter> p_tri_filter = vtkSmartPointer<vtkTriangleFilter>::New();
-    p_tri_filter->SetInputData(GetVtk());
-
-    vtkSmartPointer<vtkSTLWriter> stlWriter = vtkSmartPointer<vtkSTLWriter>::New();
-    stlWriter->SetFileName(rFilename.c_str());
-    stlWriter->SetInputConnection(p_tri_filter->GetOutputPort());
-    stlWriter->SetFileTypeToASCII();
-    stlWriter->Write();
+    GeometryWriter writer;
+    writer.SetFileName(fileName);
+    writer.SetInput(mVtkPart);
+    writer.SetOutputFormat(format);
+    writer.Write();
 }
 
 // Explicit instantiation

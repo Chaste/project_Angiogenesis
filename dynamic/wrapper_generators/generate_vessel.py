@@ -20,7 +20,7 @@ def update_builder(builder):
                        "VesselNetwork<3>",
                        "VasculatureGenerator<3>",
                        "AbstractVesselNetworkComponent<3>",
-                       "VtkVesselNetworkWriter<3>",
+                       "VesselNetworkWriter<3>",
                        "VesselNetworkReader<3>",
                        "VesselDistribution",
                        "SegmentLocation"]

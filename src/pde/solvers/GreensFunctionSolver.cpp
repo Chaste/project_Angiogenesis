@@ -36,8 +36,6 @@
 #include <numeric>
 #include <cstdlib>
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning for now (gcc4.3)
-#include <vtkXMLImageDataWriter.h>
-#include <vtkXMLPolyDataWriter.h>
 #include <vtkDoubleArray.h>
 #include <vtkPointData.h>
 #include <vtkImageData.h>
@@ -50,7 +48,8 @@
 #include "ReplicatableVector.hpp"
 #include "UblasMatrixInclude.hpp"
 #include "UnitCollection.hpp"
-
+#include "ImageWriter.hpp"
+#include "GeometryWriter.hpp"
 #include "GreensFunctionSolver.hpp"
 
 template<unsigned DIM>
@@ -448,11 +447,10 @@ template<unsigned DIM>
 void GreensFunctionSolver<DIM>::WriteSolution(std::map<std::string, std::vector<double> >& segmentPointData)
 {
     // Write the tissue point data
-    vtkSmartPointer<vtkXMLImageDataWriter> pImageDataWriter = vtkSmartPointer<vtkXMLImageDataWriter>::New();
-    pImageDataWriter->SetFileName((this->mpOutputFileHandler->GetOutputDirectoryFullPath() + "/pde_solution.vti").c_str());
-    pImageDataWriter->SetInputData(this->mpVtkSolution);
-    pImageDataWriter->Update();
-    pImageDataWriter->Write();
+    ImageWriter writer;
+    writer.SetFilename(this->mpOutputFileHandler->GetOutputDirectoryFullPath() + "/pde_solution.vti");
+    writer.SetImage(this->mpVtkSolution);
+    writer.Write();
 
     // Add the segment points
     vtkSmartPointer<vtkPolyData> pPolyData = vtkSmartPointer<vtkPolyData>::New();
@@ -480,10 +478,10 @@ void GreensFunctionSolver<DIM>::WriteSolution(std::map<std::string, std::vector<
         pPolyData->GetPointData()->AddArray(pInfo);
     }
 
-    vtkSmartPointer<vtkXMLPolyDataWriter> p_poldata_writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-    p_poldata_writer->SetFileName((this->mpOutputFileHandler->GetOutputDirectoryFullPath() + "/segments.vtp").c_str());
-    p_poldata_writer->SetInputData(pPolyData);
-    p_poldata_writer->Write();
+    GeometryWriter geometry_writer;
+    geometry_writer.SetFileName(this->mpOutputFileHandler->GetOutputDirectoryFullPath() + "/segments.vtp");
+    geometry_writer.SetInput(pPolyData);
+    geometry_writer.Write();
 }
 
 // Explicit instantiation

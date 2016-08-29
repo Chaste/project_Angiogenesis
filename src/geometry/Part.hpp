@@ -47,46 +47,56 @@
 #include "Polygon.hpp"
 #include "Facet.hpp"
 #include "VesselNetwork.hpp"
+#include "GeometryWriter.hpp"
 
-/* A geometric feature described using a PLC (piecewise linear complex) description
+/**
+ * A geometric feature described using a PLC (piecewise linear complex) description
  * (see the tetgen manual for details:http://wias-berlin.de/software/tetgen/).
  * These descriptions allow parts to be meshed using triangle or tetgen.
  */
 template<unsigned DIM>
 class Part
 {
-    /* Planar collections of polygons
+    /**
+     * Planar collections of polygons
      */
     std::vector<boost::shared_ptr<Facet> > mFacets;
 
-    /* A vtk representation of the part, for vizualization
+    /**
+     * A vtk representation of the part
      */
     vtkSmartPointer<vtkPolyData> mVtkPart;
 
-    /* The locations of hole markers (see PLC definition)
+    /**
+     * The locations of hole markers (see PLC definition)
      */
     std::vector<c_vector<double, DIM> > mHoleMarkers;
 
-    /* The locations of region markers (see PLC definition)
+    /**
+     * The locations of region markers (see PLC definition)
      */
     std::vector<c_vector<double, DIM> > mRegionMarkers;
 
 public:
 
-    /* Constructor
+    /**
+     * Constructor
      */
     Part();
 
-    /* Factory constructor method
+    /**
+     * Factory constructor method
      * @return a shared pointer to a new part
      */
     static boost::shared_ptr<Part> Create();
 
-    /* Destructor
+    /**
+     * Destructor
      */
     ~Part();
 
-    /* Add a circle to the part. If a target facet is not specified the default position is normal to the z-axis.
+    /**
+     * Add a circle to the part. If a target facet is not specified the default position is normal to the z-axis.
      * @param radius the circle radius
      * @param centre the centre of the circle
      * @param numSegments, the number of linear segments the circle is described with
@@ -100,7 +110,8 @@ public:
                                          c_vector<double, DIM> centre = zero_vector<double>(DIM),
                                          unsigned numSegments = 24);
 
-    /* Add a cuboid to the part.
+    /**
+     * Add a cuboid to the part.
      * @param sizeX the dimension in x
      * @param sizeY the dimension in y
      * @param sizeZ the dimension in z
@@ -110,12 +121,14 @@ public:
     void AddCuboid(double sizeX = 1.0, double sizeY = 1.0, double sizeZ = 1.0,
                    c_vector<double, DIM> origin = zero_vector<double>(DIM));
 
-    /* Add a hole marker to the part
+    /**
+     * Add a hole marker to the part
      * @param location the location of the hole
      */
     void AddHoleMarker(c_vector<double, DIM> location);
 
-    /* Add a polygon described by a vector or vertices. The vertices should be planar. This is not
+    /**
+     * Add a polygon described by a vector or vertices. The vertices should be planar. This is not
      * checked.
      * @param vertices a vector of vertices making up the polygon
      * @param pFacet an optional facet that the circle can be generated on
@@ -124,7 +137,8 @@ public:
     boost::shared_ptr<Polygon> AddPolygon(std::vector<boost::shared_ptr<Vertex> > vertices, bool newFacet = false,
                                                          boost::shared_ptr<Facet> pFacet = boost::shared_ptr<Facet>());
 
-    /* Add a polygon
+    /**
+     * Add a polygon
      * @param pPolygon a polygon to add to the part
      * @param pFacet an optional facet that the polygon can be generated on
      * @return the new polygon, useful for further operations, such as extrusion.
@@ -132,7 +146,8 @@ public:
     boost::shared_ptr<Polygon> AddPolygon(boost::shared_ptr<Polygon> pPolygon, bool newFacet = false,
                                                          boost::shared_ptr<Facet> pFacet = boost::shared_ptr<Facet>());
 
-    /* Add a rectangle to the part, oriented by default with out of plane direction along the z-axis.
+    /**
+     * Add a rectangle to the part, oriented by default with out of plane direction along the z-axis.
      * @param sizeX the dimension in the x direction
      * @param sizeY the dimension in the y direction
      * @param origin the bottom left corner
@@ -141,19 +156,22 @@ public:
     boost::shared_ptr<Polygon> AddRectangle(double sizeX = 1.0, double sizeY = 1.0,
                                                            c_vector<double, DIM> origin = zero_vector<double>(DIM));
 
-    /* Add a vessel network to the part.
+    /**
+     * Add a vessel network to the part.
      * @param pVesselNetwork the vessel network to be added
      * @param surface true if a surface representation of the network is required
      */
     void AddVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pVesselNetwork, bool surface = false);
 
-    /* Extrude the part along the z-axis, inserting planar faces in place of edges.
+    /**
+     * Extrude the part along the z-axis, inserting planar faces in place of edges.
      * @param pPolygon the polygon to extrude
      * @param distance the extrusion distance
      */
     void Extrude(boost::shared_ptr<Polygon> pPolygon, double distance = 1.0);
 
-    /* Return the bounding box
+    /**
+     * Return the bounding box
      * @return the bounding box of the part (xmin, xmax, ymin, ymax, zmin, zmax)
      */
     c_vector<double, 2*DIM> GetBoundingBox();
@@ -162,65 +180,73 @@ public:
     std::vector<unsigned> GetContainingGridIndices(unsigned num_x, unsigned num_y = 1, unsigned num_z = 1, double spacing = 1.0);
 
 
-    /* Return the hole marker locations
+    /**
+     * Return the hole marker locations
      * @return the hole marker locations
      */
     std::vector<c_vector<double, DIM> > GetHoleMarkers();
 
-    /* Return the facets
+    /**
+     * Return the facets
      * @return the facets
      */
     std::vector<boost::shared_ptr<Facet> > GetFacets();
 
-    /* Return the polygons
+    /**
+     * Return the polygons
      * @return the polygons
      */
     std::vector<boost::shared_ptr<Polygon> > GetPolygons();
 
-    /* Return the segment indexes, used for 2D meshing
+    /**
+     * Return the segment indexes, used for 2D meshing
      * @return the indices of vertices corresponding to segments (edges) in the part
      */
     std::vector<std::pair<unsigned, unsigned> > GetSegmentIndices();
 
-    /* Return the unique vertices
+    /**
+     * Return the unique vertices
      * @return the unique vertices
      */
     std::vector<boost::shared_ptr<Vertex> > GetVertices();
 
-    /* Return the vertex locations
+    /**
+     * Return the vertex locations
      * @return the vertex locations
      */
     std::vector<c_vector<double, DIM> > GetVertexLocations();
 
-    /* Return the a vtk polydata representation of the part
+    /**
+     * Return the a vtk polydata representation of the part
      * @return a vtk representation of the part
      */
     vtkSmartPointer<vtkPolyData> GetVtk(bool update=true);
 
-    /* Is the point inside the part
+    /**
+     * Is the point inside the part
      * @param location the location of the point
      * @return bool true if the point is inside the part
      */
     bool IsPointInPart(c_vector<double, DIM> location, bool update=true);
 
-    /* Merge vertices that overlap in polygons and facets
+    /**
+     * Merge vertices that overlap in polygons and facets
      */
     void MergeCoincidentVertices();
 
-    /* Move the part along the translation vector
+    /**
+     * Move the part along the translation vector
      * @param vector the vector to move the part along
      */
     void Translate(c_vector<double, DIM> vector);
 
-    /* Write the part to file in vtk format
-     * @param rFilename the path to the file to be written, should include the file extension.
+    /**
+     * Write the part to file in vtk format
+     * @param rFilename the path to the file to be written, without extension
+     * @param format the output format
      */
-    void Write(const std::string& rFilename);
+    void Write(const std::string& rFilename, GeometryFormat::Value format = GeometryFormat::VTP);
 
-    /* Write the part to file in stl format
-     * @param rFilename the path to the file to be written, should include the file extension.
-     */
-    void WriteStl(const std::string& rFilename);
 };
 
 #endif /*PART_HPP_*/

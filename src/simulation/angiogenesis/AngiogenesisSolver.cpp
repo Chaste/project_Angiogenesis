@@ -42,7 +42,7 @@
 #include "AngiogenesisSolver.hpp"
 #include "StalkCellMutationState.hpp"
 #include "TipCellMutationState.hpp"
-#include "VtkVesselNetworkWriter.hpp"
+#include "VesselNetworkWriter.hpp"
 
 template<unsigned DIM>
 AngiogenesisSolver<DIM>::AngiogenesisSolver() :
@@ -447,7 +447,7 @@ template<unsigned DIM>
 void AngiogenesisSolver<DIM>::Run(bool writeOutput)
 {
     // Set up a vessel network writer
-    boost::shared_ptr<VtkVesselNetworkWriter<DIM> > p_network_writer = VtkVesselNetworkWriter<DIM>::Create();
+    boost::shared_ptr<VesselNetworkWriter<DIM> > p_network_writer = VesselNetworkWriter<DIM>::Create();
 
     // Loop for the duration of the simulation time
     while (!SimulationTime::Instance()->IsFinished())

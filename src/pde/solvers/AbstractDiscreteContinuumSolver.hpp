@@ -96,7 +96,7 @@ protected:
     bool IsSetupForSolve;
 
     /**
-     *  Should the solution be writtento file
+     *  Should the solution be written to file
      */
     bool mWriteSolution;
 

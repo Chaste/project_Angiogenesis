@@ -39,7 +39,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "OutputFileHandler.hpp"
 #include "SegmentFlowProperties.hpp"
 #include "VesselNetwork.hpp"
-#include "VtkVesselNetworkWriter.hpp"
+#include "VesselNetworkWriter.hpp"
 
 template <unsigned DIM>
 VesselNetwork<DIM>::VesselNetwork() : AbstractVesselNetworkComponent<DIM>(),
@@ -1092,7 +1092,7 @@ bool VesselNetwork<DIM>::VesselCrossesLineSegment(c_vector<double, DIM> coordina
 template<unsigned DIM>
 void VesselNetwork<DIM>::Write(const std::string& rFileName)
 {
-    boost::shared_ptr<VtkVesselNetworkWriter<DIM> > p_writer = VtkVesselNetworkWriter<DIM>::Create();
+    boost::shared_ptr<VesselNetworkWriter<DIM> > p_writer = VesselNetworkWriter<DIM>::Create();
     p_writer->SetFileName(rFileName);
     p_writer->SetVesselNetwork(this->shared_from_this());
     p_writer->Write();

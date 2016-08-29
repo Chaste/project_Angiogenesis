@@ -45,10 +45,11 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif // CHASTE_VTK
 #include "SmartPointers.hpp"
 #include "Exception.hpp"
-#include "VtkVesselNetworkWriter.hpp"
+#include "PetscTools.hpp"
+#include "VesselNetworkWriter.hpp"
 
 template <unsigned DIM>
-VtkVesselNetworkWriter<DIM>::VtkVesselNetworkWriter() :
+VesselNetworkWriter<DIM>::VesselNetworkWriter() :
     mpVesselNetwork(),
     mpVtkVesselNetwork(vtkSmartPointer<vtkPolyData>::New()),
     mIsVtkNetworkUpToDate(false),
@@ -58,27 +59,27 @@ VtkVesselNetworkWriter<DIM>::VtkVesselNetworkWriter() :
 }
 
 template <unsigned DIM>
-VtkVesselNetworkWriter<DIM>::~VtkVesselNetworkWriter()
+VesselNetworkWriter<DIM>::~VesselNetworkWriter()
 {
 
 }
 
 template <unsigned DIM>
-boost::shared_ptr<VtkVesselNetworkWriter<DIM> > VtkVesselNetworkWriter<DIM>::Create()
+boost::shared_ptr<VesselNetworkWriter<DIM> > VesselNetworkWriter<DIM>::Create()
 {
-    MAKE_PTR(VtkVesselNetworkWriter<DIM>, pSelf);
+    MAKE_PTR(VesselNetworkWriter<DIM>, pSelf);
     return pSelf;
 }
 
 template <unsigned DIM>
-void VtkVesselNetworkWriter<DIM>::SetVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pNetwork)
+void VesselNetworkWriter<DIM>::SetVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pNetwork)
 {
     mpVesselNetwork = pNetwork;
     mIsVtkNetworkUpToDate = false;
 }
 
 template <unsigned DIM>
-vtkSmartPointer<vtkPolyData> VtkVesselNetworkWriter<DIM>::GetOutput()
+vtkSmartPointer<vtkPolyData> VesselNetworkWriter<DIM>::GetOutput()
 {
     if(!mpVesselNetwork)
     {
@@ -194,30 +195,33 @@ vtkSmartPointer<vtkPolyData> VtkVesselNetworkWriter<DIM>::GetOutput()
 }
 
 template <unsigned DIM>
-void VtkVesselNetworkWriter<DIM>::SetFileName(const std::string& rFileName)
+void VesselNetworkWriter<DIM>::SetFileName(const std::string& rFileName)
 {
     mFilename = rFileName;
 }
 
 template <unsigned DIM>
-void VtkVesselNetworkWriter<DIM>::Write()
+void VesselNetworkWriter<DIM>::Write()
 {
     if(mFilename.empty())
     {
-        EXCEPTION("No file name set for VtkVesselNetworkWriter");
+        EXCEPTION("No file name set for VesselNetworkWriter");
     }
 
-    vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-    writer->SetFileName(mFilename.c_str());
+    if(PetscTools::AmMaster())
+    {
+        vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
+        writer->SetFileName(mFilename.c_str());
 
-    #if VTK_MAJOR_VERSION <= 5
-        writer->SetInput(this->GetOutput());
-    #else
-        writer->SetInputData(this->GetOutput());
-    #endif
-    writer->Write();
+        #if VTK_MAJOR_VERSION <= 5
+            writer->SetInput(this->GetOutput());
+        #else
+            writer->SetInputData(this->GetOutput());
+        #endif
+        writer->Write();
+    }
 }
 
 // Explicit instantiation
-template class VtkVesselNetworkWriter<2>;
-template class VtkVesselNetworkWriter<3>;
+template class VesselNetworkWriter<2>;
+template class VesselNetworkWriter<3>;

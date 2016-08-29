@@ -34,13 +34,13 @@
  */
 
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning for now (gcc4.3)
-#include <vtkXMLImageDataWriter.h>
 #include <vtkDoubleArray.h>
 #include <vtkPointData.h>
 #include <vtkPolyData.h>
 #include <vtkProbeFilter.h>
 #include <vtkImageData.h>
 #include <vtkSmartPointer.h>
+#include "ImageWriter.hpp"
 
 #include "AbstractRegularGridDiscreteContinuumSolver.hpp"
 
@@ -255,19 +255,17 @@ void AbstractRegularGridDiscreteContinuumSolver<DIM>::Write()
         EXCEPTION("An output file handler has not been set for the DiscreteContinuum solver.");
     }
 
-    vtkSmartPointer<vtkXMLImageDataWriter> pImageDataWriter = vtkSmartPointer<vtkXMLImageDataWriter>::New();
+    ImageWriter writer;
     if(!this->mFilename.empty())
     {
-        pImageDataWriter->SetFileName((this->mpOutputFileHandler->GetOutputDirectoryFullPath() + "/" + this->mFilename).c_str());
+        writer.SetFilename((this->mpOutputFileHandler->GetOutputDirectoryFullPath() + "/" + this->mFilename));
     }
     else
     {
-        pImageDataWriter->SetFileName((this->mpOutputFileHandler->GetOutputDirectoryFullPath() + "/solution.vti").c_str());
+        writer.SetFilename((this->mpOutputFileHandler->GetOutputDirectoryFullPath() + "/solution.vti"));
     }
-
-    pImageDataWriter->SetInputData(this->mpVtkSolution);
-    pImageDataWriter->Update();
-    pImageDataWriter->Write();
+    writer.SetImage(this->mpVtkSolution);
+    writer.Write();
 }
 
 // Explicit instantiation

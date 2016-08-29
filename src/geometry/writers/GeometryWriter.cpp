@@ -33,7 +33,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifdef CHASTE_VTK
 #define _BACKWARD_BACKWARD_WARNING_H 1
 #include <vtkDoubleArray.h>
 #include <vtkCellData.h>
@@ -43,15 +42,18 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vtkXMLPolyDataWriter.h>
 #include <vtkSTLWriter.h>
 #include <vtkVersion.h>
-#endif // CHASTE_VTK
+#include <vtkGeometryFilter.h>
+#include <vtkTriangleFilter.h>
+#include <vtkCleanPolyData.h>
 #include "SmartPointers.hpp"
 #include "Exception.hpp"
+#include "PetscTools.hpp"
 #include "GeometryWriter.hpp"
 
 GeometryWriter::GeometryWriter() :
-    mpInputSurface(),
+    mpInputGeometry(),
     mFilename(),
-    mWriteStl(false)
+    mFormat(GeometryFormat::VTP)
 {
 
 }
@@ -67,54 +69,67 @@ boost::shared_ptr<GeometryWriter > GeometryWriter::Create()
     return pSelf;
 }
 
-void GeometryWriter::SetInput(vtkSmartPointer<vtkPolyData> pSurface)
-{
-    mpInputSurface = pSurface;
-}
-
-void GeometryWriter::SetWriteStl(bool writeStl)
-{
-    mWriteStl = writeStl;
-}
-
 void GeometryWriter::SetFileName(const std::string& rFileName)
 {
     mFilename = rFileName;
 }
 
+void GeometryWriter::SetInput(vtkSmartPointer<vtkPolyData> pSurface)
+{
+    mpInputGeometry = pSurface;
+}
+
+void GeometryWriter::SetOutputFormat(GeometryFormat::Value format)
+{
+    mFormat = format;
+}
+
 void GeometryWriter::Write()
 {
-    if(!mpInputSurface)
+    if(!mpInputGeometry)
     {
-        EXCEPTION("An input surface is not set.");
+        EXCEPTION("An input geometry is not set.");
     }
 
     if(mFilename.empty())
     {
-        EXCEPTION("No file name set for VtkVesselNetworkWriter");
+        EXCEPTION("No file name set for the GeometryWriter.");
     }
 
-    if(mWriteStl)
+    if(mFormat == GeometryFormat::STL)
     {
-        vtkSmartPointer<vtkSTLWriter> writer = vtkSmartPointer<vtkSTLWriter>::New();
-        writer->SetFileName(mFilename.c_str());
-        #if VTK_MAJOR_VERSION <= 5
-            writer->SetInput(mpInputSurface);
-        #else
-            writer->SetInputData(mpInputSurface);
-        #endif
-        writer->SetFileTypeToASCII();
-        writer->Write();
+        if(PetscTools::AmMaster())
+        {
+            vtkSmartPointer<vtkTriangleFilter> p_tri_filter = vtkSmartPointer<vtkTriangleFilter>::New();
+            p_tri_filter->SetInputData(mpInputGeometry);
+
+            vtkSmartPointer<vtkCleanPolyData> p_clean_filter = vtkSmartPointer<vtkCleanPolyData>::New();
+            p_clean_filter->SetInputConnection(p_tri_filter->GetOutputPort());
+            p_clean_filter->Update();
+
+            vtkSmartPointer<vtkSTLWriter> writer = vtkSmartPointer<vtkSTLWriter>::New();
+            writer->SetFileName(mFilename.c_str());
+            #if VTK_MAJOR_VERSION <= 5
+                writer->SetInput(p_clean_filter->GetOutput());
+            #else
+                writer->SetInputData(p_clean_filter->GetOutput());
+            #endif
+            writer->SetFileTypeToASCII();
+            writer->Write();
+        }
     }
     else
     {
-        vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-        writer->SetFileName(mFilename.c_str());
-        #if VTK_MAJOR_VERSION <= 5
-            writer->SetInput(mpInputSurface);
-        #else
-            writer->SetInputData(mpInputSurface);
-        #endif
-        writer->Write();
+        if(PetscTools::AmMaster())
+        {
+            vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
+            writer->SetFileName(mFilename.c_str());
+            #if VTK_MAJOR_VERSION <= 5
+                writer->SetInput(mpInputGeometry);
+            #else
+                writer->SetInputData(mpInputGeometry);
+            #endif
+            writer->Write();
+        }
     }
 }

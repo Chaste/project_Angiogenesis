@@ -34,7 +34,6 @@
  */
 
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning for now (gcc4.3)
-#include <vtkXMLPolyDataWriter.h>
 #include <vtkPolygon.h>
 #include <stdlib.h>
 #include "Exception.hpp"
