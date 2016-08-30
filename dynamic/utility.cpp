@@ -28,6 +28,17 @@ struct ParameterCollection_wrapper : ParameterCollection, bp::wrapper< Parameter
 
 };
 
+struct SimulationTime_wrapper : SimulationTime, bp::wrapper< SimulationTime > {
+
+    SimulationTime_wrapper( )
+    : SimulationTime( )
+      , bp::wrapper< SimulationTime >(){
+        // null constructor
+    
+    }
+
+};
+
 BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_utility){
     { //::BaseParameterInstance
         typedef bp::class_< BaseParameterInstance > BaseParameterInstance_exposer_t;
@@ -331,6 +342,118 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_utility){
         bp::implicitly_convertible< boost::shared_ptr< PressureParameterInstance >, boost::shared_ptr< BaseParameterInstance > >();
     }
 
+    { //::SimulationTime
+        typedef bp::class_< SimulationTime_wrapper, boost::noncopyable > SimulationTime_exposer_t;
+        SimulationTime_exposer_t SimulationTime_exposer = SimulationTime_exposer_t( "SimulationTime", bp::no_init );
+        bp::scope SimulationTime_scope( SimulationTime_exposer );
+        SimulationTime_exposer.def( bp::init< >() );
+        { //::SimulationTime::Destroy
+        
+            typedef void ( *Destroy_function_type )(  );
+            
+            SimulationTime_exposer.def( 
+                "Destroy"
+                , Destroy_function_type( &::SimulationTime::Destroy ) );
+        
+        }
+        { //::SimulationTime::GetTime
+        
+            typedef double ( ::SimulationTime::*GetTime_function_type)(  ) const;
+            
+            SimulationTime_exposer.def( 
+                "GetTime"
+                , GetTime_function_type( &::SimulationTime::GetTime ) );
+        
+        }
+        { //::SimulationTime::GetTimeStep
+        
+            typedef double ( ::SimulationTime::*GetTimeStep_function_type)(  ) const;
+            
+            SimulationTime_exposer.def( 
+                "GetTimeStep"
+                , GetTimeStep_function_type( &::SimulationTime::GetTimeStep ) );
+        
+        }
+        { //::SimulationTime::GetTimeStepsElapsed
+        
+            typedef unsigned int ( ::SimulationTime::*GetTimeStepsElapsed_function_type)(  ) const;
+            
+            SimulationTime_exposer.def( 
+                "GetTimeStepsElapsed"
+                , GetTimeStepsElapsed_function_type( &::SimulationTime::GetTimeStepsElapsed ) );
+        
+        }
+        { //::SimulationTime::IncrementTimeOneStep
+        
+            typedef void ( ::SimulationTime::*IncrementTimeOneStep_function_type)(  ) ;
+            
+            SimulationTime_exposer.def( 
+                "IncrementTimeOneStep"
+                , IncrementTimeOneStep_function_type( &::SimulationTime::IncrementTimeOneStep ) );
+        
+        }
+        { //::SimulationTime::IsEndTimeAndNumberOfTimeStepsSetUp
+        
+            typedef bool ( ::SimulationTime::*IsEndTimeAndNumberOfTimeStepsSetUp_function_type)(  ) const;
+            
+            SimulationTime_exposer.def( 
+                "IsEndTimeAndNumberOfTimeStepsSetUp"
+                , IsEndTimeAndNumberOfTimeStepsSetUp_function_type( &::SimulationTime::IsEndTimeAndNumberOfTimeStepsSetUp ) );
+        
+        }
+        { //::SimulationTime::IsFinished
+        
+            typedef bool ( ::SimulationTime::*IsFinished_function_type)(  ) const;
+            
+            SimulationTime_exposer.def( 
+                "IsFinished"
+                , IsFinished_function_type( &::SimulationTime::IsFinished ) );
+        
+        }
+        { //::SimulationTime::IsStartTimeSetUp
+        
+            typedef bool ( ::SimulationTime::*IsStartTimeSetUp_function_type)(  ) const;
+            
+            SimulationTime_exposer.def( 
+                "IsStartTimeSetUp"
+                , IsStartTimeSetUp_function_type( &::SimulationTime::IsStartTimeSetUp ) );
+        
+        }
+        { //::SimulationTime::ResetEndTimeAndNumberOfTimeSteps
+        
+            typedef void ( ::SimulationTime::*ResetEndTimeAndNumberOfTimeSteps_function_type)( double const &,unsigned int const & ) ;
+            
+            SimulationTime_exposer.def( 
+                "ResetEndTimeAndNumberOfTimeSteps"
+                , ResetEndTimeAndNumberOfTimeSteps_function_type( &::SimulationTime::ResetEndTimeAndNumberOfTimeSteps )
+                , ( bp::arg("rEndTime"), bp::arg("rNumberOfTimeStepsInThisRun") ) );
+        
+        }
+        { //::SimulationTime::SetEndTimeAndNumberOfTimeSteps
+        
+            typedef void ( ::SimulationTime::*SetEndTimeAndNumberOfTimeSteps_function_type)( double,unsigned int ) ;
+            
+            SimulationTime_exposer.def( 
+                "SetEndTimeAndNumberOfTimeSteps"
+                , SetEndTimeAndNumberOfTimeSteps_function_type( &::SimulationTime::SetEndTimeAndNumberOfTimeSteps )
+                , ( bp::arg("endTime"), bp::arg("totalTimeStepsInSimulation") ) );
+        
+        }
+        { //::SimulationTime::SetStartTime
+        
+            typedef void ( ::SimulationTime::*SetStartTime_function_type)( double ) ;
+            
+            SimulationTime_exposer.def( 
+                "SetStartTime"
+                , SetStartTime_function_type( &::SimulationTime::SetStartTime )
+                , ( bp::arg("startTime") ) );
+        
+        }
+        SimulationTime_exposer.staticmethod( "Destroy" );
+        bp::register_ptr_to_python< boost::shared_ptr< SimulationTime > >();
+        bp::implicitly_convertible< boost::shared_ptr< SimulationTime >, boost::shared_ptr< SerializableSingleton< SimulationTime > > >();
+    }
+
     { //::TimeParameterInstance
         typedef bp::class_< TimeParameterInstance, bp::bases< BaseParameterInstance > > TimeParameterInstance_exposer_t;
         TimeParameterInstance_exposer_t TimeParameterInstance_exposer = TimeParameterInstance_exposer_t( "TimeParameterInstance", bp::init< >() );
@@ -434,6 +557,12 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_utility){
         typedef bp::class_< boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > > MassQuantity_exposer_t;
         MassQuantity_exposer_t MassQuantity_exposer = MassQuantity_exposer_t( "MassQuantity" );
         bp::scope MassQuantity_scope( MassQuantity_exposer );
+    }
+
+    { //::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >
+        typedef bp::class_< boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > > TimeQuantity_exposer_t;
+        TimeQuantity_exposer_t TimeQuantity_exposer = TimeQuantity_exposer_t( "TimeQuantity" );
+        bp::scope TimeQuantity_scope( TimeQuantity_exposer );
     }
 
     { //::boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >

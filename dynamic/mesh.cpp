@@ -386,6 +386,224 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_mesh){
         set_less__unsigned_int__greater__exposer.def( bp::indexing::set_suite< std::set< unsigned int > >() );
     }
 
+    { //::DimensionalChastePoint< 2 >
+        typedef bp::class_< DimensionalChastePoint< 2 > > DimensionalChastePoint2_exposer_t;
+        DimensionalChastePoint2_exposer_t DimensionalChastePoint2_exposer = DimensionalChastePoint2_exposer_t( "DimensionalChastePoint2", bp::init< bp::optional< double, double, double, boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > > >(( bp::arg("x")=0., bp::arg("y")=0., bp::arg("z")=0., bp::arg("referenceLength")=9.9999999999999995E-7 * unit::metres )) );
+        bp::scope DimensionalChastePoint2_scope( DimensionalChastePoint2_exposer );
+        bp::implicitly_convertible< double, DimensionalChastePoint< 2 > >();
+        DimensionalChastePoint2_exposer.def( bp::init< boost::numeric::ublas::c_vector< double, 2 >, bp::optional< boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > > >(( bp::arg("coords"), bp::arg("referenceLength")=9.9999999999999995E-7 * unit::metres )) );
+        bp::implicitly_convertible< boost::numeric::ublas::c_vector< double, 2 >, DimensionalChastePoint< 2 > >();
+        { //::DimensionalChastePoint< 2 >::GetDistance
+        
+            typedef DimensionalChastePoint< 2 > exported_class_t;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDistance_function_type)( ::DimensionalChastePoint< 2 > const &,bool ) const;
+            
+            DimensionalChastePoint2_exposer.def( 
+                "GetDistance"
+                , GetDistance_function_type( &::DimensionalChastePoint< 2 >::GetDistance )
+                , ( bp::arg("rLocation"), bp::arg("checkDimensions")=(bool)(true) ) );
+        
+        }
+        { //::DimensionalChastePoint< 2 >::GetDistance
+        
+            typedef DimensionalChastePoint< 2 > exported_class_t;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( *GetDistance_function_type )( ::DimensionalChastePoint< 2 > const &,::DimensionalChastePoint< 2 > const &,::DimensionalChastePoint< 2 > const &,bool );
+            
+            DimensionalChastePoint2_exposer.def( 
+                "GetDistance"
+                , GetDistance_function_type( &::DimensionalChastePoint< 2 >::GetDistance )
+                , ( bp::arg("rStartLocation"), bp::arg("rEndLocation"), bp::arg("rProbeLocation"), bp::arg("checkDimensions")=(bool)(true) ) );
+        
+        }
+        { //::DimensionalChastePoint< 2 >::GetMidPoint
+        
+            typedef DimensionalChastePoint< 2 > exported_class_t;
+            typedef ::DimensionalChastePoint< 2 > ( exported_class_t::*GetMidPoint_function_type)( ::DimensionalChastePoint< 2 > const &,bool ) const;
+            
+            DimensionalChastePoint2_exposer.def( 
+                "GetMidPoint"
+                , GetMidPoint_function_type( &::DimensionalChastePoint< 2 >::GetMidPoint )
+                , ( bp::arg("rLocation"), bp::arg("checkDimensions")=(bool)(true) ) );
+        
+        }
+        { //::DimensionalChastePoint< 2 >::GetPointProjection
+        
+            typedef DimensionalChastePoint< 2 > exported_class_t;
+            typedef ::DimensionalChastePoint< 2 > ( *GetPointProjection_function_type )( ::DimensionalChastePoint< 2 > const &,::DimensionalChastePoint< 2 > const &,::DimensionalChastePoint< 2 > const &,bool,bool );
+            
+            DimensionalChastePoint2_exposer.def( 
+                "GetPointProjection"
+                , GetPointProjection_function_type( &::DimensionalChastePoint< 2 >::GetPointProjection )
+                , ( bp::arg("rStartLocation"), bp::arg("rEndLocation"), bp::arg("rProbeLocation"), bp::arg("projectToEnds")=(bool)(false), bp::arg("checkDimensions")=(bool)(true) ) );
+        
+        }
+        { //::DimensionalChastePoint< 2 >::GetReferenceLengthScale
+        
+            typedef DimensionalChastePoint< 2 > exported_class_t;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetReferenceLengthScale_function_type)(  ) const;
+            
+            DimensionalChastePoint2_exposer.def( 
+                "GetReferenceLengthScale"
+                , GetReferenceLengthScale_function_type( &::DimensionalChastePoint< 2 >::GetReferenceLengthScale ) );
+        
+        }
+        { //::DimensionalChastePoint< 2 >::GetScalingFactor
+        
+            typedef DimensionalChastePoint< 2 > exported_class_t;
+            typedef double ( exported_class_t::*GetScalingFactor_function_type)( ::DimensionalChastePoint< 2 > const & ) const;
+            
+            DimensionalChastePoint2_exposer.def( 
+                "GetScalingFactor"
+                , GetScalingFactor_function_type( &::DimensionalChastePoint< 2 >::GetScalingFactor )
+                , ( bp::arg("rLocation") ) );
+        
+        }
+        { //::DimensionalChastePoint< 2 >::GetUnitTangent
+        
+            typedef DimensionalChastePoint< 2 > exported_class_t;
+            typedef ::boost::numeric::ublas::c_vector< double, 2 > ( exported_class_t::*GetUnitTangent_function_type)( ::DimensionalChastePoint< 2 > const &,bool ) const;
+            
+            DimensionalChastePoint2_exposer.def( 
+                "GetUnitTangent"
+                , GetUnitTangent_function_type( &::DimensionalChastePoint< 2 >::GetUnitTangent )
+                , ( bp::arg("rLocation"), bp::arg("checkDimensions")=(bool)(true) ) );
+        
+        }
+        { //::DimensionalChastePoint< 2 >::IsCoincident
+        
+            typedef DimensionalChastePoint< 2 > exported_class_t;
+            typedef bool ( exported_class_t::*IsCoincident_function_type)( ::DimensionalChastePoint< 2 > const &,bool ) const;
+            
+            DimensionalChastePoint2_exposer.def( 
+                "IsCoincident"
+                , IsCoincident_function_type( &::DimensionalChastePoint< 2 >::IsCoincident )
+                , ( bp::arg("rLocation"), bp::arg("checkDimensions")=(bool)(true) ) );
+        
+        }
+        { //::DimensionalChastePoint< 2 >::SetReferenceLengthScale
+        
+            typedef DimensionalChastePoint< 2 > exported_class_t;
+            typedef void ( exported_class_t::*SetReferenceLengthScale_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
+            
+            DimensionalChastePoint2_exposer.def( 
+                "SetReferenceLengthScale"
+                , SetReferenceLengthScale_function_type( &::DimensionalChastePoint< 2 >::SetReferenceLengthScale )
+                , ( bp::arg("lenthScale") ) );
+        
+        }
+        DimensionalChastePoint2_exposer.staticmethod( "GetDistance" );
+        DimensionalChastePoint2_exposer.staticmethod( "GetPointProjection" );
+    }
+
+    { //::DimensionalChastePoint< 3 >
+        typedef bp::class_< DimensionalChastePoint< 3 > > DimensionalChastePoint3_exposer_t;
+        DimensionalChastePoint3_exposer_t DimensionalChastePoint3_exposer = DimensionalChastePoint3_exposer_t( "DimensionalChastePoint3", bp::init< bp::optional< double, double, double, boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > > >(( bp::arg("x")=0., bp::arg("y")=0., bp::arg("z")=0., bp::arg("referenceLength")=9.9999999999999995E-7 * unit::metres )) );
+        bp::scope DimensionalChastePoint3_scope( DimensionalChastePoint3_exposer );
+        bp::implicitly_convertible< double, DimensionalChastePoint< 3 > >();
+        DimensionalChastePoint3_exposer.def( bp::init< boost::numeric::ublas::c_vector< double, 3 >, bp::optional< boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > > >(( bp::arg("coords"), bp::arg("referenceLength")=9.9999999999999995E-7 * unit::metres )) );
+        bp::implicitly_convertible< boost::numeric::ublas::c_vector< double, 3 >, DimensionalChastePoint< 3 > >();
+        { //::DimensionalChastePoint< 3 >::GetDistance
+        
+            typedef DimensionalChastePoint< 3 > exported_class_t;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetDistance_function_type)( ::DimensionalChastePoint< 3 > const &,bool ) const;
+            
+            DimensionalChastePoint3_exposer.def( 
+                "GetDistance"
+                , GetDistance_function_type( &::DimensionalChastePoint< 3 >::GetDistance )
+                , ( bp::arg("rLocation"), bp::arg("checkDimensions")=(bool)(true) ) );
+        
+        }
+        { //::DimensionalChastePoint< 3 >::GetDistance
+        
+            typedef DimensionalChastePoint< 3 > exported_class_t;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( *GetDistance_function_type )( ::DimensionalChastePoint< 3 > const &,::DimensionalChastePoint< 3 > const &,::DimensionalChastePoint< 3 > const &,bool );
+            
+            DimensionalChastePoint3_exposer.def( 
+                "GetDistance"
+                , GetDistance_function_type( &::DimensionalChastePoint< 3 >::GetDistance )
+                , ( bp::arg("rStartLocation"), bp::arg("rEndLocation"), bp::arg("rProbeLocation"), bp::arg("checkDimensions")=(bool)(true) ) );
+        
+        }
+        { //::DimensionalChastePoint< 3 >::GetMidPoint
+        
+            typedef DimensionalChastePoint< 3 > exported_class_t;
+            typedef ::DimensionalChastePoint< 3 > ( exported_class_t::*GetMidPoint_function_type)( ::DimensionalChastePoint< 3 > const &,bool ) const;
+            
+            DimensionalChastePoint3_exposer.def( 
+                "GetMidPoint"
+                , GetMidPoint_function_type( &::DimensionalChastePoint< 3 >::GetMidPoint )
+                , ( bp::arg("rLocation"), bp::arg("checkDimensions")=(bool)(true) ) );
+        
+        }
+        { //::DimensionalChastePoint< 3 >::GetPointProjection
+        
+            typedef DimensionalChastePoint< 3 > exported_class_t;
+            typedef ::DimensionalChastePoint< 3 > ( *GetPointProjection_function_type )( ::DimensionalChastePoint< 3 > const &,::DimensionalChastePoint< 3 > const &,::DimensionalChastePoint< 3 > const &,bool,bool );
+            
+            DimensionalChastePoint3_exposer.def( 
+                "GetPointProjection"
+                , GetPointProjection_function_type( &::DimensionalChastePoint< 3 >::GetPointProjection )
+                , ( bp::arg("rStartLocation"), bp::arg("rEndLocation"), bp::arg("rProbeLocation"), bp::arg("projectToEnds")=(bool)(false), bp::arg("checkDimensions")=(bool)(true) ) );
+        
+        }
+        { //::DimensionalChastePoint< 3 >::GetReferenceLengthScale
+        
+            typedef DimensionalChastePoint< 3 > exported_class_t;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( exported_class_t::*GetReferenceLengthScale_function_type)(  ) const;
+            
+            DimensionalChastePoint3_exposer.def( 
+                "GetReferenceLengthScale"
+                , GetReferenceLengthScale_function_type( &::DimensionalChastePoint< 3 >::GetReferenceLengthScale ) );
+        
+        }
+        { //::DimensionalChastePoint< 3 >::GetScalingFactor
+        
+            typedef DimensionalChastePoint< 3 > exported_class_t;
+            typedef double ( exported_class_t::*GetScalingFactor_function_type)( ::DimensionalChastePoint< 3 > const & ) const;
+            
+            DimensionalChastePoint3_exposer.def( 
+                "GetScalingFactor"
+                , GetScalingFactor_function_type( &::DimensionalChastePoint< 3 >::GetScalingFactor )
+                , ( bp::arg("rLocation") ) );
+        
+        }
+        { //::DimensionalChastePoint< 3 >::GetUnitTangent
+        
+            typedef DimensionalChastePoint< 3 > exported_class_t;
+            typedef ::boost::numeric::ublas::c_vector< double, 3 > ( exported_class_t::*GetUnitTangent_function_type)( ::DimensionalChastePoint< 3 > const &,bool ) const;
+            
+            DimensionalChastePoint3_exposer.def( 
+                "GetUnitTangent"
+                , GetUnitTangent_function_type( &::DimensionalChastePoint< 3 >::GetUnitTangent )
+                , ( bp::arg("rLocation"), bp::arg("checkDimensions")=(bool)(true) ) );
+        
+        }
+        { //::DimensionalChastePoint< 3 >::IsCoincident
+        
+            typedef DimensionalChastePoint< 3 > exported_class_t;
+            typedef bool ( exported_class_t::*IsCoincident_function_type)( ::DimensionalChastePoint< 3 > const &,bool ) const;
+            
+            DimensionalChastePoint3_exposer.def( 
+                "IsCoincident"
+                , IsCoincident_function_type( &::DimensionalChastePoint< 3 >::IsCoincident )
+                , ( bp::arg("rLocation"), bp::arg("checkDimensions")=(bool)(true) ) );
+        
+        }
+        { //::DimensionalChastePoint< 3 >::SetReferenceLengthScale
+        
+            typedef DimensionalChastePoint< 3 > exported_class_t;
+            typedef void ( exported_class_t::*SetReferenceLengthScale_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
+            
+            DimensionalChastePoint3_exposer.def( 
+                "SetReferenceLengthScale"
+                , SetReferenceLengthScale_function_type( &::DimensionalChastePoint< 3 >::SetReferenceLengthScale )
+                , ( bp::arg("lenthScale") ) );
+        
+        }
+        DimensionalChastePoint3_exposer.staticmethod( "GetDistance" );
+        DimensionalChastePoint3_exposer.staticmethod( "GetPointProjection" );
+    }
+
     { //::DiscreteContinuumMesh< 3, 3 >
         typedef bp::class_< DiscreteContinuumMesh< 3, 3 >, boost::noncopyable > DiscreteContinuumMesh3_3_exposer_t;
         DiscreteContinuumMesh3_3_exposer_t DiscreteContinuumMesh3_3_exposer = DiscreteContinuumMesh3_3_exposer_t( "DiscreteContinuumMesh3_3", bp::init< >() );
