@@ -33,78 +33,59 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#ifndef DIMENSIONALSIMULATIONTIME_HPP_
-#define DIMENSIONALSIMULATIONTIME_HPP_
+#ifndef TimeParameterInstance_HPP_
+#define TimeParameterInstance_HPP_
 
-#include <boost/shared_ptr.hpp>
 #include "ChasteSerialization.hpp"
-#include <boost/serialization/shared_ptr.hpp>
-#include "SerializableSingleton.hpp"
+#include <boost/serialization/base_object.hpp>
+#include "SmartPointers.hpp"
 #include "UnitCollection.hpp"
-#include "SimulationTime.hpp"
+#include "BaseParameterInstance.hpp"
 
 /**
- * Drop in replacement for SimulationTime with units. Also provide a shared pointer to the SimulationTime singleton
- * for convenience in Python methods.
+ * This is a class for storing often used for length type parameters. Note, templating of the
+ * individual parameter types is avoided to ease Python wrapping.
  */
-class DimensionalSimulationTime : public SerializableSingleton<DimensionalSimulationTime>
+
+class TimeParameterInstance : public BaseParameterInstance
 {
 
     /**
-     * A pointer to the singleton instance of this class.
+     * Archiving
      */
-    static boost::shared_ptr<DimensionalSimulationTime> mpInstance;
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & boost::serialization::base_object<BaseParameterInstance>(*this);
+        ar & mValue;
+    }
 
     /**
-     * A pointer to the SimulationTime singleton instance
+     * The value of the parameter
      */
-    static boost::shared_ptr<SimulationTime> mpSimulationTimeInstance;
-
-    /**
-     * The time unit for increments
-     */
-    units::quantity<unit::time> mReferenceTime;
+    units::quantity<unit::time> mValue;
 
 public:
 
     /**
-     * @return a pointer to the dimensional simulation time object.
-     * The first time this is called the simulation time object is created.
+     * Constructor
      */
-    static boost::shared_ptr<DimensionalSimulationTime> Instance();
-
-
-    static boost::shared_ptr<SimulationTime> GetSimulationTime();
+    TimeParameterInstance();
 
     /**
-     * @return the reference time scale
+     * Destructor
      */
-    units::quantity<unit::time> GetReferenceTimeScale();
+    virtual ~TimeParameterInstance();
 
     /**
-     * Sets reference time scale
+     * Set the default value
      */
-    void SetReferenceTimeScale(units::quantity<unit::time> referenceTimeScale);
-
-    /**
-     * Destroy the current DimensionalSimulationTime instance AND the SimulationTime instance.
-     *
-     * This method *must* be called before program exit, to avoid a memory
-     * leak in SimulationTime.
-     */
-    static void Destroy();
+    void SetValue(units::quantity<unit::time> value);
 
 
-protected:
-
-    /**
-     * Default simulation time constructor
-     *
-     * Sets up time, you must set the start time,
-     * end time and number of time steps before using the object.
-     */
-    DimensionalSimulationTime();
+    units::quantity<unit::time> GetValue();
 
 };
 
-#endif /*SIMULATIONTIME_HPP_*/
+#endif /*TimeParameterInstance_HPP_*/

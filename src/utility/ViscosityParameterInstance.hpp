@@ -33,50 +33,58 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#include "ParameterInstance.hpp"
+#ifndef ViscosityParameterInstance_HPP_
+#define ViscosityParameterInstance_HPP_
 
-template<class UNIT>
-ParameterInstance<UNIT>::ParameterInstance()
-    : BaseParameterInstance(),
-      mValue()
+#include "ChasteSerialization.hpp"
+#include <boost/serialization/base_object.hpp>
+#include "SmartPointers.hpp"
+#include "UnitCollection.hpp"
+#include "BaseParameterInstance.hpp"
+
+/**
+ * This is a class for storing often used for length type parameters. Note, templating of the
+ * individual parameter types is avoided to ease Python wrapping.
+ */
+
+class ViscosityParameterInstance : public BaseParameterInstance
 {
+    /**
+     * Archiving
+     */
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & boost::serialization::base_object<BaseParameterInstance>(*this);
+        ar & mValue;
+    }
 
-}
+    /**
+     * The value of the parameter
+     */
+    units::quantity<unit::dynamic_viscosity> mValue;
 
-template<class UNIT>
-ParameterInstance<UNIT>::~ParameterInstance()
-{
+public:
 
-}
+    /**
+     * Constructor
+     */
+    ViscosityParameterInstance();
 
-template<class UNIT>
-void ParameterInstance<UNIT>::SetValue(units::quantity<UNIT> value)
-{
-    mValue = value;
-}
+    /**
+     * Destructor
+     */
+    virtual ~ViscosityParameterInstance();
 
-template<class UNIT>
-units::quantity<UNIT> ParameterInstance<UNIT>::GetValue()
-{
-    return mValue;
-}
+    /**
+     * Set the default value
+     */
+    void SetValue(units::quantity<unit::dynamic_viscosity> value);
 
-// Explicit instantiation
-template class ParameterInstance<unit::time>;
-template class ParameterInstance<unit::length>;
-template class ParameterInstance<unit::mass>;
-template class ParameterInstance<unit::pressure>;
-template class ParameterInstance<unit::dimensionless>;
-template class ParameterInstance<unit::rate>;
-template class ParameterInstance<unit::flow_impedance>;
-template class ParameterInstance<unit::flow_rate>;
 
-#include "SerializationExportWrapperForCpp.hpp"
-EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::time)
-EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::length)
-EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::mass)
-EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::pressure)
-EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::dimensionless)
-EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::rate)
-EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::flow_impedance)
-EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::flow_rate)
+    units::quantity<unit::dynamic_viscosity> GetValue();
+
+};
+
+#endif /*ViscosityParameterInstance_HPP_*/

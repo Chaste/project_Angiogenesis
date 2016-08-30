@@ -39,14 +39,14 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "DimensionalSimulationTime.hpp"
 
 /** Pointer to the single instance */
-DimensionalSimulationTime* DimensionalSimulationTime::mpInstance = NULL;
-SimulationTime* DimensionalSimulationTime::mpSimulationTimeInstance = NULL;
+boost::shared_ptr<DimensionalSimulationTime> DimensionalSimulationTime::mpInstance = boost::shared_ptr<DimensionalSimulationTime>();
+boost::shared_ptr<SimulationTime> DimensionalSimulationTime::mpSimulationTimeInstance = boost::shared_ptr<SimulationTime>();
 
-DimensionalSimulationTime* DimensionalSimulationTime::Instance()
+boost::shared_ptr<DimensionalSimulationTime> DimensionalSimulationTime::Instance()
 {
-    if (mpInstance == NULL)
+    if (mpInstance)
     {
-        mpInstance = new DimensionalSimulationTime;
+        mpInstance = boost::shared_ptr<DimensionalSimulationTime>(new DimensionalSimulationTime);
         std::atexit(Destroy);
     }
     return mpInstance;
@@ -56,9 +56,11 @@ DimensionalSimulationTime::DimensionalSimulationTime()
     : mReferenceTime(60.0 * unit::seconds)
 {
     // Make sure there's only one instance - enforces correct serialization
-    assert(mpInstance == NULL);
+    assert(bool(mpInstance) == false);
 
-    mpSimulationTimeInstance = SimulationTime::Instance();
+    // Careful, we are grabbing a raw pointer with a shared one. Have to hope no-one uses it to make
+    // more shared pointers to SimulationTime and carefully manage deletion in Destroy.
+    mpSimulationTimeInstance = boost::shared_ptr<SimulationTime>(SimulationTime::Instance());
 }
 
 units::quantity<unit::time> DimensionalSimulationTime::GetReferenceTimeScale()
@@ -71,23 +73,21 @@ void DimensionalSimulationTime::SetReferenceTimeScale(units::quantity<unit::time
     mReferenceTime = referenceTimeScale;
 }
 
-SimulationTime* DimensionalSimulationTime::GetSimulationTime()
+boost::shared_ptr<SimulationTime> DimensionalSimulationTime::GetSimulationTime()
 {
     return mpSimulationTimeInstance;
 }
 
 void DimensionalSimulationTime::Destroy()
 {
-
     if(mpSimulationTimeInstance)
     {
-        mpSimulationTimeInstance = NULL;
+        mpSimulationTimeInstance = boost::shared_ptr<SimulationTime>();
         SimulationTime::Destroy();
     }
 
     if (mpInstance)
     {
-        delete mpInstance;
-        mpInstance = NULL;
+        mpInstance = boost::shared_ptr<DimensionalSimulationTime>();
     }
 }

@@ -1,5 +1,4 @@
 /*
-
 Copyright (c) 2005-2016, University of Oxford.
 All rights reserved.
 
@@ -40,13 +39,13 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ParameterCollection.hpp"
 
 /** Pointer to the single instance */
-ParameterCollection* ParameterCollection::mpInstance = NULL;
+boost::shared_ptr<ParameterCollection> ParameterCollection::mpInstance = boost::shared_ptr<ParameterCollection>();
 
-ParameterCollection* ParameterCollection::Instance()
+boost::shared_ptr<ParameterCollection> ParameterCollection::Instance()
 {
-    if (mpInstance == NULL)
+    if (!mpInstance)
     {
-        mpInstance = new ParameterCollection;
+        mpInstance = boost::shared_ptr<ParameterCollection>(new ParameterCollection);
         std::atexit(Destroy);
     }
     return mpInstance;
@@ -56,7 +55,7 @@ ParameterCollection::ParameterCollection()
     : mParameters()
 {
     // Make sure there's only one instance - enforces correct serialization
-    assert(mpInstance == NULL);
+    assert(!mpInstance);
 
 }
 
@@ -70,13 +69,12 @@ void ParameterCollection::DumpToFile(const std::string& rFilename)
     }
 }
 
-template<class UNIT>
-boost::shared_ptr<ParameterInstance<UNIT> > ParameterCollection::GetParameter(const std::string& rName)
+boost::shared_ptr<LengthParameterInstance> ParameterCollection::GetLengthParameter(const std::string& rName)
 {
     boost::shared_ptr<BaseParameterInstance> p_base_parameter = mParameters[rName];
 
     // Try to cast to the templated type
-    boost::shared_ptr<ParameterInstance<UNIT> > p_parameter = boost::dynamic_pointer_cast<ParameterInstance<UNIT> >(p_base_parameter);
+    boost::shared_ptr<LengthParameterInstance> p_parameter = boost::dynamic_pointer_cast<LengthParameterInstance>(p_base_parameter);
 
     if(p_parameter)
     {
@@ -84,9 +82,76 @@ boost::shared_ptr<ParameterInstance<UNIT> > ParameterCollection::GetParameter(co
     }
     else
     {
-        EXCEPTION("Named parameter does not match (can not be cast to) template type");
+        EXCEPTION("Named parameter does not match (can not be cast to) length type");
     }
+}
 
+boost::shared_ptr<MassParameterInstance> ParameterCollection::GetMassParameter(const std::string& rName)
+{
+    boost::shared_ptr<BaseParameterInstance> p_base_parameter = mParameters[rName];
+
+    // Try to cast to the templated type
+    boost::shared_ptr<MassParameterInstance> p_parameter = boost::dynamic_pointer_cast<MassParameterInstance>(p_base_parameter);
+
+    if(p_parameter)
+    {
+        return p_parameter;
+    }
+    else
+    {
+        EXCEPTION("Named parameter does not match (can not be cast to) mass type");
+    }
+}
+
+boost::shared_ptr<TimeParameterInstance> ParameterCollection::GetTimeParameter(const std::string& rName)
+{
+    boost::shared_ptr<BaseParameterInstance> p_base_parameter = mParameters[rName];
+
+    // Try to cast to the templated type
+    boost::shared_ptr<TimeParameterInstance> p_parameter = boost::dynamic_pointer_cast<TimeParameterInstance>(p_base_parameter);
+
+    if(p_parameter)
+    {
+        return p_parameter;
+    }
+    else
+    {
+        EXCEPTION("Named parameter does not match (can not be cast to) time type");
+    }
+}
+
+boost::shared_ptr<PressureParameterInstance> ParameterCollection::GetPressureParameter(const std::string& rName)
+{
+    boost::shared_ptr<BaseParameterInstance> p_base_parameter = mParameters[rName];
+
+    // Try to cast to the templated type
+    boost::shared_ptr<PressureParameterInstance> p_parameter = boost::dynamic_pointer_cast<PressureParameterInstance>(p_base_parameter);
+
+    if(p_parameter)
+    {
+        return p_parameter;
+    }
+    else
+    {
+        EXCEPTION("Named parameter does not match (can not be cast to) pressure type");
+    }
+}
+
+boost::shared_ptr<ViscosityParameterInstance> ParameterCollection::GetViscosityParameter(const std::string& rName)
+{
+    boost::shared_ptr<BaseParameterInstance> p_base_parameter = mParameters[rName];
+
+    // Try to cast to the templated type
+    boost::shared_ptr<ViscosityParameterInstance> p_parameter = boost::dynamic_pointer_cast<ViscosityParameterInstance>(p_base_parameter);
+
+    if(p_parameter)
+    {
+        return p_parameter;
+    }
+    else
+    {
+        EXCEPTION("Named parameter does not match (can not be cast to) viscosity type");
+    }
 }
 
 void ParameterCollection::AddParameter(boost::shared_ptr<BaseParameterInstance> pParameter)
@@ -98,16 +163,7 @@ void ParameterCollection::Destroy()
 {
     if (mpInstance)
     {
-        delete mpInstance;
-        mpInstance = NULL;
+        mpInstance = boost::shared_ptr<ParameterCollection>();
     }
 }
 
-template boost::shared_ptr<ParameterInstance<unit::length> > ParameterCollection::GetParameter(const std::string&);
-template boost::shared_ptr<ParameterInstance<unit::time> > ParameterCollection::GetParameter(const std::string&);
-template boost::shared_ptr<ParameterInstance<unit::dimensionless> > ParameterCollection::GetParameter(const std::string&);
-template boost::shared_ptr<ParameterInstance<unit::mass> > ParameterCollection::GetParameter(const std::string&);
-template boost::shared_ptr<ParameterInstance<unit::pressure> > ParameterCollection::GetParameter(const std::string&);
-template boost::shared_ptr<ParameterInstance<unit::rate> > ParameterCollection::GetParameter(const std::string&);
-template boost::shared_ptr<ParameterInstance<unit::flow_impedance> > ParameterCollection::GetParameter(const std::string&);
-template boost::shared_ptr<ParameterInstance<unit::flow_rate> > ParameterCollection::GetParameter(const std::string&);

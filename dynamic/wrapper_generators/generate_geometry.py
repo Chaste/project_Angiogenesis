@@ -23,6 +23,6 @@ def update_builder(builder):
             builder.class_(eachClass).rename(new_name) 
 
     # There is a problem with templated default arguements, so turn them off for now.  
-    builder.class_('Part<3>').calldefs().use_default_arguments=False    
+#    builder.class_('Part<3>').calldefs().use_default_arguments=False    
   
     return builder

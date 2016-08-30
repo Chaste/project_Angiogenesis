@@ -33,7 +33,7 @@ def update_builder(builder):
             builder.class_(eachClass).rename(new_name) 
             
     # Default template args problem
-    builder.class_('VesselNetworkGenerator<3> ').calldefs().use_default_arguments=False    
+#    builder.class_('VesselNetworkGenerator<3> ').calldefs().use_default_arguments=False    
     
     # The VesselSegment and Vessel classes need factory constructors as they have private constructor methods
     builder.add_declaration_code('boost::shared_ptr<VesselSegment<3> > (*VS3_Nodes)(boost::shared_ptr<VesselNode<3> >, boost::shared_ptr<VesselNode<3> >) = &VesselSegment<3>::Create;')

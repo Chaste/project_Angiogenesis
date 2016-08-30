@@ -97,7 +97,7 @@ struct AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper : Ab
         return AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints( pGrid );
     }
 
-    virtual ::std::vector< double > GetSolutionAtPoints( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > samplePoints ) {
+    virtual ::std::vector< double > GetSolutionAtPoints( ::std::vector< DimensionalChastePoint<3> > samplePoints ) {
         if( bp::override func_GetSolutionAtPoints = this->get_override( "GetSolutionAtPoints" ) )
             return func_GetSolutionAtPoints( samplePoints );
         else{
@@ -105,7 +105,7 @@ struct AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper : Ab
         }
     }
     
-    ::std::vector< double > default_GetSolutionAtPoints( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > samplePoints ) {
+    ::std::vector< double > default_GetSolutionAtPoints( ::std::vector< DimensionalChastePoint<3> > samplePoints ) {
         return AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints( samplePoints );
     }
 
@@ -552,7 +552,7 @@ struct FiniteDifferenceSolver_less__3__greater__wrapper : FiniteDifferenceSolver
         return AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints( pGrid );
     }
 
-    virtual ::std::vector< double > GetSolutionAtPoints( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > samplePoints ) {
+    virtual ::std::vector< double > GetSolutionAtPoints( ::std::vector< DimensionalChastePoint<3> > samplePoints ) {
         if( bp::override func_GetSolutionAtPoints = this->get_override( "GetSolutionAtPoints" ) )
             return func_GetSolutionAtPoints( samplePoints );
         else{
@@ -560,7 +560,7 @@ struct FiniteDifferenceSolver_less__3__greater__wrapper : FiniteDifferenceSolver
         }
     }
     
-    ::std::vector< double > default_GetSolutionAtPoints( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > samplePoints ) {
+    ::std::vector< double > default_GetSolutionAtPoints( ::std::vector< DimensionalChastePoint<3> > samplePoints ) {
         return AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints( samplePoints );
     }
 
@@ -642,7 +642,7 @@ struct FiniteElementSolver_less__3__greater__wrapper : FiniteElementSolver< 3 >,
         return FiniteElementSolver< 3 >::GetSolutionAtGridPoints( pGrid );
     }
 
-    virtual ::std::vector< double > GetSolutionAtPoints( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > samplePoints ) {
+    virtual ::std::vector< double > GetSolutionAtPoints( ::std::vector< DimensionalChastePoint<3> > samplePoints ) {
         if( bp::override func_GetSolutionAtPoints = this->get_override( "GetSolutionAtPoints" ) )
             return func_GetSolutionAtPoints( samplePoints );
         else{
@@ -650,7 +650,7 @@ struct FiniteElementSolver_less__3__greater__wrapper : FiniteElementSolver< 3 >,
         }
     }
     
-    ::std::vector< double > default_GetSolutionAtPoints( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > samplePoints ) {
+    ::std::vector< double > default_GetSolutionAtPoints( ::std::vector< DimensionalChastePoint<3> > samplePoints ) {
         return FiniteElementSolver< 3 >::GetSolutionAtPoints( samplePoints );
     }
 
@@ -756,7 +756,7 @@ struct FunctionMap_less__3__greater__wrapper : FunctionMap< 3 >, bp::wrapper< Fu
         return AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints( pGrid );
     }
 
-    virtual ::std::vector< double > GetSolutionAtPoints( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > samplePoints ) {
+    virtual ::std::vector< double > GetSolutionAtPoints( ::std::vector< DimensionalChastePoint<3> > samplePoints ) {
         if( bp::override func_GetSolutionAtPoints = this->get_override( "GetSolutionAtPoints" ) )
             return func_GetSolutionAtPoints( samplePoints );
         else{
@@ -764,7 +764,7 @@ struct FunctionMap_less__3__greater__wrapper : FunctionMap< 3 >, bp::wrapper< Fu
         }
     }
     
-    ::std::vector< double > default_GetSolutionAtPoints( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > samplePoints ) {
+    ::std::vector< double > default_GetSolutionAtPoints( ::std::vector< DimensionalChastePoint<3> > samplePoints ) {
         return AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints( samplePoints );
     }
 
@@ -894,7 +894,7 @@ struct GreensFunctionSolver_less__3__greater__wrapper : GreensFunctionSolver< 3 
         return AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtGridPoints( pGrid );
     }
 
-    virtual ::std::vector< double > GetSolutionAtPoints( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > samplePoints ) {
+    virtual ::std::vector< double > GetSolutionAtPoints( ::std::vector< DimensionalChastePoint<3> > samplePoints ) {
         if( bp::override func_GetSolutionAtPoints = this->get_override( "GetSolutionAtPoints" ) )
             return func_GetSolutionAtPoints( samplePoints );
         else{
@@ -902,7 +902,7 @@ struct GreensFunctionSolver_less__3__greater__wrapper : GreensFunctionSolver< 3 
         }
     }
     
-    ::std::vector< double > default_GetSolutionAtPoints( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > samplePoints ) {
+    ::std::vector< double > default_GetSolutionAtPoints( ::std::vector< DimensionalChastePoint<3> > samplePoints ) {
         return AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints( samplePoints );
     }
 
@@ -983,7 +983,7 @@ struct GreensFunctionSolver_less__3__greater__wrapper : GreensFunctionSolver< 3 
 namespace boost { namespace python { namespace indexing {
 
 template<>
-struct value_traits< boost::numeric::ublas::c_vector< double, 3 > >{
+struct value_traits< DimensionalChastePoint< 3 > >{
 
     static bool const equality_comparable = false;
     
@@ -1035,11 +1035,11 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
         __type_exposer.def( bp::indexing::vector_suite< std::vector< boost::shared_ptr<DiscreteSource<3> > > >() );
     }
 
-    { //::std::vector< boost::numeric::ublas::c_vector<double, 3> >
-        typedef bp::class_< std::vector< boost::numeric::ublas::c_vector<double, 3> > > __type_exposer_t;
+    { //::std::vector< DimensionalChastePoint<3> >
+        typedef bp::class_< std::vector< DimensionalChastePoint<3> > > __type_exposer_t;
         __type_exposer_t __type_exposer = __type_exposer_t( "__type" );
         bp::scope __type_scope( __type_exposer );
-        __type_exposer.def( bp::indexing::vector_suite< std::vector< boost::numeric::ublas::c_vector<double, 3> > >() );
+        __type_exposer.def( bp::indexing::vector_suite< std::vector< DimensionalChastePoint<3> > >() );
     }
 
     { //::std::map< unsigned int, double >
@@ -1088,8 +1088,8 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             , ( bp::arg("pGrid") ) )    
         .def( 
             "GetSolutionAtPoints"
-            , (::std::vector< double > ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints)
-            , (::std::vector< double > ( AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper::* )( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ))(&AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper::default_GetSolutionAtPoints)
+            , (::std::vector< double > ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )( ::std::vector< DimensionalChastePoint<3> > ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints)
+            , (::std::vector< double > ( AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper::* )( ::std::vector< DimensionalChastePoint<3> > ))(&AbstractRegularGridDiscreteContinuumSolver_less__3__greater__wrapper::default_GetSolutionAtPoints)
             , ( bp::arg("samplePoints") ) )    
         .def( 
             "GetVtkSolution"
@@ -1313,7 +1313,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
         { //::DiscreteSource< 3 >::SetPoints
         
             typedef DiscreteSource< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
+            typedef void ( exported_class_t::*SetPoints_function_type)( ::std::vector< DimensionalChastePoint<3> > ) ;
             
             DiscreteSource3_exposer.def( 
                 "SetPoints"
@@ -1506,7 +1506,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
         { //::DiscreteContinuumBoundaryCondition< 3 >::GetValue
         
             typedef DiscreteContinuumBoundaryCondition< 3 > exported_class_t;
-            typedef ::std::pair< bool, double > ( exported_class_t::*GetValue_function_type)( ::boost::numeric::ublas::c_vector< double, 3 >,double ) ;
+            typedef ::std::pair< bool, double > ( exported_class_t::*GetValue_function_type)( ::DimensionalChastePoint< 3 >,double ) ;
             
             DiscreteContinuumBoundaryCondition3_exposer.def( 
                 "GetValue"
@@ -1561,7 +1561,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
         { //::DiscreteContinuumBoundaryCondition< 3 >::SetPoints
         
             typedef DiscreteContinuumBoundaryCondition< 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
+            typedef void ( exported_class_t::*SetPoints_function_type)( ::std::vector< DimensionalChastePoint<3> > ) ;
             
             DiscreteContinuumBoundaryCondition3_exposer.def( 
                 "SetPoints"
@@ -2328,8 +2328,8 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
         { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints
         
             typedef FiniteDifferenceSolver< 3 > exported_class_t;
-            typedef ::std::vector< double > ( exported_class_t::*GetSolutionAtPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
-            typedef ::std::vector< double > ( FiniteDifferenceSolver_less__3__greater__wrapper::*default_GetSolutionAtPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
+            typedef ::std::vector< double > ( exported_class_t::*GetSolutionAtPoints_function_type)( ::std::vector< DimensionalChastePoint<3> > ) ;
+            typedef ::std::vector< double > ( FiniteDifferenceSolver_less__3__greater__wrapper::*default_GetSolutionAtPoints_function_type)( ::std::vector< DimensionalChastePoint<3> > ) ;
             
             FiniteDifferenceSolver3_exposer.def( 
                 "GetSolutionAtPoints"
@@ -2433,8 +2433,8 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
         { //::FiniteElementSolver< 3 >::GetSolutionAtPoints
         
             typedef FiniteElementSolver< 3 > exported_class_t;
-            typedef ::std::vector< double > ( exported_class_t::*GetSolutionAtPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
-            typedef ::std::vector< double > ( FiniteElementSolver_less__3__greater__wrapper::*default_GetSolutionAtPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
+            typedef ::std::vector< double > ( exported_class_t::*GetSolutionAtPoints_function_type)( ::std::vector< DimensionalChastePoint<3> > ) ;
+            typedef ::std::vector< double > ( FiniteElementSolver_less__3__greater__wrapper::*default_GetSolutionAtPoints_function_type)( ::std::vector< DimensionalChastePoint<3> > ) ;
             
             FiniteElementSolver3_exposer.def( 
                 "GetSolutionAtPoints"
@@ -2604,8 +2604,8 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
         { //::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints
         
             typedef FunctionMap< 3 > exported_class_t;
-            typedef ::std::vector< double > ( exported_class_t::*GetSolutionAtPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
-            typedef ::std::vector< double > ( FunctionMap_less__3__greater__wrapper::*default_GetSolutionAtPoints_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
+            typedef ::std::vector< double > ( exported_class_t::*GetSolutionAtPoints_function_type)( ::std::vector< DimensionalChastePoint<3> > ) ;
+            typedef ::std::vector< double > ( FunctionMap_less__3__greater__wrapper::*default_GetSolutionAtPoints_function_type)( ::std::vector< DimensionalChastePoint<3> > ) ;
             
             FunctionMap3_exposer.def( 
                 "GetSolutionAtPoints"
@@ -2713,8 +2713,8 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
             , ( bp::arg("pGrid") ) )    
         .def( 
             "GetSolutionAtPoints"
-            , (::std::vector< double > ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints)
-            , (::std::vector< double > ( GreensFunctionSolver_less__3__greater__wrapper::* )( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ))(&GreensFunctionSolver_less__3__greater__wrapper::default_GetSolutionAtPoints)
+            , (::std::vector< double > ( ::AbstractRegularGridDiscreteContinuumSolver<3>::* )( ::std::vector< DimensionalChastePoint<3> > ))(&::AbstractRegularGridDiscreteContinuumSolver< 3 >::GetSolutionAtPoints)
+            , (::std::vector< double > ( GreensFunctionSolver_less__3__greater__wrapper::* )( ::std::vector< DimensionalChastePoint<3> > ))(&GreensFunctionSolver_less__3__greater__wrapper::default_GetSolutionAtPoints)
             , ( bp::arg("samplePoints") ) )    
         .def( 
             "GetVtkSolution"

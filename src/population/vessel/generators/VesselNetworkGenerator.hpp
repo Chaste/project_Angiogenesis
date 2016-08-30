@@ -143,7 +143,7 @@ public:
     /*
      * Creates an oval shaped network with one inlet and one outlet
      */
-    boost::shared_ptr<VesselNetwork<DIM> > GenerateOvalNetwork(units::quantity<unit::length> scaleFactor = 200.0,
+    boost::shared_ptr<VesselNetwork<DIM> > GenerateOvalNetwork(units::quantity<unit::length> scaleFactor,
                                                                      unsigned num_increments = 40,
                                                                      double a_param = 0.5,
                                                                      double b_param = 1.0);
@@ -155,9 +155,9 @@ public:
     /*
      * Creates a vessel network based on a voronoi tesselation in the provided cube.
      */
-    boost::shared_ptr<VesselNetwork<DIM> > GenerateVoronoiNetwork(units::quantity<unit::length> cubeX = 100.0,
-                                                                  units::quantity<unit::length> cubeY = 100.0,
-                                                                  units::quantity<unit::length> cubeZ = 100.0, unsigned numPoints = 400);
+    boost::shared_ptr<VesselNetwork<DIM> > GenerateVoronoiNetwork(units::quantity<unit::length> cubeX,
+                                                                  units::quantity<unit::length> cubeY,
+                                                                  units::quantity<unit::length> cubeZ, unsigned numPoints = 400);
 
     /*
      * Pattern Unit. Coincident nodes are automatically merged in this method.

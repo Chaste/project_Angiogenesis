@@ -40,13 +40,14 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <boost/units/quantity.hpp>
 #include <boost/units/systems/si/time.hpp>
 #include <boost/units/base_units/metric/hour.hpp>
+
+#include "LengthParameterInstance.hpp"
 #include "CheckpointArchiveTypes.hpp"
 #include "ArchiveLocationInfo.hpp"
 #include "SmartPointers.hpp"
 #include "UnitCollection.hpp"
 #include "OutputFileHandler.hpp"
 #include "BaseParameterInstance.hpp"
-#include "ParameterInstance.hpp"
 #include "ParameterCollection.hpp"
 
 class TestParameterCollection : public CxxTest::TestSuite
@@ -96,7 +97,7 @@ public:
 
     void TestParameterInstance()
     {
-        boost::shared_ptr<ParameterInstance<unit::time> > p_my_parameter = boost::shared_ptr<ParameterInstance<unit::time> >(new ParameterInstance<unit::time>);
+        boost::shared_ptr<TimeParameterInstance> p_my_parameter = boost::shared_ptr<TimeParameterInstance>(new TimeParameterInstance);
         units::quantity<unit::time> few_seconds = 5.0*unit::seconds;
         p_my_parameter->SetShortDescription("My Description For Time Parameter");
         p_my_parameter->SetValue(few_seconds);
@@ -118,7 +119,7 @@ public:
             p_my_parameter_for_archive->SetShortDescription("My Description For Time Parameter");
             p_my_parameter_for_archive->SetName("Derived");
 
-            boost::shared_ptr<ParameterInstance<unit::time> > p_my_cast_parameter_for_archive = boost::static_pointer_cast<ParameterInstance<unit::time> >(p_my_parameter_for_archive);
+            boost::shared_ptr<TimeParameterInstance> p_my_cast_parameter_for_archive = boost::static_pointer_cast<TimeParameterInstance>(p_my_parameter_for_archive);
             p_my_cast_parameter_for_archive->SetValue(few_seconds);
 
             std::ofstream ofs(archive_filename.c_str());
@@ -139,7 +140,7 @@ public:
             TS_ASSERT_EQUALS("My Description For Time Parameter", p_my_parameter_from_archive->GetShortDescription());
             TS_ASSERT_EQUALS("Derived", p_my_parameter_from_archive->GetName());
 
-            boost::shared_ptr<ParameterInstance<unit::time> > p_my_cast_parameter_from_archive = boost::static_pointer_cast<ParameterInstance<unit::time> >(p_my_parameter_from_archive);
+            boost::shared_ptr<TimeParameterInstance> p_my_cast_parameter_from_archive = boost::static_pointer_cast<TimeParameterInstance>(p_my_parameter_from_archive);
             TS_ASSERT_DELTA(p_my_cast_parameter_from_archive->GetValue()/unit::seconds, 5.0, 1.e-6);
         }
     }
@@ -150,19 +151,19 @@ public:
         my_parameter->SetShortDescription("My Description");
         my_parameter->SetName("Base");
 
-        boost::shared_ptr<ParameterInstance<unit::time> > my_time_parameter = boost::shared_ptr<ParameterInstance<unit::time> >(new ParameterInstance<unit::time>);
+        boost::shared_ptr<TimeParameterInstance> my_time_parameter = boost::shared_ptr<TimeParameterInstance>(new TimeParameterInstance);
         units::quantity<unit::time> few_seconds = 5.0*unit::seconds;
         my_time_parameter->SetShortDescription("My Description For Time Parameter");
         my_time_parameter->SetValue(few_seconds);
         my_time_parameter->SetName("Derived");
 
-        ParameterCollection* my_params = ParameterCollection::Instance();
+        boost::shared_ptr<ParameterCollection> my_params = ParameterCollection::Instance();
 
         my_params->AddParameter(my_parameter);
         my_params->AddParameter(my_time_parameter);
         my_params->DumpToFile("/home/grogan/test.txt");
 
-        std::cout << "Name:" << my_params->template GetParameter<unit::time>("Derived")->GetName() << std::endl;
+        std::cout << "Name:" << my_params->GetTimeParameter("Derived")->GetName() << std::endl;
 
         ParameterCollection::Destroy();
     }

@@ -164,7 +164,7 @@ struct SharedPottsMeshGenerator_less__3__greater__wrapper : SharedPottsMeshGener
 namespace boost { namespace python { namespace indexing {
 
 template<>
-struct value_traits< boost::numeric::ublas::c_vector< double, 3 > >{
+struct value_traits< DimensionalChastePoint< 3 > >{
 
     static bool const equality_comparable = false;
     
@@ -358,13 +358,6 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_mesh){
         vector_less__double__greater__exposer.def( bp::indexing::vector_suite< std::vector< double > >() );
     }
 
-    { //::std::vector< boost::numeric::ublas::c_vector<double, 3> >
-        typedef bp::class_< std::vector< boost::numeric::ublas::c_vector<double, 3> > > __type_exposer_t;
-        __type_exposer_t __type_exposer = __type_exposer_t( "__type" );
-        bp::scope __type_scope( __type_exposer );
-        __type_exposer.def( bp::indexing::vector_suite< std::vector< boost::numeric::ublas::c_vector<double, 3> > >() );
-    }
-
     { //::std::vector< PottsElement<3> * >
         typedef bp::class_< std::vector< PottsElement<3> * > > __type_exposer_t;
         __type_exposer_t __type_exposer = __type_exposer_t( "__type" );
@@ -377,6 +370,13 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_mesh){
         __type_exposer_t __type_exposer = __type_exposer_t( "__type" );
         bp::scope __type_scope( __type_exposer );
         __type_exposer.def( bp::indexing::vector_suite< std::vector< Node<3> * > >::with_policies(bp::return_internal_reference< >()) );
+    }
+
+    { //::std::vector< DimensionalChastePoint<3> >
+        typedef bp::class_< std::vector< DimensionalChastePoint<3> > > __type_exposer_t;
+        __type_exposer_t __type_exposer = __type_exposer_t( "__type" );
+        bp::scope __type_scope( __type_exposer );
+        __type_exposer.def( bp::indexing::vector_suite< std::vector< DimensionalChastePoint<3> > >() );
     }
 
     { //::std::set< unsigned int >
@@ -466,7 +466,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_mesh){
         { //::DiscreteContinuumMesh< 3, 3 >::SetHoles
         
             typedef DiscreteContinuumMesh< 3, 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetHoles_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
+            typedef void ( exported_class_t::*SetHoles_function_type)( ::std::vector< DimensionalChastePoint<3> > ) ;
             
             DiscreteContinuumMesh3_3_exposer.def( 
                 "SetHoles"
@@ -488,7 +488,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_mesh){
         { //::DiscreteContinuumMesh< 3, 3 >::SetRegionMarkers
         
             typedef DiscreteContinuumMesh< 3, 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetRegionMarkers_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
+            typedef void ( exported_class_t::*SetRegionMarkers_function_type)( ::std::vector< DimensionalChastePoint<3> > ) ;
             
             DiscreteContinuumMesh3_3_exposer.def( 
                 "SetRegionMarkers"
@@ -818,7 +818,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_mesh){
         { //::RegularGrid< 3, 3 >::GetLocation
         
             typedef RegularGrid< 3, 3 > exported_class_t;
-            typedef ::boost::numeric::ublas::c_vector< double, 3 > ( exported_class_t::*GetLocation_function_type)( unsigned int,unsigned int,unsigned int ) ;
+            typedef ::DimensionalChastePoint< 3 > ( exported_class_t::*GetLocation_function_type)( unsigned int,unsigned int,unsigned int ) ;
             
             RegularGrid3_3_exposer.def( 
                 "GetLocation"
@@ -829,7 +829,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_mesh){
         { //::RegularGrid< 3, 3 >::GetLocationOf1dIndex
         
             typedef RegularGrid< 3, 3 > exported_class_t;
-            typedef ::boost::numeric::ublas::c_vector< double, 3 > ( exported_class_t::*GetLocationOf1dIndex_function_type)( unsigned int ) ;
+            typedef ::DimensionalChastePoint< 3 > ( exported_class_t::*GetLocationOf1dIndex_function_type)( unsigned int ) ;
             
             RegularGrid3_3_exposer.def( 
                 "GetLocationOf1dIndex"
@@ -840,7 +840,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_mesh){
         { //::RegularGrid< 3, 3 >::GetLocations
         
             typedef RegularGrid< 3, 3 > exported_class_t;
-            typedef ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ( exported_class_t::*GetLocations_function_type)(  ) ;
+            typedef ::std::vector< DimensionalChastePoint<3> > ( exported_class_t::*GetLocations_function_type)(  ) ;
             
             RegularGrid3_3_exposer.def( 
                 "GetLocations"
@@ -850,7 +850,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_mesh){
         { //::RegularGrid< 3, 3 >::GetNearestGridIndex
         
             typedef RegularGrid< 3, 3 > exported_class_t;
-            typedef unsigned int ( exported_class_t::*GetNearestGridIndex_function_type)( ::boost::numeric::ublas::c_vector< double, 3 > const & ) ;
+            typedef unsigned int ( exported_class_t::*GetNearestGridIndex_function_type)( ::DimensionalChastePoint< 3 > const & ) ;
             
             RegularGrid3_3_exposer.def( 
                 "GetNearestGridIndex"
@@ -882,7 +882,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_mesh){
         { //::RegularGrid< 3, 3 >::GetOrigin
         
             typedef RegularGrid< 3, 3 > exported_class_t;
-            typedef ::boost::numeric::ublas::c_vector< double, 3 > ( exported_class_t::*GetOrigin_function_type)(  ) ;
+            typedef ::DimensionalChastePoint< 3 > ( exported_class_t::*GetOrigin_function_type)(  ) ;
             
             RegularGrid3_3_exposer.def( 
                 "GetOrigin"
@@ -916,7 +916,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_mesh){
         { //::RegularGrid< 3, 3 >::GetPointPointMap
         
             typedef RegularGrid< 3, 3 > exported_class_t;
-            typedef ::std::vector< std::vector< unsigned int > > ( exported_class_t::*GetPointPointMap_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ) ;
+            typedef ::std::vector< std::vector< unsigned int > > ( exported_class_t::*GetPointPointMap_function_type)( ::std::vector< DimensionalChastePoint<3> > ) ;
             
             RegularGrid3_3_exposer.def( 
                 "GetPointPointMap"
@@ -968,7 +968,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_mesh){
         { //::RegularGrid< 3, 3 >::InterpolateGridValues
         
             typedef RegularGrid< 3, 3 > exported_class_t;
-            typedef ::std::vector< double > ( exported_class_t::*InterpolateGridValues_function_type)( ::std::vector< boost::numeric::ublas::c_vector<double, 3> >,::std::vector< double >,bool ) ;
+            typedef ::std::vector< double > ( exported_class_t::*InterpolateGridValues_function_type)( ::std::vector< DimensionalChastePoint<3> >,::std::vector< double >,bool ) ;
             
             RegularGrid3_3_exposer.def( 
                 "InterpolateGridValues"
@@ -979,7 +979,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_mesh){
         { //::RegularGrid< 3, 3 >::IsLocationInPointVolume
         
             typedef RegularGrid< 3, 3 > exported_class_t;
-            typedef bool ( exported_class_t::*IsLocationInPointVolume_function_type)( ::boost::numeric::ublas::c_vector< double, 3 >,unsigned int ) ;
+            typedef bool ( exported_class_t::*IsLocationInPointVolume_function_type)( ::DimensionalChastePoint< 3 >,unsigned int ) ;
             
             RegularGrid3_3_exposer.def( 
                 "IsLocationInPointVolume"
@@ -1045,7 +1045,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_mesh){
         { //::RegularGrid< 3, 3 >::SetOrigin
         
             typedef RegularGrid< 3, 3 > exported_class_t;
-            typedef void ( exported_class_t::*SetOrigin_function_type)( ::boost::numeric::ublas::c_vector< double, 3 > ) ;
+            typedef void ( exported_class_t::*SetOrigin_function_type)( ::DimensionalChastePoint< 3 > ) ;
             
             RegularGrid3_3_exposer.def( 
                 "SetOrigin"

@@ -33,8 +33,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#ifndef ParameterInstance_HPP_
-#define ParameterInstance_HPP_
+#ifndef PressureParameterInstance_HPP_
+#define PressureParameterInstance_HPP_
 
 #include "ChasteSerialization.hpp"
 #include <boost/serialization/base_object.hpp>
@@ -43,12 +43,11 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "BaseParameterInstance.hpp"
 
 /**
- * This is a class for storing often used parameters and their metadata, such as a short textual description, bib information
- * from a paper and units. It is templated over unit type. Specific parameter values can inherit from this class, with
- * hard-coded metadata.
+ * This is a class for storing often used for length type parameters. Note, templating of the
+ * individual parameter types is avoided to ease Python wrapping.
  */
-template<class UNIT>
-class ParameterInstance : public BaseParameterInstance
+
+class PressureParameterInstance : public BaseParameterInstance
 {
 
     /**
@@ -63,40 +62,30 @@ class ParameterInstance : public BaseParameterInstance
     }
 
     /**
-     * The value of the parameter, template over unit type
+     * The value of the parameter
      */
-    units::quantity<UNIT> mValue;
+    units::quantity<unit::pressure> mValue;
 
 public:
 
     /**
      * Constructor
      */
-    ParameterInstance();
+    PressureParameterInstance();
 
     /**
      * Destructor
      */
-    virtual ~ParameterInstance();
+    virtual ~PressureParameterInstance();
 
     /**
      * Set the default value
      */
-    void SetValue(units::quantity<UNIT> value);
+    void SetValue(units::quantity<unit::pressure> value);
 
 
-    units::quantity<UNIT> GetValue();
+    units::quantity<unit::pressure> GetValue();
 
 };
 
-#include "SerializationExportWrapper.hpp"
-EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::time)
-EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::length)
-EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::mass)
-EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::pressure)
-EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::dimensionless)
-EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::rate)
-EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::flow_impedance)
-EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::flow_rate)
-
-#endif /*ParameterInstance_HPP_*/
+#endif /*PressureParameterInstance_HPP_*/

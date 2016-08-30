@@ -41,9 +41,13 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <boost/serialization/shared_ptr.hpp>
 #include "SerializableSingleton.hpp"
 #include "UnitCollection.hpp"
-#include "ParameterInstance.hpp"
 #include "BaseParameterInstance.hpp"
 #include <map>
+#include "LengthParameterInstance.hpp"
+#include "TimeParameterInstance.hpp"
+#include "MassParameterInstance.hpp"
+#include "PressureParameterInstance.hpp"
+#include "ViscosityParameterInstance.hpp"
 
 /**
  * This singleton holds parameter values used in a simulation. It allows the value of parameters
@@ -55,7 +59,7 @@ class ParameterCollection : public SerializableSingleton<ParameterCollection>
     /**
      * A pointer to the singleton instance of this class.
      */
-    static ParameterCollection* mpInstance;
+    static boost::shared_ptr<ParameterCollection> mpInstance;
 
     /**
      * Parameter Collection
@@ -68,7 +72,7 @@ public:
      * @return a pointer to the singleton instance
      * The first time this is called the simulation object is created.
      */
-    static ParameterCollection* Instance();
+    static boost::shared_ptr<ParameterCollection> Instance();
 
     /**
      * Dump the parameters to file
@@ -82,14 +86,19 @@ public:
 
     /**
      * Destroy the current ParameterCollection instance.
-     *
-     * This method *must* be called before program exit, to avoid a memory
-     * leak.
      */
     static void Destroy();
 
-    template<class UNIT>
-    boost::shared_ptr<ParameterInstance<UNIT> > GetParameter(const std::string& rName);
+    boost::shared_ptr<LengthParameterInstance> GetLengthParameter(const std::string& rName);
+
+    boost::shared_ptr<MassParameterInstance> GetMassParameter(const std::string& rName);
+
+    boost::shared_ptr<TimeParameterInstance> GetTimeParameter(const std::string& rName);
+
+    boost::shared_ptr<PressureParameterInstance> GetPressureParameter(const std::string& rName);
+
+    boost::shared_ptr<ViscosityParameterInstance> GetViscosityParameter(const std::string& rName);
+
 
 protected:
 

@@ -59,11 +59,12 @@ public:
     {
         // Set up the grid
         boost::shared_ptr<Part<2> > p_domain = Part<2>::Create();
-        p_domain->AddRectangle(1.0*1.e-6*unit::metres,
-                               2.0*1.e-6*unit::metres,
+        p_domain->AddRectangle(10*1.e-6*unit::metres,
+                               20*1.e-6*unit::metres,
                                DimensionalChastePoint<2>(0.0, 0.0, 0.0));
+
         boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
-        p_grid->GenerateFromPart(p_domain, 0.1*1.e-6*unit::metres);
+        p_grid->GenerateFromPart(p_domain, 1.0*1.e-6*unit::metres);
 
         // Choose the PDE
         boost::shared_ptr<DiscreteContinuumLinearEllipticPde<2> > p_pde = DiscreteContinuumLinearEllipticPde<2>::Create();
@@ -82,6 +83,7 @@ public:
 
         MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestFiniteDifferenceSolver/RectangleDomain", false));
         solver.SetFileHandler(p_output_file_handler);
+
         solver.Solve();
     }
 

@@ -15,6 +15,26 @@ namespace bp = boost::python;
 namespace boost { namespace python { namespace indexing {
 
 template<>
+struct value_traits< DimensionalChastePoint< 3 > >{
+
+    static bool const equality_comparable = false;
+    
+
+    static bool const less_than_comparable = false;
+    
+
+    template<typename PythonClass, typename Policy>
+    static void visit_container_class(PythonClass &, Policy const &){
+        
+    }
+
+};
+
+}/*indexing*/ } /*python*/ } /*boost*/
+
+namespace boost { namespace python { namespace indexing {
+
+template<>
 struct value_traits< boost::numeric::ublas::c_vector< double, 3 > >{
 
     static bool const equality_comparable = false;
@@ -120,11 +140,14 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_geometry){
         vector_less__boost_scope_shared_ptr_less_Facet_greater___greater__exposer.def( bp::indexing::vector_suite< std::vector< boost::shared_ptr<Facet> > >() );
     }
 
-    { //::std::vector< boost::numeric::ublas::c_vector<double, 3> >
-        typedef bp::class_< std::vector< boost::numeric::ublas::c_vector<double, 3> > > __type_exposer_t;
+    bp::class_< std::vector< boost::numeric::ublas::c_vector<double, 3> > >("vector_less__boost_scope_numeric_scope_ublas_scope_c_vector_less_double_comma__3_greater___greater_")    
+        .def( bp::indexing::vector_suite< std::vector< boost::numeric::ublas::c_vector<double, 3> > >() );
+
+    { //::std::vector< DimensionalChastePoint<3> >
+        typedef bp::class_< std::vector< DimensionalChastePoint<3> > > __type_exposer_t;
         __type_exposer_t __type_exposer = __type_exposer_t( "__type" );
         bp::scope __type_scope( __type_exposer );
-        __type_exposer.def( bp::indexing::vector_suite< std::vector< boost::numeric::ublas::c_vector<double, 3> > >() );
+        __type_exposer.def( bp::indexing::vector_suite< std::vector< DimensionalChastePoint<3> > >() );
     }
 
     { //::Facet
@@ -156,7 +179,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_geometry){
         }
         { //::Facet::ContainsPoint
         
-            typedef bool ( ::Facet::*ContainsPoint_function_type)( ::boost::numeric::ublas::c_vector< double, 3 > ) ;
+            typedef bool ( ::Facet::*ContainsPoint_function_type)( ::DimensionalChastePoint< 3 > const & ) ;
             
             Facet_exposer.def( 
                 "ContainsPoint"
@@ -195,7 +218,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_geometry){
         }
         { //::Facet::GetCentroid
         
-            typedef ::boost::numeric::ublas::c_vector< double, 3 > ( ::Facet::*GetCentroid_function_type)(  ) ;
+            typedef ::DimensionalChastePoint< 3 > ( ::Facet::*GetCentroid_function_type)(  ) ;
             
             Facet_exposer.def( 
                 "GetCentroid"
@@ -214,7 +237,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_geometry){
         }
         { //::Facet::GetDistance
         
-            typedef double ( ::Facet::*GetDistance_function_type)( ::boost::numeric::ublas::c_vector< double, 3 > ) ;
+            typedef double ( ::Facet::*GetDistance_function_type)( ::DimensionalChastePoint< 3 > const & ) ;
             
             Facet_exposer.def( 
                 "GetDistance"
@@ -317,18 +340,18 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_geometry){
         { //::Part< 3 >::AddCircle
         
             typedef Part< 3 > exported_class_t;
-            typedef ::boost::shared_ptr< Polygon > ( exported_class_t::*AddCircle_function_type)( double,::boost::numeric::ublas::c_vector< double, 3 >,unsigned int ) ;
+            typedef ::boost::shared_ptr< Polygon > ( exported_class_t::*AddCircle_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >,::DimensionalChastePoint< 3 >,unsigned int ) ;
             
             Part3_exposer.def( 
                 "AddCircle"
                 , AddCircle_function_type( &::Part< 3 >::AddCircle )
-                , ( bp::arg("radius"), bp::arg("centre"), bp::arg("numSegments") ) );
+                , ( bp::arg("radius"), bp::arg("centre"), bp::arg("numSegments")=(unsigned int)(24) ) );
         
         }
         { //::Part< 3 >::AddCuboid
         
             typedef Part< 3 > exported_class_t;
-            typedef void ( exported_class_t::*AddCuboid_function_type)( double,double,double,::boost::numeric::ublas::c_vector< double, 3 > ) ;
+            typedef void ( exported_class_t::*AddCuboid_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >,::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >,::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >,::DimensionalChastePoint< 3 > ) ;
             
             Part3_exposer.def( 
                 "AddCuboid"
@@ -339,18 +362,18 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_geometry){
         { //::Part< 3 >::AddCylinder
         
             typedef Part< 3 > exported_class_t;
-            typedef void ( exported_class_t::*AddCylinder_function_type)( double,double,::boost::numeric::ublas::c_vector< double, 3 >,unsigned int ) ;
+            typedef void ( exported_class_t::*AddCylinder_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >,::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >,::DimensionalChastePoint< 3 >,unsigned int ) ;
             
             Part3_exposer.def( 
                 "AddCylinder"
                 , AddCylinder_function_type( &::Part< 3 >::AddCylinder )
-                , ( bp::arg("radius"), bp::arg("depth"), bp::arg("centre"), bp::arg("numSegments") ) );
+                , ( bp::arg("radius"), bp::arg("depth"), bp::arg("arg2"), bp::arg("numSegments")=(unsigned int)(24) ) );
         
         }
         { //::Part< 3 >::AddHoleMarker
         
             typedef Part< 3 > exported_class_t;
-            typedef void ( exported_class_t::*AddHoleMarker_function_type)( ::boost::numeric::ublas::c_vector< double, 3 > ) ;
+            typedef void ( exported_class_t::*AddHoleMarker_function_type)( ::DimensionalChastePoint< 3 > ) ;
             
             Part3_exposer.def( 
                 "AddHoleMarker"
@@ -366,7 +389,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_geometry){
             Part3_exposer.def( 
                 "AddPolygon"
                 , AddPolygon_function_type( &::Part< 3 >::AddPolygon )
-                , ( bp::arg("vertices"), bp::arg("newFacet"), bp::arg("pFacet") ) );
+                , ( bp::arg("vertices"), bp::arg("newFacet")=(bool)(false), bp::arg("pFacet")=boost::shared_ptr<Facet>() ) );
         
         }
         { //::Part< 3 >::AddPolygon
@@ -377,13 +400,13 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_geometry){
             Part3_exposer.def( 
                 "AddPolygon"
                 , AddPolygon_function_type( &::Part< 3 >::AddPolygon )
-                , ( bp::arg("pPolygon"), bp::arg("newFacet"), bp::arg("pFacet") ) );
+                , ( bp::arg("pPolygon"), bp::arg("newFacet")=(bool)(false), bp::arg("pFacet")=boost::shared_ptr<Facet>() ) );
         
         }
         { //::Part< 3 >::AddRectangle
         
             typedef Part< 3 > exported_class_t;
-            typedef ::boost::shared_ptr< Polygon > ( exported_class_t::*AddRectangle_function_type)( double,double,::boost::numeric::ublas::c_vector< double, 3 > ) ;
+            typedef ::boost::shared_ptr< Polygon > ( exported_class_t::*AddRectangle_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >,::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >,::DimensionalChastePoint< 3 > ) ;
             
             Part3_exposer.def( 
                 "AddRectangle"
@@ -399,7 +422,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_geometry){
             Part3_exposer.def( 
                 "AddVesselNetwork"
                 , AddVesselNetwork_function_type( &::Part< 3 >::AddVesselNetwork )
-                , ( bp::arg("pVesselNetwork"), bp::arg("surface") ) );
+                , ( bp::arg("pVesselNetwork"), bp::arg("surface")=(bool)(false) ) );
         
         }
         { //::Part< 3 >::Create
@@ -415,7 +438,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_geometry){
         { //::Part< 3 >::Extrude
         
             typedef Part< 3 > exported_class_t;
-            typedef void ( exported_class_t::*Extrude_function_type)( ::boost::shared_ptr< Polygon >,double ) ;
+            typedef void ( exported_class_t::*Extrude_function_type)( ::boost::shared_ptr< Polygon >,::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
             
             Part3_exposer.def( 
                 "Extrude"
@@ -441,7 +464,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_geometry){
             Part3_exposer.def( 
                 "GetContainingGridIndices"
                 , GetContainingGridIndices_function_type( &::Part< 3 >::GetContainingGridIndices )
-                , ( bp::arg("num_x"), bp::arg("num_y"), bp::arg("num_z"), bp::arg("spacing") ) );
+                , ( bp::arg("num_x"), bp::arg("num_y")=(unsigned int)(1), bp::arg("num_z")=(unsigned int)(1), bp::arg("spacing")=1. ) );
         
         }
         { //::Part< 3 >::GetFacets
@@ -457,7 +480,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_geometry){
         { //::Part< 3 >::GetHoleMarkers
         
             typedef Part< 3 > exported_class_t;
-            typedef ::std::vector< boost::numeric::ublas::c_vector<double, 3> > ( exported_class_t::*GetHoleMarkers_function_type)(  ) ;
+            typedef ::std::vector< DimensionalChastePoint<3> > ( exported_class_t::*GetHoleMarkers_function_type)(  ) ;
             
             Part3_exposer.def( 
                 "GetHoleMarkers"
@@ -512,18 +535,18 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_geometry){
             Part3_exposer.def( 
                 "GetVtk"
                 , GetVtk_function_type( &::Part< 3 >::GetVtk )
-                , ( bp::arg("update") ) );
+                , ( bp::arg("update")=(bool)(true) ) );
         
         }
         { //::Part< 3 >::IsPointInPart
         
             typedef Part< 3 > exported_class_t;
-            typedef bool ( exported_class_t::*IsPointInPart_function_type)( ::boost::numeric::ublas::c_vector< double, 3 >,bool ) ;
+            typedef bool ( exported_class_t::*IsPointInPart_function_type)( ::DimensionalChastePoint< 3 >,bool ) ;
             
             Part3_exposer.def( 
                 "IsPointInPart"
                 , IsPointInPart_function_type( &::Part< 3 >::IsPointInPart )
-                , ( bp::arg("location"), bp::arg("update") ) );
+                , ( bp::arg("location"), bp::arg("update")=(bool)(true) ) );
         
         }
         { //::Part< 3 >::MergeCoincidentVertices
@@ -550,23 +573,12 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_geometry){
         { //::Part< 3 >::Write
         
             typedef Part< 3 > exported_class_t;
-            typedef void ( exported_class_t::*Write_function_type)( ::std::string const & ) ;
+            typedef void ( exported_class_t::*Write_function_type)( ::std::string const &,::GeometryFormat::Value ) ;
             
             Part3_exposer.def( 
                 "Write"
                 , Write_function_type( &::Part< 3 >::Write )
-                , ( bp::arg("rFilename") ) );
-        
-        }
-        { //::Part< 3 >::WriteStl
-        
-            typedef Part< 3 > exported_class_t;
-            typedef void ( exported_class_t::*WriteStl_function_type)( ::std::string const & ) ;
-            
-            Part3_exposer.def( 
-                "WriteStl"
-                , WriteStl_function_type( &::Part< 3 >::WriteStl )
-                , ( bp::arg("rFilename") ) );
+                , ( bp::arg("rFilename"), bp::arg("format")) );
         
         }
         Part3_exposer.staticmethod( "Create" );
@@ -602,7 +614,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_geometry){
         }
         { //::Polygon::ContainsPoint
         
-            typedef bool ( ::Polygon::*ContainsPoint_function_type)( ::boost::numeric::ublas::c_vector< double, 3 > ) ;
+            typedef bool ( ::Polygon::*ContainsPoint_function_type)( ::DimensionalChastePoint< 3 > const & ) ;
             
             Polygon_exposer.def( 
                 "ContainsPoint"
@@ -641,7 +653,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_geometry){
         }
         { //::Polygon::GetCentroid
         
-            typedef ::boost::numeric::ublas::c_vector< double, 3 > ( ::Polygon::*GetCentroid_function_type)(  ) ;
+            typedef ::DimensionalChastePoint< 3 > ( ::Polygon::*GetCentroid_function_type)(  ) ;
             
             Polygon_exposer.def( 
                 "GetCentroid"
@@ -650,7 +662,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_geometry){
         }
         { //::Polygon::GetDistance
         
-            typedef double ( ::Polygon::*GetDistance_function_type)( ::boost::numeric::ublas::c_vector< double, 3 > ) ;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( ::Polygon::*GetDistance_function_type)( ::DimensionalChastePoint< 3 > const & ) ;
             
             Polygon_exposer.def( 
                 "GetDistance"
@@ -660,7 +672,7 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_geometry){
         }
         { //::Polygon::GetDistanceToEdges
         
-            typedef double ( ::Polygon::*GetDistanceToEdges_function_type)( ::boost::numeric::ublas::c_vector< double, 3 > ) ;
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( ::Polygon::*GetDistanceToEdges_function_type)( ::DimensionalChastePoint< 3 > const & ) ;
             
             Polygon_exposer.def( 
                 "GetDistanceToEdges"
@@ -759,29 +771,29 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_geometry){
 
     { //::Vertex
         typedef bp::class_< Vertex > Vertex_exposer_t;
-        Vertex_exposer_t Vertex_exposer = Vertex_exposer_t( "Vertex", bp::init< bp::optional< double, double, double > >(( bp::arg("x")=0., bp::arg("y")=0., bp::arg("z")=0. )) );
+        Vertex_exposer_t Vertex_exposer = Vertex_exposer_t( "Vertex", bp::init< bp::optional< double, double, double, boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > > >(( bp::arg("x")=0., bp::arg("y")=0., bp::arg("z")=0., bp::arg("referenceLength")=9.9999999999999995E-7 * unit::metres )) );
         bp::scope Vertex_scope( Vertex_exposer );
         bp::implicitly_convertible< double, Vertex >();
-        Vertex_exposer.def( bp::init< boost::numeric::ublas::c_vector< double, 3 > >(( bp::arg("coords") )) );
+        Vertex_exposer.def( bp::init< boost::numeric::ublas::c_vector< double, 3 >, bp::optional< boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > > >(( bp::arg("coords"), bp::arg("referenceLength")=9.9999999999999995E-7 * unit::metres )) );
         bp::implicitly_convertible< boost::numeric::ublas::c_vector< double, 3 >, Vertex >();
         { //::Vertex::Create
         
-            typedef ::boost::shared_ptr< Vertex > ( *Create_function_type )( double,double,double );
+            typedef ::boost::shared_ptr< Vertex > ( *Create_function_type )( double,double,double,::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > );
             
             Vertex_exposer.def( 
                 "Create"
                 , Create_function_type( &::Vertex::Create )
-                , ( bp::arg("x")=0., bp::arg("y")=0., bp::arg("z")=0. ) );
+                , ( bp::arg("x")=0., bp::arg("y")=0., bp::arg("z")=0., bp::arg("referenceLength")=9.9999999999999995E-7 * unit::metres ) );
         
         }
         { //::Vertex::Create
         
-            typedef ::boost::shared_ptr< Vertex > ( *Create_function_type )( ::boost::numeric::ublas::c_vector< double, 3 > );
+            typedef ::boost::shared_ptr< Vertex > ( *Create_function_type )( ::boost::numeric::ublas::c_vector< double, 3 >,::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > );
             
             Vertex_exposer.def( 
                 "Create"
                 , Create_function_type( &::Vertex::Create )
-                , ( bp::arg("coords") ) );
+                , ( bp::arg("coords"), bp::arg("referenceLength")=9.9999999999999995E-7 * unit::metres ) );
         
         }
         { //::Vertex::GetIndex
@@ -826,6 +838,8 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_geometry){
         Vertex_exposer.staticmethod( "Create" );
         bp::register_ptr_to_python< boost::shared_ptr< Vertex > >();
         bp::implicitly_convertible< boost::shared_ptr< Vertex >, boost::shared_ptr< boost::enable_shared_from_this< Vertex > > >();
+        bp::implicitly_convertible< boost::shared_ptr< Vertex >, boost::shared_ptr< DimensionalChastePoint< 3 > > >();
+        bp::implicitly_convertible< boost::shared_ptr< Vertex >, boost::shared_ptr< boost::enable_shared_from_this< DimensionalChastePoint< 3 > > > >();
         bp::implicitly_convertible< boost::shared_ptr< Vertex >, boost::shared_ptr< ChastePoint< 3 > > >();
     }
 }

@@ -1,8 +1,12 @@
+#include "LengthParameterInstance.hpp"
+#include "MassParameterInstance.hpp"
+#include "TimeParameterInstance.hpp"
+#include "PressureParameterInstance.hpp"
+#include "ViscosityParameterInstance.hpp"
 #include "UnitCollection.hpp"
 #include "ParameterCollection.hpp"
 #include "BaseParameterInstance.hpp"
 #include "DimensionalSimulationTime.hpp"
-#include "ParameterInstance.hpp"
 
 // Typdef in this namespace so that pyplusplus uses the nicer typedef'd name for the class
 namespace pyplusplus{

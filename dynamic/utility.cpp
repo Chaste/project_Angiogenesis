@@ -93,34 +93,270 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_utility){
         bp::register_ptr_to_python< boost::shared_ptr< BaseParameterInstance > >();
     }
 
-    bp::class_< DimensionalSimulationTime_wrapper, boost::noncopyable >( "DimensionalSimulationTime", bp::no_init )    
-        .def( bp::init< >() )    
-        .def( 
-            "Destroy"
-            , (void (*)(  ))( &::DimensionalSimulationTime::Destroy ) )    
-        .def( 
-            "GetReferenceTimeScale"
-            , (::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( ::DimensionalSimulationTime::* )(  ))( &::DimensionalSimulationTime::GetReferenceTimeScale ) )    
-        .def( 
-            "SetReferenceTimeScale"
-            , (void ( ::DimensionalSimulationTime::* )( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ))( &::DimensionalSimulationTime::SetReferenceTimeScale )
-            , ( bp::arg("referenceTimeScale") ) )    
-        .staticmethod( "Destroy" );
+    { //::DimensionalSimulationTime
+        typedef bp::class_< DimensionalSimulationTime_wrapper, boost::noncopyable > DimensionalSimulationTime_exposer_t;
+        DimensionalSimulationTime_exposer_t DimensionalSimulationTime_exposer = DimensionalSimulationTime_exposer_t( "DimensionalSimulationTime", bp::no_init );
+        bp::scope DimensionalSimulationTime_scope( DimensionalSimulationTime_exposer );
+        DimensionalSimulationTime_exposer.def( bp::init< >() );
+        { //::DimensionalSimulationTime::Destroy
+        
+            typedef void ( *Destroy_function_type )(  );
+            
+            DimensionalSimulationTime_exposer.def( 
+                "Destroy"
+                , Destroy_function_type( &::DimensionalSimulationTime::Destroy ) );
+        
+        }
+        { //::DimensionalSimulationTime::GetReferenceTimeScale
+        
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( ::DimensionalSimulationTime::*GetReferenceTimeScale_function_type)(  ) ;
+            
+            DimensionalSimulationTime_exposer.def( 
+                "GetReferenceTimeScale"
+                , GetReferenceTimeScale_function_type( &::DimensionalSimulationTime::GetReferenceTimeScale ) );
+        
+        }
+        { //::DimensionalSimulationTime::GetSimulationTime
+        
+            typedef ::boost::shared_ptr< SimulationTime > ( *GetSimulationTime_function_type )(  );
+            
+            DimensionalSimulationTime_exposer.def( 
+                "GetSimulationTime"
+                , GetSimulationTime_function_type( &::DimensionalSimulationTime::GetSimulationTime ) );
+        
+        }
+        { //::DimensionalSimulationTime::Instance
+        
+            typedef ::boost::shared_ptr< DimensionalSimulationTime > ( *Instance_function_type )(  );
+            
+            DimensionalSimulationTime_exposer.def( 
+                "Instance"
+                , Instance_function_type( &::DimensionalSimulationTime::Instance ) );
+        
+        }
+        { //::DimensionalSimulationTime::SetReferenceTimeScale
+        
+            typedef void ( ::DimensionalSimulationTime::*SetReferenceTimeScale_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
+            
+            DimensionalSimulationTime_exposer.def( 
+                "SetReferenceTimeScale"
+                , SetReferenceTimeScale_function_type( &::DimensionalSimulationTime::SetReferenceTimeScale )
+                , ( bp::arg("referenceTimeScale") ) );
+        
+        }
+        DimensionalSimulationTime_exposer.staticmethod( "Destroy" );
+        DimensionalSimulationTime_exposer.staticmethod( "GetSimulationTime" );
+        DimensionalSimulationTime_exposer.staticmethod( "Instance" );
+        bp::register_ptr_to_python< boost::shared_ptr< DimensionalSimulationTime > >();
+        bp::implicitly_convertible< boost::shared_ptr< DimensionalSimulationTime >, boost::shared_ptr< SerializableSingleton< DimensionalSimulationTime > > >();
+    }
 
-    bp::class_< ParameterCollection_wrapper, boost::noncopyable >( "ParameterCollection", bp::no_init )    
-        .def( bp::init< >() )    
-        .def( 
-            "AddParameter"
-            , (void ( ::ParameterCollection::* )( ::boost::shared_ptr< BaseParameterInstance > ))( &::ParameterCollection::AddParameter )
-            , ( bp::arg("pParameter") ) )    
-        .def( 
-            "Destroy"
-            , (void (*)(  ))( &::ParameterCollection::Destroy ) )    
-        .def( 
-            "DumpToFile"
-            , (void ( ::ParameterCollection::* )( ::std::string const & ))( &::ParameterCollection::DumpToFile )
-            , ( bp::arg("rFilename") ) )
-        .staticmethod( "Destroy" );
+    { //::LengthParameterInstance
+        typedef bp::class_< LengthParameterInstance, bp::bases< BaseParameterInstance > > LengthParameterInstance_exposer_t;
+        LengthParameterInstance_exposer_t LengthParameterInstance_exposer = LengthParameterInstance_exposer_t( "LengthParameterInstance", bp::init< >() );
+        bp::scope LengthParameterInstance_scope( LengthParameterInstance_exposer );
+        { //::LengthParameterInstance::GetValue
+        
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( ::LengthParameterInstance::*GetValue_function_type)(  ) ;
+            
+            LengthParameterInstance_exposer.def( 
+                "GetValue"
+                , GetValue_function_type( &::LengthParameterInstance::GetValue ) );
+        
+        }
+        { //::LengthParameterInstance::SetValue
+        
+            typedef void ( ::LengthParameterInstance::*SetValue_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
+            
+            LengthParameterInstance_exposer.def( 
+                "SetValue"
+                , SetValue_function_type( &::LengthParameterInstance::SetValue )
+                , ( bp::arg("value") ) );
+        
+        }
+        bp::register_ptr_to_python< boost::shared_ptr< LengthParameterInstance > >();
+        bp::implicitly_convertible< boost::shared_ptr< LengthParameterInstance >, boost::shared_ptr< BaseParameterInstance > >();
+    }
+
+    { //::MassParameterInstance
+        typedef bp::class_< MassParameterInstance, bp::bases< BaseParameterInstance > > MassParameterInstance_exposer_t;
+        MassParameterInstance_exposer_t MassParameterInstance_exposer = MassParameterInstance_exposer_t( "MassParameterInstance", bp::init< >() );
+        bp::scope MassParameterInstance_scope( MassParameterInstance_exposer );
+        { //::MassParameterInstance::GetValue
+        
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( ::MassParameterInstance::*GetValue_function_type)(  ) ;
+            
+            MassParameterInstance_exposer.def( 
+                "GetValue"
+                , GetValue_function_type( &::MassParameterInstance::GetValue ) );
+        
+        }
+        { //::MassParameterInstance::SetValue
+        
+            typedef void ( ::MassParameterInstance::*SetValue_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
+            
+            MassParameterInstance_exposer.def( 
+                "SetValue"
+                , SetValue_function_type( &::MassParameterInstance::SetValue )
+                , ( bp::arg("value") ) );
+        
+        }
+        bp::register_ptr_to_python< boost::shared_ptr< MassParameterInstance > >();
+        bp::implicitly_convertible< boost::shared_ptr< MassParameterInstance >, boost::shared_ptr< BaseParameterInstance > >();
+    }
+
+    { //::ParameterCollection
+        typedef bp::class_< ParameterCollection_wrapper, boost::noncopyable > ParameterCollection_exposer_t;
+        ParameterCollection_exposer_t ParameterCollection_exposer = ParameterCollection_exposer_t( "ParameterCollection", bp::no_init );
+        bp::scope ParameterCollection_scope( ParameterCollection_exposer );
+        ParameterCollection_exposer.def( bp::init< >() );
+        { //::ParameterCollection::AddParameter
+        
+            typedef void ( ::ParameterCollection::*AddParameter_function_type)( ::boost::shared_ptr< BaseParameterInstance > ) ;
+            
+            ParameterCollection_exposer.def( 
+                "AddParameter"
+                , AddParameter_function_type( &::ParameterCollection::AddParameter )
+                , ( bp::arg("pParameter") ) );
+        
+        }
+        { //::ParameterCollection::Destroy
+        
+            typedef void ( *Destroy_function_type )(  );
+            
+            ParameterCollection_exposer.def( 
+                "Destroy"
+                , Destroy_function_type( &::ParameterCollection::Destroy ) );
+        
+        }
+        { //::ParameterCollection::DumpToFile
+        
+            typedef void ( ::ParameterCollection::*DumpToFile_function_type)( ::std::string const & ) ;
+            
+            ParameterCollection_exposer.def( 
+                "DumpToFile"
+                , DumpToFile_function_type( &::ParameterCollection::DumpToFile )
+                , ( bp::arg("rFilename") ) );
+        
+        }
+        { //::ParameterCollection::GetLengthParameter
+        
+            typedef ::boost::shared_ptr< LengthParameterInstance > ( ::ParameterCollection::*GetLengthParameter_function_type)( ::std::string const & ) ;
+            
+            ParameterCollection_exposer.def( 
+                "GetLengthParameter"
+                , GetLengthParameter_function_type( &::ParameterCollection::GetLengthParameter )
+                , ( bp::arg("rName") ) );
+        
+        }
+        { //::ParameterCollection::GetMassParameter
+        
+            typedef ::boost::shared_ptr< MassParameterInstance > ( ::ParameterCollection::*GetMassParameter_function_type)( ::std::string const & ) ;
+            
+            ParameterCollection_exposer.def( 
+                "GetMassParameter"
+                , GetMassParameter_function_type( &::ParameterCollection::GetMassParameter )
+                , ( bp::arg("rName") ) );
+        
+        }
+        { //::ParameterCollection::GetPressureParameter
+        
+            typedef ::boost::shared_ptr< PressureParameterInstance > ( ::ParameterCollection::*GetPressureParameter_function_type)( ::std::string const & ) ;
+            
+            ParameterCollection_exposer.def( 
+                "GetPressureParameter"
+                , GetPressureParameter_function_type( &::ParameterCollection::GetPressureParameter )
+                , ( bp::arg("rName") ) );
+        
+        }
+        { //::ParameterCollection::GetTimeParameter
+        
+            typedef ::boost::shared_ptr< TimeParameterInstance > ( ::ParameterCollection::*GetTimeParameter_function_type)( ::std::string const & ) ;
+            
+            ParameterCollection_exposer.def( 
+                "GetTimeParameter"
+                , GetTimeParameter_function_type( &::ParameterCollection::GetTimeParameter )
+                , ( bp::arg("rName") ) );
+        
+        }
+        { //::ParameterCollection::GetViscosityParameter
+        
+            typedef ::boost::shared_ptr< ViscosityParameterInstance > ( ::ParameterCollection::*GetViscosityParameter_function_type)( ::std::string const & ) ;
+            
+            ParameterCollection_exposer.def( 
+                "GetViscosityParameter"
+                , GetViscosityParameter_function_type( &::ParameterCollection::GetViscosityParameter )
+                , ( bp::arg("rName") ) );
+        
+        }
+        { //::ParameterCollection::Instance
+        
+            typedef ::boost::shared_ptr< ParameterCollection > ( *Instance_function_type )(  );
+            
+            ParameterCollection_exposer.def( 
+                "Instance"
+                , Instance_function_type( &::ParameterCollection::Instance ) );
+        
+        }
+        ParameterCollection_exposer.staticmethod( "Destroy" );
+        ParameterCollection_exposer.staticmethod( "Instance" );
+        bp::register_ptr_to_python< boost::shared_ptr< ParameterCollection > >();
+        bp::implicitly_convertible< boost::shared_ptr< ParameterCollection >, boost::shared_ptr< SerializableSingleton< ParameterCollection > > >();
+    }
+
+    { //::PressureParameterInstance
+        typedef bp::class_< PressureParameterInstance, bp::bases< BaseParameterInstance > > PressureParameterInstance_exposer_t;
+        PressureParameterInstance_exposer_t PressureParameterInstance_exposer = PressureParameterInstance_exposer_t( "PressureParameterInstance", bp::init< >() );
+        bp::scope PressureParameterInstance_scope( PressureParameterInstance_exposer );
+        { //::PressureParameterInstance::GetValue
+        
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -2, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( ::PressureParameterInstance::*GetValue_function_type)(  ) ;
+            
+            PressureParameterInstance_exposer.def( 
+                "GetValue"
+                , GetValue_function_type( &::PressureParameterInstance::GetValue ) );
+        
+        }
+        { //::PressureParameterInstance::SetValue
+        
+            typedef void ( ::PressureParameterInstance::*SetValue_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -2, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
+            
+            PressureParameterInstance_exposer.def( 
+                "SetValue"
+                , SetValue_function_type( &::PressureParameterInstance::SetValue )
+                , ( bp::arg("value") ) );
+        
+        }
+        bp::register_ptr_to_python< boost::shared_ptr< PressureParameterInstance > >();
+        bp::implicitly_convertible< boost::shared_ptr< PressureParameterInstance >, boost::shared_ptr< BaseParameterInstance > >();
+    }
+
+    { //::TimeParameterInstance
+        typedef bp::class_< TimeParameterInstance, bp::bases< BaseParameterInstance > > TimeParameterInstance_exposer_t;
+        TimeParameterInstance_exposer_t TimeParameterInstance_exposer = TimeParameterInstance_exposer_t( "TimeParameterInstance", bp::init< >() );
+        bp::scope TimeParameterInstance_scope( TimeParameterInstance_exposer );
+        { //::TimeParameterInstance::GetValue
+        
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( ::TimeParameterInstance::*GetValue_function_type)(  ) ;
+            
+            TimeParameterInstance_exposer.def( 
+                "GetValue"
+                , GetValue_function_type( &::TimeParameterInstance::GetValue ) );
+        
+        }
+        { //::TimeParameterInstance::SetValue
+        
+            typedef void ( ::TimeParameterInstance::*SetValue_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
+            
+            TimeParameterInstance_exposer.def( 
+                "SetValue"
+                , SetValue_function_type( &::TimeParameterInstance::SetValue )
+                , ( bp::arg("value") ) );
+        
+        }
+        bp::register_ptr_to_python< boost::shared_ptr< TimeParameterInstance > >();
+        bp::implicitly_convertible< boost::shared_ptr< TimeParameterInstance >, boost::shared_ptr< BaseParameterInstance > >();
+    }
 
     bp::class_< UnitTester >( "UnitTester", bp::init< >() )    
         .def( 
@@ -130,6 +366,33 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_utility){
             "SetMass"
             , (void ( ::UnitTester::* )( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::dimensionless_type >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ))( &::UnitTester::SetMass )
             , ( bp::arg("inputMass") ) );
+
+    { //::ViscosityParameterInstance
+        typedef bp::class_< ViscosityParameterInstance, bp::bases< BaseParameterInstance > > ViscosityParameterInstance_exposer_t;
+        ViscosityParameterInstance_exposer_t ViscosityParameterInstance_exposer = ViscosityParameterInstance_exposer_t( "ViscosityParameterInstance", bp::init< >() );
+        bp::scope ViscosityParameterInstance_scope( ViscosityParameterInstance_exposer );
+        { //::ViscosityParameterInstance::GetValue
+        
+            typedef ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ( ::ViscosityParameterInstance::*GetValue_function_type)(  ) ;
+            
+            ViscosityParameterInstance_exposer.def( 
+                "GetValue"
+                , GetValue_function_type( &::ViscosityParameterInstance::GetValue ) );
+        
+        }
+        { //::ViscosityParameterInstance::SetValue
+        
+            typedef void ( ::ViscosityParameterInstance::*SetValue_function_type)( ::boost::units::quantity< boost::units::unit< boost::units::list< boost::units::dim< boost::units::length_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::list< boost::units::dim< boost::units::mass_base_dimension, boost::units::static_rational< 1, 1 > >, boost::units::list< boost::units::dim< boost::units::time_base_dimension, boost::units::static_rational< -1, 1 > >, boost::units::dimensionless_type > > >, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > ) ;
+            
+            ViscosityParameterInstance_exposer.def( 
+                "SetValue"
+                , SetValue_function_type( &::ViscosityParameterInstance::SetValue )
+                , ( bp::arg("value") ) );
+        
+        }
+        bp::register_ptr_to_python< boost::shared_ptr< ViscosityParameterInstance > >();
+        bp::implicitly_convertible< boost::shared_ptr< ViscosityParameterInstance >, boost::shared_ptr< BaseParameterInstance > >();
+    }
 
     { //::boost::units::quantity< boost::units::unit< boost::units::dimensionless_type, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double >
         typedef bp::class_< boost::units::quantity< boost::units::unit< boost::units::dimensionless_type, boost::units::homogeneous_system< boost::units::list< boost::units::si::meter_base_unit, boost::units::list< boost::units::scaled_base_unit< boost::units::cgs::gram_base_unit, boost::units::scale< 10, boost::units::static_rational< 3 > > >, boost::units::list< boost::units::si::second_base_unit, boost::units::list< boost::units::si::ampere_base_unit, boost::units::list< boost::units::si::kelvin_base_unit, boost::units::list< boost::units::si::mole_base_unit, boost::units::list< boost::units::si::candela_base_unit, boost::units::list< boost::units::angle::radian_base_unit, boost::units::list< boost::units::angle::steradian_base_unit, boost::units::dimensionless_type > > > > > > > > > >, void >, double > > DimensionlessQuantity_exposer_t;

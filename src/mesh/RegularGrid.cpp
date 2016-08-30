@@ -151,14 +151,13 @@ void RegularGrid<ELEMENT_DIM, SPACE_DIM>::GenerateFromPart(boost::shared_ptr<Par
     if (SPACE_DIM == 3)
     {
         mExtents[2] = unsigned((spatial_extents[5] - spatial_extents[4])*mReferenceLength / gridSize) + 1u;
+        mOrigin = DimensionalChastePoint<SPACE_DIM>(spatial_extents[0], spatial_extents[2], spatial_extents[4]);
     }
     else
     {
         mExtents[2] = 1;
+        mOrigin = DimensionalChastePoint<SPACE_DIM>(spatial_extents[0], spatial_extents[2], 0.0);
     }
-
-    mOrigin = DimensionalChastePoint<SPACE_DIM>(spatial_extents[0], spatial_extents[2], spatial_extents[4]);
-
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
