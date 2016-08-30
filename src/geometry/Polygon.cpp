@@ -124,12 +124,12 @@ vtkSmartPointer<vtkPolygon> Polygon::GetVtkPolygon()
     return p_polygon;
 }
 
-c_vector<double, 3> Polygon::GetCentroid()
+DimensionalChastePoint<3> Polygon::GetCentroid()
 {
     c_vector<double, 3> centroid;
     std::pair<vtkSmartPointer<vtkPoints>, vtkSmartPointer<vtkIdTypeArray> > vertex_data = GetVtkVertices();
     vtkPolygon::ComputeCentroid(vertex_data.second, vertex_data.first, &centroid[0]);
-    return centroid;
+    return DimensionalChastePoint<3>(centroid);
 }
 
 c_vector<double, 6> Polygon::GetBoundingBox()
@@ -140,14 +140,20 @@ c_vector<double, 6> Polygon::GetBoundingBox()
     return box;
 }
 
-double Polygon::GetDistance(c_vector<double, 3> location)
+units::quantity<unit::length> Polygon::GetDistance(const DimensionalChastePoint<3>& location)
 {
+    double point[3];
+    for (unsigned idx = 0; idx < 3; idx++)
+    {
+        point[idx] = location[idx];
+    }
+
     vtkSmartPointer<vtkPlane> p_plane = GetPlane();
-    double distance = p_plane->DistanceToPlane(&location[0]);
-    return distance;
+    double distance = p_plane->DistanceToPlane(&point[0]);
+    return distance * location.GetReferenceLengthScale();
 }
 
-double Polygon::GetDistanceToEdges(c_vector<double, 3> location)
+units::quantity<unit::length> Polygon::GetDistanceToEdges(const DimensionalChastePoint<3>& location)
 {
     double point[3];
     for (unsigned idx = 0; idx < 3; idx++)
@@ -165,14 +171,14 @@ double Polygon::GetDistanceToEdges(c_vector<double, 3> location)
             point, p_polygon->GetPoints()->GetNumberOfPoints(),
             static_cast<double*>(p_polygon->GetPoints()->GetData()->GetVoidPointer(0)), bounds, closest);
 
-    return distance;
+    return distance * location.GetReferenceLengthScale();
 
 }
 
 vtkSmartPointer<vtkPlane> Polygon::GetPlane()
 {
     vtkSmartPointer<vtkPlane> p_plane = vtkSmartPointer<vtkPlane>::New();
-    c_vector<double, 3> centroid = GetCentroid();
+    DimensionalChastePoint<3> centroid = GetCentroid();
     p_plane->SetOrigin(centroid[0], centroid[1], centroid[2]);
 
     c_vector<double, 3> normal = GetNormal();
@@ -199,7 +205,7 @@ c_vector<double, 3> Polygon::GetNormal()
     return normal;
 }
 
-bool Polygon::ContainsPoint(c_vector<double, 3> location)
+bool Polygon::ContainsPoint(const DimensionalChastePoint<3>& location)
 {
     bool contains_point = false;
     if (mVertices.size() >= 3)

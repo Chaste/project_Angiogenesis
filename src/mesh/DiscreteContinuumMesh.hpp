@@ -45,6 +45,7 @@
 #include <vtkSmartPointer.h>
 #include "Part.hpp"
 #include "Cell.hpp"
+#include "DimensionalChastePoint.hpp"
 
 // Jonathan Shewchuk's triangle and Hang Si's tetgen.
 #define REAL double
@@ -88,17 +89,19 @@ class DiscreteContinuumMesh : public TetrahedralMesh<ELEMENT_DIM, SPACE_DIM>
     /**
      * A collection of hole location markers
      */
-    std::vector<c_vector<double, SPACE_DIM> > mHoles;
+    std::vector<DimensionalChastePoint<SPACE_DIM> > mHoles;
 
     /**
      * A collection of region markers
      */
-    std::vector<c_vector<double, SPACE_DIM> > mRegions;
+    std::vector<DimensionalChastePoint<SPACE_DIM> > mRegions;
 
     /**
      * Store element-wise region markers
      */
     std::vector<unsigned> mAttributes;
+
+    units::quantity<unit::length> mReferenceLength;
 
 public:
 
@@ -146,13 +149,13 @@ public:
     * Set the hole locations
     * @param holes hole locations
     */
-    void SetHoles(std::vector<c_vector<double, SPACE_DIM> > holes);
+    void SetHoles(std::vector<DimensionalChastePoint<SPACE_DIM> > holes);
 
     /**
     * Set the region marker locations
     * @param regionMarkers region marker locations
     */
-    void SetRegionMarkers(std::vector<c_vector<double, SPACE_DIM> > regionMarkers);
+    void SetRegionMarkers(std::vector<DimensionalChastePoint<SPACE_DIM> > regionMarkers);
 
     /**
      * Do the meshing

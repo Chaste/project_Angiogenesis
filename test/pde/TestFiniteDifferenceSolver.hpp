@@ -44,7 +44,7 @@
 #include "DiscreteContinuumLinearEllipticPde.hpp"
 #include "FiniteDifferenceSolver.hpp"
 #include "VesselNetwork.hpp"
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkGenerator.hpp"
 #include "OutputFileHandler.hpp"
 #include "RegularGrid.hpp"
 
@@ -59,7 +59,9 @@ public:
     {
         // Set up the grid
         boost::shared_ptr<Part<2> > p_domain = Part<2>::Create();
-        p_domain->AddRectangle(1.0, 2.0);
+        p_domain->AddRectangle(1.0*1.e-6*unit::metres,
+                               2.0*1.e-6*unit::metres,
+                               DimensionalChastePoint<2>(0.0, 0.0, 0.0));
         boost::shared_ptr<RegularGrid<2> > p_grid = RegularGrid<2>::Create();
         p_grid->GenerateFromPart(p_domain, 0.1*1.e-6*unit::metres);
 
@@ -87,7 +89,10 @@ public:
     {
         // Set up the grid
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
-        p_domain->AddCuboid(1.0, 2.0, 1.0);
+        p_domain->AddCuboid(1.0*1.e-6*unit::metres,
+                            2.0*1.e-6*unit::metres,
+                            1.0*1.e-6*unit::metres,
+                            DimensionalChastePoint<3>(0.0, 0.0, 0.0));
         boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
         p_grid->GenerateFromPart(p_domain, 0.1*1.e-6*unit::metres);
 
@@ -114,13 +119,14 @@ public:
     void TestWithVesselBoundaryConditions() throw(Exception)
     {
         // Set up the vessel network
-        double vessel_length = 100;
-        VasculatureGenerator<3> generator;
-        boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length);
+        units::quantity<unit::length> vessel_length = 100.0 * 1.e-6 * unit::metres;
+        VesselNetworkGenerator<3> generator;
+        boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length,
+                                                                                        DimensionalChastePoint<3>(0.0, 0.0, 0.0));
 
         // Set up the grid
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
-        p_domain->AddCuboid(vessel_length, vessel_length, vessel_length);
+        p_domain->AddCuboid(vessel_length, vessel_length, vessel_length, DimensionalChastePoint<3>(0.0, 0.0, 0.0));
         boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
         p_grid->GenerateFromPart(p_domain, 10.0*1.e-6*unit::metres);
 

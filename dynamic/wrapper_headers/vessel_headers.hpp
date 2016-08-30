@@ -6,7 +6,7 @@
 #include "VesselSegment.hpp"
 #include "Vessel.hpp"
 #include "VesselNetwork.hpp"
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkGenerator.hpp"
 #include "AbstractVesselNetworkComponent.hpp"
 #include "VesselNetworkWriter.hpp"
 
@@ -19,5 +19,5 @@ template class Vessel<3>;
 template class VesselNetwork<3>;
 template class VesselNetworkWriter<3>;
 template class AbstractVesselNetworkComponent<3>;
-template class VasculatureGenerator<3>;
+template class VesselNetworkGenerator<3>;
 template class VesselNetworkReader<3>;

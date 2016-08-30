@@ -40,6 +40,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <boost/pending/indirect_cmp.hpp>
 #include "Exception.hpp"
 #include "VesselNetworkGraphCalculator.hpp"
+#include "PetscTools.hpp"
 
 /**
  * Helper class for "connected" methods
@@ -347,10 +348,13 @@ void VesselNetworkGraphCalculator<DIM>::WriteConnectivity(const std::string& out
         }
     }
 
-    std::ofstream outf(output_filename.c_str());
-    boost::dynamic_properties dp;
-    dp.property("node_id", get(boost::vertex_index, G));
-    write_graphviz_dp(outf, G, dp);
+    if(PetscTools::AmMaster())
+    {
+        std::ofstream outf(output_filename.c_str());
+        boost::dynamic_properties dp;
+        dp.property("node_id", get(boost::vertex_index, G));
+        write_graphviz_dp(outf, G, dp);
+    }
 }
 
 template <unsigned DIM>

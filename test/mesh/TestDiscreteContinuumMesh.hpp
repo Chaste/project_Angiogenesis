@@ -44,7 +44,7 @@
 #include "DiscreteContinuumMesh.hpp"
 #include "VtkMeshWriter.hpp"
 #include "OutputFileHandler.hpp"
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkGenerator.hpp"
 #include "VesselNode.hpp"
 #include "VesselSegment.hpp"
 #include "Vessel.hpp"
@@ -94,8 +94,8 @@ public:
     void TestMeshCylinder()
     {
         boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
-        boost::shared_ptr<Polygon> p_circle = p_part->AddCircle();
-        p_part->Extrude(p_circle);
+        boost::shared_ptr<Polygon> p_circle = p_part->AddCircle(0.33e-6*unit::metres, DimensionalChastePoint<3>(0.5, 0.5));
+        p_part->Extrude(p_circle, 1.e-6 * unit::metres);
 
         boost::shared_ptr<DiscreteContinuumMesh<3> > p_mesh = DiscreteContinuumMesh<3>::Create();
         p_mesh->SetDomain(p_part);
@@ -109,15 +109,16 @@ public:
     // Not Supported With Tetgen <1.5
     void DontTestMeshCylinderWithVesselLine()
     {
-        double vessel_length = 100.0;
-        VasculatureGenerator<3> generator;
-        boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length);
+        units::quantity<unit::length> vessel_length = 100.0* 1.e-6 * unit::metres;
+        VesselNetworkGenerator<3> generator;
+        boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length,
+                                                                                        DimensionalChastePoint<3>(0.0, 0.0));
         p_network->GetVessels()[0]->GetStartNode()->SetRadius(5.0 * 1.e-6 * unit::metres);
         p_network->GetVessels()[0]->GetEndNode()->SetRadius(5.0 * 1.e-6 * unit::metres);
 
         boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
-        boost::shared_ptr<Polygon> p_circle = p_part->AddCircle(100.0);
-        p_part->Extrude(p_circle, 100.0);
+        boost::shared_ptr<Polygon> p_circle = p_part->AddCircle(100.0* 1.e-6*unit::metres, DimensionalChastePoint<3>(0.0, 0.0));
+        p_part->Extrude(p_circle, 100.0*1.e-6*unit::metres);
         p_part->AddVesselNetwork(p_network);
 
         boost::shared_ptr<DiscreteContinuumMesh<3> > p_mesh = DiscreteContinuumMesh<3>::Create();
@@ -131,15 +132,16 @@ public:
 
     void TestMeshCylinderWithVesselSurface()
     {
-        double vessel_length = 100.0;
-        VasculatureGenerator<3> generator;
-        boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length);
+        units::quantity<unit::length> vessel_length = 100.0* 1.e-6 * unit::metres;
+        VesselNetworkGenerator<3> generator;
+        boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length,
+                                                                                        DimensionalChastePoint<3>(0.0, 0.0));
         p_network->GetVessels()[0]->GetStartNode()->SetRadius(5.0 * 1.e-6 * unit::metres);
         p_network->GetVessels()[0]->GetEndNode()->SetRadius(5.0 * 1.e-6 * unit::metres);
 
         boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
-        boost::shared_ptr<Polygon> p_circle = p_part->AddCircle(100.0);
-        p_part->Extrude(p_circle, 100.0);
+        boost::shared_ptr<Polygon> p_circle = p_part->AddCircle(100.0* 1.e-6*unit::metres, DimensionalChastePoint<3>(0.0, 0.0));
+        p_part->Extrude(p_circle, 100.0*1.e-6*unit::metres);
         p_part->AddVesselNetwork(p_network, true);
 
         boost::shared_ptr<DiscreteContinuumMesh<3> > p_mesh = DiscreteContinuumMesh<3>::Create();
@@ -154,17 +156,15 @@ public:
     // Not Supported With Tetgen <1.5
     void DontTestMeshCubeWithVesselLine()
     {
-        double vessel_length = 100.0;
-        VasculatureGenerator<3> generator;
-        c_vector<double,3> centre = zero_vector<double>(3);
-        centre[0] = vessel_length/2.0;
-        centre[1] = vessel_length/2.0;
+        units::quantity<unit::length> vessel_length = 100.0* 1.e-6 * unit::metres;
+        VesselNetworkGenerator<3> generator;
+        DimensionalChastePoint<3> centre(vessel_length/(2.0* 1.e-6 * unit::metres), vessel_length/(2.0* 1.e-6 * unit::metres));
         boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre);
         p_network->GetVessels()[0]->GetStartNode()->SetRadius(5.0 * 1.e-6 * unit::metres);
         p_network->GetVessels()[0]->GetEndNode()->SetRadius(5.0 * 1.e-6 * unit::metres);
 
         boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
-        p_part->AddCuboid(vessel_length, vessel_length, vessel_length);
+        p_part->AddCuboid(vessel_length, vessel_length, vessel_length, DimensionalChastePoint<3>(0.0, 0.0));
         p_part->AddVesselNetwork(p_network);
 
         boost::shared_ptr<DiscreteContinuumMesh<3> > p_mesh = DiscreteContinuumMesh<3>::Create();
@@ -177,17 +177,17 @@ public:
 
     void TestMeshCubeWithVesselSurface()
     {
-        double vessel_length = 100.0;
-        VasculatureGenerator<3> generator;
-        c_vector<double,3> centre = zero_vector<double>(3);
-        centre[0] = vessel_length/2.0;
-        centre[1] = vessel_length/2.0;
-        boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre);
+        units::quantity<unit::length> vessel_length = 100.0* 1.e-6 * unit::metres;
+        VesselNetworkGenerator<3> generator;
+        DimensionalChastePoint<3> centre(vessel_length/(2.0* 1.e-6 * unit::metres), vessel_length/(2.0* 1.e-6 * unit::metres));
+        boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length,
+                                                                                        DimensionalChastePoint<3>(0.0, 0.0));
+
         p_network->GetVessels()[0]->GetStartNode()->SetRadius(10.0 * 1.e-6 * unit::metres);
         p_network->GetVessels()[0]->GetEndNode()->SetRadius(10.0 * 1.e-6 * unit::metres);
 
         boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
-        p_part->AddCuboid(2.0 * vessel_length, 2.0 * vessel_length, vessel_length);
+        p_part->AddCuboid(2.0 * vessel_length, 2.0 * vessel_length, vessel_length, DimensionalChastePoint<3>(0.0, 0.0));
         p_part->AddVesselNetwork(p_network, true);
 
         boost::shared_ptr<DiscreteContinuumMesh<3> > p_mesh = DiscreteContinuumMesh<3>::Create();
@@ -200,20 +200,18 @@ public:
 
     void TestMeshCubeWithVesselSurfaceInternal()
     {
-        double vessel_length = 100.0;
-        VasculatureGenerator<3> generator;
-        c_vector<double,3> centre = zero_vector<double>(3);
-        centre[0] = vessel_length/2.0;
-        centre[1] = vessel_length/2.0;
+        units::quantity<unit::length> vessel_length = 100.0* 1.e-6 * unit::metres;
+        VesselNetworkGenerator<3> generator;
+        DimensionalChastePoint<3> centre(vessel_length/(2.0* 1.e-6 * unit::metres), vessel_length/(2.0* 1.e-6 * unit::metres));
         boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre);
         p_network->GetVessels()[0]->GetStartNode()->SetRadius(10.0 * 1.e-6 * unit::metres);
         p_network->GetVessels()[0]->GetEndNode()->SetRadius(10.0 * 1.e-6 * unit::metres);
 
         c_vector<double,3> translate = zero_vector<double>(3);
-        translate[2] = -vessel_length/2.0;
+        translate[2] = -vessel_length/(2.0* 1.e-6 * unit::metres);
 
         boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
-        p_part->AddCuboid(vessel_length, vessel_length, 2.0*vessel_length);
+        p_part->AddCuboid(vessel_length, vessel_length, 2.0*vessel_length, DimensionalChastePoint<3>(0.0, 0.0));
         p_part->Translate(translate);
         p_part->AddVesselNetwork(p_network, true);
 
@@ -227,7 +225,7 @@ public:
 
     void TestParrallelVesselSurfaceCube()
     {
-        double vessel_length = 100;
+        units::quantity<unit::length> vessel_length = 100.0* 1.e-6 * unit::metres;
         double radius = 10.0;
         double spacing = 3.0 * radius;
         unsigned num_vessels_per_row = 5;
@@ -235,7 +233,7 @@ public:
         double domain_width = num_vessels_per_row * (spacing + 2.0* radius);
         double domain_height = num_vessels_per_row * (spacing + 2.0* radius);
         boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
-        p_part->AddCuboid(domain_width, domain_height, vessel_length);
+        p_part->AddCuboid(domain_width* 1.e-6 * unit::metres, domain_height* 1.e-6 * unit::metres, vessel_length, DimensionalChastePoint<3>(0.0, 0.0));
         p_part->AddVesselNetwork(SetUpNetwork(), true);
 
         boost::shared_ptr<DiscreteContinuumMesh<3> > p_mesh = DiscreteContinuumMesh<3>::Create();

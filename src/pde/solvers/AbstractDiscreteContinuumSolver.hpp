@@ -155,7 +155,7 @@ public:
      * Return the value of the field at the requested points
      * @return the value of the field ordered according to input point order
      */
-    virtual std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints) = 0;
+    virtual std::vector<double> GetSolutionAtPoints(std::vector<DimensionalChastePoint<DIM> > samplePoints) = 0;
 
     /**
      * Return the value of the field at all points on the supplied grid

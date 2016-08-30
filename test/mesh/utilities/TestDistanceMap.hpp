@@ -42,7 +42,7 @@
 #include "Part.hpp"
 #include "DistanceMap.hpp"
 #include "VesselNetwork.hpp"
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkGenerator.hpp"
 #include "SmartPointers.hpp"
 #include "OutputFileHandler.hpp"
 #include "RegularGrid.hpp"
@@ -55,15 +55,17 @@ public:
     void Test3dBifurcationNetwork()
     {
         // Set up the vessel network
-        double vessel_length = 100;
-        VasculatureGenerator<3> generator;
-        c_vector<double,3> start_position = zero_vector<double>(3);
-        start_position[2] = vessel_length;
-        boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateBifurcationUnit(vessel_length, start_position);
+        units::quantity<unit::length> vessel_length = 100 * 1.e-6 * unit::metres;
+        VesselNetworkGenerator<3> generator;
+        boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateBifurcationUnit(vessel_length,
+                                                                                           DimensionalChastePoint<3>(0.0, vessel_length/(1.e-6*unit::metres), 0.0));
 
         // Set up the tissue domain
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
-        p_domain->AddCuboid(4.0 * vessel_length, 2.0 * vessel_length, 2.0 * vessel_length);
+        p_domain->AddCuboid(4.0 * vessel_length,
+                            2.0 * vessel_length,
+                            2.0 * vessel_length,
+                            DimensionalChastePoint<3>(0.0, 0.0, 0.0));
         boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
         p_grid->GenerateFromPart(p_domain, 20.0e-6 * unit::metres);
 

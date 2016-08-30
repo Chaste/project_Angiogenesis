@@ -212,7 +212,7 @@ void AngiogenesisSolver<DIM>::UpdateNodalPositions(bool sprouting)
                 bool do_move = true;
                 if (mpBoundingDomain)
                 {
-                    if (!mpBoundingDomain->IsPointInPart(tips[idx]->rGetLocation() + movement_vectors[idx]))
+                    if (!mpBoundingDomain->IsPointInPart(DimensionalChastePoint<DIM>(tips[idx]->rGetLocation().rGetLocation() + movement_vectors[idx])))
                     {
                         do_move = false;
                     }
@@ -223,14 +223,14 @@ void AngiogenesisSolver<DIM>::UpdateNodalPositions(bool sprouting)
                     if (sprouting)
                     {
                         mpNetwork->FormSprout(tips[idx]->rGetLocation(),
-                                              tips[idx]->rGetLocation() + movement_vectors[idx]);
+                                              DimensionalChastePoint<DIM>(tips[idx]->rGetLocation().rGetLocation() + movement_vectors[idx]));
                         tips[idx]->SetIsMigrating(false);
                         mpNetwork->UpdateAll();
                     }
                     else
                     {
                         boost::shared_ptr<VesselNode<DIM> > p_new_node = VesselNode<DIM>::Create(tips[idx]);
-                        p_new_node->SetLocation(tips[idx]->rGetLocation() + movement_vectors[idx]);
+                        p_new_node->SetLocation(DimensionalChastePoint<DIM>(tips[idx]->rGetLocation().rGetLocation() + movement_vectors[idx]));
                         mpNetwork->ExtendVessel(tips[idx]->GetSegment(0)->GetVessel(), tips[idx], p_new_node);
                         tips[idx]->SetIsMigrating(false);
                         p_new_node->SetIsMigrating(true);
@@ -307,10 +307,10 @@ void AngiogenesisSolver<DIM>::DoAnastamosis()
                         && nodes[idx]->GetSegment(0)->GetLength() > segment_pair.second)
                 {
                     // If there is a non-zero anastamosis radius move the tip onto the segment
-                    c_vector<double, DIM> original_location = nodes[idx]->rGetLocation();
+                    DimensionalChastePoint<DIM> original_location = nodes[idx]->rGetLocation();
                     if (mNodeAnastamosisRadius > 0.0 * unit::metres)
                     {
-                        c_vector<double, DIM> divide_location = segment_pair.first->GetPointProjection(
+                        DimensionalChastePoint<DIM> divide_location = segment_pair.first->GetPointProjection(
                                 original_location, true);
                         nodes[idx]->SetLocation(divide_location);
                     }

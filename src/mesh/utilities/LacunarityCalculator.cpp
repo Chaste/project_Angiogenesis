@@ -111,8 +111,8 @@ void LacunarityCalculator<DIM>::Solve()
                     double vessel_length = 0.0;
                     for (unsigned seg_index = 0; seg_index < segments.size(); seg_index++)
                     {
-                        vessel_length += LengthOfLineInBox<DIM>(segments[seg_index]->GetNode(0)->rGetLocation(),
-                                                                segments[seg_index]->GetNode(1)->rGetLocation(),
+                        vessel_length += LengthOfLineInBox<DIM>(segments[seg_index]->GetNode(0)->rGetLocation().rGetLocation(),
+                                                                segments[seg_index]->GetNode(1)->rGetLocation().rGetLocation(),
                                                                 box_location, box_size);
                     }
                     q1 += vessel_length;

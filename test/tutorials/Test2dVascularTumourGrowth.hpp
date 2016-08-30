@@ -69,7 +69,7 @@
 #include "PottsMesh.hpp"
 #include "OnLatticeSimulation.hpp"
 #include "ApoptoticCellKiller.hpp"
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkGenerator.hpp"
 #include "VesselNetwork.hpp"
 #include "CaBasedCellPopulation.hpp"
 #include "AngiogenesisSolver.hpp"
@@ -178,8 +178,10 @@ class Test2dVascularTumourGrowth : public AbstractCellBasedWithTimingsTestSuite
 
     boost::shared_ptr<VesselNetwork<2> > GetHexagonalNetwork(double domain_x, double domain_y)
     {
-        VasculatureGenerator<2> network_generator;
-        boost::shared_ptr<VesselNetwork<2> > p_network = network_generator.GenerateHexagonalNetwork(domain_x, domain_y, 7);
+        VesselNetworkGenerator<2> network_generator;
+        boost::shared_ptr<VesselNetwork<2> > p_network = network_generator.GenerateHexagonalNetwork(domain_x*1.e-6*unit::metres,
+                                                                                                    domain_y*1.e-6*unit::metres,
+                                                                                                    7.0*1.e-6*unit::metres);
 
         std::vector<boost::shared_ptr<VesselNode<2> > > nodes;
         nodes.push_back(VesselNode<2>::Create(0, 0));

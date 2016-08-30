@@ -137,13 +137,12 @@ public:
 
         // Set up points
         RandomNumberGenerator::Instance()->Reseed(1000);
-        std::vector<c_vector<double, 3> > points(10000);
+        std::vector<DimensionalChastePoint<3> > points(10000);
         for (unsigned idx = 0; idx < 10000; idx++)
         {
-            c_vector<double, 3> location;
-            location[0] = RandomNumberGenerator::Instance()->ranf() * 100.0;
-            location[1] = RandomNumberGenerator::Instance()->ranf() * 100.0;
-            location[2] = RandomNumberGenerator::Instance()->ranf() * 100.0;
+            DimensionalChastePoint<3> location(RandomNumberGenerator::Instance()->ranf() * 100.0,
+                                               RandomNumberGenerator::Instance()->ranf() * 100.0,
+                                               RandomNumberGenerator::Instance()->ranf() * 100.0);
             points[idx] = location;
         }
 
@@ -222,13 +221,12 @@ public:
         }
 
         // Set up some sample points
-        std::vector<c_vector<double, 3> > points(100);
+        std::vector<DimensionalChastePoint<3> > points(100);
         for (unsigned idx = 0; idx < 100; idx++)
         {
-            c_vector<double, 3> location;
-            location[0] = RandomNumberGenerator::Instance()->ranf() * 30.0;
-            location[1] = RandomNumberGenerator::Instance()->ranf() * 30.0;
-            location[2] = RandomNumberGenerator::Instance()->ranf() * 30.0;
+            DimensionalChastePoint<3> location(RandomNumberGenerator::Instance()->ranf() * 30.0,
+                                               RandomNumberGenerator::Instance()->ranf() * 30.0,
+                                               RandomNumberGenerator::Instance()->ranf() * 30.0);
             points[idx] = location;
         }
 
@@ -280,13 +278,13 @@ public:
         }
 
         // Set up some sample points
-        std::vector<c_vector<double, 3> > points(100);
+        // Set up some sample points
+        std::vector<DimensionalChastePoint<3> > points(100);
         for (unsigned idx = 0; idx < 100; idx++)
         {
-            c_vector<double, 3> location;
-            location[0] = RandomNumberGenerator::Instance()->ranf() * 30.0;
-            location[1] = RandomNumberGenerator::Instance()->ranf() * 30.0;
-            location[2] = RandomNumberGenerator::Instance()->ranf() * 30.0;
+            DimensionalChastePoint<3> location(RandomNumberGenerator::Instance()->ranf() * 30.0,
+                                               RandomNumberGenerator::Instance()->ranf() * 30.0,
+                                               RandomNumberGenerator::Instance()->ranf() * 30.0);
             points[idx] = location;
         }
 

@@ -14,7 +14,7 @@
 #include "FileFinder.hpp"
 #include "OutputFileHandler.hpp"
 #include "SmartPointers.hpp"
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkGenerator.hpp"
 #include "VesselNetwork.hpp"
 #include "CaBasedCellPopulation.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
@@ -53,12 +53,9 @@ public:
         PottsMesh<3>* p_mesh = generator.GetMesh();
 
         // Create the vessel network: single vessel in middle of domain
-        c_vector<double, 3> start_position;
-        start_position[0] = 10;
-        start_position[1] = 10;
-        start_position[2] = 0;
-        VasculatureGenerator<3> network_generator;
-        boost::shared_ptr<VesselNetwork<3> > p_network = network_generator.GenerateSingleVessel(20, start_position);
+        VesselNetworkGenerator<3> network_generator;
+        boost::shared_ptr<VesselNetwork<3> > p_network = network_generator.GenerateSingleVessel(20*1.e-6*unit::metres,
+                                                                                                DimensionalChastePoint<3>(10.0, 20.0, 0.0));
 
         // Write the initial network to file
         std::string output_directory = "TestVesselNetworkCellPopulationInteractor";

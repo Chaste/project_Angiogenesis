@@ -122,9 +122,9 @@ std::vector<double> DiscreteSource<DIM>::GetVesselRegularGridValues()
                     point_volume *= spacing;
                 }
 
-                double length_in_box = LengthOfLineInBox<DIM>(point_segment_map[idx][jdx]->GetNode(0)->rGetLocation(),
-                                                                             point_segment_map[idx][jdx]->GetNode(1)->rGetLocation(),
-                                                                             mpRegularGrid->GetLocationOf1dIndex(idx), spacing);
+                double length_in_box = LengthOfLineInBox<DIM>(point_segment_map[idx][jdx]->GetNode(0)->rGetLocation().rGetLocation(),
+                                                                             point_segment_map[idx][jdx]->GetNode(1)->rGetLocation().rGetLocation(),
+                                                                             mpRegularGrid->GetLocationOf1dIndex(idx).rGetLocation(), spacing);
                 values[idx] += mValue * length_in_box/ point_volume;
             }
         }
@@ -210,7 +210,7 @@ void DiscreteSource<DIM>::SetLabelName(const std::string& label)
 }
 
 template<unsigned DIM>
-void DiscreteSource<DIM>::SetPoints(std::vector<c_vector<double, DIM> > points)
+void DiscreteSource<DIM>::SetPoints(std::vector<DimensionalChastePoint<DIM> > points)
 {
     mPoints = points;
 }

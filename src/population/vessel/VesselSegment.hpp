@@ -44,6 +44,7 @@
 #include "ChastePoint.hpp"
 #include "UnitCollection.hpp"
 #include "AbstractVesselNetworkComponent.hpp"
+#include "DimensionalChastePoint.hpp"
 
 /**
  *  Forward declaration to allow vessels to manage adding and removing themselves from segments. and segment management by vessels.
@@ -151,7 +152,7 @@ public:
      * @param location the point the get the distance from
      * @return the distance to the segment
      */
-    units::quantity<unit::length> GetDistance(const c_vector<double, DIM>& location) const;
+    units::quantity<unit::length> GetDistance(const DimensionalChastePoint<DIM>& location) const;
 
     /**
      * Return the flow properties of the component
@@ -172,7 +173,7 @@ public:
      *
      * @return a point midway along the segment
      */
-    c_vector<double, DIM> GetMidPoint() const;
+    DimensionalChastePoint<DIM> GetMidPoint() const;
 
     /**
      * Return a pointer to the node specified by the index
@@ -203,7 +204,7 @@ public:
      * @param location the location to be projected
      * @return the location of the projected point
      */
-    c_vector<double, DIM> GetPointProjection(const c_vector<double, DIM>& location, bool projectToEnds = false) const;
+    DimensionalChastePoint<DIM> GetPointProjection(const DimensionalChastePoint<DIM>& location, bool projectToEnds = false) const;
 
     /**
      * Return a unit vector pointing along the segment. The orientation along the segment is from node0 to node 1.

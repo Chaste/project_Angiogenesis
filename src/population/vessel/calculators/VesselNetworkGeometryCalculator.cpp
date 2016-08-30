@@ -147,7 +147,7 @@ units::quantity<unit::length>  VesselNetworkGeometryCalculator<DIM>::GetAverageI
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = mpVesselNetwork->GetVesselSegments();
 
     // store segment midpoints
-    std::vector<c_vector<double, DIM> > midpoints(segments.size());
+    std::vector<DimensionalChastePoint<DIM> > midpoints(segments.size());
     for(unsigned idx=0; idx<segments.size(); idx++)
     {
         midpoints[idx] = segments[idx]->GetMidPoint();
@@ -162,7 +162,7 @@ units::quantity<unit::length>  VesselNetworkGeometryCalculator<DIM>::GetAverageI
         {
             if(segments[idx] != segments[jdx] && segments[idx]->GetVessel() != segments[jdx]->GetVessel())
             {
-                double dist = norm_2(midpoints[idx] - midpoints[jdx]);
+                double dist = norm_2(midpoints[idx].rGetLocation() - midpoints[jdx].rGetLocation() );
                 if(dist < min_dist)
                 {
                     min_dist = dist;

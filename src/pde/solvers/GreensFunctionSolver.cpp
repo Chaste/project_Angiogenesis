@@ -251,8 +251,8 @@ void GreensFunctionSolver<DIM>::GenerateSubSegments()
             // Otherwise generate subsegment points along its length
             else
             {
-                c_vector<double, DIM> start_point = (*segment_iter)->GetNode(0)->rGetLocation();
-                c_vector<double, DIM> end_point = (*segment_iter)->GetNode(1)->rGetLocation();
+                c_vector<double, DIM> start_point = (*segment_iter)->GetNode(0)->rGetLocation().rGetLocation();
+                c_vector<double, DIM> end_point = (*segment_iter)->GetNode(1)->rGetLocation().rGetLocation();
 
                 double subsegment_length = segment_length / max_subsegment_length;
                 unsigned num_subsegments = std::floor(subsegment_length) + 1;

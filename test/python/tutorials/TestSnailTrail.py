@@ -38,7 +38,7 @@ class TestSnailTrail(unittest.TestCase):
         divisions = grid.GetExtents()[1] - 2 # divide the vessel to coincide with grid
         
             
-        network = chaste.population.vessel.VasculatureGenerator().GenerateSingleVessel(length, (2.0 * grid.GetSpacing(), 0.0, 0.0), divisions, 1)
+        network = chaste.population.vessel.VesselNetworkGenerator().GenerateSingleVessel(length, (2.0 * grid.GetSpacing(), 0.0, 0.0), divisions, 1)
         network.write(file_handler.GetOutputDirectoryFullPath() + "/network.vtp")
         
         # Set up the sprouting and migration rules for angiogenesis

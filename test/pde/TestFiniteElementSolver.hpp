@@ -46,7 +46,7 @@
 #include "Vertex.hpp"
 #include "DiscreteContinuumLinearEllipticPde.hpp"
 #include "VesselNetwork.hpp"
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkGenerator.hpp"
 #include "SmartPointers.hpp"
 #include "DiscreteContinuumBoundaryCondition.hpp"
 #include "DiscreteContinuumMesh.hpp"
@@ -60,16 +60,15 @@ public:
     void DontTest3dKroghCylinderNetwork() throw(Exception)
     {
         // Set up the vessel network
-        double vessel_length = 100;
-        VasculatureGenerator<3> generator;
-        c_vector<double,3> centre = zero_vector<double>(3);
-        centre[0] = vessel_length/2.0;
-        centre[1] = vessel_length/2.0;
+        units::quantity<unit::length> micron_length_scale = 1.e-6*unit::metres;
+        units::quantity<unit::length> vessel_length = 100.0 * micron_length_scale;
+        VesselNetworkGenerator<3> generator;
+        DimensionalChastePoint<3> centre(vessel_length/(2.0*micron_length_scale), vessel_length/(2.0*micron_length_scale), 0.0, micron_length_scale);
         boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre);
 
         // Set up the mesh
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
-        p_domain->AddCuboid(vessel_length, vessel_length, vessel_length);
+        p_domain->AddCuboid(vessel_length, vessel_length, vessel_length, DimensionalChastePoint<3>(0.0, 0.0, 0.0));
         p_domain->AddVesselNetwork(p_network);
         boost::shared_ptr<DiscreteContinuumMesh<3, 3> > p_mesh = DiscreteContinuumMesh<3, 3>::Create();
         p_mesh->SetDomain(p_domain);
@@ -102,16 +101,15 @@ public:
     void Test3dKroghCylinderNetworkSurface() throw(Exception)
     {
         // Set up the vessel network
-        double vessel_length = 100;
-        VasculatureGenerator<3> generator;
-        c_vector<double,3> centre = zero_vector<double>(3);
-        centre[0] = vessel_length/2.0;
-        centre[1] = vessel_length/2.0;
+        units::quantity<unit::length> micron_length_scale = 1.e-6*unit::metres;
+        units::quantity<unit::length> vessel_length = 100.0 * micron_length_scale;
+        VesselNetworkGenerator<3> generator;
+        DimensionalChastePoint<3> centre(vessel_length/(2.0*micron_length_scale), vessel_length/(2.0*micron_length_scale), 0.0, micron_length_scale);
         boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre);
 
         // Set up the mesh
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
-        p_domain->AddCuboid(vessel_length, vessel_length, vessel_length);
+        p_domain->AddCuboid(vessel_length, vessel_length, vessel_length, DimensionalChastePoint<3>(0.0, 0.0, 0.0));
         p_domain->AddVesselNetwork(p_network, true);
         boost::shared_ptr<DiscreteContinuumMesh<3, 3> > p_mesh = DiscreteContinuumMesh<3, 3>::Create();
         p_mesh->SetDomain(p_domain);

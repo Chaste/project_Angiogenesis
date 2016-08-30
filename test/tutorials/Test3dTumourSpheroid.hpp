@@ -184,7 +184,10 @@ public:
         double domain_y = 40.0;
         double domain_z = 6.0;
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
-        p_domain->AddCuboid(domain_x, domain_y, domain_z);
+        p_domain->AddCuboid(domain_x*1.e6*unit::metres,
+                            domain_y*1.e6*unit::metres,
+                            domain_z*1.e6*unit::metres,
+                            DimensionalChastePoint<3>(0.0, 0.0, 0.0));
 
         // Create a lattice for the cell population
         double spacing = 1.0;
@@ -202,7 +205,8 @@ public:
         origin[1] = 20.0;
         origin[2] = 3.0;
         boost::shared_ptr<Part<3> > p_sub_domain = Part<3>::Create();
-        boost::shared_ptr<Polygon> circle = p_sub_domain->AddCircle(radius, origin);
+        boost::shared_ptr<Polygon> circle = p_sub_domain->AddCircle(radius*1.e6*unit::metres,
+                                                                    DimensionalChastePoint<3>(20.0, 20.0, 3.0));
         std::vector<unsigned> location_indices;
         for (unsigned ind = 0; ind < p_mesh->GetNumNodes(); ind++)
         {

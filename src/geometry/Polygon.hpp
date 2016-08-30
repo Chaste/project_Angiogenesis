@@ -45,6 +45,7 @@
 #include "UblasVectorInclude.hpp"
 #include "SmartPointers.hpp"
 #include "Vertex.hpp"
+#include "UnitCollection.hpp"
 
 /** A collection of planar vertices, joined in the order they are added.
  */
@@ -98,7 +99,7 @@ public:
      * @param location the location to be tested
      * @return true if the location is in the polygon
      */
-    bool ContainsPoint(c_vector<double, 3> location);
+    bool ContainsPoint(const DimensionalChastePoint<3>& location);
 
     /* Return the bounding box of the polygon
      * @return the bounding box (xmin, xmax, ymin, ymax, zmin, zmax)
@@ -108,15 +109,15 @@ public:
     /* Return the centroid of the polygon
      * @return the centroid of the polygon
      */
-    c_vector<double, 3> GetCentroid();
+    DimensionalChastePoint<3> GetCentroid();
 
     /* Return the distance to the polygon's plane
      * @param location the location of the point to get the distance from
      * @return the distance to the plane containing the polygon
      */
-    double GetDistance(c_vector<double, 3> location);
+    units::quantity<unit::length> GetDistance(const DimensionalChastePoint<3>& location);
 
-    double GetDistanceToEdges(c_vector<double, 3> location);
+    units::quantity<unit::length> GetDistanceToEdges(const DimensionalChastePoint<3>& location);
 
     /* Return the polygon's plane
      * @return a vtk plane on the polygon's plane

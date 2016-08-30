@@ -33,89 +33,67 @@
 
  */
 
-#ifndef VesselNetworkGeometryCalculator_HPP_
-#define VesselNetworkGeometryCalculator_HPP_
+#ifndef ImageWriter_HPP_
+#define ImageWriter_HPP_
 
-#include <string>
-#include <vector>
-#include "VesselNetwork.hpp"
-#include "UnitCollection.hpp"
-#include "DimensionalChastePoint.hpp"
+#include "SmartPointers.hpp"
+#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning
+#include <vtkImageData.h>
+#include <vtkSmartPointer.h>
 
 /**
- * Calculate geometric properties of vessel networks
+ *  This class that manages output of vtk images (regular structured grids). It is also used for
+ *  outputting solutions on regular grids.
  */
-template<unsigned DIM>
-class VesselNetworkGeometryCalculator
+class ImageWriter
 {
 
 private:
 
     /**
-     * Container for the VesselNetwork.
+     * The image to be written
      */
-    boost::shared_ptr<VesselNetwork<DIM> > mpVesselNetwork;
+    vtkSmartPointer<vtkImageData> mpVtkImage;
+
+    /**
+     * The output path
+     */
+    std::string mFilepath;
 
 public:
 
     /**
      * Constructor
      */
-    VesselNetworkGeometryCalculator();
-
-    /**
-     * Construct a new instance of the class and return a shared pointer to it.
-     *
-     * @return a pointer to a class instance
-     */
-    static boost::shared_ptr<VesselNetworkGeometryCalculator<DIM> > Create();
+    ImageWriter();
 
     /**
      * Destructor
      */
-    ~VesselNetworkGeometryCalculator();
+    ~ImageWriter();
 
     /**
-     * Set the vessel network
-     * @param pVesselNetwork the vessel network
+     * Factory constructor method
+     * @return a shared pointer to a instance of this class
      */
-    void SetVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pVesselNetwork);
+    static boost::shared_ptr<ImageWriter> Create();
 
     /**
-     * Get the intercapillary distance using a 2d measure
+     * Set the filename for the writer
+     * @param rFilename the file name
      */
-    std::vector<units::quantity<unit::length> > GetInterCapillaryDistances();
+    void SetFilename(const std::string& rFilename);
 
     /**
-     * Return the total length of the network
+     * Set the image in vti format
+     * @param pImage
      */
-    units::quantity<unit::length> GetTotalLength();
+    void SetImage(vtkSmartPointer<vtkImageData> pImage);
 
     /**
-     * Return the total volume of the network
+     * Write the image in VTK format
      */
-    units::quantity<unit::volume> GetTotalVolume();
-
-    /**
-     * Return the total surface area of the network
-     */
-    units::quantity<unit::area> GetTotalSurfaceArea();
-
-    /**
-     * Return the average distance between segments
-     */
-    units::quantity<unit::length> GetAverageInterSegmentDistance();
-
-    /**
-     * Return the average vessel length
-     */
-    units::quantity<unit::length> GetAverageVesselLength();
-
-    /**
-     * Return a histogram of vessel length distributions
-     */
-    std::vector<unsigned> GetVesselLengthDistribution(double binSpacing = 10.0, unsigned numberOfBins = 10);
-
+    void Write();
 };
 
-#endif /* VesselNetworkGeometryCalculator_HPP_ */
+#endif /*ImageWriter_HPP_*/

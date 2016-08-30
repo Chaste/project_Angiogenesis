@@ -43,6 +43,7 @@
 #include "BoundaryConditionsContainer.hpp"
 #include "RegularGrid.hpp"
 #include "DiscreteContinuumMesh.hpp"
+#include "DimensionalChastePoint.hpp"
 
 /**
  * Helper struct for defining the type of boundary condition.
@@ -84,7 +85,7 @@ protected:
     /**
      * Point locations for POINT type conditions
      */
-    std::vector<c_vector<double, DIM> > mPoints;
+    std::vector<DimensionalChastePoint<DIM> > mPoints;
 
     /**
      * The type of boundary condition
@@ -156,7 +157,7 @@ public:
      * @param tolerance the tolerance for evaluating if a point is on a boundary
      * @return a bool specifying if the point is on a boundary and the value of the point on the boundary
      */
-    std::pair<bool, double> GetValue(c_vector<double,DIM> location, double tolerance);
+    std::pair<bool, double> GetValue(DimensionalChastePoint<DIM> location, double tolerance);
 
     /**
      * Update the boundary conditions container for use with the finite element solver
@@ -203,7 +204,7 @@ public:
      * Set the points for POINT type boundary conditions
      * @param points the point locations for POINT type boundary conditions
      */
-    void SetPoints(std::vector<c_vector<double, DIM> > points);
+    void SetPoints(std::vector<DimensionalChastePoint<DIM> > points);
 
     /**
      * Set the regular grid

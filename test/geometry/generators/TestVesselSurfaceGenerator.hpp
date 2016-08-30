@@ -43,7 +43,7 @@
 #include <string>
 #include "FakePetscSetup.hpp"
 #include "VesselNetwork.hpp"
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkGenerator.hpp"
 #include "SmartPointers.hpp"
 #include "VesselNode.hpp"
 #include "VesselSegment.hpp"
@@ -58,9 +58,9 @@ public:
 
     void TestSingleSegmentVessel()
     {
-        double vessel_length = 100.0;
-        VasculatureGenerator<3> generator;
-        boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length);
+        units::quantity<unit::length> vessel_length = 100.0 * 1.e-6 * unit::metres;
+        VesselNetworkGenerator<3> generator;
+        boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, DimensionalChastePoint<3>(0.0, 0.0, 0.0));
         p_network->GetVessels()[0]->GetStartNode()->SetRadius(10.0e-6 * unit::metres);
         p_network->GetVessels()[0]->GetEndNode()->SetRadius(10.0e-6 * unit::metres);
 

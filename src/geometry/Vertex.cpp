@@ -34,30 +34,29 @@
  */
 
 #include "UblasIncludes.hpp"
-
 #include "Vertex.hpp"
 
-Vertex::Vertex(double x, double y, double z) :
-        ChastePoint<3>(x, y, z),
+Vertex::Vertex(double x, double y, double z, units::quantity<unit::length> referenceLength) :
+        DimensionalChastePoint<3>(x, y, z, referenceLength),
         mIndex(0)
 {
 }
 
-Vertex::Vertex(c_vector<double, 3> coords) :
-        ChastePoint<3>(coords),
+Vertex::Vertex(c_vector<double, 3> coords, units::quantity<unit::length> referenceLength) :
+        DimensionalChastePoint<3>(coords, referenceLength),
         mIndex(0)
 {
 }
 
-boost::shared_ptr<Vertex> Vertex::Create(double x, double y, double z)
+boost::shared_ptr<Vertex> Vertex::Create(double x, double y, double z, units::quantity<unit::length> referenceLength)
 {
-    MAKE_PTR_ARGS(Vertex, pSelf, (x, y, z));
+    MAKE_PTR_ARGS(Vertex, pSelf, (x, y, z, referenceLength));
     return pSelf;
 }
 
-boost::shared_ptr<Vertex> Vertex::Create(c_vector<double, 3> coords)
+boost::shared_ptr<Vertex> Vertex::Create(c_vector<double, 3> coords, units::quantity<unit::length> referenceLength)
 {
-    MAKE_PTR_ARGS(Vertex, pSelf, (coords));
+    MAKE_PTR_ARGS(Vertex, pSelf, (coords, referenceLength));
     return pSelf;
 }
 

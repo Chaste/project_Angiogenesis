@@ -110,33 +110,9 @@ void VesselSegment<DIM>::CopyDataFromExistingSegment(const boost::shared_ptr<Ves
 }
 
 template<unsigned DIM>
-units::quantity<unit::length> VesselSegment<DIM>::GetDistance(const c_vector<double, DIM>& location) const
+units::quantity<unit::length> VesselSegment<DIM>::GetDistance(const DimensionalChastePoint<DIM>& location) const
 {
-    c_vector<double, DIM> start_location = mNodes.first->rGetLocation();
-    c_vector<double, DIM> segment_vector = mNodes.second->rGetLocation() - start_location;
-
-    double dp_segment_point = inner_prod(segment_vector, location - start_location);
-    // Point projection is outside segment, return node0 distance
-    if (dp_segment_point <= 0.0)
-    {
-        return mNodes.first->GetDistance(location);
-    }
-
-    double dp_segment_segment = inner_prod(segment_vector, segment_vector);
-    // Point projection is outside segment, return node1 distance
-    if (dp_segment_segment <= dp_segment_point)
-    {
-        return mNodes.second->GetDistance(location);
-    }
-
-    // Point projection is inside segment, get distance to point projection
-    double projection_ratio = dp_segment_point / dp_segment_segment;
-
-    if(mNodes.first->GetReferenceLengthScale() != mNodes.second->GetReferenceLengthScale())
-    {
-        EXCEPTION("Segment nodes need the same length scale for performing distance calculations.");
-    }
-    return norm_2(start_location + projection_ratio * segment_vector - location) * mNodes.first->GetReferenceLengthScale();
+    return DimensionalChastePoint<DIM>::GetDistance(mNodes.first->rGetLocation(), mNodes.second->rGetLocation(), location);
 }
 
 template<unsigned DIM>
@@ -148,12 +124,7 @@ boost::shared_ptr<SegmentFlowProperties<DIM> > VesselSegment<DIM>::GetFlowProper
 template<unsigned DIM>
 units::quantity<unit::length> VesselSegment<DIM>::GetLength() const
 {
-    if(mNodes.first->GetReferenceLengthScale() != mNodes.second->GetReferenceLengthScale())
-    {
-        EXCEPTION("Segment nodes need the same length scale for performing length calculation.");
-    }
-
-    return norm_2(mNodes.second->rGetLocation() - mNodes.first->rGetLocation())* mNodes.first->GetReferenceLengthScale();
+    return mNodes.second->GetDistance(mNodes.first->rGetLocation());
 }
 
 template<unsigned DIM>
@@ -167,9 +138,9 @@ std::map<std::string, double> VesselSegment<DIM>::GetOutputData()
 }
 
 template<unsigned DIM>
-c_vector<double, DIM> VesselSegment<DIM>::GetMidPoint() const
+DimensionalChastePoint<DIM> VesselSegment<DIM>::GetMidPoint() const
 {
-    return (mNodes.second->rGetLocation() + mNodes.first->rGetLocation()) / 2.0;
+    return mNodes.first->rGetLocation().GetMidPoint(mNodes.second->rGetLocation());
 }
 
 template<unsigned DIM>
@@ -213,48 +184,15 @@ std::pair<boost::shared_ptr<VesselNode<DIM> >, boost::shared_ptr<VesselNode<DIM>
 }
 
 template<unsigned DIM>
-c_vector<double, DIM> VesselSegment<DIM>::GetPointProjection(const c_vector<double, DIM>& location, bool projectToEnds) const
+DimensionalChastePoint<DIM> VesselSegment<DIM>::GetPointProjection(const  DimensionalChastePoint<DIM>& location, bool projectToEnds) const
 {
-    c_vector<double, DIM> start_location = GetNode(0)->rGetLocation();
-    c_vector<double, DIM> end_location = GetNode(1)->rGetLocation();
-
-    c_vector<double, DIM> segment_vector = end_location - start_location;
-    c_vector<double, DIM> point_vector = location - start_location;
-
-    double dp_segment_point = inner_prod(segment_vector, point_vector);
-    double dp_segment_segment = inner_prod(segment_vector, segment_vector);
-
-    if (dp_segment_point <= 0.0 || dp_segment_segment <= dp_segment_point)
-    {
-        if(!projectToEnds)
-        {
-            EXCEPTION("Projection of point is outside segment.");
-        }
-        else
-        {
-            double dist1 = norm_2(start_location - location);
-            double dist2 = norm_2(end_location - location);
-            if(dist1 <= dist2)
-            {
-                return start_location;
-            }
-            else
-            {
-                return end_location;
-            }
-        }
-    }
-
-    // Point projection is inside segment, get distance to point projection
-    double projection_ratio = dp_segment_point / dp_segment_segment;
-    c_vector<double, DIM> projected_point = start_location + projection_ratio * segment_vector;
-    return projected_point;
+    return DimensionalChastePoint<DIM>::GetPointProjection(mNodes.first->rGetLocation(), mNodes.second->rGetLocation(), location, projectToEnds);
 }
 
 template<unsigned DIM>
 c_vector<double, DIM> VesselSegment<DIM>::GetUnitTangent() const
 {
-    return (mNodes.second->rGetLocation() - mNodes.first->rGetLocation()) / (this->GetLength()/mNodes.first->GetReferenceLengthScale());
+    return mNodes.first->rGetLocation().GetUnitTangent(mNodes.second->rGetLocation());
 }
 
 template<unsigned DIM>

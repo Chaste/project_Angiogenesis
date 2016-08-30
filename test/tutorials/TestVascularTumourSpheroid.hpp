@@ -65,7 +65,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "FakePetscSetup.hpp"
 #include "FiniteDifferenceSolver.hpp"
 #include "DiscreteContinuumLinearEllipticPde.hpp"
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkGenerator.hpp"
 #include "SimpleOxygenBasedCellCycleModel.hpp"
 #include "DiscreteContinuumBoundaryCondition.hpp"
 #include "DiscreteSource.hpp"

@@ -38,25 +38,23 @@
 #include "VesselNode.hpp"
 
 template<unsigned DIM>
-VesselNode<DIM>::VesselNode(double v1, double v2, double v3) : AbstractVesselNetworkComponent<DIM>(),
-        mLocation(ChastePoint<DIM>(v1 ,v2, v3)),
+VesselNode<DIM>::VesselNode(double v1, double v2, double v3, units::quantity<unit::length> referenceLength) : AbstractVesselNetworkComponent<DIM>(),
+        mLocation(DimensionalChastePoint<DIM>(v1 ,v2, v3, referenceLength)),
         mSegments(std::vector<boost::weak_ptr<VesselSegment<DIM> > >()),
         mIsMigrating(false),
         mpFlowProperties(boost::shared_ptr<NodeFlowProperties<DIM> >(new NodeFlowProperties<DIM>())),
-        mPtrComparisonId(0),
-        mReferenceLength(1.e-6 * unit::metres)
+        mPtrComparisonId(0)
 {
     this->mpFlowProperties = boost::shared_ptr<NodeFlowProperties<DIM> >(new NodeFlowProperties<DIM>());
 }
 
 template<unsigned DIM>
-VesselNode<DIM>::VesselNode(c_vector<double, DIM> location) : AbstractVesselNetworkComponent<DIM>(),
-        mLocation(ChastePoint<DIM>(location)),
+VesselNode<DIM>::VesselNode(const DimensionalChastePoint<DIM>& location) : AbstractVesselNetworkComponent<DIM>(),
+        mLocation(location),
         mSegments(std::vector<boost::weak_ptr<VesselSegment<DIM> > >()),
         mIsMigrating(false),
         mpFlowProperties(boost::shared_ptr<NodeFlowProperties<DIM> >(new NodeFlowProperties<DIM>())),
-        mPtrComparisonId(0),
-        mReferenceLength(1.e-6 * unit::metres)
+        mPtrComparisonId(0)
 {
     this->mpFlowProperties = boost::shared_ptr<NodeFlowProperties<DIM> >(new NodeFlowProperties<DIM>());
 }
@@ -68,8 +66,7 @@ VesselNode<DIM>::VesselNode(const VesselNode<DIM>& rExistingNode) :
         mSegments(std::vector<boost::weak_ptr<VesselSegment<DIM> > >()),
         mIsMigrating(false),
         mpFlowProperties(boost::shared_ptr<NodeFlowProperties<DIM> >(new NodeFlowProperties<DIM>())),
-        mPtrComparisonId(0),
-        mReferenceLength(1.e-6 * unit::metres)
+        mPtrComparisonId(0)
 {
     SetFlowProperties(*(rExistingNode.GetFlowProperties()));
     mIsMigrating = rExistingNode.IsMigrating();
@@ -82,14 +79,14 @@ VesselNode<DIM>::~VesselNode()
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VesselNode<DIM> > VesselNode<DIM>::Create(double v1, double v2, double v3)
+boost::shared_ptr<VesselNode<DIM> > VesselNode<DIM>::Create(double v1, double v2, double v3, units::quantity<unit::length> referenceLength)
 {
-    MAKE_PTR_ARGS(VesselNode<DIM>, pSelf, (v1, v2, v3));
+    MAKE_PTR_ARGS(VesselNode<DIM>, pSelf, (v1, v2, v3, referenceLength));
     return pSelf;
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VesselNode<DIM> > VesselNode<DIM>::Create(const c_vector<double, DIM>& location)
+boost::shared_ptr<VesselNode<DIM> > VesselNode<DIM>::Create(const DimensionalChastePoint<DIM>& location)
 {
     MAKE_PTR_ARGS(VesselNode<DIM>, pSelf, (location));
     return pSelf;
@@ -135,9 +132,9 @@ unsigned VesselNode<DIM>::GetComparisonId()
 }
 
 template<unsigned DIM>
-units::quantity<unit::length> VesselNode<DIM>::GetDistance(const c_vector<double, DIM>& rLocation) const
+units::quantity<unit::length> VesselNode<DIM>::GetDistance(const DimensionalChastePoint<DIM>& rLocation) const
 {
-    return norm_2(rLocation - mLocation.rGetLocation()) * this->mReferenceLength;
+    return mLocation.GetDistance(rLocation, true);
 }
 
 template<unsigned DIM>
@@ -147,9 +144,9 @@ boost::shared_ptr<NodeFlowProperties<DIM> > VesselNode<DIM>::GetFlowProperties()
 }
 
 template<unsigned DIM>
-const c_vector<double, DIM>& VesselNode<DIM>::rGetLocation() const
+const DimensionalChastePoint<DIM>& VesselNode<DIM>::rGetLocation() const
 {
-    return mLocation.rGetLocation();
+    return mLocation;
 }
 
 template<unsigned DIM>
@@ -172,7 +169,7 @@ std::map<std::string, double> VesselNode<DIM>::GetOutputData()
 template<unsigned DIM>
 units::quantity<unit::length> VesselNode<DIM>::GetReferenceLengthScale() const
 {
-    return mReferenceLength;
+    return mLocation.GetReferenceLengthScale();
 }
 
 template<unsigned DIM>
@@ -209,18 +206,9 @@ bool VesselNode<DIM>::IsAttachedTo(const boost::shared_ptr<VesselSegment<DIM> > 
 }
 
 template<unsigned DIM>
-bool VesselNode<DIM>::IsCoincident(const c_vector<double, DIM>& rLocation) const
+bool VesselNode<DIM>::IsCoincident(const DimensionalChastePoint<DIM>& rLocation) const
 {
-    bool returned_value = true;
-    for (unsigned dim=0; dim<DIM; dim++)
-    {
-        if (rLocation[dim] != mLocation[dim])
-        {
-            returned_value = false;
-            break;
-        }
-    }
-    return returned_value;
+    return this->mLocation.IsCoincident(rLocation, true);
 }
 
 template<unsigned DIM>
@@ -256,15 +244,15 @@ void VesselNode<DIM>::SetFlowProperties(const NodeFlowProperties<DIM>& rFlowProp
 }
 
 template<unsigned DIM>
-void VesselNode<DIM>::SetLocation(const c_vector<double, DIM>& location)
+void VesselNode<DIM>::SetLocation(const DimensionalChastePoint<DIM>& location)
 {
-    mLocation = ChastePoint<DIM>(location);
+    this->mLocation = DimensionalChastePoint<DIM>(location);
 }
 
 template<unsigned DIM>
-void VesselNode<DIM>::SetLocation(double x, double y, double z)
+void VesselNode<DIM>::SetLocation(double x, double y, double z, units::quantity<unit::length> referenceLength)
 {
-    mLocation = ChastePoint<DIM>(x,y,z);
+    this->mLocation = DimensionalChastePoint<DIM>(x,y,z,referenceLength);
 }
 
 template<unsigned DIM>
@@ -274,10 +262,9 @@ void VesselNode<DIM>::SetIsMigrating(bool isMigrating)
 }
 
 template<unsigned DIM>
-void VesselNode<DIM>::SetReferenceLengthScale(units::quantity<unit::length> lenthScale)
+void VesselNode<DIM>::SetReferenceLengthScale(units::quantity<unit::length> lengthScale)
 {
-    mLocation = ChastePoint<DIM>(mLocation.rGetLocation() * (mReferenceLength/lenthScale));
-    mReferenceLength = lenthScale;
+    this->mLocation.SetReferenceLengthScale(lengthScale);
 }
 
 // Explicit instantiation

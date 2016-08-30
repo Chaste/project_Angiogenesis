@@ -110,7 +110,7 @@ std::vector<double> FiniteElementSolver<DIM>::GetSolutionAtGridPoints(boost::sha
 }
 
 template<unsigned DIM>
-std::vector<double> FiniteElementSolver<DIM>::GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints)
+std::vector<double> FiniteElementSolver<DIM>::GetSolutionAtPoints(std::vector<DimensionalChastePoint<DIM> > samplePoints)
 {
     if(!mFeVtkSolution)
     {

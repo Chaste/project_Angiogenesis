@@ -99,7 +99,7 @@ protected:
     /**
      * Locations for POINT type sources
      */
-    std::vector<c_vector<double, DIM> > mPoints;
+    std::vector<DimensionalChastePoint<DIM> > mPoints;
 
     /**
      * The type of source
@@ -209,7 +209,7 @@ public:
      * Set the points for POINT type sources
      * @param points the point locations for POINT type sources
      */
-    void SetPoints(std::vector<c_vector<double, DIM> > points);
+    void SetPoints(std::vector<DimensionalChastePoint<DIM> > points);
 
     /**
      * Set the regular grid

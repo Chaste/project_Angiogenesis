@@ -60,9 +60,9 @@ VesselSurfaceGenerator<DIM>::~VesselSurfaceGenerator()
 }
 
 template<unsigned DIM>
-std::vector<c_vector<double, DIM> > VesselSurfaceGenerator<DIM>::GetHoles()
+std::vector<DimensionalChastePoint<DIM> > VesselSurfaceGenerator<DIM>::GetHoles()
 {
-    std::vector<c_vector<double, DIM> > hole_locations;
+    std::vector<DimensionalChastePoint<DIM> > hole_locations;
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = mpVesselNetwork->GetVesselSegments();
     for (unsigned idx = 0; idx < segments.size(); idx++)
     {
@@ -112,7 +112,7 @@ std::vector<std::vector<boost::shared_ptr<Polygon> > > VesselSurfaceGenerator<DI
 
         if (p_start_node->GetNumberOfSegments() == 1)
         {
-            c_vector<double, DIM> node_location = p_start_node->rGetLocation();
+            c_vector<double, DIM> node_location = p_start_node->rGetLocation().rGetLocation();
             vtkSmartPointer<vtkPlane> p_plane = vtkSmartPointer<vtkPlane>::New();
             p_plane->SetOrigin(node_location[0], node_location[1], node_location[2]);
             p_plane->SetNormal(segment_tangent[0], segment_tangent[1], segment_tangent[2]);
@@ -132,7 +132,7 @@ std::vector<std::vector<boost::shared_ptr<Polygon> > > VesselSurfaceGenerator<DI
                     }
 
                     average_start_normal += VectorProduct(segment_tangent, other_segment_tangent);
-                    c_vector<double, DIM> node_location = p_start_node->rGetLocation();
+                    c_vector<double, DIM> node_location = p_start_node->rGetLocation().rGetLocation();
                     vtkSmartPointer<vtkPlane> p_plane = vtkSmartPointer<vtkPlane>::New();
                     p_plane->SetOrigin(node_location[0], node_location[1], node_location[2]);
 
@@ -146,7 +146,7 @@ std::vector<std::vector<boost::shared_ptr<Polygon> > > VesselSurfaceGenerator<DI
 
         if (p_end_node->GetNumberOfSegments() == 1)
         {
-            c_vector<double, DIM> node_location = p_end_node->rGetLocation();
+            c_vector<double, DIM> node_location = p_end_node->rGetLocation().rGetLocation();
             vtkSmartPointer<vtkPlane> p_plane = vtkSmartPointer<vtkPlane>::New();
             p_plane->SetOrigin(node_location[0], node_location[1], node_location[2]);
             p_plane->SetNormal(segment_tangent[0], segment_tangent[1], segment_tangent[2]);
@@ -166,7 +166,7 @@ std::vector<std::vector<boost::shared_ptr<Polygon> > > VesselSurfaceGenerator<DI
                     }
                     average_end_normal += VectorProduct(segment_tangent, other_segment_tangent);
 
-                    c_vector<double, DIM> node_location = p_end_node->rGetLocation();
+                    c_vector<double, DIM> node_location = p_end_node->rGetLocation().rGetLocation();
                     vtkSmartPointer<vtkPlane> p_plane = vtkSmartPointer<vtkPlane>::New();
                     p_plane->SetOrigin(node_location[0], node_location[1], node_location[2]);
 
@@ -179,8 +179,8 @@ std::vector<std::vector<boost::shared_ptr<Polygon> > > VesselSurfaceGenerator<DI
         }
 
         // Project the precursor points onto the first plane they hit
-        Translate(start_points, segments[idx]->GetMidPoint());
-        Translate(end_points, segments[idx]->GetMidPoint());
+        Translate(start_points, segments[idx]->GetMidPoint().rGetLocation());
+        Translate(end_points, segments[idx]->GetMidPoint().rGetLocation());
 
         std::vector<c_vector<double, DIM> > projected_start_points = start_points;
         std::vector<c_vector<double, DIM> > projected_end_points = end_points;

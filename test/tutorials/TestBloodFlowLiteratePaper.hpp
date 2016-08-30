@@ -58,7 +58,7 @@
 #include "VesselSegment.hpp"
 #include "Vessel.hpp"
 #include "VesselNetwork.hpp"
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkGenerator.hpp"
 /*
  * The flow solver, individual calculators and the structural adaptation solver
  */

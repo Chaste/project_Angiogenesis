@@ -87,7 +87,7 @@ void Facet::AddPolygon(boost::shared_ptr<Polygon> pPolygon)
     mPolygons.push_back(pPolygon);
     mVerticesUpToDate = false;
 }
-bool Facet::ContainsPoint(c_vector<double, 3> location)
+bool Facet::ContainsPoint(const DimensionalChastePoint<3>& location)
 {
     bool contains_point = false;
     for (unsigned idx = 0; idx < mPolygons.size(); idx++)
@@ -131,7 +131,7 @@ c_vector<double, 6> Facet::GetBoundingBox()
     return box;
 }
 
-c_vector<double, 3> Facet::GetCentroid()
+DimensionalChastePoint<3> Facet::GetCentroid()
 {
     double centroid[3];
     std::pair<vtkSmartPointer<vtkPoints>, vtkSmartPointer<vtkIdTypeArray> > vertex_data = GetVtkVertices();
@@ -141,7 +141,7 @@ c_vector<double, 3> Facet::GetCentroid()
     {
         return_centroid[idx] = centroid[idx];
     }
-    return return_centroid;
+    return DimensionalChastePoint<3>(return_centroid);
 }
 
 double Facet::GetData(const std::string& label)
@@ -150,10 +150,16 @@ double Facet::GetData(const std::string& label)
 }
 
 
-double Facet::GetDistance(c_vector<double, 3> location)
+double Facet::GetDistance(const DimensionalChastePoint<3>& location)
 {
+    double location_array[3];
+    for(unsigned idx=0; idx<3;idx++)
+    {
+        location_array[idx] = location[idx];
+    }
+
     vtkSmartPointer<vtkPlane> p_plane = GetPlane();
-    double distance = p_plane->DistanceToPlane(&location[0]);
+    double distance = p_plane->DistanceToPlane(&location_array[0]);
     return distance;
 }
 
@@ -180,7 +186,7 @@ c_vector<double, 3> Facet::GetNormal()
 vtkSmartPointer<vtkPlane> Facet::GetPlane()
 {
     vtkSmartPointer<vtkPlane> p_plane = vtkSmartPointer<vtkPlane>::New();
-    c_vector<double, 3> centroid = GetCentroid();
+    DimensionalChastePoint<3> centroid = GetCentroid();
     p_plane->SetOrigin(centroid[0], centroid[1], centroid[2]);
 
     c_vector<double, 3> normal = GetNormal();

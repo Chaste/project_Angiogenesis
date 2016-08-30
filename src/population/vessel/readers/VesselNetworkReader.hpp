@@ -58,15 +58,15 @@ class VesselNetworkReader
     std::string mRadiusLabel;
 
     /**
-     * The reference length scale for the vessel network, default in microns.
-     */
-    units::quantity<unit::length> mReferenceLength;
-
-    /**
      * Radius conversion factor. Multiply radii by this factor, useful if the contents of the
      * 'Radius' array in the vtk file is not in the form we want
      */
     double mRadiusConversionFactor;
+
+    /**
+     * The reference length scale for the vessel network, default in microns.
+     */
+    units::quantity<unit::length> mReferenceLength;
 
 public:
 
@@ -88,6 +88,13 @@ public:
     static boost::shared_ptr<VesselNetworkReader<DIM> > Create();
 
     /**
+     * Do the read and return the vessel network
+     *
+     * @return the vessel network
+     */
+    boost::shared_ptr<VesselNetwork<DIM> > Read();
+
+    /**
      * Set the name of the radius array
      *
      * @param rRadius the radius array name
@@ -102,12 +109,11 @@ public:
     void SetFileName(const std::string& rFileName);
 
     /**
-     * Do the read and return the vessel network
+     * Set the reference length scale
      *
-     * @return the vessel network
+     * @param rLengthScale the reference length scale
      */
-    boost::shared_ptr<VesselNetwork<DIM> > Read();
-
+    void SetReferenceLengthScale(units::quantity<unit::length> rReferenceLength);
 };
 
 #endif /* VESSELNETWORKREADER_HPP_ */

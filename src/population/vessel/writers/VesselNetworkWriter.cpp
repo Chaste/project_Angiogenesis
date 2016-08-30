@@ -53,7 +53,8 @@ VesselNetworkWriter<DIM>::VesselNetworkWriter() :
     mpVesselNetwork(),
     mpVtkVesselNetwork(vtkSmartPointer<vtkPolyData>::New()),
     mIsVtkNetworkUpToDate(false),
-    mFilename()
+    mFilename(),
+    mReferenceLength(1.e-6 * unit::metres)
 {
 
 }
@@ -79,11 +80,22 @@ void VesselNetworkWriter<DIM>::SetVesselNetwork(boost::shared_ptr<VesselNetwork<
 }
 
 template <unsigned DIM>
+void VesselNetworkWriter<DIM>::SetReferenceLengthScale(units::quantity<unit::length> rReferenceLength)
+{
+    mReferenceLength = rReferenceLength;
+}
+
+template <unsigned DIM>
 vtkSmartPointer<vtkPolyData> VesselNetworkWriter<DIM>::GetOutput()
 {
     if(!mpVesselNetwork)
     {
         EXCEPTION("A vessel network is required for the vtk writer.");
+    }
+
+    if(mReferenceLength == 0.0 * unit::metres)
+    {
+        EXCEPTION("A non zero reference length scale is required for the vtk writer.");
     }
 
     mpVtkVesselNetwork = vtkSmartPointer<vtkPolyData>::New();
@@ -125,13 +137,18 @@ vtkSmartPointer<vtkPolyData> VesselNetworkWriter<DIM>::GetOutput()
         for(unsigned idx=0; idx<nodes.size(); idx++)
         {
             nodes[idx]->SetId(idx);
+            double scale_factor = nodes[idx]->GetReferenceLengthScale()/mReferenceLength;
+
             if(DIM == 2)
             {
-                pPoints->InsertNextPoint(nodes[idx]->rGetLocation()[0], nodes[idx]->rGetLocation()[1], 0.0);
+                pPoints->InsertNextPoint(nodes[idx]->rGetLocation()[0]*scale_factor,
+                                         nodes[idx]->rGetLocation()[1]*scale_factor, 0.0);
             }
             else
             {
-                pPoints->InsertNextPoint(nodes[idx]->rGetLocation()[0], nodes[idx]->rGetLocation()[1], nodes[idx]->rGetLocation()[2]);
+                pPoints->InsertNextPoint(nodes[idx]->rGetLocation()[0]*scale_factor,
+                                         nodes[idx]->rGetLocation()[1]*scale_factor,
+                                         nodes[idx]->rGetLocation()[2]*scale_factor);
             }
 
             std::map<std::string, double> vtk_node_data = nodes[idx]->GetOutputData();

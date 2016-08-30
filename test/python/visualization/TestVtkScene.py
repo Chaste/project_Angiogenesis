@@ -18,7 +18,7 @@ class TestVtkScene(unittest.TestCase):
         scene.show(interactive=False)
         
     def test_vessel_network(self):
-        generator = chaste.population.vessel.VasculatureGenerator()
+        generator = chaste.population.vessel.VesselNetworkGenerator()
         network = generator.GenerateHexagonalUnit(100.0)
         
         # Visualize it using VTK

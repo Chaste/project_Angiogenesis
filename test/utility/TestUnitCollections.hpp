@@ -40,6 +40,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <boost/units/quantity.hpp>
 #include <boost/units/systems/si/time.hpp>
 #include <boost/units/base_units/metric/hour.hpp>
+#include <boost/units/base_units/metric/micron.hpp>
+#include <boost/units/systems/si/prefixes.hpp>
 #include <SmartPointers.hpp>
 #include "UnitCollection.hpp"
 #include "UblasVectorInclude.hpp"

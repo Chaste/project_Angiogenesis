@@ -44,6 +44,7 @@
 #include "Part.hpp"
 #include "UblasVectorInclude.hpp"
 #include "UnitCollection.hpp"
+#include "DimensionalChastePoint.hpp"
 
 /**
  *  Struct to define random vessel distribution properties
@@ -63,20 +64,25 @@ struct VesselDistribution
 
 
 template<unsigned DIM>
-class VasculatureGenerator
+class VesselNetworkGenerator
 {
+
+    /**
+     * The reference length scale for the vessel network, default in microns.
+     */
+    units::quantity<unit::length> mReferenceLength;
 
 public:
 
     /**
      * Constructor
      */
-    VasculatureGenerator();
+    VesselNetworkGenerator();
 
     /**
      * Destructor
      */
-    ~VasculatureGenerator();
+    ~VesselNetworkGenerator();
 
     /*
      * Create a vessel network with all vessels parallel. Vessels are aligned in the 'Z' direction in 3D
@@ -113,32 +119,32 @@ public:
     /*
      * Creates a hexagonal network corresponding to that of Alarcon et al. (2006)
      */
-    boost::shared_ptr<VesselNetwork<DIM> > GenerateHexagonalNetwork(double width, double height,
-                                                                        double vesselLength);
+    boost::shared_ptr<VesselNetwork<DIM> > GenerateHexagonalNetwork(units::quantity<unit::length> width,
+                                                                    units::quantity<unit::length> height,
+                                                                    units::quantity<unit::length> vesselLength);
     /*
      * Creates a hexagonal repeating unit
      */
-    boost::shared_ptr<VesselNetwork<DIM> > GenerateHexagonalUnit(double vesselLength = 100.0);
+    boost::shared_ptr<VesselNetwork<DIM> > GenerateHexagonalUnit(units::quantity<unit::length> vesselLength);
 
     /*
      * Creates a bifurcation repeating unit
      */
-    boost::shared_ptr<VesselNetwork<DIM> > GenerateBifurcationUnit(double vesselLength= 100.0,
-                                                                       c_vector<double, DIM> startPosition = zero_vector<double>(DIM));
+    boost::shared_ptr<VesselNetwork<DIM> > GenerateBifurcationUnit(units::quantity<unit::length> vesselLength,
+                                                                   DimensionalChastePoint<DIM> startPosition);
 
     /*
      * Creates a single vessel
      */
-    boost::shared_ptr<VesselNetwork<DIM> > GenerateSingleVessel(double vesselLength= 100.0,
-                                                                    c_vector<double, DIM> startPosition = zero_vector<double>(DIM),
-                                                                    unsigned divisions = 0,
-                                                                    unsigned axis = 2);
+    boost::shared_ptr<VesselNetwork<DIM> > GenerateSingleVessel(units::quantity<unit::length> vesselLength,
+                                                                DimensionalChastePoint<DIM> startPosition,
+                                                                    unsigned divisions = 0, unsigned axis = 2);
 
     /*
      * Creates an oval shaped network with one inlet and one outlet
      */
-    boost::shared_ptr<VesselNetwork<DIM> > GenerateOvalNetwork(double scale_factor = 200.0,
-                                                                     unsigned num_increments =40,
+    boost::shared_ptr<VesselNetwork<DIM> > GenerateOvalNetwork(units::quantity<unit::length> scaleFactor = 200.0,
+                                                                     unsigned num_increments = 40,
                                                                      double a_param = 0.5,
                                                                      double b_param = 1.0);
     /*
@@ -149,12 +155,21 @@ public:
     /*
      * Creates a vessel network based on a voronoi tesselation in the provided cube.
      */
-    boost::shared_ptr<VesselNetwork<DIM> > GenerateVoronoiNetwork(double cubeX = 100.0, double cubeY = 100.0, double cubeZ = 100.0, unsigned numPoints = 400);
+    boost::shared_ptr<VesselNetwork<DIM> > GenerateVoronoiNetwork(units::quantity<unit::length> cubeX = 100.0,
+                                                                  units::quantity<unit::length> cubeY = 100.0,
+                                                                  units::quantity<unit::length> cubeZ = 100.0, unsigned numPoints = 400);
 
     /*
      * Pattern Unit. Coincident nodes are automatically merged in this method.
      */
     void PatternUnitByTranslation(boost::shared_ptr<VesselNetwork<DIM> > pInputUnit, std::vector<unsigned> numberOfUnits);
+
+    /**
+     * Set the reference length scale
+     *
+     * @param rLengthScale the reference length scale
+     */
+    void SetReferenceLengthScale(units::quantity<unit::length> rReferenceLength);
 
 };
 

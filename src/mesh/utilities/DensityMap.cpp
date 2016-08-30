@@ -168,12 +168,12 @@ void DensityMap<DIM>::Solve()
                 for (unsigned k = 0; k < extents_x; k++) // X
                 {
                     unsigned grid_index = this->mpRegularGrid->Get1dGridIndex(k, j, i);
-                    c_vector<double, DIM> location = this->mpRegularGrid->GetLocation(k ,j, i);
+                    c_vector<double, DIM> location = this->mpRegularGrid->GetLocation(k ,j, i).rGetLocation();
 
                     for (unsigned idx = 0; idx <  segments.size(); idx++)
                     {
-                        vessel_solution[grid_index] += LengthOfLineInBox(segments[idx]->GetNode(0)->rGetLocation(),
-                                                                         segments[idx]->GetNode(1)->rGetLocation(),
+                        vessel_solution[grid_index] += LengthOfLineInBox(segments[idx]->GetNode(0)->rGetLocation().rGetLocation(),
+                                                                         segments[idx]->GetNode(1)->rGetLocation().rGetLocation(),
                                                                          location, spacing);
                     }
                     vessel_solution[grid_index] /= (std::pow(spacing,3));

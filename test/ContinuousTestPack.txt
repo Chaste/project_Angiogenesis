@@ -24,7 +24,7 @@ population/vessel/TestVesselSegment.hpp
 population/vessel/TestVessel.hpp
 population/vessel/TestVascularNetwork.hpp
 population/vessel/calculators/TestVesselNetworkGraphCalculator.hpp
-population/vessel/generators/TestVasculatureGenerator.hpp
+population/vessel/generators/TestVesselNetworkGenerator.hpp
 population/vessel/properties/TestSegmentFlowProperties.hpp
 population/vessel/readers/TestVesselNetworkReader.hpp
 simulation/flow/TestFlowSolver.hpp

@@ -290,7 +290,7 @@ void Vessel<DIM>::CopyDataFromExistingVessel(boost::shared_ptr<Vessel<DIM> > pTa
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VesselNode<DIM> > Vessel<DIM>::DivideSegment(const c_vector<double, DIM>& location, double distanceTolerance)
+boost::shared_ptr<VesselNode<DIM> > Vessel<DIM>::DivideSegment(const DimensionalChastePoint<DIM>& location, double distanceTolerance)
 {
     // Identify segment
     boost::shared_ptr<VesselSegment<DIM> > pVesselSegment;
@@ -448,10 +448,10 @@ std::map<std::string, double> Vessel<DIM>::GetOutputData()
 }
 
 template<unsigned DIM>
-units::quantity<unit::length> Vessel<DIM>::GetClosestEndNodeDistance(c_vector<double, DIM> location)
+units::quantity<unit::length> Vessel<DIM>::GetClosestEndNodeDistance(const DimensionalChastePoint<DIM>& rLocation)
 {
-    units::quantity<unit::length> distance_1 = this->GetStartNode()->GetDistance(location);
-    units::quantity<unit::length> distance_2 = this->GetEndNode()->GetDistance(location);
+    units::quantity<unit::length> distance_1 = this->GetStartNode()->GetDistance(rLocation);
+    units::quantity<unit::length> distance_2 = this->GetEndNode()->GetDistance(rLocation);
     if(distance_1 > distance_2)
     {
         return distance_2;
@@ -463,13 +463,13 @@ units::quantity<unit::length> Vessel<DIM>::GetClosestEndNodeDistance(c_vector<do
 }
 
 template<unsigned DIM>
-units::quantity<unit::length> Vessel<DIM>::GetDistance(const c_vector<double, DIM>& location) const
+units::quantity<unit::length> Vessel<DIM>::GetDistance(const DimensionalChastePoint<DIM>& rLocation) const
 {
     // Get the distance to the nearest segment in the vessel
     units::quantity<unit::length> nearest_distance = DBL_MAX * unit::metres;
     for(unsigned idx=0; idx<mSegments.size(); idx++)
     {
-        units::quantity<unit::length> seg_distance = mSegments[idx]->GetDistance(location);
+        units::quantity<unit::length> seg_distance = mSegments[idx]->GetDistance(rLocation);
         if(seg_distance < nearest_distance)
         {
             nearest_distance = seg_distance;

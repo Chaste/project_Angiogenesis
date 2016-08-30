@@ -41,7 +41,7 @@
 #include "FileFinder.hpp"
 #include "OutputFileHandler.hpp"
 #include "SmartPointers.hpp"
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkGenerator.hpp"
 #include "FlowSolver.hpp"
 #include "FakePetscSetup.hpp"
 #include "FileFinder.hpp"
@@ -425,12 +425,12 @@ public:
     void TestFlowThroughHexagonalNetwork() throw (Exception)
     {
         // Specify the network dimensions
-        double vessel_length = 80.0;
+        units::quantity<unit::length> vessel_length = 80.0*1.e-6*unit::metres;
 
         // Generate the network
-        VasculatureGenerator<2> vascular_network_generator;
+        VesselNetworkGenerator<2> vascular_network_generator;
         boost::shared_ptr<VesselNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(
-                1000, 1000, vessel_length);
+                1000*1.e-6*unit::metres, 1000*1.e-6*unit::metres, vessel_length);
 
         // Make some nodes
         std::vector<NodePtr2> nodes;

@@ -1071,46 +1071,46 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_vessel){
             ;
     }
 
-    bp::class_< VasculatureGenerator< 3 > >( "VasculatureGenerator3", bp::init< >() )    
+    bp::class_< VesselNetworkGenerator< 3 > >( "VesselNetworkGenerator3", bp::init< >() )    
         .def( 
             "Generate3dNetwork"
-            , (::boost::shared_ptr< VesselNetwork< 3 > > ( ::VasculatureGenerator<3>::* )( ::boost::shared_ptr< Part< 3 > >,::std::vector< double >,::VesselDistribution::Value,double,bool,::std::vector< boost::shared_ptr<Vertex> > ))( &::VasculatureGenerator< 3 >::Generate3dNetwork )
+            , (::boost::shared_ptr< VesselNetwork< 3 > > ( ::VesselNetworkGenerator<3>::* )( ::boost::shared_ptr< Part< 3 > >,::std::vector< double >,::VesselDistribution::Value,double,bool,::std::vector< boost::shared_ptr<Vertex> > ))( &::VesselNetworkGenerator< 3 >::Generate3dNetwork )
             , ( bp::arg("domain"), bp::arg("targetDensity"), bp::arg("distrbutionType"), bp::arg("exclusionDistance"), bp::arg("useBbox"), bp::arg("seeds") ) )    
         .def( 
             "GenerateBifurcationUnit"
-            , (::boost::shared_ptr< VesselNetwork< 3 > > ( ::VasculatureGenerator<3>::* )( double,::boost::numeric::ublas::c_vector< double, 3 > ))( &::VasculatureGenerator< 3 >::GenerateBifurcationUnit )
+            , (::boost::shared_ptr< VesselNetwork< 3 > > ( ::VesselNetworkGenerator<3>::* )( double,::boost::numeric::ublas::c_vector< double, 3 > ))( &::VesselNetworkGenerator< 3 >::GenerateBifurcationUnit )
             , ( bp::arg("vesselLength"), bp::arg("startPosition") ) )    
         .def( 
             "GenerateFromPart"
-            , (::boost::shared_ptr< VesselNetwork< 3 > > ( ::VasculatureGenerator<3>::* )( ::boost::shared_ptr< Part< 3 > > ))( &::VasculatureGenerator< 3 >::GenerateFromPart )
+            , (::boost::shared_ptr< VesselNetwork< 3 > > ( ::VesselNetworkGenerator<3>::* )( ::boost::shared_ptr< Part< 3 > > ))( &::VesselNetworkGenerator< 3 >::GenerateFromPart )
             , ( bp::arg("part") ) )    
         .def( 
             "GenerateHexagonalNetwork"
-            , (::boost::shared_ptr< VesselNetwork< 3 > > ( ::VasculatureGenerator<3>::* )( double,double,double ))( &::VasculatureGenerator< 3 >::GenerateHexagonalNetwork )
+            , (::boost::shared_ptr< VesselNetwork< 3 > > ( ::VesselNetworkGenerator<3>::* )( double,double,double ))( &::VesselNetworkGenerator< 3 >::GenerateHexagonalNetwork )
             , ( bp::arg("width"), bp::arg("height"), bp::arg("vesselLength") ) )    
         .def( 
             "GenerateHexagonalUnit"
-            , (::boost::shared_ptr< VesselNetwork< 3 > > ( ::VasculatureGenerator<3>::* )( double ))( &::VasculatureGenerator< 3 >::GenerateHexagonalUnit )
+            , (::boost::shared_ptr< VesselNetwork< 3 > > ( ::VesselNetworkGenerator<3>::* )( double ))( &::VesselNetworkGenerator< 3 >::GenerateHexagonalUnit )
             , ( bp::arg("vesselLength") ) )    
         .def( 
             "GenerateOvalNetwork"
-            , (::boost::shared_ptr< VesselNetwork< 3 > > ( ::VasculatureGenerator<3>::* )( double,unsigned int,double,double ))( &::VasculatureGenerator< 3 >::GenerateOvalNetwork )
+            , (::boost::shared_ptr< VesselNetwork< 3 > > ( ::VesselNetworkGenerator<3>::* )( double,unsigned int,double,double ))( &::VesselNetworkGenerator< 3 >::GenerateOvalNetwork )
             , ( bp::arg("scale_factor"), bp::arg("num_increments"), bp::arg("a_param"), bp::arg("b_param") ) )    
         .def( 
             "GenerateParrallelNetwork"
-            , (::boost::shared_ptr< VesselNetwork< 3 > > ( ::VasculatureGenerator<3>::* )( ::boost::shared_ptr< Part< 3 > >,double,::VesselDistribution::Value,double,bool,::std::vector< boost::shared_ptr<Vertex> > ))( &::VasculatureGenerator< 3 >::GenerateParrallelNetwork )
+            , (::boost::shared_ptr< VesselNetwork< 3 > > ( ::VesselNetworkGenerator<3>::* )( ::boost::shared_ptr< Part< 3 > >,double,::VesselDistribution::Value,double,bool,::std::vector< boost::shared_ptr<Vertex> > ))( &::VesselNetworkGenerator< 3 >::GenerateParrallelNetwork )
             , ( bp::arg("domain"), bp::arg("targetDensity"), bp::arg("distrbutionType"), bp::arg("exclusionDistance"), bp::arg("useBbox"), bp::arg("seeds") ) )    
         .def( 
             "GenerateSingleVessel"
-            , (::boost::shared_ptr< VesselNetwork< 3 > > ( ::VasculatureGenerator<3>::* )( double,::boost::numeric::ublas::c_vector< double, 3 >,unsigned int,unsigned int ))( &::VasculatureGenerator< 3 >::GenerateSingleVessel )
+            , (::boost::shared_ptr< VesselNetwork< 3 > > ( ::VesselNetworkGenerator<3>::* )( double,::boost::numeric::ublas::c_vector< double, 3 >,unsigned int,unsigned int ))( &::VesselNetworkGenerator< 3 >::GenerateSingleVessel )
             , ( bp::arg("vesselLength"), bp::arg("startPosition"), bp::arg("divisions"), bp::arg("axis") ) )    
         .def( 
             "GenerateVoronoiNetwork"
-            , (::boost::shared_ptr< VesselNetwork< 3 > > ( ::VasculatureGenerator<3>::* )( double,double,double,unsigned int ))( &::VasculatureGenerator< 3 >::GenerateVoronoiNetwork )
+            , (::boost::shared_ptr< VesselNetwork< 3 > > ( ::VesselNetworkGenerator<3>::* )( double,double,double,unsigned int ))( &::VesselNetworkGenerator< 3 >::GenerateVoronoiNetwork )
             , ( bp::arg("cubeX"), bp::arg("cubeY"), bp::arg("cubeZ"), bp::arg("numPoints") ) )    
         .def( 
             "PatternUnitByTranslation"
-            , (void ( ::VasculatureGenerator<3>::* )( ::boost::shared_ptr< VesselNetwork< 3 > >,::std::vector< unsigned int > ))( &::VasculatureGenerator< 3 >::PatternUnitByTranslation )
+            , (void ( ::VesselNetworkGenerator<3>::* )( ::boost::shared_ptr< VesselNetwork< 3 > >,::std::vector< unsigned int > ))( &::VesselNetworkGenerator< 3 >::PatternUnitByTranslation )
             , ( bp::arg("pInputUnit"), bp::arg("numberOfUnits") ) );
 
     { //::Vessel< 3 >

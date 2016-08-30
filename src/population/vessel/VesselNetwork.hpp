@@ -135,7 +135,8 @@ public:
     /**
      * Divides a vessel into two at the specified location.
      */
-    boost::shared_ptr<VesselNode<DIM> > DivideVessel(boost::shared_ptr<Vessel<DIM> > pVessel, const c_vector<double, DIM>& location);
+    boost::shared_ptr<VesselNode<DIM> > DivideVessel(boost::shared_ptr<Vessel<DIM> > pVessel,
+                                                     const DimensionalChastePoint<DIM>& location);
 
     /**
      * Add a new node to the end of the vessel
@@ -148,18 +149,18 @@ public:
     /**
      * Forms a sprout at the specified locations.
      */
-    boost::shared_ptr<Vessel<DIM> > FormSprout(const c_vector<double, DIM>& sproutBaseLocation,
-                                               const c_vector<double, DIM>& sproutTipLocation);
+    boost::shared_ptr<Vessel<DIM> > FormSprout(const DimensionalChastePoint<DIM>& sproutBaseLocation,
+                                               const DimensionalChastePoint<DIM>& sproutTipLocation);
 
     /**
      * Get distance to nearest node
      */
-    units::quantity<unit::length> GetDistanceToNearestNode(const c_vector<double, DIM>& rLocation);
+    units::quantity<unit::length> GetDistanceToNearestNode(const DimensionalChastePoint<DIM>& rLocation);
 
     /**
      * Get the node nearest to the specified location
      */
-    boost::shared_ptr<VesselNode<DIM> > GetNearestNode(const c_vector<double, DIM>& rLocation);
+    boost::shared_ptr<VesselNode<DIM> > GetNearestNode(const DimensionalChastePoint<DIM>& rLocation);
 
     /**
      Get the node nearest to the specified node
@@ -179,12 +180,12 @@ public:
     /**
      Get the segment nearest to the specified location and the distance to it
      */
-    std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> > GetNearestSegment(const c_vector<double, DIM>& location);
+    std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> > GetNearestSegment(const DimensionalChastePoint<DIM>& location);
 
     /**
      Get the segment nearest to the specified location
      */
-    boost::shared_ptr<Vessel<DIM> > GetNearestVessel(const c_vector<double, DIM>& location);
+    boost::shared_ptr<Vessel<DIM> > GetNearestVessel(const DimensionalChastePoint<DIM>& location);
 
     /**
      Get index of nearest node
@@ -194,7 +195,7 @@ public:
     /**
      Get the number of nodes near to a specified point
      */
-    unsigned NumberOfNodesNearLocation(const c_vector<double, DIM>&  rLocation, double tolerance = 0.0);
+    unsigned NumberOfNodesNearLocation(const DimensionalChastePoint<DIM>&  rLocation, double tolerance = 0.0);
 
     /**
      Return the extents of the vessel network in the form ((xmin, xmax), (ymin, ymax), (zmin, zmax))
@@ -360,7 +361,7 @@ public:
     /**
      * Returns whether a vessel crosses a line segment.
      */
-    bool VesselCrossesLineSegment(c_vector<double, DIM> coordinate_1, c_vector<double, DIM> coordinate_2, double tolerance = 1e-6);
+    bool VesselCrossesLineSegment(DimensionalChastePoint<DIM> coordinate_1, DimensionalChastePoint<DIM> coordinate_2, double tolerance = 1e-6);
 
     /**
      * Write the network to file

@@ -73,6 +73,11 @@ private:
      */
     std::string mFilename;
 
+    /**
+     * The reference length scale for the output.
+     */
+    units::quantity<unit::length> mReferenceLength;
+
 public:
 
     /**
@@ -112,6 +117,13 @@ public:
      * Return a vtk representation of the network
      */
     vtkSmartPointer<vtkPolyData> GetOutput();
+
+    /**
+     * Set the reference length scale
+     *
+     * @param rLengthScale the reference length scale
+     */
+    void SetReferenceLengthScale(units::quantity<unit::length> rReferenceLength);
 
 };
 

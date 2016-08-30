@@ -39,7 +39,7 @@
 #include <cxxtest/TestSuite.h>
 #include "GreensFunctionSolver.hpp"
 #include "VesselNetwork.hpp"
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkGenerator.hpp"
 #include "DiscreteContinuumLinearEllipticPde.hpp"
 #include "RegularGrid.hpp"
 #include "UnitCollection.hpp"
@@ -53,19 +53,16 @@ public:
 
     void TestSingleVessel3d()
     {
-        double vessel_length = 2.0;
-        VasculatureGenerator<3> generator;
-        c_vector<double,3> centre = zero_vector<double>(3);
-        centre[0] = 0.5;
-        centre[1] = 0.5;
-        centre[2] = 0.0;
+        units::quantity<unit::length> vessel_length = 2.0e-6*unit::metres;
+        VesselNetworkGenerator<3> generator;
+        DimensionalChastePoint<3> centre(0.5, 0.5, 0.0);
 
         boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, centre, 14.0);
         p_network->SetSegmentRadii(0.05*1.e-6*unit::metres);
 
         // Set up the grid
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
-        p_domain->AddCuboid(1.0, 1.0, 2.0);
+        p_domain->AddCuboid(1.0e-6*unit::metres, 1.0e-6*unit::metres, 2.0e-6*unit::metres, DimensionalChastePoint<3>(0.0, 0.0, 0.0));
         boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
         p_grid->GenerateFromPart(p_domain, 0.1*1.e-6*unit::metres);
 

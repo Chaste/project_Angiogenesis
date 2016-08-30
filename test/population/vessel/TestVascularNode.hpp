@@ -64,7 +64,7 @@ public:
 
         // Pointer Factory Constructors
         boost::shared_ptr<VesselNode<3> > p_node_1 = VesselNode<3>::Create(2.0, 3.0, 4.0);
-        boost::shared_ptr<VesselNode<3> > p_node_3 = VesselNode<3>::Create(location1);
+        boost::shared_ptr<VesselNode<3> > p_node_3 = VesselNode<3>::Create(DimensionalChastePoint<3>(location1));
 
         // Test the location methods
         TS_ASSERT_DELTA(p_node_1->rGetLocation()[0], 2.0, 1.e-6);

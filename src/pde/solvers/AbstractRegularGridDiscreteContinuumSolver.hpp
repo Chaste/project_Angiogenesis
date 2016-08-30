@@ -97,7 +97,7 @@ public:
      * @param samplingStrategy use the default sampling strategy
      * @return a vector of the point values
      */
-    virtual std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints);
+    virtual std::vector<double> GetSolutionAtPoints(std::vector<DimensionalChastePoint<DIM> > samplePoints);
 
     virtual std::vector<double> GetSolutionAtGridPoints(boost::shared_ptr<RegularGrid<DIM> > pGrid);
 

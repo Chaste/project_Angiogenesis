@@ -57,7 +57,8 @@ DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::DiscreteContinuumMesh() :
     mStlFilePath(),
     mHoles(),
     mRegions(),
-    mAttributes()
+    mAttributes(),
+    mReferenceLength(1.e-6 * unit::metres)
 {
 
 }
@@ -100,13 +101,13 @@ void DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::SetMaxElementArea(double max
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::SetHoles(std::vector<c_vector<double, SPACE_DIM> > holes)
+void DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::SetHoles(std::vector<DimensionalChastePoint<SPACE_DIM> > holes)
 {
     mHoles = holes;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::SetRegionMarkers(std::vector<c_vector<double, SPACE_DIM> > regionMarkers)
+void DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::SetRegionMarkers(std::vector<DimensionalChastePoint<SPACE_DIM> > regionMarkers)
 {
     mRegions = regionMarkers;
 }
@@ -347,7 +348,7 @@ template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::Mesh3d()
 {
     std::vector<c_vector<double, SPACE_DIM> > vertex_locations = mpDomain->GetVertexLocations();
-    std::vector<c_vector<double, SPACE_DIM> > hole_locations = mpDomain->GetHoleMarkers();
+    std::vector<DimensionalChastePoint<SPACE_DIM> > hole_locations = mpDomain->GetHoleMarkers();
     unsigned num_vertices = vertex_locations.size();
     unsigned num_holes = hole_locations.size();
     std::vector<boost::shared_ptr<Facet> > facets = mpDomain->GetFacets();

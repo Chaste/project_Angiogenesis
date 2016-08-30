@@ -49,8 +49,8 @@ template<unsigned DIM>
 VesselNetworkReader<DIM>::VesselNetworkReader()
     : mFileName(),
       mRadiusLabel("Node Radius"),
-      mReferenceLength(1.e-6 * unit::metres),
-      mRadiusConversionFactor(1.0)
+      mRadiusConversionFactor(1.0),
+      mReferenceLength(1.e-6 * unit::metres)
 {
 }
 
@@ -70,6 +70,12 @@ template <unsigned DIM>
 void VesselNetworkReader<DIM>::SetRadiusArrayName(const std::string& rRadius)
 {
     mRadiusLabel = rRadius;
+}
+
+template <unsigned DIM>
+void VesselNetworkReader<DIM>::SetReferenceLengthScale(units::quantity<unit::length> rReferenceLength)
+{
+    mReferenceLength = rReferenceLength;
 }
 
 template<unsigned DIM>
@@ -99,17 +105,12 @@ boost::shared_ptr<VesselNetwork<DIM> > VesselNetworkReader<DIM>::Read()
         p_polydata->GetPoint(i, point_coords);
         if (DIM < 3)
         {
-            nodes.push_back(VesselNode<DIM>::Create(point_coords[0], point_coords[1]));
+            nodes.push_back(VesselNode<DIM>::Create(point_coords[0], point_coords[1], 0.0, mReferenceLength));
         }
         else
         {
-            nodes.push_back(VesselNode<DIM>::Create(point_coords[0], point_coords[1], point_coords[2]));
+            nodes.push_back(VesselNode<DIM>::Create(point_coords[0], point_coords[1], point_coords[2], mReferenceLength));
         }
-    }
-
-    for(unsigned idx=0; idx<nodes.size(); idx++)
-    {
-        nodes[idx]->SetReferenceLengthScale(mReferenceLength);
     }
 
     // Extract radii corresponding to each node from the VTK Polydata and store them in a list.

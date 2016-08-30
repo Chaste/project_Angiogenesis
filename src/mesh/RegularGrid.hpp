@@ -49,6 +49,7 @@
 #include "CaBasedCellPopulation.hpp"
 #include "Part.hpp"
 #include "UnitCollection.hpp"
+#include "DimensionalChastePoint.hpp"
 
 /**
  * A class for describing regular grids, calculating point and line to grid point relationships and
@@ -70,7 +71,7 @@ class RegularGrid
     /**
      *  The origin of the grid in x,y,z. Corresponds to location of front, bottom, left corner.
      */
-    c_vector<double, SPACE_DIM> mOrigin;
+    DimensionalChastePoint<SPACE_DIM> mOrigin;
 
     /**
      * The vessel network
@@ -171,7 +172,7 @@ public:
      * @param location the point to get the nearest index to
      * @return the 1-d index of the nearest grid point
      */
-    unsigned GetNearestGridIndex(const c_vector<double, SPACE_DIM>& rLocation);
+    unsigned GetNearestGridIndex(const DimensionalChastePoint<SPACE_DIM>& rLocation);
 
     /**
      * Calculate neighbour indices for each grid point
@@ -192,20 +193,20 @@ public:
      * @param z_index the grid z index
      * @return the location of the point
      */
-    c_vector<double, SPACE_DIM> GetLocation(unsigned xIndex, unsigned yIndex, unsigned zIndex);
+    DimensionalChastePoint<SPACE_DIM> GetLocation(unsigned xIndex, unsigned yIndex, unsigned zIndex);
 
     /*
      * Get the location of a point on the grid for given 1-d grid index
      * @param gridIndex the 1d grid index
      * @return the location of the point
      */
-    c_vector<double, SPACE_DIM> GetLocationOf1dIndex(unsigned gridIndex);
+    DimensionalChastePoint<SPACE_DIM> GetLocationOf1dIndex(unsigned gridIndex);
 
     /**
      * Get all of the grid locations
      * @return a vector containing all grid locations in grid order
      */
-    std::vector<c_vector<double, SPACE_DIM> > GetLocations();
+    std::vector<DimensionalChastePoint<SPACE_DIM> > GetLocations();
 
     /**
      * Return the number of points in the grid
@@ -217,14 +218,14 @@ public:
      * Return the origin in x, y, z
      * @return the grid origin
      */
-    c_vector<double, SPACE_DIM> GetOrigin();
+    DimensionalChastePoint<SPACE_DIM> GetOrigin();
 
     /**
      * Return a vector of input point indices which in the bounding boxes of each grid point
      * @bool inputPoints a vector of point locations
      * @return the indices of input points in the bounding box of each grid point
      */
-    std::vector<std::vector<unsigned> > GetPointPointMap(std::vector<c_vector<double, SPACE_DIM> > inputPoints);
+    std::vector<std::vector<unsigned> > GetPointPointMap(std::vector<DimensionalChastePoint<SPACE_DIM> > inputPoints);
 
     /**
      * Return the point cell map
@@ -267,7 +268,7 @@ public:
      * @param useVtk use VTK to do the sampling, faster but algorithm not clearly documented
      * @return the grid spacing
      */
-    std::vector<double> InterpolateGridValues(std::vector<c_vector<double, SPACE_DIM> > locations,
+    std::vector<double> InterpolateGridValues(std::vector<DimensionalChastePoint<SPACE_DIM> > locations,
                                               std::vector<double> values, bool useVtk = false);
 
     /**
@@ -276,7 +277,7 @@ public:
      * @param gridIndex the grid point of interest
      * @return is the input location in the bounding box of the grid point
      */
-    bool IsLocationInPointVolume(c_vector<double, SPACE_DIM> point, unsigned gridIndex);
+    bool IsLocationInPointVolume(DimensionalChastePoint<SPACE_DIM> point, unsigned gridIndex);
 
     /**
      * Is the point on the outer boundary of the domain
@@ -312,7 +313,7 @@ public:
      * Set the origin in x, y, z
      * @param origin the grid origin
      */
-    void SetOrigin(c_vector<double, SPACE_DIM> origin);
+    void SetOrigin(DimensionalChastePoint<SPACE_DIM> origin);
 
     /**
      * Set the values of a field at all points on the grid

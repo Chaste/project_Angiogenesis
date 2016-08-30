@@ -41,7 +41,7 @@
 #include "FileFinder.hpp"
 #include "OutputFileHandler.hpp"
 #include "SmartPointers.hpp"
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkGenerator.hpp"
 #include "VesselNetwork.hpp"
 #include "CaBasedCellPopulation.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
@@ -84,18 +84,13 @@ public:
         p_grid->Write(p_file_handler);
 
         // Create the vessel network: single vessel in middle of domain
-        c_vector<double, 2> start_position;
-        start_position[0] = 10;
-        start_position[1] = 0;
-        VasculatureGenerator<2> network_generator;
-        boost::shared_ptr<VesselNetwork<2> > p_network = network_generator.GenerateSingleVessel(10, start_position);
+        VesselNetworkGenerator<2> network_generator;
+        boost::shared_ptr<VesselNetwork<2> > p_network = network_generator.GenerateSingleVessel(10*1.e-6*unit::metres, DimensionalChastePoint<2>(10.0, 0.0));
 
         // Write the initial network to file
         std::string output_filename = p_file_handler->GetOutputDirectoryFullPath().append("InitialVesselNetwork.vtp");
 
-        c_vector<double, 2> tip_position;
-        tip_position[0] = 10;
-        tip_position[1] = 10;
+        DimensionalChastePoint<2> tip_position(10.0, 10.0);
         p_network->GetNearestNode(tip_position)->SetIsMigrating(true);
         p_network->Write(output_filename);
 

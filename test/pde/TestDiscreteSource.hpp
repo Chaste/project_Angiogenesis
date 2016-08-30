@@ -45,7 +45,7 @@
 #include "DiscreteContinuumNonLinearEllipticPde.hpp"
 #include "FiniteDifferenceSolver.hpp"
 #include "VesselNetwork.hpp"
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkGenerator.hpp"
 #include "OutputFileHandler.hpp"
 #include "RegularGrid.hpp"
 #include "DiscreteSource.hpp"
@@ -60,16 +60,20 @@ public:
     void TestWithVessels() throw(Exception)
     {
         // Set up the vessel network
-        double vessel_length = 100;
-        VasculatureGenerator<3> generator;
-        boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length);
+        units::quantity<unit::length> vessel_length = 100 * 1.e-6 * unit::metres;
+        VesselNetworkGenerator<3> generator;
+        boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length,
+                                                                                        DimensionalChastePoint<3>(0.0, 0.0, 0.0));
 
         // Set up the grid
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
-        p_domain->AddCuboid(vessel_length, vessel_length, vessel_length);
+        p_domain->AddCuboid(vessel_length,
+                            vessel_length,
+                            vessel_length,
+                            DimensionalChastePoint<3>(0.0, 0.0, 0.0));
         c_vector<double, 3> translation_vector;
-        translation_vector[0] = -vessel_length/2.0;
-        translation_vector[1] = -vessel_length/2.0;
+        translation_vector[0] = -vessel_length/(2.0* 1.e-6 * unit::metres);
+        translation_vector[1] = -vessel_length/(2.0* 1.e-6 * unit::metres);
         translation_vector[2] = 0.0;
 
         p_domain->Translate(translation_vector);
@@ -112,16 +116,17 @@ public:
     void TestNonLinearWithVessels() throw(Exception)
     {
         // Set up the vessel network
-        double vessel_length = 100;
-        VasculatureGenerator<3> generator;
-        boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length);
+        units::quantity<unit::length> vessel_length = 100 * 1.e-6 * unit::metres;
+        VesselNetworkGenerator<3> generator;
+        boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length,
+                                                                                        DimensionalChastePoint<3>(0.0, 0.0, 0.0));
 
         // Set up the grid
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
-        p_domain->AddCuboid(vessel_length, vessel_length, vessel_length);
+        p_domain->AddCuboid(vessel_length, vessel_length, vessel_length, DimensionalChastePoint<3>(0.0, 0.0, 0.0));
         c_vector<double, 3> translation_vector;
-        translation_vector[0] = -vessel_length/2.0;
-        translation_vector[1] = -vessel_length/2.0;
+        translation_vector[0] = -vessel_length/(2.0* 1.e-6 * unit::metres);
+        translation_vector[1] = -vessel_length/(2.0* 1.e-6 * unit::metres);
         translation_vector[2] = 0.0;
 
         p_domain->Translate(translation_vector);

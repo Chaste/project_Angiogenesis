@@ -46,6 +46,7 @@
 #include "UnitCollection.hpp"
 #include "VesselSegment.hpp"
 #include "SmartPointers.hpp"
+#include "DimensionalChastePoint.hpp"
 
 /**
  *  Forward declaration to allow segments to manage adding and removing themselves from nodes.
@@ -70,9 +71,9 @@ private:
     friend class VesselSegment<DIM> ;
 
     /**
-     * Dimensionless location of a node in space.
+     * Location of a node in space.
      */
-    ChastePoint<DIM> mLocation;
+    DimensionalChastePoint<DIM> mLocation;
 
     /**
      * Collection of pointers to Vessel Segments connected to this node.
@@ -95,14 +96,6 @@ private:
      */
     unsigned mPtrComparisonId;
 
-    /**
-     * The reference length scale for the node, default in microns. This is needed as units can't be combined
-     * with c_vectors, which hold the node's location. If the length scale is changed the
-     * values in mLocation will be changed accordingly. i.e. if the reference length scale is changed
-     * from 1 micron to 40 micron, the value in mLocation will be divided by 40.
-     */
-    units::quantity<unit::length> mReferenceLength;
-
 public:
 
     /**
@@ -112,8 +105,9 @@ public:
      * @param v1  the node's x-coordinate (defaults to 0)
      * @param v2  the node's y-coordinate (defaults to 0)
      * @param v3  the node's z-coordinate (defaults to 0)
+     * @param referenceLength the reference length scale, defaults to micron
      */
-    VesselNode(double v1 = 0.0, double v2 = 0.0, double v3 = 0.0);
+    VesselNode(double v1 = 0.0, double v2 = 0.0, double v3 = 0.0, units::quantity<unit::length> referenceLength = 1.e-6*unit::metres);
 
     /**
      * Constructor.
@@ -121,7 +115,7 @@ public:
      *
      * @param location the node's location (defaults to 0.0)
      */
-    VesselNode(c_vector<double, DIM> location);
+    VesselNode(const DimensionalChastePoint<DIM>& location);
 
     /**
      * Copy constructor.
@@ -142,7 +136,7 @@ public:
      * @param v3  the node's z-coordinate (defaults to 0 micron)
      * @return a pointer to the newly created node
      */
-    static boost::shared_ptr<VesselNode<DIM> > Create(double v1 = 0.0, double v2 = 0.0, double v3 = 0.0);
+    static boost::shared_ptr<VesselNode<DIM> > Create(double v1 = 0.0, double v2 = 0.0, double v3 = 0.0, units::quantity<unit::length> referenceLength = 1.e-6*unit::metres);
 
     /**
      * Construct a new instance of the class and return a shared pointer to it.
@@ -150,7 +144,7 @@ public:
      * @param location the node's location (defaults to 0.0  micron)
      * @return a pointer to the newly created node
      */
-    static boost::shared_ptr<VesselNode<DIM> > Create(const c_vector<double, DIM>& location);
+    static boost::shared_ptr<VesselNode<DIM> > Create(const DimensionalChastePoint<DIM>& location);
 
     /**
      * Construct a new instance of the class and return a shared pointer to it.
@@ -168,7 +162,6 @@ public:
      */
     static boost::shared_ptr<VesselNode<DIM> > Create(boost::shared_ptr<VesselNode<DIM> > pExistingNode);
 
-
     /**
      * Return the Id for comparing pointer contents
      * @return the node id
@@ -181,7 +174,7 @@ public:
      * @param rLocation the location to calculate the distance to
      * @return the distance to the location
      */
-    units::quantity<unit::length> GetDistance(const c_vector<double, DIM>& rLocation) const;
+    units::quantity<unit::length> GetDistance(const DimensionalChastePoint<DIM>& rLocation) const;
 
     /**
      * Return the flow properties of the component
@@ -195,7 +188,7 @@ public:
      *
      * @return a ublas c_vector at the location of the node
      */
-    const c_vector<double, DIM>& rGetLocation() const;
+    const DimensionalChastePoint<DIM>& rGetLocation() const;
 
     /**
      * Return the number of attached segments
@@ -246,7 +239,7 @@ public:
      * @param rLocation the query location
      * @return whether then node is coincident with the input location
      */
-    bool IsCoincident(const c_vector<double, DIM>& rLocation) const;
+    bool IsCoincident(const DimensionalChastePoint<DIM>& rLocation) const;
 
     /**
      * Has the node been designated as migrating. This is useful for keeping track of
@@ -285,7 +278,7 @@ public:
      *
      * @param rLocation a ublas c_vector specifying the location
      */
-    void SetLocation(const c_vector<double, DIM>& rLocation);
+    void SetLocation(const DimensionalChastePoint<DIM>& rLocation);
 
     /**
      * Set the location of the node. It is assumed that this location is consistent
@@ -295,7 +288,7 @@ public:
      * @param y the y location
      * @param z the z location
      */
-    void SetLocation(double x, double y, double z=0.0);
+    void SetLocation(double x, double y, double z=0.0, units::quantity<unit::length> referenceLength = 1.e-6*unit::metres);
 
     /**
      * Set the length scale used to dimensionalize the node location as stored in mLocation.

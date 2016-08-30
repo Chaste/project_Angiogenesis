@@ -51,7 +51,8 @@ Part<DIM>::Part() :
         mFacets(),
         mVtkPart(vtkSmartPointer<vtkPolyData>()),
         mHoleMarkers(),
-        mRegionMarkers()
+        mRegionMarkers(),
+        mReferenceLength(1.e-6 * unit::metres)
 {
 }
 
@@ -69,43 +70,50 @@ Part<DIM>::~Part()
 }
 
 template<unsigned DIM>
-boost::shared_ptr<Polygon> Part<DIM>::AddCircle(double radius, c_vector<double, DIM> centre, unsigned numSegments)
+boost::shared_ptr<Polygon> Part<DIM>::AddCircle(units::quantity<unit::length> radius,
+                                                DimensionalChastePoint<DIM> centre, unsigned numSegments)
 {
     std::vector<boost::shared_ptr<Vertex> > vertices;
     double seg_angle = 2.0 * M_PI / double(numSegments);
     for (unsigned idx = 0; idx < numSegments; idx++)
     {
         double angle = seg_angle * double(idx);
-        double x = radius * std::cos(angle) + centre[0];
-        double y = radius * std::sin(angle) + centre[1];
+        double x = (radius * std::cos(angle) + centre[0]*centre.GetReferenceLengthScale())/mReferenceLength;
+        double y = (radius * std::sin(angle) + centre[1]*centre.GetReferenceLengthScale())/mReferenceLength;
         if(DIM==3)
         {
-            vertices.push_back(Vertex::Create(x, y, centre[2]));
+            vertices.push_back(Vertex::Create(x, y, centre[2], mReferenceLength));
         }
         else
         {
-            vertices.push_back(Vertex::Create(x, y, 0.0));
+            vertices.push_back(Vertex::Create(x, y, 0.0, mReferenceLength));
         }
     }
     return AddPolygon(vertices);
 }
 
 template<unsigned DIM>
-void Part<DIM>::AddCylinder(double radius, double depth, c_vector<double, DIM> centre, unsigned numSegments)
+void Part<DIM>::AddCylinder(units::quantity<unit::length> radius,
+                            units::quantity<unit::length> depth,
+                            DimensionalChastePoint<DIM> centre,
+                            unsigned numSegments)
 {
     boost::shared_ptr<Polygon> p_circle = AddCircle(radius, centre, numSegments);
     Extrude(p_circle, depth);
 }
 
 template<unsigned DIM>
-void Part<DIM>::AddCuboid(double sizeX, double sizeY, double sizeZ, c_vector<double, DIM> origin)
+void Part<DIM>::AddCuboid(units::quantity<unit::length> sizeX,
+                          units::quantity<unit::length> sizeY,
+                          units::quantity<unit::length> sizeZ,
+                          DimensionalChastePoint<DIM> origin)
 {
     boost::shared_ptr<Polygon> p_rectangle = AddRectangle(sizeX, sizeY, origin);
     Extrude(p_rectangle, sizeZ);
 }
 
 template<unsigned DIM>
-void Part<DIM>::AddHoleMarker(c_vector<double, DIM> hole)
+void Part<DIM>::AddHoleMarker(DimensionalChastePoint<DIM> hole)
 {
     mHoleMarkers.push_back(hole);
 }
@@ -120,7 +128,8 @@ boost::shared_ptr<Polygon> Part<DIM>::AddPolygon(std::vector<boost::shared_ptr<V
 }
 
 template<unsigned DIM>
-boost::shared_ptr<Polygon> Part<DIM>::AddPolygon(boost::shared_ptr<Polygon> pPolygon, bool newFacet, boost::shared_ptr<Facet> pFacet)
+boost::shared_ptr<Polygon> Part<DIM>::AddPolygon(boost::shared_ptr<Polygon> pPolygon, bool newFacet,
+                                                 boost::shared_ptr<Facet> pFacet)
 {
     if (!pFacet)
     {
@@ -142,22 +151,26 @@ boost::shared_ptr<Polygon> Part<DIM>::AddPolygon(boost::shared_ptr<Polygon> pPol
 }
 
 template<unsigned DIM>
-boost::shared_ptr<Polygon> Part<DIM>::AddRectangle(double sizeX, double sizeY, c_vector<double, DIM> origin)
+boost::shared_ptr<Polygon> Part<DIM>::AddRectangle(units::quantity<unit::length> sizeX,
+                                                   units::quantity<unit::length> sizeY,
+                                                   DimensionalChastePoint<DIM> origin)
 {
+    origin.SetReferenceLengthScale(mReferenceLength);
+
     std::vector<boost::shared_ptr<Vertex> > vertices;
     if(DIM==3)
     {
-        vertices.push_back(Vertex::Create(origin[0], origin[1], origin[2]));
-        vertices.push_back(Vertex::Create(origin[0] + sizeX, origin[1], origin[2]));
-        vertices.push_back(Vertex::Create(origin[0] + sizeX, origin[1] + sizeY, origin[2]));
-        vertices.push_back(Vertex::Create(origin[0], origin[1] + sizeY, origin[2]));
+        vertices.push_back(Vertex::Create(origin[0], origin[1], origin[2], mReferenceLength));
+        vertices.push_back(Vertex::Create(origin[0] + sizeX/mReferenceLength, origin[1], origin[2],mReferenceLength));
+        vertices.push_back(Vertex::Create(origin[0] + sizeX/mReferenceLength, origin[1] + sizeY/mReferenceLength, origin[2], mReferenceLength));
+        vertices.push_back(Vertex::Create(origin[0], origin[1] + sizeY/mReferenceLength, origin[2],mReferenceLength));
     }
     else
     {
-        vertices.push_back(Vertex::Create(origin[0], origin[1], 0.0));
-        vertices.push_back(Vertex::Create(origin[0] + sizeX, origin[1], 0.0));
-        vertices.push_back(Vertex::Create(origin[0] + sizeX, origin[1] + sizeY, 0.0));
-        vertices.push_back(Vertex::Create(origin[0], origin[1] + sizeY, 0.0));
+        vertices.push_back(Vertex::Create(origin[0], origin[1], 0.0, mReferenceLength));
+        vertices.push_back(Vertex::Create(origin[0] + sizeX/mReferenceLength, origin[1], 0.0, mReferenceLength));
+        vertices.push_back(Vertex::Create(origin[0] + sizeX/mReferenceLength, origin[1] + sizeY/mReferenceLength, 0.0, mReferenceLength));
+        vertices.push_back(Vertex::Create(origin[0], origin[1] + sizeY/mReferenceLength, 0.0, mReferenceLength));
     }
     return AddPolygon(vertices);
 }
@@ -171,7 +184,7 @@ void Part<DIM>::AddVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pVesselN
         std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes = pVesselNetwork->GetNodes();
         for (unsigned idx = 0; idx < nodes.size(); idx++)
         {
-            vertices.push_back(Vertex::Create(nodes[idx]->rGetLocation()));
+            vertices.push_back(Vertex::Create(nodes[idx]->rGetLocation().rGetLocation()));
         }
 
         // If vertices lie on any existing facets add the vertex to the facet
@@ -216,7 +229,7 @@ void Part<DIM>::AddVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pVesselN
         for (unsigned idx = 0; idx < polygons.size(); idx++)
         {
             bool on_facet = false;
-            c_vector<double, DIM> poly_centroid = polygons[idx]->GetCentroid();
+            DimensionalChastePoint<3> poly_centroid = polygons[idx]->GetCentroid();
             for (unsigned jdx = 0; jdx < mFacets.size(); jdx++)
             {
                 if (mFacets[jdx]->ContainsPoint(poly_centroid))
@@ -237,7 +250,7 @@ void Part<DIM>::AddVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pVesselN
             }
         }
 
-        std::vector<c_vector<double, DIM> > hole_locations = generator.GetHoles();
+        std::vector<DimensionalChastePoint<DIM> > hole_locations = generator.GetHoles();
         for(unsigned idx=0; idx<hole_locations.size(); idx++)
         {
             AddHoleMarker(hole_locations[idx]);
@@ -247,7 +260,7 @@ void Part<DIM>::AddVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pVesselN
 }
 
 template<unsigned DIM>
-void Part<DIM>::Extrude(boost::shared_ptr<Polygon> pPolygon, double depth)
+void Part<DIM>::Extrude(boost::shared_ptr<Polygon> pPolygon, units::quantity<unit::length> depth)
 {
     if(DIM==2)
     {
@@ -259,7 +272,8 @@ void Part<DIM>::Extrude(boost::shared_ptr<Polygon> pPolygon, double depth)
     for (unsigned idx = 0; idx < original_vertices.size(); idx++)
     {
         c_vector<double, DIM> location = original_vertices[idx]->rGetLocation();
-        new_vertices.push_back(Vertex::Create(location[0], location[1], location[2] + depth));
+        new_vertices.push_back(Vertex::Create(location[0], location[1], location[2] + depth/original_vertices[idx]->GetReferenceLengthScale(),
+                                              original_vertices[idx]->GetReferenceLengthScale()));
     }
 
     // Every straight edge is now a planar face, with 3 new edges ordered in CCW
@@ -287,7 +301,7 @@ void Part<DIM>::Extrude(boost::shared_ptr<Polygon> pPolygon, double depth)
 }
 
 template<unsigned DIM>
-std::vector<c_vector<double, DIM> > Part<DIM>::GetHoleMarkers()
+std::vector<DimensionalChastePoint<DIM> > Part<DIM>::GetHoleMarkers()
 {
     return mHoleMarkers;
 }
@@ -324,10 +338,7 @@ std::vector<unsigned> Part<DIM>::GetContainingGridIndices(unsigned num_x, unsign
         {
             for(unsigned idx=0; idx<num_x; idx++)
             {
-                c_vector<double,3> location;
-                location[0] = double(idx) * spacing;
-                location[1] = double(jdx) * spacing;
-                location[2] = double(kdx) * spacing;
+                DimensionalChastePoint<DIM> location(double(idx) * spacing, double(jdx) * spacing, double(kdx) * spacing);
                 unsigned index = idx + num_x * jdx + num_x * num_y * kdx;
                 bool update = false;
                 if(index==0)
@@ -489,7 +500,7 @@ vtkSmartPointer<vtkPolyData> Part<DIM>::GetVtk(bool update)
 }
 
 template<unsigned DIM>
-bool Part<DIM>::IsPointInPart(c_vector<double, DIM> location, bool update)
+bool Part<DIM>::IsPointInPart(DimensionalChastePoint<DIM> location, bool update)
 {
     vtkSmartPointer<vtkPolyData> p_part = GetVtk(update);
     vtkSmartPointer<vtkPoints> p_points = vtkSmartPointer<vtkPoints>::New();

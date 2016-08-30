@@ -48,7 +48,7 @@
 #include "SmartPointers.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "RegularGrid.hpp"
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkGenerator.hpp"
 #include "VesselNetwork.hpp"
 #include "AngiogenesisSolver.hpp"
 #include "FunctionMap.hpp"
@@ -70,8 +70,8 @@ public:
 
         // Set up the grid
         boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
-        double spacing = 40.0;
-        p_grid->SetSpacing(spacing * 1.e-6 * unit::metres);
+        units::quantity<unit::length> grid_spacing = 40.0 * 1.e-6* unit::metres;
+        p_grid->SetSpacing(grid_spacing);
 
         std::vector<unsigned> extents(3, 1);
         extents[0] = 25; // num x
@@ -82,7 +82,7 @@ public:
         std::vector<double> vegf_field = std::vector<double>(extents[0] * extents[1], 0.0);
         for (unsigned idx = 0; idx < extents[0] * extents[1]; idx++)
         {
-            vegf_field[idx] = 0.2*p_grid->GetLocationOf1dIndex(idx)[0] / (spacing * extents[0]);
+            vegf_field[idx] = 0.2*p_grid->GetLocationOf1dIndex(idx)[0] / (grid_spacing/(1.e-6* unit::metres) * extents[0]);
         }
 
         boost::shared_ptr<FunctionMap<3> > p_funciton_map = FunctionMap<3>::Create();
@@ -95,13 +95,9 @@ public:
         p_funciton_map->Write();
 
         //Set up the limbal vessel
-        VasculatureGenerator<3> generator;
-        c_vector<double, 3> start_point;
-        start_point[0] = 2.0 * spacing; // two lattice points to the right
-        start_point[1] = 0.0;
-        start_point[2] = 0.0;
-
-        double length = spacing * (extents[1] - 1); // full domain in y direction
+        VesselNetworkGenerator<3> generator;
+        DimensionalChastePoint<3> start_point(2.0, 0.0, 0.0, grid_spacing); // two lattice points to the right
+        units::quantity<unit::length> length = double(extents[1] - 1) * grid_spacing; // full domain in y direction
         unsigned divisions = extents[1] - 2; // divide the vessel to coincide with grid
         unsigned alignment_axis = 1; // pointing y direction
         boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(length, start_point,
@@ -163,7 +159,7 @@ public:
 //        p_funciton_map->Write();
 //
 //        //Set up the limbal vessel
-//        VasculatureGenerator<3> generator;
+//        VesselNetworkGenerator<3> generator;
 //        c_vector<double, 3> start_point;
 //        start_point[0] = 2.0 * spacing; // two lattice points to the right
 //        start_point[1] = 0.0;
@@ -229,7 +225,7 @@ public:
 //        p_funciton_map->Write();
 //
 //        //Set up the limbal vessel
-//        VasculatureGenerator<3> generator;
+//        VesselNetworkGenerator<3> generator;
 //        c_vector<double, 3> start_point;
 //        start_point[0] = 2.0 * spacing; // two lattice points to the right
 //        start_point[1] = 0.0;

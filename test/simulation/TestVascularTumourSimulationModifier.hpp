@@ -65,7 +65,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "FakePetscSetup.hpp"
 #include "FiniteDifferenceSolver.hpp"
 #include "DiscreteContinuumLinearEllipticPde.hpp"
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkGenerator.hpp"
 #include "SimpleOxygenBasedCellCycleModel.hpp"
 #include "DiscreteContinuumBoundaryCondition.hpp"
 #include "DiscreteSource.hpp"
@@ -87,7 +87,10 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
         double domain_y = 800.0;
         double domain_z = 200.0;
         boost::shared_ptr<Part<3> > p_domain = Part<3> ::Create();
-        p_domain->AddCuboid(domain_x, domain_y, domain_z);
+        p_domain->AddCuboid(domain_x*1.e-6*unit::metres,
+                            domain_y*1.e-6*unit::metres,
+                            domain_z*1.e-6*unit::metres,
+                            DimensionalChastePoint<3>(0.0));
         return p_domain;
     }
 
@@ -134,13 +137,9 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
     {
         double radius = 100.0;
         double depth = 200.0;
-        c_vector<double, 3> origin;
-        origin[0] = 400.0;
-        origin[1] = 400.0;
-        origin[2] = 0.0;
         boost::shared_ptr<Part<3> > p_domain = Part<3> ::Create();
-        boost::shared_ptr<Polygon> circle = p_domain->AddCircle(radius, origin);
-        p_domain->Extrude(circle, depth);
+        boost::shared_ptr<Polygon> circle = p_domain->AddCircle(radius*1.e-6*unit::metres, DimensionalChastePoint<3>(400.0, 400.0, 0.0));
+        p_domain->Extrude(circle, depth*1.e-6*unit::metres);
         return p_domain;
     }
 

@@ -38,14 +38,14 @@
 
 #include <vector>
 #include <boost/enable_shared_from_this.hpp>
-#include "ChastePoint.hpp"
+#include "DimensionalChastePoint.hpp"
 #include "SmartPointers.hpp"
 #include "UblasVectorInclude.hpp"
 
 /**
  * A point in 3d space.
  */
-class Vertex : public ChastePoint<3>, public boost::enable_shared_from_this<Vertex>
+class Vertex : public DimensionalChastePoint<3>, public boost::enable_shared_from_this<Vertex>
 {
     /**
      *  An optional index
@@ -60,13 +60,13 @@ public:
      * @param y y position of vertex
      * @param z z position of vertex
      */
-    Vertex(double x = 0.0, double y = 0.0, double z = 0.0);
+    Vertex(double x = 0.0, double y = 0.0, double z = 0.0, units::quantity<unit::length> referenceLength = 1.e-6*unit::metres);
 
     /**
      * Constructor
      * @param a vector of x, y, z coordinates
      */
-    Vertex(c_vector<double, 3> coords);
+    Vertex(c_vector<double, 3> coords, units::quantity<unit::length> referenceLength = 1.e-6*unit::metres);
 
     /**
      * Factory constructor method
@@ -75,14 +75,14 @@ public:
      * @param z z position of vertex
      * @return a shared pointer to a new vertex
      */
-    static boost::shared_ptr<Vertex> Create(double x = 0.0, double y = 0.0, double z = 0.0);
+    static boost::shared_ptr<Vertex> Create(double x = 0.0, double y = 0.0, double z = 0.0, units::quantity<unit::length> referenceLength = 1.e-6*unit::metres);
 
     /**
      * Factory constructor method
      * @param a vector of x, y, z coordinates
      * @return a shared pointer to a new vertex
      */
-    static boost::shared_ptr<Vertex> Create(c_vector<double, 3> coords);
+    static boost::shared_ptr<Vertex> Create(c_vector<double, 3> coords, units::quantity<unit::length> referenceLength = 1.e-6*unit::metres);
 
     /**
      * Desctructor

@@ -41,17 +41,14 @@
  *
  * The following is covered:
  * * Manually building a network from a collection of nodes, segments and vessels
- * * Writing networks to file and visualizing with Paraview
- * * Building a network using a network generator
- * * Reading a network from file
- *
- * Further functionality is gradually introduced over the course of subsequent tutorials.
+ * * Managing dimensions and units
+ * * Reading, writing and visualizing vessel networks
+ * * Vessel network generators
  *
  * = The Test =
- * We start by introducing the necessary header files. The first contain functionality for setting up unit tests
+ * Start by introducing the necessary header files. The first contain functionality for setting up unit tests
  */
 #include <cxxtest/TestSuite.h>
-#include "VesselNetworkReader.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 /*
  * Boost shared pointers are used extensively in this component. This header contains some useful
@@ -59,7 +56,7 @@
  */
 #include "SmartPointers.hpp"
 /*
- * The OutputFileHandler manages where output files are written to.
+ * The `OutputFileHandler` manages where output files are written to.
  */
 #include "OutputFileHandler.hpp"
 /*
@@ -70,15 +67,25 @@
 #include "Vessel.hpp"
 #include "VesselNetwork.hpp"
 /*
- * Tools for generating vessel networks
+ * Tools for reading and writing networks
  */
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkReader.hpp"
+#include "VesselNetworkWriter.hpp"
 /*
- * We use this to read in vessel networks in VTK format
+ * Dimensional analysis
  */
-#include "FakePetscSetup.hpp"
+#include "DimensionalChastePoint.hpp"
+#include "UnitCollection.hpp"
 /*
- * Tutorials are developed as a series of unit tests using the `CxxTest` framework. We make a single test class, which inherits from
+ * Tools for automatically generating vessel networks
+ */
+#include "VesselNetworkGenerator.hpp"
+/*
+ * Used to initialize MPI/PETSc in unit tests
+ */
+#include "PetscSetupAndFinalize.hpp"
+/*
+ * Tutorials are developed as a series of unit tests using the `CxxTest` framework. Make a single test class, which inherits from
  * `AbstractCellBasedWithTimingsTestSuite`. `AbstractCellBasedWithTimingsTestSuite` adds some useful functionality to the default
  * `CxxTest::TestSuite` class, including setting up timers and initializing random number generators.
  */
@@ -88,25 +95,48 @@ public:
     /*
      * = Test 1 - Building a vessel network manually, writing it to file and visualizing it =
      *
-     * In the first test we will build a vessel network from its constituent components; nodes, segments and vessels. We will do some
-     * simple tests to make sure the network has been formed as expected. Then we write the network to file and visualize it in Paraview.
+     * In the first test build a vessel network from its constituent components; nodes, segments and vessels. Do some
+     * simple tests to make sure the network has been formed as expected. Then write the network to file and visualize it in Paraview. The
+     * network will be built manually, which is tedious and not done much in practice. Later examples will used automatic generators.
      */
-
     void TestBuildNetworkManually() throw (Exception)
     {
         /*
-         * First we make some nodes, which are point features from which vessels can be constructed. They are initialized with a location.
-         * All vessel network components are created using special factory methods which return shared pointers, rather than being created
-         * directly through their constructors. Vessel network components are templated over spatial dimension, and can be 2D or 3D. We will
-         * create a Y shaped network. Later we will learn how to build up networks in a more efficient manner.
+         * First, a note on units. In many simulations with vessel networks care is needed in managing units, as multiple computational grids and
+         * physical phenomena are of interest. It is helpful to be explicit regarding assumed length, time and mass scales and to specify input parameters
+         * with accompanying units. In this component, the `DimensionalChastePoint` is a fundamental geometric feature which contains a location in `N`
+         * dimensional space, stored as a vector of dimensionless doubles, and an accompanying reference length. Thus, each DimensionalChastePoint is a
+         * location with units. To demonstrate, we will create a point, which has a reference length of 1 micron and then rescale its position according
+         * to a different reference length, a cell width.
          */
-        double length = 100.0;
-        boost::shared_ptr<VesselNode<2> > p_node_1 = VesselNode<2>::Create(0.0, 0.0);
-        boost::shared_ptr<VesselNode<2> > p_node_2 = VesselNode<2>::Create(length, 0.0);
-        boost::shared_ptr<VesselNode<2> > p_node_3 = VesselNode<2>::Create(2.0*length, length);
-        boost::shared_ptr<VesselNode<2> > p_node_4 = VesselNode<2>::Create(2.0*length, -length);
+        units::quantity<unit::length> reference_length = 1.0 * 1.e-6 * unit::metres;
+        DimensionalChastePoint<2> my_point(25.0, 50.0, 0.0, reference_length);
         /*
-         * Next we make vessel segments and vessels. Vessel segments are straight-line features which contain a vascular node at each end. Vessels
+         * We can use the unit test framework to check our coordinate values are assigned as expected.
+         */
+        TS_ASSERT_DELTA(my_point[0], 25.0, 1.e-6);
+        TS_ASSERT_DELTA(my_point[1], 50.0, 1.e-6);
+        /*
+         * If we want our coordinates in terms of a fictitious cell width unit we just have to rescale the reference length.
+         */
+        units::quantity<unit::length> cell_width = 25.0 * 1.e-6 * unit::metres;
+        my_point.SetReferenceLengthScale(cell_width);
+        TS_ASSERT_DELTA(my_point[0], 1.0, 1.e-6);
+        TS_ASSERT_DELTA(my_point[1], 2.0, 1.e-6);
+        /*
+         * All geometric features, `VesselNodes`, `Parts`, `RegularGrids` use the `DimensionalChastePoint` as their base representation of spatial
+         * location, meaning that it is straight-forward to change (or if brave mix) length scales in a simulation.
+         *
+         * Now we proceed to making some nodes, which are point features from which vessels can be constructed. They are initialized in the same way as
+         * a `DimensionalChastePoint`, but use a convenience `Create` factory method to get a shared pointer. We will create a 2D Y shaped network.
+         */
+        double vessel_length = 100.0;
+        boost::shared_ptr<VesselNode<2> > p_node_1 = VesselNode<2>::Create(0.0, 0.0, 0.0, reference_length);
+        boost::shared_ptr<VesselNode<2> > p_node_2 = VesselNode<2>::Create(vessel_length, 0.0, 0.0, reference_length);
+        boost::shared_ptr<VesselNode<2> > p_node_3 = VesselNode<2>::Create(2.0*vessel_length, vessel_length, 0.0, reference_length);
+        boost::shared_ptr<VesselNode<2> > p_node_4 = VesselNode<2>::Create(2.0*vessel_length, -vessel_length, 0.0, reference_length);
+        /*
+         * Next make vessel segments and vessels. Vessel segments are straight-line features which contain a vascular node at each end. Vessels
          * can be constructed from multiple vessel segments, but in this case each vessel just has a single segment.
          */
         boost::shared_ptr<VesselSegment<2> > p_segment_1 = VesselSegment<2>::Create(p_node_1, p_node_2);
@@ -116,24 +146,30 @@ public:
         boost::shared_ptr<VesselSegment<2> > p_segment_3 = VesselSegment<2>::Create(p_node_2, p_node_4);
         boost::shared_ptr<Vessel<2> > p_vessel_3 = Vessel<2>::Create(p_segment_3);
         /*
-         * Now we can add our vessels to a vessel network.
+         * Now add the vessels to a vessel network.
          */
         boost::shared_ptr<VesselNetwork<2> > p_network = VesselNetwork<2>::Create();
         p_network->AddVessel(p_vessel_1);
         p_network->AddVessel(p_vessel_2);
         p_network->AddVessel(p_vessel_3);
         /*
-         * We use our test framework to make sure that the network has been created correctly by checking the number of vessels and nodes
+         * Use the test framework to make sure that the network has been created correctly by checking the number of vessels and nodes
          */
         TS_ASSERT_EQUALS(p_network->GetNumberOfNodes(), 4u);
         TS_ASSERT_EQUALS(p_network->GetNumberOfVessels(), 3u);
         /*
-         * Next we write our network to file. We use the Chaste `OutputFileHandler` functionality to manage the output location
-         * and the pointer MACRO `MAKE_PTR_ARGS` to quickly make a smart pointer. Networks are written using VTK's PolyData format,
-         * which should have a .vtp extension.
+         * Next write the network to file. Use the `OutputFileHandler` functionality to manage the output location
+         * and the pointer MACRO `MAKE_PTR_ARGS` to quickly make a smart pointer. Networks are written using VTK's !PolyData format by default,
+         * which will have a .vtp extension. Note that we set the length scale we want for the output (e.g. micron). If none is set the default
+         * is micron.
          */
         MAKE_PTR_ARGS(OutputFileHandler, p_handler, ("TestBuildVesselNetworkLiteratePaper"));
-        p_network->Write(p_handler->GetOutputDirectoryFullPath() + "bifurcating_network.vtp");
+        VesselNetworkWriter<2> writer;
+        writer.SetFileName(p_handler->GetOutputDirectoryFullPath() + "bifurcating_network.vtp");
+        writer.SetVesselNetwork(p_network);
+        writer.SetReferenceLengthScale(reference_length);
+        writer.Write();
+
     }
     /*
      * Now we can visualize then network in Paraview. See the tutorial [wiki:UserTutorials/VisualizingWithParaview here], to get started. To view the network import the file
@@ -143,32 +179,47 @@ public:
     /*
      * = Test 2 - Building a vessel network using a generator and reading from file =
      *
-     * In this test we use a built in generator to automatically construct a network. We then write it to file, read it back in and check
-     * that it is restored as expected.
+     * It is usually tedious to build a vessel network from scratch. In this test we use a generator to automatically construct a network.
+     * We then write it to file, read it back in and check that it is restored as expected.
      */
     void TestBuildNetworkFromGeneratorAndReadFromFile() throw (Exception)
     {
         /*
-         * We create a hexagonal network in 3D space using a generator. We specify the target network width and height and the desired vessel
-         * length.
+         * Create a hexagonal network in 3D space using a generator. Specify the target network width and height and the desired vessel
+         * length. The use of dimensional analysis is demonstrated by now using a fictitious 'cell width' reference length unit instead of microns.
          */
-        VasculatureGenerator<3> network_generator = VasculatureGenerator<3>();
-        double target_width = 600.0;
-        double target_height = 800.0;
-        double length = 100.0;
-        boost::shared_ptr<VesselNetwork<3> > p_network = network_generator.GenerateHexagonalNetwork(target_width, target_height, length);
+        units::quantity<unit::length> cell_width = 25.0 * 1.e-6 * unit::metres;
+        units::quantity<unit::length> target_width = 24.0 * cell_width;
+        units::quantity<unit::length> target_height = 31.0 * cell_width;
+        units::quantity<unit::length> vessel_length = 4.0 * cell_width;
+        /*
+         * Note that the generator is given the reference length scale. This is not imperative, but helps to ensure that all point coordinates
+         * are stored with the same reference length scale. This is helpful when combining with computational grids and cell populations later on.
+         */
+        VesselNetworkGenerator<3> network_generator;
+        network_generator.SetReferenceLengthScale(cell_width);
+        boost::shared_ptr<VesselNetwork<3> > p_network = network_generator.GenerateHexagonalNetwork(target_width,
+                                                                                                    target_height,
+                                                                                                    vessel_length);
         /*
          * Get the number of nodes and vessels for testing later, and write the network to file as before.
          */
         unsigned number_of_nodes = p_network->GetNumberOfNodes();
         unsigned number_of_vessels = p_network->GetNumberOfVessels();
         MAKE_PTR_ARGS(OutputFileHandler, p_handler, ("TestBuildVesselNetworkLiteratePaper"));
-        p_network->Write(p_handler->GetOutputDirectoryFullPath() + "hexagonal_network.vtp");
+        VesselNetworkWriter<3> writer;
+        writer.SetFileName(p_handler->GetOutputDirectoryFullPath() + "hexagonal_network.vtp");
+        writer.SetVesselNetwork(p_network);
 
+        units::quantity<unit::length> micron_length_scale = 1.e-6 * unit::metres;
+        writer.SetReferenceLengthScale(micron_length_scale);
+        writer.Write();
         /*
-         * We use a reader to read the network back in from the VTK file.
+         * Use a reader to read the network back in from the VTK file. Our network was written in units of micron, so
+         * we need to tell the reader this so that locations are suitably stored.
          */
         VesselNetworkReader<3> network_reader;
+        network_reader.SetReferenceLengthScale(micron_length_scale);
         network_reader.SetFileName(p_handler->GetOutputDirectoryFullPath() + "hexagonal_network.vtp");
         boost::shared_ptr<VesselNetwork<3> > p_network_from_file = network_reader.Read();
         /*

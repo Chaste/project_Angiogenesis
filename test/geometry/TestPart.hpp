@@ -42,7 +42,7 @@
 #include "Polygon.hpp"
 #include "Part.hpp"
 #include "OutputFileHandler.hpp"
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkGenerator.hpp"
 #include "VesselNode.hpp"
 #include "VesselSegment.hpp"
 #include "Vessel.hpp"
@@ -92,7 +92,7 @@ public:
     void TestAddRectangle()
     {
         Part<3> part = Part<3>();
-        part.AddRectangle();
+        part.AddRectangle(1.e-6*unit::metres, 1.e-6*unit::metres, DimensionalChastePoint<3>(0.0, 0.0));
 
         TS_ASSERT_DELTA(part.GetPolygons()[0]->GetVertices()[0]->rGetLocation()[0], 0.0, 1.e-6);
         TS_ASSERT_DELTA(part.GetPolygons()[0]->GetVertices()[0]->rGetLocation()[1], 0.0, 1.e-6);
@@ -107,17 +107,14 @@ public:
     void TestAddCuboid()
     {
         Part<3> part = Part<3>();
-        part.AddCuboid();
+        part.AddCuboid(1.e-6*unit::metres, 1.e-6*unit::metres, 1.e-6*unit::metres, DimensionalChastePoint<3>(0.0, 0.0, 0.0));
     }
 
     void TestComposite2DPart()
     {
         boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
-        p_part->AddRectangle();
-        c_vector<double,3> centre = zero_vector<double>(3);
-        centre[0] = 0.5;
-        centre[1] = 0.5;
-        p_part->AddCircle(0.33, centre);
+        p_part->AddRectangle(1.e-6*unit::metres, 1.e-6*unit::metres, DimensionalChastePoint<3>(0.0, 0.0));
+        p_part->AddCircle(0.33e-6*unit::metres, DimensionalChastePoint<3>(0.5, 0.5));
 
         OutputFileHandler output_file_handler("TestPart");
         p_part->Write(output_file_handler.GetOutputDirectoryFullPath().append("Composite2DPart.vtp"));
@@ -126,8 +123,8 @@ public:
     void TestExtrudePart()
     {
         boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
-        boost::shared_ptr<Polygon> p_circle = p_part->AddCircle();
-        p_part->Extrude(p_circle);
+        boost::shared_ptr<Polygon> p_circle = p_part->AddCircle(0.33e-6*unit::metres, DimensionalChastePoint<3>(0.5, 0.5));
+        p_part->Extrude(p_circle, 1.e-6*unit::metres);
         OutputFileHandler output_file_handler("TestPart", false);
         p_part->Write(output_file_handler.GetOutputDirectoryFullPath().append("ExtrudePart.vtp"));
     }
@@ -144,7 +141,10 @@ public:
         double domain_width = num_vessels_per_row * (spacing + 2.0* radius);
         double domain_height = num_vessels_per_row * (spacing + 2.0* radius);
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
-        p_domain->AddCuboid(domain_width, domain_height, vessel_length);
+        p_domain->AddCuboid(domain_width*1.e-6*unit::metres,
+                            domain_height*1.e-6*unit::metres,
+                            vessel_length*1.e-6*unit::metres,
+                            DimensionalChastePoint<3>(0.0, 0.0, 0.0));
         p_domain->AddVesselNetwork(p_network);
 
         OutputFileHandler output_file_handler("TestPart", false);
@@ -163,7 +163,10 @@ public:
         double domain_width = num_vessels_per_row * (spacing + 2.0* radius);
         double domain_height = num_vessels_per_row * (spacing + 2.0* radius);
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
-        p_domain->AddCuboid(domain_width, domain_height, vessel_length);
+        p_domain->AddCuboid(domain_width*1.e-6*unit::metres,
+                            domain_height*1.e-6*unit::metres,
+                            vessel_length*1.e-6*unit::metres,
+                            DimensionalChastePoint<3>(0.0, 0.0, 0.0));
         p_domain->AddVesselNetwork(p_network, true);
 
         OutputFileHandler output_file_handler("TestPart", false);
@@ -172,14 +175,14 @@ public:
 
     void TestAddVesselsSurface3dCylinder()
     {
-        double vessel_length = 100.0;
-        VasculatureGenerator<3> generator;
-        boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length);
+        units::quantity<unit::length> vessel_length = 100.0 * 1.e-6 * unit::metres;
+        VesselNetworkGenerator<3> generator;
+        boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(vessel_length, DimensionalChastePoint<3>(0.0, 0.0, 0.0));
         p_network->GetVessels()[0]->GetStartNode()->SetRadius(5.0e-6 * unit::metres);
         p_network->GetVessels()[0]->GetEndNode()->SetRadius(5.0e-6 * unit::metres);
 
         Part<3> part = Part<3>();
-        boost::shared_ptr<Polygon> p_circle = part.AddCircle(vessel_length);
+        boost::shared_ptr<Polygon> p_circle = part.AddCircle(vessel_length, DimensionalChastePoint<3>(0.0, 0.0, 0.0));
         part.Extrude(p_circle, vessel_length);
         part.AddVesselNetwork(p_network, true);
 

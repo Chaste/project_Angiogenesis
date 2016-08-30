@@ -93,7 +93,7 @@ public:
      * 'inside' of vessel segments. They are useful for meshing.
      * @ return the locations of PLC holes in the network
      */
-    std::vector<c_vector<double, DIM> > GetHoles();
+    std::vector<DimensionalChastePoint<DIM> > GetHoles();
 
     /**
      * Return the surface in the form of VTK polydata

@@ -44,7 +44,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "WallShearStressBasedRegressionSolver.hpp"
 #include "AngiogenesisSolver.hpp"
 #include "SimulationTime.hpp"
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkGenerator.hpp"
 #include "StructuralAdaptationSolver.hpp"
 #include "FlowSolver.hpp"
 #include "VascularTumourSolver.hpp"
@@ -97,8 +97,10 @@ public:
         double vessel_length = 80.0;
 
         // Generate the network
-        VasculatureGenerator<2> p_network_generator;
-        boost::shared_ptr<VesselNetwork<2> > p_network = p_network_generator.GenerateHexagonalNetwork(1000, 1000, vessel_length);
+        VesselNetworkGenerator<2> p_network_generator;
+        boost::shared_ptr<VesselNetwork<2> > p_network = p_network_generator.GenerateHexagonalNetwork(1000*1.e-6*unit::metres,
+                                                                                                      1000*1.e-6*unit::metres,
+                                                                                                      vessel_length*1.e-6*unit::metres);
 
         // Make a dummy segment to set properties on
         boost::shared_ptr<VesselSegment<2> > p_segment1 = VesselSegment<2>::Create(VesselNode<2>::Create(0.0, 0.0),
@@ -107,15 +109,8 @@ public:
         p_network->SetSegmentProperties(p_segment1);
 
         // Get the nearest node to the inlet and outlet
-        c_vector<double, 2> loc1;
-        c_vector<double, 2> loc2;
-        loc1[0] = 742;
-        loc1[1] = 912;
-        loc2[0] = 0;
-        loc2[1] = 0;
-
-        boost::shared_ptr<VesselNode<2> > p_inlet_node = p_network->GetNearestNode(loc1);
-        boost::shared_ptr<VesselNode<2> > p_outlet_node = p_network->GetNearestNode(loc2);
+        boost::shared_ptr<VesselNode<2> > p_inlet_node = p_network->GetNearestNode(DimensionalChastePoint<2>(742, 912));
+        boost::shared_ptr<VesselNode<2> > p_outlet_node = p_network->GetNearestNode(DimensionalChastePoint<2>(0, 0));
         p_inlet_node->GetFlowProperties()->SetIsInputNode(true);
         p_inlet_node->GetFlowProperties()->SetPressure(3393*unit::pascals);
         p_outlet_node->GetFlowProperties()->SetIsOutputNode(true);

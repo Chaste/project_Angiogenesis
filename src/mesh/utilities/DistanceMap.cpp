@@ -91,7 +91,7 @@ void DistanceMap<DIM>::Solve()
                 for (unsigned k = 0; k < extents_x; k++) // X
                 {
                     unsigned grid_index = this->mpRegularGrid->Get1dGridIndex(k, j, i);
-                    c_vector<double, DIM> location = this->mpRegularGrid->GetLocation(k ,j, i);
+                    DimensionalChastePoint<DIM> location = this->mpRegularGrid->GetLocation(k ,j, i);
                     units::quantity<unit::length> min_distance = DBL_MAX * unit::metres;
                     for (unsigned idx = 0; idx <  segments.size(); idx++)
                     {

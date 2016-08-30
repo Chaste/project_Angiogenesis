@@ -72,7 +72,7 @@
 #include "PottsMesh.hpp"
 #include "OnLatticeSimulation.hpp"
 #include "LQRadiotherapyCellKiller.hpp"
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkGenerator.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
 
@@ -120,7 +120,7 @@ public:
         double domain_x = 40.0;
         double domain_y = 40.0;
         boost::shared_ptr<Part<2> > p_domain = Part<2>::Create();
-        p_domain->AddRectangle(domain_x, domain_y);
+        p_domain->AddRectangle(domain_x*1.e-6*unit::metres, domain_y*1.e-6*unit::metres, DimensionalChastePoint<2>(0.0, 0.0));
 
         // Create a lattice for the cell population
         double spacing = 1.0;
@@ -130,24 +130,18 @@ public:
         PottsMesh<2>* p_mesh = generator.GetMesh();
         p_mesh->Scale(spacing, spacing);
 
-        VasculatureGenerator<2> network_generator;
-        c_vector<double, 2> start_point;
-        start_point[0] = 20.0;
-        start_point[1] = 0.0;
+        VesselNetworkGenerator<2> network_generator;
 
         double length = spacing * num_y; // full domain in y direction
         unsigned divisions = num_y - 1; // divide the vessel to coincide with grid
         unsigned alignment_axis = 1; // pointing y direction
-        boost::shared_ptr<VesselNetwork<2> > p_network = network_generator.GenerateSingleVessel(length, start_point,
+        boost::shared_ptr<VesselNetwork<2> > p_network = network_generator.GenerateSingleVessel(length*1.e-6*unit::metres, DimensionalChastePoint<2>(20.0, 0.0),
                                                                                             divisions, alignment_axis);
 
         // Get initital tumour cell region
         double radius = 3.0;
-        c_vector<double, 2> origin;
-        origin[0] = 20.0;
-        origin[1] = 20.0;
         boost::shared_ptr<Part<2> > p_sub_domain = Part<2>::Create();
-        boost::shared_ptr<Polygon> circle = p_sub_domain->AddCircle(radius, origin);
+        boost::shared_ptr<Polygon> circle = p_sub_domain->AddCircle(radius*1.e-6*unit::metres, DimensionalChastePoint<2>(20.0, 20.0));
         std::vector<unsigned> location_indices;
         for (unsigned ind = 0; ind < p_mesh->GetNumNodes(); ind++)
         {

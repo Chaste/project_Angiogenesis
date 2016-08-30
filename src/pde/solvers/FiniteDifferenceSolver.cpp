@@ -191,7 +191,6 @@ void FiniteDifferenceSolver<DIM>::DoLinearSolve()
             {
                 unsigned grid_index = this->mpRegularGrid->Get1dGridIndex(k, j, i);
 
-                c_vector<double, DIM> location = this->mpRegularGrid->GetLocation(k ,j, i);
                 linear_system.AddToMatrixElement(grid_index, grid_index, this->mpPde->ComputeLinearInUCoeffInSourceTerm(grid_index) - 6.0 * diffusion_term);
 
                 // Assume no flux on domain boundaries by default
@@ -357,7 +356,6 @@ PetscErrorCode HyrbidFiniteDifference_ComputeResidual(SNES snes, Vec solution_gu
                 unsigned grid_index = solver->GetGrid()->Get1dGridIndex(k, j, i);
                 double grid_guess = soln_guess_repl[grid_index];
 
-                c_vector<double, DIM> location = solver->GetGrid()->GetLocation(k ,j, i);
                 PetscVecTools::AddToElement(residual, grid_index, grid_guess * (- 6.0 * diffusion_term) +
                                                 solver->GetNonLinearPde()->ComputeNonlinearSourceTerm(grid_index, grid_guess));
 
@@ -479,7 +477,6 @@ PetscErrorCode HyrbidFiniteDifference_ComputeJacobian(SNES snes, Vec input, Mat*
                 unsigned grid_index = solver->GetGrid()->Get1dGridIndex(k, j, i);
                 double grid_guess = input_repl[grid_index];
 
-                c_vector<double, DIM> location = solver->GetGrid()->GetLocation(k ,j, i);
                 PetscMatTools::AddToElement(jacobian, grid_index, grid_index, - 6.0 * diffusion_term +
                                             solver->GetNonLinearPde()->ComputeNonlinearSourceTermPrime(grid_index, grid_guess));
 

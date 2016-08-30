@@ -89,7 +89,7 @@ public:
     /*
      * Overridden solution at points
      */
-    std::vector<double> GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints);
+    std::vector<double> GetSolutionAtPoints(std::vector<DimensionalChastePoint<DIM> > samplePoints);
 
     std::vector<double> GetSolutionAtGridPoints(boost::shared_ptr<RegularGrid<DIM, DIM> > pGrid);
 

@@ -40,20 +40,20 @@
 #include "FileFinder.hpp"
 #include "OutputFileHandler.hpp"
 #include "SmartPointers.hpp"
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkGenerator.hpp"
 #include "FakePetscSetup.hpp"
 
-class TestVasculatureGenerator : public CxxTest::TestSuite
+class TestVesselNetworkGenerator : public CxxTest::TestSuite
 {
 public:
 
     void TestGenerateAndWriteHexagonalNetwork() throw (Exception)
     {
         // Specify the network dimensions
-        double vessel_length = 5.0;
+        units::quantity<unit::length> vessel_length = 5.0* 1.e-6 * unit::metres;
 
         // Generate the network
-        VasculatureGenerator<2> vascular_network_generator;
+        VesselNetworkGenerator<2> vascular_network_generator;
         boost::shared_ptr<VesselNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalUnit(vessel_length);
 
         // Pattern the unit
@@ -61,7 +61,7 @@ public:
         vascular_network_generator.PatternUnitByTranslation(vascular_network, num_units);
 
         // Write the network to file
-        OutputFileHandler output_file_handler("TestVasculatureGenerator", false);
+        OutputFileHandler output_file_handler("TestVesselNetworkGenerator", false);
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("HexagonalVesselNetwork.vtp");
         vascular_network->Write(output_filename);
     }
@@ -69,10 +69,10 @@ public:
     void TestGenerate3dHexagonalNetwork() throw (Exception)
     {
         // Specify the network dimensions
-        double vessel_length = 40.0;
+        units::quantity<unit::length> vessel_length = 40.0* 1.e-6 * unit::metres;
 
         // Generate the network
-        VasculatureGenerator<3> vascular_network_generator;
+        VesselNetworkGenerator<3> vascular_network_generator;
         boost::shared_ptr<VesselNetwork<3> > vascular_network = vascular_network_generator.GenerateHexagonalUnit(vessel_length);
 
         // Pattern the unit
@@ -80,7 +80,7 @@ public:
         vascular_network_generator.PatternUnitByTranslation(vascular_network, num_units);
 
         // Write the network to file
-        OutputFileHandler output_file_handler("TestVasculatureGenerator", false);
+        OutputFileHandler output_file_handler("TestVesselNetworkGenerator", false);
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("HexagonalVesselNetwork3d.vtp");
         vascular_network->Write(output_filename);
     }
@@ -89,10 +89,13 @@ public:
     void DontTestVoronoiNetwork() throw (Exception)
     {
         // Generate the network
-        VasculatureGenerator<3> vascular_network_generator;
-        OutputFileHandler output_file_handler("TestVasculatureGenerator", false);
+        VesselNetworkGenerator<3> vascular_network_generator;
+        OutputFileHandler output_file_handler("TestVesselNetworkGenerator", false);
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("VoronoiNetwork.vtp");
-        boost::shared_ptr<VesselNetwork<3> > p_network = vascular_network_generator.GenerateVoronoiNetwork(100, 100, 100, 100);
+        boost::shared_ptr<VesselNetwork<3> > p_network = vascular_network_generator.GenerateVoronoiNetwork(100* 1.e-6 * unit::metres,
+                                                                                                           100* 1.e-6 * unit::metres,
+                                                                                                           100* 1.e-6 * unit::metres,
+                                                                                                           100);
         p_network->Write(output_filename);
 
     }
@@ -100,12 +103,15 @@ public:
     void TestParallelNetworks() throw (Exception)
     {
         boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
-        p_part->AddCuboid(1000.0, 1000.0, 50.0);
-        VasculatureGenerator<3> network_generator;
+        p_part->AddCuboid(1000.0* 1.e-6 * unit::metres,
+                          1000.0* 1.e-6 * unit::metres,
+                          50.0* 1.e-6 * unit::metres,
+                          DimensionalChastePoint<3>(0.0, 0.0, 0.0));
+        VesselNetworkGenerator<3> network_generator;
         boost::shared_ptr<VesselNetwork<3> > p_network = network_generator.GenerateParrallelNetwork(p_part,
                                                                                                         1.e-4,
                                                                                                         VesselDistribution::REGULAR);
-        OutputFileHandler output_file_handler("TestVasculatureGenerator/Parallel", false);
+        OutputFileHandler output_file_handler("TestVesselNetworkGenerator/Parallel", false);
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("RegularNetwork.vtp");
         p_network->Write(output_filename);
 
@@ -144,16 +150,19 @@ public:
     void DontTest3dNetworks() throw (Exception)
     {
         boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
-        p_part->AddCuboid(2000.0, 2000.0, 2000.0);
+        p_part->AddCuboid(2000.0* 1.e-6 * unit::metres,
+                          2000.0* 1.e-6 * unit::metres,
+                          2000.0* 1.e-6 * unit::metres,
+                          DimensionalChastePoint<3>(0.0, 0.0, 0.0));
         std::vector<double> density;
         density.push_back(8.e-5);
         density.push_back(8.e-5);
         density.push_back(1.e-5);
-        VasculatureGenerator<3> network_generator;
+        VesselNetworkGenerator<3> network_generator;
         boost::shared_ptr<VesselNetwork<3> > p_network = network_generator.Generate3dNetwork(p_part,
                                                                                                         density,
                                                                                                         VesselDistribution::REGULAR);
-        OutputFileHandler output_file_handler("TestVasculatureGenerator/3d", false);
+        OutputFileHandler output_file_handler("TestVesselNetworkGenerator/3d", false);
         std::string output_filename = output_file_handler.GetOutputDirectoryFullPath().append("RegularNetwork.vtp");
         p_network->Write(output_filename);
 

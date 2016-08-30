@@ -42,7 +42,7 @@ class TestSnailTrailOffLattice(unittest.TestCase):
         field.Write()
         
         # Create and oval shaped planar vessel network
-        network = chaste.population.vessel.VasculatureGenerator().GenerateOvalNetwork(400, 40, 0.5, 1.0)
+        network = chaste.population.vessel.VesselNetworkGenerator().GenerateOvalNetwork(400, 40, 0.5, 1.0)
         
         # Set up an off lattice tip cell migration rule
         migration_rule = chaste.simulation.OffLatticeMigrationRule()

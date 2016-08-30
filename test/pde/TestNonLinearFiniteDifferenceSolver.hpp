@@ -47,7 +47,7 @@
 #include "DiscreteContinuumLinearEllipticPde.hpp"
 #include "DiscreteContinuumNonLinearEllipticPde.hpp"
 #include "VesselNetwork.hpp"
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkGenerator.hpp"
 #include "SmartPointers.hpp"
 #include "DiscreteContinuumBoundaryCondition.hpp"
 #include "DiscreteContinuumMesh.hpp"
@@ -63,7 +63,10 @@ public:
     {
         // Set up the mesh
         boost::shared_ptr<Part<3> > p_domain = Part<3>::Create();
-        p_domain->AddCuboid(4.0, 4.0, 4.0);
+        p_domain->AddCuboid(4.0e-6*unit::metres,
+                            4.0e-6*unit::metres,
+                            4.0e-6*unit::metres,
+                            DimensionalChastePoint<3>(0.0, 0.0, 0.0));
 
         boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
         p_grid->GenerateFromPart(p_domain, 0.5*1.e-6*unit::metres);

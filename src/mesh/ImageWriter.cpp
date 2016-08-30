@@ -13,7 +13,7 @@
  modification, are permitted provided that the following conditions are met:
  * Redistributions of source code must retain the above copyright notice,
  this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the abovea copyright notice,
+ * Redistributions in binary form must reproduce the above copyright notice,
  this list of conditions and the following disclaimer in the documentation
  and/or other materials provided with the distribution.
  * Neither the name of the University of Oxford nor the names of its
@@ -33,38 +33,64 @@
 
  */
 
-#ifndef TESTVORONOIGENERATOR_HPP_
-#define TESTVORONOIGENERATOR_HPP_
+#include "Exception.hpp"
+#include <boost/filesystem.hpp>
+#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning
+#include <vtkXMLImageDataWriter.h>
+#include <vtkVersion.h>
+#include "PetscTools.hpp"
+#include "ImageWriter.hpp"
 
-#include <cxxtest/TestSuite.h>
-#include "SmartPointers.hpp"
-#include "Part.hpp"
-#include "VoronoiGenerator.hpp"
-#include "OutputFileHandler.hpp"
-
-class TestVoronoiGenerator : public CxxTest::TestSuite
+ImageWriter::ImageWriter()
+    : mpVtkImage(vtkSmartPointer<vtkImageData>::New()),
+      mFilepath()
 {
-public:
 
-    // Voronoi generation with tetgen no longer supported
-    void TestSquare()
+}
+
+boost::shared_ptr<ImageWriter> ImageWriter::Create()
+{
+    MAKE_PTR(ImageWriter, pSelf);
+    return pSelf;
+}
+
+ImageWriter::~ImageWriter()
+{
+
+}
+
+void ImageWriter::SetImage(vtkSmartPointer<vtkImageData> pImage)
+{
+    mpVtkImage = pImage;
+}
+
+void ImageWriter::SetFilename(const std::string& filename)
+{
+    mFilepath = filename;
+}
+
+void ImageWriter::Write()
+{
+    if(mFilepath == "")
     {
-        boost::shared_ptr<Part<3> > p_part = Part<3>::Create();
-        p_part->AddCuboid(3000*1.e-6*unit::metres,
-                          1500*1.e-6*unit::metres,
-                          200*1.e-6*unit::metres,
-                          DimensionalChastePoint<3>(0.0, 0.0, 0.0));
-
-        VoronoiGenerator<3> generator;
-//        boost::shared_ptr<Part<3> > p_tesselation = generator.Generate(p_part, std::vector<boost::shared_ptr<Vertex> >(), 200);
-//        std::vector<boost::shared_ptr<Vertex> > vertices = p_tesselation->GetVertices();
-//        for(unsigned idx=0; idx < vertices.size(); idx++)
-//        {
-//            vertices[idx]->SetCoordinate(1, 2.0 * vertices[idx]->rGetLocation()[1]);
-//        }
-//        OutputFileHandler output_file_handler("TestVoronoiNetwork", false);
-//        p_tesselation->Write(output_file_handler.GetOutputDirectoryFullPath() + "part.vtp");
+        EXCEPTION("Output file not specified for image writer.");
     }
-};
 
-#endif /*TESTVORONOIGENERATOR_HPP_*/
+    if(!mpVtkImage)
+    {
+        EXCEPTION("Output image not set for image writer.");
+    }
+
+    if(PetscTools::AmMaster())
+    {
+        vtkSmartPointer<vtkXMLImageDataWriter> p_writer1 = vtkSmartPointer<vtkXMLImageDataWriter>::New();
+        p_writer1->SetFileName(mFilepath.c_str());
+        #if VTK_MAJOR_VERSION <= 5
+            p_writer1->SetInput(mpVtkImage);
+        #else
+            p_writer1->SetInputData(mpVtkImage);
+        #endif
+        p_writer1->Update();
+        p_writer1->Write();
+    }
+}

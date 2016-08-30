@@ -122,7 +122,7 @@ public:
      * @param location the location to be tested
      * @return true if the location is in the facet
      */
-    bool ContainsPoint(c_vector<double, 3> location);
+    bool ContainsPoint(const DimensionalChastePoint<3>& location);
 
     /* Return the bounding box of the facet
      * @return the bounding box (xmin, xmax, ymin, ymax, zmin, zmax)
@@ -132,7 +132,7 @@ public:
     /* Return the centroid of the facet
      * @return the centroid of the facet
      */
-    c_vector<double, 3> GetCentroid();
+    DimensionalChastePoint<3> GetCentroid();
 
     /* Return the data for the specified label
      * @param label the data label
@@ -143,7 +143,7 @@ public:
     /* Return the distance to the facet
      * @return the distance to the facet
      */
-    double GetDistance(c_vector<double, 3> location);
+    double GetDistance(const DimensionalChastePoint<3>& location);
 
     /* Return the facet's plane
      * @return a vtk plane on the facet's plane

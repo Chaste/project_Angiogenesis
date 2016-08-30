@@ -108,7 +108,7 @@ public:
         vertices.push_back(Vertex::Create(0.0, 1.0, 0.0));
         boost::shared_ptr<Polygon> p_polygon = Polygon::Create(vertices);
 
-        c_vector<double, 3> centroid = p_polygon->GetCentroid();
+        DimensionalChastePoint<3> centroid = p_polygon->GetCentroid();
         TS_ASSERT_DELTA(centroid[0], 0.5, 1.e-6);
         TS_ASSERT_DELTA(centroid[1], 0.5, 1.e-6);
         TS_ASSERT_DELTA(centroid[2], 0.0, 1.e-6);
@@ -118,20 +118,9 @@ public:
         TS_ASSERT_DELTA(normal[1], 0.0, 1.e-6);
         TS_ASSERT_DELTA(normal[2], 1.0, 1.e-6);
 
-        c_vector<double, 3> test_point1;
-        test_point1[0] = 0.75;
-        test_point1[1] = 0.75;
-        test_point1[2] = 0.0;
-
-        c_vector<double, 3> test_point2;
-        test_point2[0] = 1.25;
-        test_point2[1] = 0.75;
-        test_point2[2] = 0.0;
-
-        c_vector<double, 3> test_point3;
-        test_point3[0] = 0.75;
-        test_point3[1] = 0.75;
-        test_point3[2] = 1.0;
+        DimensionalChastePoint<3> test_point1(0.75, 0.75, 0.0);
+        DimensionalChastePoint<3> test_point2(1.25, 0.75, 0.0);
+        DimensionalChastePoint<3> test_point3(0.75, 0.75, 1.0);
 
         TS_ASSERT(p_polygon->ContainsPoint(test_point1));
         TS_ASSERT(!p_polygon->ContainsPoint(test_point2));

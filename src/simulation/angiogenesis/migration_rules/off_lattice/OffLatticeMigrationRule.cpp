@@ -115,7 +115,7 @@ std::vector<c_vector<double, DIM> > OffLatticeMigrationRule<DIM>::GetDirections(
                 angle_z = RandomNumberGenerator::Instance()->NormalRandomDeviate(mMeanAngles[2], mSdvAngles[2]);
             }
             c_vector<double, DIM> currentDirection  =
-                    -rNodes[idx]->GetSegments()[0]->GetOppositeNode(rNodes[idx])->rGetLocation() + rNodes[idx]->rGetLocation();
+                    -rNodes[idx]->GetSegments()[0]->GetOppositeNode(rNodes[idx])->rGetLocation().rGetLocation() + rNodes[idx]->rGetLocation().rGetLocation();
             currentDirection /= norm_2(currentDirection);
 
             c_vector<double, DIM> new_direction_z = RotateAboutAxis<DIM>(currentDirection, mGlobalZ, angle_z);
@@ -127,16 +127,16 @@ std::vector<c_vector<double, DIM> > OffLatticeMigrationRule<DIM>::GetDirections(
             if(this->mpSolver)
             {
                 // Make points
-                std::vector<c_vector<double, DIM> > probe_locations;
+                std::vector<DimensionalChastePoint<DIM> > probe_locations;
                 probe_locations.push_back(rNodes[idx]->rGetLocation());
-                probe_locations.push_back(probe_locations[0] + mProbeLength * unit_vector<double>(DIM,0));
-                probe_locations.push_back(probe_locations[0] - mProbeLength * unit_vector<double>(DIM,0));
-                probe_locations.push_back(probe_locations[0] + mProbeLength * unit_vector<double>(DIM,1));
-                probe_locations.push_back(probe_locations[0] - mProbeLength * unit_vector<double>(DIM,1));
+                probe_locations.push_back(DimensionalChastePoint<DIM>(probe_locations[0].rGetLocation() + mProbeLength * unit_vector<double>(DIM,0)));
+                probe_locations.push_back(DimensionalChastePoint<DIM>(probe_locations[0].rGetLocation() - mProbeLength * unit_vector<double>(DIM,0)));
+                probe_locations.push_back(DimensionalChastePoint<DIM>(probe_locations[0].rGetLocation() + mProbeLength * unit_vector<double>(DIM,1)));
+                probe_locations.push_back(DimensionalChastePoint<DIM>(probe_locations[0].rGetLocation() - mProbeLength * unit_vector<double>(DIM,1)));
                 if(DIM==3)
                 {
-                    probe_locations.push_back(probe_locations[0] + mProbeLength * unit_vector<double>(DIM,2));
-                    probe_locations.push_back(probe_locations[0] - mProbeLength * unit_vector<double>(DIM,2));
+                    probe_locations.push_back(DimensionalChastePoint<DIM>(probe_locations[0].rGetLocation() + mProbeLength * unit_vector<double>(DIM,2)));
+                    probe_locations.push_back(DimensionalChastePoint<DIM>(probe_locations[0].rGetLocation() - mProbeLength * unit_vector<double>(DIM,2)));
                 }
 
                 // Get the solution
@@ -197,13 +197,13 @@ std::vector<c_vector<double, DIM> > OffLatticeMigrationRule<DIM>::GetDirections(
             c_vector<double, DIM> min_direction = zero_vector<double>(DIM);
             for(unsigned jdx=0; jdx<nodes.size(); jdx++)
             {
-                if(IsPointInCone<DIM>(nodes[jdx]->rGetLocation(), rNodes[idx]->rGetLocation(), rNodes[idx]->rGetLocation() + currentDirection * 100.0, M_PI/3.0))
+                if(IsPointInCone<DIM>(nodes[jdx]->rGetLocation().rGetLocation(), rNodes[idx]->rGetLocation().rGetLocation(), rNodes[idx]->rGetLocation().rGetLocation() + currentDirection * 100.0, M_PI/3.0))
                 {
-                    double distance = norm_2(rNodes[idx]->rGetLocation() - nodes[jdx]->rGetLocation());
+                    double distance = norm_2(rNodes[idx]->rGetLocation().rGetLocation() - nodes[jdx]->rGetLocation().rGetLocation());
                     if(distance < min_distance)
                     {
                         min_distance = distance;
-                        min_direction = nodes[jdx]->rGetLocation() - rNodes[idx]->rGetLocation();
+                        min_direction = nodes[jdx]->rGetLocation().rGetLocation() - rNodes[idx]->rGetLocation().rGetLocation();
                         min_direction /= norm_2(min_direction);
                     }
                 }

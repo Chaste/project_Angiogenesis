@@ -41,7 +41,7 @@
 #include "FileFinder.hpp"
 #include "OutputFileHandler.hpp"
 #include "SmartPointers.hpp"
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkGenerator.hpp"
 #include "FlowSolver.hpp"
 #include "DimensionalSimulationTime.hpp"
 #include "AlarconHaematocritSolver.hpp"
@@ -165,12 +165,13 @@ public:
     void TestHexagonalNetwork() throw(Exception)
 	{
         // Specify the network dimensions
-        double vessel_length = 82.0;
+        units::quantity<unit::length> vessel_length = 83.0 * 1.e-6 * unit::metres;
 
         // Generate the network
-        VasculatureGenerator<2> vascular_network_generator;
-        boost::shared_ptr<VesselNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(800.0,
-                                                                                                                        1000.0, vessel_length);
+        VesselNetworkGenerator<2> vascular_network_generator;
+        boost::shared_ptr<VesselNetwork<2> > vascular_network = vascular_network_generator.GenerateHexagonalNetwork(800.0* 1.e-6 * unit::metres,
+                                                                                                                        1000.0* 1.e-6 * unit::metres,
+                                                                                                                        vessel_length);
 
         std::vector<ChastePoint<2> > points;
         points.push_back(ChastePoint<2>(0, 0));

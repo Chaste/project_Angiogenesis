@@ -43,7 +43,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "OutputFileHandler.hpp"
 #include "SmartPointers.hpp"
 #include "FunctionMap.hpp"
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkGenerator.hpp"
 #include "VesselNode.hpp"
 #include "VesselSegment.hpp"
 #include "Vessel.hpp"
@@ -93,16 +93,12 @@ public:
         p_funciton_map->Write();
 
         //Set up the limbal vessel
-        VasculatureGenerator<3> generator;
-        c_vector<double, 3> start_point;
-        start_point[0] = 2.0 * spacing; // two lattice points to the right
-        start_point[1] = 2.0 * spacing;
-        start_point[2] = 10.0*spacing;
-
+        VesselNetworkGenerator<3> generator;
         double length = spacing * (extents[1] - 3); // full domain in y direction
         unsigned divisions = extents[1] - 2; // divide the vessel to coincide with grid
         unsigned alignment_axis = 1; // pointing y direction
-        boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(length, start_point,
+        boost::shared_ptr<VesselNetwork<3> > p_network = generator.GenerateSingleVessel(length*1.e-6*unit::metres,
+                                                                                        DimensionalChastePoint<3>(2.0*spacing, 2.0*spacing, 10.0*spacing),
                                                                                             divisions, alignment_axis);
 
         boost::shared_ptr<OffLatticeMigrationRule<3> > p_migration_rule = OffLatticeMigrationRule<3>::Create();

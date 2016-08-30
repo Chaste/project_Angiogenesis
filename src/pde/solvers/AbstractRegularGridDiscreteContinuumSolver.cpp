@@ -72,7 +72,7 @@ boost::shared_ptr<RegularGrid<DIM> > AbstractRegularGridDiscreteContinuumSolver<
 }
 
 template<unsigned DIM>
-std::vector<double> AbstractRegularGridDiscreteContinuumSolver<DIM>::GetSolutionAtPoints(std::vector<c_vector<double, DIM> > samplePoints)
+std::vector<double> AbstractRegularGridDiscreteContinuumSolver<DIM>::GetSolutionAtPoints(std::vector<DimensionalChastePoint<DIM> > samplePoints)
 {
     if(!this->mpVtkSolution)
     {

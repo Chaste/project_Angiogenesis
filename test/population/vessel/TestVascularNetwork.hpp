@@ -44,7 +44,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "VesselNetwork.hpp"
 #include "OutputFileHandler.hpp"
 #include "UblasIncludes.hpp"
-#include "VasculatureGenerator.hpp"
+#include "VesselNetworkGenerator.hpp"
 #include "UnitCollection.hpp"
 #include "Debug.hpp"
 

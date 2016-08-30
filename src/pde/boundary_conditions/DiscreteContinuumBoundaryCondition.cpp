@@ -136,7 +136,7 @@ void DiscreteContinuumBoundaryCondition<DIM>::UpdateBoundaryConditionContainer(b
 }
 
 template<unsigned DIM>
-std::pair<bool, double> DiscreteContinuumBoundaryCondition<DIM>::GetValue(c_vector<double,DIM> location, double tolerance)
+std::pair<bool, double> DiscreteContinuumBoundaryCondition<DIM>::GetValue(DimensionalChastePoint<DIM> location, double tolerance)
 {
     std::pair<bool, double> result(false, 0.0);
     if(mType == BoundaryConditionType::POINT)
@@ -149,7 +149,7 @@ std::pair<bool, double> DiscreteContinuumBoundaryCondition<DIM>::GetValue(c_vect
         {
             for(unsigned jdx=0; jdx<mPoints.size(); jdx++)
             {
-                if(norm_2(location-mPoints[jdx]) < tolerance)
+                if(norm_2(location.rGetLocation()-mPoints[jdx].rGetLocation()) < tolerance)
                 {
                     return std::pair<bool, double>(true, mValue);
                 }
@@ -297,7 +297,7 @@ void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridFacetBoundaryCond
             std::vector<boost::shared_ptr<Facet> > facets =  mpDomain->GetFacets();
             for(unsigned jdx=0; jdx<facets.size();jdx++)
             {
-                if(facets[jdx]->ContainsPoint(mpRegularGrid->GetLocationOf1dIndex(idx)))
+                if(facets[jdx]->ContainsPoint(DimensionalChastePoint<3>(mpRegularGrid->GetLocationOf1dIndex(idx).rGetLocation())))
                 {
                     if(BoundaryConditionSource::PRESCRIBED)
                     {
@@ -419,7 +419,7 @@ void DiscreteContinuumBoundaryCondition<DIM>::SetDomain(boost::shared_ptr<Part<D
 }
 
 template<unsigned DIM>
-void DiscreteContinuumBoundaryCondition<DIM>::SetPoints(std::vector<c_vector<double, DIM> > points)
+void DiscreteContinuumBoundaryCondition<DIM>::SetPoints(std::vector<DimensionalChastePoint<DIM> > points)
 {
     mPoints = points;
 }

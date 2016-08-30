@@ -42,7 +42,7 @@
 #include <boost/enable_shared_from_this.hpp>
 #include "VesselSegment.hpp"
 #include "VesselNode.hpp"
-#include "ChastePoint.hpp"
+#include "DimensionalChastePoint.hpp"
 #include "UnitCollection.hpp"
 #include "VesselFlowProperties.hpp"
 
@@ -176,19 +176,19 @@ public:
      * @param rLocation the location of the division
      * @param distanceTolerance how far from a segment should the probe point be
      */
-    boost::shared_ptr<VesselNode<DIM> > DivideSegment(const c_vector<double, DIM>& rLocation, double distanceTolerance = 1.e-6);
+    boost::shared_ptr<VesselNode<DIM> > DivideSegment(const DimensionalChastePoint<DIM>& rLocation, double distanceTolerance = 1.e-6);
 
     /**
      *  Return the dimensionless distance to the vessel end node closest to the input location
      *  @param rLocation the location to probe
      */
-    units::quantity<unit::length> GetClosestEndNodeDistance(c_vector<double, DIM> rLocation);
+    units::quantity<unit::length> GetClosestEndNodeDistance(const DimensionalChastePoint<DIM>& rLocation);
 
     /**
      *  Return the distance from the vessel to the input location
      *  @param rLocation the location to probe
      */
-    units::quantity<unit::length> GetDistance(const c_vector<double, DIM>& rLocation) const;
+    units::quantity<unit::length> GetDistance(const DimensionalChastePoint<DIM>& rLocation) const;
 
     /**
      * @return vector of vessels connected to this one

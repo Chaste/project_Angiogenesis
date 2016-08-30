@@ -48,6 +48,8 @@
 #include "Facet.hpp"
 #include "VesselNetwork.hpp"
 #include "GeometryWriter.hpp"
+#include "DimensionalChastePoint.hpp"
+#include "UnitCollection.hpp"
 
 /**
  * A geometric feature described using a PLC (piecewise linear complex) description
@@ -70,12 +72,14 @@ class Part
     /**
      * The locations of hole markers (see PLC definition)
      */
-    std::vector<c_vector<double, DIM> > mHoleMarkers;
+    std::vector<DimensionalChastePoint<DIM> > mHoleMarkers;
 
     /**
      * The locations of region markers (see PLC definition)
      */
-    std::vector<c_vector<double, DIM> > mRegionMarkers;
+    std::vector<DimensionalChastePoint<DIM> > mRegionMarkers;
+
+    units::quantity<unit::length> mReferenceLength;
 
 public:
 
@@ -88,7 +92,7 @@ public:
      * Factory constructor method
      * @return a shared pointer to a new part
      */
-    static boost::shared_ptr<Part> Create();
+    static boost::shared_ptr<Part<DIM> > Create();
 
     /**
      * Destructor
@@ -102,13 +106,14 @@ public:
      * @param numSegments, the number of linear segments the circle is described with
      * @return the polygon corresponding to the circle, useful for further operations, such as extrusion.
      */
-    boost::shared_ptr<Polygon> AddCircle(double radius = 0.25,
-                                         c_vector<double, DIM> centre = zero_vector<double>(DIM),
+    boost::shared_ptr<Polygon> AddCircle(units::quantity<unit::length> radius,
+                                         DimensionalChastePoint<DIM> centre,
                                          unsigned numSegments = 24);
 
-    void AddCylinder(double radius = 0.25, double depth = 1.0,
-                                         c_vector<double, DIM> centre = zero_vector<double>(DIM),
-                                         unsigned numSegments = 24);
+    void AddCylinder(units::quantity<unit::length> radius,
+                     units::quantity<unit::length> depth,
+                     DimensionalChastePoint<DIM>,
+                     unsigned numSegments = 24);
 
     /**
      * Add a cuboid to the part.
@@ -116,16 +121,17 @@ public:
      * @param sizeY the dimension in y
      * @param sizeZ the dimension in z
      * @param origin the bottom, left, front corner
-     *
      */
-    void AddCuboid(double sizeX = 1.0, double sizeY = 1.0, double sizeZ = 1.0,
-                   c_vector<double, DIM> origin = zero_vector<double>(DIM));
+    void AddCuboid(units::quantity<unit::length> sizeX,
+                   units::quantity<unit::length> sizeY,
+                   units::quantity<unit::length> sizeZ,
+                   DimensionalChastePoint<DIM> origin);
 
     /**
      * Add a hole marker to the part
      * @param location the location of the hole
      */
-    void AddHoleMarker(c_vector<double, DIM> location);
+    void AddHoleMarker(DimensionalChastePoint<DIM> location);
 
     /**
      * Add a polygon described by a vector or vertices. The vertices should be planar. This is not
@@ -134,8 +140,9 @@ public:
      * @param pFacet an optional facet that the circle can be generated on
      * @return the new polygon, useful for further operations, such as extrusion.
      */
-    boost::shared_ptr<Polygon> AddPolygon(std::vector<boost::shared_ptr<Vertex> > vertices, bool newFacet = false,
-                                                         boost::shared_ptr<Facet> pFacet = boost::shared_ptr<Facet>());
+    boost::shared_ptr<Polygon> AddPolygon(std::vector<boost::shared_ptr<Vertex> > vertices,
+                                          bool newFacet = false,
+                                          boost::shared_ptr<Facet> pFacet = boost::shared_ptr<Facet>());
 
     /**
      * Add a polygon
@@ -143,8 +150,9 @@ public:
      * @param pFacet an optional facet that the polygon can be generated on
      * @return the new polygon, useful for further operations, such as extrusion.
      */
-    boost::shared_ptr<Polygon> AddPolygon(boost::shared_ptr<Polygon> pPolygon, bool newFacet = false,
-                                                         boost::shared_ptr<Facet> pFacet = boost::shared_ptr<Facet>());
+    boost::shared_ptr<Polygon> AddPolygon(boost::shared_ptr<Polygon> pPolygon,
+                                          bool newFacet = false,
+                                          boost::shared_ptr<Facet> pFacet = boost::shared_ptr<Facet>());
 
     /**
      * Add a rectangle to the part, oriented by default with out of plane direction along the z-axis.
@@ -153,8 +161,9 @@ public:
      * @param origin the bottom left corner
      * @return the new polygon, useful for further operations, such as extrusion.
      */
-    boost::shared_ptr<Polygon> AddRectangle(double sizeX = 1.0, double sizeY = 1.0,
-                                                           c_vector<double, DIM> origin = zero_vector<double>(DIM));
+    boost::shared_ptr<Polygon> AddRectangle(units::quantity<unit::length> sizeX,
+                                            units::quantity<unit::length> sizeY,
+                                            DimensionalChastePoint<DIM> origin);
 
     /**
      * Add a vessel network to the part.
@@ -168,7 +177,7 @@ public:
      * @param pPolygon the polygon to extrude
      * @param distance the extrusion distance
      */
-    void Extrude(boost::shared_ptr<Polygon> pPolygon, double distance = 1.0);
+    void Extrude(boost::shared_ptr<Polygon> pPolygon, units::quantity<unit::length> distance);
 
     /**
      * Return the bounding box
@@ -184,7 +193,7 @@ public:
      * Return the hole marker locations
      * @return the hole marker locations
      */
-    std::vector<c_vector<double, DIM> > GetHoleMarkers();
+    std::vector<DimensionalChastePoint<DIM> > GetHoleMarkers();
 
     /**
      * Return the facets
@@ -227,7 +236,7 @@ public:
      * @param location the location of the point
      * @return bool true if the point is inside the part
      */
-    bool IsPointInPart(c_vector<double, DIM> location, bool update=true);
+    bool IsPointInPart(DimensionalChastePoint<DIM> location, bool update=true);
 
     /**
      * Merge vertices that overlap in polygons and facets
