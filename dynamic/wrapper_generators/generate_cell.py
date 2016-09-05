@@ -13,8 +13,7 @@ def update_builder(builder):
     
     include_classes = ["CancerCellMutationState",
                    "SimpleCell<3>",
-                   "SimpleCellPopulation<3>",
-                   "CaBasedCellPopulation<3>"]
+                   "SimpleCellPopulation<3>"]
     
     for eachClass in include_classes:
         builder.class_(eachClass).include()  
@@ -24,13 +23,6 @@ def update_builder(builder):
             
     builder.free_functions("GenerateCell").include()         
     builder.free_functions("GenerateCaBasedCellPopulation").include()  
-    
-    builder.class_("CaBasedCellPopulation<3>").member_functions("GetNode").exclude()
-    builder.class_("CaBasedCellPopulation<3>").member_functions("GetNodeCorrespondingToCell").exclude()
-    builder.class_("CaBasedCellPopulation<3>").member_functions("rGetAvailableSpaces").exclude()
-    builder.class_("CaBasedCellPopulation<3>").member_functions("GetNodeCorrespondingToCell").exclude()
-    builder.class_("CaBasedCellPopulation<3>").member_functions("GetTetrahedralMeshForPdeModifier").exclude()
-    builder.class_("CaBasedCellPopulation<3>").member_functions(lambda decl: decl.name.startswith( "rGetMesh")).exclude()
     
     builder.class_('SimpleCellPopulation<3>').calldefs().use_default_arguments=False  
 

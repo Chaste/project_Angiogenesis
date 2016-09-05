@@ -14,15 +14,13 @@ def update_builder(builder):
     include_classes = ["RegularGrid<3,3>", 
                        "DiscreteContinuumMesh<3,3>", 
                        "SharedPottsMeshGenerator<3>", 
-                       "PottsMesh<3>",
                        "DimensionalChastePoint<3>",
                        "DimensionalChastePoint<2>" ]
+    
     for eachClass in include_classes:
         builder.class_(eachClass).include()  
         new_name = generate_bindings.template_replace(eachClass)
         if(new_name != eachClass):
             builder.class_(eachClass).rename(new_name) 
-
-    builder.class_('PottsMesh<3>').member_functions("GetElement").exclude()
    
     return builder

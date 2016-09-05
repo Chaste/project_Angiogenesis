@@ -15,7 +15,6 @@ def update_builder(builder):
                        "DiscreteContinuumBoundaryCondition<3>", 
                        "DiscreteContinuumNonLinearEllipticPde<3,3>", 
                        "DiscreteContinuumLinearEllipticPde<3,3>",
-                       "AbstractLinearEllipticPde<3,3>",
                        "AbstractRegularGridDiscreteContinuumSolver<3>",
                        "FiniteDifferenceSolver<3>",
                        "FiniteElementSolver<3>",

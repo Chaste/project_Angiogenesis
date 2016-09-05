@@ -1,6 +1,5 @@
 #include "DiscreteSource.hpp"
 #include "DiscreteContinuumBoundaryCondition.hpp"
-#include "AbstractLinearEllipticPde.hpp"
 #include "DiscreteContinuumLinearEllipticPde.hpp"
 #include "DiscreteContinuumNonLinearEllipticPde.hpp"
 #include "AbstractDiscreteContinuumSolver.hpp"

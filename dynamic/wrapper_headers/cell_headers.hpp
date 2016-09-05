@@ -1,11 +1,7 @@
 #include "CancerCellMutationState.hpp"
 #include "SimpleCell.hpp"
 #include "SimpleCellPopulation.hpp"
-#include "Cell.hpp"
-#include "CaBasedCellPopulation.hpp"
-#include "PottsMesh.hpp"
 #include "Owen2011OxygenBasedCellCycleModel.hpp"
-#include "StemCellProliferativeType.hpp"
 
 template class SimpleCell<3>;
 template class SimpleCellPopulation<3>;

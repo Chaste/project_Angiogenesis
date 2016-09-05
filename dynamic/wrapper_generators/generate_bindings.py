@@ -7,14 +7,6 @@ import sys
 from pyplusplus import module_builder
 from pyplusplus.module_builder import call_policies
 from pygccxml import parser
-import generate_flow
-import generate_utility
-import generate_vessel
-import generate_geometry
-import generate_pde
-import generate_mesh
-import generate_simulation
-import generate_angiogenesis
 
 def template_replace(class_name):
 
@@ -78,7 +70,7 @@ def generate_wrappers(args):
     builder = do_module(module_name, builder)
     
     # Make the wrapper code
-    builder.build_code_creator(module_name="_chaste_project_Angiogenesis_" + module_name)
+    builder.build_code_creator(module_name="_chaste_project_PyChaste_" + module_name)
     builder.code_creator.user_defined_directories.append(work_dir + "/dynamic/wrapper_headers/")
     builder.write_module(work_dir + "/dynamic/" + module_name + ".cpp")
     
