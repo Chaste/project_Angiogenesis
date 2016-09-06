@@ -33,69 +33,34 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#ifndef ViscosityParameterInstance_HPP_
-#define ViscosityParameterInstance_HPP_
+#ifndef Owen11Parameters_HPP_
+#define Owen11Parameters_HPP_
 
-#include "ChasteSerialization.hpp"
-#include <boost/serialization/base_object.hpp>
 #include "SmartPointers.hpp"
-#include "UnitCollection.hpp"
 #include "BaseParameterInstance.hpp"
+#include "PressureParameterInstance.hpp"
+#include "ViscosityParameterInstance.hpp"
 
 /**
- * This is a class for storing often used for length type parameters. Note, templating of the
- * individual parameter types is avoided to ease Python wrapping.
+ * This struct stores parameter values used in the paper Owen et al. (2011)
  */
-
-class ViscosityParameterInstance : public BaseParameterInstance
+struct Owen11Parameters
 {
     /**
-     * Archiving
+     * Network Inlet Pressure: P_in
      */
-    friend class boost::serialization::access;
-    template<class Archive>
-    void serialize(Archive & ar, const unsigned int version)
-    {
-        ar & boost::serialization::base_object<BaseParameterInstance>(*this);
-        ar & mValue;
-    }
+    static const boost::shared_ptr<PressureParameterInstance> mpInletPressure;
 
     /**
-     * The value of the parameter
+     * Network Outlet Pressure: P_out
      */
-    units::quantity<unit::dynamic_viscosity> mValue;
-
-public:
+    static const boost::shared_ptr<PressureParameterInstance> mpOutletPressure;
 
     /**
-     * Constructor
+     * Plasma viscosity \mu_{plasma}
      */
-    ViscosityParameterInstance();
-
-    /**
-     * Constructor
-     */
-    ViscosityParameterInstance(units::quantity<unit::dynamic_viscosity> value,
-                              const std::string& rName,
-                              const std::string& rShortDescription,
-                              const std::string& rSymbol,
-                              const std::string& rBibliographicInfromation);
-
-    /**
-     * Destructor
-     */
-    virtual ~ViscosityParameterInstance();
-
-    /**
-     * Set the default value
-     */
-    void SetValue(units::quantity<unit::dynamic_viscosity> value);
-
-
-    units::quantity<unit::dynamic_viscosity> GetValue();
-
-    std::string GetValueAsString();
+    static const boost::shared_ptr<ViscosityParameterInstance> mpPlasmaViscosity;
 
 };
 
-#endif /*ViscosityParameterInstance_HPP_*/
+#endif /*Owen11Parameters_HPP_*/

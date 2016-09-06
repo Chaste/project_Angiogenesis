@@ -74,6 +74,15 @@ public:
     MassParameterInstance();
 
     /**
+     * Constructor
+     */
+    MassParameterInstance(units::quantity<unit::mass> value,
+                              const std::string& rName,
+                              const std::string& rShortDescription,
+                              const std::string& rSymbol,
+                              const std::string& rBibliographicInfromation);
+
+    /**
      * Destructor
      */
     virtual ~MassParameterInstance();
@@ -85,6 +94,9 @@ public:
 
 
     units::quantity<unit::mass> GetValue();
+
+    std::string GetValueAsString();
+
 
 };
 

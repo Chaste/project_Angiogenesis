@@ -47,6 +47,25 @@ ViscosityParameterInstance::~ViscosityParameterInstance()
 
 }
 
+ViscosityParameterInstance::ViscosityParameterInstance(units::quantity<unit::dynamic_viscosity> value,
+                                                     const std::string& rName,
+                                                     const std::string& rShortDescription,
+                                                     const std::string& rSymbol,
+                                                     const std::string& rBibliographicInfromation)
+    : BaseParameterInstance(rName, rShortDescription, rSymbol, rBibliographicInfromation),
+      mValue(value)
+{
+
+}
+
+std::string ViscosityParameterInstance::GetValueAsString()
+{
+    std::stringstream ss;
+    ss << mValue;
+    return ss.str();
+}
+
+
 void ViscosityParameterInstance::SetValue(units::quantity<unit::dynamic_viscosity> value)
 {
     mValue = value;

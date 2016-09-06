@@ -42,9 +42,27 @@ TimeParameterInstance::TimeParameterInstance()
 
 }
 
+TimeParameterInstance::TimeParameterInstance(units::quantity<unit::time> value,
+                                                     const std::string& rName,
+                                                     const std::string& rShortDescription,
+                                                     const std::string& rSymbol,
+                                                     const std::string& rBibliographicInfromation)
+    : BaseParameterInstance(rName, rShortDescription, rSymbol, rBibliographicInfromation),
+      mValue(value)
+{
+
+}
+
 TimeParameterInstance::~TimeParameterInstance()
 {
 
+}
+
+std::string TimeParameterInstance::GetValueAsString()
+{
+    std::stringstream ss;
+    ss << mValue;
+    return ss.str();
 }
 
 void TimeParameterInstance::SetValue(units::quantity<unit::time> value)

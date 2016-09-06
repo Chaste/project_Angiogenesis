@@ -38,7 +38,22 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 BaseParameterInstance::BaseParameterInstance()
     : mName("DefaultParameter"),
       mShortDescription("A short description of the parameter"),
-      mSourceInformation("WARNING: No source information given for parameter.")
+      mSourceInformation("WARNING: No source information given for parameter."),
+      mSymbol("-"),
+      mBaseValue(0.0)
+{
+
+}
+
+BaseParameterInstance::BaseParameterInstance(const std::string& rName,
+                                             const std::string& rShortDescription,
+                                             const std::string& rSymbol,
+                                             const std::string& rBibliographicInfromation)
+    : mName(rName),
+      mShortDescription(rShortDescription),
+      mSourceInformation(rBibliographicInfromation),
+      mSymbol(rSymbol),
+      mBaseValue(0.0)
 {
 
 }
@@ -48,6 +63,12 @@ BaseParameterInstance::~BaseParameterInstance()
 
 }
 
+std::string BaseParameterInstance::GetValueAsString()
+{
+    std::stringstream ss;
+    ss << mBaseValue;
+    return ss.str();
+}
 
 std::string BaseParameterInstance::GetBibliographicInformation()
 {
@@ -57,6 +78,11 @@ std::string BaseParameterInstance::GetBibliographicInformation()
 std::string BaseParameterInstance::GetName()
 {
     return mName;
+}
+
+std::string BaseParameterInstance::GetSymbol()
+{
+    return mSymbol;
 }
 
 std::string BaseParameterInstance::GetShortDescription()
@@ -77,4 +103,9 @@ void BaseParameterInstance::SetName(const std::string& rName)
 void BaseParameterInstance::SetShortDescription(const std::string& rShortDescription)
 {
     mShortDescription = rShortDescription;
+}
+
+void BaseParameterInstance::SetSymbol(const std::string& rSymbol)
+{
+    mSymbol = rSymbol;
 }

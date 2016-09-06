@@ -74,6 +74,15 @@ public:
     TimeParameterInstance();
 
     /**
+     * Constructor
+     */
+    TimeParameterInstance(units::quantity<unit::time> value,
+                              const std::string& rName,
+                              const std::string& rShortDescription,
+                              const std::string& rSymbol,
+                              const std::string& rBibliographicInfromation);
+
+    /**
      * Destructor
      */
     virtual ~TimeParameterInstance();
@@ -85,6 +94,8 @@ public:
 
 
     units::quantity<unit::time> GetValue();
+
+    std::string GetValueAsString();
 
 };
 

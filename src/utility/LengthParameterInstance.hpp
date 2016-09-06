@@ -74,6 +74,15 @@ public:
     LengthParameterInstance();
 
     /**
+     * Constructor
+     */
+    LengthParameterInstance(units::quantity<unit::length> value,
+                              const std::string& rName,
+                              const std::string& rShortDescription,
+                              const std::string& rSymbol,
+                              const std::string& rBibliographicInfromation);
+
+    /**
      * Destructor
      */
     virtual ~LengthParameterInstance();
@@ -85,6 +94,8 @@ public:
 
 
     units::quantity<unit::length> GetValue();
+
+    std::string GetValueAsString();
 
 };
 

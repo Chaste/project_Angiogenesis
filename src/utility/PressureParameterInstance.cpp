@@ -42,9 +42,27 @@ PressureParameterInstance::PressureParameterInstance()
 
 }
 
+PressureParameterInstance::PressureParameterInstance(units::quantity<unit::pressure> value,
+                                                     const std::string& rName,
+                                                     const std::string& rShortDescription,
+                                                     const std::string& rSymbol,
+                                                     const std::string& rBibliographicInfromation)
+    : BaseParameterInstance(rName, rShortDescription, rSymbol, rBibliographicInfromation),
+      mValue(value)
+{
+
+}
+
 PressureParameterInstance::~PressureParameterInstance()
 {
 
+}
+
+std::string PressureParameterInstance::GetValueAsString()
+{
+    std::stringstream ss;
+    ss << mValue;
+    return ss.str();
 }
 
 void PressureParameterInstance::SetValue(units::quantity<unit::pressure> value)

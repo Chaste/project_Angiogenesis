@@ -36,6 +36,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef BaseParameterInstance_HPP_
 #define BaseParameterInstance_HPP_
 
+#include <ostream>
 #include "ChasteSerialization.hpp"
 #include "SmartPointers.hpp"
 #include "UnitCollection.hpp"
@@ -74,12 +75,24 @@ class BaseParameterInstance
      */
     std::string mSourceInformation;
 
+    std::string mSymbol;
+
+    units::quantity<unit::dimensionless> mBaseValue;
+
 public:
 
     /**
      * Constructor
      */
     BaseParameterInstance();
+
+    /**
+     * Constructor
+     */
+    BaseParameterInstance(const std::string& rName,
+                          const std::string& rShortDescription,
+                          const std::string& rSymbol,
+                          const std::string& rBibliographicInfromation);
 
     /**
      * Destructor
@@ -104,6 +117,10 @@ public:
      */
     std::string GetShortDescription();
 
+    virtual std::string GetValueAsString();
+
+    std::string GetSymbol();
+
     /**
      * Set the bibliographic information
      * @param rSourceInformation the bibliographic information
@@ -121,6 +138,8 @@ public:
      * @param rShortDescription the short description
      */
     void SetShortDescription(const std::string& rShortDescription);
+
+    void SetSymbol(const std::string& rSymbol);
 
 };
 

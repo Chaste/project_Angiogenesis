@@ -47,6 +47,24 @@ MassParameterInstance::~MassParameterInstance()
 
 }
 
+MassParameterInstance::MassParameterInstance(units::quantity<unit::mass> value,
+                                                     const std::string& rName,
+                                                     const std::string& rShortDescription,
+                                                     const std::string& rSymbol,
+                                                     const std::string& rBibliographicInfromation)
+    : BaseParameterInstance(rName, rShortDescription, rSymbol, rBibliographicInfromation),
+      mValue(value)
+{
+
+}
+
+std::string MassParameterInstance::GetValueAsString()
+{
+    std::stringstream ss;
+    ss << mValue;
+    return ss.str();
+}
+
 void MassParameterInstance::SetValue(units::quantity<unit::mass> value)
 {
     mValue = value;

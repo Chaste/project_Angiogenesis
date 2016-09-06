@@ -74,6 +74,15 @@ public:
     PressureParameterInstance();
 
     /**
+     * Constructor
+     */
+    PressureParameterInstance(units::quantity<unit::pressure> value,
+                              const std::string& rName,
+                              const std::string& rShortDescription,
+                              const std::string& rSymbol,
+                              const std::string& rBibliographicInfromation);
+
+    /**
      * Destructor
      */
     virtual ~PressureParameterInstance();
@@ -85,6 +94,8 @@ public:
 
 
     units::quantity<unit::pressure> GetValue();
+
+    std::string GetValueAsString();
 
 };
 

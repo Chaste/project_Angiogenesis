@@ -35,6 +35,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <cassert>
 #include <cmath>
 #include <iostream>
+#include <fstream>
+#include "PetscTools.hpp"
 
 #include "ParameterCollection.hpp"
 
@@ -61,17 +63,33 @@ ParameterCollection::ParameterCollection()
 
 void ParameterCollection::DumpToFile(const std::string& rFilename)
 {
-
-    typedef std::map<std::string, boost::shared_ptr<BaseParameterInstance> >::iterator it_type;
-    for(it_type iterator = mParameters.begin(); iterator != mParameters.end(); iterator++)
+    if(PetscTools::AmMaster())
     {
-        std::cout << "Name: " << iterator->first << "Description:" << (iterator->second)->GetName();
+        std::ofstream myfile;
+        myfile.open(rFilename.c_str());
+        myfile << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << std::endl;
+        myfile << "<parameter_collection>" << std::endl;
+
+        typedef std::map<std::string, std::pair<std::string, boost::shared_ptr<BaseParameterInstance> > >::iterator it_type;
+        for(it_type iterator = mParameters.begin(); iterator != mParameters.end(); iterator++)
+        {
+            myfile << "<parameter>" << std::endl;
+            myfile<< "<name>" << (iterator->second).second->GetName() <<"</name>" << std::endl;
+            myfile << "<added_by>" << (iterator->second).first << "</added_by>"<< std::endl;
+            myfile<< "<value>" << (iterator->second).second->GetValueAsString() << "</value>" << std::endl;
+            myfile<< "<description>" << (iterator->second).second->GetShortDescription() << "</description>" << std::endl;
+            myfile<< "<symbol>" << (iterator->second).second->GetSymbol() << "</symbol>" << std::endl;
+            myfile<< "<source>" << "\"" <<(iterator->second).second->GetBibliographicInformation() << "\"" << "</source>"<< std::endl;
+            myfile << "</parameter>" << std::endl;
+        }
+        myfile << "</parameter_collection>" << std::endl;
+        myfile.close();
     }
 }
 
 boost::shared_ptr<LengthParameterInstance> ParameterCollection::GetLengthParameter(const std::string& rName)
 {
-    boost::shared_ptr<BaseParameterInstance> p_base_parameter = mParameters[rName];
+    boost::shared_ptr<BaseParameterInstance> p_base_parameter = mParameters[rName].second;
 
     // Try to cast to the templated type
     boost::shared_ptr<LengthParameterInstance> p_parameter = boost::dynamic_pointer_cast<LengthParameterInstance>(p_base_parameter);
@@ -88,7 +106,7 @@ boost::shared_ptr<LengthParameterInstance> ParameterCollection::GetLengthParamet
 
 boost::shared_ptr<MassParameterInstance> ParameterCollection::GetMassParameter(const std::string& rName)
 {
-    boost::shared_ptr<BaseParameterInstance> p_base_parameter = mParameters[rName];
+    boost::shared_ptr<BaseParameterInstance> p_base_parameter = mParameters[rName].second;
 
     // Try to cast to the templated type
     boost::shared_ptr<MassParameterInstance> p_parameter = boost::dynamic_pointer_cast<MassParameterInstance>(p_base_parameter);
@@ -105,7 +123,7 @@ boost::shared_ptr<MassParameterInstance> ParameterCollection::GetMassParameter(c
 
 boost::shared_ptr<TimeParameterInstance> ParameterCollection::GetTimeParameter(const std::string& rName)
 {
-    boost::shared_ptr<BaseParameterInstance> p_base_parameter = mParameters[rName];
+    boost::shared_ptr<BaseParameterInstance> p_base_parameter = mParameters[rName].second;
 
     // Try to cast to the templated type
     boost::shared_ptr<TimeParameterInstance> p_parameter = boost::dynamic_pointer_cast<TimeParameterInstance>(p_base_parameter);
@@ -122,7 +140,7 @@ boost::shared_ptr<TimeParameterInstance> ParameterCollection::GetTimeParameter(c
 
 boost::shared_ptr<PressureParameterInstance> ParameterCollection::GetPressureParameter(const std::string& rName)
 {
-    boost::shared_ptr<BaseParameterInstance> p_base_parameter = mParameters[rName];
+    boost::shared_ptr<BaseParameterInstance> p_base_parameter = mParameters[rName].second;
 
     // Try to cast to the templated type
     boost::shared_ptr<PressureParameterInstance> p_parameter = boost::dynamic_pointer_cast<PressureParameterInstance>(p_base_parameter);
@@ -139,7 +157,7 @@ boost::shared_ptr<PressureParameterInstance> ParameterCollection::GetPressurePar
 
 boost::shared_ptr<ViscosityParameterInstance> ParameterCollection::GetViscosityParameter(const std::string& rName)
 {
-    boost::shared_ptr<BaseParameterInstance> p_base_parameter = mParameters[rName];
+    boost::shared_ptr<BaseParameterInstance> p_base_parameter = mParameters[rName].second;
 
     // Try to cast to the templated type
     boost::shared_ptr<ViscosityParameterInstance> p_parameter = boost::dynamic_pointer_cast<ViscosityParameterInstance>(p_base_parameter);
@@ -154,9 +172,9 @@ boost::shared_ptr<ViscosityParameterInstance> ParameterCollection::GetViscosityP
     }
 }
 
-void ParameterCollection::AddParameter(boost::shared_ptr<BaseParameterInstance> pParameter)
+void ParameterCollection::AddParameter(boost::shared_ptr<BaseParameterInstance> pParameter, const std::string& rFirstInstantiated)
 {
-    mParameters[pParameter->GetName()] = pParameter;
+    mParameters[pParameter->GetName()] = std::pair<std::string, boost::shared_ptr<BaseParameterInstance> >(rFirstInstantiated, pParameter);
 }
 
 void ParameterCollection::Destroy()

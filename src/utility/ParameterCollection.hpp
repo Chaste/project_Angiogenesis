@@ -64,7 +64,7 @@ class ParameterCollection : public SerializableSingleton<ParameterCollection>
     /**
      * Parameter Collection
      */
-    std::map<std::string, boost::shared_ptr<BaseParameterInstance> > mParameters;
+    std::map<std::string, std::pair<std::string, boost::shared_ptr<BaseParameterInstance> > > mParameters;
 
 public:
 
@@ -82,7 +82,7 @@ public:
     /**
      * Add a parameter
      */
-    void AddParameter(boost::shared_ptr<BaseParameterInstance> pParameter);
+    void AddParameter(boost::shared_ptr<BaseParameterInstance> pParameter, const std::string& rFirstInstantiated);
 
     /**
      * Destroy the current ParameterCollection instance.

@@ -47,6 +47,24 @@ LengthParameterInstance::~LengthParameterInstance()
 
 }
 
+LengthParameterInstance::LengthParameterInstance(units::quantity<unit::length> value,
+                                                     const std::string& rName,
+                                                     const std::string& rShortDescription,
+                                                     const std::string& rSymbol,
+                                                     const std::string& rBibliographicInfromation)
+    : BaseParameterInstance(rName, rShortDescription, rSymbol, rBibliographicInfromation),
+      mValue(value)
+{
+
+}
+
+std::string LengthParameterInstance::GetValueAsString()
+{
+    std::stringstream ss;
+    ss << mValue;
+    return ss.str();
+}
+
 void LengthParameterInstance::SetValue(units::quantity<unit::length> value)
 {
     mValue = value;

@@ -94,7 +94,7 @@ class TestBuildVesselNetworkLiteratePaper : public AbstractCellBasedWithTimingsT
 public:
     /*
      * = Test 1 - Building a vessel network manually, writing it to file and visualizing it =
-     * [[Image(source:/chaste/projects/Angiogenesis/test/tutorials/images/bifurcating_network.png, 25%, align=center, border=1)]]
+     * [[Image(source:/chaste/projects/Angiogenesis/test/tutorials/images/bifurcating_network.png, 15%, align=center, border=1)]]
      *
      * In the first test build a vessel network from its constituent components; nodes, segments and vessels. Do some
      * simple tests to make sure the network has been formed as expected. Then write the network to file and visualize it in Paraview. The
