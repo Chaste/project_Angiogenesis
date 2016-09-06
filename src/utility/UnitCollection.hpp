@@ -30,6 +30,7 @@
 #include <boost/units/base_units/metric/hour.hpp>
 #include <boost/units/base_units/metric/day.hpp>
 #include <boost/units/base_units/metric/mmHg.hpp>
+#include <boost/units/base_units/metric/micron.hpp>
 
 #include "Exception.hpp"
 
@@ -59,8 +60,8 @@ namespace unit
     typedef units::si::area area;
     typedef units::si::volume volume;
     BOOST_UNITS_STATIC_CONSTANT(metres, units::si::length);
-    typedef units::make_scaled_unit<units::si::length , units::scale<10, units::static_rational<-6> > >::type micron_type;
-    BOOST_UNITS_STATIC_CONSTANT(microns, micron_type);
+//    typedef units::make_scaled_unit<units::si::length , units::scale<10, units::static_rational<-6> > >::type micron_type;
+    BOOST_UNITS_STATIC_CONSTANT(microns, units::metric::micron_base_unit::unit_type);
 
     // Force/Pressure/Stress
     typedef units::si::force force;

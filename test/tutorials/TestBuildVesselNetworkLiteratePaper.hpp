@@ -105,11 +105,12 @@ public:
          * First, a note on units. In many simulations with vessel networks care is needed in managing units, as multiple computational grids and
          * physical phenomena are of interest. It is helpful to be explicit regarding assumed length, time and mass scales and to specify input parameters
          * with accompanying units. In this component, the `DimensionalChastePoint` is a fundamental geometric feature which contains a location in `N`
-         * dimensional space, stored as a vector of dimensionless doubles, and an accompanying reference length. Thus, each DimensionalChastePoint is a
-         * location with units. To demonstrate, we will create a point, which has a reference length of 1 micron and then rescale its position according
-         * to a different reference length, a cell width.
+         * dimensional space, stored as a vector of dimensionless doubles, and an accompanying reference length. Thus, each `DimensionalChastePoint` is a
+         * location with units. To demonstrate, we will create a point, which has a reference length of 1 micron and then re-scale its location according
+         * to a different reference length, a cell width. Note that the syntax `reference_length (1.0 * unit::microns)` rather than
+         * `reference_length = 1.0 * unit::microns` is used when instantiating quantities.
          */
-        units::quantity<unit::length> reference_length = 1.0 * 1.e-6 * unit::metres;
+        units::quantity<unit::length> reference_length(1.0 * unit::microns);
         DimensionalChastePoint<2> my_point(25.0, 50.0, 0.0, reference_length);
         /*
          * We can use the unit test framework to check our coordinate values are assigned as expected.
@@ -119,16 +120,17 @@ public:
         /*
          * If we want our coordinates in terms of a fictitious cell width unit we just have to rescale the reference length.
          */
-        units::quantity<unit::length> cell_width = 25.0 * 1.e-6 * unit::metres;
+        units::quantity<unit::length> cell_width(25.0 * unit::microns);
         my_point.SetReferenceLengthScale(cell_width);
         TS_ASSERT_DELTA(my_point[0], 1.0, 1.e-6);
         TS_ASSERT_DELTA(my_point[1], 2.0, 1.e-6);
         /*
          * All geometric features, `VesselNodes`, `Parts`, `RegularGrids` use the `DimensionalChastePoint` as their base representation of spatial
-         * location, meaning that it is straight-forward to change (or if brave mix) length scales in a simulation.
+         * location, meaning that it is straight-forward to change or even mix length scales in a simulation.
          *
          * Now we proceed to making some nodes, which are point features from which vessels can be constructed. They are initialized in the same way as
          * a `DimensionalChastePoint`, but use a convenience `Create` factory method to get a shared pointer. We will create a 2D Y shaped network.
+         * Again, we will avoid the tedium of manual network creation in later examples.
          */
         double vessel_length = 100.0;
         boost::shared_ptr<VesselNode<2> > p_node_1 = VesselNode<2>::Create(0.0, 0.0, 0.0, reference_length);
@@ -136,8 +138,8 @@ public:
         boost::shared_ptr<VesselNode<2> > p_node_3 = VesselNode<2>::Create(2.0*vessel_length, vessel_length, 0.0, reference_length);
         boost::shared_ptr<VesselNode<2> > p_node_4 = VesselNode<2>::Create(2.0*vessel_length, -vessel_length, 0.0, reference_length);
         /*
-         * Next make vessel segments and vessels. Vessel segments are straight-line features which contain a vascular node at each end. Vessels
-         * can be constructed from multiple vessel segments, but in this case each vessel just has a single segment.
+         * Next make vessel segments and vessels. Vessel segments are straight-line features which contain a `VesselNode` at each end. Vessels
+         * can be constructed from multiple vessel segments by adding them in order, but in this case each vessel just has a single segment.
          */
         boost::shared_ptr<VesselSegment<2> > p_segment_1 = VesselSegment<2>::Create(p_node_1, p_node_2);
         boost::shared_ptr<Vessel<2> > p_vessel_1 = Vessel<2>::Create(p_segment_1);
@@ -159,7 +161,7 @@ public:
         TS_ASSERT_EQUALS(p_network->GetNumberOfVessels(), 3u);
         /*
          * Next write the network to file. Use the `OutputFileHandler` functionality to manage the output location
-         * and the pointer MACRO `MAKE_PTR_ARGS` to quickly make a smart pointer. Networks are written using VTK's !PolyData format by default,
+         * and the pointer MACRO `MAKE_PTR_ARGS` to easily make a smart pointer. Networks are written using VTK's !PolyData format by default,
          * which will have a .vtp extension. Note that we set the length scale we want for the output (e.g. micron). If none is set the default
          * is micron.
          */
@@ -178,7 +180,7 @@ public:
 
     /*
      * = Test 2 - Building a vessel network using a generator and reading from file =
-     *
+     * [[Image(source:/chaste/projects/Angiogenesis/tutorials/images/hexagonal_network.png)]]
      * It is usually tedious to build a vessel network from scratch. In this test we use a generator to automatically construct a network.
      * We then write it to file, read it back in and check that it is restored as expected.
      */
@@ -188,9 +190,9 @@ public:
          * Create a hexagonal network in 3D space using a generator. Specify the target network width and height and the desired vessel
          * length. The use of dimensional analysis is demonstrated by now using a fictitious 'cell width' reference length unit instead of microns.
          */
-        units::quantity<unit::length> cell_width = 25.0 * 1.e-6 * unit::metres;
-        units::quantity<unit::length> target_width = 24.0 * cell_width;
-        units::quantity<unit::length> target_height = 31.0 * cell_width;
+        units::quantity<unit::length> cell_width(25.0 * unit::microns);
+        units::quantity<unit::length> target_width = 60.0 * cell_width;
+        units::quantity<unit::length> target_height = 30.0 * cell_width;
         units::quantity<unit::length> vessel_length = 4.0 * cell_width;
         /*
          * Note that the generator is given the reference length scale. This is not imperative, but helps to ensure that all point coordinates
@@ -211,7 +213,7 @@ public:
         writer.SetFileName(p_handler->GetOutputDirectoryFullPath() + "hexagonal_network.vtp");
         writer.SetVesselNetwork(p_network);
 
-        units::quantity<unit::length> micron_length_scale = 1.e-6 * unit::metres;
+        units::quantity<unit::length> micron_length_scale(1.0*unit::microns);
         writer.SetReferenceLengthScale(micron_length_scale);
         writer.Write();
         /*

@@ -805,15 +805,6 @@ boost::shared_ptr<VesselNetwork<DIM> > VesselNetworkGenerator<DIM>::GenerateSing
     return p_network;
 }
 
-template<typename T>
-std::string to_string(T const& value)
-{
-    std::stringstream sstr;
-    sstr << value;
-    return sstr.str();
-}
-
-
 template<unsigned DIM>
 boost::shared_ptr<VesselNetwork<DIM> > VesselNetworkGenerator<DIM>::GenerateFromPart(boost::shared_ptr<Part<DIM> > part)
 {
@@ -863,145 +854,78 @@ boost::shared_ptr<VesselNetwork<DIM> > VesselNetworkGenerator<DIM>::GenerateHexa
                                                                                            units::quantity<unit::length> height,
                                                                                            units::quantity<unit::length> vessel_length)
 {
+    // Vessels are laid out on a regular grid in a hexagonal pattern.
+    // The repeating unit looks like this:
+    //    \_/
+    //    / \_
+    // There is an extra set of lines along the top to 'close' the pattern.
+    double grid_length = vessel_length/mReferenceLength;
+    double unit_height = 2.0 * grid_length;
+    double unit_width = 4.0 * grid_length;
 
-    // Determine the number of repeating hexagonal units in the x and y directions based on the input height, width and vessel length
-    double horizontal_vessel_length = vessel_length/mReferenceLength;
-    double diagonal_vessel_length = floor(vessel_length / (mReferenceLength*std::sqrt(2)) + 0.5);
-    unsigned units_in_x_direction = floor(
-            ((width/mReferenceLength - horizontal_vessel_length - 2.0 * diagonal_vessel_length - 1)
-                    / (2.0 * (horizontal_vessel_length + diagonal_vessel_length))));
-    unsigned units_in_y_direction = floor(((height/mReferenceLength-1) / (2.0 * diagonal_vessel_length)));
+    // The pattern may not reach the extents of the target area.
+    unsigned units_in_x_direction = floor((width/mReferenceLength)/ unit_width);
+    unsigned units_in_y_direction = floor((height/mReferenceLength) / unit_height);
 
-    // Ensure there are a minimal number of units required to generate a functional network
-    if (units_in_x_direction < 1 || units_in_y_direction < 1)
+    // If the number of units is less than 1, just make a single unit in that direction
+    if (units_in_x_direction < 1)
     {
-        std::string message =
-                "Insufficient number of repeating units specified for the hexagonal network. Minimum length in x = ";
-        message.append(
-                to_string<double>(
-                        2.0 * (horizontal_vessel_length + diagonal_vessel_length) + horizontal_vessel_length
-                                + 2.0 * diagonal_vessel_length));
-        message.append(". Minimum length in y = ");
-        message.append(to_string<double>(2.0 * diagonal_vessel_length));
-        message.append(".");
-        EXCEPTION(message);
+        units_in_x_direction = 1;
     }
 
-    // Generate an array of vessels with no spatial info
-    unsigned number_of_vessels = (units_in_x_direction * units_in_y_direction * 6) + (units_in_y_direction * 5)
-            + units_in_x_direction;
-    boost::shared_ptr<VesselNetwork<DIM> > pVesselNetwork(new VesselNetwork<DIM>());
-    std::vector<boost::shared_ptr<Vessel<DIM> > > vessel_array;
-    std::vector<boost::shared_ptr<VesselSegment<DIM> > > vessel_segment_array;
-
-    for (unsigned i = 0; i < number_of_vessels; i++)
+    if (units_in_y_direction < 1)
     {
-        // instantiate set of vessel segments with any nodes then later change location of that node
-        // with GetNode(index)->SetLocation(ChastePoint ... )
-        boost::shared_ptr<VesselNode<DIM> > node1(VesselNode<DIM>::Create(0, 0, 0, mReferenceLength));
-        boost::shared_ptr<VesselNode<DIM> > node2(VesselNode<DIM>::Create(0, 0, 0, mReferenceLength));
-        vessel_segment_array.push_back(VesselSegment<DIM>::Create(node1, node2));
+        units_in_x_direction = 1;
     }
 
-    // Set the left side coordinates of vessels in the network
-    vessel_segment_array[0]->GetNode(0)->SetLocation(0.0, 0.0, 0.0, mReferenceLength);
-    vessel_segment_array[1]->GetNode(0)->SetLocation(diagonal_vessel_length + horizontal_vessel_length, diagonal_vessel_length, 0.0, mReferenceLength);
-    vessel_segment_array[2]->GetNode(0)->SetLocation(2.0 * diagonal_vessel_length + horizontal_vessel_length, 0.0, 0.0, mReferenceLength);
-    for (unsigned i = 3; i < (2 + 3 * units_in_x_direction); i++)
+    // Create vessels by looping over the units, x direction is inside loop.
+    boost::shared_ptr<VesselNetwork<DIM> > pVesselNetwork = VesselNetwork<DIM>::Create();
+    for(unsigned jdx = 0; jdx<units_in_y_direction; jdx++)
     {
-        vessel_segment_array[i]->GetNode(0)->SetLocation(vessel_segment_array[i - 3]->GetNode(0)->rGetLocation()[0]
-                                + 2.0 * (diagonal_vessel_length + horizontal_vessel_length),
-                        vessel_segment_array[i - 3]->GetNode(0)->rGetLocation()[1], 0.0, mReferenceLength);
-    }
-    vessel_segment_array[2 + 3 * units_in_x_direction]->GetNode(0)->SetLocation(0, 2.0 * diagonal_vessel_length, 0.0, mReferenceLength);
-    vessel_segment_array[2 + 3 * units_in_x_direction + 1]->GetNode(0)->SetLocation(diagonal_vessel_length, diagonal_vessel_length, 0.0, mReferenceLength);
-    vessel_segment_array[2 + 3 * units_in_x_direction + 2]->GetNode(0)->SetLocation(diagonal_vessel_length + horizontal_vessel_length, diagonal_vessel_length, 0.0, mReferenceLength);
+        for(unsigned idx=0; idx<units_in_x_direction; idx++)
+        {
+            pVesselNetwork->AddVessel(Vessel<DIM>::Create(VesselNode<DIM>::Create(double(idx)*unit_width + 0.0,
+                                                                                  double(jdx)*unit_height + 0.0, 0, mReferenceLength),
+                                                                           VesselNode<DIM>::Create(double(idx)*unit_width + grid_length,
+                                                                                                   double(jdx)*unit_height + grid_length, 0, mReferenceLength)));
 
-    for (unsigned i = (2 + 3 * units_in_x_direction + 3);
-            i < (2 + 3 * units_in_x_direction + 3 * (units_in_x_direction + 1)); i++)
-    {
-        vessel_segment_array[i]->GetNode(0)->SetLocation(
-                        vessel_segment_array[i - 3]->GetNode(0)->rGetLocation()[0]
-                                + 2.0 * (diagonal_vessel_length + horizontal_vessel_length),
-                        vessel_segment_array[i - 3]->GetNode(0)->rGetLocation()[1], 0.0, mReferenceLength);
-    }
+            pVesselNetwork->AddVessel(Vessel<DIM>::Create(VesselNode<DIM>::Create(double(idx)*unit_width + 0.0,
+                                                                                  double(jdx)*unit_height + 2.0*grid_length, 0, mReferenceLength),
+                                                                           VesselNode<DIM>::Create(double(idx)*unit_width + grid_length,
+                                                                                                   double(jdx)*unit_height + grid_length, 0, mReferenceLength)));
 
-    for (unsigned i = (2 + 3 * units_in_x_direction + 3 * (units_in_x_direction + 1));
-            i < number_of_vessels - units_in_x_direction; i++)
-    {
-        vessel_segment_array[i]->GetNode(0)->SetLocation(
-                        vessel_segment_array[i - (2 + 3 * units_in_x_direction + 3 * (units_in_x_direction + 1))]->GetNode(
-                                0)->rGetLocation()[0],
-                        vessel_segment_array[i - (2 + 3 * units_in_x_direction + 3 * (units_in_x_direction + 1))]->GetNode(
-                                0)->rGetLocation()[1] + 2.0 * diagonal_vessel_length, 0.0, mReferenceLength);
-    }
-    vessel_segment_array[number_of_vessels - units_in_x_direction]->GetNode(0)->SetLocation(
-                    2.0 * diagonal_vessel_length + horizontal_vessel_length,
-                    vessel_segment_array[number_of_vessels - units_in_x_direction - 1]->GetNode(0)->rGetLocation()[1]
-                            + diagonal_vessel_length, 0.0, mReferenceLength);
+            pVesselNetwork->AddVessel(Vessel<DIM>::Create(VesselNode<DIM>::Create(double(idx)*unit_width + grid_length,
+                                                                                  double(jdx)*unit_height + grid_length, 0, mReferenceLength),
+                                                                           VesselNode<DIM>::Create(double(idx)*unit_width + 2.0*grid_length,
+                                                                                                   double(jdx)*unit_height + grid_length, 0, mReferenceLength)));
 
-    for (unsigned i = 1; i < units_in_x_direction; i++)
-    {
-        vessel_segment_array[number_of_vessels - units_in_x_direction + i]->GetNode(0)->SetLocation(
-                        vessel_segment_array[number_of_vessels - units_in_x_direction + i - 1]->GetNode(0)->rGetLocation()[0]
-                                + 2 * (diagonal_vessel_length + horizontal_vessel_length),
-                        vessel_segment_array[number_of_vessels - units_in_x_direction + i - 1]->GetNode(0)->rGetLocation()[1], 0.0, mReferenceLength);
+            pVesselNetwork->AddVessel(Vessel<DIM>::Create(VesselNode<DIM>::Create(double(idx)*unit_width + 2.0*grid_length,
+                                                                                  double(jdx)*unit_height + grid_length, 0, mReferenceLength),
+                                                                           VesselNode<DIM>::Create(double(idx)*unit_width + 3.0*grid_length,
+                                                                                                   double(jdx)*unit_height + 2.0*grid_length, 0, mReferenceLength)));
+
+            pVesselNetwork->AddVessel(Vessel<DIM>::Create(VesselNode<DIM>::Create(double(idx)*unit_width + 2.0*grid_length,
+                                                                                  double(jdx)*unit_height + grid_length, 0, mReferenceLength),
+                                                                           VesselNode<DIM>::Create(double(idx)*unit_width + 3.0*grid_length,
+                                                                                                   double(jdx)*unit_height + 0.0, 0, mReferenceLength)));
+
+            pVesselNetwork->AddVessel(Vessel<DIM>::Create(VesselNode<DIM>::Create(double(idx)*unit_width + 3.0*grid_length,
+                                                                                  double(jdx)*unit_height + 0.0, 0, mReferenceLength),
+                                                                           VesselNode<DIM>::Create(double(idx)*unit_width + 4.0*grid_length,
+                                                                                                   double(jdx)*unit_height + 0.0, 0, mReferenceLength)));
+        }
     }
 
-    // Set the right side coordinates of vessels in the network
-    vessel_segment_array[0]->GetNode(1)->SetLocation(diagonal_vessel_length, diagonal_vessel_length, 0.0, mReferenceLength);
-    vessel_segment_array[1]->GetNode(1)->SetLocation(2.0 * diagonal_vessel_length + horizontal_vessel_length, 0.0, 0.0, mReferenceLength);
-    vessel_segment_array[2]->GetNode(1)->SetLocation(2.0 * (diagonal_vessel_length + horizontal_vessel_length), 0.0, 0.0, mReferenceLength);
-
-    for (unsigned i = 3; i < (2 + 3 * units_in_x_direction); i++)
+    // Add an extra line of vessels along the top
+    for(unsigned idx=0; idx<units_in_x_direction; idx++)
     {
-        vessel_segment_array[i]->GetNode(1)->SetLocation(
-                        vessel_segment_array[i - 3]->GetNode(1)->rGetLocation()[0]
-                                + 2 * (diagonal_vessel_length + horizontal_vessel_length),
-                        vessel_segment_array[i - 3]->GetNode(1)->rGetLocation()[1], 0.0, mReferenceLength);
-    }
-    vessel_segment_array[2 + 3 * units_in_x_direction]->GetNode(1)->SetLocation(diagonal_vessel_length, diagonal_vessel_length, 0.0, mReferenceLength);
-    vessel_segment_array[2 + 3 * units_in_x_direction + 1]->GetNode(1)->SetLocation(diagonal_vessel_length + horizontal_vessel_length, diagonal_vessel_length, 0.0, mReferenceLength);
-    vessel_segment_array[2 + 3 * units_in_x_direction + 2]->GetNode(1)->SetLocation(2 * diagonal_vessel_length + horizontal_vessel_length, 2 * diagonal_vessel_length, 0.0, mReferenceLength);
-
-    for (unsigned i = (2 + 3 * units_in_x_direction + 3);
-            i < (2 + 3 * units_in_x_direction + 3 * (units_in_x_direction + 1)); i++)
-    {
-        vessel_segment_array[i]->GetNode(1)->SetLocation(vessel_segment_array[i - 3]->GetNode(1)->rGetLocation()[0]
-                                + 2 * (diagonal_vessel_length + horizontal_vessel_length),
-                        vessel_segment_array[i - 3]->GetNode(1)->rGetLocation()[1], 0.0, mReferenceLength);
+        pVesselNetwork->AddVessel(Vessel<DIM>::Create(VesselNode<DIM>::Create(double(idx)*unit_width + 3.0*grid_length,
+                                                                              double(units_in_y_direction)*unit_height, 0, mReferenceLength),
+                                                                       VesselNode<DIM>::Create(double(idx)*unit_width + 4.0 *grid_length,
+                                                                                               double(units_in_y_direction)*unit_height, 0, mReferenceLength)));
     }
 
-    for (unsigned i = (2 + 3 * units_in_x_direction + 3 * (units_in_x_direction + 1));
-            i < number_of_vessels - units_in_x_direction; i++)
-    {
-        vessel_segment_array[i]->GetNode(1)->SetLocation(vessel_segment_array[i - (2 + 3 * units_in_x_direction + 3 * (units_in_x_direction + 1))]->GetNode(
-                                1)->rGetLocation()[0],
-                        vessel_segment_array[i - (2 + 3 * units_in_x_direction + 3 * (units_in_x_direction + 1))]->GetNode(
-                                1)->rGetLocation()[1] + 2 * diagonal_vessel_length, 0.0, mReferenceLength);
-    }
 
-    vessel_segment_array[number_of_vessels - units_in_x_direction]->GetNode(1)->SetLocation(
-                    2 * (diagonal_vessel_length + horizontal_vessel_length),
-                    vessel_segment_array[number_of_vessels - units_in_x_direction - 1]->GetNode(0)->rGetLocation()[1]
-                            + diagonal_vessel_length, 0.0, mReferenceLength);
-
-    for (unsigned i = 1; i < units_in_x_direction; i++)
-    {
-        vessel_segment_array[number_of_vessels - units_in_x_direction + i]->GetNode(1)->SetLocation(
-                        vessel_segment_array[number_of_vessels - units_in_x_direction + i - 1]->GetNode(1)->rGetLocation()[0]
-                                + 2 * (diagonal_vessel_length + horizontal_vessel_length),
-                        vessel_segment_array[number_of_vessels - units_in_x_direction + i - 1]->GetNode(1)->rGetLocation()[1], 0.0, mReferenceLength);
-    }
-
-    typename std::vector<boost::shared_ptr<VesselSegment<DIM> > >::iterator segment_iterator;
-
-    for (unsigned i = 0; i < vessel_segment_array.size(); i++)
-    {
-        vessel_array.push_back(Vessel<DIM>::Create(vessel_segment_array[i]));
-    }
-
-    pVesselNetwork->AddVessels(vessel_array);
     pVesselNetwork->MergeCoincidentNodes();
     return pVesselNetwork;
 }
