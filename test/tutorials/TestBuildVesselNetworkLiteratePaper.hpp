@@ -46,7 +46,7 @@
  * * Vessel network generators
  *
  * = The Test =
- * Start by introducing the necessary header files. The first contain functionality for setting up unit tests
+ * Start by introducing the necessary header files. The first contain functionality for setting up unit tests.
  */
 #include <cxxtest/TestSuite.h>
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
@@ -67,12 +67,12 @@
 #include "Vessel.hpp"
 #include "VesselNetwork.hpp"
 /*
- * Tools for reading and writing networks
+ * Tools for reading and writing networks.
  */
 #include "VesselNetworkReader.hpp"
 #include "VesselNetworkWriter.hpp"
 /*
- * Dimensional analysis
+ * Dimensional analysis.
  */
 #include "DimensionalChastePoint.hpp"
 #include "UnitCollection.hpp"
@@ -81,7 +81,7 @@
  */
 #include "VesselNetworkGenerator.hpp"
 /*
- * Used to initialize MPI/PETSc in unit tests
+ * Used to initialize MPI/PETSc in unit tests.
  */
 #include "PetscSetupAndFinalize.hpp"
 /*
@@ -94,6 +94,7 @@ class TestBuildVesselNetworkLiteratePaper : public AbstractCellBasedWithTimingsT
 public:
     /*
      * = Test 1 - Building a vessel network manually, writing it to file and visualizing it =
+     * [[Image(source:/chaste/projects/Angiogenesis/test/tutorials/images/bifurcating_network.png, 25%, align=center, border=1)]]
      *
      * In the first test build a vessel network from its constituent components; nodes, segments and vessels. Do some
      * simple tests to make sure the network has been formed as expected. Then write the network to file and visualize it in Paraview. The
@@ -180,7 +181,8 @@ public:
 
     /*
      * = Test 2 - Building a vessel network using a generator and reading from file =
-     * [[Image(source:/chaste/projects/Angiogenesis/tutorials/images/hexagonal_network.png)]]
+     * [[Image(source:/chaste/projects/Angiogenesis/test/tutorials/images/hexagonal_network.png, 25%, align=center, border=1)]]
+     *
      * It is usually tedious to build a vessel network from scratch. In this test we use a generator to automatically construct a network.
      * We then write it to file, read it back in and check that it is restored as expected.
      */
@@ -208,7 +210,7 @@ public:
          */
         unsigned number_of_nodes = p_network->GetNumberOfNodes();
         unsigned number_of_vessels = p_network->GetNumberOfVessels();
-        MAKE_PTR_ARGS(OutputFileHandler, p_handler, ("TestBuildVesselNetworkLiteratePaper"));
+        MAKE_PTR_ARGS(OutputFileHandler, p_handler, ("TestBuildVesselNetworkLiteratePaper", false));
         VesselNetworkWriter<3> writer;
         writer.SetFileName(p_handler->GetOutputDirectoryFullPath() + "hexagonal_network.vtp");
         writer.SetVesselNetwork(p_network);
@@ -234,5 +236,4 @@ public:
      * It is suggested that the tutorial [wiki:PaperTutorials/Angiogenesis/BloodFlow on flow modelling] is covered next.
      */
 };
-
 #endif /*TESTBUILDVESSELNETWORKLITERATEPAPER_HPP_*/
