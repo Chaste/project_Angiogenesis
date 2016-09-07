@@ -71,7 +71,9 @@ void ViscosityParameterInstance::SetValue(units::quantity<unit::dynamic_viscosit
     mValue = value;
 }
 
-units::quantity<unit::dynamic_viscosity> ViscosityParameterInstance::GetValue()
+units::quantity<unit::dynamic_viscosity> ViscosityParameterInstance::GetValue(const std::string& rCallingClass)
 {
+    // Register self with the parameter collection if not already in there.
+    RegisterWithCollection(rCallingClass);
     return mValue;
 }

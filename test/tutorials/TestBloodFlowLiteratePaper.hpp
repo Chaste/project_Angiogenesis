@@ -67,7 +67,7 @@
  */
 #include "NodeFlowProperties.hpp"
 /*
- * A collection of useful literature parameter values and a way to dump values to.
+ * A collection of useful literature parameter values and a way to dump values to
  * file after use.
  */
 #include "Owen11Parameters.hpp"
@@ -90,7 +90,7 @@ class TestBloodFlowLiteratePaper : public AbstractCellBasedWithTimingsTestSuite
 public:
     /*
      * = Test 1 - Simulating 1d Flow in a Bifurcating Network =
-     * [[Image(source:/chaste/projects/Angiogenesis/test/tutorials/images/bifurcation_network_flow.png, 25%, align=center, border=1)]]
+     * [[Image(source:/chaste/projects/Angiogenesis/test/tutorials/images/bifurcation_network_flow.png, 45%, align=center, border=1)]]
      *
      * In the first test we will simulate blood flow in a simple bifurcating vessel network. Subsequent tests will add detail in the form of
      * more complex networks, structural adaptation and vessel regression.
@@ -134,17 +134,13 @@ public:
          */
         p_network->GetNode(p_network->GetNumberOfNodes()-1)->GetFlowProperties()->SetIsOutputNode(true);
         p_network->GetNode(p_network->GetNumberOfNodes()-1)->GetFlowProperties()->SetPressure(Owen11Parameters::mpOutletPressure->GetValue());
-        boost::shared_ptr<ParameterCollection> p_parameter_collection = ParameterCollection::Instance();
-        ParameterCollection::Instance()->AddParameter(Owen11Parameters::mpOutletPressure, "User");
         /*
          * Now set the segment radii and viscosity values.
          */
         units::quantity<unit::length> vessel_radius(GenericParameters::mpCapillaryRadius->GetValue());
-        ParameterCollection::Instance()->AddParameter(GenericParameters::mpCapillaryRadius, "User");
         p_network->SetSegmentRadii(vessel_radius);
 
         units::quantity<unit::dynamic_viscosity> viscosity = Owen11Parameters::mpPlasmaViscosity->GetValue();
-        ParameterCollection::Instance()->AddParameter(Owen11Parameters::mpPlasmaViscosity, "User");
         std::vector<boost::shared_ptr<VesselSegment<2> > > segments = p_network->GetVesselSegments();
         for(unsigned idx=0; idx<segments.size(); idx++)
         {
@@ -182,13 +178,14 @@ public:
         /*
          * Now we can visualize the results in Paraview. See [wiki:UserTutorials/VisualizingWithParaview here] to get started. To view the network import the file
          * `TestBloodFlowLiteratePaper\bifurcating_network.vtp` into Paraview. For a nicer rendering you can do `Filters->Alphabetical->Tube`.
-         * Finally, dump our parameter collection to an xml file.
+         * Finally, dump our parameter collection to an xml file and, importantly, clear it for the next test.
          */
-        p_parameter_collection->DumpToFile(p_handler->GetOutputDirectoryFullPath() + "parameter_collection.xml");
+        ParameterCollection::Instance()->DumpToFile(p_handler->GetOutputDirectoryFullPath() + "parameter_collection.xml");
+        ParameterCollection::Instance()->Destroy();
     }
     /*
      * = Test 2 - Simulating Haematocrit Transport in 3D =
-     * [[Image(source:/chaste/projects/Angiogenesis/test/tutorials/images/haematocrit.png, 15%, align=center, border=1)]]
+     * [[Image(source:/chaste/projects/Angiogenesis/test/tutorials/images/haematocrit.png, 25%, align=center, border=1)]]
      *
      * In this test we will simulate haematocrit transport in a 3d vessel network.
      */
@@ -219,17 +216,13 @@ public:
         p_inlet_node->GetFlowProperties()->SetPressure(Owen11Parameters::mpInletPressure->GetValue());
         p_outlet_node->GetFlowProperties()->SetIsOutputNode(true);
         p_outlet_node->GetFlowProperties()->SetPressure(Owen11Parameters::mpOutletPressure->GetValue());
-        ParameterCollection::Instance()->AddParameter(Owen11Parameters::mpInletPressure, "User");
-        ParameterCollection::Instance()->AddParameter(Owen11Parameters::mpOutletPressure, "User");
 
         /*
          * Now set the segment radii and viscosity values.
          */
         units::quantity<unit::length> vessel_radius(GenericParameters::mpCapillaryRadius->GetValue());
-        ParameterCollection::Instance()->AddParameter(GenericParameters::mpCapillaryRadius, "User");
         p_network->SetSegmentRadii(vessel_radius);
         units::quantity<unit::dynamic_viscosity> viscosity = Owen11Parameters::mpPlasmaViscosity->GetValue();
-        ParameterCollection::Instance()->AddParameter(Owen11Parameters::mpPlasmaViscosity, "User");
         std::vector<boost::shared_ptr<VesselSegment<3> > > segments = p_network->GetVesselSegments();
         for(unsigned idx=0; idx<segments.size(); idx++)
         {
@@ -258,13 +251,10 @@ public:
                 double z_frac = nodes[idx]->rGetLocation()[2] / (extents[2].second - extents[2].first);
                 radius = sphere_radius - sphere_thickess * z_frac;
             }
-
-            // Get the new x
             DimensionalChastePoint<3>new_position(radius * std::cos(azimuth_angle) * std::sin(polar_angle),
                                                   radius * std::cos(polar_angle),
                                                   radius * std::sin(azimuth_angle) * std::sin(polar_angle),
                                                   cell_width);
-            std::cout << new_position.rGetLocation() << std::endl;
             nodes[idx]->SetLocation(new_position);
         }
         /*
@@ -295,7 +285,7 @@ public:
          * `TestBloodFlowLiteratePaper\bifurcating_network.vtp` into Paraview. For a nicer rendering you can do `Filters->Alphabetical->Tube`.
          */
         ParameterCollection::Instance()->DumpToFile(p_handler->GetOutputDirectoryFullPath() + "parameter_collection.xml");
+        ParameterCollection::Instance()->Destroy();
     }
 };
-
 #endif /*TESTBLOODFLOWLITERATEPAPER_HPP_*/

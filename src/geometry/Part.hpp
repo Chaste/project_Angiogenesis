@@ -207,6 +207,8 @@ public:
      */
     std::vector<boost::shared_ptr<Polygon> > GetPolygons();
 
+    units::quantity<unit::length> GetReferenceLengthScale();
+
     /**
      * Return the segment indexes, used for 2D meshing
      * @return the indices of vertices corresponding to segments (edges) in the part
@@ -242,6 +244,8 @@ public:
      * Merge vertices that overlap in polygons and facets
      */
     void MergeCoincidentVertices();
+
+    void SetReferenceLengthScale(units::quantity<unit::length> referenceLength);
 
     /**
      * Move the part along the translation vector

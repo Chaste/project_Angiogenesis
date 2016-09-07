@@ -37,6 +37,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define BaseParameterInstance_HPP_
 
 #include <ostream>
+#include <boost/shared_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
 #include "ChasteSerialization.hpp"
 #include "SmartPointers.hpp"
 #include "UnitCollection.hpp"
@@ -46,7 +48,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * from a paper and units. It is templated over unit type. Specific parameter values can inherit from this class, with
  * hard-coded metadata.
  */
-class BaseParameterInstance
+class BaseParameterInstance : public boost::enable_shared_from_this<BaseParameterInstance>
 {
     /**
      * Archiving
@@ -121,6 +123,8 @@ public:
 
     std::string GetSymbol();
 
+    void RegisterWithCollection(const std::string& rCallingClass);
+
     /**
      * Set the bibliographic information
      * @param rSourceInformation the bibliographic information
@@ -140,6 +144,8 @@ public:
     void SetShortDescription(const std::string& rShortDescription);
 
     void SetSymbol(const std::string& rSymbol);
+
+    friend std::ostream& operator<< (std::ostream& stream, const boost::shared_ptr<BaseParameterInstance>& rParameter);
 
 };
 

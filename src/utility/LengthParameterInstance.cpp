@@ -70,7 +70,9 @@ void LengthParameterInstance::SetValue(units::quantity<unit::length> value)
     mValue = value;
 }
 
-units::quantity<unit::length> LengthParameterInstance::GetValue()
+units::quantity<unit::length> LengthParameterInstance::GetValue(const std::string& rCallingClass)
 {
+    // Register self with the parameter collection if not already in there.
+    RegisterWithCollection(rCallingClass);
     return mValue;
 }

@@ -93,7 +93,7 @@ public:
     void SetValue(units::quantity<unit::pressure> value);
 
 
-    units::quantity<unit::pressure> GetValue();
+    units::quantity<unit::pressure> GetValue(const std::string& rCallingClass = "User");
 
     std::string GetValueAsString();
 

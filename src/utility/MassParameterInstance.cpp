@@ -70,7 +70,9 @@ void MassParameterInstance::SetValue(units::quantity<unit::mass> value)
     mValue = value;
 }
 
-units::quantity<unit::mass> MassParameterInstance::GetValue()
+units::quantity<unit::mass> MassParameterInstance::GetValue(const std::string& rCallingClass)
 {
+    // Register self with the parameter collection if not already in there.
+    RegisterWithCollection(rCallingClass);
     return mValue;
 }

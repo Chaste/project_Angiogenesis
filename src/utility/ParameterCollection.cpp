@@ -74,12 +74,8 @@ void ParameterCollection::DumpToFile(const std::string& rFilename)
         for(it_type iterator = mParameters.begin(); iterator != mParameters.end(); iterator++)
         {
             myfile << "<parameter>" << std::endl;
-            myfile<< "<name>" << (iterator->second).second->GetName() <<"</name>" << std::endl;
             myfile << "<added_by>" << (iterator->second).first << "</added_by>"<< std::endl;
-            myfile<< "<value>" << (iterator->second).second->GetValueAsString() << "</value>" << std::endl;
-            myfile<< "<description>" << (iterator->second).second->GetShortDescription() << "</description>" << std::endl;
-            myfile<< "<symbol>" << (iterator->second).second->GetSymbol() << "</symbol>" << std::endl;
-            myfile<< "<source>" << "\"" <<(iterator->second).second->GetBibliographicInformation() << "\"" << "</source>"<< std::endl;
+            myfile << (iterator->second).second;
             myfile << "</parameter>" << std::endl;
         }
         myfile << "</parameter_collection>" << std::endl;
@@ -174,7 +170,16 @@ boost::shared_ptr<ViscosityParameterInstance> ParameterCollection::GetViscosityP
 
 void ParameterCollection::AddParameter(boost::shared_ptr<BaseParameterInstance> pParameter, const std::string& rFirstInstantiated)
 {
-    mParameters[pParameter->GetName()] = std::pair<std::string, boost::shared_ptr<BaseParameterInstance> >(rFirstInstantiated, pParameter);
+    // Check if the parameter already exists in the map
+    std::map<std::string, std::pair<std::string, boost::shared_ptr<BaseParameterInstance> > >::iterator it = mParameters.find(pParameter->GetName());
+    if(it != mParameters.end() && rFirstInstantiated != it->first)
+    {
+        it->second = std::pair<std::string, boost::shared_ptr<BaseParameterInstance> >(rFirstInstantiated, pParameter);
+    }
+    else
+    {
+        mParameters[pParameter->GetName()] = std::pair<std::string, boost::shared_ptr<BaseParameterInstance> >(rFirstInstantiated, pParameter);
+    }
 }
 
 void ParameterCollection::Destroy()

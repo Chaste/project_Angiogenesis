@@ -307,6 +307,12 @@ std::vector<DimensionalChastePoint<DIM> > Part<DIM>::GetHoleMarkers()
 }
 
 template<unsigned DIM>
+units::quantity<unit::length> Part<DIM>::GetReferenceLengthScale()
+{
+    return mReferenceLength;
+}
+
+template<unsigned DIM>
 std::vector<boost::shared_ptr<Vertex> > Part<DIM>::GetVertices()
 {
     std::vector<boost::shared_ptr<Polygon> > polygons = GetPolygons();
@@ -565,6 +571,12 @@ void Part<DIM>::MergeCoincidentVertices()
     {
         mFacets[idx]->UpdateVertices();
     }
+}
+
+template<unsigned DIM>
+void Part<DIM>::SetReferenceLengthScale(units::quantity<unit::length> referenceLength)
+{
+    mReferenceLength = referenceLength;
 }
 
 template<unsigned DIM>

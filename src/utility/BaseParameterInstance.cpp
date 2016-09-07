@@ -34,6 +34,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "BaseParameterInstance.hpp"
+#include "ParameterCollection.hpp"
 
 BaseParameterInstance::BaseParameterInstance()
     : mName("DefaultParameter"),
@@ -61,6 +62,11 @@ BaseParameterInstance::BaseParameterInstance(const std::string& rName,
 BaseParameterInstance::~BaseParameterInstance()
 {
 
+}
+
+void BaseParameterInstance::RegisterWithCollection(const std::string& rCallingClass)
+{
+    ParameterCollection::Instance()->AddParameter(shared_from_this(), rCallingClass);
 }
 
 std::string BaseParameterInstance::GetValueAsString()
@@ -108,4 +114,14 @@ void BaseParameterInstance::SetShortDescription(const std::string& rShortDescrip
 void BaseParameterInstance::SetSymbol(const std::string& rSymbol)
 {
     mSymbol = rSymbol;
+}
+
+std::ostream& operator <<(std::ostream& stream, const boost::shared_ptr<BaseParameterInstance>& rParameter)
+{
+    stream<< "<name>" << rParameter->GetName() <<"</name>\n";
+    stream<< "<value>" << rParameter->GetValueAsString() << "</value>\n";
+    stream<< "<description>" << rParameter->GetShortDescription() << "</description>\n";
+    stream<< "<symbol>" << rParameter->GetSymbol() << "</symbol>\n";
+    stream<< "<source>" << "\"" <<rParameter->GetBibliographicInformation() << "\"" << "</source>\n";
+    return stream;
 }

@@ -93,7 +93,7 @@ public:
     void SetValue(units::quantity<unit::time> value);
 
 
-    units::quantity<unit::time> GetValue();
+    units::quantity<unit::time> GetValue(const std::string& rCallingClass = "User");
 
     std::string GetValueAsString();
 

@@ -44,7 +44,7 @@ boost::shared_ptr<SimulationTime> DimensionalSimulationTime::mpSimulationTimeIns
 
 boost::shared_ptr<DimensionalSimulationTime> DimensionalSimulationTime::Instance()
 {
-    if (mpInstance)
+    if (!mpInstance)
     {
         mpInstance = boost::shared_ptr<DimensionalSimulationTime>(new DimensionalSimulationTime);
         std::atexit(Destroy);

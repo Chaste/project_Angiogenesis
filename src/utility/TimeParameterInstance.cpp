@@ -70,7 +70,9 @@ void TimeParameterInstance::SetValue(units::quantity<unit::time> value)
     mValue = value;
 }
 
-units::quantity<unit::time> TimeParameterInstance::GetValue()
+units::quantity<unit::time> TimeParameterInstance::GetValue(const std::string& rCallingClass)
 {
+    // Register self with the parameter collection if not already in there.
+    RegisterWithCollection(rCallingClass);
     return mValue;
 }

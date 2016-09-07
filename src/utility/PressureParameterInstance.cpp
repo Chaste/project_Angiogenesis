@@ -70,7 +70,9 @@ void PressureParameterInstance::SetValue(units::quantity<unit::pressure> value)
     mValue = value;
 }
 
-units::quantity<unit::pressure> PressureParameterInstance::GetValue()
+units::quantity<unit::pressure> PressureParameterInstance::GetValue(const std::string& rCallingClass)
 {
+    // Register self with the parameter collection if not already in there.
+    RegisterWithCollection(rCallingClass);
     return mValue;
 }

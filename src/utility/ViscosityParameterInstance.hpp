@@ -92,7 +92,7 @@ public:
     void SetValue(units::quantity<unit::dynamic_viscosity> value);
 
 
-    units::quantity<unit::dynamic_viscosity> GetValue();
+    units::quantity<unit::dynamic_viscosity> GetValue(const std::string& rCallingClass = "User");
 
     std::string GetValueAsString();
 

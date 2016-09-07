@@ -214,7 +214,6 @@ public:
         VesselNetworkWriter<3> writer;
         writer.SetFileName(p_handler->GetOutputDirectoryFullPath() + "hexagonal_network.vtp");
         writer.SetVesselNetwork(p_network);
-
         units::quantity<unit::length> micron_length_scale(1.0*unit::microns);
         writer.SetReferenceLengthScale(micron_length_scale);
         writer.Write();
