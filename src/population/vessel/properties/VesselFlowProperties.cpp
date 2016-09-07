@@ -62,7 +62,7 @@ units::quantity<unit::dimensionless> VesselFlowProperties<DIM>::GetHaematocrit(c
 template<unsigned DIM>
 units::quantity<unit::flow_rate> VesselFlowProperties<DIM>::GetFlowRate(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const
 {
-    units::quantity<unit::flow_rate> value = 0.0 * unit::unit_flow_rate;
+    units::quantity<unit::flow_rate> value = 0.0 * unit::metre_cubed_per_second;
     for (unsigned i = 0; i < segments.size(); i++)
     {
         value += segments[i]->GetFlowProperties()->GetFlowRate() / double(segments.size());
@@ -73,7 +73,7 @@ units::quantity<unit::flow_rate> VesselFlowProperties<DIM>::GetFlowRate(const st
 template<unsigned DIM>
 units::quantity<unit::flow_impedance> VesselFlowProperties<DIM>::GetImpedance(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const
 {
-    units::quantity<unit::flow_impedance> value = 0.0 * unit::unit_flow_impedance;
+    units::quantity<unit::flow_impedance> value = 0.0 * unit::pascal_second_per_metre_cubed;
     for (unsigned i = 0; i < segments.size(); i++)
     {
         value += segments[i]->GetFlowProperties()->GetImpedance();
@@ -106,7 +106,7 @@ units::quantity<unit::pressure> VesselFlowProperties<DIM>::GetWallShearStress(co
 template<unsigned DIM>
 units::quantity<unit::rate> VesselFlowProperties<DIM>::GetGrowthStimulus(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const
 {
-    units::quantity<unit::rate> value = 0.0 * unit::reciprocal_seconds;
+    units::quantity<unit::rate> value = 0.0 * unit::per_second;
     for (unsigned i = 0; i < segments.size(); i++)
     {
         value += segments[i]->GetFlowProperties()->GetGrowthStimulus()/ double(segments.size());
@@ -118,13 +118,13 @@ template<unsigned DIM>
 std::map<std::string, double> VesselFlowProperties<DIM>::GetOutputData(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const
 {
     std::map<std::string, double> output_data;
-    output_data["Vessel Impedance kg/m^4/s"] = this->GetImpedance(segments) / unit::unit_flow_impedance ;
+    output_data["Vessel Impedance kg/m^4/s"] = this->GetImpedance(segments) / unit::pascal_second_per_metre_cubed;
     output_data["Vessel Haematocrit"] = this->GetHaematocrit(segments);
-    output_data["Vessel Flow Rate m^3/s"] = this->GetFlowRate(segments) / unit::unit_flow_rate;
-    output_data["Absolute Vessel Flow Rate m^3/s"] = fabs(this->GetFlowRate(segments)) / unit::unit_flow_rate;
+    output_data["Vessel Flow Rate m^3/s"] = this->GetFlowRate(segments) / unit::metre_cubed_per_second;
+    output_data["Absolute Vessel Flow Rate m^3/s"] = fabs(this->GetFlowRate(segments)) / unit::metre_cubed_per_second;
     output_data["Vessel Viscosity Pa.s"] = this->GetViscosity(segments) / unit::poiseuille;
     output_data["Vessel Wall Shear Stress Pa"] = this->GetWallShearStress(segments)  / unit::pascals;
-    output_data["Vessel Growth Stimulus s^-1"] = this->GetGrowthStimulus(segments) / unit::reciprocal_seconds;
+    output_data["Vessel Growth Stimulus s^-1"] = this->GetGrowthStimulus(segments) / unit::per_second;
     return output_data;
 }
 

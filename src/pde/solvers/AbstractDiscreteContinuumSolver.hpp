@@ -41,7 +41,7 @@
 #include "OutputFileHandler.hpp"
 #include "VesselNetwork.hpp"
 #include "AbstractCellPopulation.hpp"
-#include "DiscreteContinuumLinearEllipticPde.hpp"
+#include "AbstractDiscreteContinuumLinearEllipticPde.hpp"
 #include "DiscreteContinuumNonLinearEllipticPde.hpp"
 #include "DiscreteContinuumBoundaryCondition.hpp"
 #include "RegularGrid.hpp"
@@ -103,7 +103,7 @@ protected:
     /**
      * The PDE to be solved, optional
      */
-    boost::shared_ptr<DiscreteContinuumLinearEllipticPde<DIM, DIM> > mpPde;
+    boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<DIM, DIM> > mpPde;
 
     /**
      * The non-linear PDE to be solved, optional
@@ -143,7 +143,7 @@ public:
      * Return the PDE
      * @return the DiscreteContinuum linear elliptic pde
      */
-    boost::shared_ptr<DiscreteContinuumLinearEllipticPde<DIM, DIM> > GetPde();
+    boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<DIM, DIM> > GetPde();
 
     /**
      * Return the nonlinear PDE
@@ -193,7 +193,7 @@ public:
      *  Set the PDE to be solved
      * @param pPde the pde to be solved
      */
-    void SetPde(boost::shared_ptr<DiscreteContinuumLinearEllipticPde<DIM, DIM> > pPde);
+    void SetPde(boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<DIM, DIM> > pPde);
 
     /**
      *  Set the nonlinear PDE to be solved

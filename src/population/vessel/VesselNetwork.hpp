@@ -200,7 +200,7 @@ public:
     /**
      Return the extents of the vessel network in the form ((xmin, xmax), (ymin, ymax), (zmin, zmax))
      */
-    std::vector<std::pair<double, double> > GetExtents(bool useRadii = false);
+    std::pair<DimensionalChastePoint<DIM>, DimensionalChastePoint<DIM> > GetExtents(bool useRadii = false);
 
     /**
      * Return the indexed node in the network
@@ -324,14 +324,19 @@ public:
     void SetSegmentRadii(units::quantity<unit::length> radius);
 
     /**
+     * Set the segment viscosity to the same value
+     */
+    void SetSegmentViscosity(units::quantity<unit::dynamic_viscosity> viscosity);
+
+    /**
      * Translate the network along the provided vector
      */
-    void Translate(const c_vector<double, DIM>& rTranslationVector);
+    void Translate(DimensionalChastePoint<DIM> rTranslationVector);
 
     /**
      * Translate specific vessels along the provided vector
      */
-    void Translate(const c_vector<double, DIM>& rTranslationVector, std::vector<boost::shared_ptr<Vessel<DIM> > > vessels);
+    void Translate(DimensionalChastePoint<DIM> rTranslationVector, std::vector<boost::shared_ptr<Vessel<DIM> > > vessels);
 
     /**
      * Update the network node collection

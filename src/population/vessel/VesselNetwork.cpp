@@ -271,88 +271,87 @@ void VesselNetwork<DIM>::SetNodeRadiiFromSegments()
 }
 
 template <unsigned DIM>
-std::vector<std::pair<double, double> > VesselNetwork<DIM>::GetExtents(bool useRadii)
+std::pair<DimensionalChastePoint<DIM>, DimensionalChastePoint<DIM> > VesselNetwork<DIM>::GetExtents(bool useRadii)
 {
-    double x_max = -DBL_MAX;
-    double y_max = -DBL_MAX;
-    double z_max = -DBL_MAX;
+    units::quantity<unit::length> x_max = -DBL_MAX*unit::metres;
+    units::quantity<unit::length> y_max = -DBL_MAX*unit::metres;
+    units::quantity<unit::length> z_max = -DBL_MAX*unit::metres;
 
     std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes = GetNodes();
     typename std::vector<boost::shared_ptr<VesselNode<DIM> > >::iterator it;
-
     for(it = nodes.begin(); it != nodes.end(); it++)
     {
         DimensionalChastePoint<DIM> location = (*it)->rGetLocation();
-        if(location[0] > x_max)
+        units::quantity<unit::length> length_scale = location.GetReferenceLengthScale();
+        if(location[0]*length_scale > x_max)
         {
-            x_max = location[0];
+            x_max = location[0]*length_scale;
             if(useRadii)
             {
-                x_max += (*it)->GetRadius()/(*it)->GetReferenceLengthScale();
+                x_max += (*it)->GetRadius();
             }
         }
-        if(location[1] > y_max)
+        if(location[1]*length_scale > y_max)
         {
-            y_max = location[1];
+            y_max = location[1]*length_scale;
             if(useRadii)
             {
-                y_max += (*it)->GetRadius()/(*it)->GetReferenceLengthScale();
+                y_max += (*it)->GetRadius();
             }
         }
         if(DIM > 2)
         {
-            if(location[2] > z_max)
+            if(location[2]*length_scale > z_max)
             {
-                z_max = location[2];
+                z_max = location[2]*length_scale;
                 if(useRadii)
                 {
-                    z_max += (*it)->GetRadius()/(*it)->GetReferenceLengthScale();
+                    z_max += (*it)->GetRadius();
                 }
             }
         }
     }
 
-    double x_min = x_max;
-    double y_min = y_max;
-    double z_min = z_max;
-
+    units::quantity<unit::length> x_min = x_max;
+    units::quantity<unit::length> y_min = y_max;
+    units::quantity<unit::length> z_min = z_max;
     for(it = nodes.begin(); it != nodes.end(); it++)
     {
         DimensionalChastePoint<DIM> location = (*it)->rGetLocation();
-        if(location[0] < x_min)
+        units::quantity<unit::length> length_scale = location.GetReferenceLengthScale();
+        if(location[0]*length_scale < x_min)
         {
-            x_min = location[0];
+            x_min = location[0]*length_scale;
             if(useRadii)
             {
-                x_min -= (*it)->GetRadius()/(*it)->GetReferenceLengthScale();
+                x_min -= (*it)->GetRadius();
             }
         }
-        if(location[1] < y_min)
+        if(location[1]*length_scale < y_min)
         {
-            y_min = location[1];
+            y_min = location[1]*length_scale;
             if(useRadii)
             {
-                y_min -= (*it)->GetRadius()/(*it)->GetReferenceLengthScale();
+                y_min -= (*it)->GetRadius();
             }
         }
         if(DIM > 2)
         {
-            if(location[2] < z_min)
+            if(location[2]*length_scale < z_min)
             {
-                z_min = location[2];
+                z_min = location[2]*length_scale;
                 if(useRadii)
                 {
-                    z_min -= (*it)->GetRadius()/(*it)->GetReferenceLengthScale();
+                    z_min -= (*it)->GetRadius();
                 }
             }
         }
     }
 
-    std::vector<std::pair<double, double> > container;
-    container.push_back(std::pair<double, double>(x_min, x_max));
-    container.push_back(std::pair<double, double>(y_min, y_max));
-    container.push_back(std::pair<double, double>(z_min, z_max));
-    return container;
+    units::quantity<unit::length> base_length = BaseUnits::Instance()->GetReferenceLengthScale();
+    std::pair<DimensionalChastePoint<DIM>, DimensionalChastePoint<DIM> > bbox(DimensionalChastePoint<DIM>(x_min/base_length, y_min/base_length, z_min/base_length, base_length),
+                                                                              DimensionalChastePoint<DIM>(x_max/base_length, y_max/base_length, z_max/base_length, base_length));
+    return bbox;
 }
 
 template <unsigned DIM>
@@ -918,13 +917,13 @@ void VesselNetwork<DIM>::SetSegmentProperties(boost::shared_ptr<VesselSegment<DI
 }
 
 template <unsigned DIM>
-void VesselNetwork<DIM>::Translate(const c_vector<double, DIM>& rTranslationVector)
+void VesselNetwork<DIM>::Translate(DimensionalChastePoint<DIM> rTranslationVector)
 {
     Translate(rTranslationVector, mVessels);
 }
 
 template <unsigned DIM>
-void VesselNetwork<DIM>::Translate(const c_vector<double, DIM>& rTranslationVector, std::vector<boost::shared_ptr<Vessel<DIM> > > vessels)
+void VesselNetwork<DIM>::Translate(DimensionalChastePoint<DIM> rTranslationVector, std::vector<boost::shared_ptr<Vessel<DIM> > > vessels)
 {
     std::set<boost::shared_ptr<VesselNode<DIM> > > nodes;
     for(unsigned idx = 0; idx <vessels.size(); idx++)
@@ -936,7 +935,9 @@ void VesselNetwork<DIM>::Translate(const c_vector<double, DIM>& rTranslationVect
     typename std::set<boost::shared_ptr<VesselNode<DIM> > >::iterator node_iter;
     for(node_iter = nodes.begin(); node_iter != nodes.end(); node_iter++)
     {
-        (*node_iter)->SetLocation(DimensionalChastePoint<DIM>((*node_iter)->rGetLocation().rGetLocation() + rTranslationVector));
+        DimensionalChastePoint<DIM> old_loc = (*node_iter)->rGetLocation();
+        old_loc.Translate(rTranslationVector);
+        (*node_iter)->SetLocation(old_loc);
     }
 }
 
@@ -983,6 +984,16 @@ void VesselNetwork<DIM>::SetSegmentRadii(units::quantity<unit::length> radius)
     for(unsigned idx=0; idx<segments.size();idx++)
     {
         segments[idx]->SetRadius(radius);
+    }
+}
+
+template <unsigned DIM>
+void VesselNetwork<DIM>::SetSegmentViscosity(units::quantity<unit::dynamic_viscosity> viscosity)
+{
+    std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = GetVesselSegments();
+    for(unsigned idx=0; idx<segments.size(); idx++)
+    {
+        segments[idx]->GetFlowProperties()->SetViscosity(viscosity);
     }
 }
 

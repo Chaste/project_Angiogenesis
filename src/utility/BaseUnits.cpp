@@ -35,59 +35,64 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <cassert>
 #include <cmath>
-
-#include "DimensionalSimulationTime.hpp"
+#include "BaseUnits.hpp"
 
 /** Pointer to the single instance */
-boost::shared_ptr<DimensionalSimulationTime> DimensionalSimulationTime::mpInstance = boost::shared_ptr<DimensionalSimulationTime>();
-boost::shared_ptr<SimulationTime> DimensionalSimulationTime::mpSimulationTimeInstance = boost::shared_ptr<SimulationTime>();
+boost::shared_ptr<BaseUnits> BaseUnits::mpInstance = boost::shared_ptr<BaseUnits>();
 
-boost::shared_ptr<DimensionalSimulationTime> DimensionalSimulationTime::Instance()
+boost::shared_ptr<BaseUnits> BaseUnits::Instance()
 {
     if (!mpInstance)
     {
-        mpInstance = boost::shared_ptr<DimensionalSimulationTime>(new DimensionalSimulationTime);
+        mpInstance = boost::shared_ptr<BaseUnits>(new BaseUnits);
         std::atexit(Destroy);
     }
     return mpInstance;
 }
 
-DimensionalSimulationTime::DimensionalSimulationTime()
-    : mReferenceTime(60.0 * unit::seconds)
+BaseUnits::BaseUnits()
+    : mTime(60.0 * unit::seconds),
+      mLength(1.e-6 * unit::metres),
+      mMass(1.0 * unit::kg)
 {
     // Make sure there's only one instance - enforces correct serialization
     assert(bool(mpInstance) == false);
-
-    // Careful, we are grabbing a raw pointer with a shared one. Have to hope no-one uses it to make
-    // more shared pointers to SimulationTime and carefully manage deletion in Destroy.
-    mpSimulationTimeInstance = boost::shared_ptr<SimulationTime>(SimulationTime::Instance());
 }
 
-units::quantity<unit::time> DimensionalSimulationTime::GetReferenceTimeScale()
+units::quantity<unit::time> BaseUnits::GetReferenceTimeScale()
 {
-    return mReferenceTime;
+    return mTime;
 }
 
-void DimensionalSimulationTime::SetReferenceTimeScale(units::quantity<unit::time> referenceTimeScale)
+void BaseUnits::SetReferenceTimeScale(units::quantity<unit::time> referenceTimeScale)
 {
-    mReferenceTime = referenceTimeScale;
+    mTime = referenceTimeScale;
 }
 
-boost::shared_ptr<SimulationTime> DimensionalSimulationTime::GetSimulationTime()
+units::quantity<unit::length> BaseUnits::GetReferenceLengthScale()
 {
-    return mpSimulationTimeInstance;
+    return mLength;
 }
 
-void DimensionalSimulationTime::Destroy()
+void BaseUnits::SetReferenceLengthScale(units::quantity<unit::length> referenceLengthScale)
 {
-    if(mpSimulationTimeInstance)
-    {
-        mpSimulationTimeInstance = boost::shared_ptr<SimulationTime>();
-        SimulationTime::Destroy();
-    }
+    mLength = referenceLengthScale;
+}
 
+units::quantity<unit::mass> BaseUnits::GetReferenceMassScale()
+{
+    return mMass;
+}
+
+void BaseUnits::SetReferenceMassScale(units::quantity<unit::mass> referenceMassScale)
+{
+    mMass = referenceMassScale;
+}
+
+void BaseUnits::Destroy()
+{
     if (mpInstance)
     {
-        mpInstance = boost::shared_ptr<DimensionalSimulationTime>();
+        mpInstance = boost::shared_ptr<BaseUnits>();
     }
 }

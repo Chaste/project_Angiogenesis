@@ -164,6 +164,12 @@ public:
      */
     void PatternUnitByTranslation(boost::shared_ptr<VesselNetwork<DIM> > pInputUnit, std::vector<unsigned> numberOfUnits);
 
+    void MapToSphere(boost::shared_ptr<VesselNetwork<DIM> > pInputUnit,
+                     units::quantity<unit::length> radius,
+                     units::quantity<unit::length> thickess,
+                     double azimuthExtent,
+                     double polarExtent);
+
     /**
      * Set the reference length scale
      *

@@ -38,7 +38,6 @@
 #include <vtkTriangle.h>
 #include <vtkDoubleArray.h>
 #include "Exception.hpp"
-
 #include "Polygon.hpp"
 
 Polygon::Polygon(std::vector<boost::shared_ptr<Vertex> > vertices) :

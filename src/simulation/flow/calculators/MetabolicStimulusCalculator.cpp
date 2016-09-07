@@ -37,9 +37,9 @@
 
 template<unsigned DIM>
 MetabolicStimulusCalculator<DIM>::MetabolicStimulusCalculator() : AbstractVesselNetworkCalculator<DIM>(),
-        mQRef(6.666 * pow(10.0, -10) * unit::unit_flow_rate),
-        mKm(0.83 * unit::reciprocal_seconds),
-        mMaxStimulus(1 * pow(10.0, 10.0) * unit::reciprocal_seconds)
+        mQRef(6.666 * pow(10.0, -10) * unit::metre_cubed_per_second),
+        mKm(0.83 * unit::per_second),
+        mMaxStimulus(1 * pow(10.0, 10.0) * unit::per_second)
 {
 
 }
@@ -95,7 +95,7 @@ void MetabolicStimulusCalculator<DIM>::Calculate()
         units::quantity<unit::rate> metabolic_stimulus;
         units::quantity<unit::dimensionless> haematocrit = segments[idx]->GetFlowProperties()->GetHaematocrit();
         units::quantity<unit::flow_rate> flow_rate = units::fabs(segments[idx]->GetFlowProperties()->GetFlowRate());
-        if (flow_rate > 0.0 * unit::unit_flow_rate)
+        if (flow_rate > 0.0 * unit::metre_cubed_per_second)
         {
             if (haematocrit > 0.0)
             {
@@ -108,7 +108,7 @@ void MetabolicStimulusCalculator<DIM>::Calculate()
         }
         else
         {
-            metabolic_stimulus = 0.0 * unit::reciprocal_seconds;
+            metabolic_stimulus = 0.0 * unit::per_second;
         }
         segments[idx]->GetFlowProperties()->SetGrowthStimulus(segments[idx]->GetFlowProperties()->GetGrowthStimulus() + metabolic_stimulus);
     }

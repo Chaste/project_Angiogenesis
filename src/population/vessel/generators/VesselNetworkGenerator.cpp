@@ -609,17 +609,15 @@ void VesselNetworkGenerator<DIM>::PatternUnitByTranslation(boost::shared_ptr<Ves
 {
 
     // Get unit dimensions
-    std::vector<std::pair<double, double> > extents= input_unit->GetExtents();
+    std::pair<DimensionalChastePoint<DIM>, DimensionalChastePoint<DIM> > extents = input_unit->GetExtents();
 
     // For each number of units in each dimension copy the original vessels and move the copy to the desired location
     double num_x = 0;
     double num_y = 0;
     double num_z = 0;
-
     if(numberOfUnits.size() >= 1)
     {
         num_x = numberOfUnits[0];
-
         if(numberOfUnits.size() >= 2)
         {
             num_y = numberOfUnits[1];
@@ -632,32 +630,18 @@ void VesselNetworkGenerator<DIM>::PatternUnitByTranslation(boost::shared_ptr<Ves
 
     // Keep track of the current vessels
     std::vector<boost::shared_ptr<Vessel<DIM> > > original_vessels = input_unit->GetVessels();
-
     for(unsigned idx =0; idx < num_x; idx++)
     {
-        c_vector<double, DIM> translation_vector;
-        translation_vector[0] = double(idx+1) * (extents[0].second - extents[0].first);
-        translation_vector[1] = 0.0;
-        if(DIM==3)
-        {
-            translation_vector[2] = 0.0;
-        }
+        DimensionalChastePoint<DIM>translation_vector(double(idx+1) * (extents.second[0] - extents.first[0]), 0.0, 0.0, extents.first.GetReferenceLengthScale());
         std::vector<boost::shared_ptr<Vessel<DIM> > > copied_vessels = input_unit->CopyVessels(original_vessels);
         input_unit->Translate(translation_vector, copied_vessels);
     }
-
     input_unit->MergeCoincidentNodes();
-    std::vector<boost::shared_ptr<Vessel<DIM> > > x_transform_vessels = input_unit->GetVessels();
 
+    std::vector<boost::shared_ptr<Vessel<DIM> > > x_transform_vessels = input_unit->GetVessels();
     for(unsigned idx =0; idx < num_y; idx++)
     {
-        c_vector<double, DIM> translation_vector;
-        translation_vector[0] = 0.0;
-        translation_vector[1] = double(idx+1) * (extents[1].second - extents[1].first);
-        if(DIM==3)
-        {
-            translation_vector[2] = 0.0;
-        }
+        DimensionalChastePoint<DIM>translation_vector(0.0, double(idx+1) * (extents.second[1] - extents.first[1]), 0.0, extents.first.GetReferenceLengthScale());
         std::vector<boost::shared_ptr<Vessel<DIM> > > copied_vessels = input_unit->CopyVessels(x_transform_vessels);
         input_unit->Translate(translation_vector, copied_vessels);
     }
@@ -666,13 +650,7 @@ void VesselNetworkGenerator<DIM>::PatternUnitByTranslation(boost::shared_ptr<Ves
 
     for(unsigned idx =0; idx < num_z; idx++)
     {
-        c_vector<double, DIM> translation_vector;
-        translation_vector[0] = 0.0;
-        translation_vector[1] = 0.0;
-        if(DIM==3)
-        {
-            translation_vector[2] = double(idx+1) * (extents[2].second - extents[2].first);
-        }
+        DimensionalChastePoint<DIM>translation_vector(0.0, 0.0, double(idx+1) * (extents.second[2] - extents.first[2]), extents.first.GetReferenceLengthScale());
         std::vector<boost::shared_ptr<Vessel<DIM> > > copied_vessels = input_unit->CopyVessels(y_transform_vessels);
         input_unit->Translate(translation_vector, copied_vessels);
     }
@@ -750,7 +728,7 @@ boost::shared_ptr<VesselNetwork<DIM> > VesselNetworkGenerator<DIM>::GenerateBifu
     // Generate the network
     boost::shared_ptr<VesselNetwork<DIM> > p_network(new VesselNetwork<DIM>());
     p_network->AddVessels(vessels);
-    p_network->Translate(startPosition.rGetLocation());
+    p_network->Translate(startPosition);
     return p_network;
 }
 
@@ -829,7 +807,6 @@ boost::shared_ptr<VesselNetwork<DIM> > VesselNetworkGenerator<DIM>::GenerateFrom
     return p_network;
 }
 
-
 template<unsigned DIM>
 boost::shared_ptr<VesselNetwork<DIM> > VesselNetworkGenerator<DIM>::GenerateVoronoiNetwork(units::quantity<unit::length> cubeX,
                                                                                          units::quantity<unit::length> cubeY,
@@ -847,6 +824,37 @@ boost::shared_ptr<VesselNetwork<DIM> > VesselNetworkGenerator<DIM>::GenerateVoro
     boost::shared_ptr<Part<DIM> > p_tesselation = generator.Generate(p_part, std::vector<boost::shared_ptr<Vertex> >(), numPoints);
     boost::shared_ptr<VesselNetwork<DIM> > p_network =  GenerateFromPart(p_tesselation);
     return p_network;
+}
+
+template<unsigned DIM>
+void VesselNetworkGenerator<DIM>::MapToSphere(boost::shared_ptr<VesselNetwork<DIM> > pInputUnit,
+                                              units::quantity<unit::length> radius, units::quantity<unit::length> thickess,
+                                              double azimuthExtent, double polarExtent)
+{
+    std::pair<DimensionalChastePoint<DIM>, DimensionalChastePoint<DIM> > extents = pInputUnit->GetExtents();
+    std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes = pInputUnit->GetNodes();
+    for(unsigned idx =0; idx<nodes.size(); idx++)
+    {
+        units::quantity<unit::length> node_length_scale = nodes[idx]->rGetLocation().GetReferenceLengthScale();
+        units::quantity<unit::length> network_length_scale = extents.first.GetReferenceLengthScale();
+        double x_frac = (nodes[idx]->rGetLocation()[0]*node_length_scale) / ((extents.second[0] - extents.first[0])*network_length_scale);
+        double azimuth_angle = x_frac * azimuthExtent;
+
+        double y_frac = (nodes[idx]->rGetLocation()[1] + 3.0)*node_length_scale / ((extents.second[1] - extents.first[1])*network_length_scale);
+        double polar_angle = y_frac * polarExtent;
+
+        double dimless_radius = radius/mReferenceLength;
+        if(extents.second[2] - extents.first[2]>0.0)
+        {
+            double z_frac = nodes[idx]->rGetLocation()[2]*node_length_scale / ((extents.second[2] - extents.first[2])*network_length_scale);
+            dimless_radius = dimless_radius - (thickess/mReferenceLength) * z_frac;
+        }
+        DimensionalChastePoint<DIM>new_position(dimless_radius * std::cos(azimuth_angle) * std::sin(polar_angle),
+                                              dimless_radius * std::cos(polar_angle),
+                                              dimless_radius * std::sin(azimuth_angle) * std::sin(polar_angle),
+                                              mReferenceLength);
+        nodes[idx]->SetLocation(new_position);
+    }
 }
 
 template<unsigned DIM>

@@ -64,7 +64,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "GeneralisedLinearSpringForce.hpp"
 #include "FakePetscSetup.hpp"
 #include "FiniteDifferenceSolver.hpp"
-#include "DiscreteContinuumLinearEllipticPde.hpp"
+#include "AbstractDiscreteContinuumLinearEllipticPde.hpp"
 #include "VesselNetworkGenerator.hpp"
 #include "SimpleOxygenBasedCellCycleModel.hpp"
 #include "DiscreteContinuumBoundaryCondition.hpp"
@@ -146,7 +146,7 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
     boost::shared_ptr<FiniteDifferenceSolver<3> > GetOxygenSolver(boost::shared_ptr<Part<3> > p_domain,
                                                                   boost::shared_ptr<VesselNetwork<3> > p_network)
     {
-        boost::shared_ptr<DiscreteContinuumLinearEllipticPde<3> > p_oxygen_pde = DiscreteContinuumLinearEllipticPde<3>::Create();
+        boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<3> > p_oxygen_pde = AbstractDiscreteContinuumLinearEllipticPde<3>::Create();
         p_oxygen_pde->SetIsotropicDiffusionConstant(0.0033);
         p_oxygen_pde->SetVariableName("oxygen");
 
@@ -176,7 +176,7 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
     boost::shared_ptr<FiniteDifferenceSolver<3> > GetVegfSolver(boost::shared_ptr<Part<3> > p_domain,
                                                                   boost::shared_ptr<VesselNetwork<3> > p_network)
     {
-        boost::shared_ptr<DiscreteContinuumLinearEllipticPde<3> > p_vegf_pde = DiscreteContinuumLinearEllipticPde<3>::Create();
+        boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<3> > p_vegf_pde = AbstractDiscreteContinuumLinearEllipticPde<3>::Create();
         p_vegf_pde->SetIsotropicDiffusionConstant(0.0033);
         p_vegf_pde->SetVariableName("vegf");
         p_vegf_pde->SetContinuumLinearInUTerm(-1.e-7);

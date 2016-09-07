@@ -44,7 +44,7 @@
 #include "UblasIncludes.hpp"
 #include "Part.hpp"
 #include "Vertex.hpp"
-#include "DiscreteContinuumLinearEllipticPde.hpp"
+#include "AbstractDiscreteContinuumLinearEllipticPde.hpp"
 #include "DiscreteContinuumNonLinearEllipticPde.hpp"
 #include "VesselNetwork.hpp"
 #include "VesselNetworkGenerator.hpp"
@@ -70,7 +70,7 @@ public:
         p_mesh->Update();
 
         // Choose the PDE
-        boost::shared_ptr<DiscreteContinuumLinearEllipticPde<3> > p_linear_pde = DiscreteContinuumLinearEllipticPde<3>::Create();
+        boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<3> > p_linear_pde = AbstractDiscreteContinuumLinearEllipticPde<3>::Create();
         p_linear_pde->SetIsotropicDiffusionConstant(1.0);
         p_linear_pde->SetContinuumLinearInUTerm(-2.0);
 

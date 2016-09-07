@@ -441,6 +441,7 @@ template<unsigned DIM>
 std::map<std::string, double> Vessel<DIM>::GetOutputData()
 {
     std::map<std::string, double> flow_data = this->mpFlowProperties->GetOutputData(GetSegments());
+    this->mOutputData.clear();
     this->mOutputData.insert(flow_data.begin(), flow_data.end());
     this->mOutputData["Vessel Id"] = double(this->GetId());
     this->mOutputData["Vessel Radius m"] = this->GetRadius() / unit::metres;

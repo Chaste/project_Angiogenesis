@@ -64,9 +64,9 @@ public:
         std::cout << d1 << std::endl;
 
         // Rates
-        units::quantity<unit::rate> rs1 = 3.0*unit::reciprocal_seconds;
-        units::quantity<unit::rate> rm1(3.0*unit::reciprocal_minutes);
-        units::quantity<unit::rate> rh1(3.0*unit::reciprocal_hours);
+        units::quantity<unit::rate> rs1 = 3.0*unit::per_second;
+        units::quantity<unit::rate> rm1(3.0*unit::per_minute);
+        units::quantity<unit::rate> rh1(3.0*unit::per_hour);
         std::cout << rs1 << std::endl;
         std::cout << rm1 << std::endl;
         std::cout << rh1 << std::endl;

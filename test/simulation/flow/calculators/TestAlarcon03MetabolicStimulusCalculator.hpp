@@ -36,27 +36,27 @@ public:
         boost::shared_ptr<Vessel<3> > p_vessel(Vessel<3>::Create(VesselSegment<3>::Create(nodes[0], nodes[1])));
         boost::shared_ptr<VesselNetwork<3> > p_vascular_network = VesselNetwork<3>::Create();
         p_vascular_network->AddVessel(p_vessel);
-        p_vessel->GetSegments()[0]->GetFlowProperties()->SetFlowRate(flow_rate*unit::unit_flow_rate);
+        p_vessel->GetSegments()[0]->GetFlowProperties()->SetFlowRate(flow_rate*unit::metre_cubed_per_second);
         p_vessel->GetSegments()[0]->GetFlowProperties()->SetHaematocrit(haematocrit_level);
 
         boost::shared_ptr<MetabolicStimulusCalculator<3> > calculator(new MetabolicStimulusCalculator<3>());
         calculator->SetVesselNetwork(p_vascular_network);
-        double Q_ref = calculator->GetQRef()/unit::unit_flow_rate;
-        double k_m = calculator->GetKm()/unit::reciprocal_seconds;
-        double MaxStimulus = calculator->GetMaxStimulus()/unit::reciprocal_seconds;
+        double Q_ref = calculator->GetQRef()/unit::metre_cubed_per_second;
+        double k_m = calculator->GetKm()/unit::per_second;
+        double MaxStimulus = calculator->GetMaxStimulus()/unit::per_second;
         double expected_metabolic_stimulus = k_m * log10(Q_ref / (flow_rate * haematocrit_level) + 1.0);
-        TS_ASSERT_DELTA(p_vessel->GetSegments()[0]->GetFlowProperties()->GetGrowthStimulus()/unit::reciprocal_seconds, expected_metabolic_stimulus, 1e-6);
+        TS_ASSERT_DELTA(p_vessel->GetSegments()[0]->GetFlowProperties()->GetGrowthStimulus()/unit::per_second, expected_metabolic_stimulus, 1e-6);
 
-        p_vessel->GetSegments()[0]->GetFlowProperties()->SetFlowRate(0.0 * unit::unit_flow_rate);
+        p_vessel->GetSegments()[0]->GetFlowProperties()->SetFlowRate(0.0 * unit::metre_cubed_per_second);
         calculator->Calculate();
         expected_metabolic_stimulus = 0;
-        TS_ASSERT_DELTA(p_vessel->GetSegments()[0]->GetFlowProperties()->GetGrowthStimulus()/unit::reciprocal_seconds, expected_metabolic_stimulus, 1e-6);
+        TS_ASSERT_DELTA(p_vessel->GetSegments()[0]->GetFlowProperties()->GetGrowthStimulus()/unit::per_second, expected_metabolic_stimulus, 1e-6);
 
-        p_vessel->GetSegments()[0]->GetFlowProperties()->SetFlowRate(flow_rate * unit::unit_flow_rate);
+        p_vessel->GetSegments()[0]->GetFlowProperties()->SetFlowRate(flow_rate * unit::metre_cubed_per_second);
         p_vessel->GetSegments()[0]->GetFlowProperties()->SetHaematocrit(0.0);
         calculator->Calculate();
         expected_metabolic_stimulus = MaxStimulus;
-        TS_ASSERT_DELTA(p_vessel->GetSegments()[0]->GetFlowProperties()->GetGrowthStimulus()/unit::reciprocal_seconds, expected_metabolic_stimulus, 1e-6);
+        TS_ASSERT_DELTA(p_vessel->GetSegments()[0]->GetFlowProperties()->GetGrowthStimulus()/unit::per_second, expected_metabolic_stimulus, 1e-6);
     }
 };
 

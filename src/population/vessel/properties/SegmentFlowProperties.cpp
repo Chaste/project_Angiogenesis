@@ -38,11 +38,11 @@
 template<unsigned DIM>
 SegmentFlowProperties<DIM>::SegmentFlowProperties() : AbstractVesselNetworkComponentFlowProperties<DIM>(),
     mHaematocrit(0.0),
-    mFlowRate(0.0*unit::unit_flow_rate),
-    mImpedance(0.0*unit::unit_flow_impedance),
+    mFlowRate(0.0*unit::metre_cubed_per_second),
+    mImpedance(0.0*unit::pascal_second_per_metre_cubed),
     mViscosity(0.0*unit::poiseuille),
     mWallShearStress(0.0*unit::pascals),
-    mStimulus(0.0*unit::reciprocal_seconds)
+    mStimulus(0.0*unit::per_second)
 {
 }
 
@@ -92,11 +92,11 @@ std::map<std::string, double> SegmentFlowProperties<DIM>::GetOutputData() const
 {
     std::map<std::string, double> output_data;
     output_data["Segment Haematocrit"] = this->GetHaematocrit();
-    output_data["Segment Flow Rate m^3/s"] = this->GetFlowRate() / unit::unit_flow_rate;
-    output_data["Segment Impedance kg/m^4/s"] = this->GetImpedance() / unit::unit_flow_impedance;
+    output_data["Segment Flow Rate m^3/s"] = this->GetFlowRate() / unit::metre_cubed_per_second;
+    output_data["Segment Impedance kg/m^4/s"] = this->GetImpedance() / unit::pascal_second_per_metre_cubed;
     output_data["Segment Viscosity Pa.s"] = this->GetViscosity() / unit::poiseuille;
     output_data["Segment Wall Shear Stress Pa"] = this->GetWallShearStress() / unit::pascals;
-    output_data["Segment Growth Stimulus s^-1"] = this->GetGrowthStimulus() / unit::reciprocal_seconds;
+    output_data["Segment Growth Stimulus s^-1"] = this->GetGrowthStimulus() / unit::per_second;
     return output_data;
 }
 

@@ -62,7 +62,7 @@
 #include "StemCellProliferativeType.hpp"
 #include "RegularGrid.hpp"
 #include "FiniteDifferenceSolver.hpp"
-#include "DiscreteContinuumLinearEllipticPde.hpp"
+#include "AbstractDiscreteContinuumLinearEllipticPde.hpp"
 #include "DiscreteContinuumBoundaryCondition.hpp"
 #include "CellStateDependentDiscreteSource.hpp"
 #include "DiscreteSource.hpp"
@@ -78,9 +78,9 @@
 
 class Test2dTumourSpheroid : public AbstractCellBasedWithTimingsTestSuite
 {
-    boost::shared_ptr<DiscreteContinuumLinearEllipticPde<2> > GetOxygenPde()
+    boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<2> > GetOxygenPde()
         {
-            boost::shared_ptr<DiscreteContinuumLinearEllipticPde<2> > p_pde = DiscreteContinuumLinearEllipticPde<2>::Create();
+            boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<2> > p_pde = AbstractDiscreteContinuumLinearEllipticPde<2>::Create();
             p_pde->SetIsotropicDiffusionConstant(8700000 / (400.0)); // assume cell width is 20 microns
 
             // Add a cell state specific discrete source for cells consuming oxygen

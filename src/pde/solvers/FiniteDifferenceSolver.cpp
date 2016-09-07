@@ -36,7 +36,7 @@
 #include "LinearSystem.hpp"
 #include "ReplicatableVector.hpp"
 #include "VesselSegment.hpp"
-#include "DiscreteContinuumLinearEllipticPde.hpp"
+#include "AbstractDiscreteContinuumLinearEllipticPde.hpp"
 #include "FiniteDifferenceSolver.hpp"
 #include "SimplePetscNonlinearSolver.hpp"
 

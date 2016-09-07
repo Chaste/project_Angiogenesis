@@ -1,6 +1,6 @@
 #include "DiscreteSource.hpp"
 #include "DiscreteContinuumBoundaryCondition.hpp"
-#include "DiscreteContinuumLinearEllipticPde.hpp"
+#include "AbstractDiscreteContinuumLinearEllipticPde.hpp"
 #include "DiscreteContinuumNonLinearEllipticPde.hpp"
 #include "AbstractDiscreteContinuumSolver.hpp"
 #include "AbstractRegularGridDiscreteContinuumSolver.hpp"
@@ -27,7 +27,7 @@ namespace chaste
                     sizeof(CellStateDependentDiscreteSource<3>) +
                     sizeof(DiscreteContinuumBoundaryCondition<3>) +
                     sizeof(DiscreteContinuumNonLinearEllipticPde<3, 3>) +
-                    sizeof(DiscreteContinuumLinearEllipticPde<3, 3>) +
+                    sizeof(AbstractDiscreteContinuumLinearEllipticPde<3, 3>) +
                     sizeof(AbstractLinearEllipticPde<3, 3>) +
                     sizeof(DiscreteSource<3>);
         }

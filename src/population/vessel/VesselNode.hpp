@@ -102,12 +102,22 @@ public:
      * Constructor.
      * Create a node using xyz coordinates
      *
+     * @param v1  the node's x-coordinate
+     * @param v2  the node's y-coordinate
+     * @param v3  the node's z-coordinate
+     * @param referenceLength the reference length scale, defaults to micron
+     */
+    VesselNode(double v1, double v2, double v3, units::quantity<unit::length> referenceLength);
+
+    /**
+     * Constructor.
+     * Create a node using xyz coordinates
+     *
      * @param v1  the node's x-coordinate (defaults to 0)
      * @param v2  the node's y-coordinate (defaults to 0)
      * @param v3  the node's z-coordinate (defaults to 0)
-     * @param referenceLength the reference length scale, defaults to micron
      */
-    VesselNode(double v1 = 0.0, double v2 = 0.0, double v3 = 0.0, units::quantity<unit::length> referenceLength = 1.e-6*unit::metres);
+    VesselNode(double v1 = 0.0, double v2 = 0.0, double v3 = 0.0);
 
     /**
      * Constructor.
@@ -136,7 +146,17 @@ public:
      * @param v3  the node's z-coordinate (defaults to 0 micron)
      * @return a pointer to the newly created node
      */
-    static boost::shared_ptr<VesselNode<DIM> > Create(double v1 = 0.0, double v2 = 0.0, double v3 = 0.0, units::quantity<unit::length> referenceLength = 1.e-6*unit::metres);
+    static boost::shared_ptr<VesselNode<DIM> > Create(double v1 = 0.0, double v2 = 0.0, double v3 = 0.0);
+
+    /**
+     * Construct a new instance of the class and return a shared pointer to it.
+     *
+     * @param v1  the node's x-coordinate (defaults to 0 micron)
+     * @param v2  the node's y-coordinate (defaults to 0 micron)
+     * @param v3  the node's z-coordinate (defaults to 0 micron)
+     * @return a pointer to the newly created node
+     */
+    static boost::shared_ptr<VesselNode<DIM> > Create(double v1, double v2, double v3, units::quantity<unit::length> referenceLength);
 
     /**
      * Construct a new instance of the class and return a shared pointer to it.

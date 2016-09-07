@@ -34,48 +34,47 @@
  */
 
 #include <algorithm>
-#include "DiscreteContinuumLinearEllipticPde.hpp"
-#include "Debug.hpp"
+#include "LinearMoleBasedChemicalTransportPde.hpp"
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::DiscreteContinuumLinearEllipticPde() :
+LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::LinearMoleBasedChemicalTransportPde() :
             AbstractLinearEllipticPde<ELEMENT_DIM, ELEMENT_DIM>(),
             mDiffusionTensor(identity_matrix<double>(SPACE_DIM)),
-            mDiffusivity(0.003),
-            mConstantInUTerm(0.0),
-            mLinearInUTerm(0.0),
+            mDiffusivity(1.0 * unit::metre_squared_per_second),
+            mConstantInUTerm(0.0 * unit::per_second),
+            mLinearInUTerm(0.0 * unit::mole_per_second),
             mVariableName("Default"),
             mDiscreteSources(),
             mpRegularGrid(),
             mpMesh(),
             mUseRegularGrid(true),
-            mDiscreteConstantSourceStrengths(std::vector<double>(1,0.0)),
-            mDiscreteLinearSourceStrengths(std::vector<double>(1,0.0))
+            mDiscreteConstantSourceStrengths(),
+            mDiscreteLinearSourceStrengths()
 {
-    mDiffusionTensor *= mDiffusivity;
+    mDiffusionTensor *= mDiffusivity.value();
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-boost::shared_ptr<DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM> > DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::Create()
+boost::shared_ptr<LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM> > LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::Create()
 {
-    MAKE_PTR(DiscreteContinuumLinearEllipticPde<ELEMENT_DIM>, pSelf);
+    MAKE_PTR(LinearMoleBasedChemicalTransportPde<ELEMENT_DIM>, pSelf);
     return pSelf;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::AddDiscreteSource(boost::shared_ptr<DiscreteSource<SPACE_DIM> > pDiscreteSource)
+void LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::AddDiscreteSource(boost::shared_ptr<DiscreteSource<SPACE_DIM> > pDiscreteSource)
 {
     mDiscreteSources.push_back(pDiscreteSource);
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-double DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeConstantInUSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement)
+double LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::ComputeConstantInUSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement)
 {
-    return mConstantInUTerm;
+    return mConstantInUTerm/unit::per_second;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-double DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeConstantInUSourceTerm(unsigned gridIndex)
+units::quantity<unit::rate> LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::ComputeConstantInUSourceTerm(unsigned gridIndex)
 {
     if(gridIndex >= mDiscreteLinearSourceStrengths.size())
     {
@@ -85,19 +84,19 @@ double DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeConsta
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-c_matrix<double, SPACE_DIM, SPACE_DIM> DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeDiffusionTerm(const ChastePoint<SPACE_DIM>&)
+c_matrix<double, SPACE_DIM, SPACE_DIM> LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::ComputeDiffusionTerm(const ChastePoint<SPACE_DIM>&)
 {
     return mDiffusionTensor;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-double DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeLinearInUCoeffInSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement)
+double LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::ComputeLinearInUCoeffInSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement)
 {
-    return mLinearInUTerm;
+    return mLinearInUTerm/unit::mole_per_second;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-double DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeLinearInUCoeffInSourceTerm(unsigned gridIndex)
+units::quantity<unit::molar_flow_rate> LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::ComputeLinearInUCoeffInSourceTerm(unsigned gridIndex)
 {
     if(gridIndex >= mDiscreteLinearSourceStrengths.size())
     {
@@ -107,68 +106,68 @@ double DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeLinear
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-double DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeIsotropicDiffusionTerm()
+units::quantity<unit::diffusivity> LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::ComputeIsotropicDiffusionTerm()
 {
     return mDiffusivity;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-std::vector<boost::shared_ptr<DiscreteSource<SPACE_DIM> > > DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::GetDiscreteSources()
+std::vector<boost::shared_ptr<DiscreteSource<SPACE_DIM> > > LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::GetDiscreteSources()
 {
     return mDiscreteSources;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-const std::string& DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::GetVariableName()
+const std::string& LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::GetVariableName()
 {
     return mVariableName;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetContinuumConstantInUTerm(double constantInUTerm)
+void LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::SetContinuumConstantInUTerm(units::quantity<unit::rate> constantInUTerm)
 {
     mConstantInUTerm = constantInUTerm;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetIsotropicDiffusionConstant(double diffusivity)
+void LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::SetIsotropicDiffusionConstant(units::quantity<unit::diffusivity> diffusivity)
 {
     mDiffusivity = diffusivity;
-    mDiffusionTensor = identity_matrix<double>(SPACE_DIM)* mDiffusivity;
+    mDiffusionTensor = identity_matrix<double>(SPACE_DIM)* (mDiffusivity/unit::metre_cubed_per_second);
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetContinuumLinearInUTerm(double linearInUTerm)
+void LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::SetContinuumLinearInUTerm(units::quantity<unit::molar_flow_rate> linearInUTerm)
 {
     mLinearInUTerm = linearInUTerm;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetRegularGrid(boost::shared_ptr<RegularGrid<ELEMENT_DIM, SPACE_DIM> > pRegularGrid)
+void LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::SetRegularGrid(boost::shared_ptr<RegularGrid<ELEMENT_DIM, SPACE_DIM> > pRegularGrid)
 {
     mpRegularGrid = pRegularGrid;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetMesh(boost::shared_ptr<TetrahedralMesh<ELEMENT_DIM, SPACE_DIM> > pMesh)
+void LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::SetMesh(boost::shared_ptr<TetrahedralMesh<ELEMENT_DIM, SPACE_DIM> > pMesh)
 {
     mpMesh = pMesh;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetUseRegularGrid(bool useRegularGrid)
+void LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::SetUseRegularGrid(bool useRegularGrid)
 {
     mUseRegularGrid = useRegularGrid;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetVariableName(const std::string& rVariableName)
+void LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::SetVariableName(const std::string& rVariableName)
 {
     mVariableName = rVariableName;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::UpdateDiscreteSourceStrengths()
+void LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::UpdateDiscreteSourceStrengths()
 {
     if(mUseRegularGrid)
     {
@@ -176,22 +175,23 @@ void DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::UpdateDiscreteS
         {
             EXCEPTION("A grid has not been set for the determination of source strengths.");
         }
-        mDiscreteConstantSourceStrengths = std::vector<double>(mpRegularGrid->GetNumberOfPoints(), 0.0);
-        mDiscreteLinearSourceStrengths = std::vector<double>(mpRegularGrid->GetNumberOfPoints(), 0.0);
+        mDiscreteConstantSourceStrengths = std::vector<units::quantity<unit::rate> >(mpRegularGrid->GetNumberOfPoints(), 0.0);
+        mDiscreteLinearSourceStrengths = std::vector<units::quantity<unit::molar_flow_rate> >(mpRegularGrid->GetNumberOfPoints(), 0.0);
 
         for(unsigned idx=0; idx<mDiscreteSources.size(); idx++)
         {
             mDiscreteSources[idx]->SetRegularGrid(mpRegularGrid);
-            std::vector<double> result = mDiscreteSources[idx]->GetRegularGridValues();
             if(mDiscreteSources[idx]->IsLinearInSolution())
             {
+                std::vector<units::quantity<unit::molar_flow_rate> > result = mDiscreteSources[idx]->GetLinearRegularGridValues();
                 std::transform(mDiscreteLinearSourceStrengths.begin( ), mDiscreteLinearSourceStrengths.end( ),
-                               result.begin( ), mDiscreteLinearSourceStrengths.begin( ),std::plus<double>( ));
+                               result.begin( ), mDiscreteLinearSourceStrengths.begin( ),std::plus<units::quantity<unit::molar_flow_rate> >( ));
             }
             else
             {
+                std::vector<units::quantity<unit::rate> > result = mDiscreteSources[idx]->GetConstantRegularGridValues();
                 std::transform(mDiscreteConstantSourceStrengths.begin( ), mDiscreteConstantSourceStrengths.end( ),
-                               result.begin( ), mDiscreteConstantSourceStrengths.begin( ),std::plus<double>( ));
+                               result.begin( ), mDiscreteConstantSourceStrengths.begin( ),std::plus<units::quantity<unit::rate> >( ));
             }
         }
     }
@@ -210,5 +210,5 @@ void DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::UpdateDiscreteS
 }
 
 // Explicit instantiation
-template class DiscreteContinuumLinearEllipticPde<2>;
-template class DiscreteContinuumLinearEllipticPde<3>;
+template class LinearMoleBasedChemicalTransportPde<2>;
+template class LinearMoleBasedChemicalTransportPde<3>;

@@ -51,6 +51,22 @@ DimensionalChastePoint<DIM>::DimensionalChastePoint(c_vector<double, DIM> coords
 }
 
 template<unsigned DIM>
+DimensionalChastePoint<DIM>::DimensionalChastePoint(double x, double y, double z) :
+        ChastePoint<DIM>(x, y, z),
+        mReferenceLength(BaseUnits::Instance()->GetReferenceLengthScale())
+{
+
+}
+
+template<unsigned DIM>
+DimensionalChastePoint<DIM>::DimensionalChastePoint(c_vector<double, DIM> coords) :
+        ChastePoint<DIM>(coords),
+        mReferenceLength(BaseUnits::Instance()->GetReferenceLengthScale())
+{
+
+}
+
+template<unsigned DIM>
 DimensionalChastePoint<DIM>::~DimensionalChastePoint()
 {
 }
@@ -256,6 +272,22 @@ c_vector<double, DIM> DimensionalChastePoint<DIM>::GetUnitTangent(const Dimensio
     }
 
     return (rLocation.rGetLocation()*scaling_length - ChastePoint<DIM>::rGetLocation()) / (GetDistance(rLocation)/mReferenceLength);
+}
+
+template<unsigned DIM>
+void DimensionalChastePoint<DIM>::Translate(DimensionalChastePoint<DIM> rVector)
+{
+    // Save the original reference length
+    units::quantity<unit::length> original_length = mReferenceLength;
+
+    // Change to the vector length
+    SetReferenceLengthScale(rVector.GetReferenceLengthScale());
+
+    // Update the position using raw c_vectors
+    ChastePoint<DIM>::rGetLocation()=ChastePoint<DIM>::rGetLocation()+rVector.rGetLocation();
+
+    // Change back to the original reference length
+    SetReferenceLengthScale(original_length);
 }
 
 // Explicit instantiation

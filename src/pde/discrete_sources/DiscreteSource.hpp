@@ -42,6 +42,7 @@
 #include "UblasIncludes.hpp"
 #include "RegularGrid.hpp"
 #include "DiscreteContinuumMesh.hpp"
+#include "UnitCollection.hpp"
 
 /**
  * Specify the type of source.
@@ -92,7 +93,7 @@ protected:
     boost::shared_ptr<DiscreteContinuumMesh<DIM, DIM> > mpMesh;
 
     /**
-     * A continuum field sampled on the regular grid points or mesh nodes
+     * An amount field sampled on the regular grid points or mesh nodes
      */
     std::vector<double>  mpSolution;
 

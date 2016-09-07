@@ -37,13 +37,13 @@
 #include "ConstantHaematocritSolver.hpp"
 #include "StructuralAdaptationSolver.hpp"
 #include "UnitCollection.hpp"
-#include "Debug.hpp"
+#include "RadiusCalculator.hpp"
 
 template<unsigned DIM>
 StructuralAdaptationSolver<DIM>::StructuralAdaptationSolver() :
         AbstractStructuralAdaptationSolver<DIM>(),
         mpFlowSolver(new FlowSolver<DIM>),
-        mpRadiusCalculator(),
+        mpRadiusCalculator(new RadiusCalculator<DIM>),
         mPreFlowSolveCalculators(),
         mPostFlowSolveCalculators()
 {
@@ -101,7 +101,6 @@ void StructuralAdaptationSolver<DIM>::Iterate()
         EXCEPTION("A vessel network is required before the SA solver can be used.");
     }
 
-    MARK;
     if(SimulationTime::Instance()->GetTimeStepsElapsed()==0)
     {
         // Set up calculators
@@ -120,26 +119,23 @@ void StructuralAdaptationSolver<DIM>::Iterate()
         }
     }
 
-    MARK;
     for(unsigned idx=0; idx<mPreFlowSolveCalculators.size();idx++)
     {
         mPreFlowSolveCalculators[idx]->Calculate();
     }
 
-    MARK;
     if(SimulationTime::Instance()->GetTimeStepsElapsed()==0)
     {
         UpdateFlowSolver();
     }
 
-    MARK;
     mpFlowSolver->Update(false);
     mpFlowSolver->Solve();
     for(unsigned idx=0; idx<mPostFlowSolveCalculators.size();idx++)
     {
         mPostFlowSolveCalculators[idx]->Calculate();
     }
-    MARK;
+
     if(mpRadiusCalculator)
     {
         mpRadiusCalculator->SetTimestep(this->GetTimeIncrement());

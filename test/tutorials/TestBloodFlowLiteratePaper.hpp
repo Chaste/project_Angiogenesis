@@ -62,6 +62,7 @@
 #include "VesselNetwork.hpp"
 #include "VesselNetworkGenerator.hpp"
 #include "UnitCollection.hpp"
+#include "BaseUnits.hpp"
 /*
  * A container for flow information (boundary conditions, pressure values) for nodes.
  */
@@ -101,13 +102,13 @@ public:
          * We will work in microns
          */
         units::quantity<unit::length> reference_length(1.0 * unit::microns);
+        BaseUnits::Instance()->SetReferenceLengthScale(reference_length);
         /*
          * First make the network using a generator. Start with a simple unit.
          */
-        units::quantity<unit::length> vessel_length = 100.0 * reference_length;
+        units::quantity<unit::length> vessel_length(100.0*unit::microns);
         DimensionalChastePoint<2> start_point(0.0, 0.0);
         VesselNetworkGenerator<2> network_generator;
-        network_generator.SetReferenceLengthScale(reference_length);
         boost::shared_ptr<VesselNetwork<2> > p_network = network_generator.GenerateBifurcationUnit(vessel_length, start_point);
         /*
          * Next, pattern it to make a larger network
@@ -129,8 +130,7 @@ public:
         /*
          * It would be useful if we had a record of which parameter values we have used in the simulation and where they are sourced in the
          * literature. Instead of manually entering parameter values like above we can use a `ParameterCollection` singleton which allows for
-         * some extra metadata storage. We will take some parameter values from a paper by Owen et al. (2011). We add the parameter value
-         * to our parameter collection with the annotation 'User', to clarify it is not added automatically by some solver.
+         * some extra metadata storage. We will take some parameter values from a paper by Owen et al. (2011).
          */
         p_network->GetNode(p_network->GetNumberOfNodes()-1)->GetFlowProperties()->SetIsOutputNode(true);
         p_network->GetNode(p_network->GetNumberOfNodes()-1)->GetFlowProperties()->SetPressure(Owen11Parameters::mpOutletPressure->GetValue());
@@ -139,13 +139,8 @@ public:
          */
         units::quantity<unit::length> vessel_radius(GenericParameters::mpCapillaryRadius->GetValue());
         p_network->SetSegmentRadii(vessel_radius);
-
         units::quantity<unit::dynamic_viscosity> viscosity = Owen11Parameters::mpPlasmaViscosity->GetValue();
-        std::vector<boost::shared_ptr<VesselSegment<2> > > segments = p_network->GetVesselSegments();
-        for(unsigned idx=0; idx<segments.size(); idx++)
-        {
-            segments[idx]->GetFlowProperties()->SetViscosity(viscosity);
-        }
+        p_network->SetSegmentViscosity(viscosity);
         /*
          * We use a calculator to work out the impedance of each vessel based on assumptions of Poiseuille flow and cylindrical vessels. This
          * updates the value of the impedance in the vessel.
@@ -166,7 +161,7 @@ public:
         flow_solver.SetVesselNetwork(p_network);
         flow_solver.Solve();
         /*
-         * Check the pressures, it is expected to drop linearly so should be the average of the input and output half way along the network.
+         * Check the pressure, it is expected to drop linearly so should be the average of the input and output half way along the network.
          */
         units::quantity<unit::pressure> expected_pressure = (inlet_pressure + Owen11Parameters::mpOutletPressure->GetValue())/2.0;
         TS_ASSERT_DELTA(p_network->GetNode(7)->GetFlowProperties()->GetPressure().value(), expected_pressure.value(), 1.e-6);
@@ -182,6 +177,7 @@ public:
          */
         ParameterCollection::Instance()->DumpToFile(p_handler->GetOutputDirectoryFullPath() + "parameter_collection.xml");
         ParameterCollection::Instance()->Destroy();
+        BaseUnits::Instance()->Destroy();
     }
     /*
      * = Test 2 - Simulating Haematocrit Transport in 3D =
@@ -197,11 +193,11 @@ public:
          * assuming it has no effect on the flow. Set up the network as before
          */
         units::quantity<unit::length> cell_width(25.0 * unit::microns);
+        BaseUnits::Instance()->SetReferenceLengthScale(cell_width);
         units::quantity<unit::length> target_width = 100.0 * cell_width;
         units::quantity<unit::length> target_height = 30.0 * cell_width;
         units::quantity<unit::length> vessel_length = 4.0 * cell_width;
         VesselNetworkGenerator<3> network_generator;
-        network_generator.SetReferenceLengthScale(cell_width);
         boost::shared_ptr<VesselNetwork<3> > p_network = network_generator.GenerateHexagonalNetwork(target_width,
                                                                                                     target_height,
                                                                                                     vessel_length);
@@ -223,40 +219,15 @@ public:
         units::quantity<unit::length> vessel_radius(GenericParameters::mpCapillaryRadius->GetValue());
         p_network->SetSegmentRadii(vessel_radius);
         units::quantity<unit::dynamic_viscosity> viscosity = Owen11Parameters::mpPlasmaViscosity->GetValue();
-        std::vector<boost::shared_ptr<VesselSegment<3> > > segments = p_network->GetVesselSegments();
-        for(unsigned idx=0; idx<segments.size(); idx++)
-        {
-            segments[idx]->GetFlowProperties()->SetViscosity(viscosity);
-        }
+        p_network->SetSegmentViscosity(viscosity);
         /*
          * Next some simple extra functionality is demonstrated by mapping the network onto a hemisphere
          */
-        std::vector<std::pair<double, double> > extents = p_network->GetExtents();
-        double sphere_radius = 400.0;
-        double sphere_thickess = 3.0;
+        units::quantity<unit::length> sphere_radius = 400.0 * cell_width;
+        units::quantity<unit::length> sphere_thickess = 1.0 * cell_width;
         double sphere_azimuth = M_PI;
         double sphere_polar = M_PI/2.0;
-        std::vector<boost::shared_ptr<VesselNode<3> > > nodes = p_network->GetNodes();
-        for(unsigned idx =0; idx<nodes.size(); idx++)
-        {
-            double x_frac = (nodes[idx]->rGetLocation()[0]) / (extents[0].second - extents[0].first);
-            double azimuth_angle = x_frac * sphere_azimuth;
-
-            double y_frac = (nodes[idx]->rGetLocation()[1] + 3.0) / (extents[1].second - extents[1].first);
-            double polar_angle = y_frac * sphere_polar;
-
-            double radius = sphere_radius;
-            if(extents[2].second - extents[2].first>0.0)
-            {
-                double z_frac = nodes[idx]->rGetLocation()[2] / (extents[2].second - extents[2].first);
-                radius = sphere_radius - sphere_thickess * z_frac;
-            }
-            DimensionalChastePoint<3>new_position(radius * std::cos(azimuth_angle) * std::sin(polar_angle),
-                                                  radius * std::cos(polar_angle),
-                                                  radius * std::sin(azimuth_angle) * std::sin(polar_angle),
-                                                  cell_width);
-            nodes[idx]->SetLocation(new_position);
-        }
+        network_generator.MapToSphere(p_network, sphere_radius, sphere_thickess, sphere_azimuth, sphere_polar);
         /*
          * Get the impedance
          */
@@ -279,6 +250,7 @@ public:
         /*
          * Next we write out the network, including updated flow data, to file.
          */
+        BaseUnits::Instance()->SetReferenceLengthScale(1.e-6*unit::metres);
         p_network->Write(p_handler->GetOutputDirectoryFullPath() + "network_haematocrit.vtp");
         /*
          * Now we can visualize the results in Paraview. See [wiki:UserTutorials/VisualizingWithParaview here] to get started. To view the network import the file

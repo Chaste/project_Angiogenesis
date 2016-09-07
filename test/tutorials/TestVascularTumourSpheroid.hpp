@@ -64,7 +64,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "GeneralisedLinearSpringForce.hpp"
 #include "FakePetscSetup.hpp"
 #include "FiniteDifferenceSolver.hpp"
-#include "DiscreteContinuumLinearEllipticPde.hpp"
+#include "AbstractDiscreteContinuumLinearEllipticPde.hpp"
 #include "VesselNetworkGenerator.hpp"
 #include "SimpleOxygenBasedCellCycleModel.hpp"
 #include "DiscreteContinuumBoundaryCondition.hpp"

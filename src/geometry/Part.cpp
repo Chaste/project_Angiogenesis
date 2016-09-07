@@ -300,6 +300,22 @@ void Part<DIM>::Extrude(boost::shared_ptr<Polygon> pPolygon, units::quantity<uni
     mFacets.push_back(Facet::Create(p_polygon));
 }
 
+template <unsigned DIM>
+void Part<DIM>::BooleanWithNetwork(boost::shared_ptr<VesselNetwork<DIM> > pVesselNetwork)
+{
+    // Remove any vessel with both nodes outside the domain
+    std::vector<boost::shared_ptr<Vessel<DIM> > > vessels = pVesselNetwork->GetVessels();
+    for(unsigned idx=0;idx<vessels.size();idx++)
+    {
+        if(!IsPointInPart(vessels[idx]->GetStartNode()->rGetLocation(), idx==0) &&
+                !IsPointInPart(vessels[idx]->GetEndNode()->rGetLocation(), idx==0))
+        {
+            pVesselNetwork->RemoveVessel(vessels[idx], true);
+        }
+    }
+    pVesselNetwork->UpdateAll();
+}
+
 template<unsigned DIM>
 std::vector<DimensionalChastePoint<DIM> > Part<DIM>::GetHoleMarkers()
 {

@@ -108,7 +108,7 @@ void BetteridgeHaematocritSolver<DIM>::Calculate()
             linearSystem.SetRhsVectorElement(idx, mHaematocrit);
         }
         // Set rhs to zero, it should already be zero but this explicitly captures the no flow case
-        else if(vessels[idx]->GetFlowProperties()->GetFlowRate(vessels[idx]->GetSegments())==0.0*unit::unit_flow_rate)
+        else if(vessels[idx]->GetFlowProperties()->GetFlowRate(vessels[idx]->GetSegments())==0.0*unit::metre_cubed_per_second)
         {
             linearSystem.SetRhsVectorElement(idx, 0.0);
         }
@@ -117,7 +117,7 @@ void BetteridgeHaematocritSolver<DIM>::Calculate()
             // Identify inflow node
             boost::shared_ptr<VesselNode<DIM> > p_inflow_node;
             units::quantity<unit::flow_rate> flow_rate= vessels[idx]->GetFlowProperties()->GetFlowRate(vessels[idx]->GetSegments());
-            if(flow_rate >0 * unit::unit_flow_rate)
+            if(flow_rate >0 * unit::metre_cubed_per_second)
             {
                 p_inflow_node = vessels[idx]->GetStartNode();
             }
@@ -139,22 +139,22 @@ void BetteridgeHaematocritSolver<DIM>::Calculate()
                         units::quantity<unit::flow_rate> inflow_rate = p_inflow_node->GetSegment(jdx)->GetVessel()->GetFlowProperties()->GetFlowRate(p_inflow_node->GetSegment(jdx)->GetVessel()->GetSegments());
                         if(p_inflow_node->GetSegment(jdx)->GetVessel()->GetEndNode()==p_inflow_node)
                         {
-                            if(inflow_rate>0.0 * unit::unit_flow_rate)
+                            if(inflow_rate>0.0 * unit::metre_cubed_per_second)
                             {
                                 parent_vessels.push_back(p_inflow_node->GetSegment(jdx)->GetVessel());
                             }
-                            else if(inflow_rate<0.0 * unit::unit_flow_rate)
+                            else if(inflow_rate<0.0 * unit::metre_cubed_per_second)
                             {
                                 competitor_vessels.push_back(p_inflow_node->GetSegment(jdx)->GetVessel());
                             }
                         }
                         if(p_inflow_node->GetSegment(jdx)->GetVessel()->GetStartNode()==p_inflow_node)
                         {
-                            if(inflow_rate>0.0 * unit::unit_flow_rate)
+                            if(inflow_rate>0.0 * unit::metre_cubed_per_second)
                             {
                                 competitor_vessels.push_back(p_inflow_node->GetSegment(jdx)->GetVessel());
                             }
-                            else if(inflow_rate<0.0 * unit::unit_flow_rate)
+                            else if(inflow_rate<0.0 * unit::metre_cubed_per_second)
                             {
                                 parent_vessels.push_back(p_inflow_node->GetSegment(jdx)->GetVessel());
                             }
@@ -163,7 +163,7 @@ void BetteridgeHaematocritSolver<DIM>::Calculate()
                 }
 
                 // If there are no competitor vessels the haematocrit is just the sum of the parent values
-                if(competitor_vessels.size()==0 or units::fabs(competitor_vessels[0]->GetFlowProperties()->GetFlowRate(competitor_vessels[0]->GetSegments())) == 0.0 * unit::unit_flow_rate)
+                if(competitor_vessels.size()==0 or units::fabs(competitor_vessels[0]->GetFlowProperties()->GetFlowRate(competitor_vessels[0]->GetSegments())) == 0.0 * unit::metre_cubed_per_second)
                 {
                     for(unsigned jdx=0; jdx<parent_vessels.size();jdx++)
                     {

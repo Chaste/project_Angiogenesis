@@ -33,8 +33,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#ifndef DIMENSIONALSIMULATIONTIME_HPP_
-#define DIMENSIONALSIMULATIONTIME_HPP_
+#ifndef BaseUnits_HPP_
+#define BaseUnits_HPP_
 
 #include <boost/shared_ptr.hpp>
 #include "ChasteSerialization.hpp"
@@ -44,26 +44,39 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SimulationTime.hpp"
 
 /**
- * Drop in replacement for SimulationTime with units. Also provide a shared pointer to the SimulationTime singleton
- * for convenience in Python methods.
+ * This singleton manages base units of time and length. Its use needs some care.
+ *
+ * The default values are Length: microns, Time: minutes, Mass: kg
+ *
+ * After a length unit is set any features (Dimensional Chaste Point, Readers, Writers, Solvers) created
+ * after that point will use the length base unit as their reference length scale. Any already
+ * existing features won't be changed. It is better to explicitly set reference length scales in a feature
+ * rather than changing this value often in a simulation.
+ *
+ * After a time unit is set any timers depending on SimulationTime will use it as the reference time scale. Extra care should be taken if
+ * this value is changed during a simulation looping over solvers, to make sure it is changed back when needed.
  */
-class DimensionalSimulationTime : public SerializableSingleton<DimensionalSimulationTime>
+class BaseUnits : public SerializableSingleton<BaseUnits>
 {
-
     /**
      * A pointer to the singleton instance of this class.
      */
-    static boost::shared_ptr<DimensionalSimulationTime> mpInstance;
-
-    /**
-     * A pointer to the SimulationTime singleton instance
-     */
-    static boost::shared_ptr<SimulationTime> mpSimulationTimeInstance;
+    static boost::shared_ptr<BaseUnits> mpInstance;
 
     /**
      * The time unit for increments
      */
-    units::quantity<unit::time> mReferenceTime;
+    units::quantity<unit::time> mTime;
+
+    /**
+     * The length unit
+     */
+    units::quantity<unit::length> mLength;
+
+    /**
+     * The mass unit
+     */
+    units::quantity<unit::mass> mMass;
 
 public:
 
@@ -71,10 +84,7 @@ public:
      * @return a pointer to the dimensional simulation time object.
      * The first time this is called the simulation time object is created.
      */
-    static boost::shared_ptr<DimensionalSimulationTime> Instance();
-
-
-    static boost::shared_ptr<SimulationTime> GetSimulationTime();
+    static boost::shared_ptr<BaseUnits> Instance();
 
     /**
      * @return the reference time scale
@@ -82,29 +92,43 @@ public:
     units::quantity<unit::time> GetReferenceTimeScale();
 
     /**
+     * @return the reference time scale
+     */
+    units::quantity<unit::length> GetReferenceLengthScale();
+
+    /**
+     * @return the reference time scale
+     */
+    units::quantity<unit::mass> GetReferenceMassScale();
+
+    /**
      * Sets reference time scale
      */
     void SetReferenceTimeScale(units::quantity<unit::time> referenceTimeScale);
 
     /**
-     * Destroy the current DimensionalSimulationTime instance AND the SimulationTime instance.
-     *
-     * This method *must* be called before program exit, to avoid a memory
-     * leak in SimulationTime.
+     * Sets reference length scale
+     */
+    void SetReferenceLengthScale(units::quantity<unit::length> referenceLengthScale);
+
+    /**
+     * Sets reference mass scale
+     */
+    void SetReferenceMassScale(units::quantity<unit::mass> referenceMassScale);
+
+    /**
+     * Destroy the current BaseUnits instance
      */
     static void Destroy();
-
 
 protected:
 
     /**
-     * Default simulation time constructor
+     * Default  constructor, force instantiation through factory method.
      *
-     * Sets up time, you must set the start time,
-     * end time and number of time steps before using the object.
      */
-    DimensionalSimulationTime();
+    BaseUnits();
 
 };
 
-#endif /*SIMULATIONTIME_HPP_*/
+#endif /*BaseUnits_HPP_*/

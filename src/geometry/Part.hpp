@@ -47,9 +47,9 @@
 #include "Polygon.hpp"
 #include "Facet.hpp"
 #include "VesselNetwork.hpp"
-#include "GeometryWriter.hpp"
 #include "DimensionalChastePoint.hpp"
 #include "UnitCollection.hpp"
+#include "GeometryWriter.hpp"
 
 /**
  * A geometric feature described using a PLC (piecewise linear complex) description
@@ -171,6 +171,9 @@ public:
      * @param surface true if a surface representation of the network is required
      */
     void AddVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pVesselNetwork, bool surface = false);
+
+
+    void BooleanWithNetwork(boost::shared_ptr<VesselNetwork<DIM> > pVesselNetwork);
 
     /**
      * Extrude the part along the z-axis, inserting planar faces in place of edges.

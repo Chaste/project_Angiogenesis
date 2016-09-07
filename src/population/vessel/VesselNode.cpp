@@ -49,6 +49,17 @@ VesselNode<DIM>::VesselNode(double v1, double v2, double v3, units::quantity<uni
 }
 
 template<unsigned DIM>
+VesselNode<DIM>::VesselNode(double v1, double v2, double v3) : AbstractVesselNetworkComponent<DIM>(),
+        mLocation(DimensionalChastePoint<DIM>(v1 ,v2, v3)),
+        mSegments(std::vector<boost::weak_ptr<VesselSegment<DIM> > >()),
+        mIsMigrating(false),
+        mpFlowProperties(boost::shared_ptr<NodeFlowProperties<DIM> >(new NodeFlowProperties<DIM>())),
+        mPtrComparisonId(0)
+{
+    this->mpFlowProperties = boost::shared_ptr<NodeFlowProperties<DIM> >(new NodeFlowProperties<DIM>());
+}
+
+template<unsigned DIM>
 VesselNode<DIM>::VesselNode(const DimensionalChastePoint<DIM>& location) : AbstractVesselNetworkComponent<DIM>(),
         mLocation(location),
         mSegments(std::vector<boost::weak_ptr<VesselSegment<DIM> > >()),
@@ -82,6 +93,13 @@ template<unsigned DIM>
 boost::shared_ptr<VesselNode<DIM> > VesselNode<DIM>::Create(double v1, double v2, double v3, units::quantity<unit::length> referenceLength)
 {
     MAKE_PTR_ARGS(VesselNode<DIM>, pSelf, (v1, v2, v3, referenceLength));
+    return pSelf;
+}
+
+template<unsigned DIM>
+boost::shared_ptr<VesselNode<DIM> > VesselNode<DIM>::Create(double v1, double v2, double v3)
+{
+    MAKE_PTR_ARGS(VesselNode<DIM>, pSelf, (v1, v2, v3));
     return pSelf;
 }
 
@@ -158,6 +176,7 @@ unsigned VesselNode<DIM>::GetNumberOfSegments() const
 template<unsigned DIM>
 std::map<std::string, double> VesselNode<DIM>::GetOutputData()
 {
+    this->mOutputData.clear();
     std::map<std::string, double> flow_data = this->mpFlowProperties->GetOutputData();
     this->mOutputData.insert(flow_data.begin(), flow_data.end());
     this->mOutputData["Node Id"] = double(this->GetId());

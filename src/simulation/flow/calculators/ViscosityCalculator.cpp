@@ -72,7 +72,7 @@ void ViscosityCalculator<DIM>::Calculate()
 
         // This equation assumes the radius is in micron so manually converted. No dimensional checking is done here, it may not
         // even be possible for this equation.
-        double micron_radius = radius/unit::metres *1.e-6;
+        double micron_radius = (radius/unit::metres)*1.e6;
         double power_term_1 = 1.0 / (1.0 + pow(10.0, -11.0) * pow(2.0 * micron_radius, 12));
         double c = (0.8 + exp(-0.15 * micron_radius)) * (power_term_1 - 1) + power_term_1;
         double mu_45 = 6.0 * exp(-0.17 * micron_radius) + 3.2 - 2.44 * exp(-0.06 * pow(2 * micron_radius, 0.645));

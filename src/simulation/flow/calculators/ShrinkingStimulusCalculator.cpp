@@ -37,7 +37,7 @@
 
 template<unsigned DIM>
 ShrinkingStimulusCalculator<DIM>::ShrinkingStimulusCalculator() :  AbstractVesselNetworkCalculator<DIM>(),
-    mDefaultStimulus(1.79*unit::reciprocal_seconds)
+    mDefaultStimulus(1.79*unit::per_second)
 {
 
 }

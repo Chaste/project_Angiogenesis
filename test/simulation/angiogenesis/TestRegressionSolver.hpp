@@ -105,7 +105,7 @@ public:
         // Make a dummy segment to set properties on
         boost::shared_ptr<VesselSegment<2> > p_segment1 = VesselSegment<2>::Create(VesselNode<2>::Create(0.0, 0.0),
                                                                                    VesselNode<2>::Create(1.0, 0.0));
-        p_segment1->GetFlowProperties()->SetImpedance(0.0001*unit::unit_flow_impedance);
+        p_segment1->GetFlowProperties()->SetImpedance(0.0001*unit::pascal_second_per_metre_cubed);
         p_network->SetSegmentProperties(p_segment1);
 
         // Get the nearest node to the inlet and outlet

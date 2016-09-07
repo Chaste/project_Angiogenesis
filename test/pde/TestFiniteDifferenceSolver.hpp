@@ -41,7 +41,7 @@
 #include <string>
 #include "SmartPointers.hpp"
 #include "Part.hpp"
-#include "DiscreteContinuumLinearEllipticPde.hpp"
+#include "AbstractDiscreteContinuumLinearEllipticPde.hpp"
 #include "FiniteDifferenceSolver.hpp"
 #include "VesselNetwork.hpp"
 #include "VesselNetworkGenerator.hpp"
@@ -67,7 +67,7 @@ public:
         p_grid->GenerateFromPart(p_domain, 1.0*1.e-6*unit::metres);
 
         // Choose the PDE
-        boost::shared_ptr<DiscreteContinuumLinearEllipticPde<2> > p_pde = DiscreteContinuumLinearEllipticPde<2>::Create();
+        boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<2> > p_pde = AbstractDiscreteContinuumLinearEllipticPde<2>::Create();
         p_pde->SetIsotropicDiffusionConstant(1.e-6);
         p_pde->SetContinuumLinearInUTerm(-2.e-5);
 
@@ -99,7 +99,7 @@ public:
         p_grid->GenerateFromPart(p_domain, 0.1*1.e-6*unit::metres);
 
         // Choose the PDE
-        boost::shared_ptr<DiscreteContinuumLinearEllipticPde<3> > p_pde = DiscreteContinuumLinearEllipticPde<3>::Create();
+        boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<3> > p_pde = AbstractDiscreteContinuumLinearEllipticPde<3>::Create();
         p_pde->SetIsotropicDiffusionConstant(1.e-6);
         p_pde->SetContinuumLinearInUTerm(-2.e-5);
 
@@ -133,7 +133,7 @@ public:
         p_grid->GenerateFromPart(p_domain, 10.0*1.e-6*unit::metres);
 
         // Choose the PDE
-        boost::shared_ptr<DiscreteContinuumLinearEllipticPde<3> > p_pde = DiscreteContinuumLinearEllipticPde<3>::Create();
+        boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<3> > p_pde = AbstractDiscreteContinuumLinearEllipticPde<3>::Create();
         p_pde->SetIsotropicDiffusionConstant(0.0033);
         p_pde->SetContinuumLinearInUTerm(-2.e-7);
 

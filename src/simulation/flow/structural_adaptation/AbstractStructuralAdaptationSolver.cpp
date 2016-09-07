@@ -37,12 +37,13 @@
 #include <algorithm>
 #include <iostream>
 #include "AbstractStructuralAdaptationSolver.hpp"
-#include "DimensionalSimulationTime.hpp"
+#include "BaseUnits.hpp"
 
 template<unsigned DIM>
 AbstractStructuralAdaptationSolver<DIM>::AbstractStructuralAdaptationSolver()
     :   mTolerance(1.e-4),
         mTimeIncrement(1.e-4 * unit::seconds),
+        mReferenceTimeScale(BaseUnits::Instance()->GetReferenceTimeScale()),
         mWriteOutput(false),
         mOutputFileName(),
         mMaxIterations(1.e5),
@@ -134,7 +135,7 @@ void AbstractStructuralAdaptationSolver<DIM>::Solve()
         previous_radii[segment_index] = segments[segment_index]->GetRadius();
     }
 
-    while (max_radius_relative_change > mTolerance && time < (SimulationTime::Instance()->GetTimeStep()*DimensionalSimulationTime::Instance()->GetReferenceTimeScale()) && iteration < mMaxIterations)
+    while (max_radius_relative_change > mTolerance && time < (SimulationTime::Instance()->GetTimeStep()*mReferenceTimeScale) && iteration < mMaxIterations)
     {
         time += mTimeIncrement;
         iteration++;
@@ -150,7 +151,6 @@ void AbstractStructuralAdaptationSolver<DIM>::Solve()
         }
 
         max_radius_relative_change = *(std::max_element(relative_change.begin(), relative_change.end()));
-
         if (out.is_open())
         {
             out << std::setw(6) << iteration << std::setw(20) << max_radius_relative_change << "\n";

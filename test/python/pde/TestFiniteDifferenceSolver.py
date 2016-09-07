@@ -19,7 +19,7 @@ class TestFiniteDifferenceSolver(unittest.TestCase):
         grid = chaste.mesh.RegularGrid()
         grid.GenerateFromPart(domain, 10.0)
         
-        pde = chaste.pde.DiscreteContinuumLinearEllipticPde()
+        pde = chaste.pde.AbstractDiscreteContinuumLinearEllipticPde()
         pde.SetIsotropicDiffusionConstant(0.003)
         pde.SetContinuumLinearInUTerm(-1.e-5)
         
@@ -44,7 +44,7 @@ class TestFiniteDifferenceSolver(unittest.TestCase):
         grid = chaste.mesh.RegularGrid()
         grid.GenerateFromPart(domain, 10.0)
         
-        pde = chaste.pde.DiscreteContinuumLinearEllipticPde()
+        pde = chaste.pde.AbstractDiscreteContinuumLinearEllipticPde()
         pde.SetIsotropicDiffusionConstant(0.003)
         pde.SetContinuumLinearInUTerm(-1.e-5)
         
@@ -71,7 +71,7 @@ class TestFiniteDifferenceSolver(unittest.TestCase):
         grid = chaste.mesh.RegularGrid()
         grid.GenerateFromPart(domain, 10.0)
         
-        pde = chaste.pde.DiscreteContinuumLinearEllipticPde()
+        pde = chaste.pde.AbstractDiscreteContinuumLinearEllipticPde()
         pde.SetIsotropicDiffusionConstant(0.003)
         pde.SetContinuumLinearInUTerm(-1.e-5)
         

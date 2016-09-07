@@ -33,8 +33,8 @@
 
  */
 
-#ifndef DiscreteContinuumLINEARELLIPTICPDE_HPP_
-#define DiscreteContinuumLINEARELLIPTICPDE_HPP_
+#ifndef LinearMoleBasedChemicalTransportPde_HPP_
+#define LinearMoleBasedChemicalTransportPde_HPP_
 
 #include <string>
 #include "ChastePoint.hpp"
@@ -46,12 +46,13 @@
 #include "GeometryTools.hpp"
 #include "RegularGrid.hpp"
 #include "TetrahedralMesh.hpp"
+#include "UnitCollection.hpp"
 
 /**
  * Linear Elliptic PDE with both continuum and discrete source terms.
  */
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM = ELEMENT_DIM>
-class DiscreteContinuumLinearEllipticPde : public AbstractLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>
+class LinearMoleBasedChemicalTransportPde : public AbstractLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>
 {
     /**
      * The diffusion tensor
@@ -61,17 +62,17 @@ class DiscreteContinuumLinearEllipticPde : public AbstractLinearEllipticPde<ELEM
     /**
      * The diffusion constant for isotropic diffusion
      */
-    double mDiffusivity;
+    units::quantity<unit::diffusivity> mDiffusivity;
 
     /**
      * The continuum constant in U term, discrete terms are added to this.
      */
-    double mConstantInUTerm;
+    units::quantity<unit::rate> mConstantInUTerm;
 
     /**
      * The continuum linear in U term, discrete terms are added to this.
      */
-    double mLinearInUTerm;
+    units::quantity<unit::molar_flow_rate> mLinearInUTerm;
 
     /**
      * The name of the quantity in the pde
@@ -101,25 +102,25 @@ class DiscreteContinuumLinearEllipticPde : public AbstractLinearEllipticPde<ELEM
     /**
      * The constant source strengths for each point on the grid or mesh
      */
-    std::vector<double> mDiscreteConstantSourceStrengths;
+    std::vector<units::quantity<unit::rate> > mDiscreteConstantSourceStrengths;
 
     /**
      * The linear source strengths for each point on the grid or mesh
      */
-    std::vector<double> mDiscreteLinearSourceStrengths;
+    std::vector<units::quantity<unit::molar_flow_rate> > mDiscreteLinearSourceStrengths;
 
 public:
 
     /**
      * Constructor
      */
-    DiscreteContinuumLinearEllipticPde();
+    LinearMoleBasedChemicalTransportPde();
 
     /**
      * Factory Constructor
      * @return a pointer to an instance of the pde
      */
-    static boost::shared_ptr<DiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM> > Create();
+    static boost::shared_ptr<LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM> > Create();
 
     /**
      * Add a discrete source to the pde
@@ -140,7 +141,7 @@ public:
      * @param gridIndex grid index
      * @return source strength
      */
-    double ComputeConstantInUSourceTerm(unsigned gridIndex=0);
+    units::quantity<unit::rate> ComputeConstantInUSourceTerm(unsigned gridIndex=0);
 
     /**
      * Overwritten method to return the diffusion term to the Chaste FE solver
@@ -152,7 +153,7 @@ public:
      * Return the diffusion constant for isotropic diffusion
      * @return the diffusion constant
      */
-    double ComputeIsotropicDiffusionTerm();
+    units::quantity<unit::diffusivity> ComputeIsotropicDiffusionTerm();
 
     /**
      * Overwritten method to return the linear in U contribution to the Chaste FE solver
@@ -167,7 +168,7 @@ public:
      * @param gridIndex grid index
      * @return source strength
      */
-    double ComputeLinearInUCoeffInSourceTerm(unsigned gridIndex=0);
+    units::quantity<unit::molar_flow_rate> ComputeLinearInUCoeffInSourceTerm(unsigned gridIndex=0);
 
     /**
      * Return the collection of discrete sources
@@ -185,19 +186,19 @@ public:
      * Set the continuum constant in U term
      * @param constantInUTerm the continuum constant in U term
      */
-    void SetContinuumConstantInUTerm(double constantInUTerm);
+    void SetContinuumConstantInUTerm(units::quantity<unit::rate> constantInUTerm);
 
     /**
      * Set the isotropic diffusion constant
      * @param diffusivity the isotropic diffusion constant
      */
-    void SetIsotropicDiffusionConstant(double diffusivity);
+    void SetIsotropicDiffusionConstant(units::quantity<unit::diffusivity> diffusivity);
 
     /**
      * Set the linear constant in U term
      * @param linearInUTerm the linear constant in U term
      */
-    void SetContinuumLinearInUTerm(double linearInUTerm);
+    void SetContinuumLinearInUTerm(units::quantity<unit::molar_flow_rate> linearInUTerm);
 
     /**
      * Set the regular grid
@@ -230,4 +231,4 @@ public:
 
 };
 
-#endif /*DiscreteContinuumLINEARELLIPTICPDE_HPP_*/
+#endif /*LinearMoleBasedChemicalTransportPde_HPP_*/

@@ -153,12 +153,12 @@ void FlowSolver<DIM>::Update(bool runSetup)
 
     // Get the impedances, scale them by the maximum impedance to remove small values from the system matrix
     std::vector<units::quantity<unit::flow_impedance> > scaled_impedances;
-    units::quantity<unit::flow_impedance> max_impedance = 0.0 * unit::unit_flow_impedance;
-    units::quantity<unit::flow_impedance> min_impedance = DBL_MAX * unit::unit_flow_impedance;
+    units::quantity<unit::flow_impedance> max_impedance = 0.0 * unit::pascal_second_per_metre_cubed;
+    units::quantity<unit::flow_impedance> min_impedance = DBL_MAX * unit::pascal_second_per_metre_cubed;
     for (unsigned vessel_index = 0; vessel_index < mVessels.size(); vessel_index++)
     {
         units::quantity<unit::flow_impedance> impedance = mVessels[vessel_index]->GetFlowProperties()->GetImpedance(mVessels[vessel_index]->GetSegments());
-        if (impedance <= 0.0 * unit::unit_flow_impedance)
+        if (impedance <= 0.0 * unit::pascal_second_per_metre_cubed)
         {
             EXCEPTION("Impedance should be a positive number.");
         }
@@ -253,9 +253,9 @@ void FlowSolver<DIM>::Solve()
         units::quantity<unit::flow_rate> flow_rate = (start_node_pressure - end_node_pressure) / mVessels[vessel_index]->GetFlowProperties()->GetImpedance(mVessels[vessel_index]->GetSegments());
 
         // Clean up small values as some structural adaptation calculators are sensitive to them.
-        if (fabs(flow_rate) < pow(10, -20)*unit::unit_flow_rate)
+        if (fabs(flow_rate) < pow(10, -20)*unit::metre_cubed_per_second)
         {
-            flow_rate = 0.0 * unit::unit_flow_rate;
+            flow_rate = 0.0 * unit::metre_cubed_per_second;
         }
 
         std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments = mVessels[vessel_index]->GetSegments();

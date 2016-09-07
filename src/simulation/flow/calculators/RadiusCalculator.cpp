@@ -38,7 +38,7 @@
 template<unsigned DIM>
 RadiusCalculator<DIM>::RadiusCalculator() : AbstractVesselNetworkCalculator<DIM>(),
         mMinRadius(1.0* unit::microns),
-        mMaxRadius(50.0 * unit::microns),
+        mMaxRadius(100.0 * unit::microns),
         mTimeStep(0.0001 * unit::seconds)
 {
 
@@ -76,14 +76,19 @@ void RadiusCalculator<DIM>::Calculate()
     {
         units::quantity<unit::rate> total_stimulus = segments[segment_index]->GetFlowProperties()->GetGrowthStimulus();
         units::quantity<unit::length> radius = segments[segment_index]->GetRadius();
-        radius *= 1.0 + mTimeStep * total_stimulus;
-        if (radius > mMaxRadius)
+        radius = radius*(1.0 + mTimeStep * total_stimulus);
+
+        // Only change the radius if there is a stimulus, so we can use this calculator without stimulii
+        if(mTimeStep * total_stimulus!=0.0)
         {
-            radius = mMaxRadius;
-        }
-        if (radius < mMinRadius)
-        {
-            radius = mMinRadius;
+            if (radius > mMaxRadius)
+            {
+                radius = mMaxRadius;
+            }
+            if (radius < mMinRadius)
+            {
+                radius = mMinRadius;
+            }
         }
         segments[segment_index]->SetRadius(radius);
     }

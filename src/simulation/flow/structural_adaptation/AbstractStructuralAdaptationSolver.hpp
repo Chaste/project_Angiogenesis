@@ -65,6 +65,8 @@ protected:
      */
     units::quantity<unit::time> mTimeIncrement;
 
+    units::quantity<unit::time> mReferenceTimeScale;
+
     /**
      *  Whether to output the progress of the structural adaptation algorithm to a file.
      */

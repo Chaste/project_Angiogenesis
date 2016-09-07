@@ -60,13 +60,27 @@ public:
      * @param y y position of vertex
      * @param z z position of vertex
      */
-    Vertex(double x = 0.0, double y = 0.0, double z = 0.0, units::quantity<unit::length> referenceLength = 1.e-6*unit::metres);
+    Vertex(double x, double y, double z, units::quantity<unit::length> referenceLength);
 
     /**
      * Constructor
      * @param a vector of x, y, z coordinates
      */
-    Vertex(c_vector<double, 3> coords, units::quantity<unit::length> referenceLength = 1.e-6*unit::metres);
+    Vertex(c_vector<double, 3> coords, units::quantity<unit::length> referenceLength);
+
+    /**
+     * Constructor
+     * @param x x position of vertex
+     * @param y y position of vertex
+     * @param z z position of vertex
+     */
+    Vertex(double x = 0.0, double y = 0.0, double z = 0.0);
+
+    /**
+     * Constructor
+     * @param a vector of x, y, z coordinates
+     */
+    Vertex(c_vector<double, 3> coords);
 
     /**
      * Factory constructor method
@@ -75,14 +89,30 @@ public:
      * @param z z position of vertex
      * @return a shared pointer to a new vertex
      */
-    static boost::shared_ptr<Vertex> Create(double x = 0.0, double y = 0.0, double z = 0.0, units::quantity<unit::length> referenceLength = 1.e-6*unit::metres);
+    static boost::shared_ptr<Vertex> Create(double x, double y, double z, units::quantity<unit::length> referenceLength);
 
     /**
      * Factory constructor method
      * @param a vector of x, y, z coordinates
      * @return a shared pointer to a new vertex
      */
-    static boost::shared_ptr<Vertex> Create(c_vector<double, 3> coords, units::quantity<unit::length> referenceLength = 1.e-6*unit::metres);
+    static boost::shared_ptr<Vertex> Create(c_vector<double, 3> coords, units::quantity<unit::length> referenceLength);
+
+    /**
+     * Factory constructor method
+     * @param x x position of vertex
+     * @param y y position of vertex
+     * @param z z position of vertex
+     * @return a shared pointer to a new vertex
+     */
+    static boost::shared_ptr<Vertex> Create(double x = 0.0, double y = 0.0, double z = 0.0);
+
+    /**
+     * Factory constructor method
+     * @param a vector of x, y, z coordinates
+     * @return a shared pointer to a new vertex
+     */
+    static boost::shared_ptr<Vertex> Create(c_vector<double, 3> coords);
 
     /**
      * Desctructor

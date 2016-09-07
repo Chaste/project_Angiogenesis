@@ -42,6 +42,7 @@
 #include "SmartPointers.hpp"
 #include "UblasVectorInclude.hpp"
 #include "UnitCollection.hpp"
+#include "BaseUnits.hpp"
 
 /**
  * This class is used in place of ChastePoint when units are important. It is needed as it is difficult to
@@ -67,13 +68,27 @@ public:
      * @param y y position of vertex
      * @param z z position of vertex
      */
-    DimensionalChastePoint(double x = 0.0, double y = 0.0, double z = 0.0, units::quantity<unit::length> referenceLength = 1.e-6*unit::metres);
+    DimensionalChastePoint(double x, double y, double z, units::quantity<unit::length> referenceLength);
 
     /**
      * Constructor
      * @param a vector of x, y, z coordinates
      */
-    DimensionalChastePoint(c_vector<double, DIM> coords, units::quantity<unit::length> referenceLength = 1.e-6*unit::metres);
+    DimensionalChastePoint(c_vector<double, DIM> coords, units::quantity<unit::length> referenceLength);
+
+    /**
+     * Constructor
+     * @param x x position of vertex
+     * @param y y position of vertex
+     * @param z z position of vertex
+     */
+    DimensionalChastePoint(double x = 0.0, double y = 0.0, double z = 0.0);
+
+    /**
+     * Constructor
+     * @param a vector of x, y, z coordinates
+     */
+    DimensionalChastePoint(c_vector<double, DIM> coords);
 
     /**
      * Destructor
@@ -145,6 +160,8 @@ public:
      * @return true if the input point is coincident with this point
      */
     bool IsCoincident(const DimensionalChastePoint<DIM>& rLocation, bool checkDimensions = true) const;
+
+    void Translate(DimensionalChastePoint<DIM> rVector);
 
 
 };

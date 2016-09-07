@@ -37,7 +37,6 @@
 #include "MathsCustomFunctions.hpp"
 #include "VesselImpedanceCalculator.hpp"
 #include "UnitCollection.hpp"
-
 template<unsigned DIM>
 VesselImpedanceCalculator<DIM>::VesselImpedanceCalculator() : AbstractVesselNetworkCalculator<DIM>()
 {
@@ -57,6 +56,7 @@ void VesselImpedanceCalculator<DIM>::Calculate()
     for (unsigned idx = 0; idx < segments.size(); idx++)
     {
         units::quantity<unit::dynamic_viscosity> viscosity = segments[idx]->GetFlowProperties()->GetViscosity();
+
         units::quantity<unit::flow_impedance> impedance = 8.0 * viscosity * segments[idx]->GetLength() / (M_PI * units::pow<4>(segments[idx]->GetRadius()));
         segments[idx]->GetFlowProperties()->SetImpedance(impedance);
     }

@@ -14,7 +14,7 @@ def update_builder(builder):
     include_classes = ["DiscreteSource<3>", 
                        "DiscreteContinuumBoundaryCondition<3>", 
                        "DiscreteContinuumNonLinearEllipticPde<3,3>", 
-                       "DiscreteContinuumLinearEllipticPde<3,3>",
+                       "AbstractDiscreteContinuumLinearEllipticPde<3,3>",
                        "AbstractRegularGridDiscreteContinuumSolver<3>",
                        "FiniteDifferenceSolver<3>",
                        "FiniteElementSolver<3>",

@@ -93,10 +93,10 @@ public:
 
         pVessel1->SetRadius(5.0 * 1.e-6 * unit::metres);
         pVessel1->GetFlowProperties()->SetHaematocrit(10.0, pVessel1->GetSegments());
-        pVessel1->GetFlowProperties()->SetFlowRate(15.0 * unit::unit_flow_rate, pVessel1->GetSegments());
+        pVessel1->GetFlowProperties()->SetFlowRate(15.0 * unit::metre_cubed_per_second, pVessel1->GetSegments());
         TS_ASSERT_DELTA(pVessel1->GetRadius()/ (1.e-6 * unit::metres), 5.0, 1.e-6);
         TS_ASSERT_DELTA(pVessel1->GetFlowProperties()->GetHaematocrit(pVessel1->GetSegments()), 10.0, 1.e-6);
-        TS_ASSERT_DELTA(pVessel1->GetFlowProperties()->GetFlowRate(pVessel1->GetSegments())/unit::unit_flow_rate, 15.0, 1.e-6);
+        TS_ASSERT_DELTA(pVessel1->GetFlowProperties()->GetFlowRate(pVessel1->GetSegments())/unit::metre_cubed_per_second, 15.0, 1.e-6);
     }
 
     void TestAddingAndRemovingSegments() throw (Exception)

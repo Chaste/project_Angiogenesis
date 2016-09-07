@@ -37,13 +37,13 @@
 #define TestStructuralAdaptationSolver_hpp
 
 #include <cxxtest/TestSuite.h>
+#include "../../../../src/utility/BaseUnits.hpp"
 #include "StructuralAdaptationSolver.hpp"
 #include "FileFinder.hpp"
 #include "OutputFileHandler.hpp"
 #include "SmartPointers.hpp"
 #include "VesselNetworkGenerator.hpp"
 #include "FlowSolver.hpp"
-#include "DimensionalSimulationTime.hpp"
 #include "AlarconHaematocritSolver.hpp"
 #include "FakePetscSetup.hpp"
 #include "UnitCollection.hpp"
@@ -112,8 +112,8 @@ public:
         p_network->Write(output_filename);
 
         TS_ASSERT_DELTA((nodes[3]->GetFlowProperties()->GetPressure() + nodes[4]->GetFlowProperties()->GetPressure())/(2.0*unit::pascals),((3322.0 + 1993.0) / 2.0), 1e-6);
-        TS_ASSERT_DELTA(boost::units::fabs(segments[0]->GetFlowProperties()->GetFlowRate())/unit::unit_flow_rate,
-                        boost::units::fabs(segments[1]->GetFlowProperties()->GetFlowRate())/unit::unit_flow_rate, 1e-6);
+        TS_ASSERT_DELTA(boost::units::fabs(segments[0]->GetFlowProperties()->GetFlowRate())/unit::metre_cubed_per_second,
+                        boost::units::fabs(segments[1]->GetFlowProperties()->GetFlowRate())/unit::metre_cubed_per_second, 1e-6);
 
         p_simulation_time->Destroy();
     }

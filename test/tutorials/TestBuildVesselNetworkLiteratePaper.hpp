@@ -76,6 +76,7 @@
  */
 #include "DimensionalChastePoint.hpp"
 #include "UnitCollection.hpp"
+#include "BaseUnits.hpp"
 /*
  * Tools for automatically generating vessel networks
  */
@@ -108,7 +109,7 @@ public:
          * with accompanying units. In this component, the `DimensionalChastePoint` is a fundamental geometric feature which contains a location in `N`
          * dimensional space, stored as a vector of dimensionless doubles, and an accompanying reference length. Thus, each `DimensionalChastePoint` is a
          * location with units. To demonstrate, we will create a point, which has a reference length of 1 micron and then re-scale its location according
-         * to a different reference length, a cell width. Note that the syntax `reference_length (1.0 * unit::microns)` rather than
+         * to a different reference length, a cell width. Note that the syntax `reference_length(1.0 * unit::microns)` rather than
          * `reference_length = 1.0 * unit::microns` is used when instantiating quantities.
          */
         units::quantity<unit::length> reference_length(1.0 * unit::microns);
@@ -126,6 +127,14 @@ public:
         TS_ASSERT_DELTA(my_point[0], 1.0, 1.e-6);
         TS_ASSERT_DELTA(my_point[1], 2.0, 1.e-6);
         /*
+         * It is tedious to keep supplying a reference length, mass, time when setting up simulations. To avoid this a `BaseUnits` singleton is
+         * used to set these values. Any geometrical features, readers, writers, solvers etc. created after a base unit has been set will take
+         * the current value as their `ReferenceXScale`. As will be demonstrated, these values can be over-ridden on a class-by-class basis
+         * if needed.
+         */
+        BaseUnits::Instance()->SetReferenceLengthScale(reference_length);
+        BaseUnits::Instance()->SetReferenceTimeScale(60.0 * unit::seconds);
+        /*
          * All geometric features, `VesselNodes`, `Parts`, `RegularGrids` use the `DimensionalChastePoint` as their base representation of spatial
          * location, meaning that it is straight-forward to change or even mix length scales in a simulation.
          *
@@ -134,10 +143,10 @@ public:
          * Again, we will avoid the tedium of manual network creation in later examples.
          */
         double vessel_length = 100.0;
-        boost::shared_ptr<VesselNode<2> > p_node_1 = VesselNode<2>::Create(0.0, 0.0, 0.0, reference_length);
+        boost::shared_ptr<VesselNode<2> > p_node_1 = VesselNode<2>::Create(0.0, 0.0);
         boost::shared_ptr<VesselNode<2> > p_node_2 = VesselNode<2>::Create(vessel_length, 0.0, 0.0, reference_length);
-        boost::shared_ptr<VesselNode<2> > p_node_3 = VesselNode<2>::Create(2.0*vessel_length, vessel_length, 0.0, reference_length);
-        boost::shared_ptr<VesselNode<2> > p_node_4 = VesselNode<2>::Create(2.0*vessel_length, -vessel_length, 0.0, reference_length);
+        boost::shared_ptr<VesselNode<2> > p_node_3 = VesselNode<2>::Create(2.0*vessel_length, vessel_length);
+        boost::shared_ptr<VesselNode<2> > p_node_4 = VesselNode<2>::Create(2.0*vessel_length, -vessel_length);
         /*
          * Next make vessel segments and vessels. Vessel segments are straight-line features which contain a `VesselNode` at each end. Vessels
          * can be constructed from multiple vessel segments by adding them in order, but in this case each vessel just has a single segment.
@@ -163,16 +172,15 @@ public:
         /*
          * Next write the network to file. Use the `OutputFileHandler` functionality to manage the output location
          * and the pointer MACRO `MAKE_PTR_ARGS` to easily make a smart pointer. Networks are written using VTK's !PolyData format by default,
-         * which will have a .vtp extension. Note that we set the length scale we want for the output (e.g. micron). If none is set the default
-         * is micron.
+         * which will have a .vtp extension.
          */
         MAKE_PTR_ARGS(OutputFileHandler, p_handler, ("TestBuildVesselNetworkLiteratePaper"));
         VesselNetworkWriter<2> writer;
         writer.SetFileName(p_handler->GetOutputDirectoryFullPath() + "bifurcating_network.vtp");
         writer.SetVesselNetwork(p_network);
-        writer.SetReferenceLengthScale(reference_length);
         writer.Write();
 
+        BaseUnits::Instance()->Destroy();
     }
     /*
      * Now we can visualize then network in Paraview. See the tutorial [wiki:UserTutorials/VisualizingWithParaview here], to get started. To view the network import the file
@@ -193,6 +201,8 @@ public:
          * length. The use of dimensional analysis is demonstrated by now using a fictitious 'cell width' reference length unit instead of microns.
          */
         units::quantity<unit::length> cell_width(25.0 * unit::microns);
+        BaseUnits::Instance()->SetReferenceLengthScale(cell_width);
+        BaseUnits::Instance()->SetReferenceTimeScale(60.0 * unit::seconds);
         units::quantity<unit::length> target_width = 60.0 * cell_width;
         units::quantity<unit::length> target_height = 30.0 * cell_width;
         units::quantity<unit::length> vessel_length = 4.0 * cell_width;
@@ -201,12 +211,13 @@ public:
          * are stored with the same reference length scale. This is helpful when combining with computational grids and cell populations later on.
          */
         VesselNetworkGenerator<3> network_generator;
-        network_generator.SetReferenceLengthScale(cell_width);
         boost::shared_ptr<VesselNetwork<3> > p_network = network_generator.GenerateHexagonalNetwork(target_width,
                                                                                                     target_height,
                                                                                                     vessel_length);
         /*
-         * Get the number of nodes and vessels for testing later, and write the network to file as before.
+         * Get the number of nodes and vessels for testing later, and write the network to file as before. We want to over-ride the
+         * reference length scale so that the output is written in micron. We could also change the 'ReferenceLengthScale' in 'BaseUnits'
+         * if we wanted.
          */
         unsigned number_of_nodes = p_network->GetNumberOfNodes();
         unsigned number_of_vessels = p_network->GetNumberOfVessels();

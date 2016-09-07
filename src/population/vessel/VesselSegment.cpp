@@ -130,6 +130,7 @@ units::quantity<unit::length> VesselSegment<DIM>::GetLength() const
 template<unsigned DIM>
 std::map<std::string, double> VesselSegment<DIM>::GetOutputData()
 {
+    this->mOutputData.clear();
     std::map<std::string, double> flow_data = this->mpFlowProperties->GetOutputData();
     this->mOutputData.insert(flow_data.begin(), flow_data.end());
     this->mOutputData["Segment Id"] = double(this->GetId());

@@ -97,9 +97,9 @@ public:
         TS_ASSERT_DELTA(pSegment->GetRadius()/(1.e-6*unit::metres), 5.0, 1.e-6);
 
         pSegment->GetFlowProperties()->SetHaematocrit(10.0);
-        pSegment->GetFlowProperties()->SetFlowRate(15.0 * unit::unit_flow_rate);
+        pSegment->GetFlowProperties()->SetFlowRate(15.0 * unit::metre_cubed_per_second);
         TS_ASSERT_DELTA(pSegment->GetFlowProperties()->GetHaematocrit(), 10.0, 1.e-6);
-        TS_ASSERT_DELTA(pSegment->GetFlowProperties()->GetFlowRate()/unit::unit_flow_rate, 15.0, 1.e-6);
+        TS_ASSERT_DELTA(pSegment->GetFlowProperties()->GetFlowRate()/unit::metre_cubed_per_second, 15.0, 1.e-6);
     }
 
     void TestGeometricFeatures() throw (Exception)
