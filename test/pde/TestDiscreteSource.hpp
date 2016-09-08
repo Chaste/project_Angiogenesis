@@ -33,16 +33,17 @@
 
  */
 
-#ifndef TESTDISCRETESOURCE_HPP_
-#define TESTDISCRETESOURCE_HPP_
+#ifndef TESTDiscreteSource_HPP_
+#define TESTDiscreteSource_HPP_
 
 #include <cxxtest/TestSuite.h>
 #include <vector>
 #include <string>
+
+#include "../../src/pde/problem/LinearSteadyStateDiffusionReactionPde.hpp"
 #include "SmartPointers.hpp"
 #include "Part.hpp"
-#include "AbstractDiscreteContinuumLinearEllipticPde.hpp"
-#include "DiscreteContinuumNonLinearEllipticPde.hpp"
+#include "NonLinearConcentrationBasedDiffusionReactionPde.hpp"
 #include "FiniteDifferenceSolver.hpp"
 #include "VesselNetwork.hpp"
 #include "VesselNetworkGenerator.hpp"
@@ -81,7 +82,7 @@ public:
         p_grid->GenerateFromPart(p_domain, 10.0 * 1.e-6 * unit::metres);
 
         // Choose the PDE
-        boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<3> > p_pde = AbstractDiscreteContinuumLinearEllipticPde<3>::Create();
+        boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<3> > p_pde = LinearConcentrationBasedDiffusionReactionPde<3>::Create();
         p_pde->SetIsotropicDiffusionConstant(0.0033);
         p_pde->SetContinuumConstantInUTerm(-2.e-6);
 
@@ -134,7 +135,7 @@ public:
         p_grid->GenerateFromPart(p_domain, 10.0 * 1.e-6 * unit::metres);
 
         // Choose the PDE
-        boost::shared_ptr<DiscreteContinuumNonLinearEllipticPde<3> > p_pde = DiscreteContinuumNonLinearEllipticPde<3>::Create();
+        boost::shared_ptr<NonLinearConcentrationBasedDiffusionReactionPde<3> > p_pde = NonLinearConcentrationBasedDiffusionReactionPde<3>::Create();
         p_pde->SetIsotropicDiffusionConstant(0.0033);
         p_pde->SetContinuumConstantInUTerm(-2.e-6);
         p_pde->SetThreshold(2.5);
@@ -168,4 +169,4 @@ public:
     }
 };
 
-#endif /*TESTDISCRETESOURCE_HPP_*/
+#endif /*TESTDiscreteSource_HPP_*/

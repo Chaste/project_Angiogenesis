@@ -38,6 +38,8 @@
 
 #include <cxxtest/TestSuite.h>
 #include <vector>
+
+#include "../../src/pde/problem/LinearSteadyStateDiffusionReactionPde.hpp"
 #include "SmartPointers.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "HoneycombMeshGenerator.hpp"
@@ -62,7 +64,6 @@
 #include "StalkCellMutationState.hpp"
 #include "RegularGrid.hpp"
 #include "FiniteDifferenceSolver.hpp"
-#include "AbstractDiscreteContinuumLinearEllipticPde.hpp"
 #include "DiscreteContinuumBoundaryCondition.hpp"
 #include "CellStateDependentDiscreteSource.hpp"
 #include "DiscreteSource.hpp"
@@ -76,9 +77,9 @@
 
 class Test3dTumourSpheroid : public AbstractCellBasedWithTimingsTestSuite
 {
-    boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<3> > GetOxygenPde()
+    boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<3> > GetOxygenPde()
                                 {
-        boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<3> > p_pde = AbstractDiscreteContinuumLinearEllipticPde<3>::Create();
+        boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<3> > p_pde = LinearConcentrationBasedDiffusionReactionPde<3>::Create();
         p_pde->SetIsotropicDiffusionConstant(8700000 / (400.0)); // assume cell width is 20 microns
 
         // Add a cell state specific discrete source for cells consuming oxygen
@@ -125,9 +126,9 @@ class Test3dTumourSpheroid : public AbstractCellBasedWithTimingsTestSuite
                                 }
 
     // todo need to check parameters in sink/source terms in here
-    boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<3> > GetVegfPde()
+    boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<3> > GetVegfPde()
                                 {
-        boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<3> > p_pde = AbstractDiscreteContinuumLinearEllipticPde<3>::Create();
+        boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<3> > p_pde = LinearConcentrationBasedDiffusionReactionPde<3>::Create();
         p_pde->SetIsotropicDiffusionConstant(60000 / (400.0)); // assume cell width is 20 microns
         p_pde->SetContinuumLinearInUTerm(-0.8); //Vegf decay
 

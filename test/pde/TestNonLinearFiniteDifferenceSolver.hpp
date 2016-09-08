@@ -40,12 +40,13 @@
 #include <vector>
 #include <string>
 #include <boost/lexical_cast.hpp>
+
+#include "../../src/pde/problem/LinearSteadyStateDiffusionReactionPde.hpp"
 #include "FiniteDifferenceSolver.hpp"
 #include "UblasIncludes.hpp"
 #include "Part.hpp"
 #include "Vertex.hpp"
-#include "AbstractDiscreteContinuumLinearEllipticPde.hpp"
-#include "DiscreteContinuumNonLinearEllipticPde.hpp"
+#include "NonLinearConcentrationBasedDiffusionReactionPde.hpp"
 #include "VesselNetwork.hpp"
 #include "VesselNetworkGenerator.hpp"
 #include "SmartPointers.hpp"
@@ -72,7 +73,7 @@ public:
         p_grid->GenerateFromPart(p_domain, 0.5*1.e-6*unit::metres);
 
         // Choose the PDE
-        boost::shared_ptr<DiscreteContinuumNonLinearEllipticPde<3> > p_non_linear_pde = DiscreteContinuumNonLinearEllipticPde<3>::Create();
+        boost::shared_ptr<NonLinearConcentrationBasedDiffusionReactionPde<3> > p_non_linear_pde = NonLinearConcentrationBasedDiffusionReactionPde<3>::Create();
         p_non_linear_pde->SetIsotropicDiffusionConstant(1.0);
         p_non_linear_pde->SetContinuumConstantInUTerm(-2.0);
         p_non_linear_pde->SetThreshold(0.0625);

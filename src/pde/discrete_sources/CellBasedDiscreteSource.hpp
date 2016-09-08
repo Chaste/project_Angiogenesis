@@ -33,78 +33,90 @@
 
  */
 
-#ifndef CELLSTATEDEPENDENTDiscreteSource_HPP_
-#define CELLSTATEDEPENDENTDiscreteSource_HPP_
+#ifndef DiscreteSource_HPP_
+#define DiscreteSource_HPP_
 
 #include <vector>
 #include <string>
 #include <map>
 #include "UblasIncludes.hpp"
-#include "Part.hpp"
-#include "AbstractCellProperty.hpp"
-#include "ApoptoticCellProperty.hpp"
+#include "RegularGrid.hpp"
+#include "DiscreteContinuumMesh.hpp"
+#include "UnitCollection.hpp"
 #include "DiscreteSource.hpp"
 
 /**
- * Specialization of discrete sources for cell state specific sink and source strengths
+ * This class calculates the value of discrete sources at grid/mesh locations for cells
  */
 template<unsigned DIM>
-class CellStateDependentDiscreteSource : public DiscreteSource<DIM>
+class CellBasedDiscreteSource : public DiscreteSource<DIM>
 {
 
-private:
+protected:
 
     /**
-     * Cells of different 'color' (i.e. mutation state label) can have different sink rates.
+     * The linear in U rate of consumption per cell
      */
-    std::map<unsigned, double > mStateRateMap;
+    units::quantity<unit::rate> mCellConstantInUValue;
 
     /**
-     * Cells of different 'color' (i.e. mutation state label) can have different sink rate thresholds.
+     * The constant in U rate of consumption per cell
      */
-    std::map<unsigned, double > mStateRateThresholdMap;
+    units::quantity<unit::concentration_flow_rate> mCellLinearInUValue;
 
 public:
 
     /**
      *  Constructor
      */
-    CellStateDependentDiscreteSource();
+    CellBasedDiscreteSource();
 
     /**
      * Destructor
      */
-    virtual ~CellStateDependentDiscreteSource();
+    virtual ~CellBasedDiscreteSource();
 
     /**
      * Factory constructor method
      * @return a pointer to an instance of the class
      */
-    static boost::shared_ptr<CellStateDependentDiscreteSource<DIM> > Create();
+    static boost::shared_ptr<CellBasedDiscreteSource<DIM> > Create();
 
     /**
-     * Over-ridden method for obtaining discrete source strengths due to cells
+     * Return the values of the source strengths sampled on the mesh elements
+     * @return a vector of source strengths
      */
-    std::vector<double> GetCellRegularGridValues();
+    std::vector<units::quantity<unit::rate> > GetConstantInUMeshValues();
 
     /**
-     * Set cell 'color' specific consumption rates. 'Color' is a property of the cell mutation state set in its constructor.
-     * It is up to the user to ensure that different mutation states of interest have different 'color' values assigned.
-     * If a cell 'color' key is requested from the map that does not have a value assigned then its consumption rate will
-     * be 0.0.
-     *
-     * @param cellColorSinkRates the label for the source strength value
+     * Return the values of the source strengths sampled on the mesh elements
+     * @return a vector of source strengths
      */
-    void SetStateRateMap(std::map<unsigned, double > stateRateMap);
+    std::vector<units::quantity<unit::concentration_flow_rate> > GetLinearInUMeshValues();
 
     /**
-     * Set cell 'color' specific consumption rate thresholds.
-     * If a cell 'color' key is requested from the map that does not have a value assigned then its consumption rate threshold will
-     * be 0.0.
-     *
-     * @param cellColorSinkRates the label for the source strength value
+     * Return the values of the source strengths sampled on the regular grid
+     * @return a vector of source strengths
      */
-    void SetStateRateThresholdMap(std::map<unsigned, double > stateThresholdMap);
+    std::vector<units::quantity<unit::rate> > GetConstantInURegularGridValues();
+
+    /**
+     * Return the values of the source strengths sampled on the regular grid
+     * @return a vector of source strengths
+     */
+    std::vector<units::quantity<unit::concentration_flow_rate> > GetLinearInURegularGridValues();
+
+    /**
+     * Set the value of the source for PRESCRIBED type sources
+     * @param value the value of the source
+     */
+    void SetConstantInUConsumptionRatePerCell(units::quantity<unit::rate> value);
+
+    /**
+     * Set the value of the source for PRESCRIBED type sources
+     * @param value the value of the source
+     */
+    void SetLinearInUConsumptionRatePerCell(units::quantity<unit::concentration_flow_rate> value);
 };
 
-#endif /* CELLSTATEDEPENDENTDiscreteSource_HPP_ */
+#endif /* DiscreteSource_HPP_ */

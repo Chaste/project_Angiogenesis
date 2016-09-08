@@ -34,47 +34,49 @@
  */
 
 #include <algorithm>
-#include "LinearMoleBasedChemicalTransportPde.hpp"
+#include "NonLinearConcentrationBasedDiffusionReactionPde.hpp"
+#include "Debug.hpp"
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::LinearMoleBasedChemicalTransportPde() :
-            AbstractLinearEllipticPde<ELEMENT_DIM, ELEMENT_DIM>(),
+NonLinearConcentrationBasedDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::NonLinearConcentrationBasedDiffusionReactionPde() :
+            AbstractNonlinearEllipticPde<SPACE_DIM>(),
             mDiffusionTensor(identity_matrix<double>(SPACE_DIM)),
-            mDiffusivity(1.0 * unit::metre_squared_per_second),
-            mConstantInUTerm(0.0 * unit::per_second),
-            mLinearInUTerm(0.0 * unit::mole_per_second),
+            mDiffusivity(0.003),
+            mThreshold(1.0),
+            mConstantInUTerm(0.0),
+            mLinearInUTerm(0.0),
             mVariableName("Default"),
             mDiscreteSources(),
             mpRegularGrid(),
             mpMesh(),
             mUseRegularGrid(true),
-            mDiscreteConstantSourceStrengths(),
-            mDiscreteLinearSourceStrengths()
+            mDiscreteConstantSourceStrengths(std::vector<double>(1,0.0)),
+            mDiscreteLinearSourceStrengths(std::vector<double>(1,0.0))
 {
-    mDiffusionTensor *= mDiffusivity.value();
+    mDiffusionTensor *= mDiffusivity;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-boost::shared_ptr<LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM> > LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::Create()
+boost::shared_ptr<NonLinearConcentrationBasedDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM> > NonLinearConcentrationBasedDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::Create()
 {
-    MAKE_PTR(LinearMoleBasedChemicalTransportPde<ELEMENT_DIM>, pSelf);
+    MAKE_PTR(NonLinearConcentrationBasedDiffusionReactionPde<ELEMENT_DIM>, pSelf);
     return pSelf;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::AddDiscreteSource(boost::shared_ptr<DiscreteSource<SPACE_DIM> > pDiscreteSource)
+void NonLinearConcentrationBasedDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::AddDiscreteSource(boost::shared_ptr<DiscreteSource<SPACE_DIM> > pDiscreteSource)
 {
     mDiscreteSources.push_back(pDiscreteSource);
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-double LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::ComputeConstantInUSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement)
+double NonLinearConcentrationBasedDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::ComputeConstantInUSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement)
 {
-    return mConstantInUTerm/unit::per_second;
+    return mConstantInUTerm;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-units::quantity<unit::rate> LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::ComputeConstantInUSourceTerm(unsigned gridIndex)
+double NonLinearConcentrationBasedDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::ComputeConstantInUSourceTerm(unsigned gridIndex)
 {
     if(gridIndex >= mDiscreteLinearSourceStrengths.size())
     {
@@ -84,19 +86,19 @@ units::quantity<unit::rate> LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPA
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-c_matrix<double, SPACE_DIM, SPACE_DIM> LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::ComputeDiffusionTerm(const ChastePoint<SPACE_DIM>&)
+c_matrix<double, SPACE_DIM, SPACE_DIM> NonLinearConcentrationBasedDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::ComputeDiffusionTerm(const ChastePoint<SPACE_DIM>&, double u)
 {
     return mDiffusionTensor;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-double LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::ComputeLinearInUCoeffInSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement)
+double NonLinearConcentrationBasedDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::ComputeLinearInUCoeffInSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement)
 {
-    return mLinearInUTerm/unit::mole_per_second;
+    return mLinearInUTerm;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-units::quantity<unit::molar_flow_rate> LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::ComputeLinearInUCoeffInSourceTerm(unsigned gridIndex)
+double NonLinearConcentrationBasedDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::ComputeLinearInUCoeffInSourceTerm(unsigned gridIndex)
 {
     if(gridIndex >= mDiscreteLinearSourceStrengths.size())
     {
@@ -106,68 +108,68 @@ units::quantity<unit::molar_flow_rate> LinearMoleBasedChemicalTransportPde<ELEME
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-units::quantity<unit::diffusivity> LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::ComputeIsotropicDiffusionTerm()
+double NonLinearConcentrationBasedDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::ComputeIsotropicDiffusionTerm()
 {
     return mDiffusivity;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-std::vector<boost::shared_ptr<DiscreteSource<SPACE_DIM> > > LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::GetDiscreteSources()
+std::vector<boost::shared_ptr<DiscreteSource<SPACE_DIM> > > NonLinearConcentrationBasedDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::GetDiscreteSources()
 {
     return mDiscreteSources;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-const std::string& LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::GetVariableName()
+const std::string& NonLinearConcentrationBasedDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::GetVariableName()
 {
     return mVariableName;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::SetContinuumConstantInUTerm(units::quantity<unit::rate> constantInUTerm)
+void NonLinearConcentrationBasedDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::SetContinuumConstantInUTerm(double constantInUTerm)
 {
     mConstantInUTerm = constantInUTerm;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::SetIsotropicDiffusionConstant(units::quantity<unit::diffusivity> diffusivity)
+void NonLinearConcentrationBasedDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::SetIsotropicDiffusionConstant(double diffusivity)
 {
     mDiffusivity = diffusivity;
-    mDiffusionTensor = identity_matrix<double>(SPACE_DIM)* (mDiffusivity/unit::metre_cubed_per_second);
+    mDiffusionTensor = identity_matrix<double>(SPACE_DIM)* mDiffusivity;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::SetContinuumLinearInUTerm(units::quantity<unit::molar_flow_rate> linearInUTerm)
+void NonLinearConcentrationBasedDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::SetContinuumLinearInUTerm(double linearInUTerm)
 {
     mLinearInUTerm = linearInUTerm;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::SetRegularGrid(boost::shared_ptr<RegularGrid<ELEMENT_DIM, SPACE_DIM> > pRegularGrid)
+void NonLinearConcentrationBasedDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::SetRegularGrid(boost::shared_ptr<RegularGrid<ELEMENT_DIM, SPACE_DIM> > pRegularGrid)
 {
     mpRegularGrid = pRegularGrid;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::SetMesh(boost::shared_ptr<TetrahedralMesh<ELEMENT_DIM, SPACE_DIM> > pMesh)
+void NonLinearConcentrationBasedDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::SetMesh(boost::shared_ptr<TetrahedralMesh<ELEMENT_DIM, SPACE_DIM> > pMesh)
 {
     mpMesh = pMesh;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::SetUseRegularGrid(bool useRegularGrid)
+void NonLinearConcentrationBasedDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::SetUseRegularGrid(bool useRegularGrid)
 {
     mUseRegularGrid = useRegularGrid;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::SetVariableName(const std::string& rVariableName)
+void NonLinearConcentrationBasedDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::SetVariableName(const std::string& rVariableName)
 {
     mVariableName = rVariableName;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::UpdateDiscreteSourceStrengths()
+void NonLinearConcentrationBasedDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::UpdateDiscreteSourceStrengths()
 {
     if(mUseRegularGrid)
     {
@@ -175,23 +177,22 @@ void LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::UpdateDiscrete
         {
             EXCEPTION("A grid has not been set for the determination of source strengths.");
         }
-        mDiscreteConstantSourceStrengths = std::vector<units::quantity<unit::rate> >(mpRegularGrid->GetNumberOfPoints(), 0.0);
-        mDiscreteLinearSourceStrengths = std::vector<units::quantity<unit::molar_flow_rate> >(mpRegularGrid->GetNumberOfPoints(), 0.0);
+        mDiscreteConstantSourceStrengths = std::vector<double>(mpRegularGrid->GetNumberOfPoints(), 0.0);
+        mDiscreteLinearSourceStrengths = std::vector<double>(mpRegularGrid->GetNumberOfPoints(), 0.0);
 
         for(unsigned idx=0; idx<mDiscreteSources.size(); idx++)
         {
             mDiscreteSources[idx]->SetRegularGrid(mpRegularGrid);
+            std::vector<double> result = mDiscreteSources[idx]->GetRegularGridValues();
             if(mDiscreteSources[idx]->IsLinearInSolution())
             {
-                std::vector<units::quantity<unit::molar_flow_rate> > result = mDiscreteSources[idx]->GetLinearRegularGridValues();
                 std::transform(mDiscreteLinearSourceStrengths.begin( ), mDiscreteLinearSourceStrengths.end( ),
-                               result.begin( ), mDiscreteLinearSourceStrengths.begin( ),std::plus<units::quantity<unit::molar_flow_rate> >( ));
+                               result.begin( ), mDiscreteLinearSourceStrengths.begin( ),std::plus<double>( ));
             }
             else
             {
-                std::vector<units::quantity<unit::rate> > result = mDiscreteSources[idx]->GetConstantRegularGridValues();
                 std::transform(mDiscreteConstantSourceStrengths.begin( ), mDiscreteConstantSourceStrengths.end( ),
-                               result.begin( ), mDiscreteConstantSourceStrengths.begin( ),std::plus<units::quantity<unit::rate> >( ));
+                               result.begin( ), mDiscreteConstantSourceStrengths.begin( ),std::plus<double>( ));
             }
         }
     }
@@ -210,5 +211,5 @@ void LinearMoleBasedChemicalTransportPde<ELEMENT_DIM, SPACE_DIM>::UpdateDiscrete
 }
 
 // Explicit instantiation
-template class LinearMoleBasedChemicalTransportPde<2>;
-template class LinearMoleBasedChemicalTransportPde<3>;
+template class NonLinearConcentrationBasedDiffusionReactionPde<2>;
+template class NonLinearConcentrationBasedDiffusionReactionPde<3>;

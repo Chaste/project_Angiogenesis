@@ -37,10 +37,10 @@
 #define TESTGREENSFUNCTIONSOLVER_HPP_
 
 #include <cxxtest/TestSuite.h>
+#include "../../src/pde/problem/LinearSteadyStateDiffusionReactionPde.hpp"
 #include "GreensFunctionSolver.hpp"
 #include "VesselNetwork.hpp"
 #include "VesselNetworkGenerator.hpp"
-#include "AbstractDiscreteContinuumLinearEllipticPde.hpp"
 #include "RegularGrid.hpp"
 #include "UnitCollection.hpp"
 
@@ -67,7 +67,7 @@ public:
         p_grid->GenerateFromPart(p_domain, 0.1*1.e-6*unit::metres);
 
         // Choose the PDE
-        boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<3> > p_pde = AbstractDiscreteContinuumLinearEllipticPde<3>::Create();
+        boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<3> > p_pde = LinearConcentrationBasedDiffusionReactionPde<3>::Create();
         p_pde->SetIsotropicDiffusionConstant(1);
         p_pde->SetContinuumConstantInUTerm(-2.0);
 

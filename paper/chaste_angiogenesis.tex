@@ -72,7 +72,7 @@
 \maketitle
 
 \begin{abstract}
-Multi-scale agent-based modelling is a popular technique in the study of vascular tissues in the areas of cancer, wound healing and development. Problems of interest in these areas involve the solution of blood flow, solute transport, cell cycling, vessel re-modelling and angiogenesis sub-problems. The development of software for solving such problems is a time-consuming process, due to the multiple physical processes and modelling techniques involved. There are a variety of agent-based methods used in the literature for representing both cells and vessels, including lattice-based and lattice-free approaches, and for solving transport problems involving discrete sinks and sources. Despite the recognized importance of model prediction cross-comparison, the expense of model implementation, variety of previosuly adopted modelling approaches and lack of 'free' open source code mean that little progress has been made in model benchmarking to date. Here, a new agent-based framework for simulating vascular tissue growth and treatment response is presented, based on the open source C++ library, Chaste (Cancer, Heart And Soft Tissue Environment). The framework is designed to address the conflicting requirements in vascular tissue modelling of computational performance, extensiblity and rapid model prototyping by using object oriented programming in C++, established linear algebra libraries (uBlas and PETSc), and Python bindings. In this study, the framework is overviewed, with example applications showing its use in model cross-comparison for well-known 'snail-trail' type angiogenesis problems using on- and off-lattice approaches and two- and three-dimensional representations. Problems of this type are of relevance in the areas of cancer, wound healing and development. It is envisaged that the framework will be useful in future vascular tissue model development and benchmarking, while features such as automated Python wrapping and dimensional analysis may be of general interest in the development of scientific software.
+Multi-scale agent-based modelling is a popular technique in the study of vascular tissues in the areas of cancer, wound healing and development. Problems of interest in these areas involve the solution of blood flow, solute transport, cell cycling, vessel re-modelling and angiogenesis sub-problems. The development of software for solving such problems is a time-consuming process, due to the multiple physical processes and modelling techniques involved. There are a variety of agent-based methods used in the literature for representing both cells and vessels, including lattice-based and lattice-free approaches, and for solving transport problems involving discrete sinks and sources. Despite the recognized importance of model prediction cross-comparison, the expense of model implementation, variety of previosuly adopted modelling approaches and lack of open source code mean that little progress has been made in model benchmarking to date. Here, a new agent-based framework for simulating vascular tissue growth and treatment response is presented, based on the open source C++ library, Chaste (Cancer, Heart And Soft Tissue Environment). The framework is designed to address the conflicting requirements in vascular tissue modelling of computational performance, extensiblity and rapid model prototyping by using object oriented programming in C++, established linear algebra libraries (uBlas and PETSc), and Python bindings. In this study the framework is overviewed, with example applications showing its use in model cross-comparison for well-known 'snail-trail' type angiogenesis problems using on- and off-lattice approaches and two- and three-dimensional representations. Problems of this type are of relevance in the areas of cancer, wound healing and development. It is envisaged that the framework will be useful in future vascular tissue model development and benchmarking, while features such as automated Python wrapping and dimensional analysis may be of general interest in the development of scientific software.
 
 \smallskip
 \noindent \textbf{Keywords:} Chaste - agent-based simulation - multi-scale model - vascular tumour growth - on-lattice model - off-lattice model
@@ -102,7 +102,7 @@ Multi-scale agent-based modelling is a popular technique in the study of vascula
 \newpage
 \doublespacing
 
-\section{1. Introduction}
+\section{Introduction}
 \label{sec:introduction}
 
 Multi-scale agent-based modelling is a popular method for simulating tissue growth and treament response in the areas of cancer, wound healing and developmental biology. These approaches typically involve modelling cells as discrete entities, with indivudual cell-cycling and spatial positioning described using lattice-based [] or lattice free methods []. Cell interactions with each other can be through lattice-neighbour interactions [] or nearest-neighbour approaches based on touching spheres [], for example. Cells can interact with chemical fields by acting as discrete or distrbuted sink or source terms in partial differential equations arising from mass balances. There now exists a range of flexible, open-source frameworks for implementing the described multi-scale problems, including Chaste [], OpenCMISS [], CompuCell3D [] and BioFVM [] amongst others. In addition, a variety of bespoke, problem-specific, frameworks have been developed, often using MATLAB [][][]. 
@@ -113,13 +113,13 @@ The additional requirements for vascular tissue simulations and the wide variety
 
 Existing open-source agent-based frameworks for cells do not contain sufficient functionality for many vascular tissue problems, while currently published frameworks for both cells \emph{and} vessels, overviewed subsequently, do not yet cover all of the deriserable attributes of \emph{flexibility}, \emph{extensibility},  \emph{efficiency} and \emph{availablility}. A widely popular approach for multi-scale agent-based modelling of cells and vessels is the use of MATLAB, often with expensive parts of the simulation written in C or C++ and pre-compiled [][][]. This approach offers \emph{efficiency} and \emph{flexibility}, in that code has the potential to be reasonably performant and the MATLAB environment allows rapid model prototyping. Limitations are that proprietary software is used, limiting \emph{availablility}, and MATLAB's matrix based language is needed, limiting opportunities for \emph{extensibility} afforded by languages with greater focus (from both a language and developer perspective) on object oriented programming, like C++ and Python. Of the many models (and modeling frameworks) developed in such a manner, few have made their source public to the authors knowledge. Exceptions are [] and []. It is also common to write models and frameworks in C or C++ [][][], offering scope for efficiency and, in the latter, extensibility. Flexibility is compromised, given that software needs to be recompiled and linked for any changes, which can be time consuming in a relatively large code-base. Again, it is rare for source code to be made publically available, with the exception being several studies by Secomb and co-workers [][]. The open-source software of Secomb and co-workers is an in-valuable resource in this area, however it mostly does not follow object oriented design practices [] nor contain significant documentation. This limits oppurtunity for model extension. 
 
-As has been noted, it is rare for software associated with models of this type to be made publically available. This, in addition, to the significant time required in implementing such frameworks has limited the ability to cross-compare and reproduce models and model predictions. The important of, and challenges in, cross-comparison of such models has been discussed in the recent review of R et al []. In particular, it is noted that given a widespread difficulty in comparing models with experimental data for many vascular tissue problems of interest, it is important to verify that models developed to data are at least consistent with one another.
+As has been noted, it is rare for software associated with models of this type to be made publically available. This, in addition to the significant time required in implementing such frameworks, has limited the ability to cross-compare and reproduce models and model predictions. The important of, and challenges in, cross-comparison of such models has been discussed in the recent review of R et al []. In particular, it is noted that given a widespread difficulty in comparing models with experimental data for many vascular tissue problems of interest, it is important to verify that models developed to data are at least consistent with one another.
 
-The aim of this study is the development of a 'free' open-source multi-scale agent-based simulation framework for vascular tissues. The framework is designed to balance \emph{extensibility}, \emph{flexibility} and \emph{efficiency} as best possible, allowing future rapid-prototyping of new models and benchmarking of existing models. Given that problems of interest are a super-set of those already addressed by existing cell focused agent-based framerworks, it is sensible that the new framework builds on one of these. The new framework is based on the Chaste (Cancer, Heart And Soft Tissue Environment) open source C++ library [], which uses object-oriented programming including templating, implements a number of agent-based modelling techniques for cells [], interfaces with well established linear algebra libraries (uBlas [], PETSc []), ODE solvers (CVODE[]) and visualization software (VTK []) and has suitable unit-test, documentation and tutorial coverage []. A limitation of Chaste is that, due to being written in C++, it is difficult to quickly prototype models or over-ride existing methods without re-building the software. To address this limitation, the new framework uses automatically generated Python bindings to facilitate rapid model creation, allowing integrated model development and post-processing with a rapidly growing collection of scientific tools for Python [].
+The aim of this study is the development of an open-source multi-scale agent-based simulation framework for vascular tissues. The framework is designed to balance \emph{extensibility}, \emph{flexibility} and \emph{efficiency} as best possible, allowing future rapid-prototyping of new models and benchmarking of existing models. Given that problems of interest are a super-set of those already addressed by existing cell focused agent-based framerworks, it is sensible that the new framework builds on one of these. The new framework is based on the Chaste (Cancer, Heart And Soft Tissue Environment) open source C++ library [], which uses object-oriented programming including templating, implements a number of agent-based modelling techniques for cells [], interfaces with well established linear algebra libraries (uBlas [], PETSc []), ODE solvers (CVODE[]) and visualization software (VTK []) and has suitable unit-test, documentation and tutorial coverage []. A limitation of Chaste is that, due to being written in C++, it is difficult to quickly prototype models or over-ride existing methods without re-building the software. To address this limitation, the new framework uses automatically generated Python bindings to facilitate rapid model creation, allowing integrated model development and post-processing with a rapidly growing collection of scientific tools for Python [].
 
-The remainder of this study is now overviewed. Section 2 overviews common components of vascular tissue models, as described in the literature. Section 3 gives a high level over-view of the code design and implementation details. Due to the close linke with Chaste, the design of that software is also briefly summarized, however the reader should refer to [][] for further details. Section 4 demonstrates the use of the code, by comparing the predictions of different models of a well-known 'snail-trail' [][] angiogenesis problem in 2-D and 3-D and with on- and off-lattice representations of cells and vessels. The results in Section 4 may themselves be of scientific interest, given that it is the first detailed comparison, to the authors knowledge, of the predictions of several modelling paradigms. Section 5 overviews code availability, future directions and other potential applications.
+The remainder of this study is now overviewed. Section 2 overviews common components of vascular tissue models, as described in the literature. Section 3 gives a high level over-view of the code design and implementation details. Due to the close links with Chaste, the design of that software is also briefly summarized, however the reader should refer to [][] for further details. Section 4 demonstrates the use of the code, by comparing the predictions of different models of a well-known 'snail-trail' [][] angiogenesis problem in 2-D and 3-D and with on- and off-lattice representations of cells and vessels. The results in Section 4 may themselves be of scientific interest, given that it is the first detailed comparison, to the authors knowledge, of the predictions of several modelling paradigms. Section 5 overviews code availability, future directions and other potential applications.
 
-\section{2. Multi-Scale Agent-Based Vascular Tissue Models}
+\section{Multi-Scale Agent-Based Vascular Tissue Models}
 \label{sec:modelling_overview}
 
 This section gradually introduces the typical components of a multi-scale agent-based vascular tissue model and gives an indication of how they might be implemented in a simplified software framework. The approach follows that of Connor et al. [], although the actual implementations of the frameworks differ, reflecting implementation constraints.
@@ -146,64 +146,19 @@ Given the described representations of cells and vessels, growth, flow, nutrient
 
 
 
-\section{3. Code Design and Implementation}
+\section{Code Design and Implementation}
 \label{sec:design and implementation}
 
-Chaste is a C++ library with code that can be used to build a range of models in the area of computational biology. The code is over-viewed in detail in several publications [][][]. In brief, the core components are:
 
-\begin{itemize}
- \item global - basic mathematics, check-pointing and time stepping
- \item io - reading and writing of various file formats, including HDF5
- \item mesh - handling linear and quadratic meshes, including reading and writing
- \item linalg - linear algebra, including PETSc and uBLAS wrappers
- \item ode - ODE system solvers, including CVODE interface
- \item pde - PDE solvers using the finite element method
- \item continuum mechanics - non-linear elasticity problems
-\end{itemize}
 
-Beyond the core components further code is specialized for discrete cell problems and cardiac electro-physiology problems. The code for modelling discrete cell problems is further divided into []:
-
-\begin{itemize}
- \item cell - cell description, cell cycle models and mutation state definitions
- \item population - collections of cells described using cellular automaton, mesh based, node based, vertex based and cellular potts frameworks
- \item simulation - tissue growth using lattice and off lattice approaches
- \item writers - solution output to ascii and VTK files
-\end{itemize}
-
-Chaste can be extended by add-on user projects, which can share the same dependencies and build and test frameworks []. The vascular tumour growth functionality is implemented as such an add-on project, but with additional functionality implemented through Python bindings. As such the code is divided into a C++ framework, which follows a similar design to cell-based Chaste framework [] and a Python package, which encompasses most of the C++ functionality, but with easier integration with other solvers and libraries. 
-
-The primary C++ components are:
-
-\begin{itemize}
- \item vessel - vessel network reading, writing, analysis and management
- \item geometry - simple geometric descriptions and operations
- \item mesh - finite element meshing and regular grid tools
- \item pde - extensions to core PDE solvers with finite difference and semi-analytical methods
- \item simulation - solvers for flow, angiogenesis and structural adaptation. Modifiers for integration with cell based Chaste.
-\end{itemize}
-
-The code heavily uses Chaste core functionality, but is only loosely integrated with cell-based functionality through a 'simulation modifier' pattern. This pattern allows loose coupling during simulations between discrete representations of vessels and cells, through the solution of PDEs in which either agent can be a discrete sinks or sources or through simple models of mechanical contact. The new framework is developed with Python binding in mind. This leads to extensive use of shared pointers and factory constructor methods and reduction in the use of templating relative to the remainder of the Chaste code. Unrelated to Python binding, there is also limited parallelism and checkpointing functionality at present.
-
-The Python framework is available as a standard Python package []. Due to fundamental differences between C++ and Python in regard to templating and memory management it does not encompass all of the functionality of the C++ framework. In particular all simulations assume a spatial dimension of 3 (i.e. 3D) and some extra wrappers are needed to generate meshes, cell populations and simulation instances. Extra functionality is implemented in Python, giving the following additional components:
-
-\begin{itemize}
- \item geometry - CAD operations and centreline extraction
- \item image - image processing and segmentation
- \item interface - interfaces with external finite element solvers
- \item plot - two dimensional and three dimensional post-processing and visualization
- \item gui - graphical user interface for model pre-processing steps
-\end{itemize}
-
-Both C++ and Python components are subject to unit-testing are documented and are accompanied with a collection of tutorials. Functionality with application in the solution of vascular tumour growth problems is demonstrated in the next section.
-
-\section{4. 'Snail Trail' Example Problem}
+\section{'Snail Trail' Example Problem}
 \label{sec:results}
 
 
-\section{5. Discussion and Future Work}
+\section{Discussion and Future Work}
 \label{sec:discussion and future work}
 
-\section{6. Conclusions}
+\section{Conclusions}
 \label{sec:conclusions}
 
 \end{document}

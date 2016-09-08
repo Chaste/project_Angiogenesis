@@ -49,7 +49,9 @@
 #include "UnitCollection.hpp"
 
 /**
- * Linear Elliptic PDE with both continuum and discrete source terms.
+ * Base PDE class for managing discrete entities on the computational grid. Child classes need to
+ * implement methods for calculating the 'LinearInU' source terms, which will have units related to
+ * the field quantity being solved for.
  */
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM = ELEMENT_DIM>
 class AbstractDiscreteContinuumLinearEllipticPde : public AbstractLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>
@@ -68,11 +70,6 @@ class AbstractDiscreteContinuumLinearEllipticPde : public AbstractLinearElliptic
      * The continuum constant in U term, discrete terms are added to this.
      */
     units::quantity<unit::rate> mConstantInUTerm;
-
-    /**
-     * The name of the quantity in the pde
-     */
-    std::string mVariableName;
 
     /**
      * The collection of discrete sources for addition to the continuum terms
@@ -107,10 +104,9 @@ public:
     AbstractDiscreteContinuumLinearEllipticPde();
 
     /**
-     * Factory Constructor
-     * @return a pointer to an instance of the pde
+     * Destructor
      */
-    static boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM> > Create();
+    AbstractDiscreteContinuumLinearEllipticPde();
 
     /**
      * Add a discrete source to the pde
@@ -152,12 +148,6 @@ public:
     std::vector<boost::shared_ptr<DiscreteSource<SPACE_DIM> > > GetDiscreteSources();
 
     /**
-     * Return the name of the pde variable
-     * @return the name of the pde variable
-     */
-    const std::string& GetVariableName();
-
-    /**
      * Set the continuum constant in U term
      * @param constantInUTerm the continuum constant in U term
      */
@@ -168,6 +158,12 @@ public:
      * @param diffusivity the isotropic diffusion constant
      */
     void SetIsotropicDiffusionConstant(units::quantity<unit::diffusivity> diffusivity);
+
+    /**
+     * Set the linear constant in U term
+     * @param linearInUTerm the linear constant in U term
+     */
+    void SetContinuumLinearInUTerm(units::quantity<unit::concentration_flow_rate> linearInUTerm);
 
     /**
      * Set the regular grid
@@ -186,12 +182,6 @@ public:
      * @param useRegularGrid whether to use a regular grid
      */
     void SetUseRegularGrid(bool useRegularGrid);
-
-    /**
-     * Set the name of the pde variable
-     * @param rVariableName the name of the pde variable
-     */
-    void SetVariableName(const std::string& rVariableName);
 
     /**
      * Update the discrete source strengths

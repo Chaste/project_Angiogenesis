@@ -320,18 +320,18 @@ struct CellStateDependentDiscreteSource_less__3__greater__wrapper : CellStateDep
 
 };
 
-struct DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper : DiscreteContinuumLinearEllipticPde< 3, 3 >, bp::wrapper< DiscreteContinuumLinearEllipticPde< 3, 3 > > {
+struct LinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper : LinearConcentrationBasedDiffusionReactionPde< 3, 3 >, bp::wrapper< LinearConcentrationBasedDiffusionReactionPde< 3, 3 > > {
 
-    DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper(DiscreteContinuumLinearEllipticPde<3, 3> const & arg )
-    : DiscreteContinuumLinearEllipticPde<3, 3>( arg )
-      , bp::wrapper< DiscreteContinuumLinearEllipticPde< 3, 3 > >(){
+    LinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper(LinearConcentrationBasedDiffusionReactionPde<3, 3> const & arg )
+    : LinearConcentrationBasedDiffusionReactionPde<3, 3>( arg )
+      , bp::wrapper< LinearConcentrationBasedDiffusionReactionPde< 3, 3 > >(){
         // copy constructor
         
     }
 
-    DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper( )
-    : DiscreteContinuumLinearEllipticPde<3, 3>( )
-      , bp::wrapper< DiscreteContinuumLinearEllipticPde< 3, 3 > >(){
+    LinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper( )
+    : LinearConcentrationBasedDiffusionReactionPde<3, 3>( )
+      , bp::wrapper< LinearConcentrationBasedDiffusionReactionPde< 3, 3 > >(){
         // null constructor
     
     }
@@ -340,36 +340,36 @@ struct DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper : D
         if( bp::override func_ComputeConstantInUSourceTerm = this->get_override( "ComputeConstantInUSourceTerm" ) )
             return func_ComputeConstantInUSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
         else{
-            return this->DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
+            return this->LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeConstantInUSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
         }
     }
     
     double default_ComputeConstantInUSourceTerm( ::ChastePoint< 3 > const & rX, ::Element< 3, 3 > * pElement ) {
-        return DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
+        return LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeConstantInUSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
     }
 
     virtual ::boost::numeric::ublas::c_matrix< double, 3, 3 > ComputeDiffusionTerm( ::ChastePoint< 3 > const & arg0 ) {
         if( bp::override func_ComputeDiffusionTerm = this->get_override( "ComputeDiffusionTerm" ) )
             return func_ComputeDiffusionTerm( boost::ref(arg0) );
         else{
-            return this->DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm( boost::ref(arg0) );
+            return this->LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeDiffusionTerm( boost::ref(arg0) );
         }
     }
     
     ::boost::numeric::ublas::c_matrix< double, 3, 3 > default_ComputeDiffusionTerm( ::ChastePoint< 3 > const & arg0 ) {
-        return DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm( boost::ref(arg0) );
+        return LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeDiffusionTerm( boost::ref(arg0) );
     }
 
     virtual double ComputeLinearInUCoeffInSourceTerm( ::ChastePoint< 3 > const & rX, ::Element< 3, 3 > * pElement ) {
         if( bp::override func_ComputeLinearInUCoeffInSourceTerm = this->get_override( "ComputeLinearInUCoeffInSourceTerm" ) )
             return func_ComputeLinearInUCoeffInSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
         else{
-            return this->DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
+            return this->LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
         }
     }
     
     double default_ComputeLinearInUCoeffInSourceTerm( ::ChastePoint< 3 > const & rX, ::Element< 3, 3 > * pElement ) {
-        return DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
+        return LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm( boost::ref(rX), boost::python::ptr(pElement) );
     }
 
     virtual double ComputeConstantInUSourceTermAtNode( ::Node< 3 > const & rNode ) {
@@ -398,18 +398,18 @@ struct DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper : D
 
 };
 
-struct DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper : DiscreteContinuumNonLinearEllipticPde< 3, 3 >, bp::wrapper< DiscreteContinuumNonLinearEllipticPde< 3, 3 > > {
+struct NonLinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper : NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >, bp::wrapper< NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > > {
 
-    DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper(DiscreteContinuumNonLinearEllipticPde<3, 3> const & arg )
-    : DiscreteContinuumNonLinearEllipticPde<3, 3>( arg )
-      , bp::wrapper< DiscreteContinuumNonLinearEllipticPde< 3, 3 > >(){
+    NonLinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper(NonLinearConcentrationBasedDiffusionReactionPde<3, 3> const & arg )
+    : NonLinearConcentrationBasedDiffusionReactionPde<3, 3>( arg )
+      , bp::wrapper< NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > >(){
         // copy constructor
         
     }
 
-    DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper( )
-    : DiscreteContinuumNonLinearEllipticPde<3, 3>( )
-      , bp::wrapper< DiscreteContinuumNonLinearEllipticPde< 3, 3 > >(){
+    NonLinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper( )
+    : NonLinearConcentrationBasedDiffusionReactionPde<3, 3>( )
+      , bp::wrapper< NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > >(){
         // null constructor
     
     }
@@ -418,60 +418,60 @@ struct DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper 
         if( bp::override func_ComputeDiffusionTerm = this->get_override( "ComputeDiffusionTerm" ) )
             return func_ComputeDiffusionTerm( boost::ref(arg0), u );
         else{
-            return this->DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm( boost::ref(arg0), u );
+            return this->NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeDiffusionTerm( boost::ref(arg0), u );
         }
     }
     
     ::boost::numeric::ublas::c_matrix< double, 3, 3 > default_ComputeDiffusionTerm( ::ChastePoint< 3 > const & arg0, double u ) {
-        return DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm( boost::ref(arg0), u );
+        return NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeDiffusionTerm( boost::ref(arg0), u );
     }
 
     virtual ::boost::numeric::ublas::c_matrix< double, 3, 3 > ComputeDiffusionTermPrime( ::ChastePoint< 3 > const & rX, double u ) {
         if( bp::override func_ComputeDiffusionTermPrime = this->get_override( "ComputeDiffusionTermPrime" ) )
             return func_ComputeDiffusionTermPrime( boost::ref(rX), u );
         else{
-            return this->DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTermPrime( boost::ref(rX), u );
+            return this->NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeDiffusionTermPrime( boost::ref(rX), u );
         }
     }
     
     ::boost::numeric::ublas::c_matrix< double, 3, 3 > default_ComputeDiffusionTermPrime( ::ChastePoint< 3 > const & rX, double u ) {
-        return DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTermPrime( boost::ref(rX), u );
+        return NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeDiffusionTermPrime( boost::ref(rX), u );
     }
 
     virtual double ComputeLinearSourceTerm( ::ChastePoint< 3 > const & rX ) {
         if( bp::override func_ComputeLinearSourceTerm = this->get_override( "ComputeLinearSourceTerm" ) )
             return func_ComputeLinearSourceTerm( boost::ref(rX) );
         else{
-            return this->DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeLinearSourceTerm( boost::ref(rX) );
+            return this->NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeLinearSourceTerm( boost::ref(rX) );
         }
     }
     
     double default_ComputeLinearSourceTerm( ::ChastePoint< 3 > const & rX ) {
-        return DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeLinearSourceTerm( boost::ref(rX) );
+        return NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeLinearSourceTerm( boost::ref(rX) );
     }
 
     virtual double ComputeNonlinearSourceTerm( ::ChastePoint< 3 > const & rX, double u ) {
         if( bp::override func_ComputeNonlinearSourceTerm = this->get_override( "ComputeNonlinearSourceTerm" ) )
             return func_ComputeNonlinearSourceTerm( boost::ref(rX), u );
         else{
-            return this->DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTerm( boost::ref(rX), u );
+            return this->NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeNonlinearSourceTerm( boost::ref(rX), u );
         }
     }
     
     double default_ComputeNonlinearSourceTerm( ::ChastePoint< 3 > const & rX, double u ) {
-        return DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTerm( boost::ref(rX), u );
+        return NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeNonlinearSourceTerm( boost::ref(rX), u );
     }
 
     virtual double ComputeNonlinearSourceTermPrime( ::ChastePoint< 3 > const & rX, double u ) {
         if( bp::override func_ComputeNonlinearSourceTermPrime = this->get_override( "ComputeNonlinearSourceTermPrime" ) )
             return func_ComputeNonlinearSourceTermPrime( boost::ref(rX), u );
         else{
-            return this->DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTermPrime( boost::ref(rX), u );
+            return this->NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeNonlinearSourceTermPrime( boost::ref(rX), u );
         }
     }
     
     double default_ComputeNonlinearSourceTermPrime( ::ChastePoint< 3 > const & rX, double u ) {
-        return DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTermPrime( boost::ref(rX), u );
+        return NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeNonlinearSourceTermPrime( boost::ref(rX), u );
     }
 
 };
@@ -1694,539 +1694,539 @@ BOOST_PYTHON_MODULE(_chaste_project_Angiogenesis_pde){
         bp::register_ptr_to_python< boost::shared_ptr< DiscreteContinuumBoundaryCondition<3> > >();
     }
 
-    { //::DiscreteContinuumLinearEllipticPde< 3, 3 >
-        typedef bp::class_< DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper, bp::bases< AbstractLinearEllipticPde< 3, 3 > > > DiscreteContinuumLinearEllipticPde3_3_exposer_t;
-        DiscreteContinuumLinearEllipticPde3_3_exposer_t DiscreteContinuumLinearEllipticPde3_3_exposer = DiscreteContinuumLinearEllipticPde3_3_exposer_t( "DiscreteContinuumLinearEllipticPde3_3", bp::init< >() );
-        bp::scope DiscreteContinuumLinearEllipticPde3_3_scope( DiscreteContinuumLinearEllipticPde3_3_exposer );
-        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::AddDiscreteSource
+    { //::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >
+        typedef bp::class_< LinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper, bp::bases< AbstractLinearEllipticPde< 3, 3 > > > LinearConcentrationBasedDiffusionReactionPde3_3_exposer_t;
+        LinearConcentrationBasedDiffusionReactionPde3_3_exposer_t LinearConcentrationBasedDiffusionReactionPde3_3_exposer = LinearConcentrationBasedDiffusionReactionPde3_3_exposer_t( "LinearConcentrationBasedDiffusionReactionPde3_3", bp::init< >() );
+        bp::scope LinearConcentrationBasedDiffusionReactionPde3_3_scope( LinearConcentrationBasedDiffusionReactionPde3_3_exposer );
+        { //::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::AddDiscreteSource
         
-            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef LinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*AddDiscreteSource_function_type)( ::boost::shared_ptr< DiscreteSource< 3 > > ) ;
             
-            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
+            LinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "AddDiscreteSource"
-                , AddDiscreteSource_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::AddDiscreteSource )
+                , AddDiscreteSource_function_type( &::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::AddDiscreteSource )
                 , ( bp::arg("pDiscreteSource") ) );
         
         }
-        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm
+        { //::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeConstantInUSourceTerm
         
-            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef LinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeConstantInUSourceTerm_function_type)( ::ChastePoint< 3 > const &,::Element< 3, 3 > * ) ;
-            typedef double ( DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeConstantInUSourceTerm_function_type)( ::ChastePoint< 3 > const &,::Element< 3, 3 > * ) ;
+            typedef double ( LinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper::*default_ComputeConstantInUSourceTerm_function_type)( ::ChastePoint< 3 > const &,::Element< 3, 3 > * ) ;
             
-            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
+            LinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "ComputeConstantInUSourceTerm"
-                , ComputeConstantInUSourceTerm_function_type(&::DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm)
-                , default_ComputeConstantInUSourceTerm_function_type(&DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeConstantInUSourceTerm)
+                , ComputeConstantInUSourceTerm_function_type(&::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeConstantInUSourceTerm)
+                , default_ComputeConstantInUSourceTerm_function_type(&LinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper::default_ComputeConstantInUSourceTerm)
                 , ( bp::arg("rX"), bp::arg("pElement") ) );
         
         }
-        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm
+        { //::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeConstantInUSourceTerm
         
-            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef LinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeConstantInUSourceTerm_function_type)( unsigned int ) ;
             
-            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
+            LinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "ComputeConstantInUSourceTerm"
-                , ComputeConstantInUSourceTerm_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm )
+                , ComputeConstantInUSourceTerm_function_type( &::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeConstantInUSourceTerm )
                 , ( bp::arg("gridIndex")=(unsigned int)(0) ) );
         
         }
-        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm
+        { //::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeDiffusionTerm
         
-            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef LinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef ::boost::numeric::ublas::c_matrix< double, 3, 3 > ( exported_class_t::*ComputeDiffusionTerm_function_type)( ::ChastePoint< 3 > const & ) ;
-            typedef ::boost::numeric::ublas::c_matrix< double, 3, 3 > ( DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeDiffusionTerm_function_type)( ::ChastePoint< 3 > const & ) ;
+            typedef ::boost::numeric::ublas::c_matrix< double, 3, 3 > ( LinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper::*default_ComputeDiffusionTerm_function_type)( ::ChastePoint< 3 > const & ) ;
             
-            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
+            LinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "ComputeDiffusionTerm"
-                , ComputeDiffusionTerm_function_type(&::DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm)
-                , default_ComputeDiffusionTerm_function_type(&DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeDiffusionTerm)
+                , ComputeDiffusionTerm_function_type(&::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeDiffusionTerm)
+                , default_ComputeDiffusionTerm_function_type(&LinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper::default_ComputeDiffusionTerm)
                 , ( bp::arg("arg0") ) );
         
         }
-        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeIsotropicDiffusionTerm
+        { //::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeIsotropicDiffusionTerm
         
-            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef LinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeIsotropicDiffusionTerm_function_type)(  ) ;
             
-            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
+            LinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "ComputeIsotropicDiffusionTerm"
-                , ComputeIsotropicDiffusionTerm_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeIsotropicDiffusionTerm ) );
+                , ComputeIsotropicDiffusionTerm_function_type( &::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeIsotropicDiffusionTerm ) );
         
         }
-        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm
+        { //::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm
         
-            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef LinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeLinearInUCoeffInSourceTerm_function_type)( ::ChastePoint< 3 > const &,::Element< 3, 3 > * ) ;
-            typedef double ( DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeLinearInUCoeffInSourceTerm_function_type)( ::ChastePoint< 3 > const &,::Element< 3, 3 > * ) ;
+            typedef double ( LinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper::*default_ComputeLinearInUCoeffInSourceTerm_function_type)( ::ChastePoint< 3 > const &,::Element< 3, 3 > * ) ;
             
-            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
+            LinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "ComputeLinearInUCoeffInSourceTerm"
-                , ComputeLinearInUCoeffInSourceTerm_function_type(&::DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm)
-                , default_ComputeLinearInUCoeffInSourceTerm_function_type(&DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeLinearInUCoeffInSourceTerm)
+                , ComputeLinearInUCoeffInSourceTerm_function_type(&::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm)
+                , default_ComputeLinearInUCoeffInSourceTerm_function_type(&LinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper::default_ComputeLinearInUCoeffInSourceTerm)
                 , ( bp::arg("rX"), bp::arg("pElement") ) );
         
         }
-        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm
+        { //::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm
         
-            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef LinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeLinearInUCoeffInSourceTerm_function_type)( unsigned int ) ;
             
-            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
+            LinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "ComputeLinearInUCoeffInSourceTerm"
-                , ComputeLinearInUCoeffInSourceTerm_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm )
+                , ComputeLinearInUCoeffInSourceTerm_function_type( &::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm )
                 , ( bp::arg("gridIndex")=(unsigned int)(0) ) );
         
         }
-        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::Create
+        { //::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::Create
         
-            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
-            typedef ::boost::shared_ptr< DiscreteContinuumLinearEllipticPde< 3, 3 > > ( *Create_function_type )(  );
+            typedef LinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
+            typedef ::boost::shared_ptr< LinearConcentrationBasedDiffusionReactionPde< 3, 3 > > ( *Create_function_type )(  );
             
-            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
+            LinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "Create"
-                , Create_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::Create ) );
+                , Create_function_type( &::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::Create ) );
         
         }
-        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::GetDiscreteSources
+        { //::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::GetDiscreteSources
         
-            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef LinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef ::std::vector< boost::shared_ptr<DiscreteSource<3> > > ( exported_class_t::*GetDiscreteSources_function_type)(  ) ;
             
-            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
+            LinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "GetDiscreteSources"
-                , GetDiscreteSources_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::GetDiscreteSources ) );
+                , GetDiscreteSources_function_type( &::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::GetDiscreteSources ) );
         
         }
-        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::GetVariableName
+        { //::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::GetVariableName
         
-            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef LinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef ::std::string const & ( exported_class_t::*GetVariableName_function_type)(  ) ;
             
-            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
+            LinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "GetVariableName"
-                , GetVariableName_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::GetVariableName )
+                , GetVariableName_function_type( &::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::GetVariableName )
                 , bp::return_value_policy< bp::copy_const_reference >() );
         
         }
-        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetContinuumConstantInUTerm
+        { //::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetContinuumConstantInUTerm
         
-            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef LinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetContinuumConstantInUTerm_function_type)( double ) ;
             
-            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
+            LinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "SetContinuumConstantInUTerm"
-                , SetContinuumConstantInUTerm_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetContinuumConstantInUTerm )
+                , SetContinuumConstantInUTerm_function_type( &::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetContinuumConstantInUTerm )
                 , ( bp::arg("constantInUTerm") ) );
         
         }
-        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetContinuumLinearInUTerm
+        { //::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetContinuumLinearInUTerm
         
-            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef LinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetContinuumLinearInUTerm_function_type)( double ) ;
             
-            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
+            LinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "SetContinuumLinearInUTerm"
-                , SetContinuumLinearInUTerm_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetContinuumLinearInUTerm )
+                , SetContinuumLinearInUTerm_function_type( &::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetContinuumLinearInUTerm )
                 , ( bp::arg("linearInUTerm") ) );
         
         }
-        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetIsotropicDiffusionConstant
+        { //::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetIsotropicDiffusionConstant
         
-            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef LinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetIsotropicDiffusionConstant_function_type)( double ) ;
             
-            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
+            LinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "SetIsotropicDiffusionConstant"
-                , SetIsotropicDiffusionConstant_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetIsotropicDiffusionConstant )
+                , SetIsotropicDiffusionConstant_function_type( &::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetIsotropicDiffusionConstant )
                 , ( bp::arg("diffusivity") ) );
         
         }
-        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetMesh
+        { //::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetMesh
         
-            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef LinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetMesh_function_type)( ::boost::shared_ptr< TetrahedralMesh< 3, 3 > > ) ;
             
-            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
+            LinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "SetMesh"
-                , SetMesh_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetMesh )
+                , SetMesh_function_type( &::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetMesh )
                 , ( bp::arg("pMesh") ) );
         
         }
-        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetRegularGrid
+        { //::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetRegularGrid
         
-            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef LinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetRegularGrid_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
             
-            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
+            LinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "SetRegularGrid"
-                , SetRegularGrid_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetRegularGrid )
+                , SetRegularGrid_function_type( &::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetRegularGrid )
                 , ( bp::arg("pRegularGrid") ) );
         
         }
-        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetUseRegularGrid
+        { //::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetUseRegularGrid
         
-            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef LinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetUseRegularGrid_function_type)( bool ) ;
             
-            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
+            LinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "SetUseRegularGrid"
-                , SetUseRegularGrid_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetUseRegularGrid )
+                , SetUseRegularGrid_function_type( &::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetUseRegularGrid )
                 , ( bp::arg("useRegularGrid") ) );
         
         }
-        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetVariableName
+        { //::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetVariableName
         
-            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef LinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetVariableName_function_type)( ::std::string const & ) ;
             
-            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
+            LinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "SetVariableName"
-                , SetVariableName_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::SetVariableName )
+                , SetVariableName_function_type( &::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetVariableName )
                 , ( bp::arg("rVariableName") ) );
         
         }
-        { //::DiscreteContinuumLinearEllipticPde< 3, 3 >::UpdateDiscreteSourceStrengths
+        { //::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::UpdateDiscreteSourceStrengths
         
-            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef LinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateDiscreteSourceStrengths_function_type)(  ) ;
             
-            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
+            LinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "UpdateDiscreteSourceStrengths"
-                , UpdateDiscreteSourceStrengths_function_type( &::DiscreteContinuumLinearEllipticPde< 3, 3 >::UpdateDiscreteSourceStrengths ) );
+                , UpdateDiscreteSourceStrengths_function_type( &::LinearConcentrationBasedDiffusionReactionPde< 3, 3 >::UpdateDiscreteSourceStrengths ) );
         
         }
         { //::AbstractLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTermAtNode
         
-            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef LinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeConstantInUSourceTermAtNode_function_type)( ::Node< 3 > const & ) ;
-            typedef double ( DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeConstantInUSourceTermAtNode_function_type)( ::Node< 3 > const & ) ;
+            typedef double ( LinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper::*default_ComputeConstantInUSourceTermAtNode_function_type)( ::Node< 3 > const & ) ;
             
-            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
+            LinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "ComputeConstantInUSourceTermAtNode"
                 , ComputeConstantInUSourceTermAtNode_function_type(&::AbstractLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTermAtNode)
-                , default_ComputeConstantInUSourceTermAtNode_function_type(&DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeConstantInUSourceTermAtNode)
+                , default_ComputeConstantInUSourceTermAtNode_function_type(&LinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper::default_ComputeConstantInUSourceTermAtNode)
                 , ( bp::arg("rNode") ) );
         
         }
         { //::AbstractLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTermAtNode
         
-            typedef DiscreteContinuumLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef LinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeLinearInUCoeffInSourceTermAtNode_function_type)( ::Node< 3 > const & ) ;
-            typedef double ( DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeLinearInUCoeffInSourceTermAtNode_function_type)( ::Node< 3 > const & ) ;
+            typedef double ( LinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper::*default_ComputeLinearInUCoeffInSourceTermAtNode_function_type)( ::Node< 3 > const & ) ;
             
-            DiscreteContinuumLinearEllipticPde3_3_exposer.def( 
+            LinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "ComputeLinearInUCoeffInSourceTermAtNode"
                 , ComputeLinearInUCoeffInSourceTermAtNode_function_type(&::AbstractLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTermAtNode)
-                , default_ComputeLinearInUCoeffInSourceTermAtNode_function_type(&DiscreteContinuumLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeLinearInUCoeffInSourceTermAtNode)
+                , default_ComputeLinearInUCoeffInSourceTermAtNode_function_type(&LinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper::default_ComputeLinearInUCoeffInSourceTermAtNode)
                 , ( bp::arg("rNode") ) );
         
         }
-        DiscreteContinuumLinearEllipticPde3_3_exposer.staticmethod( "Create" );
-        bp::register_ptr_to_python< boost::shared_ptr< DiscreteContinuumLinearEllipticPde<3, 3> > >();
-        bp::implicitly_convertible< boost::shared_ptr< DiscreteContinuumLinearEllipticPde< 3, 3 > >, boost::shared_ptr< AbstractLinearEllipticPde< 3, 3 > > >();
+        LinearConcentrationBasedDiffusionReactionPde3_3_exposer.staticmethod( "Create" );
+        bp::register_ptr_to_python< boost::shared_ptr< LinearConcentrationBasedDiffusionReactionPde<3, 3> > >();
+        bp::implicitly_convertible< boost::shared_ptr< LinearConcentrationBasedDiffusionReactionPde< 3, 3 > >, boost::shared_ptr< AbstractLinearEllipticPde< 3, 3 > > >();
     }
 
-    { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >
-        typedef bp::class_< DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper > DiscreteContinuumNonLinearEllipticPde3_3_exposer_t;
-        DiscreteContinuumNonLinearEllipticPde3_3_exposer_t DiscreteContinuumNonLinearEllipticPde3_3_exposer = DiscreteContinuumNonLinearEllipticPde3_3_exposer_t( "DiscreteContinuumNonLinearEllipticPde3_3", bp::init< >() );
-        bp::scope DiscreteContinuumNonLinearEllipticPde3_3_scope( DiscreteContinuumNonLinearEllipticPde3_3_exposer );
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::AddDiscreteSource
+    { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >
+        typedef bp::class_< NonLinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper > NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer_t;
+        NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer_t NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer = NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer_t( "NonLinearConcentrationBasedDiffusionReactionPde3_3", bp::init< >() );
+        bp::scope NonLinearConcentrationBasedDiffusionReactionPde3_3_scope( NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer );
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::AddDiscreteSource
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*AddDiscreteSource_function_type)( ::boost::shared_ptr< DiscreteSource< 3 > > ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "AddDiscreteSource"
-                , AddDiscreteSource_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::AddDiscreteSource )
+                , AddDiscreteSource_function_type( &::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::AddDiscreteSource )
                 , ( bp::arg("pDiscreteSource") ) );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeConstantInUSourceTerm
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeConstantInUSourceTerm_function_type)( ::ChastePoint< 3 > const &,::Element< 3, 3 > * ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "ComputeConstantInUSourceTerm"
-                , ComputeConstantInUSourceTerm_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm )
+                , ComputeConstantInUSourceTerm_function_type( &::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeConstantInUSourceTerm )
                 , ( bp::arg("rX"), bp::arg("pElement") ) );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeConstantInUSourceTerm
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeConstantInUSourceTerm_function_type)( unsigned int ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "ComputeConstantInUSourceTerm"
-                , ComputeConstantInUSourceTerm_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeConstantInUSourceTerm )
+                , ComputeConstantInUSourceTerm_function_type( &::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeConstantInUSourceTerm )
                 , ( bp::arg("gridIndex")=(unsigned int)(0) ) );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeDiffusionTerm
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef ::boost::numeric::ublas::c_matrix< double, 3, 3 > ( exported_class_t::*ComputeDiffusionTerm_function_type)( ::ChastePoint< 3 > const &,double ) ;
-            typedef ::boost::numeric::ublas::c_matrix< double, 3, 3 > ( DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeDiffusionTerm_function_type)( ::ChastePoint< 3 > const &,double ) ;
+            typedef ::boost::numeric::ublas::c_matrix< double, 3, 3 > ( NonLinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper::*default_ComputeDiffusionTerm_function_type)( ::ChastePoint< 3 > const &,double ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "ComputeDiffusionTerm"
-                , ComputeDiffusionTerm_function_type(&::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTerm)
-                , default_ComputeDiffusionTerm_function_type(&DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeDiffusionTerm)
+                , ComputeDiffusionTerm_function_type(&::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeDiffusionTerm)
+                , default_ComputeDiffusionTerm_function_type(&NonLinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper::default_ComputeDiffusionTerm)
                 , ( bp::arg("arg0"), bp::arg("u") ) );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTermPrime
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeDiffusionTermPrime
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef ::boost::numeric::ublas::c_matrix< double, 3, 3 > ( exported_class_t::*ComputeDiffusionTermPrime_function_type)( ::ChastePoint< 3 > const &,double ) ;
-            typedef ::boost::numeric::ublas::c_matrix< double, 3, 3 > ( DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeDiffusionTermPrime_function_type)( ::ChastePoint< 3 > const &,double ) ;
+            typedef ::boost::numeric::ublas::c_matrix< double, 3, 3 > ( NonLinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper::*default_ComputeDiffusionTermPrime_function_type)( ::ChastePoint< 3 > const &,double ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "ComputeDiffusionTermPrime"
-                , ComputeDiffusionTermPrime_function_type(&::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeDiffusionTermPrime)
-                , default_ComputeDiffusionTermPrime_function_type(&DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeDiffusionTermPrime)
+                , ComputeDiffusionTermPrime_function_type(&::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeDiffusionTermPrime)
+                , default_ComputeDiffusionTermPrime_function_type(&NonLinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper::default_ComputeDiffusionTermPrime)
                 , ( bp::arg("rX"), bp::arg("u") ) );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeIsotropicDiffusionTerm
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeIsotropicDiffusionTerm
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeIsotropicDiffusionTerm_function_type)(  ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "ComputeIsotropicDiffusionTerm"
-                , ComputeIsotropicDiffusionTerm_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeIsotropicDiffusionTerm ) );
+                , ComputeIsotropicDiffusionTerm_function_type( &::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeIsotropicDiffusionTerm ) );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeLinearInUCoeffInSourceTerm_function_type)( ::ChastePoint< 3 > const &,::Element< 3, 3 > * ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "ComputeLinearInUCoeffInSourceTerm"
-                , ComputeLinearInUCoeffInSourceTerm_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm )
+                , ComputeLinearInUCoeffInSourceTerm_function_type( &::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm )
                 , ( bp::arg("rX"), bp::arg("pElement") ) );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeLinearInUCoeffInSourceTerm_function_type)( unsigned int ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "ComputeLinearInUCoeffInSourceTerm"
-                , ComputeLinearInUCoeffInSourceTerm_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm )
+                , ComputeLinearInUCoeffInSourceTerm_function_type( &::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeLinearInUCoeffInSourceTerm )
                 , ( bp::arg("gridIndex")=(unsigned int)(0) ) );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeLinearSourceTerm
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeLinearSourceTerm
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeLinearSourceTerm_function_type)( ::ChastePoint< 3 > const & ) ;
-            typedef double ( DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeLinearSourceTerm_function_type)( ::ChastePoint< 3 > const & ) ;
+            typedef double ( NonLinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper::*default_ComputeLinearSourceTerm_function_type)( ::ChastePoint< 3 > const & ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "ComputeLinearSourceTerm"
-                , ComputeLinearSourceTerm_function_type(&::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeLinearSourceTerm)
-                , default_ComputeLinearSourceTerm_function_type(&DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeLinearSourceTerm)
+                , ComputeLinearSourceTerm_function_type(&::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeLinearSourceTerm)
+                , default_ComputeLinearSourceTerm_function_type(&NonLinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper::default_ComputeLinearSourceTerm)
                 , ( bp::arg("rX") ) );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTerm
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeNonlinearSourceTerm
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeNonlinearSourceTerm_function_type)( ::ChastePoint< 3 > const &,double ) ;
-            typedef double ( DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeNonlinearSourceTerm_function_type)( ::ChastePoint< 3 > const &,double ) ;
+            typedef double ( NonLinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper::*default_ComputeNonlinearSourceTerm_function_type)( ::ChastePoint< 3 > const &,double ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "ComputeNonlinearSourceTerm"
-                , ComputeNonlinearSourceTerm_function_type(&::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTerm)
-                , default_ComputeNonlinearSourceTerm_function_type(&DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeNonlinearSourceTerm)
+                , ComputeNonlinearSourceTerm_function_type(&::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeNonlinearSourceTerm)
+                , default_ComputeNonlinearSourceTerm_function_type(&NonLinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper::default_ComputeNonlinearSourceTerm)
                 , ( bp::arg("rX"), bp::arg("u") ) );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTerm
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeNonlinearSourceTerm
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeNonlinearSourceTerm_function_type)( unsigned int,double ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "ComputeNonlinearSourceTerm"
-                , ComputeNonlinearSourceTerm_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTerm )
+                , ComputeNonlinearSourceTerm_function_type( &::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeNonlinearSourceTerm )
                 , ( bp::arg("gridIndex"), bp::arg("u") ) );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTermPrime
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeNonlinearSourceTermPrime
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeNonlinearSourceTermPrime_function_type)( ::ChastePoint< 3 > const &,double ) ;
-            typedef double ( DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper::*default_ComputeNonlinearSourceTermPrime_function_type)( ::ChastePoint< 3 > const &,double ) ;
+            typedef double ( NonLinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper::*default_ComputeNonlinearSourceTermPrime_function_type)( ::ChastePoint< 3 > const &,double ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "ComputeNonlinearSourceTermPrime"
-                , ComputeNonlinearSourceTermPrime_function_type(&::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTermPrime)
-                , default_ComputeNonlinearSourceTermPrime_function_type(&DiscreteContinuumNonLinearEllipticPde_less__3_comma__3__greater__wrapper::default_ComputeNonlinearSourceTermPrime)
+                , ComputeNonlinearSourceTermPrime_function_type(&::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeNonlinearSourceTermPrime)
+                , default_ComputeNonlinearSourceTermPrime_function_type(&NonLinearConcentrationBasedDiffusionReactionPde_less__3_comma__3__greater__wrapper::default_ComputeNonlinearSourceTermPrime)
                 , ( bp::arg("rX"), bp::arg("u") ) );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTermPrime
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeNonlinearSourceTermPrime
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*ComputeNonlinearSourceTermPrime_function_type)( unsigned int,double ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "ComputeNonlinearSourceTermPrime"
-                , ComputeNonlinearSourceTermPrime_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::ComputeNonlinearSourceTermPrime )
+                , ComputeNonlinearSourceTermPrime_function_type( &::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::ComputeNonlinearSourceTermPrime )
                 , ( bp::arg("gridIndex"), bp::arg("u") ) );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::Create
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::Create
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
-            typedef ::boost::shared_ptr< DiscreteContinuumNonLinearEllipticPde< 3, 3 > > ( *Create_function_type )(  );
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
+            typedef ::boost::shared_ptr< NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > > ( *Create_function_type )(  );
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "Create"
-                , Create_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::Create ) );
+                , Create_function_type( &::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::Create ) );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::GetDiscreteSources
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::GetDiscreteSources
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef ::std::vector< boost::shared_ptr<DiscreteSource<3> > > ( exported_class_t::*GetDiscreteSources_function_type)(  ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "GetDiscreteSources"
-                , GetDiscreteSources_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::GetDiscreteSources ) );
+                , GetDiscreteSources_function_type( &::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::GetDiscreteSources ) );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::GetThreshold
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::GetThreshold
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef double ( exported_class_t::*GetThreshold_function_type)(  ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "GetThreshold"
-                , GetThreshold_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::GetThreshold ) );
+                , GetThreshold_function_type( &::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::GetThreshold ) );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::GetVariableName
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::GetVariableName
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef ::std::string const & ( exported_class_t::*GetVariableName_function_type)(  ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "GetVariableName"
-                , GetVariableName_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::GetVariableName )
+                , GetVariableName_function_type( &::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::GetVariableName )
                 , bp::return_value_policy< bp::copy_const_reference >() );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetContinuumConstantInUTerm
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetContinuumConstantInUTerm
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetContinuumConstantInUTerm_function_type)( double ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "SetContinuumConstantInUTerm"
-                , SetContinuumConstantInUTerm_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetContinuumConstantInUTerm )
+                , SetContinuumConstantInUTerm_function_type( &::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetContinuumConstantInUTerm )
                 , ( bp::arg("constantInUTerm") ) );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetContinuumLinearInUTerm
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetContinuumLinearInUTerm
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetContinuumLinearInUTerm_function_type)( double ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "SetContinuumLinearInUTerm"
-                , SetContinuumLinearInUTerm_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetContinuumLinearInUTerm )
+                , SetContinuumLinearInUTerm_function_type( &::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetContinuumLinearInUTerm )
                 , ( bp::arg("linearInUTerm") ) );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetIsotropicDiffusionConstant
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetIsotropicDiffusionConstant
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetIsotropicDiffusionConstant_function_type)( double ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "SetIsotropicDiffusionConstant"
-                , SetIsotropicDiffusionConstant_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetIsotropicDiffusionConstant )
+                , SetIsotropicDiffusionConstant_function_type( &::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetIsotropicDiffusionConstant )
                 , ( bp::arg("diffusivity") ) );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetMesh
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetMesh
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetMesh_function_type)( ::boost::shared_ptr< TetrahedralMesh< 3, 3 > > ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "SetMesh"
-                , SetMesh_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetMesh )
+                , SetMesh_function_type( &::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetMesh )
                 , ( bp::arg("pMesh") ) );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetRegularGrid
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetRegularGrid
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetRegularGrid_function_type)( ::boost::shared_ptr< RegularGrid< 3, 3 > > ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "SetRegularGrid"
-                , SetRegularGrid_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetRegularGrid )
+                , SetRegularGrid_function_type( &::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetRegularGrid )
                 , ( bp::arg("pRegularGrid") ) );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetThreshold
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetThreshold
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetThreshold_function_type)( double ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "SetThreshold"
-                , SetThreshold_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetThreshold )
+                , SetThreshold_function_type( &::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetThreshold )
                 , ( bp::arg("threshold") ) );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetUseRegularGrid
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetUseRegularGrid
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetUseRegularGrid_function_type)( bool ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "SetUseRegularGrid"
-                , SetUseRegularGrid_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetUseRegularGrid )
+                , SetUseRegularGrid_function_type( &::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetUseRegularGrid )
                 , ( bp::arg("useRegularGrid") ) );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetVariableName
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetVariableName
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*SetVariableName_function_type)( ::std::string const & ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "SetVariableName"
-                , SetVariableName_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::SetVariableName )
+                , SetVariableName_function_type( &::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::SetVariableName )
                 , ( bp::arg("rVariableName") ) );
         
         }
-        { //::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::UpdateDiscreteSourceStrengths
+        { //::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::UpdateDiscreteSourceStrengths
         
-            typedef DiscreteContinuumNonLinearEllipticPde< 3, 3 > exported_class_t;
+            typedef NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > exported_class_t;
             typedef void ( exported_class_t::*UpdateDiscreteSourceStrengths_function_type)(  ) ;
             
-            DiscreteContinuumNonLinearEllipticPde3_3_exposer.def( 
+            NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.def( 
                 "UpdateDiscreteSourceStrengths"
-                , UpdateDiscreteSourceStrengths_function_type( &::DiscreteContinuumNonLinearEllipticPde< 3, 3 >::UpdateDiscreteSourceStrengths ) );
+                , UpdateDiscreteSourceStrengths_function_type( &::NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 >::UpdateDiscreteSourceStrengths ) );
         
         }
-        DiscreteContinuumNonLinearEllipticPde3_3_exposer.staticmethod( "Create" );
-        bp::register_ptr_to_python< boost::shared_ptr< DiscreteContinuumNonLinearEllipticPde<3, 3> > >();
-        bp::implicitly_convertible< boost::shared_ptr< DiscreteContinuumNonLinearEllipticPde< 3, 3 > >, boost::shared_ptr< AbstractNonlinearEllipticPde< 3 > > >();
+        NonLinearConcentrationBasedDiffusionReactionPde3_3_exposer.staticmethod( "Create" );
+        bp::register_ptr_to_python< boost::shared_ptr< NonLinearConcentrationBasedDiffusionReactionPde<3, 3> > >();
+        bp::implicitly_convertible< boost::shared_ptr< NonLinearConcentrationBasedDiffusionReactionPde< 3, 3 > >, boost::shared_ptr< AbstractNonlinearEllipticPde< 3 > > >();
     }
 
     { //::FiniteDifferenceSolver< 3 >

@@ -37,6 +37,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TESTOWEN2011TUMOURSPHEROIDSIMULATIONS_HPP_
 
 #include <cxxtest/TestSuite.h>
+#include "../../src/pde/problem/LinearSteadyStateDiffusionReactionPde.hpp"
 #include "OffLatticeMigrationRule.hpp"
 #include "OffLatticeSproutingRule.hpp"
 #include "VascularTumourModifier.hpp"
@@ -64,7 +65,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "GeneralisedLinearSpringForce.hpp"
 #include "FakePetscSetup.hpp"
 #include "FiniteDifferenceSolver.hpp"
-#include "AbstractDiscreteContinuumLinearEllipticPde.hpp"
 #include "VesselNetworkGenerator.hpp"
 #include "SimpleOxygenBasedCellCycleModel.hpp"
 #include "DiscreteContinuumBoundaryCondition.hpp"

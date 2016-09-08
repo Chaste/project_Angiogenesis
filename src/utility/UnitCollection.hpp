@@ -25,6 +25,7 @@
 #include <boost/units/systems/si/force.hpp>
 #include <boost/units/systems/si/pressure.hpp>
 #include <boost/units/systems/si/mass.hpp>
+#include <boost/units/systems/si/amount.hpp>
 
 #include <boost/units/base_units/metric/minute.hpp>
 #include <boost/units/base_units/metric/hour.hpp>
@@ -86,7 +87,9 @@ namespace unit
 
     // Mass
     typedef units::si::mass mass;
+    typedef units::si::amount amount;
     BOOST_UNITS_STATIC_CONSTANT(kg, units::si::mass);
+    BOOST_UNITS_STATIC_CONSTANT(moles, units::si::amount);
 
     typedef units::derived_dimension<units::length_base_dimension, 2, units::time_base_dimension, -1>::type diffusivity_dimension;
     typedef units::unit<diffusivity_dimension, units::si::system> diffusivity;
@@ -100,6 +103,10 @@ namespace unit
     typedef units::unit<molar_flow_rate_dimension, units::si::system> molar_flow_rate;
     BOOST_UNITS_STATIC_CONSTANT(mole_per_second, molar_flow_rate);
 
+    typedef units::derived_dimension<units::amount_base_dimension, 1, units::length_base_dimension, -3, units::time_base_dimension, -1>::type concentration_flow_rate_dimension;
+    typedef units::unit<concentration_flow_rate_dimension, units::si::system> concentration_flow_rate;
+    BOOST_UNITS_STATIC_CONSTANT(mole_per_metre_cubed_per_second, concentration_flow_rate);
+
     typedef units::derived_dimension<units::mass_base_dimension, 1, units::length_base_dimension, -2, units::time_base_dimension, -1>::type mass_flux_dimension;
     typedef units::unit<mass_flux_dimension, units::si::system> mass_flux;
     BOOST_UNITS_STATIC_CONSTANT(kg_per_metre_squared_per_second, mass_flux);
@@ -108,6 +115,10 @@ namespace unit
     typedef units::unit<molar_flux_dimension, units::si::system> molar_flux;
     BOOST_UNITS_STATIC_CONSTANT(mole_per_metre_squared_per_second, molar_flux);
 
+    typedef units::derived_dimension<units::amount_base_dimension, 1, units::length_base_dimension, -5, units::time_base_dimension, -1>::type concentration_flux_dimension;
+    typedef units::unit<concentration_flux_dimension, units::si::system> concentration_flux;
+    BOOST_UNITS_STATIC_CONSTANT(mole_per_metre_pow5_per_second, concentration_flux);
+
     typedef units::derived_dimension<units::amount_base_dimension, 1, units::length_base_dimension, -3>::type concentration_dimension;
     typedef units::unit<concentration_dimension, units::si::system> concentration;
     BOOST_UNITS_STATIC_CONSTANT(mole_per_metre_cubed, concentration);
@@ -115,6 +126,10 @@ namespace unit
     typedef units::derived_dimension<units::amount_base_dimension, 1, units::mass_base_dimension, -1>::type molar_mass_dimension;
     typedef units::unit<molar_mass_dimension, units::si::system> molar_mass;
     BOOST_UNITS_STATIC_CONSTANT(mole_per_kg, molar_mass);
+
+    typedef units::derived_dimension<units::length_base_dimension, -3>::type number_density_dimension;
+    typedef units::unit<number_density_dimension, units::si::system> number_density;
+    BOOST_UNITS_STATIC_CONSTANT(per_metre_cubed, number_density);
 
     typedef units::derived_dimension<units::amount_base_dimension, 1, units::mass_base_dimension, -1, units::length_base_dimension, -2, units::time_base_dimension, 2>::type solubility_dimension;
     typedef units::unit<solubility_dimension, units::si::system> solubility;

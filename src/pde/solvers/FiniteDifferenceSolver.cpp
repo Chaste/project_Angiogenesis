@@ -36,8 +36,9 @@
 #include "LinearSystem.hpp"
 #include "ReplicatableVector.hpp"
 #include "VesselSegment.hpp"
-#include "AbstractDiscreteContinuumLinearEllipticPde.hpp"
 #include "FiniteDifferenceSolver.hpp"
+
+#include "../problem/LinearSteadyStateDiffusionReactionPde.hpp"
 #include "SimplePetscNonlinearSolver.hpp"
 
 // Nonlinear solve methods

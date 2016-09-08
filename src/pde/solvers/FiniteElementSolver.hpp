@@ -36,11 +36,11 @@
 #ifndef FINITEELEMENTSOLVER_HPP_
 #define FINITEELEMENTSOLVER_HPP_
 
+#include "../problem/LinearSteadyStateDiffusionReactionPde.hpp"
 #include "SmartPointers.hpp"
 #include "AbstractDiscreteContinuumSolver.hpp"
 #include "DiscreteContinuumMesh.hpp"
 #include "Part.hpp"
-#include "AbstractDiscreteContinuumLinearEllipticPde.hpp"
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the strstream deprecated warning for now (gcc4.3)
 #include <vtkSmartPointer.h>
 #include <vtkImageData.h>

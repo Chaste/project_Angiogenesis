@@ -38,11 +38,12 @@
 
 #include <vector>
 #include <string>
+
+#include "../problem/LinearSteadyStateDiffusionReactionPde.hpp"
 #include "OutputFileHandler.hpp"
 #include "VesselNetwork.hpp"
 #include "AbstractCellPopulation.hpp"
-#include "AbstractDiscreteContinuumLinearEllipticPde.hpp"
-#include "DiscreteContinuumNonLinearEllipticPde.hpp"
+#include "NonLinearConcentrationBasedDiffusionReactionPde.hpp"
 #include "DiscreteContinuumBoundaryCondition.hpp"
 #include "RegularGrid.hpp"
 
@@ -103,12 +104,12 @@ protected:
     /**
      * The PDE to be solved, optional
      */
-    boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<DIM, DIM> > mpPde;
+    boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<DIM, DIM> > mpPde;
 
     /**
      * The non-linear PDE to be solved, optional
      */
-    boost::shared_ptr<DiscreteContinuumNonLinearEllipticPde<DIM, DIM> > mpNonLinearPde;
+    boost::shared_ptr<NonLinearConcentrationBasedDiffusionReactionPde<DIM, DIM> > mpNonLinearPde;
 
     /**
      * The DiscreteContinuum boundary conditions, optional
@@ -143,13 +144,13 @@ public:
      * Return the PDE
      * @return the DiscreteContinuum linear elliptic pde
      */
-    boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<DIM, DIM> > GetPde();
+    boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<DIM, DIM> > GetPde();
 
     /**
      * Return the nonlinear PDE
      * @return the DiscreteContinuum nonlinear elliptic pde
      */
-    boost::shared_ptr<DiscreteContinuumNonLinearEllipticPde<DIM, DIM> > GetNonLinearPde();
+    boost::shared_ptr<NonLinearConcentrationBasedDiffusionReactionPde<DIM, DIM> > GetNonLinearPde();
 
     /**
      * Return the value of the field at the requested points
@@ -193,13 +194,13 @@ public:
      *  Set the PDE to be solved
      * @param pPde the pde to be solved
      */
-    void SetPde(boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<DIM, DIM> > pPde);
+    void SetPde(boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<DIM, DIM> > pPde);
 
     /**
      *  Set the nonlinear PDE to be solved
      * @param pPde the pde to be solved
      */
-    void SetNonLinearPde(boost::shared_ptr<DiscreteContinuumNonLinearEllipticPde<DIM, DIM> > pPde);
+    void SetNonLinearPde(boost::shared_ptr<NonLinearConcentrationBasedDiffusionReactionPde<DIM, DIM> > pPde);
 
     /**
      * Operations to be performed prior to the first solve

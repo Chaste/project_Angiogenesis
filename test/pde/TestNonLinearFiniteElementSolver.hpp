@@ -40,12 +40,13 @@
 #include <vector>
 #include <string>
 #include <boost/lexical_cast.hpp>
+
+#include "../../src/pde/problem/LinearSteadyStateDiffusionReactionPde.hpp"
 #include "FiniteElementSolver.hpp"
 #include "UblasIncludes.hpp"
 #include "Part.hpp"
 #include "Vertex.hpp"
-#include "AbstractDiscreteContinuumLinearEllipticPde.hpp"
-#include "DiscreteContinuumNonLinearEllipticPde.hpp"
+#include "NonLinearConcentrationBasedDiffusionReactionPde.hpp"
 #include "VesselNetwork.hpp"
 #include "VesselNetworkGenerator.hpp"
 #include "SmartPointers.hpp"
@@ -70,11 +71,11 @@ public:
         p_mesh->Update();
 
         // Choose the PDE
-        boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<3> > p_linear_pde = AbstractDiscreteContinuumLinearEllipticPde<3>::Create();
+        boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<3> > p_linear_pde = LinearConcentrationBasedDiffusionReactionPde<3>::Create();
         p_linear_pde->SetIsotropicDiffusionConstant(1.0);
         p_linear_pde->SetContinuumLinearInUTerm(-2.0);
 
-        boost::shared_ptr<DiscreteContinuumNonLinearEllipticPde<3> > p_non_linear_pde = DiscreteContinuumNonLinearEllipticPde<3>::Create();
+        boost::shared_ptr<NonLinearConcentrationBasedDiffusionReactionPde<3> > p_non_linear_pde = NonLinearConcentrationBasedDiffusionReactionPde<3>::Create();
         p_non_linear_pde->SetIsotropicDiffusionConstant(1.0);
         p_non_linear_pde->SetContinuumConstantInUTerm(-2.0);
 

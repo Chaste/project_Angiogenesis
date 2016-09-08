@@ -42,7 +42,6 @@ AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::AbstractDisc
             mDiffusionTensor(identity_matrix<double>(SPACE_DIM)),
             mDiffusivity(1.0 * unit::metre_squared_per_second),
             mConstantInUTerm(0.0 * unit::per_second),
-            mVariableName("Default"),
             mDiscreteSources(),
             mpRegularGrid(),
             mpMesh(),
@@ -88,6 +87,12 @@ c_matrix<double, SPACE_DIM, SPACE_DIM> AbstractDiscreteContinuumLinearEllipticPd
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+double AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeLinearInUCoeffInSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement)
+{
+    return mLinearInUTerm/unit::mole_per_second;
+}
+
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 units::quantity<unit::diffusivity> AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeIsotropicDiffusionTerm()
 {
     return mDiffusivity;
@@ -97,12 +102,6 @@ template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 std::vector<boost::shared_ptr<DiscreteSource<SPACE_DIM> > > AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::GetDiscreteSources()
 {
     return mDiscreteSources;
-}
-
-template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-const std::string& AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::GetVariableName()
-{
-    return mVariableName;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
@@ -137,12 +136,6 @@ void AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetUseR
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetVariableName(const std::string& rVariableName)
-{
-    mVariableName = rVariableName;
-}
-
-template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::UpdateDiscreteSourceStrengths()
 {
     if(mUseRegularGrid)
@@ -152,13 +145,15 @@ void AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::UpdateD
             EXCEPTION("A grid has not been set for the determination of source strengths.");
         }
         mDiscreteConstantSourceStrengths = std::vector<units::quantity<unit::rate> >(mpRegularGrid->GetNumberOfPoints(), 0.0);
-
         for(unsigned idx=0; idx<mDiscreteSources.size(); idx++)
         {
             mDiscreteSources[idx]->SetRegularGrid(mpRegularGrid);
-            std::vector<units::quantity<unit::rate> > result = mDiscreteSources[idx]->GetConstantRegularGridValues();
-            std::transform(mDiscreteConstantSourceStrengths.begin( ), mDiscreteConstantSourceStrengths.end( ),
-                           result.begin( ), mDiscreteConstantSourceStrengths.begin( ),std::plus<units::quantity<unit::rate> >( ));
+            if(!mDiscreteSources[idx]->IsLinearInSolution())
+            {
+                std::vector<units::quantity<unit::rate> > result = mDiscreteSources[idx]->GetRegularGridValues();
+                std::transform(mDiscreteConstantSourceStrengths.begin( ), mDiscreteConstantSourceStrengths.end( ),
+                               result.begin( ), mDiscreteConstantSourceStrengths.begin( ),std::plus<units::quantity<unit::rate> >( ));
+            }
         }
     }
     else
@@ -167,6 +162,7 @@ void AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::UpdateD
         {
             EXCEPTION("A mesh has not been set for the determination of source strengths.");
         }
+
     }
 }
 
