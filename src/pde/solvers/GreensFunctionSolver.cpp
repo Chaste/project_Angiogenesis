@@ -98,15 +98,15 @@ void GreensFunctionSolver<DIM>::Solve()
 
     // Get the sink rates
     unsigned number_of_sinks = mSinkCoordinates.size();
-    double sink_rate = this->mpPde->ComputeConstantInUSourceTerm();
-    double sink_volume = pow(this->mpRegularGrid->GetSpacing()/this->mpRegularGrid->GetReferenceLengthScale(), 3);
-    mSinkRates = std::vector<double>(number_of_sinks, sink_rate * sink_volume);
-    double total_sink_rate = std::accumulate(mSinkRates.begin(), mSinkRates.end(), 0.0);
+    units::quantity<unit::concentration_flow_rate> sink_rate = this->mpPde->ComputeConstantInUSourceTerm();
+    units::quantity<unit::volume> sink_volume = units::pow<3>(this->mpRegularGrid->GetSpacing());
+    mSinkRates = std::vector<units::quantity<unit::molar_flow_rate> >(number_of_sinks, sink_rate * sink_volume);
+    units::quantity<unit::molar_flow_rate> total_sink_rate = std::accumulate(mSinkRates.begin(), mSinkRates.end(), 0.0*unit::mole_per_metre_cubed_per_second);
 
     // Get the sink substance demand on each vessel subsegment
     unsigned number_of_subsegments = mSubSegmentCoordinates.size();
-    double diffusivity = this->mpPde->ComputeIsotropicDiffusionTerm();
-    std::vector<double> sink_demand_per_subsegment(number_of_subsegments, 0.0);
+    units::quantity<unit::diffusivity> diffusivity = this->mpPde->ComputeIsotropicDiffusionTerm();
+    std::vector<units::quantity<unit::concentration> > sink_demand_per_subsegment(number_of_subsegments, 0.0*unit::mole_per_metre_cubed);
     for (unsigned idx = 0; idx < number_of_subsegments; idx++)
     {
         for (unsigned jdx = 0; jdx < number_of_sinks; jdx++)
@@ -115,14 +115,15 @@ void GreensFunctionSolver<DIM>::Solve()
         }
     }
 
-    mSegmentConcentration = std::vector<double>(number_of_subsegments, 1.0);
-    mTissueConcentration = std::vector<double>(number_of_sinks, 0.0);
+    mSegmentConcentration = std::vector<units::quantity<unit::concentration> >(number_of_subsegments, 1.0*unit::mole_per_metre_cubed);
+    mTissueConcentration = std::vector<units::quantity<unit::concentration> >(number_of_sinks, 0.0*unit::mole_per_metre_cubed);
 
     // Solve for the subsegment source rates required to meet the sink substance demand
     double tolerance = 1.e-10;
     double g0 = 0.0;
-    mSourceRates = std::vector<double>(number_of_subsegments, 0.0);
+    mSourceRates = std::vector<units::quantity<unit::molar_flow_rate> >(number_of_subsegments, 0.0*unit::mole_per_metre_cubed_per_second);
 
+    units::quantity<unit::concentration> reference_concentration(1.0*unit::mole_per_metre_cubed);
     LinearSystem linear_system(number_of_subsegments + 1, number_of_subsegments + 1);
     linear_system.SetKspType("bcgs");
 
@@ -131,7 +132,7 @@ void GreensFunctionSolver<DIM>::Solve()
         linear_system.AssembleIntermediateLinearSystem();
         for (unsigned i = 0; i < number_of_subsegments; i++)
         {
-            linear_system.SetRhsVectorElement(i, mSegmentConcentration[i] - sink_demand_per_subsegment[i]);
+            linear_system.SetRhsVectorElement(i, (mSegmentConcentration[i] - sink_demand_per_subsegment[i])/reference_concentration);
         }
 
         linear_system.SetRhsVectorElement(number_of_subsegments, -total_sink_rate);

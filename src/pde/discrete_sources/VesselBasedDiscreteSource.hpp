@@ -33,8 +33,8 @@
 
  */
 
-#ifndef DiscreteSource_HPP_
-#define DiscreteSource_HPP_
+#ifndef VESSELBASEDDiscreteSource_HPP_
+#define VESSELBASEDDiscreteSource_HPP_
 
 #include <vector>
 #include <string>
@@ -55,16 +55,14 @@ class VesselBasedDiscreteSource : public DiscreteSource<DIM>
 protected:
 
     /**
-     * The linear in U rate of consumption per cell
+     * The vessel permeability
      */
-    units::quantity<unit::molar_flow_rate> mVesselConstantInUValue;
+    units::quantity<unit::membrane_permeability> mVesselPermeability;
 
     /**
-     * The constant in U rate of consumption per cell
+     * The oxygen concentration per unit haematocrit
      */
-    units::quantity<unit::rate> mVesselLinearInUValue;
-
-    units::quantity<unit::rate>
+    units::quantity<unit::concentration> mOxygenConcentrationPerUnitHaematocrit;
 
 public:
 
@@ -112,13 +110,14 @@ public:
      * Set the value of the source for PRESCRIBED type sources
      * @param value the value of the source
      */
-    void SetConstantInUSourceRatePerVessel(units::quantity<unit::molar_flow_rate> value);
+    void SetVesselPermeability(units::quantity<unit::membrane_permeability> value);
 
     /**
      * Set the value of the source for PRESCRIBED type sources
      * @param value the value of the source
      */
-    void SetLinearInUSourceRatePerVessel(units::quantity<unit::rate> value);
+    void SetOxygenConcentrationPerUnitHaematocrit(units::quantity<unit::concentration> value);
+
 };
 
-#endif /* DiscreteSource_HPP_ */
+#endif /* VESSELBASEDDiscreteSource_HPP_ */

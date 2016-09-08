@@ -88,9 +88,9 @@
 
 class Test2dVascularTumourGrowth : public AbstractCellBasedWithTimingsTestSuite
 {
-    boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<2> > GetOxygenPde()
+    boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<2> > GetOxygenPde()
     {
-        boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<2> > p_pde = LinearConcentrationBasedDiffusionReactionPde<2>::Create();
+        boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<2> > p_pde = LinearSteadyStateDiffusionReactionPde<2>::Create();
         p_pde->SetIsotropicDiffusionConstant(8700000.0/400.0); // assume cell width is 20 microns
 
         // Add a cell state specific discrete source for cells consuming oxygen
@@ -130,9 +130,9 @@ class Test2dVascularTumourGrowth : public AbstractCellBasedWithTimingsTestSuite
     }
 
     // todo need to check parameters in sink/source terms in here
-    boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<2> > GetVegfPde()
+    boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<2> > GetVegfPde()
     {
-        boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<2> > p_pde = LinearConcentrationBasedDiffusionReactionPde<2>::Create();
+        boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<2> > p_pde = LinearSteadyStateDiffusionReactionPde<2>::Create();
         p_pde->SetIsotropicDiffusionConstant(60000 / 400.0); // assume cell width is 20 microns
         p_pde->SetContinuumLinearInUTerm(-0.8); //Vegf decay
 

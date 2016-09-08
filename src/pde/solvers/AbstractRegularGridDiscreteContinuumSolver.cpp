@@ -49,7 +49,8 @@ AbstractRegularGridDiscreteContinuumSolver<DIM>::AbstractRegularGridDiscreteCont
     :   AbstractDiscreteContinuumSolver<DIM>(),
         mpVtkSolution(vtkSmartPointer<vtkImageData>::New()),
         mpRegularGrid(),
-        mPointSolution()
+        mPointSolution(),
+        mConcentrationPointSolution()
 {
 
 }
@@ -121,6 +122,60 @@ std::vector<double> AbstractRegularGridDiscreteContinuumSolver<DIM>::GetSolution
     else
     {
         return this->GetSolutionAtPoints(pGrid->GetLocations());
+    }
+}
+
+template<unsigned DIM>
+virtual std::vector<units::quantity<unit::concentration> > AbstractRegularGridDiscreteContinuumSolver<DIM>::GetConcentrationAtPoints(std::vector<DimensionalChastePoint<DIM> > samplePoints)
+{
+    if(!this->mpVtkSolution)
+    {
+        this->Setup();
+    }
+
+    std::vector<units::quantity<unit::concentration> > sampled_solution(samplePoints.size(), 0.0*unit::mole_per_metre_cubed);
+
+    // Sample the field at these locations
+    vtkSmartPointer<vtkPolyData> p_polydata = vtkSmartPointer<vtkPolyData>::New();
+    vtkSmartPointer<vtkPoints> p_points = vtkSmartPointer<vtkPoints>::New();
+    p_points->SetNumberOfPoints(samplePoints.size());
+    for(unsigned idx=0; idx< samplePoints.size(); idx++)
+    {
+        if(DIM==3)
+        {
+            p_points->SetPoint(idx, samplePoints[idx][0], samplePoints[idx][1], samplePoints[idx][2]);
+        }
+        else
+        {
+            p_points->SetPoint(idx, samplePoints[idx][0], samplePoints[idx][1], 0.0);
+        }
+    }
+    p_polydata->SetPoints(p_points);
+
+    vtkSmartPointer<vtkProbeFilter> p_probe_filter = vtkSmartPointer<vtkProbeFilter>::New();
+    p_probe_filter->SetInputData(p_polydata);
+    p_probe_filter->SetSourceData(this->mpVtkSolution);
+    p_probe_filter->Update();
+    vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetOutput()->GetPointData();
+
+    unsigned num_points = p_point_data->GetArray(this->mLabel.c_str())->GetNumberOfTuples();
+    for(unsigned idx=0; idx<num_points; idx++)
+    {
+        sampled_solution[idx] = p_point_data->GetArray(this->mLabel.c_str())->GetTuple1(idx)*unit::mole_per_metre_cubed;
+    }
+    return sampled_solution;
+}
+
+template<unsigned DIM>
+virtual std::vector<units::quantity<unit::concentration> > AbstractRegularGridDiscreteContinuumSolver<DIM>::GetConcentrationAtGridPoints(boost::shared_ptr<RegularGrid<DIM> > pGrid)
+{
+    if(this->mpRegularGrid == pGrid)
+    {
+        return this->GetConcentrationSolution();
+    }
+    else
+    {
+        return this->GetConcentrationAtPoints(pGrid->GetLocations());
     }
 }
 
@@ -203,6 +258,32 @@ void AbstractRegularGridDiscreteContinuumSolver<DIM>::UpdateSolution(std::vector
 }
 
 template<unsigned DIM>
+void AbstractRegularGridDiscreteContinuumSolver<DIM>::UpdateSolution(std::vector<units::quantity<unit::concentration> > data)
+{
+    if(!this->mpVtkSolution)
+    {
+        this->Setup();
+    }
+
+    vtkSmartPointer<vtkDoubleArray> pPointData = vtkSmartPointer<vtkDoubleArray>::New();
+    pPointData->SetNumberOfComponents(1);
+    pPointData->SetNumberOfTuples(data.size());
+    pPointData->SetName(this->GetLabel().c_str());
+    for (unsigned i = 0; i < data.size(); i++)
+    {
+        pPointData->SetValue(i, data[i]/unit::mole_per_metre_cubed);
+    }
+    this->mpVtkSolution->GetPointData()->AddArray(pPointData);
+
+    // Note, if the data vector being passed in is mPointSolution, then it will be overwritten with zeros.
+    this->mConcentrationPointSolution = std::vector<units::quantity<unit::concentration> >(data.size(), 0.0*unit::mole_per_metre_cubed);
+    for (unsigned i = 0; i < data.size(); i++)
+    {
+        this->mConcentrationPointSolution[i] = data[i];
+    }
+}
+
+template<unsigned DIM>
 void AbstractRegularGridDiscreteContinuumSolver<DIM>::UpdateCellData()
 {
     if(!this->mpVtkSolution)
@@ -240,6 +321,16 @@ std::vector<double> AbstractRegularGridDiscreteContinuumSolver<DIM>::GetPointSol
         this->Setup();
     }
     return this->mPointSolution;
+}
+
+template<unsigned DIM>
+std::vector<units::quantity<unit::concentration> > AbstractRegularGridDiscreteContinuumSolver<DIM>::GetConcentrationSolution()
+{
+    if(!this->mpVtkSolution)
+    {
+        this->Setup();
+    }
+    return this->mConcentrationPointSolution;
 }
 
 template<unsigned DIM>

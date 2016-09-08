@@ -48,7 +48,9 @@ DiscreteSource<DIM>::DiscreteSource()
         mSourceStrength(SourceStrength::PRESCRIBED),
         mLabel("Default"),
         mConstantInUValue(0.0*unit::mole_per_metre_cubed_per_second),
-        mLinearInUValue(0.0*unit::per_second)
+        mLinearInUValue(0.0*unit::per_second),
+        mConstantInUSinkRatePerSolutionQuantity(),
+        mLinearInUSinkRatePerSolutionQuantity()
 {
 
 }
@@ -93,7 +95,7 @@ std::vector<units::quantity<unit::rate> > DiscreteSource<DIM>::GetLinearInUMeshV
 }
 
 template<unsigned DIM>
-std::vector<units::quantity<unit::rate> > DiscreteSource<DIM>::GetConstantInUPointRegularGridValues()
+std::vector<units::quantity<unit::concentration_flow_rate> > DiscreteSource<DIM>::GetConstantInUPointRegularGridValues()
 {
     if(mPoints.size()==0)
     {
@@ -111,35 +113,7 @@ std::vector<units::quantity<unit::rate> > DiscreteSource<DIM>::GetConstantInUPoi
 }
 
 template<unsigned DIM>
-std::vector<units::quantity<unit::rate> > DiscreteSource<DIM>::GetConstantInUVesselRegularGridValues()
-{
-    std::vector<double> values(mpRegularGrid->GetNumberOfPoints(), 0.0);
-    std::vector<std::vector<boost::shared_ptr<VesselSegment<DIM> > > > point_segment_map = mpRegularGrid->GetPointSegmentMap();
-    for(unsigned idx=0; idx<point_segment_map.size(); idx++)
-    {
-        for (unsigned jdx = 0; jdx < point_segment_map[idx].size(); jdx++)
-        {
-            if(mSourceStrength == SourceStrength::PRESCRIBED)
-            {
-                double spacing = mpRegularGrid->GetSpacing()/mpRegularGrid->GetReferenceLengthScale();
-                double point_volume = spacing * spacing;
-                if(DIM == 3)
-                {
-                    point_volume *= spacing;
-                }
-
-                double length_in_box = LengthOfLineInBox<DIM>(point_segment_map[idx][jdx]->GetNode(0)->rGetLocation().rGetLocation(),
-                                                                             point_segment_map[idx][jdx]->GetNode(1)->rGetLocation().rGetLocation(),
-                                                                             mpRegularGrid->GetLocationOf1dIndex(idx).rGetLocation(), spacing);
-                values[idx] += mConstantInUValue * length_in_box/ point_volume;
-            }
-        }
-    }
-    return values;
-}
-
-template<unsigned DIM>
-std::vector<units::quantity<unit::rate> > DiscreteSource<DIM>::GetConstantInUSolutionDependentRegularGridValues()
+std::vector<units::quantity<unit::concentration_flow_rate> > DiscreteSource<DIM>::GetConstantInUSolutionDependentRegularGridValues()
 {
     std::vector<double> values(mpRegularGrid->GetNumberOfPoints(), 0.0);
     if(mpSolution.size() != mpRegularGrid->GetNumberOfPoints())
@@ -148,7 +122,7 @@ std::vector<units::quantity<unit::rate> > DiscreteSource<DIM>::GetConstantInUSol
     }
     for(unsigned idx=0; idx<mpRegularGrid->GetNumberOfPoints(); idx++)
     {
-        values[idx] = mpSolution[idx]*unit::per_second/unit::mole_per_metre_cubed;
+        values[idx] = mpSolution[idx]*mConstantInUSinkRatePerSolutionQuantity;
     }
     return values;
 }

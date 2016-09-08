@@ -33,35 +33,35 @@
 
  */
 
-#include "CellBasedDiscreteSource.hpp"
+#include "VesselBasedDiscreteSource.hpp"
 #include "AbstractCellPopulation.hpp"
 #include "VesselNetwork.hpp"
 #include "GeometryTools.hpp"
 
 template<unsigned DIM>
-CellBasedDiscreteSource<DIM>::CellBasedDiscreteSource()
+VesselBasedDiscreteSource<DIM>::VesselBasedDiscreteSource()
     :   DiscreteSource<DIM>(),
-        mCellConstantInUValue(0.0*unit::mole_per_second),
-        mCellLinearInUValue(0.0*per_second)
+        mVesselPermeability(0.0*unit::metre_per_second),
+        mOxygenConcentrationPerUnitHaematocrit(0.0*unit::mole_per_metre_cubed)
 {
 
 }
 
 template<unsigned DIM>
-CellBasedDiscreteSource<DIM>::~CellBasedDiscreteSource()
+VesselBasedDiscreteSource<DIM>::~VesselBasedDiscreteSource()
 {
 
 }
 
 template<unsigned DIM>
-boost::shared_ptr<CellBasedDiscreteSource<DIM> > CellBasedDiscreteSource<DIM>::Create()
+boost::shared_ptr<VesselBasedDiscreteSource<DIM> > VesselBasedDiscreteSource<DIM>::Create()
 {
-    MAKE_PTR(CellBasedDiscreteSource<DIM>, pSelf);
+    MAKE_PTR(VesselBasedDiscreteSource<DIM>, pSelf);
     return pSelf;
 }
 
 template<unsigned DIM>
-std::vector<units::quantity<unit::concentration_flow_rate> > CellBasedDiscreteSource<DIM>::GetConstantInUMeshValues()
+std::vector<units::quantity<unit::concentration_flow_rate> > VesselBasedDiscreteSource<DIM>::GetConstantInUMeshValues()
 {
     if(!mpMesh)
     {
@@ -71,7 +71,7 @@ std::vector<units::quantity<unit::concentration_flow_rate> > CellBasedDiscreteSo
 }
 
 template<unsigned DIM>
-std::vector<units::quantity<unit::rate> > CellBasedDiscreteSource<DIM>::GetLinearInUMeshValues()
+std::vector<units::quantity<unit::rate> > VesselBasedDiscreteSource<DIM>::GetLinearInUMeshValues()
 {
     if(!mpMesh)
     {
@@ -81,55 +81,65 @@ std::vector<units::quantity<unit::rate> > CellBasedDiscreteSource<DIM>::GetLinea
 }
 
 template<unsigned DIM>
-std::vector<units::quantity<unit::concentration_flow_rate> > CellBasedDiscreteSource<DIM>::GetConstantInURegularGridValues()
+std::vector<units::quantity<unit::concentration_flow_rate> > VesselBasedDiscreteSource<DIM>::GetConstantInURegularGridValues()
 {
-    if(!this->mpRegularGrid)
-    {
-        EXCEPTION("A regular grid is required for this type of source");
-    }
-
-    std::vector<double> values(this->mpRegularGrid->GetNumberOfPoints(), 0.0);
+    std::vector<units::quantity<unit::concentration_flow_rate> > values(mpRegularGrid->GetNumberOfPoints(), 0.0);
+    std::vector<std::vector<boost::shared_ptr<VesselSegment<DIM> > > > point_segment_map = this->mpRegularGrid->GetPointSegmentMap();
     units::quantity<unit::length> grid_spacing = this->mpRegularGrid->GetSpacing();
+    double dimensionless_spacing = this->mpRegularGrid->GetSpacing()/this->mpRegularGrid->GetReferenceLengthScale();
     units::quantity<unit::volume> grid_volume = units::pow<3>(grid_spacing);
-
-    std::vector<std::vector<CellPtr> > point_cell_map = this->mpRegularGrid->GetPointCellMap();
-    for(unsigned idx=0; idx<point_cell_map.size(); idx++)
+    for(unsigned idx=0; idx<point_segment_map.size(); idx++)
     {
-        values[idx] += mCellConstantInUValue * point_cell_map[idx].size()/grid_volume;
-    }
-    return values;
+        for (unsigned jdx = 0; jdx < point_segment_map[idx].size(); jdx++)
+        {
+            double length_in_box = LengthOfLineInBox<DIM>(point_segment_map[idx][jdx]->GetNode(0)->rGetLocation().rGetLocation(),
+                                                                         point_segment_map[idx][jdx]->GetNode(1)->rGetLocation().rGetLocation(),
+                                                                         mpRegularGrid->GetLocationOf1dIndex(idx).rGetLocation(), spacing);
 
-}
+            units::quantity<unit::area> surface_area = 2.0*M_PI*point_segment_map[idx][jdx]->GetRadius()*length_in_box*this->mpRegularGrid->GetReferenceLengthScale();
 
-template<unsigned DIM>
-std::vector<units::quantity<unit::rate> > CellBasedDiscreteSource<DIM>::GetLinearInURegularGridValues()
-{
-    if(!this->mpRegularGrid)
-    {
-        EXCEPTION("A regular grid is required for this type of source");
-    }
-
-    std::vector<double> values(this->mpRegularGrid->GetNumberOfPoints(), 0.0);
-    std::vector<std::vector<CellPtr> > point_cell_map = this->mpRegularGrid->GetPointCellMap();
-    for(unsigned idx=0; idx<point_cell_map.size(); idx++)
-    {
-        values[idx] += mCellLinearInUValue * point_cell_map[idx].size();
+            double haematocrit = point_segment_map[idx][jdx]->GetFlowProperties()->GetHaematocrit();
+            values[idx] += mVesselPermeability * (surface_area/grid_volume) * mOxygenConcentrationPerUnitHaematocrit * haematocrit;
+        }
     }
     return values;
 }
 
 template<unsigned DIM>
-void CellBasedDiscreteSource<DIM>::SetConstantInUValue(units::quantity<unit::concentration_flow_rate> value)
+std::vector<units::quantity<unit::rate> > VesselBasedDiscreteSource<DIM>::GetLinearInURegularGridValues()
 {
-    mConstantInUValue = value;
+    std::vector<units::quantity<unit::rate> > values(mpRegularGrid->GetNumberOfPoints(), 0.0);
+    std::vector<std::vector<boost::shared_ptr<VesselSegment<DIM> > > > point_segment_map = this->mpRegularGrid->GetPointSegmentMap();
+    units::quantity<unit::length> grid_spacing = this->mpRegularGrid->GetSpacing();
+    double dimensionless_spacing = this->mpRegularGrid->GetSpacing()/this->mpRegularGrid->GetReferenceLengthScale();
+    units::quantity<unit::volume> grid_volume = units::pow<3>(grid_spacing);
+    for(unsigned idx=0; idx<point_segment_map.size(); idx++)
+    {
+        for (unsigned jdx = 0; jdx < point_segment_map[idx].size(); jdx++)
+        {
+            double length_in_box = LengthOfLineInBox<DIM>(point_segment_map[idx][jdx]->GetNode(0)->rGetLocation().rGetLocation(),
+                                                                         point_segment_map[idx][jdx]->GetNode(1)->rGetLocation().rGetLocation(),
+                                                                         mpRegularGrid->GetLocationOf1dIndex(idx).rGetLocation(), spacing);
+
+            units::quantity<unit::area> surface_area = 2.0*M_PI*point_segment_map[idx][jdx]->GetRadius()*length_in_box*this->mpRegularGrid->GetReferenceLengthScale();
+            values[idx] -= mVesselPermeability * (surface_area/grid_volume);
+        }
+    }
+    return values;
 }
 
 template<unsigned DIM>
-void CellBasedDiscreteSource<DIM>::SetLinearInUValue(units::quantity<unit::rate> value)
+void VesselBasedDiscreteSource<DIM>::SetVesselPermeability(units::quantity<unit::membrane_permeability> value)
 {
-    mLinearInUValue = value;
+    mVesselPermeability = value;
+}
+
+template<unsigned DIM>
+void VesselBasedDiscreteSource<DIM>::SetOxygenConcentrationPerUnitHaematocrit(units::quantity<unit::concentration> value)
+{
+    mOxygenConcentrationPerUnitHaematocrit = value;
 }
 
 // Explicit instantiation
-template class CellBasedDiscreteSource<2>;
-template class CellBasedDiscreteSource<3>;
+template class VesselBasedDiscreteSource<2>;
+template class VesselBasedDiscreteSource<3>;

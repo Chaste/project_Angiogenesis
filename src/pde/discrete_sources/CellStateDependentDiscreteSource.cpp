@@ -36,7 +36,6 @@
 #include "CellStateDependentDiscreteSource.hpp"
 #include "AbstractCellPopulation.hpp"
 #include "VesselNetwork.hpp"
-#include "Debug.hpp"
 
 template<unsigned DIM>
 CellStateDependentDiscreteSource<DIM>::CellStateDependentDiscreteSource()

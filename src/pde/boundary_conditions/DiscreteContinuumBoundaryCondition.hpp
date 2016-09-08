@@ -106,7 +106,7 @@ protected:
     /**
      * The prescribed value of the boundary condition.
      */
-    double mValue;
+    units::quantity<unit::concentration> mValue;
 
     /**
      * The grid for solvers using regular grids
@@ -147,7 +147,7 @@ public:
      * Return the default value of the boundary condition
      * @return the default value of the boundary condition
      */
-    double GetValue();
+    units::quantity<unit::concentration> GetValue();
 
     void SetNetwork(boost::shared_ptr<VesselNetwork <DIM> > pNetwork);
 
@@ -157,7 +157,7 @@ public:
      * @param tolerance the tolerance for evaluating if a point is on a boundary
      * @return a bool specifying if the point is on a boundary and the value of the point on the boundary
      */
-    std::pair<bool, double> GetValue(DimensionalChastePoint<DIM> location, double tolerance);
+    std::pair<bool, units::quantity<unit::concentration> > GetValue(DimensionalChastePoint<DIM> location, double tolerance);
 
     /**
      * Update the boundary conditions container for use with the finite element solver
@@ -165,22 +165,22 @@ public:
      */
     void UpdateBoundaryConditionContainer(boost::shared_ptr<BoundaryConditionsContainer<DIM, DIM, 1> > pContainer);
 
-    void UpdateRegularGridPointBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions);
+    void UpdateRegularGridPointBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, units::quantity<unit::concentration> > > >pBoundaryConditions);
 
-    void UpdateRegularGridFacetBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions);
+    void UpdateRegularGridFacetBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, units::quantity<unit::concentration> > > >pBoundaryConditions);
 
-    void UpdateRegularGridSegmentBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions);
+    void UpdateRegularGridSegmentBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, units::quantity<unit::concentration> > > >pBoundaryConditions);
 
-    void UpdateRegularGridPartBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions);
+    void UpdateRegularGridPartBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, units::quantity<unit::concentration> > > >pBoundaryConditions);
 
-    void UpdateRegularGridCellBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions);
+    void UpdateRegularGridCellBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, units::quantity<unit::concentration> > > >pBoundaryConditions);
 
     /**
      * Update the boundary conditions on the regular grid
      * @param pBoundaryConditions the boundary condition container
      * @param tolerance the tolerance for evaluating if a point is on a boundary
      */
-    void UpdateRegularGridBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > > pBoundaryConditions);
+    void UpdateRegularGridBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, units::quantity<unit::concentration> > > > pBoundaryConditions);
 
     /**
      * Set a domain for use in the calculation of FACET type boundary conditions
@@ -228,7 +228,7 @@ public:
      * Set the default value of the boundary condition for any points on the boundary
      * @param value the default value of the boundary condition for any points on the boundary
      */
-    void SetValue(double value);
+    void SetValue(units::quantity<unit::concentration> value);
 };
 
 #endif /* DiscreteContinuumBoundaryCondition_HPP_ */

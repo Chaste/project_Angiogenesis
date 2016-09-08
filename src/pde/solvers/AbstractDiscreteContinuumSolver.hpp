@@ -39,13 +39,14 @@
 #include <vector>
 #include <string>
 
-#include "../problem/LinearSteadyStateDiffusionReactionPde.hpp"
+#include "LinearSteadyStateDiffusionReactionPde.hpp"
 #include "OutputFileHandler.hpp"
 #include "VesselNetwork.hpp"
 #include "AbstractCellPopulation.hpp"
-#include "NonLinearConcentrationBasedDiffusionReactionPde.hpp"
+#include "NonLinearSteadyStateDiffusionReactionPde.hpp"
 #include "DiscreteContinuumBoundaryCondition.hpp"
 #include "RegularGrid.hpp"
+#include "UnitCollection.hpp"
 
 /**
  * An abstract solver class for DiscreteContinuum continuum-discrete field problems.
@@ -104,12 +105,12 @@ protected:
     /**
      * The PDE to be solved, optional
      */
-    boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<DIM, DIM> > mpPde;
+    boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<DIM, DIM> > mpPde;
 
     /**
      * The non-linear PDE to be solved, optional
      */
-    boost::shared_ptr<NonLinearConcentrationBasedDiffusionReactionPde<DIM, DIM> > mpNonLinearPde;
+    boost::shared_ptr<NonLinearSteadyStateDiffusionReactionPde<DIM, DIM> > mpNonLinearPde;
 
     /**
      * The DiscreteContinuum boundary conditions, optional
@@ -144,13 +145,13 @@ public:
      * Return the PDE
      * @return the DiscreteContinuum linear elliptic pde
      */
-    boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<DIM, DIM> > GetPde();
+    boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<DIM, DIM> > GetPde();
 
     /**
      * Return the nonlinear PDE
      * @return the DiscreteContinuum nonlinear elliptic pde
      */
-    boost::shared_ptr<NonLinearConcentrationBasedDiffusionReactionPde<DIM, DIM> > GetNonLinearPde();
+    boost::shared_ptr<NonLinearSteadyStateDiffusionReactionPde<DIM, DIM> > GetNonLinearPde();
 
     /**
      * Return the value of the field at the requested points
@@ -163,6 +164,18 @@ public:
      * @return the value of the field ordered according to input point order
      */
     virtual std::vector<double> GetSolutionAtGridPoints(boost::shared_ptr<RegularGrid<DIM> > pGrid) = 0;
+
+    /**
+     * Return the value of the field at the requested points
+     * @return the value of the field ordered according to input point order
+     */
+    virtual std::vector<units::quantity<unit::concentration> > GetConcentrationAtPoints(std::vector<DimensionalChastePoint<DIM> > samplePoints) = 0;
+
+    /**
+     * Return the value of the field at all points on the supplied grid
+     * @return the value of the field ordered according to input point order
+     */
+    virtual std::vector<units::quantity<unit::concentration> > GetConcentrationAtGridPoints(boost::shared_ptr<RegularGrid<DIM> > pGrid) = 0;
 
     bool CellPopulationIsSet();
 
@@ -194,13 +207,13 @@ public:
      *  Set the PDE to be solved
      * @param pPde the pde to be solved
      */
-    void SetPde(boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<DIM, DIM> > pPde);
+    void SetPde(boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<DIM, DIM> > pPde);
 
     /**
      *  Set the nonlinear PDE to be solved
      * @param pPde the pde to be solved
      */
-    void SetNonLinearPde(boost::shared_ptr<NonLinearConcentrationBasedDiffusionReactionPde<DIM, DIM> > pPde);
+    void SetNonLinearPde(boost::shared_ptr<NonLinearSteadyStateDiffusionReactionPde<DIM, DIM> > pPde);
 
     /**
      * Operations to be performed prior to the first solve

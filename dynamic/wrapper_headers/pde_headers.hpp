@@ -1,7 +1,7 @@
 #include "../../src/pde/problem/LinearSteadyStateDiffusionReactionPde.hpp"
 #include "DiscreteSource.hpp"
 #include "DiscreteContinuumBoundaryCondition.hpp"
-#include "NonLinearConcentrationBasedDiffusionReactionPde.hpp"
+#include "NonLinearSteadyStateDiffusionReactionPde.hpp"
 #include "AbstractDiscreteContinuumSolver.hpp"
 #include "AbstractRegularGridDiscreteContinuumSolver.hpp"
 #include "FiniteDifferenceSolver.hpp"
@@ -26,8 +26,8 @@ namespace chaste
                     sizeof(GreensFunctionSolver<3>) +
                     sizeof(CellStateDependentDiscreteSource<3>) +
                     sizeof(DiscreteContinuumBoundaryCondition<3>) +
-                    sizeof(NonLinearConcentrationBasedDiffusionReactionPde<3, 3>) +
-                    sizeof(LinearConcentrationBasedDiffusionReactionPde<3, 3>) +
+                    sizeof(NonLinearSteadyStateDiffusionReactionPde<3, 3>) +
+                    sizeof(LinearSteadyStateDiffusionReactionPde<3, 3>) +
                     sizeof(AbstractLinearEllipticPde<3, 3>) +
                     sizeof(DiscreteSource<3>);
         }

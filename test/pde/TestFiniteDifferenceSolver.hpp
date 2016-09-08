@@ -68,7 +68,7 @@ public:
         p_grid->GenerateFromPart(p_domain, 1.0*1.e-6*unit::metres);
 
         // Choose the PDE
-        boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<2> > p_pde = LinearConcentrationBasedDiffusionReactionPde<2>::Create();
+        boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<2> > p_pde = LinearSteadyStateDiffusionReactionPde<2>::Create();
         p_pde->SetIsotropicDiffusionConstant(1.e-6);
         p_pde->SetContinuumLinearInUTerm(-2.e-5);
 
@@ -100,7 +100,7 @@ public:
         p_grid->GenerateFromPart(p_domain, 0.1*1.e-6*unit::metres);
 
         // Choose the PDE
-        boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<3> > p_pde = LinearConcentrationBasedDiffusionReactionPde<3>::Create();
+        boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<3> > p_pde = LinearSteadyStateDiffusionReactionPde<3>::Create();
         p_pde->SetIsotropicDiffusionConstant(1.e-6);
         p_pde->SetContinuumLinearInUTerm(-2.e-5);
 
@@ -134,7 +134,7 @@ public:
         p_grid->GenerateFromPart(p_domain, 10.0*1.e-6*unit::metres);
 
         // Choose the PDE
-        boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<3> > p_pde = LinearConcentrationBasedDiffusionReactionPde<3>::Create();
+        boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<3> > p_pde = LinearSteadyStateDiffusionReactionPde<3>::Create();
         p_pde->SetIsotropicDiffusionConstant(0.0033);
         p_pde->SetContinuumLinearInUTerm(-2.e-7);
 

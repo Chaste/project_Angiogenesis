@@ -46,7 +46,7 @@
 #include "UblasIncludes.hpp"
 #include "Part.hpp"
 #include "Vertex.hpp"
-#include "NonLinearConcentrationBasedDiffusionReactionPde.hpp"
+#include "NonLinearSteadyStateDiffusionReactionPde.hpp"
 #include "VesselNetwork.hpp"
 #include "VesselNetworkGenerator.hpp"
 #include "SmartPointers.hpp"
@@ -71,11 +71,11 @@ public:
         p_mesh->Update();
 
         // Choose the PDE
-        boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<3> > p_linear_pde = LinearConcentrationBasedDiffusionReactionPde<3>::Create();
+        boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<3> > p_linear_pde = LinearSteadyStateDiffusionReactionPde<3>::Create();
         p_linear_pde->SetIsotropicDiffusionConstant(1.0);
         p_linear_pde->SetContinuumLinearInUTerm(-2.0);
 
-        boost::shared_ptr<NonLinearConcentrationBasedDiffusionReactionPde<3> > p_non_linear_pde = NonLinearConcentrationBasedDiffusionReactionPde<3>::Create();
+        boost::shared_ptr<NonLinearSteadyStateDiffusionReactionPde<3> > p_non_linear_pde = NonLinearSteadyStateDiffusionReactionPde<3>::Create();
         p_non_linear_pde->SetIsotropicDiffusionConstant(1.0);
         p_non_linear_pde->SetContinuumConstantInUTerm(-2.0);
 

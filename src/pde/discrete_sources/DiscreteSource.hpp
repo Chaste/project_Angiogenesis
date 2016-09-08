@@ -128,6 +128,16 @@ protected:
      */
     units::quantity<unit::rate> mLinearInUValue;
 
+    /**
+     * The prescribed value of the source strength. Used for PRESCRIBED source strengths.
+     */
+    units::quantity<unit::concentration_flow_rate> mConstantInUSinkRatePerSolutionQuantity;
+
+    /**
+     * The prescribed value of the source strength. Used for PRESCRIBED source strengths.
+     */
+    units::quantity<unit::rate> mLinearInUSinkRatePerSolutionQuantity;
+
 public:
 
     /**
@@ -246,13 +256,13 @@ public:
      * Set the value of the source for PRESCRIBED type sources
      * @param value the value of the source
      */
-    void SetConstantInUValue(units::quantity<unit::rate> value);
+    void SetConstantInUValue(units::quantity<unit::concentration_flow_rate> value);
 
     /**
      * Set the value of the source for PRESCRIBED type sources
      * @param value the value of the source
      */
-    void SetLinearInUValue(units::quantity<unit::concentration_flow_rate> value);
+    void SetLinearInUValue(units::quantity<unit::rate> value);
 };
 
 #endif /* DiscreteSource_HPP_ */

@@ -71,7 +71,7 @@ const std::string& AbstractDiscreteContinuumSolver<DIM>::GetLabel()
 }
 
 template<unsigned DIM>
-boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<DIM, DIM> > AbstractDiscreteContinuumSolver<DIM>::GetPde()
+boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<DIM, DIM> > AbstractDiscreteContinuumSolver<DIM>::GetPde()
 {
     if(!mpPde)
     {
@@ -81,7 +81,7 @@ boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<DIM, DIM> > Abstr
 }
 
 template<unsigned DIM>
-boost::shared_ptr<NonLinearConcentrationBasedDiffusionReactionPde<DIM, DIM> > AbstractDiscreteContinuumSolver<DIM>::GetNonLinearPde()
+boost::shared_ptr<NonLinearSteadyStateDiffusionReactionPde<DIM, DIM> > AbstractDiscreteContinuumSolver<DIM>::GetNonLinearPde()
 {
     if(!mpNonLinearPde)
     {
@@ -117,13 +117,13 @@ void AbstractDiscreteContinuumSolver<DIM>::SetLabel(const std::string& label)
 }
 
 template<unsigned DIM>
-void AbstractDiscreteContinuumSolver<DIM>::SetPde(boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<DIM, DIM> > pPde)
+void AbstractDiscreteContinuumSolver<DIM>::SetPde(boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<DIM, DIM> > pPde)
 {
     mpPde = pPde;
 }
 
 template<unsigned DIM>
-void AbstractDiscreteContinuumSolver<DIM>::SetNonLinearPde(boost::shared_ptr<NonLinearConcentrationBasedDiffusionReactionPde<DIM, DIM> > pPde)
+void AbstractDiscreteContinuumSolver<DIM>::SetNonLinearPde(boost::shared_ptr<NonLinearSteadyStateDiffusionReactionPde<DIM, DIM> > pPde)
 {
     mpNonLinearPde = pPde;
 }

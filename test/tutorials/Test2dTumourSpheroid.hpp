@@ -79,9 +79,9 @@
 
 class Test2dTumourSpheroid : public AbstractCellBasedWithTimingsTestSuite
 {
-    boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<2> > GetOxygenPde()
+    boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<2> > GetOxygenPde()
         {
-            boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<2> > p_pde = LinearConcentrationBasedDiffusionReactionPde<2>::Create();
+            boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<2> > p_pde = LinearSteadyStateDiffusionReactionPde<2>::Create();
             p_pde->SetIsotropicDiffusionConstant(8700000 / (400.0)); // assume cell width is 20 microns
 
             // Add a cell state specific discrete source for cells consuming oxygen

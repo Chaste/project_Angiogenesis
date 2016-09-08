@@ -33,8 +33,8 @@
 
  */
 
-#ifndef NonLinearConcentrationBasedDiffusionReactionPde_HPP_
-#define NonLinearConcentrationBasedDiffusionReactionPde_HPP_
+#ifndef NonLinearSteadyStateDiffusionReactionPde_HPP_
+#define NonLinearSteadyStateDiffusionReactionPde_HPP_
 
 #include <string>
 #include "ChastePoint.hpp"
@@ -51,7 +51,7 @@
  * Non-Linear Elliptic PDE with both continuum and discrete source terms.
  */
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM = ELEMENT_DIM>
-class NonLinearConcentrationBasedDiffusionReactionPde : public AbstractNonlinearEllipticPde<SPACE_DIM>
+class NonLinearSteadyStateDiffusionReactionPde : public AbstractNonlinearEllipticPde<SPACE_DIM>
 {
     /**
      * The diffusion tensor
@@ -115,13 +115,13 @@ public:
     /**
      * Constructor
      */
-    NonLinearConcentrationBasedDiffusionReactionPde();
+    NonLinearSteadyStateDiffusionReactionPde();
 
     /**
      * Factory Constructor
      * @return a pointer to an instance of the pde
      */
-    static boost::shared_ptr<NonLinearConcentrationBasedDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM> > Create();
+    static boost::shared_ptr<NonLinearSteadyStateDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM> > Create();
 
     /**
      * Add a discrete source to the pde
@@ -335,4 +335,4 @@ public:
 
 };
 
-#endif /*NonLinearConcentrationBasedDiffusionReactionPde_HPP_*/
+#endif /*NonLinearSteadyStateDiffusionReactionPde_HPP_*/

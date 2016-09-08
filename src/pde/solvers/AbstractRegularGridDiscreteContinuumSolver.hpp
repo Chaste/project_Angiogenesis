@@ -45,6 +45,7 @@
 #include "UblasIncludes.hpp"
 #include "AbstractDiscreteContinuumSolver.hpp"
 #include "RegularGrid.hpp"
+#include "UnitCollection.hpp"
 
 /**
  * An abstract solver class for DiscreteContinuum continuum-discrete problems using structured grids.
@@ -71,6 +72,11 @@ protected:
      * The solution at the grid points
      */
     std::vector<double> mPointSolution;
+
+    /**
+     * The concentration at the grid points
+     */
+    std::vector<units::quantity<unit::concentration> > mConcentrationPointSolution;
 
 
 public:
@@ -102,6 +108,16 @@ public:
     virtual std::vector<double> GetSolutionAtGridPoints(boost::shared_ptr<RegularGrid<DIM> > pGrid);
 
     /**
+     * Return the solver output sampled at discrete points.
+     * @param samplePoints the points to be sampled at
+     * @param samplingStrategy use the default sampling strategy
+     * @return a vector of the point values
+     */
+    virtual std::vector<units::quantity<unit::concentration> > GetConcentrationAtPoints(std::vector<DimensionalChastePoint<DIM> > samplePoints);
+
+    virtual std::vector<units::quantity<unit::concentration> > GetConcentrationAtGridPoints(boost::shared_ptr<RegularGrid<DIM> > pGrid);
+
+    /**
      * Return the solution as vtk image data
      */
     virtual vtkSmartPointer<vtkImageData> GetVtkSolution();
@@ -110,6 +126,11 @@ public:
      * Return the solution on the grid points
      */
     virtual std::vector<double> GetPointSolution();
+
+    /**
+     * Return the solution on the grid points
+     */
+    virtual std::vector<units::quantity<unit::concentration> > GetConcentrationSolution();
 
     /**
      * Set the structured grid
@@ -126,6 +147,11 @@ public:
      * Update the solution manually
      */
     virtual void UpdateSolution(std::vector<double> data);
+
+    /**
+     * Update the solution manually
+     */
+    virtual void UpdateSolution(std::vector<units::quantity<unit::concentration> > data);
 
     /**
      * Update the cell data as passed in

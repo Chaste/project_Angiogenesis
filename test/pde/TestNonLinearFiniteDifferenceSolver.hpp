@@ -46,7 +46,7 @@
 #include "UblasIncludes.hpp"
 #include "Part.hpp"
 #include "Vertex.hpp"
-#include "NonLinearConcentrationBasedDiffusionReactionPde.hpp"
+#include "NonLinearSteadyStateDiffusionReactionPde.hpp"
 #include "VesselNetwork.hpp"
 #include "VesselNetworkGenerator.hpp"
 #include "SmartPointers.hpp"
@@ -73,7 +73,7 @@ public:
         p_grid->GenerateFromPart(p_domain, 0.5*1.e-6*unit::metres);
 
         // Choose the PDE
-        boost::shared_ptr<NonLinearConcentrationBasedDiffusionReactionPde<3> > p_non_linear_pde = NonLinearConcentrationBasedDiffusionReactionPde<3>::Create();
+        boost::shared_ptr<NonLinearSteadyStateDiffusionReactionPde<3> > p_non_linear_pde = NonLinearSteadyStateDiffusionReactionPde<3>::Create();
         p_non_linear_pde->SetIsotropicDiffusionConstant(1.0);
         p_non_linear_pde->SetContinuumConstantInUTerm(-2.0);
         p_non_linear_pde->SetThreshold(0.0625);

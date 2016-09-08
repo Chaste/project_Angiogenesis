@@ -33,8 +33,8 @@
 
  */
 
-#ifndef DiscreteSource_HPP_
-#define DiscreteSource_HPP_
+#ifndef cellbasedDiscreteSource_HPP_
+#define cellbasedDiscreteSource_HPP_
 
 #include <vector>
 #include <string>
@@ -119,4 +119,4 @@ public:
     void SetLinearInUConsumptionRatePerCell(units::quantity<unit::rate> value);
 };
 
-#endif /* DiscreteSource_HPP_ */
+#endif /* cellbasedDiscreteSource_HPP_ */

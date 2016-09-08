@@ -58,7 +58,8 @@ FiniteElementSolver<DIM>::FiniteElementSolver()
       mpMesh(),
       mUseNewton(false),
       mUseLinearSolveForGuess(false),
-      mGuess()
+      mGuess(),
+      mReferenceConcentration(1.0*unit::mole_per_metre_cubed)
 {
 
 }
@@ -104,13 +105,13 @@ void FiniteElementSolver<DIM>::ReadSolution()
 }
 
 template<unsigned DIM>
-std::vector<double> FiniteElementSolver<DIM>::GetSolutionAtGridPoints(boost::shared_ptr<RegularGrid<DIM, DIM> > pGrid)
+std::vector<units::quantity<unit::concentration> > FiniteElementSolver<DIM>::GetConcentrationAtGridPoints(boost::shared_ptr<RegularGrid<DIM, DIM> > pGrid)
 {
     return GetSolutionAtPoints(pGrid->GetLocations());
 }
 
 template<unsigned DIM>
-std::vector<double> FiniteElementSolver<DIM>::GetSolutionAtPoints(std::vector<DimensionalChastePoint<DIM> > samplePoints)
+std::vector<units::quantity<unit::concentration> > FiniteElementSolver<DIM>::GetConcentrationAtPoints(std::vector<DimensionalChastePoint<DIM> > samplePoints)
 {
     if(!mFeVtkSolution)
     {
@@ -141,10 +142,10 @@ std::vector<double> FiniteElementSolver<DIM>::GetSolutionAtPoints(std::vector<Di
 
     vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetOutput()->GetPointData();
     unsigned num_points = p_point_data->GetArray(this->mLabel.c_str())->GetNumberOfTuples();
-    std::vector<double> results(num_points);
+    std::vector<units::quantity<unit::concentration> > results(num_points);
     for(unsigned idx=0; idx<num_points; idx++)
     {
-        results[idx] = p_point_data->GetArray(this->mLabel.c_str())->GetTuple1(idx);
+        results[idx] = p_point_data->GetArray(this->mLabel.c_str())->GetTuple1(idx)*mReferenceConcentration;
     }
     return results;
 }
@@ -227,13 +228,10 @@ void FiniteElementSolver<DIM>::Solve()
             for(unsigned idx = 0; idx < static_solution_repl.GetSize(); idx++)
             {
                 solution[idx]= static_solution_repl[idx];
+                // Dont want negative solutions going into the initial guess
                 if(solution[idx]<0.0)
                 {
                     solution[idx] = 0.0;
-                }
-                if(solution[idx]<1.0)
-                {
-                    solution[idx] = solution[idx] / 1.0;
                 }
             }
 

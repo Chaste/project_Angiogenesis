@@ -40,6 +40,8 @@
 #include "LinearSystem.hpp"
 #include "SimplePetscNonlinearSolver.hpp"
 #include "AbstractRegularGridDiscreteContinuumSolver.hpp"
+#include "UnitCollection.hpp"
+#include "BaseUnits.hpp"
 
 /*
  * Finite difference solver for linear elliptic PDEs which can include
@@ -51,7 +53,7 @@ class FiniteDifferenceSolver : public AbstractRegularGridDiscreteContinuumSolver
 
     /* Description of boundary conditions for this grid
      */
-    boost::shared_ptr<std::vector<std::pair<bool, double> > > mpBoundaryConditions;
+    boost::shared_ptr<std::vector<std::pair<bool, units::quantity<unit::concentration> > > > mpBoundaryConditions;
 
     bool mUpdateBoundaryConditionsEachSolve;
 
@@ -74,7 +76,7 @@ public:
 
     /* Get the boundary conditions in the finite difference representation
      */
-    boost::shared_ptr<std::vector<std::pair<bool, double> > > GetRGBoundaryConditions();
+    boost::shared_ptr<std::vector<std::pair<bool, units::quantity<unit::concentration> > > > GetRGBoundaryConditions();
 
     /* Overridden solve method
      */

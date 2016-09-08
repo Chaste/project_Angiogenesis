@@ -46,7 +46,7 @@ DiscreteContinuumBoundaryCondition<DIM>::DiscreteContinuumBoundaryCondition()
         mType(BoundaryConditionType::OUTER),
         mSource(BoundaryConditionSource::PRESCRIBED),
         mLabel("Default"),
-        mValue(0.0),
+        mValue(),
         mpRegularGrid(),
         mpMesh(),
         mpNetwork()
@@ -74,7 +74,7 @@ boost::shared_ptr<DiscreteContinuumBoundaryCondition<DIM> > DiscreteContinuumBou
 }
 
 template<unsigned DIM>
-double DiscreteContinuumBoundaryCondition<DIM>::GetValue()
+units::quantity<unit::concentration> DiscreteContinuumBoundaryCondition<DIM>::GetValue()
 {
     return mValue;
 }
@@ -109,10 +109,10 @@ void DiscreteContinuumBoundaryCondition<DIM>::UpdateBoundaryConditionContainer(b
             typename DiscreteContinuumMesh<DIM, DIM>::NodeIterator iter = mpMesh->GetNodeIteratorBegin();
             while (iter != mpMesh->GetNodeIteratorEnd())
             {
-                std::pair<bool,double> result = GetValue((*iter).GetPoint().rGetLocation(), node_distance_tolerance);
+                std::pair<bool,units::quantity<unit::concentration> > result = GetValue((*iter).GetPoint().rGetLocation(), node_distance_tolerance);
                 if(result.first)
                 {
-                    ConstBoundaryCondition<DIM>* p_fixed_boundary_condition = new ConstBoundaryCondition<DIM>(result.second);
+                    ConstBoundaryCondition<DIM>* p_fixed_boundary_condition = new ConstBoundaryCondition<DIM>(result.second/unit::mole_per_metre_cubed);
                     pContainer->AddDirichletBoundaryCondition(&(*iter), p_fixed_boundary_condition, 0, false);
                 }
                 ++iter;
@@ -123,10 +123,10 @@ void DiscreteContinuumBoundaryCondition<DIM>::UpdateBoundaryConditionContainer(b
             typename DiscreteContinuumMesh<DIM, DIM>::BoundaryNodeIterator iter = mpMesh->GetBoundaryNodeIteratorBegin();
             while (iter < mpMesh->GetBoundaryNodeIteratorEnd())
             {
-                std::pair<bool,double> result = GetValue((*iter)->GetPoint().rGetLocation(), node_distance_tolerance);
+                std::pair<bool,units::quantity<unit::concentration> > result = GetValue((*iter)->GetPoint().rGetLocation(), node_distance_tolerance);
                 if(result.first)
                 {
-                    ConstBoundaryCondition<DIM>* p_fixed_boundary_condition = new ConstBoundaryCondition<DIM>(result.second);
+                    ConstBoundaryCondition<DIM>* p_fixed_boundary_condition = new ConstBoundaryCondition<DIM>(result.second/unit::mole_per_metre_cubed);
                     pContainer->AddDirichletBoundaryCondition(*iter, p_fixed_boundary_condition);
                 }
                 ++iter;
@@ -136,9 +136,9 @@ void DiscreteContinuumBoundaryCondition<DIM>::UpdateBoundaryConditionContainer(b
 }
 
 template<unsigned DIM>
-std::pair<bool, double> DiscreteContinuumBoundaryCondition<DIM>::GetValue(DimensionalChastePoint<DIM> location, double tolerance)
+std::pair<bool, units::quantity<unit::concentration> > DiscreteContinuumBoundaryCondition<DIM>::GetValue(DimensionalChastePoint<DIM> location, double tolerance)
 {
-    std::pair<bool, double> result(false, 0.0);
+    std::pair<bool, units::quantity<unit::concentration> > result(false, 0.0*unit::mole_per_metre_cubed);
     if(mType == BoundaryConditionType::POINT)
     {
         if(mPoints.size()==0)
@@ -151,7 +151,7 @@ std::pair<bool, double> DiscreteContinuumBoundaryCondition<DIM>::GetValue(Dimens
             {
                 if(norm_2(location.rGetLocation()-mPoints[jdx].rGetLocation()) < tolerance)
                 {
-                    return std::pair<bool, double>(true, mValue);
+                    return std::pair<bool, units::quantity<unit::concentration> >(true, mValue);
                 }
             }
         }
@@ -190,7 +190,7 @@ std::pair<bool, double> DiscreteContinuumBoundaryCondition<DIM>::GetValue(Dimens
                 {
                     if(BoundaryConditionSource::PRESCRIBED)
                     {
-                        return std::pair<bool, double>(true, mValue);
+                        return std::pair<bool, units::quantity<unit::concentration> >(true, mValue);
                     }
 //                    else
 //                    {
@@ -216,7 +216,7 @@ std::pair<bool, double> DiscreteContinuumBoundaryCondition<DIM>::GetValue(Dimens
                 {
                     if(BoundaryConditionSource::PRESCRIBED)
                     {
-                        return std::pair<bool, double>(true, mValue);
+                        return std::pair<bool, units::quantity<unit::concentration> >(true, mValue);
                     }
                 }
             }
@@ -251,11 +251,11 @@ std::pair<bool, double> DiscreteContinuumBoundaryCondition<DIM>::GetValue(Dimens
             {
                 if(BoundaryConditionSource::PRESCRIBED)
                 {
-                    return  std::pair<bool, double>(true, mValue);
+                    return  std::pair<bool, units::quantity<unit::concentration> >(true, mValue);
                 }
                 else
                 {
-                    return  std::pair<bool, double>(true, mValue);
+                    return  std::pair<bool, units::quantity<unit::concentration> >(true, mValue);
                 }
             }
         }
@@ -264,7 +264,7 @@ std::pair<bool, double> DiscreteContinuumBoundaryCondition<DIM>::GetValue(Dimens
 }
 
 template<unsigned DIM>
-void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridPointBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions)
+void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridPointBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, units::quantity<unit::concentration> > > >pBoundaryConditions)
 {
     if(mPoints.size()==0)
     {
@@ -277,14 +277,14 @@ void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridPointBoundaryCond
         {
             if(point_point_map[idx].size()>0)
             {
-                (*pBoundaryConditions)[idx] = std::pair<bool, double>(true, mValue);
+                (*pBoundaryConditions)[idx] = std::pair<bool, units::quantity<unit::concentration> >(true, mValue);
             }
         }
     }
 }
 
 template<unsigned DIM>
-void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridFacetBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions)
+void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridFacetBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, units::quantity<unit::concentration> > > >pBoundaryConditions)
 {
     if(!mpDomain)
     {
@@ -301,7 +301,7 @@ void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridFacetBoundaryCond
                 {
                     if(BoundaryConditionSource::PRESCRIBED)
                     {
-                        (*pBoundaryConditions)[idx] = std::pair<bool, double>(true, mValue);
+                        (*pBoundaryConditions)[idx] = std::pair<bool, units::quantity<unit::concentration> >(true, mValue);
                         break;
                     }
 //                    else
@@ -316,7 +316,7 @@ void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridFacetBoundaryCond
 }
 
 template<unsigned DIM>
-void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridSegmentBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions)
+void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridSegmentBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, units::quantity<unit::concentration> > > >pBoundaryConditions)
 {
     std::vector<std::vector<boost::shared_ptr<VesselSegment<DIM> > > > point_segment_map = mpRegularGrid->GetPointSegmentMap(true, !(mType == BoundaryConditionType::VESSEL_LINE));
     for(unsigned idx=0; idx<point_segment_map.size(); idx++)
@@ -325,7 +325,7 @@ void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridSegmentBoundaryCo
         {
             if(BoundaryConditionSource::PRESCRIBED)
             {
-                (*pBoundaryConditions)[idx] = std::pair<bool, double>(true, mValue);
+                (*pBoundaryConditions)[idx] = std::pair<bool, units::quantity<unit::concentration> >(true, mValue);
             }
 //            else
 //            {
@@ -336,7 +336,7 @@ void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridSegmentBoundaryCo
 }
 
 template<unsigned DIM>
-void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridCellBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions)
+void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridCellBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, units::quantity<unit::concentration> > > >pBoundaryConditions)
 {
 //    std::vector<boost::shared_ptr<SimpleCell<DIM> > > cells = mpCellPopulation->GetCells();
 //    std::vector<std::vector<CellPtr> > point_cell_map = mpRegularGrid->GetPointCellMap();
@@ -347,7 +347,7 @@ void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridCellBoundaryCondi
 }
 
 template<unsigned DIM>
-void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridPartBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions)
+void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridPartBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, units::quantity<unit::concentration> > > >pBoundaryConditions)
 {
     if(!mpDomain)
     {
@@ -361,12 +361,12 @@ void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridPartBoundaryCondi
             {
                 if(BoundaryConditionSource::PRESCRIBED)
                 {
-                    (*pBoundaryConditions)[idx] =  std::pair<bool, double>(true, mValue);
+                    (*pBoundaryConditions)[idx] =  std::pair<bool, units::quantity<unit::concentration> >(true, mValue);
                     break;
                 }
                 else
                 {
-                    (*pBoundaryConditions)[idx] =  std::pair<bool, double>(true, mValue);
+                    (*pBoundaryConditions)[idx] =  std::pair<bool, units::quantity<unit::concentration> >(true, mValue);
                     break;
                 }
             }
@@ -375,7 +375,7 @@ void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridPartBoundaryCondi
 }
 
 template<unsigned DIM>
-void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, double> > >pBoundaryConditions)
+void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridBoundaryConditions(boost::shared_ptr<std::vector<std::pair<bool, units::quantity<unit::concentration> > > >pBoundaryConditions)
 {
     if(! mpRegularGrid)
     {
@@ -387,7 +387,7 @@ void DiscreteContinuumBoundaryCondition<DIM>::UpdateRegularGridBoundaryCondition
     {
         for(unsigned idx=0; idx<mpRegularGrid->GetNumberOfPoints(); idx++)
         {
-            (*pBoundaryConditions)[idx] = std::pair<bool, double> (mpRegularGrid->IsOnBoundary(idx), mValue);
+            (*pBoundaryConditions)[idx] = std::pair<bool, units::quantity<unit::concentration> > (mpRegularGrid->IsOnBoundary(idx), mValue);
         }
     }
     else if(mType == BoundaryConditionType::POINT)
@@ -455,7 +455,7 @@ void DiscreteContinuumBoundaryCondition<DIM>::SetLabelName(const std::string& la
 }
 
 template<unsigned DIM>
-void DiscreteContinuumBoundaryCondition<DIM>::SetValue(double value)
+void DiscreteContinuumBoundaryCondition<DIM>::SetValue(units::quantity<unit::concentration> value)
 {
     mValue = value;
 }

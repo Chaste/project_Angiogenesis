@@ -45,6 +45,7 @@
 #include "VesselSegment.hpp"
 #include "Part.hpp"
 #include "AbstractRegularGridDiscreteContinuumSolver.hpp"
+#include "UnitCollection.hpp"
 
 template<unsigned DIM>
 class GreensFunctionSolver : public AbstractRegularGridDiscreteContinuumSolver<DIM>
@@ -54,10 +55,10 @@ class GreensFunctionSolver : public AbstractRegularGridDiscreteContinuumSolver<D
     std::vector<unsigned> mSinkPointMap;
     std::vector<ChastePoint<DIM> > mSubSegmentCoordinates;
     std::vector<double> mSubSegmentLengths;
-    std::vector<double> mSinkRates;
-    std::vector<double> mSourceRates;
-    std::vector<double> mSegmentConcentration;
-    std::vector<double> mTissueConcentration;
+    std::vector<units::quantity<unit::molar_flow_rate> > mSinkRates;
+    std::vector<units::quantity<unit::molar_flow_rate> > mSourceRates;
+    std::vector<units::quantity<unit::concentration> > mSegmentConcentration;
+    std::vector<units::quantity<unit::concentration> > mTissueConcentration;
     std::map<unsigned, boost::shared_ptr<VesselSegment<DIM> > > mSegmentPointMap;
     boost::shared_ptr<boost::multi_array<double, 2> > mGtt;
     boost::shared_ptr<boost::multi_array<double, 2> > mGvv;

@@ -36,7 +36,7 @@
 #ifndef FINITEELEMENTSOLVER_HPP_
 #define FINITEELEMENTSOLVER_HPP_
 
-#include "../problem/LinearSteadyStateDiffusionReactionPde.hpp"
+#include "LinearSteadyStateDiffusionReactionPde.hpp"
 #include "SmartPointers.hpp"
 #include "AbstractDiscreteContinuumSolver.hpp"
 #include "DiscreteContinuumMesh.hpp"
@@ -69,6 +69,8 @@ class FiniteElementSolver : public AbstractDiscreteContinuumSolver<DIM>
     // An initial solution guess
     std::vector<double> mGuess;
 
+    units::quantity<unit::concentration> mReferenceConcentration;
+
 public:
 
     /*
@@ -89,9 +91,9 @@ public:
     /*
      * Overridden solution at points
      */
-    std::vector<double> GetSolutionAtPoints(std::vector<DimensionalChastePoint<DIM> > samplePoints);
+    std::vector<units::quantity<unit::concentration> > GetConcentrationAtPoints(std::vector<DimensionalChastePoint<DIM> > samplePoints);
 
-    std::vector<double> GetSolutionAtGridPoints(boost::shared_ptr<RegularGrid<DIM, DIM> > pGrid);
+    std::vector<units::quantity<unit::concentration> > GetConcentrationAtGridPoints(boost::shared_ptr<RegularGrid<DIM, DIM> > pGrid);
 
     std::vector<double> GetNodalSolution();
 
