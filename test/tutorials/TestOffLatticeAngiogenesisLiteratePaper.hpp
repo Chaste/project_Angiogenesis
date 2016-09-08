@@ -53,6 +53,7 @@
  * smart pointer tools and output management.
  */
 #include <cxxtest/TestSuite.h>
+#include "LinearSteadyStateDiffusionReactionPde.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "SmartPointers.hpp"
 #include "OutputFileHandler.hpp"
@@ -92,7 +93,6 @@
  */
 #include "DiscreteContinuumMesh.hpp"
 #include "VtkMeshWriter.hpp"
-#include "LinearConcentrationBasedDiffusionReactionPde.hpp"
 #include "FiniteElementSolver.hpp"
 #include "DiscreteContinuumBoundaryCondition.hpp"
 /*
@@ -214,14 +214,15 @@ public:
         /*
          * Set up the oxygen
          */
-        boost::shared_ptr<LinearConcentrationBasedDiffusionReactionPde<3> > p_oxygen_pde = LinearConcentrationBasedDiffusionReactionPde<3>::Create();
+        boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<3> > p_oxygen_pde = LinearSteadyStateDiffusionReactionPde<3>::Create();
         units::quantity<unit::diffusivity> oxygen_diffusivity(1.e-6*unit::metre_squared_per_second);
-        units::quantity<unit::concentration_flow_rate> oxygen_consumption_rate(1.e-6*unit::mole_per_metre_cubed_per_second);
+        units::quantity<unit::rate> oxygen_consumption_rate(1.e-6*unit::per_second);
         p_oxygen_pde->SetIsotropicDiffusionConstant(oxygen_diffusivity);
         p_oxygen_pde->SetContinuumLinearInUTerm(oxygen_consumption_rate);
         /*
          * Add a boundary condition for vessels
          */
+
 
     }
 };

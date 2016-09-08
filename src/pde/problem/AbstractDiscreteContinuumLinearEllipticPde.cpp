@@ -41,7 +41,7 @@ AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::AbstractDisc
             AbstractLinearEllipticPde<ELEMENT_DIM, ELEMENT_DIM>(),
             mDiffusionTensor(identity_matrix<double>(SPACE_DIM)),
             mDiffusivity(1.0 * unit::metre_squared_per_second),
-            mConstantInUTerm(0.0 * unit::per_second),
+            mConstantInUTerm(0.0 * unit::mole_per_metre_cubed_per_second),
             mDiscreteSources(),
             mpRegularGrid(),
             mpMesh(),
@@ -67,11 +67,11 @@ void AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::AddDisc
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 double AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeConstantInUSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement)
 {
-    return mConstantInUTerm/unit::per_second;
+    return mConstantInUTerm/unit::mole_per_metre_cubed_per_second;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-units::quantity<unit::rate> AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeConstantInUSourceTerm(unsigned gridIndex)
+units::quantity<unit::concentration_flow_rate> AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeConstantInUSourceTerm(unsigned gridIndex)
 {
     if(gridIndex >= mDiscreteLinearSourceStrengths.size())
     {
@@ -87,12 +87,6 @@ c_matrix<double, SPACE_DIM, SPACE_DIM> AbstractDiscreteContinuumLinearEllipticPd
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-double AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeLinearInUCoeffInSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement)
-{
-    return mLinearInUTerm/unit::mole_per_second;
-}
-
-template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 units::quantity<unit::diffusivity> AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeIsotropicDiffusionTerm()
 {
     return mDiffusivity;
@@ -105,7 +99,7 @@ std::vector<boost::shared_ptr<DiscreteSource<SPACE_DIM> > > AbstractDiscreteCont
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetContinuumConstantInUTerm(units::quantity<unit::rate> constantInUTerm)
+void AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetContinuumConstantInUTerm(units::quantity<unit::concentration_flow_rate> constantInUTerm)
 {
     mConstantInUTerm = constantInUTerm;
 }
@@ -144,15 +138,15 @@ void AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::UpdateD
         {
             EXCEPTION("A grid has not been set for the determination of source strengths.");
         }
-        mDiscreteConstantSourceStrengths = std::vector<units::quantity<unit::rate> >(mpRegularGrid->GetNumberOfPoints(), 0.0);
+        mDiscreteConstantSourceStrengths = std::vector<units::quantity<unit::concentration_flow_rate> >(mpRegularGrid->GetNumberOfPoints(), 0.0);
         for(unsigned idx=0; idx<mDiscreteSources.size(); idx++)
         {
             mDiscreteSources[idx]->SetRegularGrid(mpRegularGrid);
             if(!mDiscreteSources[idx]->IsLinearInSolution())
             {
-                std::vector<units::quantity<unit::rate> > result = mDiscreteSources[idx]->GetRegularGridValues();
+                std::vector<units::quantity<unit::concentration_flow_rate> > result = mDiscreteSources[idx]->GetRegularGridValues();
                 std::transform(mDiscreteConstantSourceStrengths.begin( ), mDiscreteConstantSourceStrengths.end( ),
-                               result.begin( ), mDiscreteConstantSourceStrengths.begin( ),std::plus<units::quantity<unit::rate> >( ));
+                               result.begin( ), mDiscreteConstantSourceStrengths.begin( ),std::plus<units::quantity<unit::concentration_flow_rate> >( ));
             }
         }
     }

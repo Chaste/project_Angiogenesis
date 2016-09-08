@@ -47,8 +47,8 @@ DiscreteSource<DIM>::DiscreteSource()
         mType(SourceType::POINT),
         mSourceStrength(SourceStrength::PRESCRIBED),
         mLabel("Default"),
-        mConstantInUValue(0.0*unit::per_second),
-        mLinearInUValue(0.0*unit::mole_per_metre_cubed_per_second)
+        mConstantInUValue(0.0*unit::mole_per_metre_cubed_per_second),
+        mLinearInUValue(0.0*unit::per_second)
 {
 
 }
@@ -73,23 +73,23 @@ SourceType::Value DiscreteSource<DIM>::GetType()
 }
 
 template<unsigned DIM>
-std::vector<units::quantity<unit::rate> > DiscreteSource<DIM>::GetConstantInUMeshValues()
-{
-    if(!mpMesh)
-    {
-        EXCEPTION("A mesh is required for this type of source");
-    }
-    return std::vector<units::quantity<unit::rate> >();
-}
-
-template<unsigned DIM>
-std::vector<units::quantity<unit::concentration_flow_rate> > DiscreteSource<DIM>::GetLinearInUMeshValues()
+std::vector<units::quantity<unit::concentration_flow_rate> > DiscreteSource<DIM>::GetConstantInUMeshValues()
 {
     if(!mpMesh)
     {
         EXCEPTION("A mesh is required for this type of source");
     }
     return std::vector<units::quantity<unit::concentration_flow_rate> >();
+}
+
+template<unsigned DIM>
+std::vector<units::quantity<unit::rate> > DiscreteSource<DIM>::GetLinearInUMeshValues()
+{
+    if(!mpMesh)
+    {
+        EXCEPTION("A mesh is required for this type of source");
+    }
+    return std::vector<units::quantity<unit::rate> >();
 }
 
 template<unsigned DIM>
@@ -139,18 +139,6 @@ std::vector<units::quantity<unit::rate> > DiscreteSource<DIM>::GetConstantInUVes
 }
 
 template<unsigned DIM>
-std::vector<units::quantity<unit::rate> > DiscreteSource<DIM>::GetConstantInUCellRegularGridValues()
-{
-    std::vector<double> values(mpRegularGrid->GetNumberOfPoints(), 0.0);
-    std::vector<std::vector<CellPtr> > point_cell_map = mpRegularGrid->GetPointCellMap();
-    for(unsigned idx=0; idx<point_cell_map.size(); idx++)
-    {
-        values[idx] += mConstantInUValue * point_cell_map[idx].size();
-    }
-    return values;
-}
-
-template<unsigned DIM>
 std::vector<units::quantity<unit::rate> > DiscreteSource<DIM>::GetConstantInUSolutionDependentRegularGridValues()
 {
     std::vector<double> values(mpRegularGrid->GetNumberOfPoints(), 0.0);
@@ -166,7 +154,7 @@ std::vector<units::quantity<unit::rate> > DiscreteSource<DIM>::GetConstantInUSol
 }
 
 template<unsigned DIM>
-std::vector<units::quantity<unit::rate> > DiscreteSource<DIM>::GetConstantInURegularGridValues()
+std::vector<units::quantity<unit::concentration_flow_rate> > DiscreteSource<DIM>::GetConstantInURegularGridValues()
 {
     if(!mpRegularGrid)
     {
@@ -177,14 +165,6 @@ std::vector<units::quantity<unit::rate> > DiscreteSource<DIM>::GetConstantInUReg
     if(mType == SourceType::POINT)
     {
         return GetConstantInUPointRegularGridValues();
-    }
-    else if(mType == SourceType::VESSEL)
-    {
-        return GetConstantInUVesselRegularGridValues();
-    }
-    else if(mType == SourceType::CELL)
-    {
-        return GetConstantInUCellRegularGridValues();
     }
     else if(mType == SourceType::SOLUTION)
     {
@@ -240,13 +220,13 @@ void DiscreteSource<DIM>::SetType(SourceType::Value boundaryType)
 }
 
 template<unsigned DIM>
-void DiscreteSource<DIM>::SetConstantInUValue(units::quantity<unit::rate> value)
+void DiscreteSource<DIM>::SetConstantInUValue(units::quantity<unit::concentration_flow_rate> value)
 {
     mConstantInUValue = value;
 }
 
 template<unsigned DIM>
-void DiscreteSource<DIM>::SetLinearInUValue(units::quantity<unit::concentration_flow_rate> value)
+void DiscreteSource<DIM>::SetLinearInUValue(units::quantity<unit::rate> value)
 {
     mLinearInUValue = value;
 }

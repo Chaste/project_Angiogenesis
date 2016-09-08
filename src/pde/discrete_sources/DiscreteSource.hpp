@@ -55,7 +55,7 @@ struct SourceType
 {
     enum Value
     {
-        POINT, VESSEL, CELL, SOLUTION
+        POINT, SOLUTION
     };
 };
 
@@ -121,12 +121,12 @@ protected:
     /**
      * The prescribed value of the source strength. Used for PRESCRIBED source strengths.
      */
-    units::quantity<unit::rate> mConstantInUValue;
+    units::quantity<unit::concentration_flow_rate> mConstantInUValue;
 
     /**
      * The prescribed value of the source strength. Used for PRESCRIBED source strengths.
      */
-    units::quantity<unit::concentration_flow_rate> mLinearInUValue;
+    units::quantity<unit::rate> mLinearInUValue;
 
 public:
 
@@ -156,67 +156,43 @@ public:
      * Return the values of the source strengths sampled on the mesh elements
      * @return a vector of source strengths
      */
-    std::vector<units::quantity<unit::rate> > GetConstantInUMeshValues();
+    virtual std::vector<units::quantity<unit::concentration_flow_rate> > GetConstantInUMeshValues();
 
     /**
      * Return the values of the source strengths sampled on the mesh elements
      * @return a vector of source strengths
      */
-    std::vector<units::quantity<unit::concentration_flow_rate> > GetLinearInUMeshValues();
+    virtual std::vector<units::quantity<unit::rate> > GetLinearInUMeshValues();
 
     /**
      * Return the values of the source strengths sampled on the regular grid
      * @return a vector of source strengths
      */
-    std::vector<units::quantity<unit::rate> > GetConstantInURegularGridValues();
+    virtual std::vector<units::quantity<unit::concentration_flow_rate> > GetConstantInURegularGridValues();
 
     /**
      * Return the values of the source strengths sampled on the regular grid
      * @return a vector of source strengths
      */
-    std::vector<units::quantity<unit::concentration_flow_rate> > GetLinearInURegularGridValues();
+    virtual std::vector<units::quantity<unit::rate> > GetLinearInURegularGridValues();
 
     /**
      * Return the values of the POINT source strengths sampled on the regular grid
      * @return a vector of source strengths
      */
-    virtual std::vector<units::quantity<unit::rate> > GetConstantInUPointRegularGridValues();
-
-    /**
-     * Return the values of the CELL source strengths sampled on the regular grid
-     * @return a vector of source strengths
-     */
-    virtual std::vector<units::quantity<unit::rate> > GetConstantInUCellRegularGridValues();
-
-    /**
-     * Return the values of the VESSEL source strengths sampled on the regular grid
-     * @return a vector of source strengths
-     */
-    virtual std::vector<units::quantity<unit::rate> > GetConstantInUVesselRegularGridValues();
+    virtual std::vector<units::quantity<unit::concentration_flow_rate> > GetConstantInUPointRegularGridValues();
 
     /**
      * Return the values of the SOLUTION source strengths sampled on the regular grid
      * @return a vector of source strengths
      */
-    virtual std::vector<units::quantity<unit::rate> > GetConstantInUSolutionDependentRegularGridValues();
+    virtual std::vector<units::quantity<unit::concentration_flow_rate> > GetConstantInUSolutionDependentRegularGridValues();
 
     /**
      * Return the values of the POINT source strengths sampled on the regular grid
      * @return a vector of source strengths
      */
-    virtual std::vector<units::quantity<unit::concentration_flow_rate> > GetLinearInUPointRegularGridValues();
-
-    /**
-     * Return the values of the CELL source strengths sampled on the regular grid
-     * @return a vector of source strengths
-     */
-    virtual std::vector<units::quantity<unit::concentration_flow_rate> > GetLinearInUCellRegularGridValues();
-
-    /**
-     * Return the values of the VESSEL source strengths sampled on the regular grid
-     * @return a vector of source strengths
-     */
-    virtual std::vector<units::quantity<unit::concentration_flow_rate> > GetLinearInUVesselRegularGridValues();
+    virtual std::vector<units::quantity<unit::rate> > GetLinearInUPointRegularGridValues();
 
     /**
      * Return the values of the SOLUTION source strengths sampled on the regular grid

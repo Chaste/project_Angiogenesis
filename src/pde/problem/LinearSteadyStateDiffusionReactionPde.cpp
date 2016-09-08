@@ -39,7 +39,7 @@
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 LinearSteadyStateDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::LinearSteadyStateDiffusionReactionPde() :
             AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, ELEMENT_DIM>(),
-            mLinearInUTerm(0.0 * unit::mole_per_metre_cubed_per_second),
+            mLinearInUTerm(0.0 * unit::per_second),
             mDiscreteLinearSourceStrengths()
 {
 
@@ -55,11 +55,11 @@ boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM> 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 double LinearSteadyStateDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::ComputeLinearInUCoeffInSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement)
 {
-    return mLinearInUTerm/unit::mole_per_metre_cubed_per_second;
+    return mLinearInUTerm/unit::per_second;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-units::quantity<unit::concentration_flow_rate> LinearSteadyStateDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::ComputeLinearInUCoeffInSourceTerm(unsigned gridIndex)
+units::quantity<unit::rate> LinearSteadyStateDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::ComputeLinearInUCoeffInSourceTerm(unsigned gridIndex)
 {
     if(gridIndex >= mDiscreteLinearSourceStrengths.size())
     {
@@ -69,7 +69,7 @@ units::quantity<unit::concentration_flow_rate> LinearSteadyStateDiffusionReactio
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-void LinearSteadyStateDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::SetContinuumLinearInUTerm(units::quantity<unit::concentration_flow_rate> linearInUTerm)
+void LinearSteadyStateDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::SetContinuumLinearInUTerm(units::quantity<unit::rate> linearInUTerm)
 {
     mLinearInUTerm = linearInUTerm;
 }
@@ -85,16 +85,16 @@ void LinearSteadyStateDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::UpdateDiscre
         {
             EXCEPTION("A grid has not been set for the determination of source strengths.");
         }
-        mDiscreteLinearSourceStrengths = std::vector<units::quantity<unit::concentration_flow_rate> >(this->mpRegularGrid->GetNumberOfPoints(), 0.0);
+        mDiscreteLinearSourceStrengths = std::vector<units::quantity<unit::rate> >(this->mpRegularGrid->GetNumberOfPoints(), 0.0);
 
         for(unsigned idx=0; idx<this->mDiscreteSources.size(); idx++)
         {
             this->mDiscreteSources[idx]->SetRegularGrid(mpRegularGrid);
             if(this->mDiscreteSources[idx]->IsLinearInSolution())
             {
-                std::vector<units::quantity<unit::concentration_flow_rate> > result = this->mDiscreteSources[idx]->GetLinearRegularGridValues();
+                std::vector<units::quantity<unit::rate> > result = this->mDiscreteSources[idx]->GetLinearRegularGridValues();
                 std::transform(mDiscreteLinearSourceStrengths.begin( ), mDiscreteLinearSourceStrengths.end( ),
-                               result.begin( ), mDiscreteLinearSourceStrengths.begin( ),std::plus<units::quantity<unit::concentration_flow_rate> >( ));
+                               result.begin( ), mDiscreteLinearSourceStrengths.begin( ),std::plus<units::quantity<unit::rate> >( ));
             }
         }
     }

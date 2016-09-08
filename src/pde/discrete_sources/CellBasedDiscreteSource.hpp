@@ -57,12 +57,12 @@ protected:
     /**
      * The linear in U rate of consumption per cell
      */
-    units::quantity<unit::rate> mCellConstantInUValue;
+    units::quantity<unit::molar_flow_rate> mCellConstantInUValue;
 
     /**
      * The constant in U rate of consumption per cell
      */
-    units::quantity<unit::concentration_flow_rate> mCellLinearInUValue;
+    units::quantity<unit::rate> mCellLinearInUValue;
 
 public:
 
@@ -86,37 +86,37 @@ public:
      * Return the values of the source strengths sampled on the mesh elements
      * @return a vector of source strengths
      */
-    std::vector<units::quantity<unit::rate> > GetConstantInUMeshValues();
+    std::vector<units::quantity<unit::concentration_flow_rate> > GetConstantInUMeshValues();
 
     /**
      * Return the values of the source strengths sampled on the mesh elements
      * @return a vector of source strengths
      */
-    std::vector<units::quantity<unit::concentration_flow_rate> > GetLinearInUMeshValues();
+    std::vector<units::quantity<unit::rate> > GetLinearInUMeshValues();
 
     /**
      * Return the values of the source strengths sampled on the regular grid
      * @return a vector of source strengths
      */
-    std::vector<units::quantity<unit::rate> > GetConstantInURegularGridValues();
+    std::vector<units::quantity<unit::concentration_flow_rate> > GetConstantInURegularGridValues();
 
     /**
      * Return the values of the source strengths sampled on the regular grid
      * @return a vector of source strengths
      */
-    std::vector<units::quantity<unit::concentration_flow_rate> > GetLinearInURegularGridValues();
+    std::vector<units::quantity<unit::rate> > GetLinearInURegularGridValues();
 
     /**
      * Set the value of the source for PRESCRIBED type sources
      * @param value the value of the source
      */
-    void SetConstantInUConsumptionRatePerCell(units::quantity<unit::rate> value);
+    void SetConstantInUConsumptionRatePerCell(units::quantity<unit::molar_flow_rate> value);
 
     /**
      * Set the value of the source for PRESCRIBED type sources
      * @param value the value of the source
      */
-    void SetLinearInUConsumptionRatePerCell(units::quantity<unit::concentration_flow_rate> value);
+    void SetLinearInUConsumptionRatePerCell(units::quantity<unit::rate> value);
 };
 
 #endif /* DiscreteSource_HPP_ */

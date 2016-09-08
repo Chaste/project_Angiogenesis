@@ -85,7 +85,7 @@ namespace unit
     typedef units::unit<flow_impedance_dimension, units::si::system> flow_impedance;
     BOOST_UNITS_STATIC_CONSTANT(pascal_second_per_metre_cubed, flow_impedance);
 
-    // Mass
+    // Mass Transport
     typedef units::si::mass mass;
     typedef units::si::amount amount;
     BOOST_UNITS_STATIC_CONSTANT(kg, units::si::mass);
@@ -123,6 +123,10 @@ namespace unit
     typedef units::unit<concentration_dimension, units::si::system> concentration;
     BOOST_UNITS_STATIC_CONSTANT(mole_per_metre_cubed, concentration);
 
+    typedef units::derived_dimension<units::amount_base_dimension, -1, units::time_base_dimension, -1, units::length_base_dimension, -3>::type rate_per_concentration_dimension;
+    typedef units::unit<rate_per_concentration_dimension, units::si::system> rate_per_concentration;
+    BOOST_UNITS_STATIC_CONSTANT(metre_cubed_per_mole_per_second, rate_per_concentration);
+
     typedef units::derived_dimension<units::amount_base_dimension, 1, units::mass_base_dimension, -1>::type molar_mass_dimension;
     typedef units::unit<molar_mass_dimension, units::si::system> molar_mass;
     BOOST_UNITS_STATIC_CONSTANT(mole_per_kg, molar_mass);
@@ -134,6 +138,10 @@ namespace unit
     typedef units::derived_dimension<units::amount_base_dimension, 1, units::mass_base_dimension, -1, units::length_base_dimension, -2, units::time_base_dimension, 2>::type solubility_dimension;
     typedef units::unit<solubility_dimension, units::si::system> solubility;
     BOOST_UNITS_STATIC_CONSTANT(mole_per_metre_cubed_per_pascal, solubility);
+
+    typedef units::derived_dimension<units::length_base_dimension, 1, units::time_base_dimension, -1>::type membrane_permeability_dimension;
+    typedef units::unit<membrane_permeability_dimension, units::si::system> membrane_permeability;
+    BOOST_UNITS_STATIC_CONSTANT(metre_per_second, membrane_permeability);
 };
 
 class UnitTester

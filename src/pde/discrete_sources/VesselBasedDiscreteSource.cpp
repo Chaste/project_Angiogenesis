@@ -33,57 +33,35 @@
 
  */
 
-#include "DiscreteSource.hpp"
+#include "CellBasedDiscreteSource.hpp"
 #include "AbstractCellPopulation.hpp"
 #include "VesselNetwork.hpp"
 #include "GeometryTools.hpp"
 
 template<unsigned DIM>
-DiscreteSource<DIM>::DiscreteSource()
-    :   mpRegularGrid(),
-        mpMesh(),
-        mpSolution(),
-        mPoints(),
-        mType(SourceType::POINT),
-        mSourceStrength(SourceStrength::PRESCRIBED),
-        mLabel("Default"),
-        mConstantInUValue(0.0*unit::per_second),
-        mLinearInUValue(0.0*unit::mole_per_metre_cubed_per_second)
+CellBasedDiscreteSource<DIM>::CellBasedDiscreteSource()
+    :   DiscreteSource<DIM>(),
+        mCellConstantInUValue(0.0*unit::mole_per_second),
+        mCellLinearInUValue(0.0*per_second)
 {
 
 }
 
 template<unsigned DIM>
-DiscreteSource<DIM>::~DiscreteSource()
+CellBasedDiscreteSource<DIM>::~CellBasedDiscreteSource()
 {
 
 }
 
 template<unsigned DIM>
-boost::shared_ptr<DiscreteSource<DIM> > DiscreteSource<DIM>::Create()
+boost::shared_ptr<CellBasedDiscreteSource<DIM> > CellBasedDiscreteSource<DIM>::Create()
 {
-    MAKE_PTR(DiscreteSource<DIM>, pSelf);
+    MAKE_PTR(CellBasedDiscreteSource<DIM>, pSelf);
     return pSelf;
 }
 
 template<unsigned DIM>
-SourceType::Value DiscreteSource<DIM>::GetType()
-{
-    return mType;
-}
-
-template<unsigned DIM>
-std::vector<units::quantity<unit::rate> > DiscreteSource<DIM>::GetConstantInUMeshValues()
-{
-    if(!mpMesh)
-    {
-        EXCEPTION("A mesh is required for this type of source");
-    }
-    return std::vector<units::quantity<unit::rate> >();
-}
-
-template<unsigned DIM>
-std::vector<units::quantity<unit::concentration_flow_rate> > DiscreteSource<DIM>::GetLinearInUMeshValues()
+std::vector<units::quantity<unit::concentration_flow_rate> > CellBasedDiscreteSource<DIM>::GetConstantInUMeshValues()
 {
     if(!mpMesh)
     {
@@ -93,164 +71,65 @@ std::vector<units::quantity<unit::concentration_flow_rate> > DiscreteSource<DIM>
 }
 
 template<unsigned DIM>
-std::vector<units::quantity<unit::rate> > DiscreteSource<DIM>::GetConstantInUPointRegularGridValues()
+std::vector<units::quantity<unit::rate> > CellBasedDiscreteSource<DIM>::GetLinearInUMeshValues()
 {
-    if(mPoints.size()==0)
+    if(!mpMesh)
     {
-        EXCEPTION("A point is required for this type of source");
+        EXCEPTION("A mesh is required for this type of source");
     }
-
-    // Loop through all points
-    std::vector<double> values(mpRegularGrid->GetNumberOfPoints(), 0.0);
-    std::vector<std::vector<unsigned> > point_point_map = mpRegularGrid->GetPointPointMap(mPoints);
-    for(unsigned idx=0; idx<point_point_map.size(); idx++)
-    {
-        values[idx] += mConstantInUValue * point_point_map[idx].size();
-    }
-    return values;
+    return std::vector<units::quantity<unit::rate> >();
 }
 
 template<unsigned DIM>
-std::vector<units::quantity<unit::rate> > DiscreteSource<DIM>::GetConstantInUVesselRegularGridValues()
+std::vector<units::quantity<unit::concentration_flow_rate> > CellBasedDiscreteSource<DIM>::GetConstantInURegularGridValues()
 {
-    std::vector<double> values(mpRegularGrid->GetNumberOfPoints(), 0.0);
-    std::vector<std::vector<boost::shared_ptr<VesselSegment<DIM> > > > point_segment_map = mpRegularGrid->GetPointSegmentMap();
-    for(unsigned idx=0; idx<point_segment_map.size(); idx++)
-    {
-        for (unsigned jdx = 0; jdx < point_segment_map[idx].size(); jdx++)
-        {
-            if(mSourceStrength == SourceStrength::PRESCRIBED)
-            {
-                double spacing = mpRegularGrid->GetSpacing()/mpRegularGrid->GetReferenceLengthScale();
-                double point_volume = spacing * spacing;
-                if(DIM == 3)
-                {
-                    point_volume *= spacing;
-                }
-
-                double length_in_box = LengthOfLineInBox<DIM>(point_segment_map[idx][jdx]->GetNode(0)->rGetLocation().rGetLocation(),
-                                                                             point_segment_map[idx][jdx]->GetNode(1)->rGetLocation().rGetLocation(),
-                                                                             mpRegularGrid->GetLocationOf1dIndex(idx).rGetLocation(), spacing);
-                values[idx] += mConstantInUValue * length_in_box/ point_volume;
-            }
-        }
-    }
-    return values;
-}
-
-template<unsigned DIM>
-std::vector<units::quantity<unit::rate> > DiscreteSource<DIM>::GetConstantInUCellRegularGridValues()
-{
-    std::vector<double> values(mpRegularGrid->GetNumberOfPoints(), 0.0);
-    std::vector<std::vector<CellPtr> > point_cell_map = mpRegularGrid->GetPointCellMap();
-    for(unsigned idx=0; idx<point_cell_map.size(); idx++)
-    {
-        values[idx] += mConstantInUValue * point_cell_map[idx].size();
-    }
-    return values;
-}
-
-template<unsigned DIM>
-std::vector<units::quantity<unit::rate> > DiscreteSource<DIM>::GetConstantInUSolutionDependentRegularGridValues()
-{
-    std::vector<double> values(mpRegularGrid->GetNumberOfPoints(), 0.0);
-    if(mpSolution.size() != mpRegularGrid->GetNumberOfPoints())
-    {
-        EXCEPTION("A solution sampled on the grid is required for this type of source");
-    }
-    for(unsigned idx=0; idx<mpRegularGrid->GetNumberOfPoints(); idx++)
-    {
-        values[idx] = mpSolution[idx]*unit::per_second/unit::mole_per_metre_cubed;
-    }
-    return values;
-}
-
-template<unsigned DIM>
-std::vector<units::quantity<unit::rate> > DiscreteSource<DIM>::GetConstantInURegularGridValues()
-{
-    if(!mpRegularGrid)
+    if(!this->mpRegularGrid)
     {
         EXCEPTION("A regular grid is required for this type of source");
     }
 
-    // Check the source type
-    if(mType == SourceType::POINT)
+    std::vector<double> values(this->mpRegularGrid->GetNumberOfPoints(), 0.0);
+    units::quantity<unit::length> grid_spacing = this->mpRegularGrid->GetSpacing();
+    units::quantity<unit::volume> grid_volume = units::pow<3>(grid_spacing);
+
+    std::vector<std::vector<CellPtr> > point_cell_map = this->mpRegularGrid->GetPointCellMap();
+    for(unsigned idx=0; idx<point_cell_map.size(); idx++)
     {
-        return GetConstantInUPointRegularGridValues();
+        values[idx] += mCellConstantInUValue * point_cell_map[idx].size()/grid_volume;
     }
-    else if(mType == SourceType::VESSEL)
+    return values;
+
+}
+
+template<unsigned DIM>
+std::vector<units::quantity<unit::rate> > CellBasedDiscreteSource<DIM>::GetLinearInURegularGridValues()
+{
+    if(!this->mpRegularGrid)
     {
-        return GetConstantInUVesselRegularGridValues();
+        EXCEPTION("A regular grid is required for this type of source");
     }
-    else if(mType == SourceType::CELL)
+
+    std::vector<double> values(this->mpRegularGrid->GetNumberOfPoints(), 0.0);
+    std::vector<std::vector<CellPtr> > point_cell_map = this->mpRegularGrid->GetPointCellMap();
+    for(unsigned idx=0; idx<point_cell_map.size(); idx++)
     {
-        return GetConstantInUCellRegularGridValues();
+        values[idx] += mCellLinearInUValue * point_cell_map[idx].size();
     }
-    else if(mType == SourceType::SOLUTION)
-    {
-        return GetConstantInUSolutionDependentRegularGridValues();
-    }
-    else
-    {
-        EXCEPTION("Unknown type requested for discrete source");
-    }
-
+    return values;
 }
 
 template<unsigned DIM>
-void DiscreteSource<DIM>::SetLabelName(const std::string& label)
-{
-    mLabel = label;
-}
-
-template<unsigned DIM>
-void DiscreteSource<DIM>::SetPoints(std::vector<DimensionalChastePoint<DIM> > points)
-{
-    mPoints = points;
-}
-
-template<unsigned DIM>
-void DiscreteSource<DIM>::SetMesh(boost::shared_ptr<DiscreteContinuumMesh<DIM, DIM> > pMesh)
-{
-    mpMesh = pMesh;
-}
-
-template<unsigned DIM>
-void DiscreteSource<DIM>::SetRegularGrid(boost::shared_ptr<RegularGrid<DIM, DIM> > pRegularGrid)
-{
-    mpRegularGrid = pRegularGrid;
-}
-
-template<unsigned DIM>
-void DiscreteSource<DIM>::SetSolution(std::vector<units::quantity<unit::concentration> > solution)
-{
-    mpSolution = solution;
-}
-
-template<unsigned DIM>
-void DiscreteSource<DIM>::SetSource(SourceStrength::Value boundarySource)
-{
-    mSourceStrength = boundarySource;
-}
-
-template<unsigned DIM>
-void DiscreteSource<DIM>::SetType(SourceType::Value boundaryType)
-{
-    mType = boundaryType;
-}
-
-template<unsigned DIM>
-void DiscreteSource<DIM>::SetConstantInUValue(units::quantity<unit::rate> value)
+void CellBasedDiscreteSource<DIM>::SetConstantInUValue(units::quantity<unit::concentration_flow_rate> value)
 {
     mConstantInUValue = value;
 }
 
 template<unsigned DIM>
-void DiscreteSource<DIM>::SetLinearInUValue(units::quantity<unit::concentration_flow_rate> value)
+void CellBasedDiscreteSource<DIM>::SetLinearInUValue(units::quantity<unit::rate> value)
 {
     mLinearInUValue = value;
 }
 
 // Explicit instantiation
-template class DiscreteSource<2>;
-template class DiscreteSource<3>;
+template class CellBasedDiscreteSource<2>;
+template class CellBasedDiscreteSource<3>;

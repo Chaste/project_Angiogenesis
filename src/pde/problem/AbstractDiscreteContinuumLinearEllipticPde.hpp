@@ -69,7 +69,7 @@ class AbstractDiscreteContinuumLinearEllipticPde : public AbstractLinearElliptic
     /**
      * The continuum constant in U term, discrete terms are added to this.
      */
-    units::quantity<unit::rate> mConstantInUTerm;
+    units::quantity<unit::concentration_flow_rate> mConstantInUTerm;
 
     /**
      * The collection of discrete sources for addition to the continuum terms
@@ -94,7 +94,7 @@ class AbstractDiscreteContinuumLinearEllipticPde : public AbstractLinearElliptic
     /**
      * The constant source strengths for each point on the grid or mesh
      */
-    std::vector<units::quantity<unit::rate> > mDiscreteConstantSourceStrengths;
+    std::vector<units::quantity<unit::concentration_flow_rate> > mDiscreteConstantSourceStrengths;
 
 public:
 
@@ -127,7 +127,7 @@ public:
      * @param gridIndex grid index
      * @return source strength
      */
-    units::quantity<unit::rate> ComputeConstantInUSourceTerm(unsigned gridIndex=0);
+    units::quantity<unit::concentration_flow_rate> ComputeConstantInUSourceTerm(unsigned gridIndex=0);
 
     /**
      * Overwritten method to return the diffusion term to the Chaste FE solver
@@ -151,19 +151,13 @@ public:
      * Set the continuum constant in U term
      * @param constantInUTerm the continuum constant in U term
      */
-    void SetContinuumConstantInUTerm(units::quantity<unit::rate> constantInUTerm);
+    void SetContinuumConstantInUTerm(units::quantity<unit::concentration_flow_rate> constantInUTerm);
 
     /**
      * Set the isotropic diffusion constant
      * @param diffusivity the isotropic diffusion constant
      */
     void SetIsotropicDiffusionConstant(units::quantity<unit::diffusivity> diffusivity);
-
-    /**
-     * Set the linear constant in U term
-     * @param linearInUTerm the linear constant in U term
-     */
-    void SetContinuumLinearInUTerm(units::quantity<unit::concentration_flow_rate> linearInUTerm);
 
     /**
      * Set the regular grid
