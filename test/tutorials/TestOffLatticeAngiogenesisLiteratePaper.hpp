@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -212,7 +212,7 @@ public:
         p_mesh->SetMaxElementArea(100.0*1.e-6);
         p_mesh->Update();
         /*
-         * Set up the oxygen
+         * Set up the oxygen pde
          */
         boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<3> > p_oxygen_pde = LinearSteadyStateDiffusionReactionPde<3>::Create();
         units::quantity<unit::diffusivity> oxygen_diffusivity(1.e-6*unit::metre_squared_per_second);
@@ -220,7 +220,23 @@ public:
         p_oxygen_pde->SetIsotropicDiffusionConstant(oxygen_diffusivity);
         p_oxygen_pde->SetContinuumLinearInUTerm(oxygen_consumption_rate);
         /*
-         * Add a boundary condition for vessels
+         * Add discrete source terms for vessels
+         */
+
+        /*
+         * Add continuum sink terms for cells
+         */
+
+        /*
+         * Set up the vegf pde
+         */
+
+        /*
+         * Add a continuum source term with rate dependent on the oxygen concentration
+         */
+
+        /*
+         * Add a perfect sink at the bottom of the domain
          */
 
 

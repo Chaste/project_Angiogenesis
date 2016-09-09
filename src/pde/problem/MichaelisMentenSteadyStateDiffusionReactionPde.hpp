@@ -33,8 +33,8 @@ Copyright (c) 2005-2016, University of Oxford.
 
  */
 
-#ifndef MichaelisMentenSteadyStateDiffusionReactionPde_HPP_
-#define MichaelisMentenSteadyStateDiffusionReactionPde_HPP_
+#ifndef MICHAELISMENTENSTEADYSTATEDIFFUSIONREACTIONPDE_HPP_
+#define MICHAELISMENTENSTEADYSTATEDIFFUSIONREACTIONPDE_HPP_
 
 #include <string>
 #include "ChastePoint.hpp"
@@ -169,4 +169,4 @@ public:
     void SetMichaelisMentenThreshold(units::quantity<unit::concentration> threshold);
 };
 
-#endif /*MichaelisMentenSteadyStateDiffusionReactionPde_HPP_*/
+#endif /*MICHAELISMENTENSTEADYSTATEDIFFUSIONREACTIONPDE_HPP_*/

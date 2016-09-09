@@ -57,20 +57,14 @@ AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::~AbstractDis
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM> > AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::Create()
-{
-    MAKE_PTR(AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM>, pSelf);
-    return pSelf;
-}
-
-template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::AddDiscreteSource(boost::shared_ptr<DiscreteSource<SPACE_DIM> > pDiscreteSource)
 {
     mDiscreteSources.push_back(pDiscreteSource);
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-double AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeConstantInUSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement)
+double AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeConstantInUSourceTerm(const ChastePoint<SPACE_DIM>& rX,
+                                                                                                        Element<ELEMENT_DIM, SPACE_DIM>* pElement)
 {
     return mConstantInUTerm/unit::mole_per_metre_cubed_per_second;
 }
@@ -78,7 +72,7 @@ double AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::Compu
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 units::quantity<unit::concentration_flow_rate> AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeConstantInUSourceTerm(unsigned gridIndex)
 {
-    if(gridIndex >= mDiscreteLinearSourceStrengths.size())
+    if(gridIndex >= mDiscreteConstantSourceStrengths.size())
     {
         EXCEPTION("Requested out of bound grid index in discrete sources. Maybe you forgot to update the source strengths.");
     }
@@ -113,7 +107,7 @@ template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetIsotropicDiffusionConstant(units::quantity<unit::diffusivity> diffusivity)
 {
     mDiffusivity = diffusivity;
-    mDiffusionTensor = identity_matrix<double>(SPACE_DIM)* (mDiffusivity/unit::metre_cubed_per_second);
+    mDiffusionTensor = identity_matrix<double>(SPACE_DIM)* (mDiffusivity/unit::metre_squared_per_second);
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
@@ -143,16 +137,13 @@ void AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::UpdateD
         {
             EXCEPTION("A grid has not been set for the determination of source strengths.");
         }
-        mDiscreteConstantSourceStrengths = std::vector<units::quantity<unit::concentration_flow_rate> >(mpRegularGrid->GetNumberOfPoints(), 0.0);
+        mDiscreteConstantSourceStrengths = std::vector<units::quantity<unit::concentration_flow_rate> >(mpRegularGrid->GetNumberOfPoints(), 0.0*unit::mole_per_metre_cubed_per_second);
         for(unsigned idx=0; idx<mDiscreteSources.size(); idx++)
         {
             mDiscreteSources[idx]->SetRegularGrid(mpRegularGrid);
-            if(!mDiscreteSources[idx]->IsLinearInSolution())
-            {
-                std::vector<units::quantity<unit::concentration_flow_rate> > result = mDiscreteSources[idx]->GetRegularGridValues();
-                std::transform(mDiscreteConstantSourceStrengths.begin( ), mDiscreteConstantSourceStrengths.end( ),
-                               result.begin( ), mDiscreteConstantSourceStrengths.begin( ),std::plus<units::quantity<unit::concentration_flow_rate> >( ));
-            }
+            std::vector<units::quantity<unit::concentration_flow_rate> > result = mDiscreteSources[idx]->GetConstantInURegularGridValues();
+            std::transform(mDiscreteConstantSourceStrengths.begin( ), mDiscreteConstantSourceStrengths.end( ),
+                           result.begin( ), mDiscreteConstantSourceStrengths.begin( ),std::plus<units::quantity<unit::concentration_flow_rate> >( ));
         }
     }
     else
@@ -161,7 +152,6 @@ void AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::UpdateD
         {
             EXCEPTION("A mesh has not been set for the determination of source strengths.");
         }
-
     }
 }
 

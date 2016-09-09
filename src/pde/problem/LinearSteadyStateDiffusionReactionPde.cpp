@@ -53,7 +53,8 @@ boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM> 
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-double LinearSteadyStateDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::ComputeLinearInUCoeffInSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement)
+double LinearSteadyStateDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::ComputeLinearInUCoeffInSourceTerm(const ChastePoint<SPACE_DIM>& rX,
+                                                                                                        Element<ELEMENT_DIM, SPACE_DIM>* pElement)
 {
     return mLinearInUTerm/unit::per_second;
 }
@@ -77,7 +78,6 @@ void LinearSteadyStateDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::SetContinuum
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void LinearSteadyStateDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::UpdateDiscreteSourceStrengths()
 {
-
     AbstractDiscreteContinuumLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::UpdateDiscreteSourceStrengths();
     if(this->mUseRegularGrid)
     {
@@ -85,17 +85,13 @@ void LinearSteadyStateDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::UpdateDiscre
         {
             EXCEPTION("A grid has not been set for the determination of source strengths.");
         }
-        mDiscreteLinearSourceStrengths = std::vector<units::quantity<unit::rate> >(this->mpRegularGrid->GetNumberOfPoints(), 0.0);
-
+        mDiscreteLinearSourceStrengths = std::vector<units::quantity<unit::rate> >(this->mpRegularGrid->GetNumberOfPoints(), 0.0*unit::per_second);
         for(unsigned idx=0; idx<this->mDiscreteSources.size(); idx++)
         {
-            this->mDiscreteSources[idx]->SetRegularGrid(mpRegularGrid);
-            if(this->mDiscreteSources[idx]->IsLinearInSolution())
-            {
-                std::vector<units::quantity<unit::rate> > result = this->mDiscreteSources[idx]->GetLinearRegularGridValues();
-                std::transform(mDiscreteLinearSourceStrengths.begin( ), mDiscreteLinearSourceStrengths.end( ),
-                               result.begin( ), mDiscreteLinearSourceStrengths.begin( ),std::plus<units::quantity<unit::rate> >( ));
-            }
+            this->mDiscreteSources[idx]->SetRegularGrid(this->mpRegularGrid);
+            std::vector<units::quantity<unit::rate> > result = this->mDiscreteSources[idx]->GetLinearInURegularGridValues();
+            std::transform(mDiscreteLinearSourceStrengths.begin( ), mDiscreteLinearSourceStrengths.end( ),
+                           result.begin( ), mDiscreteLinearSourceStrengths.begin( ),std::plus<units::quantity<unit::rate> >( ));
         }
     }
     else
@@ -104,7 +100,6 @@ void LinearSteadyStateDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::UpdateDiscre
         {
             EXCEPTION("A mesh has not been set for the determination of source strengths.");
         }
-
     }
 }
 

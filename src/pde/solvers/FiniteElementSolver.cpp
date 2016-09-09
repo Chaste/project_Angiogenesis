@@ -294,7 +294,7 @@ void FiniteElementSolver<DIM>::Solve()
 }
 
 template<unsigned DIM>
-std::vector<double> GetSolutionAtPoints(std::vector<DimensionalChastePoint<DIM> > samplePoints)
+std::vector<double> FiniteElementSolver<DIM>::GetSolutionAtPoints(std::vector<DimensionalChastePoint<DIM> > samplePoints)
 {
     return std::vector<double>();
 };

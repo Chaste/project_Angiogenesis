@@ -94,7 +94,7 @@ void DiscreteContinuumBoundaryCondition<DIM>::UpdateBoundaryConditionContainer(b
 
     if(mType == BoundaryConditionType::OUTER)
     {
-        pContainer->DefineConstantDirichletOnMeshBoundary(mpMesh.get(), mValue);
+        pContainer->DefineConstantDirichletOnMeshBoundary(mpMesh.get(), mValue/unit::mole_per_metre_cubed);
         apply_boundary = false;
     }
     else if(mType == BoundaryConditionType::FACET || mType == BoundaryConditionType::VESSEL_VOLUME)

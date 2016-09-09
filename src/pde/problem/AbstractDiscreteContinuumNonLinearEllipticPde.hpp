@@ -54,6 +54,12 @@ Copyright (c) 2005-2016, University of Oxford.
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM = ELEMENT_DIM>
 class AbstractDiscreteContinuumNonLinearEllipticPde : public AbstractNonlinearEllipticPde<SPACE_DIM>
 {
+
+    using AbstractNonlinearEllipticPde<SPACE_DIM>::ComputeNonlinearSourceTermPrime;
+    using AbstractNonlinearEllipticPde<SPACE_DIM>::ComputeNonlinearSourceTerm;
+
+protected:
+
     /**
      * The diffusion tensor
      */

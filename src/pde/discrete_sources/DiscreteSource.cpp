@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -49,8 +49,8 @@ DiscreteSource<DIM>::DiscreteSource()
         mLabel("Default"),
         mConstantInUValue(0.0*unit::mole_per_metre_cubed_per_second),
         mLinearInUValue(0.0*unit::per_second),
-        mConstantInUSinkRatePerSolutionQuantity(),
-        mLinearInUSinkRatePerSolutionQuantity()
+        mConstantInUSinkRatePerSolutionQuantity(0.0*unit::per_second),
+        mLinearInUSinkRatePerSolutionQuantity(0.0*unit::metre_cubed_per_mole_per_second)
 {
 
 }
@@ -103,11 +103,29 @@ std::vector<units::quantity<unit::concentration_flow_rate> > DiscreteSource<DIM>
     }
 
     // Loop through all points
-    std::vector<double> values(mpRegularGrid->GetNumberOfPoints(), 0.0);
+    std::vector<units::quantity<unit::concentration_flow_rate> > values(mpRegularGrid->GetNumberOfPoints(), 0.0*unit::mole_per_metre_cubed_per_second);
     std::vector<std::vector<unsigned> > point_point_map = mpRegularGrid->GetPointPointMap(mPoints);
     for(unsigned idx=0; idx<point_point_map.size(); idx++)
     {
-        values[idx] += mConstantInUValue * point_point_map[idx].size();
+        values[idx] += mConstantInUValue * double(point_point_map[idx].size());
+    }
+    return values;
+}
+
+template<unsigned DIM>
+std::vector<units::quantity<unit::rate> > DiscreteSource<DIM>::GetLinearInUPointRegularGridValues()
+{
+    if(mPoints.size()==0)
+    {
+        EXCEPTION("A point is required for this type of source");
+    }
+
+    // Loop through all points
+    std::vector<units::quantity<unit::rate> > values(mpRegularGrid->GetNumberOfPoints(), 0.0*unit::per_second);
+    std::vector<std::vector<unsigned> > point_point_map = mpRegularGrid->GetPointPointMap(mPoints);
+    for(unsigned idx=0; idx<point_point_map.size(); idx++)
+    {
+        values[idx] += mLinearInUValue * double(point_point_map[idx].size());
     }
     return values;
 }
@@ -115,7 +133,7 @@ std::vector<units::quantity<unit::concentration_flow_rate> > DiscreteSource<DIM>
 template<unsigned DIM>
 std::vector<units::quantity<unit::concentration_flow_rate> > DiscreteSource<DIM>::GetConstantInUSolutionDependentRegularGridValues()
 {
-    std::vector<double> values(mpRegularGrid->GetNumberOfPoints(), 0.0);
+    std::vector<units::quantity<unit::concentration_flow_rate> > values(mpRegularGrid->GetNumberOfPoints(), 0.0*unit::mole_per_metre_cubed_per_second);
     if(mpSolution.size() != mpRegularGrid->GetNumberOfPoints())
     {
         EXCEPTION("A solution sampled on the grid is required for this type of source");
@@ -123,6 +141,21 @@ std::vector<units::quantity<unit::concentration_flow_rate> > DiscreteSource<DIM>
     for(unsigned idx=0; idx<mpRegularGrid->GetNumberOfPoints(); idx++)
     {
         values[idx] = mpSolution[idx]*mConstantInUSinkRatePerSolutionQuantity;
+    }
+    return values;
+}
+
+template<unsigned DIM>
+std::vector<units::quantity<unit::rate> > DiscreteSource<DIM>::GetLinearInUSolutionDependentRegularGridValues()
+{
+    std::vector<units::quantity<unit::rate> > values(mpRegularGrid->GetNumberOfPoints(), 0.0*unit::per_second);
+    if(mpSolution.size() != mpRegularGrid->GetNumberOfPoints())
+    {
+        EXCEPTION("A solution sampled on the grid is required for this type of source");
+    }
+    for(unsigned idx=0; idx<mpRegularGrid->GetNumberOfPoints(); idx++)
+    {
+        values[idx] = mpSolution[idx]*mLinearInUSinkRatePerSolutionQuantity;
     }
     return values;
 }
@@ -148,7 +181,6 @@ std::vector<units::quantity<unit::concentration_flow_rate> > DiscreteSource<DIM>
     {
         EXCEPTION("Unknown type requested for discrete source");
     }
-
 }
 
 template<unsigned DIM>

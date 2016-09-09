@@ -54,13 +54,6 @@ AbstractDiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::AbstractD
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-boost::shared_ptr<AbstractDiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM> > AbstractDiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::Create()
-{
-    MAKE_PTR(AbstractDiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM>, pSelf);
-    return pSelf;
-}
-
-template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 AbstractDiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::~AbstractDiscreteContinuumNonLinearEllipticPde()
 {
 
@@ -105,12 +98,6 @@ std::vector<boost::shared_ptr<DiscreteSource<SPACE_DIM> > > AbstractDiscreteCont
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-const std::string& AbstractDiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::GetVariableName()
-{
-    return mVariableName;
-}
-
-template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void AbstractDiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetContinuumConstantInUTerm(units::quantity<unit::concentration_flow_rate> constantInUTerm)
 {
     mConstantInUTerm = constantInUTerm;
@@ -120,7 +107,7 @@ template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void AbstractDiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::SetIsotropicDiffusionConstant(units::quantity<unit::diffusivity> diffusivity)
 {
     mDiffusivity = diffusivity;
-    mDiffusionTensor = identity_matrix<double>(SPACE_DIM)* mDiffusivity;
+    mDiffusionTensor = identity_matrix<double>(SPACE_DIM)* double(mDiffusivity/unit::metre_squared_per_second);
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
@@ -156,8 +143,8 @@ void AbstractDiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::Upda
         {
             EXCEPTION("A grid has not been set for the determination of source strengths.");
         }
-        mDiscreteConstantSourceStrengths = std::vector<units::quantity<unit::concentration_flow_rate> >(mpRegularGrid->GetNumberOfPoints(), 0.0);
-        mDiscreteLinearSourceStrengths = std::vector<units::quantity<unit::rate> >(mpRegularGrid->GetNumberOfPoints(), 0.0);
+        mDiscreteConstantSourceStrengths = std::vector<units::quantity<unit::concentration_flow_rate> >(mpRegularGrid->GetNumberOfPoints(), 0.0*unit::mole_per_metre_cubed_per_second);
+        mDiscreteLinearSourceStrengths = std::vector<units::quantity<unit::rate> >(mpRegularGrid->GetNumberOfPoints(), 0.0*unit::per_second);
 
         for(unsigned idx=0; idx<mDiscreteSources.size(); idx++)
         {
@@ -166,9 +153,9 @@ void AbstractDiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::Upda
             std::transform(mDiscreteLinearSourceStrengths.begin( ), mDiscreteLinearSourceStrengths.end( ),
                            result.begin( ), mDiscreteLinearSourceStrengths.begin( ),std::plus<units::quantity<unit::rate> >( ));
 
-            std::vector<unit::concentration_flow_rate> > result = mDiscreteSources[idx]->GetConstantInURegularGridValues();
+            std::vector<units::quantity<unit::concentration_flow_rate> > result2 = mDiscreteSources[idx]->GetConstantInURegularGridValues();
             std::transform(mDiscreteConstantSourceStrengths.begin( ), mDiscreteConstantSourceStrengths.end( ),
-                           result.begin( ), mDiscreteConstantSourceStrengths.begin( ),std::plus<units::quantity<unit::concentration_flow_rate> >( ));
+                           result2.begin( ), mDiscreteConstantSourceStrengths.begin( ),std::plus<units::quantity<unit::concentration_flow_rate> >( ));
         }
     }
     else

@@ -56,6 +56,9 @@ Copyright (c) 2005-2016, University of Oxford.
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM = ELEMENT_DIM>
 class AbstractDiscreteContinuumLinearEllipticPde : public AbstractLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>
 {
+
+protected:
+
     /**
      * The diffusion tensor
      */

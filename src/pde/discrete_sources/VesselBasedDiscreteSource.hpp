@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@
 
  */
 
-#ifndef VESSELBASEDDiscreteSource_HPP_
-#define VESSELBASEDDiscreteSource_HPP_
+#ifndef VESSELBASEDDISCRETESOURCE_HPP_
+#define VESSELBASEDDISCRETESOURCE_HPP_
 
 #include <vector>
 #include <string>
@@ -67,7 +67,7 @@ protected:
 public:
 
     /**
-     *  Constructor
+     * Constructor
      */
     VesselBasedDiscreteSource();
 
@@ -120,4 +120,4 @@ public:
 
 };
 
-#endif /* VESSELBASEDDiscreteSource_HPP_ */
+#endif /* VESSELBASEDDISCRETESOURCE_HPP_ */

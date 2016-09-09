@@ -154,7 +154,7 @@ units::quantity<unit::rate> MichaelisMentenSteadyStateDiffusionReactionPde<ELEME
 {
     if(u<0.0*unit::mole_per_metre_cubed)
     {
-        return (this->mConstantInUTerm * mMichaelisMentenThreshold) + this->mDiscreteLinearSourceStrengths[gridIndex];
+        return (this->mConstantInUTerm / mMichaelisMentenThreshold) + this->mDiscreteLinearSourceStrengths[gridIndex];
     }
     else
     {

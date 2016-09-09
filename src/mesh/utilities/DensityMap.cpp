@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -37,7 +37,6 @@
 #include <vtkBox.h>
 #include "VesselSegment.hpp"
 #include "ChastePoint.hpp"
-
 #include "DensityMap.hpp"
 
 template<unsigned DIM>

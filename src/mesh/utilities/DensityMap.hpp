@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -39,12 +39,18 @@
 #include "SmartPointers.hpp"
 #include "AbstractRegularGridDiscreteContinuumSolver.hpp"
 
+/**
+ * Calculate the density of vessels on a regular grid
+ */
 template<unsigned DIM>
 class DensityMap : public AbstractRegularGridDiscreteContinuumSolver<DIM>
 {
 
 public:
 
+    /**
+     * Constructor
+     */
     DensityMap();
 
     /* Factory constructor method
@@ -52,14 +58,26 @@ public:
      */
     static boost::shared_ptr<DensityMap<DIM> > Create();
 
+    /**
+     * Destructor
+     */
     ~DensityMap();
 
+    /**
+     * Calculate the map
+     */
     void Solve();
 
 private:
 
+    /**
+     * Replace with geometry tools method
+     */
     double LengthOfLineInBox(c_vector<double, DIM> start_point, c_vector<double, DIM> end_point, c_vector<double, DIM> location, double spacing);
 
+    /**
+     * Replace with geometry tools method
+     */
     bool IsPointInBox(c_vector<double, DIM> point, c_vector<double, DIM> location, double spacing);
 
 };

@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@
 
  */
 
-#ifndef DiscreteSource_HPP_
-#define DiscreteSource_HPP_
+#ifndef DISCRETESOURCE_HPP_
+#define DISCRETESOURCE_HPP_
 
 #include <vector>
 #include <string>
@@ -131,12 +131,12 @@ protected:
     /**
      * The prescribed value of the source strength. Used for PRESCRIBED source strengths.
      */
-    units::quantity<unit::concentration_flow_rate> mConstantInUSinkRatePerSolutionQuantity;
+    units::quantity<unit::rate> mConstantInUSinkRatePerSolutionQuantity;
 
     /**
      * The prescribed value of the source strength. Used for PRESCRIBED source strengths.
      */
-    units::quantity<unit::rate> mLinearInUSinkRatePerSolutionQuantity;
+    units::quantity<unit::rate_per_concentration> mLinearInUSinkRatePerSolutionQuantity;
 
 public:
 
@@ -208,7 +208,7 @@ public:
      * Return the values of the SOLUTION source strengths sampled on the regular grid
      * @return a vector of source strengths
      */
-    virtual std::vector<units::quantity<unit::concentration_flow_rate> > GetLinearInUSolutionDependentRegularGridValues();
+    virtual std::vector<units::quantity<unit::rate> > GetLinearInUSolutionDependentRegularGridValues();
 
     /**
      * Set the name of the label used in LABEL type sources
@@ -265,4 +265,4 @@ public:
     void SetLinearInUValue(units::quantity<unit::rate> value);
 };
 
-#endif /* DiscreteSource_HPP_ */
+#endif /* DISCRETESOURCE_HPP_ */

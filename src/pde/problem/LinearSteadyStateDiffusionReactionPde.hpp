@@ -51,12 +51,12 @@ class LinearSteadyStateDiffusionReactionPde : public AbstractDiscreteContinuumLi
     /**
      * The continuum linear in U term, discrete terms are added to this.
      */
-    units::quantity<unit::rate> mDimensionlessLinearInUTerm;
+    units::quantity<unit::rate> mLinearInUTerm;
 
     /**
      * The linear source strengths for each point on the grid or mesh
      */
-    std::vector<units::quantity<unit::rate> > mDimensionlessDiscreteLinearSourceStrengths;
+    std::vector<units::quantity<unit::rate> > mDiscreteLinearSourceStrengths;
 
 public:
 

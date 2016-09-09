@@ -63,7 +63,7 @@ boost::shared_ptr<CellStateDependentDiscreteSource<DIM> > CellStateDependentDisc
 template<unsigned DIM>
 std::vector<units::quantity<unit::concentration_flow_rate> > CellStateDependentDiscreteSource<DIM>::GetConstantInUMeshValues()
 {
-    if(!mpMesh)
+    if(!this->mpMesh)
     {
         EXCEPTION("A mesh is required for this type of source");
     }
@@ -73,7 +73,7 @@ std::vector<units::quantity<unit::concentration_flow_rate> > CellStateDependentD
 template<unsigned DIM>
 std::vector<units::quantity<unit::rate> > CellStateDependentDiscreteSource<DIM>::GetLinearInUMeshValues()
 {
-    if(!mpMesh)
+    if(!this->mpMesh)
     {
         EXCEPTION("A mesh is required for this type of source");
     }
@@ -179,7 +179,7 @@ std::vector<units::quantity<unit::concentration_flow_rate> > CellStateDependentD
             }
             else
             {
-                values[idx] += this->mValue;
+                values[idx] += this->mConstantInUValue;
             }
         }
     }
