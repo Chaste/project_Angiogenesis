@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -68,7 +68,6 @@ boost::shared_ptr<RegularGrid<DIM> > AbstractRegularGridDiscreteContinuumSolver<
     {
         EXCEPTION("A regular grid has not been set.");
     }
-
     return this->mpRegularGrid;
 }
 
@@ -126,7 +125,7 @@ std::vector<double> AbstractRegularGridDiscreteContinuumSolver<DIM>::GetSolution
 }
 
 template<unsigned DIM>
-virtual std::vector<units::quantity<unit::concentration> > AbstractRegularGridDiscreteContinuumSolver<DIM>::GetConcentrationAtPoints(std::vector<DimensionalChastePoint<DIM> > samplePoints)
+std::vector<units::quantity<unit::concentration> > AbstractRegularGridDiscreteContinuumSolver<DIM>::GetConcentrationAtPoints(std::vector<DimensionalChastePoint<DIM> > samplePoints)
 {
     if(!this->mpVtkSolution)
     {
@@ -167,7 +166,7 @@ virtual std::vector<units::quantity<unit::concentration> > AbstractRegularGridDi
 }
 
 template<unsigned DIM>
-virtual std::vector<units::quantity<unit::concentration> > AbstractRegularGridDiscreteContinuumSolver<DIM>::GetConcentrationAtGridPoints(boost::shared_ptr<RegularGrid<DIM> > pGrid)
+std::vector<units::quantity<unit::concentration> > AbstractRegularGridDiscreteContinuumSolver<DIM>::GetConcentrationAtGridPoints(boost::shared_ptr<RegularGrid<DIM> > pGrid)
 {
     if(this->mpRegularGrid == pGrid)
     {
@@ -186,7 +185,6 @@ vtkSmartPointer<vtkImageData> AbstractRegularGridDiscreteContinuumSolver<DIM>::G
     {
         this->Setup();
     }
-
     return this->mpVtkSolution;
 }
 

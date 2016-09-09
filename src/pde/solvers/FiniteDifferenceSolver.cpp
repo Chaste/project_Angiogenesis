@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -37,11 +37,11 @@
 #include "ReplicatableVector.hpp"
 #include "VesselSegment.hpp"
 #include "FiniteDifferenceSolver.hpp"
-
-#include "../problem/LinearSteadyStateDiffusionReactionPde.hpp"
+#include "LinearSteadyStateDiffusionReactionPde.hpp"
 #include "SimplePetscNonlinearSolver.hpp"
+#include "BaseUnits.hpp"
 
-// Nonlinear solve methods
+// Nonlinear solve method interfaces, needed later.
 template<unsigned DIM>
 PetscErrorCode HyrbidFiniteDifference_ComputeResidual(SNES snes, Vec solution_guess, Vec residual, void* pContext);
 #if ( PETSC_VERSION_MAJOR==3 && PETSC_VERSION_MINOR>=5 )
@@ -174,7 +174,6 @@ void FiniteDifferenceSolver<DIM>::DoLinearSolve()
     unsigned extents_z = this->mpRegularGrid->GetExtents()[2];
 
     units::quantity<unit::time> reference_time = BaseUnits::Instance()->GetReferenceTimeScale();
-    units::quantity<unit::concentration> reference_concentration(1.0*unit::mole_per_metre_cubed);
     units::quantity<unit::length> spacing = this->mpRegularGrid->GetSpacing();
 
     double diffusion_term = 0.0;
@@ -258,7 +257,7 @@ void FiniteDifferenceSolver<DIM>::DoLinearSolve()
                 {
                     linear_system.AddToMatrixElement(grid_index, grid_index, diffusion_term);
                 }
-                linear_system.SetRhsVectorElement(grid_index, -this->mpPde->ComputeConstantInUSourceTerm(grid_index)*(reference_time/reference_concentration));
+                linear_system.SetRhsVectorElement(grid_index, -this->mpPde->ComputeConstantInUSourceTerm(grid_index)*(reference_time/this->mReferenceConcentration));
             }
         }
     }
@@ -270,7 +269,7 @@ void FiniteDifferenceSolver<DIM>::DoLinearSolve()
         if((*mpBoundaryConditions)[idx].first)
         {
             bc_indices.push_back(idx);
-            linear_system.SetRhsVectorElement(idx, (*mpBoundaryConditions)[idx].second/reference_concentration);
+            linear_system.SetRhsVectorElement(idx, (*mpBoundaryConditions)[idx].second/this->mReferenceConcentration);
         }
     }
     linear_system.ZeroMatrixRowsWithValueOnDiagonal(bc_indices, 1.0);
@@ -283,7 +282,7 @@ void FiniteDifferenceSolver<DIM>::DoLinearSolve()
     this->mConcentrationPointSolution = std::vector<units::quantity<unit::concentration> >(number_of_points, 0.0*unit::mole_per_metre_cubed);
     for (unsigned row = 0; row < number_of_points; row++)
     {
-        this->mConcentrationPointSolution[row] = soln_repl[row]*reference_concentration;
+        this->mConcentrationPointSolution[row] = soln_repl[row]*this->mReferenceConcentration;
     }
 
     this->UpdateSolution(this->mConcentrationPointSolution);
@@ -323,7 +322,7 @@ void FiniteDifferenceSolver<DIM>::Solve()
         this->mConcentrationPointSolution = std::vector<units::quantity<unit::concentration> >(number_of_points, 0.0*unit::mole_per_metre_cubed);
         for (unsigned row = 0; row < number_of_points; row++)
         {
-           this->mConcentrationPointSolution[row] = soln_repl[row]*reference_concentration;
+           this->mConcentrationPointSolution[row] = soln_repl[row]*this->mReferenceConcentration;
         }
 
         this->UpdateSolution(this->mConcentrationPointSolution);
@@ -345,9 +344,7 @@ PetscErrorCode HyrbidFiniteDifference_ComputeResidual(SNES snes, Vec solution_gu
     unsigned extents_z = solver->GetGrid()->GetExtents()[2];
 
     units::quantity<unit::time> reference_time = BaseUnits::Instance()->GetReferenceTimeScale();
-    units::quantity<unit::concentration> reference_concentration(1.0*unit::mole_per_metre_cubed);
     units::quantity<unit::length> spacing = solver->GetGrid()->GetSpacing();
-
     double diffusion_term = (solver->GetNonLinearPde()->ComputeIsotropicDiffusionTerm() / (spacing * spacing))*reference_time;
 
     // It used to be possible to work directly with the solution_guess Vec, but now it seems to give read only errors.
@@ -364,9 +361,10 @@ PetscErrorCode HyrbidFiniteDifference_ComputeResidual(SNES snes, Vec solution_gu
             {
                 unsigned grid_index = solver->GetGrid()->Get1dGridIndex(k, j, i);
                 double grid_guess = soln_guess_repl[grid_index];
+                units::quantity<unit::concentration> scale_grid_guess = grid_guess*solver->GetReferenceConcentration();
 
                 PetscVecTools::AddToElement(residual, grid_index, grid_guess * (- 6.0 * diffusion_term) +
-                                                solver->GetNonLinearPde()->ComputeNonlinearSourceTerm(grid_index, grid_guess)*(reference_time/reference_concentration));
+                                                solver->GetNonLinearPde()->ComputeNonlinearSourceTerm(grid_index, scale_grid_guess)*(reference_time/solver->GetReferenceConcentration()));
 
                 // Assume no flux on domain boundaries by default
                 // No flux at x bottom
@@ -475,7 +473,6 @@ PetscErrorCode HyrbidFiniteDifference_ComputeJacobian(SNES snes, Vec input, Mat*
     unsigned extents_z = solver->GetGrid()->GetExtents()[2];
 
     units::quantity<unit::time> reference_time = BaseUnits::Instance()->GetReferenceTimeScale();
-    units::quantity<unit::concentration> reference_concentration(1.0*unit::mole_per_metre_cubed);
     units::quantity<unit::length> spacing = solver->GetGrid()->GetSpacing();
 
     double diffusion_term = (solver->GetNonLinearPde()->ComputeIsotropicDiffusionTerm() / (spacing * spacing))*reference_time;
@@ -489,9 +486,10 @@ PetscErrorCode HyrbidFiniteDifference_ComputeJacobian(SNES snes, Vec input, Mat*
             {
                 unsigned grid_index = solver->GetGrid()->Get1dGridIndex(k, j, i);
                 double grid_guess = input_repl[grid_index];
+                units::quantity<unit::concentration> scale_grid_guess = grid_guess*solver->GetReferenceConcentration();
 
                 PetscMatTools::AddToElement(jacobian, grid_index, grid_index, - 6.0 * diffusion_term +
-                                            solver->GetNonLinearPde()->ComputeNonlinearSourceTermPrime(grid_index, grid_guess)*(reference_time/reference_concentration));
+                                            solver->GetNonLinearPde()->ComputeNonlinearSourceTermPrime(grid_index, scale_grid_guess)*reference_time);
 
                 // Assume no flux on domain boundaries by default
                 // No flux at x bottom

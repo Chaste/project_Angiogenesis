@@ -107,7 +107,7 @@ void FiniteElementSolver<DIM>::ReadSolution()
 template<unsigned DIM>
 std::vector<units::quantity<unit::concentration> > FiniteElementSolver<DIM>::GetConcentrationAtGridPoints(boost::shared_ptr<RegularGrid<DIM, DIM> > pGrid)
 {
-    return GetSolutionAtPoints(pGrid->GetLocations());
+    return GetConcentrationAtPoints(pGrid->GetLocations());
 }
 
 template<unsigned DIM>
@@ -262,7 +262,7 @@ void FiniteElementSolver<DIM>::Solve()
         }
         else
         {
-            Vec initial_guess = PetscTools::CreateAndSetVec(mpMesh->GetNumNodes(), this->mBoundaryConditions[0]->GetValue());
+            Vec initial_guess = PetscTools::CreateAndSetVec(mpMesh->GetNumNodes(), this->mBoundaryConditions[0]->GetValue()/unit::mole_per_metre_cubed);
             SimpleNonlinearEllipticSolver<DIM, DIM> solver(mpMesh.get(), this->mpNonLinearPde.get(), p_bcc.get());
             SimpleNewtonNonlinearSolver newton_solver;
             if(mUseNewton)
@@ -292,6 +292,12 @@ void FiniteElementSolver<DIM>::Solve()
         this->Write();
     }
 }
+
+template<unsigned DIM>
+std::vector<double> GetSolutionAtPoints(std::vector<DimensionalChastePoint<DIM> > samplePoints)
+{
+    return std::vector<double>();
+};
 
 template<unsigned DIM>
 void FiniteElementSolver<DIM>::Write()

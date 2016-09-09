@@ -33,28 +33,26 @@ Copyright (c) 2005-2016, University of Oxford.
 
  */
 
-#ifndef ABSTRACTDISCRETECONTINUUMLINEARELLIPTICPDE_HPP_
-#define ABSTRACTDISCRETECONTINUUMLINEARELLIPTICPDE_HPP_
+#ifndef ABSTRACTDISCRETECONTINUUMNONLINEARELLIPTICPDE_HPP_
+#define ABSTRACTDISCRETECONTINUUMNONLINEARELLIPTICPDE_HPP_
 
 #include <string>
 #include "ChastePoint.hpp"
 #include "UblasIncludes.hpp"
 #include "SmartPointers.hpp"
 #include "UblasVectorInclude.hpp"
-#include "AbstractLinearEllipticPde.hpp"
 #include "DiscreteSource.hpp"
 #include "GeometryTools.hpp"
 #include "RegularGrid.hpp"
 #include "TetrahedralMesh.hpp"
-#include "UnitCollection.hpp"
+#include "AbstractNonlinearEllipticPde.hpp"
 
 /**
- * Base PDE class for managing discrete entities on the computational grid. Child classes need to
- * implement methods for calculating the 'LinearInU' source terms, which will have units related to
- * the field quantity being solved for.
+ * Non-Linear Elliptic PDE with both continuum and discrete source terms. There is repition with
+ * LinearSteadyStateDiffusionReactionPde to avoid multiple inheritance.
  */
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM = ELEMENT_DIM>
-class AbstractDiscreteContinuumLinearEllipticPde : public AbstractLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>
+class AbstractDiscreteContinuumNonLinearEllipticPde : public AbstractNonlinearEllipticPde<SPACE_DIM>
 {
     /**
      * The diffusion tensor
@@ -70,6 +68,11 @@ class AbstractDiscreteContinuumLinearEllipticPde : public AbstractLinearElliptic
      * The continuum constant in U term, discrete terms are added to this.
      */
     units::quantity<unit::concentration_flow_rate> mConstantInUTerm;
+
+    /**
+     * The continuum linear in U term, discrete terms are added to this.
+     */
+    units::quantity<unit::rate> mLinearInUTerm;
 
     /**
      * The collection of discrete sources for addition to the continuum terms
@@ -96,17 +99,28 @@ class AbstractDiscreteContinuumLinearEllipticPde : public AbstractLinearElliptic
      */
     std::vector<units::quantity<unit::concentration_flow_rate> > mDiscreteConstantSourceStrengths;
 
+    /**
+     * The linear source strengths for each point on the grid or mesh
+     */
+    std::vector<units::quantity<unit::rate> > mDiscreteLinearSourceStrengths;
+
 public:
 
     /**
      * Constructor
      */
-    AbstractDiscreteContinuumLinearEllipticPde();
+    AbstractDiscreteContinuumNonLinearEllipticPde();
 
     /**
-     * Destructor
+     * Desctructor
      */
-    virtual ~AbstractDiscreteContinuumLinearEllipticPde();
+    virtual ~AbstractDiscreteContinuumNonLinearEllipticPde();
+
+    /**
+     * Factory Constructor
+     * @return a pointer to an instance of the pde
+     */
+    static boost::shared_ptr<AbstractDiscreteContinuumNonLinearEllipticPde<ELEMENT_DIM, SPACE_DIM> > Create();
 
     /**
      * Add a discrete source to the pde
@@ -115,31 +129,38 @@ public:
     void AddDiscreteSource(boost::shared_ptr<DiscreteSource<SPACE_DIM> > pDiscreteSource);
 
     /**
-     * Overwritten method to return the constant in U contribution to the Chaste FE solver
-     * @param rX grid location
-     * @param pElement pointer to containing element
-     * @return source strength
-     */
-    double ComputeConstantInUSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement);
-
-    /**
-     * Overwritten method to return the constant in U contribution to the regular grid solvers
+     * Abstract method to return the constant in U contribution to the regular grid solvers
      * @param gridIndex grid index
      * @return source strength
      */
-    units::quantity<unit::concentration_flow_rate> ComputeConstantInUSourceTerm(unsigned gridIndex=0);
-
-    /**
-     * Overwritten method to return the diffusion term to the Chaste FE solver
-     * @return the diffusion matrix
-     */
-    c_matrix<double, SPACE_DIM, SPACE_DIM> ComputeDiffusionTerm(const ChastePoint<SPACE_DIM>&);
+    virtual units::quantity<unit::concentration_flow_rate> ComputeConstantInUSourceTerm(unsigned gridIndex=0);
 
     /**
      * Return the diffusion constant for isotropic diffusion
      * @return the diffusion constant
      */
     units::quantity<unit::diffusivity> ComputeIsotropicDiffusionTerm();
+
+    /**
+     * Abstract method to return the linear in U contribution to the regular grid solvers
+     * @param gridIndex grid index
+     * @return source strength
+     */
+    virtual units::quantity<unit::rate> ComputeLinearInUCoeffInSourceTerm(unsigned gridIndex=0);
+
+    /**
+     * Abstract method to return the non linear contribution to the regular grid solvers
+     * @param gridIndex grid index
+     * @return source strength
+     */
+    virtual units::quantity<unit::concentration_flow_rate> ComputeNonlinearSourceTerm(unsigned gridIndex, units::quantity<unit::concentration> u)=0;
+
+    /**
+     * Abstract method to return the non linear prime contribution to the regular grid solvers
+     * @param gridIndex grid index
+     * @return source strength
+     */
+    virtual units::quantity<unit::rate> ComputeNonlinearSourceTermPrime(unsigned gridIndex, units::quantity<unit::concentration> u)=0;
 
     /**
      * Return the collection of discrete sources
@@ -158,6 +179,12 @@ public:
      * @param diffusivity the isotropic diffusion constant
      */
     void SetIsotropicDiffusionConstant(units::quantity<unit::diffusivity> diffusivity);
+
+    /**
+     * Set the linear constant in U term
+     * @param linearInUTerm the linear constant in U term
+     */
+    void SetContinuumLinearInUTerm(units::quantity<unit::rate> linearInUTerm);
 
     /**
      * Set the regular grid
@@ -181,7 +208,6 @@ public:
      * Update the discrete source strengths
      */
     void UpdateDiscreteSourceStrengths();
-
 };
 
-#endif /*ABSTRACTDISCRETECONTINUUMLINEARELLIPTICPDE_HPP_*/
+#endif /*ABSTRACTDISCRETECONTINUUMNONLINEARELLIPTICPDE_HPP_*/

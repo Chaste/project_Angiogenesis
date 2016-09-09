@@ -46,7 +46,7 @@
 #include "UblasIncludes.hpp"
 #include "Part.hpp"
 #include "Vertex.hpp"
-#include "NonLinearSteadyStateDiffusionReactionPde.hpp"
+#include "AbstractDiscreteContinuumNonLinearEllipticPde.hpp"
 #include "VesselNetwork.hpp"
 #include "VesselNetworkGenerator.hpp"
 #include "SmartPointers.hpp"
@@ -75,7 +75,7 @@ public:
         p_linear_pde->SetIsotropicDiffusionConstant(1.0);
         p_linear_pde->SetContinuumLinearInUTerm(-2.0);
 
-        boost::shared_ptr<NonLinearSteadyStateDiffusionReactionPde<3> > p_non_linear_pde = NonLinearSteadyStateDiffusionReactionPde<3>::Create();
+        boost::shared_ptr<AbstractDiscreteContinuumNonLinearEllipticPde<3> > p_non_linear_pde = AbstractDiscreteContinuumNonLinearEllipticPde<3>::Create();
         p_non_linear_pde->SetIsotropicDiffusionConstant(1.0);
         p_non_linear_pde->SetContinuumConstantInUTerm(-2.0);
 

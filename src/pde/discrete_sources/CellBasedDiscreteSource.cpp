@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -42,7 +42,7 @@ template<unsigned DIM>
 CellBasedDiscreteSource<DIM>::CellBasedDiscreteSource()
     :   DiscreteSource<DIM>(),
         mCellConstantInUValue(0.0*unit::mole_per_second),
-        mCellLinearInUValue(0.0*per_second)
+        mCellLinearInUValue(0.0*unit::per_second)
 {
 
 }
@@ -63,7 +63,7 @@ boost::shared_ptr<CellBasedDiscreteSource<DIM> > CellBasedDiscreteSource<DIM>::C
 template<unsigned DIM>
 std::vector<units::quantity<unit::concentration_flow_rate> > CellBasedDiscreteSource<DIM>::GetConstantInUMeshValues()
 {
-    if(!mpMesh)
+    if(!this->mpMesh)
     {
         EXCEPTION("A mesh is required for this type of source");
     }
@@ -73,7 +73,7 @@ std::vector<units::quantity<unit::concentration_flow_rate> > CellBasedDiscreteSo
 template<unsigned DIM>
 std::vector<units::quantity<unit::rate> > CellBasedDiscreteSource<DIM>::GetLinearInUMeshValues()
 {
-    if(!mpMesh)
+    if(!this->mpMesh)
     {
         EXCEPTION("A mesh is required for this type of source");
     }
@@ -88,14 +88,14 @@ std::vector<units::quantity<unit::concentration_flow_rate> > CellBasedDiscreteSo
         EXCEPTION("A regular grid is required for this type of source");
     }
 
-    std::vector<double> values(this->mpRegularGrid->GetNumberOfPoints(), 0.0);
+    std::vector<units::quantity<unit::concentration_flow_rate> > values(this->mpRegularGrid->GetNumberOfPoints(), 0.0*unit::mole_per_metre_cubed_per_second);
     units::quantity<unit::length> grid_spacing = this->mpRegularGrid->GetSpacing();
     units::quantity<unit::volume> grid_volume = units::pow<3>(grid_spacing);
 
     std::vector<std::vector<CellPtr> > point_cell_map = this->mpRegularGrid->GetPointCellMap();
     for(unsigned idx=0; idx<point_cell_map.size(); idx++)
     {
-        values[idx] += mCellConstantInUValue * point_cell_map[idx].size()/grid_volume;
+        values[idx] += mCellConstantInUValue * double(point_cell_map[idx].size())/grid_volume;
     }
     return values;
 
@@ -109,25 +109,25 @@ std::vector<units::quantity<unit::rate> > CellBasedDiscreteSource<DIM>::GetLinea
         EXCEPTION("A regular grid is required for this type of source");
     }
 
-    std::vector<double> values(this->mpRegularGrid->GetNumberOfPoints(), 0.0);
+    std::vector<units::quantity<unit::rate> > values(this->mpRegularGrid->GetNumberOfPoints(), 0.0*unit::per_second);
     std::vector<std::vector<CellPtr> > point_cell_map = this->mpRegularGrid->GetPointCellMap();
     for(unsigned idx=0; idx<point_cell_map.size(); idx++)
     {
-        values[idx] += mCellLinearInUValue * point_cell_map[idx].size();
+        values[idx] += mCellLinearInUValue * double(point_cell_map[idx].size());
     }
     return values;
 }
 
 template<unsigned DIM>
-void CellBasedDiscreteSource<DIM>::SetConstantInUValue(units::quantity<unit::concentration_flow_rate> value)
+void CellBasedDiscreteSource<DIM>::SetConstantInUConsumptionRatePerCell(units::quantity<unit::molar_flow_rate> value)
 {
-    mConstantInUValue = value;
+    mCellConstantInUValue = value;
 }
 
 template<unsigned DIM>
-void CellBasedDiscreteSource<DIM>::SetLinearInUValue(units::quantity<unit::rate> value)
+void CellBasedDiscreteSource<DIM>::SetLinearInUConsumptionRatePerCell(units::quantity<unit::rate> value)
 {
-    mLinearInUValue = value;
+    mCellLinearInUValue = value;
 }
 
 // Explicit instantiation

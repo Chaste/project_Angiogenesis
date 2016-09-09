@@ -115,6 +115,13 @@ public:
 
     void UpdateCellData();
 
+    std::vector<double> GetSolutionAtPoints(std::vector<DimensionalChastePoint<DIM> > samplePoints);
+
+    virtual std::vector<double> GetSolutionAtGridPoints(boost::shared_ptr<RegularGrid<DIM> > pGrid)
+    {
+        return std::vector<double>();
+    };
+
 private:
 
     void Write();

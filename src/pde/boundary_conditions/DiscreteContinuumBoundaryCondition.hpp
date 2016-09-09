@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@
 
  */
 
-#ifndef DiscreteContinuumBoundaryCondition_HPP_
-#define DiscreteContinuumBoundaryCondition_HPP_
+#ifndef DISCRETECONTINUUMBOUNDARYCONDITION_HPP_
+#define DISCRETECONTINUUMBOUNDARYCONDITION_HPP_
 
 #include <vector>
 #include <string>
@@ -231,4 +231,4 @@ public:
     void SetValue(units::quantity<unit::concentration> value);
 };
 
-#endif /* DiscreteContinuumBoundaryCondition_HPP_ */
+#endif /* DISCRETECONTINUUMBOUNDARYCONDITION_HPP_ */

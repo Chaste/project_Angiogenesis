@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@
 
  */
 
-#ifndef cellbasedDiscreteSource_HPP_
-#define cellbasedDiscreteSource_HPP_
+#ifndef CELLBASEDDISCRETESOURCE_HPP_
+#define CELLBASEDDISCRETESOURCE_HPP_
 
 #include <vector>
 #include <string>
@@ -119,4 +119,4 @@ public:
     void SetLinearInUConsumptionRatePerCell(units::quantity<unit::rate> value);
 };
 
-#endif /* cellbasedDiscreteSource_HPP_ */
+#endif /* CELLBASEDDISCRETESOURCE_HPP_ */

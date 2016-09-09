@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@
 
  */
 
-#ifndef CELLSTATEDEPENDENTDiscreteSource_HPP_
-#define CELLSTATEDEPENDENTDiscreteSource_HPP_
+#ifndef CELLSTATEDEPENDENTDISCRETESOURCE_HPP_
+#define CELLSTATEDEPENDENTDISCRETESOURCE_HPP_
 
 #include <vector>
 #include <string>
@@ -44,6 +44,7 @@
 #include "AbstractCellProperty.hpp"
 #include "ApoptoticCellProperty.hpp"
 #include "DiscreteSource.hpp"
+#include "UnitCollection.hpp"
 
 /**
  * Specialization of discrete sources for cell state specific sink and source strengths
@@ -57,12 +58,17 @@ private:
     /**
      * Cells of different 'color' (i.e. mutation state label) can have different sink rates.
      */
-    std::map<unsigned, double > mStateRateMap;
+    std::map<unsigned, units::quantity<unit::molar_flow_rate> > mStateRateMap;
 
     /**
      * Cells of different 'color' (i.e. mutation state label) can have different sink rate thresholds.
      */
-    std::map<unsigned, double > mStateRateThresholdMap;
+    std::map<unsigned, units::quantity<unit::concentration> > mStateRateThresholdMap;
+
+    /**
+     * The consumption rate per unit species concentration
+     */
+    units::quantity<unit::flow_rate> mConsumptionRatePerUnitConcentration;
 
 public:
 
@@ -83,9 +89,28 @@ public:
     static boost::shared_ptr<CellStateDependentDiscreteSource<DIM> > Create();
 
     /**
-     * Over-ridden method for obtaining discrete source strengths due to cells
+     * Return the values of the source strengths sampled on the mesh elements
+     * @return a vector of source strengths
      */
-    std::vector<double> GetCellRegularGridValues();
+    std::vector<units::quantity<unit::concentration_flow_rate> > GetConstantInUMeshValues();
+
+    /**
+     * Return the values of the source strengths sampled on the mesh elements
+     * @return a vector of source strengths
+     */
+    std::vector<units::quantity<unit::rate> > GetLinearInUMeshValues();
+
+    /**
+     * Return the values of the source strengths sampled on the regular grid
+     * @return a vector of source strengths
+     */
+    std::vector<units::quantity<unit::concentration_flow_rate> > GetConstantInURegularGridValues();
+
+    /**
+     * Return the values of the source strengths sampled on the regular grid
+     * @return a vector of source strengths
+     */
+    std::vector<units::quantity<unit::rate> > GetLinearInURegularGridValues();
 
     /**
      * Set cell 'color' specific consumption rates. 'Color' is a property of the cell mutation state set in its constructor.
@@ -95,7 +120,7 @@ public:
      *
      * @param cellColorSinkRates the label for the source strength value
      */
-    void SetStateRateMap(std::map<unsigned, double > stateRateMap);
+    void SetStateRateMap(std::map<unsigned, units::quantity<unit::molar_flow_rate> > stateRateMap);
 
     /**
      * Set cell 'color' specific consumption rate thresholds.
@@ -104,7 +129,7 @@ public:
      *
      * @param cellColorSinkRates the label for the source strength value
      */
-    void SetStateRateThresholdMap(std::map<unsigned, double > stateThresholdMap);
+    void SetStateRateThresholdMap(std::map<unsigned, units::quantity<unit::concentration> > stateThresholdMap);
 };
 
-#endif /* CELLSTATEDEPENDENTDiscreteSource_HPP_ */
+#endif /* CELLSTATEDEPENDENTDISCRETESOURCE_HPP_ */

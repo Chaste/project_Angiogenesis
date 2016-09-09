@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,19 +33,12 @@
 
  */
 
-#ifndef LinearSteadyStateDiffusionReactionPde_HPP_
-#define LinearSteadyStateDiffusionReactionPde_HPP_
+#ifndef LINEARSTEADYSTATEDIFFUSIONREACTIONPDE_HPP_
+#define LINEARSTEADYSTATEDIFFUSIONREACTIONPDE_HPP_
 
-#include <string>
 #include "ChastePoint.hpp"
-#include "UblasIncludes.hpp"
+#include "Element.hpp"
 #include "SmartPointers.hpp"
-#include "UblasVectorInclude.hpp"
-#include "AbstractLinearEllipticPde.hpp"
-#include "DiscreteSource.hpp"
-#include "GeometryTools.hpp"
-#include "RegularGrid.hpp"
-#include "TetrahedralMesh.hpp"
 #include "UnitCollection.hpp"
 #include "AbstractDiscreteContinuumLinearEllipticPde.hpp"
 
@@ -71,6 +64,11 @@ public:
      * Constructor
      */
     LinearSteadyStateDiffusionReactionPde();
+
+    /**
+     * Destructor
+     */
+    ~LinearSteadyStateDiffusionReactionPde();
 
     /**
      * Factory Constructor
@@ -106,4 +104,4 @@ public:
 
 };
 
-#endif /*LinearSteadyStateDiffusionReactionPde_HPP_*/
+#endif /*LINEARSTEADYSTATEDIFFUSIONREACTIONPDE_HPP_*/

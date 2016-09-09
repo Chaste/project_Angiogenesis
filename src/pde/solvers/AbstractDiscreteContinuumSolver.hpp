@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,28 +33,26 @@
 
  */
 
-#ifndef ABSTRACTDiscreteContinuumSOLVER_HPP_
-#define ABSTRACTDiscreteContinuumSOLVER_HPP_
+#ifndef ABSTRACTDISCRETECONTINUUMSOLVER_HPP_
+#define ABSTRACTDISCRETECONTINUUMSOLVER_HPP_
 
 #include <vector>
 #include <string>
-
 #include "LinearSteadyStateDiffusionReactionPde.hpp"
 #include "OutputFileHandler.hpp"
 #include "VesselNetwork.hpp"
 #include "AbstractCellPopulation.hpp"
-#include "NonLinearSteadyStateDiffusionReactionPde.hpp"
+#include "AbstractDiscreteContinuumNonLinearEllipticPde.hpp"
 #include "DiscreteContinuumBoundaryCondition.hpp"
 #include "RegularGrid.hpp"
 #include "UnitCollection.hpp"
 
 /**
- * An abstract solver class for DiscreteContinuum continuum-discrete field problems.
- * The class is used by the VascularTumourSolver to provide a concentration field for a single,
+ * An abstract solver class for continuum-discrete field problems.
+ * The class is used by the VascularTumourSolver to provide a concentration or dimensionless field for a single,
  * labelled quantity for cells and/or vessels.
  * It is responsible for updating the values of data fields in cells
  * and vessels on each call and optionally writing the solution to file.
- * Methods can also be over-ridden by Python classes for use with external solvers.
  */
 template<unsigned DIM>
 class AbstractDiscreteContinuumSolver
@@ -110,12 +108,19 @@ protected:
     /**
      * The non-linear PDE to be solved, optional
      */
-    boost::shared_ptr<NonLinearSteadyStateDiffusionReactionPde<DIM, DIM> > mpNonLinearPde;
+    boost::shared_ptr<AbstractDiscreteContinuumNonLinearEllipticPde<DIM, DIM> > mpNonLinearPde;
 
     /**
      * The DiscreteContinuum boundary conditions, optional
      */
     std::vector<boost::shared_ptr<DiscreteContinuumBoundaryCondition<DIM> > > mBoundaryConditions;
+
+    /**
+     * This is used internally to scale concentrations before and after linear system solves, reads and writes.
+     * Since those functions don't use Boost Units. It should not affect the solution, but can be judiciously chosen
+     * to avoid precision problems.
+     */
+    units::quantity<unit::concentration> mReferenceConcentration;
 
 public:
 
@@ -151,7 +156,7 @@ public:
      * Return the nonlinear PDE
      * @return the DiscreteContinuum nonlinear elliptic pde
      */
-    boost::shared_ptr<NonLinearSteadyStateDiffusionReactionPde<DIM, DIM> > GetNonLinearPde();
+    boost::shared_ptr<AbstractDiscreteContinuumNonLinearEllipticPde<DIM, DIM> > GetNonLinearPde();
 
     /**
      * Return the value of the field at the requested points
@@ -165,6 +170,8 @@ public:
      */
     virtual std::vector<double> GetSolutionAtGridPoints(boost::shared_ptr<RegularGrid<DIM> > pGrid) = 0;
 
+    units::quantity<unit::concentration> GetReferenceConcentration();
+
     /**
      * Return the value of the field at the requested points
      * @return the value of the field ordered according to input point order
@@ -177,6 +184,10 @@ public:
      */
     virtual std::vector<units::quantity<unit::concentration> > GetConcentrationAtGridPoints(boost::shared_ptr<RegularGrid<DIM> > pGrid) = 0;
 
+    /**
+     * Has a cell population been set?
+     * @return whether a cell population been set.
+     */
     bool CellPopulationIsSet();
 
     /**
@@ -213,12 +224,14 @@ public:
      *  Set the nonlinear PDE to be solved
      * @param pPde the pde to be solved
      */
-    void SetNonLinearPde(boost::shared_ptr<NonLinearSteadyStateDiffusionReactionPde<DIM, DIM> > pPde);
+    void SetNonLinearPde(boost::shared_ptr<AbstractDiscreteContinuumNonLinearEllipticPde<DIM, DIM> > pPde);
 
     /**
      * Operations to be performed prior to the first solve
      */
     virtual void Setup() = 0;
+
+    void SetReferenceConcentration(units::quantity<unit::concentration> referenceConcentration);
 
     /**
      * Set the vessel network
@@ -253,4 +266,4 @@ public:
     virtual void Write() = 0;
 };
 
-#endif /* ABSTRACTDiscreteContinuumSOLVER_HPP_ */
+#endif /* ABSTRACTDISCRETECONTINUUMSOLVER_HPP_ */

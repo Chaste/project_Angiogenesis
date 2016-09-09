@@ -64,6 +64,10 @@ namespace unit
 //    typedef units::make_scaled_unit<units::si::length , units::scale<10, units::static_rational<-6> > >::type micron_type;
     BOOST_UNITS_STATIC_CONSTANT(microns, units::metric::micron_base_unit::unit_type);
 
+    typedef units::derived_dimension<units::length_base_dimension, -1>::type per_length_dimension;
+    typedef units::unit<per_length_dimension, units::si::system> per_length;
+    BOOST_UNITS_STATIC_CONSTANT(per_metre, per_length);
+
     // Force/Pressure/Stress
     typedef units::si::force force;
     BOOST_UNITS_STATIC_CONSTANT(newtons, units::si::force);

@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -47,7 +47,8 @@ AbstractDiscreteContinuumSolver<DIM>::AbstractDiscreteContinuumSolver()
         mWriteSolution(false),
         mpPde(),
         mpNonLinearPde(),
-        mBoundaryConditions()
+        mBoundaryConditions(),
+        mReferenceConcentration(1.0*unit::mole_per_metre_cubed)
 {
 
 }
@@ -81,7 +82,7 @@ boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<DIM, DIM> > AbstractDisc
 }
 
 template<unsigned DIM>
-boost::shared_ptr<NonLinearSteadyStateDiffusionReactionPde<DIM, DIM> > AbstractDiscreteContinuumSolver<DIM>::GetNonLinearPde()
+boost::shared_ptr<AbstractDiscreteContinuumNonLinearEllipticPde<DIM, DIM> > AbstractDiscreteContinuumSolver<DIM>::GetNonLinearPde()
 {
     if(!mpNonLinearPde)
     {
@@ -96,6 +97,12 @@ void AbstractDiscreteContinuumSolver<DIM>::SetCellPopulation(AbstractCellPopulat
 {
     mpCellPopulation = &rCellPopulation;
     mCellPopulationIsSet = true;
+}
+
+template<unsigned DIM>
+units::quantity<unit::concentration> AbstractDiscreteContinuumSolver<DIM>::GetReferenceConcentration()
+{
+    return mReferenceConcentration;
 }
 
 template<unsigned DIM>
@@ -123,7 +130,7 @@ void AbstractDiscreteContinuumSolver<DIM>::SetPde(boost::shared_ptr<LinearSteady
 }
 
 template<unsigned DIM>
-void AbstractDiscreteContinuumSolver<DIM>::SetNonLinearPde(boost::shared_ptr<NonLinearSteadyStateDiffusionReactionPde<DIM, DIM> > pPde)
+void AbstractDiscreteContinuumSolver<DIM>::SetNonLinearPde(boost::shared_ptr<AbstractDiscreteContinuumNonLinearEllipticPde<DIM, DIM> > pPde)
 {
     mpNonLinearPde = pPde;
 }
@@ -134,6 +141,11 @@ bool AbstractDiscreteContinuumSolver<DIM>::CellPopulationIsSet()
     return mCellPopulationIsSet;
 }
 
+template<unsigned DIM>
+void AbstractDiscreteContinuumSolver<DIM>::SetReferenceConcentration(units::quantity<unit::concentration> referenceConcentration)
+{
+    mReferenceConcentration = referenceConcentration;
+}
 
 template<unsigned DIM>
 void AbstractDiscreteContinuumSolver<DIM>::SetVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pNetwork)

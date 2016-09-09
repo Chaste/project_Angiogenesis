@@ -43,7 +43,7 @@
 #include "../../src/pde/problem/LinearSteadyStateDiffusionReactionPde.hpp"
 #include "SmartPointers.hpp"
 #include "Part.hpp"
-#include "NonLinearSteadyStateDiffusionReactionPde.hpp"
+#include "AbstractDiscreteContinuumNonLinearEllipticPde.hpp"
 #include "FiniteDifferenceSolver.hpp"
 #include "VesselNetwork.hpp"
 #include "VesselNetworkGenerator.hpp"
@@ -135,7 +135,7 @@ public:
         p_grid->GenerateFromPart(p_domain, 10.0 * 1.e-6 * unit::metres);
 
         // Choose the PDE
-        boost::shared_ptr<NonLinearSteadyStateDiffusionReactionPde<3> > p_pde = NonLinearSteadyStateDiffusionReactionPde<3>::Create();
+        boost::shared_ptr<AbstractDiscreteContinuumNonLinearEllipticPde<3> > p_pde = AbstractDiscreteContinuumNonLinearEllipticPde<3>::Create();
         p_pde->SetIsotropicDiffusionConstant(0.0033);
         p_pde->SetContinuumConstantInUTerm(-2.e-6);
         p_pde->SetThreshold(2.5);

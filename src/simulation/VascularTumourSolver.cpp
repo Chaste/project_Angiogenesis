@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -140,16 +140,17 @@ void VascularTumourSolver<DIM>::Increment()
     }
 
     // Manage vessel network output
-    if(this->mpNetwork)
+    if (this->mpNetwork)
     {
         mpNetwork->UpdateAll();
-        if(mOutputFrequency > 0 && num_steps % mOutputFrequency == 0)
+        if (mOutputFrequency > 0 && num_steps % mOutputFrequency == 0)
         {
-        	boost::shared_ptr<VesselNetworkWriter<DIM> > p_network_writer = VesselNetworkWriter<DIM>::Create();
-    		p_network_writer->SetVesselNetwork(mpNetwork);
-    		p_network_writer->SetFileName(mpOutputFileHandler->GetOutputDirectoryFullPath() + "/VesselNetwork_inc_" +
-    				boost::lexical_cast<std::string>(num_steps+1)+".vtp");
-    		p_network_writer->Write();
+            boost::shared_ptr<VesselNetworkWriter<DIM> > p_network_writer = VesselNetworkWriter<DIM>::Create();
+            p_network_writer->SetVesselNetwork(mpNetwork);
+            p_network_writer->SetFileName(
+                    mpOutputFileHandler->GetOutputDirectoryFullPath() + "/VesselNetwork_inc_"
+                            + boost::lexical_cast<std::string>(num_steps + 1) + ".vtp");
+            p_network_writer->Write();
         }
     }
 }
@@ -157,17 +158,17 @@ void VascularTumourSolver<DIM>::Increment()
 template<unsigned DIM>
 void VascularTumourSolver<DIM>::Run()
 {
-    if(this->mpNetwork)
+    if (this->mpNetwork)
     {
-    	boost::shared_ptr<VesselNetworkWriter<DIM> > p_network_writer = VesselNetworkWriter<DIM>::Create();
+        boost::shared_ptr<VesselNetworkWriter<DIM> > p_network_writer = VesselNetworkWriter<DIM>::Create();
         mpNetwork->UpdateAll(true);
-		p_network_writer->SetVesselNetwork(mpNetwork);
-		p_network_writer->SetFileName(mpOutputFileHandler->GetOutputDirectoryFullPath() + "/VesselNetwork_inc_0.vtp");
-		p_network_writer->Write();
+        p_network_writer->SetVesselNetwork(mpNetwork);
+        p_network_writer->SetFileName(mpOutputFileHandler->GetOutputDirectoryFullPath() + "/VesselNetwork_inc_0.vtp");
+        p_network_writer->Write();
     }
 
     Setup();
-    while(!SimulationTime::Instance()->IsFinished())
+    while (!SimulationTime::Instance()->IsFinished())
     {
         Increment();
         SimulationTime::Instance()->IncrementTimeOneStep();
@@ -261,7 +262,7 @@ void VascularTumourSolver<DIM>::UpdateCellData(std::vector<std::string> labels)
     {
         for(unsigned jdx=0; jdx<mDiscreteContinuumSolvers.size(); jdx++)
         {
-            if(labels[idx]==mDiscreteContinuumSolvers[idx]->GetPde()->GetVariableName())
+            if(labels[idx]==mDiscreteContinuumSolvers[idx]->GetLabel())
             {
                 mDiscreteContinuumSolvers[jdx]->UpdateCellData();
             }

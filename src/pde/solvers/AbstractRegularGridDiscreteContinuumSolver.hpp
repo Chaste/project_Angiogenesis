@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@
 
  */
 
-#ifndef ABSTRACTREGULARGRIDDiscreteContinuumSOLVER_HPP_
-#define ABSTRACTREGULARGRIDDiscreteContinuumSOLVER_HPP_
+#ifndef ABSTRACTREGULARGRIDDISCRETECONTINUUMSOLVER_HPP_
+#define ABSTRACTREGULARGRIDDISCRETECONTINUUMSOLVER_HPP_
 
 #include <vector>
 #include <string>
@@ -174,4 +174,4 @@ public:
     virtual void Write();
 };
 
-#endif /* ABSTRACTREGULARGRIDDiscreteContinuumSOLVER_HPP_ */
+#endif /* ABSTRACTREGULARGRIDDISCRETECONTINUUMSOLVER_HPP_ */

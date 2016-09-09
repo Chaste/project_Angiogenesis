@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -110,7 +110,7 @@ public:
 
     /**
      * Add a DiscreteContinuum solver to the collection
-     * @param pDiscreteContinuumSolver a DiscreteContinuum discrete-continuum solver
+     * @param pDiscreteContinuumSolver a discrete-continuum solver
      */
     void AddDiscreteContinuumSolver(boost::shared_ptr<AbstractDiscreteContinuumSolver<DIM> > pDiscreteContinuumSolver);
 
