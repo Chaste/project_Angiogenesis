@@ -102,11 +102,6 @@ class GreensFunctionSolver : public AbstractRegularGridDiscreteContinuumSolver<D
     std::vector<units::quantity<unit::concentration> > mSegmentConcentration;
 
     /**
-     * Species concentration at tissue points
-     */
-    std::vector<units::quantity<unit::concentration> > mTissueConcentration;
-
-    /**
      * Map between vessel segments and point locations
      */
     std::map<unsigned, boost::shared_ptr<VesselSegment<DIM> > > mSegmentPointMap;

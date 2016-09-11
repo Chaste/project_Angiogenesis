@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef _MechanicalStimulusCalculator_hpp
-#define _MechanicalStimulusCalculator_hpp
+#ifndef _MECHANICALSTIMULUSCALCULATOR_HPP
+#define _MECHANICALSTIMULUSCALCULATOR_HPP
 
 #include "SmartPointers.hpp"
 #include "AbstractVesselNetworkCalculator.hpp"
@@ -78,10 +78,22 @@ public:
     ~MechanicalStimulusCalculator();
 
     /**
-     * Return the shear stress as a function of pressure
-     * @return double the shear stress as a function of pressure
+     * Construct a new instance of the class and return a shared pointer to it.
+     * @return a pointer to a new class instance
+     */
+    static boost::shared_ptr<MechanicalStimulusCalculator<DIM> > Create();
+
+    /**
+     * Return the set point shear stress as a function of pressure
+     * @return the set point shear stress as a function of pressure
      */
     units::quantity<unit::pressure> GetTauP();
+
+    /**
+     * Return the shear stress for very low flow rates
+     * @return the shear stress for very low flow rates
+     */
+    units::quantity<unit::pressure> GetTauReference();
 
     /**
      * Set the wall shear stress reference value, a lower bound for the stimulus calculation
@@ -90,10 +102,16 @@ public:
     void SetTauRef(units::quantity<unit::pressure> tauRef);
 
     /**
+     * Set the wall shear stress set point pressure value
+     * @param tauP wall shear stress set point pressure value
+     */
+    void SetTauP(units::quantity<unit::pressure> tauP);
+
+    /**
      * Do the calculation
      */
     void Calculate();
 
 };
 
-#endif
+#endif /* _MECHANICALSTIMULUSCALCULATOR_HPP */

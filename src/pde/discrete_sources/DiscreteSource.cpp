@@ -184,6 +184,29 @@ std::vector<units::quantity<unit::concentration_flow_rate> > DiscreteSource<DIM>
 }
 
 template<unsigned DIM>
+std::vector<units::quantity<unit::rate> > DiscreteSource<DIM>::GetLinearInURegularGridValues()
+{
+    if(!mpRegularGrid)
+    {
+        EXCEPTION("A regular grid is required for this type of source");
+    }
+
+    // Check the source type
+    if(mType == SourceType::POINT)
+    {
+        return GetLinearInUPointRegularGridValues();
+    }
+    else if(mType == SourceType::SOLUTION)
+    {
+        return GetLinearInUSolutionDependentRegularGridValues();
+    }
+    else
+    {
+        EXCEPTION("Unknown type requested for discrete source");
+    }
+}
+
+template<unsigned DIM>
 void DiscreteSource<DIM>::SetLabelName(const std::string& label)
 {
     mLabel = label;
@@ -229,6 +252,18 @@ template<unsigned DIM>
 void DiscreteSource<DIM>::SetConstantInUValue(units::quantity<unit::concentration_flow_rate> value)
 {
     mConstantInUValue = value;
+}
+
+template<unsigned DIM>
+void DiscreteSource<DIM>::SetConstantInUSinkRatePerSolutionQuantity(units::quantity<unit::rate> value)
+{
+    mConstantInUSinkRatePerSolutionQuantity = value;
+}
+
+template<unsigned DIM>
+void DiscreteSource<DIM>::SetLinearInUSinkRatePerSolutionQuantity(units::quantity<unit::rate_per_concentration> value)
+{
+    mLinearInUSinkRatePerSolutionQuantity = value;
 }
 
 template<unsigned DIM>

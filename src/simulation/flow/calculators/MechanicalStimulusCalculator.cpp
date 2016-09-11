@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,7 +33,6 @@
 
  */
 
-#include "Exception.hpp"
 #include "MechanicalStimulusCalculator.hpp"
 
 template<unsigned DIM>
@@ -50,6 +49,13 @@ MechanicalStimulusCalculator<DIM>::~MechanicalStimulusCalculator()
 
 }
 
+template <unsigned DIM>
+boost::shared_ptr<MechanicalStimulusCalculator<DIM> > MechanicalStimulusCalculator<DIM>::Create()
+{
+    MAKE_PTR(MechanicalStimulusCalculator<DIM>, pSelf);
+    return pSelf;
+}
+
 template<unsigned DIM>
 units::quantity<unit::pressure> MechanicalStimulusCalculator<DIM>::GetTauP()
 {
@@ -57,9 +63,21 @@ units::quantity<unit::pressure> MechanicalStimulusCalculator<DIM>::GetTauP()
 }
 
 template<unsigned DIM>
+units::quantity<unit::pressure> MechanicalStimulusCalculator<DIM>::GetTauReference()
+{
+    return mTauRef;
+}
+
+template<unsigned DIM>
 void MechanicalStimulusCalculator<DIM>::SetTauRef(units::quantity<unit::pressure> TauRef)
 {
     mTauRef = TauRef;
+}
+
+template<unsigned DIM>
+void MechanicalStimulusCalculator<DIM>::SetTauP(units::quantity<unit::pressure> TauP)
+{
+    mTauP = TauP;
 }
 
 template<unsigned DIM>

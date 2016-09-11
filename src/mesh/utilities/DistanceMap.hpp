@@ -47,7 +47,7 @@ template<unsigned DIM>
 class DistanceMap : public AbstractRegularGridDiscreteContinuumSolver<DIM>
 {
     /**
-     * Use segment radii information in the calculation. Otherwise use centrelines.
+     * Use segment radius information in the calculation. Otherwise use centrelines.
      */
     bool mUseSegmentRadii;
 

@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -36,95 +36,81 @@
 #ifndef FINITEELEMENTSOLVER_HPP_
 #define FINITEELEMENTSOLVER_HPP_
 
-#include "LinearSteadyStateDiffusionReactionPde.hpp"
 #include "SmartPointers.hpp"
-#include "AbstractDiscreteContinuumSolver.hpp"
+#include "AbstractUnstructuredGridDiscreteContinuumSolver.hpp"
 #include "DiscreteContinuumMesh.hpp"
-#include "Part.hpp"
-#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the strstream deprecated warning for now (gcc4.3)
-#include <vtkSmartPointer.h>
-#include <vtkImageData.h>
-#include <vtkUnstructuredGrid.h>
 
+/**
+ * A finite element solver for linear elliptic PDEs with multiple discrete sinks or sources.
+ */
 template<unsigned DIM>
-class FiniteElementSolver : public AbstractDiscreteContinuumSolver<DIM>
+class FiniteElementSolver : public AbstractUnstructuredGridDiscreteContinuumSolver<DIM>
 {
-    using AbstractDiscreteContinuumSolver<DIM>::Solve;
+    /**
+     * Over-ride the base class solve method
+     */
+    using AbstractUnstructuredGridDiscreteContinuumSolver<DIM>::Solve;
 
-    // Keep the nodal solution
-    std::vector<double> mFeSolution;
-
-    // The solution in the form of a vtk grid
-    vtkSmartPointer<vtkUnstructuredGrid> mFeVtkSolution;
-
-    // The finite element mesh
-    boost::shared_ptr<DiscreteContinuumMesh<DIM, DIM> > mpMesh;
-
-    // Use the Chaste newton solver
+    /**
+     * Use the chaste newton solver
+     */
     bool mUseNewton;
 
-    // Use the linear solve as a guess
+    /**
+     * Use the linear solution as a guess
+     */
     bool mUseLinearSolveForGuess;
 
-    // An initial solution guess
+    /**
+     * An initial guess
+     */
     std::vector<double> mGuess;
-
-    units::quantity<unit::concentration> mReferenceConcentration;
 
 public:
 
-    /*
+    /**
      * Constructor
      */
     FiniteElementSolver();
 
-    /*
+    /**
      * Destructor
      */
     virtual ~FiniteElementSolver();
 
     /*
      * Construct a new instance of the class and return a shared pointer to it.
+     * @return a shared pointer to a class instance.
      */
     static boost::shared_ptr<FiniteElementSolver<DIM> > Create();
 
-    /*
-     * Overridden solution at points
+    /**
+     * Overridden solve method
      */
-    std::vector<units::quantity<unit::concentration> > GetConcentrationAtPoints(std::vector<DimensionalChastePoint<DIM> > samplePoints);
-
-    std::vector<units::quantity<unit::concentration> > GetConcentrationAtGridPoints(boost::shared_ptr<RegularGrid<DIM, DIM> > pGrid);
-
-    std::vector<double> GetNodalSolution();
-
-    void ReadSolution();
-
-    void Setup();
-
-    void SetMesh(boost::shared_ptr<DiscreteContinuumMesh<DIM, DIM> > pMesh);
-
     void Solve();
 
-    void SetGuess(std::vector<double> guess);
+    /**
+     * Set the initial dimensionless guess
+     * @param guess the guess.
+     */
+    void SetGuess(const std::vector<double>& guess);
 
-    void SetUseSimpleNetonSolver(bool useNewton = true);
+    /**
+     * Use Chaste's simple newton solve
+     * @param useNewton use Chaste's simple newton solve
+     */
+    void SetUseSimpleNetonSolver(bool useNewton);
 
-    void SetUseLinearSolveForGuess(bool useLinearSolve = true);
+    /**
+     * Use the solution from a linear solver as the initial guess
+     * @param useNewton use the solution from a linear solver as the initial guess
+     */
+    void SetUseLinearSolveForGuess(bool useLinearSolve);
 
+    /**
+     * Overridden update method
+     */
     void Update();
-
-    void UpdateCellData();
-
-    std::vector<double> GetSolutionAtPoints(std::vector<DimensionalChastePoint<DIM> > samplePoints);
-
-    virtual std::vector<double> GetSolutionAtGridPoints(boost::shared_ptr<RegularGrid<DIM> > pGrid)
-    {
-        return std::vector<double>();
-    };
-
-private:
-
-    void Write();
 };
 
 #endif /* FINITEELEMENTSOLVER_HPP_ */

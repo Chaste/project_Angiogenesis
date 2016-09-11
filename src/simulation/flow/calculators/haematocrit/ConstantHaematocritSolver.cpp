@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -47,6 +47,13 @@ template<unsigned DIM>
 ConstantHaematocritSolver<DIM>::~ConstantHaematocritSolver()
 {
 
+}
+
+template <unsigned DIM>
+boost::shared_ptr<ConstantHaematocritSolver<DIM> > ConstantHaematocritSolver<DIM>::Create()
+{
+    MAKE_PTR(ConstantHaematocritSolver<DIM>, pSelf);
+    return pSelf;
 }
 
 template<unsigned DIM>

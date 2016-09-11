@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,37 +33,54 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef _ConstantHaematocritSolver_hpp
-#define _ConstantHaematocritSolver_hpp
+#ifndef _CONSTANTHAEMATOCRITSOLVER_HPP
+#define _CONSTANTHAEMATOCRITSOLVER_HPP
 
-#include <boost/shared_ptr.hpp>
-
+#include "SmartPointers.hpp"
 #include "AbstractHaematocritSolver.hpp"
 #include "UnitCollection.hpp"
 
+/**
+ * This is a dummy solver which simply assigns every vessel the same haematocrit
+ */
 template<unsigned DIM>
 class ConstantHaematocritSolver : public AbstractHaematocritSolver<DIM>
 {
 
 private:
 
+    /**
+     * The haematocrit to be assigned to each vessel.
+     */
     units::quantity<unit::dimensionless> mHaematocrit;
 
 public:
 
-    // constructor
+    /**
+     * Constructor
+     */
     ConstantHaematocritSolver();
 
     /**
-     *  Virtual destructor.
+     * Virtual destructor.
      */
     virtual ~ConstantHaematocritSolver();
 
-    // method for performing the Solver
+    /**
+     * Construct a new instance of the class and return a shared pointer to it.
+     * @return a pointer to a new class instance
+     */
+    static boost::shared_ptr<ConstantHaematocritSolver<DIM> > Create();
+
+    /**
+     * Assign the haematocrit
+     */
     void Calculate();
 
+    /**
+     * Set the haematocrit to be assigned to each vessel
+     */
     void SetHaematocrit(units::quantity<unit::dimensionless> haematocrit);
-
 };
 
 #endif

@@ -48,7 +48,8 @@ VascularTumourSolver<DIM>::VascularTumourSolver() :
         mDiscreteContinuumSolvers(),
         mpStructuralAdaptationSolver(),
         mpAngiogenesisSolver(),
-        mpRegressionSolver()
+        mpRegressionSolver(),
+        mDiscreteContinuumSolversHaveCompatibleGridIndexing(false)
 {
 
 }
@@ -102,19 +103,26 @@ void VascularTumourSolver<DIM>::Increment()
         for(unsigned idx=0; idx<mDiscreteContinuumSolvers.size(); idx++)
         {
             mDiscreteContinuumSolvers[idx]->Update();
-            mDiscreteContinuumSolvers[idx]->SetFileName("/" + mDiscreteContinuumSolvers[idx]->GetLabel() +"_solution_" + boost::lexical_cast<std::string>(num_steps)+".vti");
+            mDiscreteContinuumSolvers[idx]->SetFileName("/" + mDiscreteContinuumSolvers[idx]->GetLabel() +"_solution_" + boost::lexical_cast<std::string>(num_steps));
 
             // Transfer PDE solutions for coupled problems
-//            if(idx>0 and mDiscreteContinuumSolvers[idx]->GetPde())
-//            {
-//                for(unsigned jdx=0; jdx<mDiscreteContinuumSolvers[idx]->GetPde()->GetDiscreteSources().size(); jdx++)
-//                {
-//                    if(mDiscreteContinuumSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->GetType()==SourceType::SOLUTION)
-//                    {
-//                        mDiscreteContinuumSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->SetSolution(mDiscreteContinuumSolvers[idx-1]->GetSolutionAtGridPoints());
-//                    }
-//                }
-//            }
+            if(idx>0 and mDiscreteContinuumSolvers[idx]->GetPde())
+            {
+                for(unsigned jdx=0; jdx<mDiscreteContinuumSolvers[idx]->GetPde()->GetDiscreteSources().size(); jdx++)
+                {
+                    if(mDiscreteContinuumSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->GetType()==SourceType::SOLUTION)
+                    {
+                        if(mDiscreteContinuumSolversHaveCompatibleGridIndexing)
+                        {
+                            mDiscreteContinuumSolvers[idx]->GetPde()->GetDiscreteSources()[jdx]->SetSolution(mDiscreteContinuumSolvers[idx-1]->GetConcentrations());
+                        }
+                        else
+                        {
+                            EXCEPTION("Solution dependent PDEs only work with compatible grids at the moment.");
+                        }
+                    }
+                }
+            }
             if(mOutputFrequency > 0 && num_steps % mOutputFrequency == 0)
             {
                 mDiscreteContinuumSolvers[idx]->SetWriteSolution(true);
@@ -212,6 +220,12 @@ void VascularTumourSolver<DIM>::SetupFromModifier(AbstractCellPopulation<DIM,DIM
     }
 
     Setup();
+}
+
+template<unsigned DIM>
+void VascularTumourSolver<DIM>::SetDiscreteContinuumSolversHaveCompatibleGridIndexing(bool compatibleIndexing)
+{
+    mDiscreteContinuumSolversHaveCompatibleGridIndexing = compatibleIndexing;
 }
 
 template<unsigned DIM>

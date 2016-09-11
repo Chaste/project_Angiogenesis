@@ -94,6 +94,8 @@ Copyright (c) 2005-2016, University of Oxford.
 #include "DiscreteContinuumMesh.hpp"
 #include "VtkMeshWriter.hpp"
 #include "FiniteElementSolver.hpp"
+#include "DiscreteSource.hpp"
+#include "VesselBasedDiscreteSource.hpp"
 #include "DiscreteContinuumBoundaryCondition.hpp"
 /*
  * Angiogenesis
@@ -101,6 +103,10 @@ Copyright (c) 2005-2016, University of Oxford.
 #include "OffLatticeSproutingRule.hpp"
 #include "OffLatticeMigrationRule.hpp"
 #include "AngiogenesisSolver.hpp"
+/*
+ * Runs the full simulation
+ */
+#include "VascularTumourSolver.hpp"
 /*
  * This should appear last.
  */
@@ -181,14 +187,11 @@ public:
 
         BaseUnits::Instance()->SetReferenceTimeScale(60.0*unit::seconds);
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(30, 1);
-        boost::shared_ptr<VesselImpedanceCalculator<3> > p_impedance_calculator =
-                boost::shared_ptr<VesselImpedanceCalculator<3> >(new VesselImpedanceCalculator<3>);
-        boost::shared_ptr<ConstantHaematocritSolver<3> > p_haematocrit_calculator =
-                boost::shared_ptr<ConstantHaematocritSolver<3> >(new ConstantHaematocritSolver<3>);
-        boost::shared_ptr<WallShearStressCalculator<3> > p_wss_calculator =
-                boost::shared_ptr<WallShearStressCalculator<3> >(new WallShearStressCalculator<3>);
-        boost::shared_ptr<MechanicalStimulusCalculator<3> > p_mech_stimulus_calculator =
-                boost::shared_ptr<MechanicalStimulusCalculator<3> >(new MechanicalStimulusCalculator<3>);
+        boost::shared_ptr<VesselImpedanceCalculator<3> > p_impedance_calculator = VesselImpedanceCalculator<3>::Create();
+        boost::shared_ptr<ConstantHaematocritSolver<3> > p_haematocrit_calculator = ConstantHaematocritSolver<3>::Create();
+        p_haematocrit_calculator->SetHaematocrit(0.45);
+        boost::shared_ptr<WallShearStressCalculator<3> > p_wss_calculator = WallShearStressCalculator<3>::Create();
+        boost::shared_ptr<MechanicalStimulusCalculator<3> > p_mech_stimulus_calculator = MechanicalStimulusCalculator<3>::Create();
 
         StructuralAdaptationSolver<3> structural_adaptation_solver;
         structural_adaptation_solver.SetVesselNetwork(p_network);
@@ -209,37 +212,89 @@ public:
          */
         boost::shared_ptr<DiscreteContinuumMesh<3> > p_mesh = DiscreteContinuumMesh<3>::Create();
         p_mesh->SetDomain(p_domain);
-        p_mesh->SetMaxElementArea(100.0*1.e-6);
+        p_mesh->SetMaxElementArea(1.e12);
         p_mesh->Update();
         /*
          * Set up the oxygen pde
          */
         boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<3> > p_oxygen_pde = LinearSteadyStateDiffusionReactionPde<3>::Create();
         units::quantity<unit::diffusivity> oxygen_diffusivity(1.e-6*unit::metre_squared_per_second);
-        units::quantity<unit::rate> oxygen_consumption_rate(1.e-6*unit::per_second);
         p_oxygen_pde->SetIsotropicDiffusionConstant(oxygen_diffusivity);
+        /*
+         * Add continuum sink term for cells
+         */
+        units::quantity<unit::rate> oxygen_consumption_rate(1.e-6*unit::per_second);
         p_oxygen_pde->SetContinuumLinearInUTerm(oxygen_consumption_rate);
         /*
          * Add discrete source terms for vessels
          */
-
-        /*
-         * Add continuum sink terms for cells
-         */
-
+        boost::shared_ptr<VesselBasedDiscreteSource<3> > p_vessel_oxygen_source = VesselBasedDiscreteSource<3>::Create();
+        p_vessel_oxygen_source->SetVesselPermeability(1.0 * unit::metre_per_second);
+        p_vessel_oxygen_source->SetOxygenConcentrationPerUnitHaematocrit(1.0*unit::mole_per_metre_cubed);
+        p_oxygen_pde->AddDiscreteSource(p_vessel_oxygen_source);
         /*
          * Set up the vegf pde
          */
-
+        boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<3> > p_vegf_pde = LinearSteadyStateDiffusionReactionPde<3>::Create();
+        units::quantity<unit::diffusivity> vegf_diffusivity(1.e-6*unit::metre_squared_per_second);
+        p_vegf_pde->SetIsotropicDiffusionConstant(vegf_diffusivity);
+        units::quantity<unit::rate> vegf_decay_rate(1.e-6*unit::per_second);
+        p_vegf_pde->SetContinuumLinearInUTerm(vegf_decay_rate);
         /*
          * Add a continuum source term with rate dependent on the oxygen concentration
          */
-
+        boost::shared_ptr<DiscreteSource<3> > p_oxygen_dependent_vegf_source = DiscreteSource<3>::Create();
+        p_oxygen_dependent_vegf_source->SetType(SourceType::SOLUTION);
+        p_oxygen_dependent_vegf_source->SetLinearInUSinkRatePerSolutionQuantity(-1.0*unit::metre_cubed_per_mole_per_second);
+        p_vegf_pde->AddDiscreteSource(p_oxygen_dependent_vegf_source);
         /*
-         * Add a perfect sink at the bottom of the domain
+         * Add a perfect sink at the bottom of the domain by means of a zero Dirichlet boundary condition. We can apply this
+         * directly on the domain geometry using a Facet locator to manually label the boundary. We then set the boundary condition
+         * using this label.
          */
-
-
+        p_domain->GetFacet(DimensionalChastePoint<3>(domain_radius/reference_length,
+                                                     domain_radius/reference_length, 0.0))->SetLabel("vegf_boundary");
+        boost::shared_ptr<DiscreteContinuumBoundaryCondition<3> > p_vegf_perfect_sink = DiscreteContinuumBoundaryCondition<3>::Create();
+        p_vegf_perfect_sink->SetType(BoundaryConditionType::FACET);
+        p_vegf_perfect_sink->SetDomain(p_domain);
+        p_vegf_perfect_sink->SetValue(0.0*unit::mole_per_metre_cubed);
+        p_vegf_perfect_sink->SetLabelName("vegf_boundary");
+        /*
+         * Set up the PDE solvers for the oxygen and vegf problems
+         */
+        boost::shared_ptr<FiniteElementSolver<3> > p_oxygen_solver = FiniteElementSolver<3>::Create();
+        p_oxygen_solver->SetPde(p_oxygen_pde);
+        p_oxygen_solver->SetLabel("oxygen");
+        p_oxygen_solver->SetMesh(p_mesh);
+        boost::shared_ptr<FiniteElementSolver<3> > p_vegf_solver = FiniteElementSolver<3>::Create();
+        p_vegf_solver->SetPde(p_vegf_pde);
+        p_vegf_solver->SetLabel("vegf");
+        p_vegf_solver->SetMesh(p_mesh);
+        p_vegf_solver->AddBoundaryCondition(p_vegf_perfect_sink);
+        /*
+         * Set up the `AngiogenesisSolver`
+         */
+//        boost::shared_ptr<AngiogenesisSolver<3> > p_angiogenesis_solver = AngiogenesisSolver<3>::Create();
+//        p_angiogenesis_solver->SetVesselNetwork(p_network);
+//        p_angiogenesis_solver->a
+        /*
+         * Set up the `VascularTumourSolver` which coordinates all solves. Note that for sequentially
+         * coupled PDE solves, the solution propagates in the order that the PDE solvers are added to the `VascularTumourSolver`.
+         */
+        boost::shared_ptr<VascularTumourSolver<3> > p_vascular_tumour_solver = VascularTumourSolver<3>::Create();
+        p_vascular_tumour_solver->SetVesselNetwork(p_network);
+        p_vascular_tumour_solver->AddDiscreteContinuumSolver(p_oxygen_solver);
+        p_vascular_tumour_solver->AddDiscreteContinuumSolver(p_vegf_solver);
+        p_vascular_tumour_solver->SetOutputFileHandler(p_handler);
+        p_vascular_tumour_solver->SetOutputFrequency(1);
+        p_vascular_tumour_solver->SetDiscreteContinuumSolversHaveCompatibleGridIndexing(true);
+        /*
+         * Reset the simulation time and run the solver.
+         */
+        SimulationTime::Instance()->Destroy();
+        SimulationTime::Instance()->SetStartTime(0.0);
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(30.0, 1);
+        p_vascular_tumour_solver->Run();
     }
 };
 

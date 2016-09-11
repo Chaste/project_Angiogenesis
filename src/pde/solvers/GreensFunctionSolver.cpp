@@ -60,7 +60,6 @@ GreensFunctionSolver<DIM>::GreensFunctionSolver()
       mSinkRates(),
       mSourceRates(),
       mSegmentConcentration(),
-      mTissueConcentration(),
       mSegmentPointMap(),
       mGtt(),
       mGvv(),
@@ -113,7 +112,7 @@ void GreensFunctionSolver<DIM>::Solve()
     }
 
     mSegmentConcentration = std::vector<units::quantity<unit::concentration> >(number_of_subsegments, 1.0*unit::mole_per_metre_cubed);
-    mTissueConcentration = std::vector<units::quantity<unit::concentration> >(number_of_sinks, 0.0*unit::mole_per_metre_cubed);
+    this->mConcentrations = std::vector<units::quantity<unit::concentration> >(number_of_sinks, 0.0*unit::mole_per_metre_cubed);
 
     // Solve for the subsegment source rates required to meet the sink substance demand
     double tolerance = 1.e-10;
@@ -193,28 +192,23 @@ void GreensFunctionSolver<DIM>::Solve()
     // Get the tissue concentration and write the solution
     for (unsigned i = 0; i < number_of_sinks; i++)
     {
-        mTissueConcentration[i] = 0.0 * unit::mole_per_metre_cubed;
+        this->mConcentrations[i] = 0.0 * unit::mole_per_metre_cubed;
         for (unsigned j = 0; j < number_of_sinks; j++)
         {
-            mTissueConcentration[i] += (*mGtt)[i][j] * mSinkRates[j] / diffusivity;
+            this->mConcentrations[i] += (*mGtt)[i][j] * mSinkRates[j] / diffusivity;
         }
 
         for (unsigned j = 0; j < number_of_subsegments; j++)
         {
-            mTissueConcentration[i] += (*mGtv)[i][j] * mSourceRates[j] / diffusivity;
+            this->mConcentrations[i] += (*mGtv)[i][j] * mSourceRates[j] / diffusivity;
         }
-        mTissueConcentration[i] += g0;
+        this->mConcentrations[i] += g0;
     }
 
     std::map<std::string, std::vector<units::quantity<unit::concentration> > > segmentPointData;
-    this->mConcentrationPointSolution = std::vector<units::quantity<unit::concentration> >(mTissueConcentration.size(), 0.0*unit::mole_per_metre_cubed);
-    for(unsigned idx=0; idx<mTissueConcentration.size(); idx++)
-    {
-        this->mConcentrationPointSolution[idx] = mTissueConcentration[idx];
-    }
-
     segmentPointData[this->mLabel] = mSegmentConcentration;
-    this->UpdateSolution(mTissueConcentration);
+
+    this->UpdateSolution(this->mConcentrations);
     if(this->mWriteSolution)
     {
         this->WriteSolution(segmentPointData);
@@ -445,7 +439,7 @@ void GreensFunctionSolver<DIM>::WriteSolution(std::map<std::string, std::vector<
 {
     // Write the tissue point data
     ImageWriter writer;
-    writer.SetFilename(this->mpOutputFileHandler->GetOutputDirectoryFullPath() + "/pde_solution.vti");
+    writer.SetFilename(this->mpOutputFileHandler->GetOutputDirectoryFullPath() + "/solution.vti");
     writer.SetImage(this->mpVtkSolution);
     writer.Write();
 

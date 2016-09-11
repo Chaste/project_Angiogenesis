@@ -377,8 +377,7 @@ std::vector<double> RegularGrid<ELEMENT_DIM, SPACE_DIM>::InterpolateGridValues(
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-const std::vector<std::vector<boost::shared_ptr<VesselNode<SPACE_DIM> > > >& RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetPointNodeMap(
-        bool update)
+const std::vector<std::vector<boost::shared_ptr<VesselNode<SPACE_DIM> > > >& RegularGrid<ELEMENT_DIM, SPACE_DIM>::GetPointNodeMap(bool update)
 {
     if (!update)
     {
@@ -405,7 +404,6 @@ const std::vector<std::vector<boost::shared_ptr<VesselNode<SPACE_DIM> > > >& Reg
         std::vector<boost::shared_ptr<VesselNode<SPACE_DIM> > > empty_node_pointers;
         mPointNodeMap.push_back(empty_node_pointers);
     }
-
 
     std::vector<boost::shared_ptr<VesselNode<SPACE_DIM> > > nodes = mpNetwork->GetNodes();
 

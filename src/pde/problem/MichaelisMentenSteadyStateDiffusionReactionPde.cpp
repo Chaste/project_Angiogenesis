@@ -33,7 +33,7 @@ Copyright (c) 2005-2016, University of Oxford.
 
  */
 
-#include <algorithm>
+#include "GeometryTools.hpp"
 #include "MichaelisMentenSteadyStateDiffusionReactionPde.hpp"
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
@@ -80,7 +80,7 @@ c_matrix<double, SPACE_DIM, SPACE_DIM> MichaelisMentenSteadyStateDiffusionReacti
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
-c_matrix<double, SPACE_DIM, SPACE_DIM> ComputeDiffusionTermPrime(const ChastePoint<SPACE_DIM>& rX, double u)
+c_matrix<double, SPACE_DIM, SPACE_DIM> MichaelisMentenSteadyStateDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::ComputeDiffusionTermPrime(const ChastePoint<SPACE_DIM>& rX, double u)
 {
     return zero_matrix<double>(SPACE_DIM);
 }

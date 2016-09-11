@@ -46,6 +46,12 @@ LinearSteadyStateDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::LinearSteadyState
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+LinearSteadyStateDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::~LinearSteadyStateDiffusionReactionPde()
+{
+
+}
+
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM> > LinearSteadyStateDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM>::Create()
 {
     MAKE_PTR(LinearSteadyStateDiffusionReactionPde<ELEMENT_DIM>, pSelf);

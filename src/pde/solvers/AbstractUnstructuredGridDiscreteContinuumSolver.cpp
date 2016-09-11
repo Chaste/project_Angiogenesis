@@ -40,37 +40,35 @@ Copyright (c) 2005-2016, University of Oxford.
 #include <vtkProbeFilter.h>
 #include <vtkImageData.h>
 #include <vtkSmartPointer.h>
-#include "ImageWriter.hpp"
-
-#include "AbstractRegularGridDiscreteContinuumSolver.hpp"
+#include "AbstractUnstructuredGridDiscreteContinuumSolver.hpp"
 
 template<unsigned DIM>
-AbstractRegularGridDiscreteContinuumSolver<DIM>::AbstractRegularGridDiscreteContinuumSolver()
+AbstractUnstructuredGridDiscreteContinuumSolver<DIM>::AbstractUnstructuredGridDiscreteContinuumSolver()
     :   AbstractDiscreteContinuumSolver<DIM>(),
-        mpVtkSolution(vtkSmartPointer<vtkImageData>::New()),
-        mpRegularGrid()
+        mpVtkSolution(vtkSmartPointer<vtkUnstructuredGrid>::New()),
+        mpMesh()
 {
-    this->mHasRegularGrid = true;
+    this->mHasUnstructuredGrid = true;
 }
 
 template<unsigned DIM>
-AbstractRegularGridDiscreteContinuumSolver<DIM>::~AbstractRegularGridDiscreteContinuumSolver()
+AbstractUnstructuredGridDiscreteContinuumSolver<DIM>::~AbstractUnstructuredGridDiscreteContinuumSolver()
 {
 
 }
 
 template<unsigned DIM>
-boost::shared_ptr<RegularGrid<DIM> > AbstractRegularGridDiscreteContinuumSolver<DIM>::GetGrid()
+boost::shared_ptr<DiscreteContinuumMesh<DIM> > AbstractUnstructuredGridDiscreteContinuumSolver<DIM>::GetMesh()
 {
-    if(!this->mpRegularGrid)
+    if(!this->mpMesh)
     {
-        EXCEPTION("A regular grid has not been set.");
+        EXCEPTION("A mesh has not been set.");
     }
-    return this->mpRegularGrid;
+    return this->mpMesh;
 }
 
 template<unsigned DIM>
-const std::vector<units::quantity<unit::concentration> >& AbstractRegularGridDiscreteContinuumSolver<DIM>::GetConcentrations(const std::vector<DimensionalChastePoint<DIM> >& samplePoints)
+const std::vector<units::quantity<unit::concentration> >& AbstractUnstructuredGridDiscreteContinuumSolver<DIM>::GetConcentrations(const std::vector<DimensionalChastePoint<DIM> >& samplePoints)
 {
     if(!this->mpVtkSolution)
     {
@@ -111,26 +109,26 @@ const std::vector<units::quantity<unit::concentration> >& AbstractRegularGridDis
 }
 
 template<unsigned DIM>
-const std::vector<units::quantity<unit::concentration> >& AbstractRegularGridDiscreteContinuumSolver<DIM>::GetConcentrations(boost::shared_ptr<RegularGrid<DIM> > pGrid)
+const std::vector<units::quantity<unit::concentration> >& AbstractUnstructuredGridDiscreteContinuumSolver<DIM>::GetConcentrations(boost::shared_ptr<RegularGrid<DIM> > pGrid)
 {
-    if(this->mpRegularGrid == pGrid)
+    return this->GetConcentrations(pGrid->GetLocations());
+}
+
+template<unsigned DIM>
+const std::vector<units::quantity<unit::concentration> >& AbstractUnstructuredGridDiscreteContinuumSolver<DIM>::GetConcentrations(boost::shared_ptr<DiscreteContinuumMesh<DIM> > pMesh)
+{
+    if(this->mpMesh == pMesh)
     {
         return this->GetConcentrations();
     }
     else
     {
-        return this->GetConcentrations(pGrid->GetLocations());
+        return this->GetConcentrations(pMesh->GetNodeLocations());
     }
 }
 
 template<unsigned DIM>
-const std::vector<units::quantity<unit::concentration> >& AbstractRegularGridDiscreteContinuumSolver<DIM>::GetConcentrations(boost::shared_ptr<DiscreteContinuumMesh<DIM> > pMesh)
-{
-    return this->GetConcentrations(pMesh->GetNodeLocations());
-}
-
-template<unsigned DIM>
-const std::vector<double>& AbstractRegularGridDiscreteContinuumSolver<DIM>::GetSolution(const std::vector<DimensionalChastePoint<DIM> >& rSamplePoints)
+const std::vector<double>& AbstractUnstructuredGridDiscreteContinuumSolver<DIM>::GetSolution(const std::vector<DimensionalChastePoint<DIM> >& rSamplePoints)
 {
     if(!this->mpVtkSolution)
     {
@@ -171,26 +169,26 @@ const std::vector<double>& AbstractRegularGridDiscreteContinuumSolver<DIM>::GetS
 }
 
 template<unsigned DIM>
-const std::vector<double>& AbstractRegularGridDiscreteContinuumSolver<DIM>::GetSolution(boost::shared_ptr<RegularGrid<DIM> > pGrid)
+const std::vector<double>& AbstractUnstructuredGridDiscreteContinuumSolver<DIM>::GetSolution(boost::shared_ptr<RegularGrid<DIM> > pGrid)
 {
-    if(this->mpRegularGrid == pGrid)
+    return this->GetSolution(pGrid->GetLocations());
+}
+
+template<unsigned DIM>
+const std::vector<double>& AbstractUnstructuredGridDiscreteContinuumSolver<DIM>::GetSolution(boost::shared_ptr<DiscreteContinuumMesh<DIM> > pMesh)
+{
+    if(this->mpMesh == pMesh)
     {
         return this->GetSolution();
     }
     else
     {
-        return this->GetSolution(pGrid->GetLocations());
+        return this->GetSolutionAtPoints(pMesh->GetNodeLocations());
     }
 }
 
 template<unsigned DIM>
-const std::vector<double>& AbstractRegularGridDiscreteContinuumSolver<DIM>::GetSolution(boost::shared_ptr<DiscreteContinuumMesh<DIM> > pMesh)
-{
-    return this->GetSolution(pMesh->GetNodeLocations());
-}
-
-template<unsigned DIM>
-vtkSmartPointer<vtkImageData> AbstractRegularGridDiscreteContinuumSolver<DIM>::GetVtkSolution()
+vtkSmartPointer<vtkUnstructuredGrid> AbstractUnstructuredGridDiscreteContinuumSolver<DIM>::GetVtkSolution()
 {
     if(!this->mpVtkSolution)
     {
@@ -200,48 +198,28 @@ vtkSmartPointer<vtkImageData> AbstractRegularGridDiscreteContinuumSolver<DIM>::G
 }
 
 template<unsigned DIM>
-void AbstractRegularGridDiscreteContinuumSolver<DIM>::SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid)
+void AbstractUnstructuredGridDiscreteContinuumSolver<DIM>::SetMesh(boost::shared_ptr<DiscreteContinuumMesh<DIM, DIM> > pMesh)
 {
-    this->mpRegularGrid = pGrid;
+    this->mpMesh = pMesh;
 }
 
 template<unsigned DIM>
-void AbstractRegularGridDiscreteContinuumSolver<DIM>::Setup()
+void AbstractUnstructuredGridDiscreteContinuumSolver<DIM>::Setup()
 {
-    if(!this->mpRegularGrid)
+    if(!this->mpMesh)
     {
-        EXCEPTION("Regular grid DiscreteContinuum solvers need a grid before Setup can be called.");
+        EXCEPTION("Mesh needed before Setup can be called.");
     }
 
     // Set up the VTK solution
-    this->mpVtkSolution = vtkSmartPointer<vtkImageData>::New();
+    this->mpVtkSolution = mpMesh->GetAsVtkUnstructuredGrid();
 
-    if(DIM==3)
-    {
-        this->mpVtkSolution->SetDimensions(this->mpRegularGrid->GetExtents()[0], this->mpRegularGrid->GetExtents()[1], this->mpRegularGrid->GetExtents()[2]);
-    }
-    else
-    {
-        this->mpVtkSolution->SetDimensions(this->mpRegularGrid->GetExtents()[0], this->mpRegularGrid->GetExtents()[1], 1);
-    }
-
-    double spacing = this->mpRegularGrid->GetSpacing()/this->mpRegularGrid->GetReferenceLengthScale();
-    this->mpVtkSolution->SetSpacing(spacing, spacing, spacing);
-
-    if(DIM==3)
-    {
-        this->mpVtkSolution->SetOrigin(this->mpRegularGrid->GetOrigin()[0], this->mpRegularGrid->GetOrigin()[1], this->mpRegularGrid->GetOrigin()[2]);
-    }
-    else
-    {
-        this->mpVtkSolution->SetOrigin(this->mpRegularGrid->GetOrigin()[0], this->mpRegularGrid->GetOrigin()[1], 0.0);
-    }
-
-    this->mSolution = std::vector<double>(0.0, this->mpRegularGrid->GetNumberOfPoints());
+    this->mSolution = std::vector<double>(0.0, this->mpMesh->GetNumberOfNodes());
+    this->mConcentrations = std::vector<units::quantity<unit::concentration> >(0.0*unit::mole_per_metre_cubed, this->mpMesh->GetNumberOfNodes());
 }
 
 template<unsigned DIM>
-void AbstractRegularGridDiscreteContinuumSolver<DIM>::UpdateSolution(std::vector<double>& data)
+void AbstractUnstructuredGridDiscreteContinuumSolver<DIM>::UpdateSolution(std::vector<double>& data)
 {
     if(!this->mpVtkSolution)
     {
@@ -259,7 +237,7 @@ void AbstractRegularGridDiscreteContinuumSolver<DIM>::UpdateSolution(std::vector
     this->mpVtkSolution->GetPointData()->AddArray(pPointData);
 
     // Note, if the data vector being passed in is mPointSolution, then it will be overwritten with zeros.
-    this->mPointSolution = std::vector<double>(data.size(), 0.0);
+    this->mSolution = std::vector<double>(data.size(), 0.0);
     for (unsigned i = 0; i < data.size(); i++)
     {
         this->mSolution[i] = data[i];
@@ -267,7 +245,7 @@ void AbstractRegularGridDiscreteContinuumSolver<DIM>::UpdateSolution(std::vector
 }
 
 template<unsigned DIM>
-void AbstractRegularGridDiscreteContinuumSolver<DIM>::UpdateSolution(std::vector<units::quantity<unit::concentration> >& data)
+void AbstractUnstructuredGridDiscreteContinuumSolver<DIM>::UpdateSolution(std::vector<units::quantity<unit::concentration> >& data)
 {
     if(!this->mpVtkSolution)
     {
@@ -293,7 +271,7 @@ void AbstractRegularGridDiscreteContinuumSolver<DIM>::UpdateSolution(std::vector
 }
 
 template<unsigned DIM>
-void AbstractRegularGridDiscreteContinuumSolver<DIM>::UpdateCellData()
+void AbstractUnstructuredGridDiscreteContinuumSolver<DIM>::UpdateCellData()
 {
     if(!this->mpVtkSolution)
     {
@@ -305,25 +283,26 @@ void AbstractRegularGridDiscreteContinuumSolver<DIM>::UpdateCellData()
         EXCEPTION("The DiscreteContinuum solver needs a cell population for this operation.");
     }
 
-    this->mpRegularGrid->SetCellPopulation(*(this->mpCellPopulation));
-    std::vector<std::vector<CellPtr> > point_cell_map = this->mpRegularGrid->GetPointCellMap();
-    for(unsigned idx=0; idx<point_cell_map.size(); idx++)
-    {
-        for(unsigned jdx=0; jdx<point_cell_map[idx].size(); jdx++)
-        {
-            point_cell_map[idx][jdx]->GetCellData()->SetItem(this->mLabel, this->mSolution[idx]);
-        }
-    }
+    // Update for FEM
+//    this->mpRegularGrid->SetCellPopulation(*(this->mpCellPopulation));
+//    std::vector<std::vector<CellPtr> > point_cell_map = this->mpRegularGrid->GetPointCellMap();
+//    for(unsigned idx=0; idx<point_cell_map.size(); idx++)
+//    {
+//        for(unsigned jdx=0; jdx<point_cell_map[idx].size(); jdx++)
+//        {
+//            point_cell_map[idx][jdx]->GetCellData()->SetItem(this->mLabel, this->mSolution[idx]);
+//        }
+//    }
 }
 
 template<unsigned DIM>
-void AbstractRegularGridDiscreteContinuumSolver<DIM>::Update()
+void AbstractUnstructuredGridDiscreteContinuumSolver<DIM>::Update()
 {
 
 }
 
 template<unsigned DIM>
-void AbstractRegularGridDiscreteContinuumSolver<DIM>::Write()
+void AbstractUnstructuredGridDiscreteContinuumSolver<DIM>::Write()
 {
     if(!this->mpVtkSolution)
     {
@@ -335,19 +314,27 @@ void AbstractRegularGridDiscreteContinuumSolver<DIM>::Write()
         EXCEPTION("An output file handler has not been set for the DiscreteContinuum solver.");
     }
 
-    ImageWriter writer;
-    if(!this->mFilename.empty())
+    if(PetscTools::AmMaster())
     {
-        writer.SetFilename((this->mpOutputFileHandler->GetOutputDirectoryFullPath() + "/" + this->mFilename));
+        vtkSmartPointer<vtkXMLUnstructuredGridWriter> p_writer1 = vtkSmartPointer<vtkXMLUnstructuredGridWriter>::New();
+        if(!this->mFilename.empty())
+        {
+            p_writer1->SetFileName((this->mpOutputFileHandler->GetOutputDirectoryFullPath() + "/" + this->mFilename).c_str());
+        }
+        else
+        {
+            p_writer1->SetFileName((this->mpOutputFileHandler->GetOutputDirectoryFullPath() + "/solution.vtu").c_str());
+        }
+        #if VTK_MAJOR_VERSION <= 5
+            p_writer1->SetInput(this->mpVtkSolution);
+        #else
+            p_writer1->SetInputData(this->mpVtkSolution);
+        #endif
+        p_writer1->Update();
+        p_writer1->Write();
     }
-    else
-    {
-        writer.SetFilename((this->mpOutputFileHandler->GetOutputDirectoryFullPath() + "/solution.vti"));
-    }
-    writer.SetImage(this->mpVtkSolution);
-    writer.Write();
 }
 
 // Explicit instantiation
-template class AbstractRegularGridDiscreteContinuumSolver<2> ;
-template class AbstractRegularGridDiscreteContinuumSolver<3> ;
+template class AbstractUnstructuredGridDiscreteContinuumSolver<2> ;
+template class AbstractUnstructuredGridDiscreteContinuumSolver<3> ;

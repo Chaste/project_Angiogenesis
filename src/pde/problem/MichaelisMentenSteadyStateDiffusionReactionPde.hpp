@@ -40,11 +40,6 @@ Copyright (c) 2005-2016, University of Oxford.
 #include "ChastePoint.hpp"
 #include "UblasIncludes.hpp"
 #include "SmartPointers.hpp"
-#include "UblasVectorInclude.hpp"
-#include "DiscreteSource.hpp"
-#include "GeometryTools.hpp"
-#include "RegularGrid.hpp"
-#include "TetrahedralMesh.hpp"
 #include "AbstractDiscreteContinuumNonLinearEllipticPde.hpp"
 
 /**
@@ -77,7 +72,7 @@ public:
     static boost::shared_ptr<MichaelisMentenSteadyStateDiffusionReactionPde<ELEMENT_DIM, SPACE_DIM> > Create();
 
     /**
-     * Overwritten method to return the constant in U contribution to the Chaste FE solver
+     * Over-ridden method to return the constant in U contribution to the Chaste FE solver
      * @param rX grid location
      * @param pElement pointer to containing element
      * @return source strength
@@ -85,14 +80,14 @@ public:
     double ComputeConstantInUSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement);
 
     /**
-     * Overwritten method to return the constant in U contribution to the regular grid solvers
+     * Over-ridden method to return the constant in U contribution to the regular grid solvers
      * @param gridIndex grid index
      * @return source strength
      */
     units::quantity<unit::concentration_flow_rate> ComputeConstantInUSourceTerm(unsigned gridIndex=0);
 
     /**
-     * Overwritten method to return the diffusion term to the Chaste FE solver
+     * Over-ridden method to return the diffusion term to the Chaste FE solver
      * @return the diffusion matrix
      */
     c_matrix<double, SPACE_DIM, SPACE_DIM> ComputeDiffusionTerm(const ChastePoint<SPACE_DIM>&, double u);
@@ -104,7 +99,7 @@ public:
     c_matrix<double, SPACE_DIM, SPACE_DIM> ComputeDiffusionTermPrime(const ChastePoint<SPACE_DIM>& rX, double u);
 
     /**
-     * Overwritten method to return the linear in U contribution to the Chaste FE solver
+     * Over-ridden method to return the linear in U contribution to the Chaste FE solver
      * @param rX grid location
      * @param pElement pointer to containing element
      * @return source strength
@@ -112,7 +107,7 @@ public:
     double ComputeLinearSourceTerm(const ChastePoint<SPACE_DIM>& rX);
 
     /**
-     * Overwritten method to return the linear in U contribution to the Chaste FE solver
+     * Over-ridden method to return the linear in U contribution to the Chaste FE solver
      * @param rX grid location
      * @param pElement pointer to containing element
      * @return source strength
@@ -120,14 +115,14 @@ public:
     double ComputeLinearInUCoeffInSourceTerm(const ChastePoint<SPACE_DIM>& rX, Element<ELEMENT_DIM, SPACE_DIM>* pElement);
 
     /**
-     * Overwritten method to return the linear in U contribution to the regular grid solvers
+     * Over-ridden method to return the linear in U contribution to the regular grid solvers
      * @param gridIndex grid index
      * @return source strength
      */
     virtual units::quantity<unit::rate> ComputeLinearInUCoeffInSourceTerm(unsigned gridIndex=0);
 
     /**
-     * Overwritten method to return the nonlinear in U contribution to the Chaste FE solver
+     * Over-ridden method to return the nonlinear in U contribution to the Chaste FE solver
      * @param rX grid location
      * @param pElement pointer to containing element
      * @return source strength
@@ -135,14 +130,14 @@ public:
     double ComputeNonlinearSourceTerm(const ChastePoint<SPACE_DIM>& rX, double u);
 
     /**
-     * Overwritten method to return the nonlinear in U contribution to the regular grid solvers
+     * Over-ridden method to return the nonlinear in U contribution to the regular grid solvers
      * @param gridIndex grid index
      * @return source strength
      */
     units::quantity<unit::concentration_flow_rate> ComputeNonlinearSourceTerm(unsigned gridIndex, units::quantity<unit::concentration> u);
 
     /**
-     * Overwritten method to return the nonlinear in U contribution prime to the Chaste FE solver
+     * Over-ridden method to return the nonlinear in U contribution prime to the Chaste FE solver
      * @param rX grid location
      * @param pElement pointer to containing element
      * @return source strength
@@ -150,7 +145,7 @@ public:
     double ComputeNonlinearSourceTermPrime(const ChastePoint<SPACE_DIM>& rX, double u);
 
     /**
-     * Overwritten method to return the nonlinear in U contribution prime to the regular grid solvers
+     * Over-ridden method to return the nonlinear in U contribution prime to the regular grid solvers
      * @param gridIndex grid index
      * @return source strength
      */

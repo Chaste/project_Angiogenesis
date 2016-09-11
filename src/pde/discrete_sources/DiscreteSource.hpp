@@ -262,6 +262,18 @@ public:
      * Set the value of the source for PRESCRIBED type sources
      * @param value the value of the source
      */
+    void SetConstantInUSinkRatePerSolutionQuantity(units::quantity<unit::rate> value);
+
+    /**
+     * Set the value of the source for PRESCRIBED type sources
+     * @param value the value of the source
+     */
+    void SetLinearInUSinkRatePerSolutionQuantity(units::quantity<unit::rate_per_concentration> value);
+
+    /**
+     * Set the value of the source for PRESCRIBED type sources
+     * @param value the value of the source
+     */
     void SetLinearInUValue(units::quantity<unit::rate> value);
 };
 

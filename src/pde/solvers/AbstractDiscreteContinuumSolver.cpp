@@ -39,7 +39,6 @@ template<unsigned DIM>
 AbstractDiscreteContinuumSolver<DIM>::AbstractDiscreteContinuumSolver()
     :   mpNetwork(),
         mpCellPopulation(NULL),
-        mCellPopulationIsSet(false),
         mpOutputFileHandler(),
         mFilename(),
         mLabel("Default"),
@@ -48,7 +47,11 @@ AbstractDiscreteContinuumSolver<DIM>::AbstractDiscreteContinuumSolver()
         mpPde(),
         mpNonLinearPde(),
         mBoundaryConditions(),
-        mReferenceConcentration(1.0*unit::mole_per_metre_cubed)
+        mReferenceConcentration(1.0*unit::mole_per_metre_cubed),
+        mSolution(),
+        mConcentrations(),
+        mHasRegularGrid(false),
+        mHasUnstructuredGrid(false)
 {
 
 }
@@ -66,13 +69,25 @@ void AbstractDiscreteContinuumSolver<DIM>::AddBoundaryCondition(boost::shared_pt
 }
 
 template<unsigned DIM>
+bool AbstractDiscreteContinuumSolver<DIM>::CellPopulationIsSet()
+{
+    return bool(mpCellPopulation);
+}
+
+template<unsigned DIM>
+const std::vector<units::quantity<unit::concentration> >& AbstractDiscreteContinuumSolver<DIM>::GetConcentrations()
+{
+    return mConcentrations;
+}
+
+template<unsigned DIM>
 const std::string& AbstractDiscreteContinuumSolver<DIM>::GetLabel()
 {
     return mLabel;
 }
 
 template<unsigned DIM>
-boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<DIM, DIM> > AbstractDiscreteContinuumSolver<DIM>::GetPde()
+boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<DIM, DIM> > AbstractDiscreteContinuumSolver<DIM>::GetPde()
 {
     if(!mpPde)
     {
@@ -91,18 +106,34 @@ boost::shared_ptr<AbstractDiscreteContinuumNonLinearEllipticPde<DIM, DIM> > Abst
     return mpNonLinearPde;
 }
 
+template<unsigned DIM>
+units::quantity<unit::concentration> AbstractDiscreteContinuumSolver<DIM>::GetReferenceConcentration()
+{
+    return mReferenceConcentration;
+}
+
+template<unsigned DIM>
+const std::vector<double>& AbstractDiscreteContinuumSolver<DIM>::GetSolution()
+{
+    return mSolution;
+}
+
+template<unsigned DIM>
+bool AbstractDiscreteContinuumSolver<DIM>::HasRegularGrid()
+{
+    return mHasRegularGrid;
+}
+
+template<unsigned DIM>
+bool AbstractDiscreteContinuumSolver<DIM>::HasUnstructuredGrid()
+{
+    return mHasUnstructuredGrid;
+}
 
 template<unsigned DIM>
 void AbstractDiscreteContinuumSolver<DIM>::SetCellPopulation(AbstractCellPopulation<DIM>& rCellPopulation)
 {
     mpCellPopulation = &rCellPopulation;
-    mCellPopulationIsSet = true;
-}
-
-template<unsigned DIM>
-units::quantity<unit::concentration> AbstractDiscreteContinuumSolver<DIM>::GetReferenceConcentration()
-{
-    return mReferenceConcentration;
 }
 
 template<unsigned DIM>
@@ -118,13 +149,13 @@ void AbstractDiscreteContinuumSolver<DIM>::SetFileName(const std::string& rFilen
 }
 
 template<unsigned DIM>
-void AbstractDiscreteContinuumSolver<DIM>::SetLabel(const std::string& label)
+void AbstractDiscreteContinuumSolver<DIM>::SetLabel(const std::string& rLabel)
 {
-    mLabel = label;
+    mLabel = rLabel;
 }
 
 template<unsigned DIM>
-void AbstractDiscreteContinuumSolver<DIM>::SetPde(boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<DIM, DIM> > pPde)
+void AbstractDiscreteContinuumSolver<DIM>::SetPde(boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<DIM, DIM> > pPde)
 {
     mpPde = pPde;
 }
@@ -133,12 +164,6 @@ template<unsigned DIM>
 void AbstractDiscreteContinuumSolver<DIM>::SetNonLinearPde(boost::shared_ptr<AbstractDiscreteContinuumNonLinearEllipticPde<DIM, DIM> > pPde)
 {
     mpNonLinearPde = pPde;
-}
-
-template<unsigned DIM>
-bool AbstractDiscreteContinuumSolver<DIM>::CellPopulationIsSet()
-{
-    return mCellPopulationIsSet;
 }
 
 template<unsigned DIM>
@@ -157,6 +182,18 @@ template<unsigned DIM>
 void AbstractDiscreteContinuumSolver<DIM>::SetWriteSolution(bool write)
 {
     mWriteSolution = write;
+}
+
+template<unsigned DIM>
+void AbstractDiscreteContinuumSolver<DIM>::UpdateSolution(const std::vector<double>& data)
+{
+    mSolution = data;
+}
+
+template<unsigned DIM>
+void AbstractDiscreteContinuumSolver<DIM>::UpdateSolution(const std::vector<units::quantity<unit::concentration> >& data)
+{
+    mConcentrations = data;
 }
 
 // Explicit instantiation

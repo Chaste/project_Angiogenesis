@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -326,6 +326,19 @@ template<unsigned DIM>
 units::quantity<unit::length> Part<DIM>::GetReferenceLengthScale()
 {
     return mReferenceLength;
+}
+
+template<unsigned DIM>
+boost::shared_ptr<Facet> Part<DIM>::GetFacet(const DimensionalChastePoint<3>& location)
+{
+    for(unsigned idx=0; idx<mFacets.size(); idx++)
+    {
+        if(mFacets[idx]->ContainsPoint(location))
+        {
+            return mFacets[idx];
+        }
+    }
+    EXCEPTION("No facet found at input location");
 }
 
 template<unsigned DIM>

@@ -34,10 +34,14 @@
  */
 
 #include <boost/lexical_cast.hpp>
+#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning
 #include <vtkIdList.h>
 #include <vtkCellArray.h>
 #include <vtkLine.h>
 #include <vtkPoints.h>
+#include <vtkTriangle.h>
+#include <vtkPoints.h>
+#include <vtkTetra.h>
 #include "Exception.hpp"
 #include "Warnings.hpp"
 #include "Facet.hpp"
@@ -58,7 +62,9 @@ DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::DiscreteContinuumMesh() :
     mHoles(),
     mRegions(),
     mAttributes(),
-    mReferenceLength(1.e-6 * unit::metres)
+    mReferenceLength(1.e-6 * unit::metres),
+    mpVtkMesh(),
+    mVtkRepresentationUpToDate(false)
 {
 
 }
@@ -73,6 +79,64 @@ boost::shared_ptr<DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM> > DiscreteContin
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::~DiscreteContinuumMesh()
 {
+
+}
+
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+vtkSmartPointer<vtkUnstructuredGrid> DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::GetAsVtkUnstructuredGrid()
+{
+    if(!mVtkRepresentationUpToDate)
+    {
+        vtkSmartPointer<vtkPoints> p_vtk_points = vtkSmartPointer<vtkPoints>::New();
+        std::vector<std::vector<double> > node_locations = GetNodeLocations();
+        p_vtk_points->SetNumberOfPoints(node_locations.size());
+        for(unsigned idx=0; idx<node_locations.size(); idx++)
+        {
+            if(SPACE_DIM==3)
+            {
+                p_vtk_points->InsertPoint(idx, node_locations[idx][0], node_locations[idx][1], node_locations[idx][2]);
+            }
+            else
+            {
+                p_vtk_points->InsertPoint(idx, node_locations[idx][0], node_locations[idx][1], 0.0);
+            }
+        }
+        mpVtkMesh->SetPoints(p_vtk_points);
+
+        // Add vtk tets or triangles
+        std::vector<std::vector<unsigned> > element_connectivity =  GetConnectivity();
+        unsigned num_elements = element_connectivity.size();
+        mpVtkMesh->Allocate(num_elements, num_elements);
+
+        for(unsigned idx=0; idx<num_elements; idx++)
+        {
+            if(ELEMENT_DIM==3)
+            {
+                vtkSmartPointer<vtkTetra> p_vtk_element = vtkSmartPointer<vtkTetra>::New();
+                unsigned num_nodes = element_connectivity[idx].size();
+                for(unsigned jdx=0; jdx<num_nodes; jdx++)
+                {
+                    p_vtk_element->GetPointIds()->SetId(jdx, element_connectivity[idx][jdx]);
+                }
+                mpVtkMesh->InsertNextCell(p_vtk_element->GetCellType(), p_vtk_element->GetPointIds());
+            }
+            else
+            {
+                vtkSmartPointer<vtkTriangle> p_vtk_element = vtkSmartPointer<vtkTriangle>::New();
+                unsigned num_nodes = element_connectivity[idx].size();
+                for(unsigned jdx=0; jdx<num_nodes; jdx++)
+                {
+                    p_vtk_element->GetPointIds()->SetId(jdx, element_connectivity[idx][jdx]);
+                }
+                mpVtkMesh->InsertNextCell(p_vtk_element->GetCellType(), p_vtk_element->GetPointIds());
+            }
+        }
+        mVtkRepresentationUpToDate = true;
+    }
+    else
+    {
+        return mpVtkMesh;
+    }
 
 }
 

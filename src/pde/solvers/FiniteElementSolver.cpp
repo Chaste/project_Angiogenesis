@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -37,29 +37,14 @@
 #include "SimpleLinearEllipticSolver.hpp"
 #include "SimpleNonlinearEllipticSolver.hpp"
 #include "SimpleNewtonNonlinearSolver.hpp"
-#define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the strstream deprecated warning for now (gcc4.3)
-#include <vtkDataArray.h>
-#include <vtkDoubleArray.h>
-#include <vtkCellData.h>
-#include <vtkPointData.h>
-#include <vtkTetra.h>
-#include <vtkUnstructuredGrid.h>
-#include <vtkProbeFilter.h>
-#include <vtkImageData.h>
-#include "VtkMeshWriter.hpp"
 #include "FiniteElementSolver.hpp"
-#include "VtkMeshReader.hpp"
 
 template<unsigned DIM>
 FiniteElementSolver<DIM>::FiniteElementSolver()
-    : AbstractDiscreteContinuumSolver<DIM>(),
-      mFeSolution(),
-      mFeVtkSolution(),
-      mpMesh(),
+    : AbstractUnstructuredGridDiscreteContinuumSolver<DIM>(),
       mUseNewton(false),
       mUseLinearSolveForGuess(false),
-      mGuess(),
-      mReferenceConcentration(1.0*unit::mole_per_metre_cubed)
+      mGuess()
 {
 
 }
@@ -78,92 +63,20 @@ boost::shared_ptr<FiniteElementSolver<DIM> > FiniteElementSolver<DIM>::Create()
 }
 
 template<unsigned DIM>
-void FiniteElementSolver<DIM>::Setup()
-{
-
-}
-
-template<unsigned DIM>
 void FiniteElementSolver<DIM>::Update()
 {
-
-}
-
-template<unsigned DIM>
-void FiniteElementSolver<DIM>::UpdateCellData()
-{
-
-}
-
-template<unsigned DIM>
-void FiniteElementSolver<DIM>::ReadSolution()
-{
-    mFeVtkSolution = vtkSmartPointer<vtkUnstructuredGrid>::New();
-    VtkMeshReader<DIM,DIM> mesh_reader(this->mpOutputFileHandler->GetOutputDirectoryFullPath() + this->mFilename + ".vtu");
-    vtkUnstructuredGrid* p_grid = mesh_reader.OutputMeshAsVtkUnstructuredGrid();
-    mFeVtkSolution->DeepCopy(p_grid);
-}
-
-template<unsigned DIM>
-std::vector<units::quantity<unit::concentration> > FiniteElementSolver<DIM>::GetConcentrationAtGridPoints(boost::shared_ptr<RegularGrid<DIM, DIM> > pGrid)
-{
-    return GetConcentrationAtPoints(pGrid->GetLocations());
-}
-
-template<unsigned DIM>
-std::vector<units::quantity<unit::concentration> > FiniteElementSolver<DIM>::GetConcentrationAtPoints(std::vector<DimensionalChastePoint<DIM> > samplePoints)
-{
-    if(!mFeVtkSolution)
+    if(this->mpPde)
     {
-        ReadSolution();
+        this->mpPde->UpdateDiscreteSourceStrengths();
     }
-    
-    // Sample the field at these locations
-    vtkSmartPointer<vtkPolyData> p_polydata = vtkSmartPointer<vtkPolyData>::New();
-    vtkSmartPointer<vtkPoints> p_points = vtkSmartPointer<vtkPoints>::New();
-    p_points->SetNumberOfPoints(samplePoints.size());
-    for(unsigned idx=0; idx< samplePoints.size(); idx++)
+    else
     {
-        if(DIM==3)
-        {
-            p_points->SetPoint(idx, samplePoints[idx][0], samplePoints[idx][1], samplePoints[idx][2]);
-        }
-        else
-        {
-            p_points->SetPoint(idx, samplePoints[idx][0], samplePoints[idx][1], 0.0);
-        }
+        this->mpNonLinearPde->UpdateDiscreteSourceStrengths();
     }
-    p_polydata->SetPoints(p_points);
-
-    vtkSmartPointer<vtkProbeFilter> p_probe_filter = vtkSmartPointer<vtkProbeFilter>::New();
-    p_probe_filter->SetInputData(p_polydata);
-    p_probe_filter->SetSourceData(mFeVtkSolution);
-    p_probe_filter->Update();
-
-    vtkSmartPointer<vtkPointData> p_point_data = p_probe_filter->GetOutput()->GetPointData();
-    unsigned num_points = p_point_data->GetArray(this->mLabel.c_str())->GetNumberOfTuples();
-    std::vector<units::quantity<unit::concentration> > results(num_points);
-    for(unsigned idx=0; idx<num_points; idx++)
-    {
-        results[idx] = p_point_data->GetArray(this->mLabel.c_str())->GetTuple1(idx)*mReferenceConcentration;
-    }
-    return results;
 }
 
 template<unsigned DIM>
-void FiniteElementSolver<DIM>::SetMesh(boost::shared_ptr<DiscreteContinuumMesh<DIM, DIM> > pMesh)
-{
-    mpMesh = pMesh;
-}
-
-template<unsigned DIM>
-std::vector<double> FiniteElementSolver<DIM>::GetNodalSolution()
-{
-    return mFeSolution;
-}
-
-template<unsigned DIM>
-void FiniteElementSolver<DIM>::SetGuess(std::vector<double> guess)
+void FiniteElementSolver<DIM>::SetGuess(const std::vector<double>& guess)
 {
     mGuess = guess;
 }
@@ -183,6 +96,12 @@ void FiniteElementSolver<DIM>::SetUseLinearSolveForGuess(bool useLinearSolve)
 template<unsigned DIM>
 void FiniteElementSolver<DIM>::Solve()
 {
+    if(!this->IsSetupForSolve)
+    {
+        this->Setup();
+    }
+
+    // Set up the boundary conditions in the Chaste format
     boost::shared_ptr<BoundaryConditionsContainer<DIM, DIM, 1> > p_bcc =
             boost::shared_ptr<BoundaryConditionsContainer<DIM, DIM, 1> >(new BoundaryConditionsContainer<DIM, DIM, 1> );
 
@@ -202,10 +121,11 @@ void FiniteElementSolver<DIM>::Solve()
 
         SimpleLinearEllipticSolver<DIM, DIM> static_solver(mpMesh.get(), this->mpPde.get(), p_bcc.get());
         ReplicatableVector static_solution_repl(static_solver.Solve());
-        mFeSolution = std::vector<double>(static_solution_repl.GetSize());
+        this->UpdateSolution(static_solution_repl);
+        this->mConcentrations = std::vector<units::quantity<unit::concentration> >(static_solution_repl.GetSize());
         for(unsigned idx = 0; idx < static_solution_repl.GetSize(); idx++)
         {
-            mFeSolution[idx]= static_solution_repl[idx];
+            this->mConcentrations[idx] = static_solution_repl[idx]*this->mReferenceConcentration;
         }
     }
     else if(this->mpNonLinearPde)
@@ -223,7 +143,6 @@ void FiniteElementSolver<DIM>::Solve()
             SimpleLinearEllipticSolver<DIM, DIM> static_solver(mpMesh.get(), this->mpPde.get(), p_bcc.get());
             ReplicatableVector static_solution_repl(static_solver.Solve());
 
-            std::cout << "Completed Linear Solve: Starting Non-Linear Solve" << std::endl;
             std::vector<double> solution = std::vector<double>(static_solution_repl.GetSize());
             for(unsigned idx = 0; idx < static_solution_repl.GetSize(); idx++)
             {
@@ -252,13 +171,13 @@ void FiniteElementSolver<DIM>::Solve()
             }
 
             ReplicatableVector solution_repl(solver.Solve(initial_guess));
-            mFeSolution = std::vector<double>(solution_repl.GetSize());
+            this->UpdateSolution(solution_repl);
+            this->mConcentrations = std::vector<units::quantity<unit::concentration> >(solution_repl.GetSize());
             for(unsigned idx = 0; idx < solution_repl.GetSize(); idx++)
             {
-                mFeSolution[idx]= solution_repl[idx];
+                this->mConcentrations[idx] = solution_repl[idx]*this->mReferenceConcentration;
             }
             PetscTools::Destroy(initial_guess);
-
         }
         else
         {
@@ -273,11 +192,11 @@ void FiniteElementSolver<DIM>::Solve()
             }
 
             ReplicatableVector static_solution_repl(solver.Solve(initial_guess));
-
-            mFeSolution = std::vector<double>(static_solution_repl.GetSize());
-            for(unsigned idx = 0; idx < static_solution_repl.GetSize(); idx++)
+            this->UpdateSolution(solution_repl);
+            this->mConcentrations = std::vector<units::quantity<unit::concentration> >(solution_repl.GetSize());
+            for(unsigned idx = 0; idx < solution_repl.GetSize(); idx++)
             {
-                mFeSolution[idx]= static_solution_repl[idx];
+                this->mConcentrations[idx] = solution_repl[idx]*this->mReferenceConcentration;
             }
             PetscTools::Destroy(initial_guess);
         }
@@ -291,35 +210,6 @@ void FiniteElementSolver<DIM>::Solve()
     {
         this->Write();
     }
-}
-
-template<unsigned DIM>
-std::vector<double> FiniteElementSolver<DIM>::GetSolutionAtPoints(std::vector<DimensionalChastePoint<DIM> > samplePoints)
-{
-    return std::vector<double>();
-};
-
-template<unsigned DIM>
-void FiniteElementSolver<DIM>::Write()
-{
-    // Write the output
-    if(this->mFilename.empty())
-    {
-        this->mFilename = "solution";
-    }
-
-    if(!this->mpOutputFileHandler)
-    {
-        EXCEPTION("Output file handler not set");
-    }
-
-    VtkMeshWriter <DIM, DIM> mesh_writer(this->mpOutputFileHandler->GetRelativePath(), this->mFilename, false);
-    if(mFeSolution.size() > 0)
-    {
-        mesh_writer.AddPointData(this->mLabel, mFeSolution);
-    }
-    mesh_writer.WriteFilesUsingMesh(*mpMesh);
-    ReadSolution();
 }
 
 // Explicit instantiation

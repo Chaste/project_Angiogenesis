@@ -279,10 +279,10 @@ void FiniteDifferenceSolver<DIM>::DoLinearSolve()
     ReplicatableVector soln_repl(linear_system.Solve());
 
     // Populate the solution vector
-    this->mConcentrationPointSolution = std::vector<units::quantity<unit::concentration> >(number_of_points, 0.0*unit::mole_per_metre_cubed);
+    this->mConcentrations = std::vector<units::quantity<unit::concentration> >(number_of_points, 0.0*unit::mole_per_metre_cubed);
     for (unsigned row = 0; row < number_of_points; row++)
     {
-        this->mConcentrationPointSolution[row] = soln_repl[row]*this->mReferenceConcentration;
+        this->mConcentrations[row] = soln_repl[row]*this->mReferenceConcentration;
     }
 
     this->UpdateSolution(this->mConcentrationPointSolution);
@@ -322,10 +322,10 @@ void FiniteDifferenceSolver<DIM>::Solve()
         this->mConcentrationPointSolution = std::vector<units::quantity<unit::concentration> >(number_of_points, 0.0*unit::mole_per_metre_cubed);
         for (unsigned row = 0; row < number_of_points; row++)
         {
-           this->mConcentrationPointSolution[row] = soln_repl[row]*this->mReferenceConcentration;
+           this->mConcentrations[row] = soln_repl[row]*this->mReferenceConcentration;
         }
 
-        this->UpdateSolution(this->mConcentrationPointSolution);
+        this->UpdateSolution(this->mConcentrations);
 
         if (this->mWriteSolution)
         {

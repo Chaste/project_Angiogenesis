@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef WallShearStressCalculator_hpp
-#define WallShearStressCalculator_hpp
+#ifndef WALLSHEARSTRESSCALCULATOR_HPP
+#define WALLSHEARSTRESSCALCULATOR_HPP
 
 #include "SmartPointers.hpp"
 #include "UnitCollection.hpp"
@@ -61,10 +61,16 @@ public:
     ~WallShearStressCalculator();
     
     /**
+     * Construct a new instance of the class and return a shared pointer to it.
+     * @return a pointer to a new class instance
+     */
+    static boost::shared_ptr<WallShearStressCalculator<DIM> > Create();
+
+    /**
      * Do the calculation.
      */
     void Calculate();
 
 };
 
-#endif
+#endif /* WALLSHEARSTRESSCALCULATOR_HPP */

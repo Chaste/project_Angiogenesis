@@ -49,6 +49,13 @@ VesselImpedanceCalculator<DIM>::~VesselImpedanceCalculator()
 
 }
 
+template <unsigned DIM>
+boost::shared_ptr<VesselImpedanceCalculator<DIM> > VesselImpedanceCalculator<DIM>::Create()
+{
+    MAKE_PTR(VesselImpedanceCalculator<DIM>, pSelf);
+    return pSelf;
+}
+
 template<unsigned DIM>
 void VesselImpedanceCalculator<DIM>::Calculate()
 {

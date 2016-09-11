@@ -33,18 +33,19 @@ Copyright (c) 2005-2016, University of Oxford.
 
  */
 
-#ifndef ABSTRACTREGULARGRIDDISCRETECONTINUUMSOLVER_HPP_
-#define ABSTRACTREGULARGRIDDISCRETECONTINUUMSOLVER_HPP_
+#ifndef ABSTRACTUNSTRUCTUREDGRIDDISCRETECONTINUUMSOLVER_HPP_
+#define ABSTRACTUNSTRUCTUREDGRIDDISCRETECONTINUUMSOLVER_HPP_
 
 #include <vector>
 #include <string>
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning for now (gcc4.3)
-#include <vtkImageData.h>
+#include <vtkUnstructuredGrid.h>
 #include <vtkSmartPointer.h>
 #include "SmartPointers.hpp"
 #include "UblasIncludes.hpp"
 #include "AbstractDiscreteContinuumSolver.hpp"
 #include "RegularGrid.hpp"
+#include "DiscreteContinuumMesh.hpp"
 #include "UnitCollection.hpp"
 
 /**
@@ -53,38 +54,38 @@ Copyright (c) 2005-2016, University of Oxford.
  * of discrete entities (points/cells, lines/vessels) onto structured grids.
  */
 template<unsigned DIM>
-class AbstractRegularGridDiscreteContinuumSolver : public AbstractDiscreteContinuumSolver<DIM>
+class AbstractUnstructuredGridDiscreteContinuumSolver : public AbstractDiscreteContinuumSolver<DIM>
 {
 
 protected:
 
     /**
-     * The solution in the form of vtk image data
+     * The solution in VTK form
      */
-    vtkSmartPointer<vtkImageData> mpVtkSolution;
+    vtkSmartPointer<vtkUnstructuredGrid> mpVtkSolution;
 
     /**
-     * The structured grid
+     * The finite element mesh
      */
-    boost::shared_ptr<RegularGrid<DIM> > mpRegularGrid;
+    boost::shared_ptr<DiscreteContinuumMesh<DIM, DIM> > mpMesh;
 
 public:
 
     /**
      * Constructor
      */
-    AbstractRegularGridDiscreteContinuumSolver();
+    AbstractUnstructuredGridDiscreteContinuumSolver();
 
     /**
      * Destructor
      */
-    virtual ~AbstractRegularGridDiscreteContinuumSolver();
+    virtual ~AbstractUnstructuredGridDiscreteContinuumSolver();
 
     /**
-     * Return the grid
-     * @return a pointer to the structured grid
+     * Return the mesh
+     * @return a pointer to the mesh
      */
-    boost::shared_ptr<RegularGrid<DIM> > GetGrid();
+    boost::shared_ptr<DiscreteContinuumMesh<DIM> > GetMesh();
 
     /**
      * Return the value of the field at the requested points
@@ -130,13 +131,13 @@ public:
     /**
      * Return the solution as vtk image data
      */
-    virtual vtkSmartPointer<vtkImageData> GetVtkSolution();
+    virtual vtkSmartPointer<vtkUnstructuredGrid> GetVtkSolution();
 
     /**
-     * Set the structured grid
-     * @param pRegularGrid the structured grid
+     * Set the mesh
+     * @param pMesh the finite element mesh
      */
-    void SetGrid(boost::shared_ptr<RegularGrid<DIM> > pRegularGrid);
+    void SetMesh(boost::shared_ptr<DiscreteContinuumMesh<DIM, DIM> > pMesh);
 
     /**
      * Overridden Setup method.
@@ -159,9 +160,9 @@ public:
     virtual void Solve() = 0;
 
     /**
-     * Overridden Write method. Writes the solution to file using a VTK structured grid.
+     * Overridden Write method. Writes the solution to file
      */
     virtual void Write();
 };
 
-#endif /* ABSTRACTREGULARGRIDDISCRETECONTINUUMSOLVER_HPP_ */
+#endif /* ABSTRACTUNSTRUCTUREDGRIDDISCRETECONTINUUMSOLVER_HPP_ */

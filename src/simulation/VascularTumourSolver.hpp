@@ -90,6 +90,12 @@ class VascularTumourSolver
      */
     boost::shared_ptr<RegressionSolver<DIM> > mpRegressionSolver;
 
+    /**
+     * Can the solution from one DiscreteContinuumSolver be sent directly to
+     * another, or is grid sampling needed.
+     */
+    bool mDiscreteContinuumSolversHaveCompatibleGridIndexing;
+
 public:
 
     /**
@@ -165,6 +171,11 @@ public:
      * This should be called before running in standalone mode
      */
     void Setup();
+
+    /**
+     * Set to true if we know that our discrete continuum solvers all have the same grid
+     */
+    void SetDiscreteContinuumSolversHaveCompatibleGridIndexing(bool compatibleIndexing);
 
     /**
      * Set the vessel network

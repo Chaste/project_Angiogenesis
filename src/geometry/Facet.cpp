@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -46,7 +46,8 @@ Facet::Facet(std::vector<boost::shared_ptr<Polygon> > polygons) :
         mPolygons(polygons),
         mVertices(),
         mVerticesUpToDate(false),
-        mData()
+        mData(),
+        mLabel()
 {
 
 }
@@ -149,6 +150,10 @@ double Facet::GetData(const std::string& label)
     return mData[label];
 }
 
+std::string Facet::GetLabel()
+{
+    return mLabel;
+}
 
 double Facet::GetDistance(const DimensionalChastePoint<3>& location)
 {
@@ -236,6 +241,11 @@ void Facet::RotateAboutAxis(c_vector<double, 3> axis, double angle)
 void Facet::SetData(const std::string& label, double value)
 {
     mData[label] = value;
+}
+
+void Facet::SetLabel(const std::string& label)
+{
+    mLabel= label;
 }
 
 void Facet::Translate(c_vector<double, 3> translationVector)

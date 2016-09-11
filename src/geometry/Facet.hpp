@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -75,6 +75,11 @@ class Facet
      */
     std::map<std::string, double> mData;
 
+    /**
+     * A label for the application of boundary conditions
+     */
+    std::string mLabel;
+
 public:
 
     /**
@@ -108,86 +113,114 @@ public:
      */
     ~Facet();
 
-    /* Add polygons
+    /**
+     * Add polygons
      * @param polygons planar polygons
      */
     void AddPolygons(std::vector<boost::shared_ptr<Polygon> > polygons);
 
-    /* Add polygon
+    /**
+     * Add polygon
      * @param pPolygon a polygon
      */
     void AddPolygon(boost::shared_ptr<Polygon> pPolygon);
 
-    /* Return true if the specified location is in the facet
+    /**
+     * Return true if the specified location is in the facet
      * @param location the location to be tested
      * @return true if the location is in the facet
      */
     bool ContainsPoint(const DimensionalChastePoint<3>& location);
 
-    /* Return the bounding box of the facet
+    /**
+     * Return the bounding box of the facet
      * @return the bounding box (xmin, xmax, ymin, ymax, zmin, zmax)
      */
     c_vector<double, 6> GetBoundingBox();
 
-    /* Return the centroid of the facet
+    /**
+     * Return the centroid of the facet
      * @return the centroid of the facet
      */
     DimensionalChastePoint<3> GetCentroid();
 
-    /* Return the data for the specified label
+    /**
+     * Return the data for the specified label
      * @param label the data label
      * @return the data for the specified label
      */
     double GetData(const std::string& label);
 
-    /* Return the distance to the facet
+    /**
+     * Return the distance to the facet
      * @return the distance to the facet
      */
     double GetDistance(const DimensionalChastePoint<3>& location);
 
-    /* Return the facet's plane
+    /**
+     * Get the label for boundary conditions
+     * @return label the boundary condition label
+     */
+    std::string GetLabel();
+
+    /**
+     * Return the facet's plane
      * @return a vtk plane on the facet's plane
      */
     vtkSmartPointer<vtkPlane> GetPlane();
 
-    /* Return the normal to the facet
+    /**
+     * Return the normal to the facet
      * @return the normal to the facet
      */
     c_vector<double, 3> GetNormal();
 
-    /* Return the polygons
+    /**
+     * Return the polygons
      * @return the polygons making up the facet
      */
     std::vector<boost::shared_ptr<Polygon> > GetPolygons();
 
-    /* Return the vertices
+    /**
+     * Return the vertices
      * @return the unique vertices in the facet
      */
     std::vector<boost::shared_ptr<Vertex> > GetVertices();
 
-    /* Return the facet vertices as a set of VtkPoints.
+    /**
+     * Return the facet vertices as a set of VtkPoints.
      * @return the facet vertices as a set of VtkPoints.
      */
     std::pair<vtkSmartPointer<vtkPoints>, vtkSmartPointer<vtkIdTypeArray> > GetVtkVertices();
 
-    /* Rotate about the specified axis by the specified angle
+    /**
+     * Rotate about the specified axis by the specified angle
      * @param axis the rotation axis
      * @param angle the rotation angle
      */
     void RotateAboutAxis(c_vector<double, 3> axis, double angle);
 
-    /* Set the data for the specified label
+    /**
+     * Set the data for the specified label
      * @param label the data label
      * @param value the value of the data
      */
     void SetData(const std::string& label, double value);
 
-    /* Move the facet along the translation vector
+    /**
+     * Set the label for boundary conditions
+     * @param label the boundary condition label
+     */
+    void SetLabel(const std::string& label);
+
+    /**
+     * Move the facet along the translation vector
      * @param translationVector the new location is the original + the translationVector
      */
     void Translate(c_vector<double, 3> translationVector);
 
-    /* Update the mVertices member
+    /**
+     * Update the mVertices member
      */
     void UpdateVertices();
 

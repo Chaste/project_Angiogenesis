@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@
 
  */
 
-#ifndef VesselImpedanceCalculator_HPP_
-#define VesselImpedanceCalculator_HPP_
+#ifndef VESSELIMPEDANCECALCULATOR_HPP_
+#define VESSELIMPEDANCECALCULATOR_HPP_
 
 #include "SmartPointers.hpp"
 #include "AbstractVesselNetworkCalculator.hpp"
@@ -61,6 +61,12 @@ public:
     VesselImpedanceCalculator();
 
     /**
+     * Construct a new instance of the class and return a shared pointer to it.
+     * @return a pointer to a new class instance
+     */
+    static boost::shared_ptr<VesselImpedanceCalculator<DIM> > Create();
+
+    /**
      * Destructor.
      */
     ~VesselImpedanceCalculator();
@@ -70,4 +76,4 @@ public:
 
 };
 
-#endif /* VesselImpedanceCalculator_HPP_ */
+#endif /* VESSELIMPEDANCECALCULATOR_HPP_ */

@@ -38,20 +38,21 @@ Copyright (c) 2005-2016, University of Oxford.
 
 #include <vector>
 #include <string>
-#include "LinearSteadyStateDiffusionReactionPde.hpp"
 #include "OutputFileHandler.hpp"
 #include "VesselNetwork.hpp"
 #include "AbstractCellPopulation.hpp"
+#include "AbstractDiscreteContinuumLinearEllipticPde.hpp"
 #include "AbstractDiscreteContinuumNonLinearEllipticPde.hpp"
 #include "DiscreteContinuumBoundaryCondition.hpp"
 #include "RegularGrid.hpp"
+#include "DiscreteContinuumMesh.hpp"
 #include "UnitCollection.hpp"
 
 /**
  * An abstract solver class for continuum-discrete field problems.
  * The class is used by the VascularTumourSolver to provide a concentration or dimensionless field for a single,
- * labelled quantity for cells and/or vessels.
- * It is responsible for updating the values of data fields in cells
+ * labelled quantity for cells and/or vessels. It contains methods for sampling on structured and unstructured grids.
+ * Derived classes are responsible for updating the values of data fields in cells
  * and vessels on each call and optionally writing the solution to file.
  */
 template<unsigned DIM>
@@ -66,17 +67,12 @@ protected:
     boost::shared_ptr<VesselNetwork<DIM> > mpNetwork;
 
     /**
-     * The cell population. IMPORTANT: The memory pointed to is not managed in this class.
+     * The cell population.
      */
     AbstractCellPopulation<DIM>* mpCellPopulation;
 
     /**
-     * Has a cell population been set. Avoids querying NULL pointer.
-     */
-    bool mCellPopulationIsSet;
-
-    /**
-     *  File handler containing the output directory
+     * File handler containing the output directory
      */
     boost::shared_ptr<OutputFileHandler> mpOutputFileHandler;
 
@@ -101,12 +97,12 @@ protected:
     bool mWriteSolution;
 
     /**
-     * The PDE to be solved, optional
+     * The PDE to be solved
      */
-    boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<DIM, DIM> > mpPde;
+    boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<DIM, DIM> > mpPde;
 
     /**
-     * The non-linear PDE to be solved, optional
+     * The non-linear PDE to be solved
      */
     boost::shared_ptr<AbstractDiscreteContinuumNonLinearEllipticPde<DIM, DIM> > mpNonLinearPde;
 
@@ -121,6 +117,26 @@ protected:
      * to avoid precision problems.
      */
     units::quantity<unit::concentration> mReferenceConcentration;
+
+    /**
+     * A solution field. Ordering is decided in child classes.
+     */
+    std::vector<double> mSolution;
+
+    /**
+     * A solution field. Ordering is decided in child classes.
+     */
+    std::vector<units::quantity<unit::concentration> > mConcentrations;
+
+    /**
+     * Used to check the type of solver
+     */
+    bool mHasRegularGrid;
+
+    /**
+     * Used to check the type of solver
+     */
+    bool mHasUnstructuredGrid;
 
 public:
 
@@ -141,16 +157,43 @@ public:
     void AddBoundaryCondition(boost::shared_ptr<DiscreteContinuumBoundaryCondition<DIM> > pBoundaryCondition);
 
     /**
+     * Has a cell population been set?
+     * @return whether a cell population been set.
+     */
+    bool CellPopulationIsSet();
+
+    /**
+     * Return the value of the field with ordering determined by child classes
+     * @return the value of the field with ordering determined by child classes
+     */
+    virtual const std::vector<units::quantity<unit::concentration> >& GetConcentrations();
+
+    /**
+     * Return the value of the field at all points on the supplied grid
+     * @param pGrid the sampling grid
+     * @return the value of the field ordered according to grid order
+     */
+    virtual const std::vector<units::quantity<unit::concentration> >& GetConcentrations(boost::shared_ptr<RegularGrid<DIM> > pGrid) = 0;
+
+    /**
+     * Return the value of the field at the requested points
+     * @param rSamplePoints a vector of sample points
+     * @return the value of the field ordered according to input point order
+     */
+    virtual const std::vector<units::quantity<unit::concentration> >& GetConcentrations(const std::vector<DimensionalChastePoint<DIM> >& rSamplePoints) = 0;
+
+    /**
+     * Return the value of the field on the nodes of the input mesh
+     * @param pMesh the mesh from which nodes are sampled
+     * @return the value of the field ordered according to mesh node ordering
+     */
+    virtual const std::vector<units::quantity<unit::concentration> >& GetConcentrations(boost::shared_ptr<DiscreteContinuumMesh<DIM> > pMesh) = 0;
+
+    /**
      * Return the name of the field being solved for
      * @return a reference to the field name
      */
     const std::string& GetLabel();
-
-    /**
-     * Return the PDE
-     * @return the DiscreteContinuum linear elliptic pde
-     */
-    boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<DIM, DIM> > GetPde();
 
     /**
      * Return the nonlinear PDE
@@ -159,36 +202,55 @@ public:
     boost::shared_ptr<AbstractDiscreteContinuumNonLinearEllipticPde<DIM, DIM> > GetNonLinearPde();
 
     /**
-     * Return the value of the field at the requested points
-     * @return the value of the field ordered according to input point order
+     * Return the PDE
+     * @return the DiscreteContinuum linear elliptic pde
      */
-    virtual std::vector<double> GetSolutionAtPoints(std::vector<DimensionalChastePoint<DIM> > samplePoints) = 0;
+    boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<DIM, DIM> > GetPde();
 
     /**
-     * Return the value of the field at all points on the supplied grid
-     * @return the value of the field ordered according to input point order
+     * Return the reference concentration value.
+     * @return the reference concentration value
      */
-    virtual std::vector<double> GetSolutionAtGridPoints(boost::shared_ptr<RegularGrid<DIM> > pGrid) = 0;
-
     units::quantity<unit::concentration> GetReferenceConcentration();
 
     /**
+     * Return the value of the field with ordering determined by child classes
+     * @return the value of the field with ordering determined by child classes
+     */
+    virtual const std::vector<double>& GetSolution();
+
+    /**
      * Return the value of the field at the requested points
+     * @param rSamplePoints the points for sampling
      * @return the value of the field ordered according to input point order
      */
-    virtual std::vector<units::quantity<unit::concentration> > GetConcentrationAtPoints(std::vector<DimensionalChastePoint<DIM> > samplePoints) = 0;
+    virtual const std::vector<double>& GetSolution(const std::vector<DimensionalChastePoint<DIM> >& rSamplePoints) = 0;
 
     /**
      * Return the value of the field at all points on the supplied grid
+     * @param pGrid the grid to be sampled
      * @return the value of the field ordered according to input point order
      */
-    virtual std::vector<units::quantity<unit::concentration> > GetConcentrationAtGridPoints(boost::shared_ptr<RegularGrid<DIM> > pGrid) = 0;
+    virtual const std::vector<double>& GetSolution(boost::shared_ptr<RegularGrid<DIM> > pGrid) = 0;
 
     /**
-     * Has a cell population been set?
-     * @return whether a cell population been set.
+     * Return the value of the field at all points on the supplied mesh nodes
+     * @param pMesh the mesh for point sampling
+     * @return the value of the field ordered according to mesh node order
      */
-    bool CellPopulationIsSet();
+    virtual const std::vector<double>& GetSolution(boost::shared_ptr<DiscreteContinuumMesh<DIM> > pMesh) = 0;
+
+    /**
+     * Return true if the solver uses a regular grid to store solutions
+     * @return true if the solver uses a regular grid to store solutions
+     */
+    bool HasRegularGrid();
+
+    /**
+     * Return true if the solver uses a unstructured grid to store solutions
+     * @return true if the solver uses a unstructured grid to store solutions
+     */
+    bool HasUnstructuredGrid();
 
     /**
      * Set the cell population
@@ -218,7 +280,7 @@ public:
      *  Set the PDE to be solved
      * @param pPde the pde to be solved
      */
-    void SetPde(boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<DIM, DIM> > pPde);
+    void SetPde(boost::shared_ptr<AbstractDiscreteContinuumLinearEllipticPde<DIM, DIM> > pPde);
 
     /**
      *  Set the nonlinear PDE to be solved
@@ -231,6 +293,10 @@ public:
      */
     virtual void Setup() = 0;
 
+    /**
+     * Set the reference concentration
+     * @param referenceConcentration the reference concentration
+     */
     void SetReferenceConcentration(units::quantity<unit::concentration> referenceConcentration);
 
     /**
@@ -259,6 +325,16 @@ public:
      * Set the cell data to the values in the field
      */
     virtual void UpdateCellData() = 0;
+
+    /**
+     * Update the solution manually
+     */
+    virtual void UpdateSolution(const std::vector<double>& data);
+
+    /**
+     * Update the solution manually
+     */
+    virtual void UpdateSolution(const std::vector<units::quantity<unit::concentration> >& data);
 
     /**
      * Write the solution to file

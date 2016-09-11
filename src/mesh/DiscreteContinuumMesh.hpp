@@ -43,6 +43,7 @@
 #define _BACKWARD_BACKWARD_WARNING_H 1 //Cut out the vtk deprecated warning
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
+#include <vtkUnstructuredGrid.h>
 #include "Part.hpp"
 #include "Cell.hpp"
 #include "DimensionalChastePoint.hpp"
@@ -101,7 +102,20 @@ class DiscreteContinuumMesh : public TetrahedralMesh<ELEMENT_DIM, SPACE_DIM>
      */
     std::vector<unsigned> mAttributes;
 
+    /**
+     * The reference length scale for the mesh
+     */
     units::quantity<unit::length> mReferenceLength;
+
+    /**
+     * A vtk representation
+     */
+    vtkSmartPointer<vtkUnstructuredGrid> mpVtkMesh;
+
+    /**
+     * Is the vtk representation up to date
+     */
+    bool mVtkRepresentationUpToDate;
 
 public:
 
@@ -120,6 +134,26 @@ public:
      * @return a shared pointer to a new mesh
      */
     static boost::shared_ptr<DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM> > Create();
+
+    /**
+     * Return the element connectivity
+     */
+    std::vector<std::vector<unsigned> > GetConnectivity();
+
+    /**
+     * Return the node locations
+     */
+    std::vector<std::vector<double> > GetNodeLocations();
+
+    /**
+     * Return the element-wise region markers
+     */
+    std::vector<unsigned> GetElementRegionMarkers();
+
+    /**
+     * Return the mesh as a vtk unstructured grid
+     */
+    vtkSmartPointer<vtkUnstructuredGrid> GetAsVtkUnstructuredGrid();
 
     /**
      * Set the domain for meshing
@@ -161,21 +195,6 @@ public:
      * Do the meshing
      */
     void Update();
-
-    /**
-     * Return the element connectivity
-     */
-    std::vector<std::vector<unsigned> > GetConnectivity();
-
-    /**
-     * Return the node locations
-     */
-    std::vector<std::vector<double> > GetNodeLocations();
-
-    /**
-     * Return the element-wise region markers
-     */
-    std::vector<unsigned> GetElementRegionMarkers();
 
 private:
 

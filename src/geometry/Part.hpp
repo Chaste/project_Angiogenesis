@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -203,6 +203,12 @@ public:
      * @return the facets
      */
     std::vector<boost::shared_ptr<Facet> > GetFacets();
+
+    /**
+     * Return the FIRST facet found on the point. Strict method, returns exception if there is no facet at the point.
+     * @return the FIRST found facet on the point.
+     */
+    boost::shared_ptr<Facet> GetFacet(const DimensionalChastePoint<3>& location);
 
     /**
      * Return the polygons
