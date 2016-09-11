@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@
 
  */
 
-#ifndef LatticeBasedSproutingRule_HPP_
-#define LatticeBasedSproutingRule_HPP_
+#ifndef LATTICEBASEDSPROUTINGRULE_HPP_
+#define LATTICEBASEDSPROUTINGRULE_HPP_
 
 #include <vector>
 #include <string>
@@ -93,7 +93,6 @@ public:
      * @param pGrid the grid for the vessel network
      */
     void SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid);
-
 };
 
-#endif /* LatticeBasedSproutingRule_HPP_ */
+#endif /* LATTICEBASEDSPROUTINGRULE_HPP_ */

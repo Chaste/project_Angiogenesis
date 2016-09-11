@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@
 
  */
 
-#ifndef LatticeBasedMigrationRule_HPP_
-#define LatticeBasedMigrationRule_HPP_
+#ifndef LATTICEBASEDMIGRATIONRULE_HPP_
+#define LATTICEBASEDMIGRATIONRULE_HPP_
 
 #include <vector>
 #include <string>
@@ -111,4 +111,4 @@ protected:
                                                std::vector<unsigned> neighbourIndices);
 };
 
-#endif /* LatticeBasedMigrationRule_HPP_ */
+#endif /* LATTICEBASEDMIGRATIONRULE_HPP_ */

@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -45,7 +45,6 @@
 template<unsigned DIM>
 class WallShearStressBasedRegressionSolver : public RegressionSolver<DIM>
 {
-
     /**
      * Threshold wall shear stress level, below which vessels will be removed.
      * This threshold should be prescribed in units of pascals.

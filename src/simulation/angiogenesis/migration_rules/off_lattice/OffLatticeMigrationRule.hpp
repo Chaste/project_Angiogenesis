@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@
 
  */
 
-#ifndef OffLatticeMigrationRule_HPP_
-#define OffLatticeMigrationRule_HPP_
+#ifndef OFFLATTICEMIGRATIONRULE_HPP_
+#define OFFLATTICEMIGRATIONRULE_HPP_
 
 #include <vector>
 #include <string>
@@ -76,18 +76,26 @@ class OffLatticeMigrationRule : public AbstractMigrationRule<DIM>
     /**
      * Tip cell velocity
      */
-    double mVelocity;
+    units::quantity<unit::velocity> mVelocity;
 
+    /**
+     * Chemotactic strength
+     */
     double mChemotacticStrength;
 
+    /**
+     * Vessel-vessel attraction strength
+     */
     double mAttractionStrength;
 
     /**
      * Length of probe into solution
      */
-    double mProbeLength;
+    units::quantity<unit::length> mProbeLength;
 
-
+    /**
+     * Is this a sprouting event
+     */
     bool mIsSprouting;
 
 public:
@@ -108,14 +116,6 @@ public:
      */
     static boost::shared_ptr<OffLatticeMigrationRule<DIM> > Create();
 
-    void SetIsSprouting(bool isSprouting = true);
-
-    void SetSproutingVelocity(double velocity);
-
-    void SetChemotacticStrength(double strength);
-
-    void SetAttractionStrength(double strength);
-
     /**
      * Return the movement vector (new_location - oriringal_location) for the input nodes, if they can't move set it to the zero vector
      * @param rNodes nodes to calculate indices
@@ -125,6 +125,15 @@ public:
 
 
     std::vector<c_vector<double, DIM> > GetDirectionsForSprouts(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes);
+
+    void SetIsSprouting(bool isSprouting = true);
+
+    void SetSproutingVelocity(units::quantity<unit::velocity> velocity);
+
+    void SetChemotacticStrength(double strength);
+
+    void SetAttractionStrength(double strength);
+
 };
 
 #endif /* OffLatticeMigrationRule_HPP_ */

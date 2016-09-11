@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@
 
  */
 
-#ifndef Owen2011SproutingRule_HPP_
-#define Owen2011SproutingRule_HPP_
+#ifndef OWEN2011SPROUTINGRULE_HPP_
+#define OWEN2011SPROUTINGRULE_HPP_
 
 #include <vector>
 #include <string>
@@ -56,12 +56,12 @@ protected:
     /**
      * The half maximum vegf
      */
-    double mHalfMaxVegf;
+    units::quantity<unit::concentration> mHalfMaxVegf;
 
     /**
      * The vegf field sampled at the vessel lattice sites
      */
-    std::vector<double> mVegfField;
+    std::vector<units::quantity<unit::concentration> > mVegfField;
 
 public:
 
@@ -92,7 +92,7 @@ public:
      * Set the half max vegf
      * @param halfMaxVegf the half max vegf
      */
-    void SetHalfMaxVegf(double halfMaxVegf);
+    void SetHalfMaxVegf(units::quantity<unit::concentration> halfMaxVegf);
 };
 
-#endif /* Owen2011SproutingRule_HPP_ */
+#endif /* OWEN2011SPROUTINGRULE_HPP_ */

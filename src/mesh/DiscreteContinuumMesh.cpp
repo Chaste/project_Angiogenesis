@@ -51,7 +51,6 @@
 #include "UblasVectorInclude.hpp"
 #include "AbstractTetrahedralMesh.hpp"
 #include "VtkMeshWriter.hpp"
-#include "Debug.hpp"
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::DiscreteContinuumMesh() :
@@ -63,7 +62,7 @@ DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::DiscreteContinuumMesh() :
     mRegions(),
     mAttributes(),
     mReferenceLength(1.e-6 * unit::metres),
-    mpVtkMesh(),
+    mpVtkMesh(vtkSmartPointer<vtkUnstructuredGrid>::New()),
     mVtkRepresentationUpToDate(false)
 {
 
@@ -87,6 +86,7 @@ vtkSmartPointer<vtkUnstructuredGrid> DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DI
 {
     if(!mVtkRepresentationUpToDate)
     {
+        mpVtkMesh = vtkSmartPointer<vtkUnstructuredGrid>::New();
         vtkSmartPointer<vtkPoints> p_vtk_points = vtkSmartPointer<vtkPoints>::New();
         std::vector<std::vector<double> > node_locations = GetNodeLocations();
         p_vtk_points->SetNumberOfPoints(node_locations.size());
@@ -133,11 +133,7 @@ vtkSmartPointer<vtkUnstructuredGrid> DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DI
         }
         mVtkRepresentationUpToDate = true;
     }
-    else
-    {
-        return mpVtkMesh;
-    }
-
+    return mpVtkMesh;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
@@ -696,6 +692,18 @@ std::vector<std::vector<double> > DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>:
             vec_location.push_back(location[jdx]);
         }
         locations.push_back(vec_location);
+    }
+    return locations;
+}
+
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
+std::vector<DimensionalChastePoint<SPACE_DIM> > DiscreteContinuumMesh<ELEMENT_DIM, SPACE_DIM>::GetNodeLocationsAsPoints()
+{
+    std::vector<DimensionalChastePoint<SPACE_DIM> > locations;
+    unsigned num_nodes = AbstractTetrahedralMesh<ELEMENT_DIM, SPACE_DIM>::GetNumNodes();
+    for (unsigned idx = 0; idx < num_nodes; idx++)
+    {
+        locations.push_back(DimensionalChastePoint<SPACE_DIM>(AbstractTetrahedralMesh<ELEMENT_DIM, SPACE_DIM>::GetNode(idx)->rGetLocation()));
     }
     return locations;
 }

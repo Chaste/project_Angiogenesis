@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -36,6 +36,7 @@
 #include "GeometryTools.hpp"
 #include "OffLatticeMigrationRule.hpp"
 #include "RandomNumberGenerator.hpp"
+#include "BaseUnits.hpp"
 
 template<unsigned DIM>
 OffLatticeMigrationRule<DIM>::OffLatticeMigrationRule()
@@ -45,10 +46,10 @@ OffLatticeMigrationRule<DIM>::OffLatticeMigrationRule()
       mGlobalZ(zero_vector<double>(DIM)),
       mMeanAngles(std::vector<double>(DIM, 0.0)),
       mSdvAngles(std::vector<double>(DIM, M_PI/18.0)),
-      mVelocity(20.0), // um/hr
+      mVelocity(20.0 *(3600/1.e-6) * unit::metre_per_second), // um/hr
       mChemotacticStrength(1.0),
       mAttractionStrength(1.0),
-      mProbeLength(5.0),
+      mProbeLength(5.0 * 1.e-6 * unit::metres),
       mIsSprouting(false)
 {
     if(DIM==3)
@@ -71,7 +72,7 @@ OffLatticeMigrationRule<DIM>::~OffLatticeMigrationRule()
 }
 
 template<unsigned DIM>
-void OffLatticeMigrationRule<DIM>::SetSproutingVelocity(double velocity)
+void OffLatticeMigrationRule<DIM>::SetSproutingVelocity(units::quantity<unit::velocity> velocity)
 {
     mVelocity = velocity;
 }
@@ -127,30 +128,32 @@ std::vector<c_vector<double, DIM> > OffLatticeMigrationRule<DIM>::GetDirections(
             if(this->mpSolver)
             {
                 // Make points
+                double normalized_probe_length = mProbeLength/BaseUnits::Instance()->GetReferenceLengthScale();
+
                 std::vector<DimensionalChastePoint<DIM> > probe_locations;
                 probe_locations.push_back(rNodes[idx]->rGetLocation());
-                probe_locations.push_back(DimensionalChastePoint<DIM>(probe_locations[0].rGetLocation() + mProbeLength * unit_vector<double>(DIM,0)));
-                probe_locations.push_back(DimensionalChastePoint<DIM>(probe_locations[0].rGetLocation() - mProbeLength * unit_vector<double>(DIM,0)));
-                probe_locations.push_back(DimensionalChastePoint<DIM>(probe_locations[0].rGetLocation() + mProbeLength * unit_vector<double>(DIM,1)));
-                probe_locations.push_back(DimensionalChastePoint<DIM>(probe_locations[0].rGetLocation() - mProbeLength * unit_vector<double>(DIM,1)));
+                probe_locations.push_back(DimensionalChastePoint<DIM>(probe_locations[0].rGetLocation() + normalized_probe_length * unit_vector<double>(DIM,0)));
+                probe_locations.push_back(DimensionalChastePoint<DIM>(probe_locations[0].rGetLocation() - normalized_probe_length * unit_vector<double>(DIM,0)));
+                probe_locations.push_back(DimensionalChastePoint<DIM>(probe_locations[0].rGetLocation() + normalized_probe_length * unit_vector<double>(DIM,1)));
+                probe_locations.push_back(DimensionalChastePoint<DIM>(probe_locations[0].rGetLocation() - normalized_probe_length * unit_vector<double>(DIM,1)));
                 if(DIM==3)
                 {
-                    probe_locations.push_back(DimensionalChastePoint<DIM>(probe_locations[0].rGetLocation() + mProbeLength * unit_vector<double>(DIM,2)));
-                    probe_locations.push_back(DimensionalChastePoint<DIM>(probe_locations[0].rGetLocation() - mProbeLength * unit_vector<double>(DIM,2)));
+                    probe_locations.push_back(DimensionalChastePoint<DIM>(probe_locations[0].rGetLocation() + normalized_probe_length * unit_vector<double>(DIM,2)));
+                    probe_locations.push_back(DimensionalChastePoint<DIM>(probe_locations[0].rGetLocation() - normalized_probe_length * unit_vector<double>(DIM,2)));
                 }
 
                 // Get the solution
-                std::vector<double> solutions = this->mpSolver->GetSolutionAtPoints(probe_locations);
+                std::vector<units::quantity<unit::concentration> > solutions = this->mpSolver->GetConcentrations(probe_locations);
 
                 // Get the gradients
-                std::vector<double> gradients;
+                std::vector<units::quantity<unit::concentration_gradient> > gradients;
                 for(unsigned idx=1; idx<solutions.size();idx++)
                 {
                     gradients.push_back((solutions[idx] - solutions[0]) / mProbeLength);
                 }
 
                 // Get the index of the max gradient
-                double max_grad = 0.0;
+                units::quantity<unit::concentration_gradient> max_grad = 0.0 * unit::mole_per_metre_pow_4;
                 int index = -1;
 
                 for(unsigned idx = 0; idx<gradients.size(); idx++)
@@ -221,7 +224,7 @@ std::vector<c_vector<double, DIM> > OffLatticeMigrationRule<DIM>::GetDirections(
             }
             new_direction += strength * min_direction;
             new_direction /= norm_2(new_direction);
-            movement_vectors[idx] = new_direction * mVelocity;
+            movement_vectors[idx] = new_direction * double(mVelocity*(BaseUnits::Instance()->GetReferenceTimeScale()/BaseUnits::Instance()->GetReferenceLengthScale()));
         }
         return movement_vectors;
     }
@@ -298,7 +301,7 @@ std::vector<c_vector<double, DIM> > OffLatticeMigrationRule<DIM>::GetDirectionsF
         double angle = RandomNumberGenerator::Instance()->NormalRandomDeviate(mMeanAngles[0], mSdvAngles[0]);
         c_vector<double, DIM> new_direction = RotateAboutAxis<DIM>(sprout_direction, rNodes[idx]->GetSegments()[0]->GetUnitTangent(), angle);
         new_direction /= norm_2(new_direction);
-        movement_vectors[idx] = new_direction * mVelocity;
+        movement_vectors[idx] = new_direction * double(mVelocity * (BaseUnits::Instance()->GetReferenceTimeScale()/BaseUnits::Instance()->GetReferenceLengthScale()));
     }
     return movement_vectors;
 }

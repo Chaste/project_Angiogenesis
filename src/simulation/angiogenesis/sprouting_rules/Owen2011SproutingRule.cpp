@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -41,7 +41,7 @@
 template<unsigned DIM>
 Owen2011SproutingRule<DIM>::Owen2011SproutingRule()
     : LatticeBasedSproutingRule<DIM>(),
-      mHalfMaxVegf(0.1),
+      mHalfMaxVegf(0.1 * unit::mole_per_metre_cubed),
       mVegfField()
 {
 
@@ -61,7 +61,7 @@ Owen2011SproutingRule<DIM>::~Owen2011SproutingRule()
 }
 
 template<unsigned DIM>
-void Owen2011SproutingRule<DIM>::SetHalfMaxVegf(double halfMaxVegf)
+void Owen2011SproutingRule<DIM>::SetHalfMaxVegf(units::quantity<unit::concentration> halfMaxVegf)
 {
     mHalfMaxVegf = halfMaxVegf;
 }
@@ -69,7 +69,6 @@ void Owen2011SproutingRule<DIM>::SetHalfMaxVegf(double halfMaxVegf)
 template<unsigned DIM>
 std::vector<boost::shared_ptr<VesselNode<DIM> > > Owen2011SproutingRule<DIM>::GetSprouts(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes)
 {
-
     if(!this->mpGrid)
     {
         EXCEPTION("A regular grid is required for this type of sprouting rule.");
@@ -81,7 +80,7 @@ std::vector<boost::shared_ptr<VesselNode<DIM> > > Owen2011SproutingRule<DIM>::Ge
     }
 
     // Get the VEGF field
-    this->mVegfField = this->mpSolver->GetSolutionAtGridPoints(this->mpGrid);
+    this->mVegfField = this->mpSolver->GetConcentrations(this->mpGrid);
 
     // Set up the output sprouts vector
     std::vector<boost::shared_ptr<VesselNode<DIM> > > sprouts;
@@ -126,7 +125,7 @@ std::vector<boost::shared_ptr<VesselNode<DIM> > > Owen2011SproutingRule<DIM>::Ge
 
         // Get the grid index of the node
         unsigned grid_index = this->mpGrid->GetNearestGridIndex(rNodes[idx]->rGetLocation());
-        double vegf_conc = this->mVegfField[grid_index];
+        units::quantity<unit::concentration> vegf_conc = this->mVegfField[grid_index];
         double prob_tip_selection = this->mSproutingProbability*SimulationTime::Instance()->GetTimeStep()*vegf_conc/(vegf_conc + mHalfMaxVegf);
 
         if (RandomNumberGenerator::Instance()->ranf() < prob_tip_selection)

@@ -78,7 +78,6 @@ public:
      * Calculate the map
      */
     void Solve();
-
 };
 
 #endif /* DISTANCEMAP_HPP_ */

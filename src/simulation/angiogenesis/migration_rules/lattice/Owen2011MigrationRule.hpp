@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@
 
  */
 
-#ifndef Owen2011MigrationRule_HPP_
-#define Owen2011MigrationRule_HPP_
+#ifndef OWEN2011MIGRATIONRULE_HPP_
+#define OWEN2011MIGRATIONRULE_HPP_
 
 #include <vector>
 #include <string>
@@ -42,6 +42,7 @@
 #include "SmartPointers.hpp"
 #include "LatticeBasedMigrationRule.hpp"
 #include "RegularGrid.hpp"
+#include "UnitCollection.hpp"
 
 /**
  * A concrete migration rule for lattice based simulations based on
@@ -57,17 +58,17 @@ protected:
     /**
      * Cell motility for random walks
      */
-    double mCellMotility;
+    units::quantity<unit::diffusivity> mCellMotility;
 
     /**
      * Cell chemotactic sensitivity
      */
-    double mCellChemotacticParameter;
+    units::quantity<unit::diffusivity_per_concentration> mCellChemotacticParameter;
 
     /**
      * Vegf field sampled on the vessel lattice
      */
-    std::vector<double> mVegfField;
+    std::vector<units::quantity<unit::concentration> > mVegfField;
 
 public:
 
@@ -99,13 +100,13 @@ public:
      * Set the cell chemotactic parameter
      * @param cellChemotacticParameter the cell chemotactic parameter
      */
-    void SetCellChemotacticParameter(double cellChemotacticParameter);
+    void SetCellChemotacticParameter(units::quantity<unit::diffusivity_per_concentration> cellChemotacticParameter);
 
     /**
      * Set the cell motility parameter
      * @param cellMotility the cell motility parameter
      */
-    void SetCellMotilityParameter(double cellMotility);
+    void SetCellMotilityParameter(units::quantity<unit::diffusivity> cellMotility);
 
 private:
 
@@ -120,4 +121,4 @@ private:
                                                            std::vector<unsigned> neighbourIndices, unsigned gridIndex);
 };
 
-#endif /* Owen2011MigrationRule_HPP_ */
+#endif /* OWEN2011MIGRATIONRULE_HPP_ */

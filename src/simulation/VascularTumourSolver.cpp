@@ -39,6 +39,7 @@ Copyright (c) 2005-2016, University of Oxford.
 #include "VesselNode.hpp"
 #include "VascularTumourSolver.hpp"
 #include "VesselNetworkWriter.hpp"
+#include "Debug.hpp"
 
 template<unsigned DIM>
 VascularTumourSolver<DIM>::VascularTumourSolver() :
@@ -96,12 +97,12 @@ void VascularTumourSolver<DIM>::Increment()
         mpStructuralAdaptationSolver->Solve();
     }
 
-
     // If there are PDEs solve them
     if(mDiscreteContinuumSolvers.size()>0)
     {
         for(unsigned idx=0; idx<mDiscreteContinuumSolvers.size(); idx++)
         {
+
             mDiscreteContinuumSolvers[idx]->Update();
             mDiscreteContinuumSolvers[idx]->SetFileName("/" + mDiscreteContinuumSolvers[idx]->GetLabel() +"_solution_" + boost::lexical_cast<std::string>(num_steps));
 
@@ -123,6 +124,7 @@ void VascularTumourSolver<DIM>::Increment()
                     }
                 }
             }
+
             if(mOutputFrequency > 0 && num_steps % mOutputFrequency == 0)
             {
                 mDiscreteContinuumSolvers[idx]->SetWriteSolution(true);
@@ -131,6 +133,7 @@ void VascularTumourSolver<DIM>::Increment()
             {
                 mDiscreteContinuumSolvers[idx]->SetWriteSolution(false);
             }
+
             mDiscreteContinuumSolvers[idx]->Solve();
         }
     }
@@ -176,6 +179,7 @@ void VascularTumourSolver<DIM>::Run()
     }
 
     Setup();
+
     while (!SimulationTime::Instance()->IsFinished())
     {
         Increment();

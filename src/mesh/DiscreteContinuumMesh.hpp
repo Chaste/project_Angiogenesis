@@ -146,6 +146,11 @@ public:
     std::vector<std::vector<double> > GetNodeLocations();
 
     /**
+     * Return the node locations
+     */
+    std::vector<DimensionalChastePoint<SPACE_DIM> > GetNodeLocationsAsPoints();
+
+    /**
      * Return the element-wise region markers
      */
     std::vector<unsigned> GetElementRegionMarkers();

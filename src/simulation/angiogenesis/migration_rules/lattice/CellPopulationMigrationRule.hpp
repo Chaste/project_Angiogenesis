@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@
 
  */
 
-#ifndef CellPopulationMigrationRule_HPP_
-#define CellPopulationMigrationRule_HPP_
+#ifndef CELLPOPULATIONMIGRATIONRULE_HPP_
+#define CELLPOPULATIONMIGRATIONRULE_HPP_
 
 #include <vector>
 #include <string>
@@ -113,4 +113,4 @@ protected:
 
 };
 
-#endif /* CellPopulationMigrationRule_HPP_ */
+#endif /* CELLPOPULATIONMIGRATIONRULE_HPP_ */

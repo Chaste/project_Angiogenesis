@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -42,8 +42,8 @@ template<unsigned DIM>
 AbstractSproutingRule<DIM>::AbstractSproutingRule()
     :mpSolver(),
      mSproutingProbability(0.00025 * 60.0),
-      mpVesselNetwork(),
-      mVesselEndCutoff(0.0 * unit::metres)
+     mpVesselNetwork(),
+     mVesselEndCutoff(0.0 * unit::metres)
 {
 
 }
@@ -77,6 +77,18 @@ template<unsigned DIM>
 void AbstractSproutingRule<DIM>::SetVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pVesselNetwork)
 {
     mpVesselNetwork = pVesselNetwork;
+}
+
+template<unsigned DIM>
+std::vector<boost::shared_ptr<VesselNode<DIM> > > AbstractSproutingRule<DIM>::GetSprouts(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes)
+{
+    return std::vector<boost::shared_ptr<VesselNode<DIM> > >();
+}
+
+template<unsigned DIM>
+void AbstractSproutingRule<DIM>::SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid)
+{
+
 }
 
 // Explicit instantiation

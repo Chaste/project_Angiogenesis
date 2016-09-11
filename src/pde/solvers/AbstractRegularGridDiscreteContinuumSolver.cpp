@@ -70,7 +70,7 @@ boost::shared_ptr<RegularGrid<DIM> > AbstractRegularGridDiscreteContinuumSolver<
 }
 
 template<unsigned DIM>
-const std::vector<units::quantity<unit::concentration> >& AbstractRegularGridDiscreteContinuumSolver<DIM>::GetConcentrations(const std::vector<DimensionalChastePoint<DIM> >& samplePoints)
+std::vector<units::quantity<unit::concentration> > AbstractRegularGridDiscreteContinuumSolver<DIM>::GetConcentrations(const std::vector<DimensionalChastePoint<DIM> >& samplePoints)
 {
     if(!this->mpVtkSolution)
     {
@@ -111,7 +111,7 @@ const std::vector<units::quantity<unit::concentration> >& AbstractRegularGridDis
 }
 
 template<unsigned DIM>
-const std::vector<units::quantity<unit::concentration> >& AbstractRegularGridDiscreteContinuumSolver<DIM>::GetConcentrations(boost::shared_ptr<RegularGrid<DIM> > pGrid)
+std::vector<units::quantity<unit::concentration> > AbstractRegularGridDiscreteContinuumSolver<DIM>::GetConcentrations(boost::shared_ptr<RegularGrid<DIM> > pGrid)
 {
     if(this->mpRegularGrid == pGrid)
     {
@@ -124,34 +124,34 @@ const std::vector<units::quantity<unit::concentration> >& AbstractRegularGridDis
 }
 
 template<unsigned DIM>
-const std::vector<units::quantity<unit::concentration> >& AbstractRegularGridDiscreteContinuumSolver<DIM>::GetConcentrations(boost::shared_ptr<DiscreteContinuumMesh<DIM> > pMesh)
+std::vector<units::quantity<unit::concentration> > AbstractRegularGridDiscreteContinuumSolver<DIM>::GetConcentrations(boost::shared_ptr<DiscreteContinuumMesh<DIM> > pMesh)
 {
-    return this->GetConcentrations(pMesh->GetNodeLocations());
+    return this->GetConcentrations(pMesh->GetNodeLocationsAsPoints());
 }
 
 template<unsigned DIM>
-const std::vector<double>& AbstractRegularGridDiscreteContinuumSolver<DIM>::GetSolution(const std::vector<DimensionalChastePoint<DIM> >& rSamplePoints)
+std::vector<double> AbstractRegularGridDiscreteContinuumSolver<DIM>::GetSolution(const std::vector<DimensionalChastePoint<DIM> >& rSamplePoints)
 {
     if(!this->mpVtkSolution)
     {
         this->Setup();
     }
 
-    std::vector<double> sampled_solution(samplePoints.size(), 0.0);
+    std::vector<double> sampled_solution(rSamplePoints.size(), 0.0);
 
     // Sample the field at these locations
     vtkSmartPointer<vtkPolyData> p_polydata = vtkSmartPointer<vtkPolyData>::New();
     vtkSmartPointer<vtkPoints> p_points = vtkSmartPointer<vtkPoints>::New();
-    p_points->SetNumberOfPoints(samplePoints.size());
-    for(unsigned idx=0; idx< samplePoints.size(); idx++)
+    p_points->SetNumberOfPoints(rSamplePoints.size());
+    for(unsigned idx=0; idx< rSamplePoints.size(); idx++)
     {
         if(DIM==3)
         {
-            p_points->SetPoint(idx, samplePoints[idx][0], samplePoints[idx][1], samplePoints[idx][2]);
+            p_points->SetPoint(idx, rSamplePoints[idx][0], rSamplePoints[idx][1], rSamplePoints[idx][2]);
         }
         else
         {
-            p_points->SetPoint(idx, samplePoints[idx][0], samplePoints[idx][1], 0.0);
+            p_points->SetPoint(idx, rSamplePoints[idx][0], rSamplePoints[idx][1], 0.0);
         }
     }
     p_polydata->SetPoints(p_points);
@@ -171,7 +171,7 @@ const std::vector<double>& AbstractRegularGridDiscreteContinuumSolver<DIM>::GetS
 }
 
 template<unsigned DIM>
-const std::vector<double>& AbstractRegularGridDiscreteContinuumSolver<DIM>::GetSolution(boost::shared_ptr<RegularGrid<DIM> > pGrid)
+std::vector<double> AbstractRegularGridDiscreteContinuumSolver<DIM>::GetSolution(boost::shared_ptr<RegularGrid<DIM> > pGrid)
 {
     if(this->mpRegularGrid == pGrid)
     {
@@ -184,9 +184,9 @@ const std::vector<double>& AbstractRegularGridDiscreteContinuumSolver<DIM>::GetS
 }
 
 template<unsigned DIM>
-const std::vector<double>& AbstractRegularGridDiscreteContinuumSolver<DIM>::GetSolution(boost::shared_ptr<DiscreteContinuumMesh<DIM> > pMesh)
+std::vector<double> AbstractRegularGridDiscreteContinuumSolver<DIM>::GetSolution(boost::shared_ptr<DiscreteContinuumMesh<DIM> > pMesh)
 {
-    return this->GetSolution(pMesh->GetNodeLocations());
+    return this->GetSolution(pMesh->GetNodeLocationsAsPoints());
 }
 
 template<unsigned DIM>
@@ -259,7 +259,7 @@ void AbstractRegularGridDiscreteContinuumSolver<DIM>::UpdateSolution(std::vector
     this->mpVtkSolution->GetPointData()->AddArray(pPointData);
 
     // Note, if the data vector being passed in is mPointSolution, then it will be overwritten with zeros.
-    this->mPointSolution = std::vector<double>(data.size(), 0.0);
+    this->mSolution = std::vector<double>(data.size(), 0.0);
     for (unsigned i = 0; i < data.size(); i++)
     {
         this->mSolution[i] = data[i];

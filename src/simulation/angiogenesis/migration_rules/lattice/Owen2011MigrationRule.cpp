@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -38,12 +38,13 @@
 #include "Vessel.hpp"
 #include "Owen2011MigrationRule.hpp"
 #include "AbstractRegularGridDiscreteContinuumSolver.hpp"
+#include "BaseUnits.hpp"
 
 template<unsigned DIM>
 Owen2011MigrationRule<DIM>::Owen2011MigrationRule()
     : LatticeBasedMigrationRule<DIM>(),
-      mCellMotility(60.0), // um^2/hour
-      mCellChemotacticParameter(2.0e4 * 60.0), // um^2/hour/nM
+      mCellMotility(60.0 * 1.e-6 * 1.e-6 *(1.0/3600.0) * unit::metre_squared_per_second), // um^2/hour
+      mCellChemotacticParameter(2.0e4 * 60.0 * 1.e-6 *(1.0/3600.0) * (1.e9)* unit::metre_pow5_per_second_per_mole), // um^2/hour/nM
       mVegfField()
 {
 
@@ -63,13 +64,13 @@ Owen2011MigrationRule<DIM>::~Owen2011MigrationRule()
 }
 
 template<unsigned DIM>
-void Owen2011MigrationRule<DIM>::SetCellChemotacticParameter(double cellChemotacticParameter)
+void Owen2011MigrationRule<DIM>::SetCellChemotacticParameter(units::quantity<unit::diffusivity_per_concentration> cellChemotacticParameter)
 {
     mCellChemotacticParameter = cellChemotacticParameter;
 }
 
 template<unsigned DIM>
-void Owen2011MigrationRule<DIM>::SetCellMotilityParameter(double cellMotility)
+void Owen2011MigrationRule<DIM>::SetCellMotilityParameter(units::quantity<unit::diffusivity> cellMotility)
 {
     mCellMotility = cellMotility;
 }
@@ -82,7 +83,7 @@ std::vector<int> Owen2011MigrationRule<DIM>::GetIndices(const std::vector<boost:
         EXCEPTION("A DiscreteContinuum solver is required for this type of sprouting rule.");
     }
 
-    mVegfField = this->mpSolver->GetSolutionAtGridPoints(this->mpGrid);
+    mVegfField = this->mpSolver->GetConcentrations(this->mpGrid);
 
     // Use the base class for the rest
     return LatticeBasedMigrationRule<DIM>::GetIndices(rNodes);
@@ -114,9 +115,9 @@ std::vector<double> Owen2011MigrationRule<DIM>::GetNeighbourMovementProbabilitie
 
         if (!vessel_crosses_line_segment && !sprout_already_attached_to_vessel_at_location)
         {
-            double VEGF_diff = (mVegfField[neighbourIndices[jdx]] - mVegfField[gridIndex]);
-            double dt = SimulationTime::Instance()->GetTimeStep();
-            double dij = norm_2(pNode->rGetLocation().rGetLocation() - neighbour_location.rGetLocation());
+            units::quantity<unit::concentration> VEGF_diff = (mVegfField[neighbourIndices[jdx]] - mVegfField[gridIndex]);
+            units::quantity<unit::time> dt = SimulationTime::Instance()->GetTimeStep() * BaseUnits::Instance()->GetReferenceTimeScale();
+            units::quantity<unit::length> dij = pNode->rGetLocation().GetDistance(neighbour_location);
             probability_of_moving[jdx] = ((mCellMotility * dt)/(2.0*dij*dij))*(1.0 + mCellChemotacticParameter*VEGF_diff/(2.0*mCellMotility));
             if (probability_of_moving[jdx] < 0.0)
             {

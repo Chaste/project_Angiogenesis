@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -52,6 +52,25 @@ AbstractMigrationRule<DIM>::~AbstractMigrationRule()
 
 }
 
+template <unsigned DIM>
+boost::shared_ptr<AbstractMigrationRule<DIM> > AbstractMigrationRule<DIM>::Create()
+{
+    MAKE_PTR(AbstractMigrationRule<DIM>, pSelf);
+    return pSelf;
+}
+
+template <unsigned DIM>
+std::vector<c_vector<double, DIM> > AbstractMigrationRule<DIM>::GetDirections(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes)
+{
+    return std::vector<c_vector<double, DIM> >();
+}
+
+template <unsigned DIM>
+std::vector<int> AbstractMigrationRule<DIM>::GetIndices(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes)
+{
+    return std::vector<int>();
+}
+
 template<unsigned DIM>
 void AbstractMigrationRule<DIM>::SetIsSprouting(bool isSprouting)
 {
@@ -68,13 +87,6 @@ template<unsigned DIM>
 void AbstractMigrationRule<DIM>::SetDiscreteContinuumSolver(boost::shared_ptr<AbstractDiscreteContinuumSolver<DIM> > pSolver)
 {
     mpSolver = pSolver;
-}
-
-template <unsigned DIM>
-boost::shared_ptr<AbstractMigrationRule<DIM> > AbstractMigrationRule<DIM>::Create()
-{
-    MAKE_PTR(AbstractMigrationRule<DIM>, pSelf);
-    return pSelf;
 }
 
 template<unsigned DIM>

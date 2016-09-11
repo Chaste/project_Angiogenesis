@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -116,18 +116,12 @@ public:
      * @param rNodes nodes to check for sprouting
      * @return a vector of nodes which may sprout
      */
-    virtual std::vector<boost::shared_ptr<VesselNode<DIM> > > GetSprouts(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes)
-    {
-        return std::vector<boost::shared_ptr<VesselNode<DIM> > >();
-    }
+    virtual std::vector<boost::shared_ptr<VesselNode<DIM> > > GetSprouts(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes);
 
     /**
      * Set a grid for the vessel network, implemented in some, but not all, child classes.
      */
-    virtual void SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid)
-    {
-
-    }
+    virtual void SetGrid(boost::shared_ptr<RegularGrid<DIM> > pGrid);
 };
 
 #endif /* ABSTRACTSPROUTINGRULE_HPP_ */

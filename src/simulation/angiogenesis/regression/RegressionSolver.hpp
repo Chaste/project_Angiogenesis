@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -54,6 +54,9 @@ protected:
      */
     boost::shared_ptr<VesselNetwork<DIM> > mpNetwork;
 
+    /**
+     * The reference time-scale
+     */
     units::quantity<unit::time> mReferenceTime;
 
 public:
@@ -78,7 +81,6 @@ public:
      * Increment one step in time
      */
     virtual void Increment();
-
 };
 
 #endif /* REGRESSIONSOLVER_HPP_ */

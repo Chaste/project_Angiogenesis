@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@
 
  */
 
-#ifndef AbstractMigrationRule_HPP_
-#define AbstractMigrationRule_HPP_
+#ifndef ABSTRACTMIGRATIONRULE_HPP_
+#define ABSTRACTMIGRATIONRULE_HPP_
 
 #include <vector>
 #include <string>
@@ -96,6 +96,10 @@ public:
      */
     static boost::shared_ptr<AbstractMigrationRule<DIM> > Create();
 
+    virtual std::vector<c_vector<double, DIM> > GetDirections(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes);
+
+    virtual std::vector<int> GetIndices(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes);
+
     /**
      * Set whether this is a sprouting event
      * @param isSprouting is this a sprouting event
@@ -126,16 +130,6 @@ public:
      */
     void SetCellPopulation(boost::shared_ptr<AbstractCellPopulation<DIM> > pCellPopulation);
 
-    virtual std::vector<c_vector<double, DIM> > GetDirections(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes)
-    {
-        return std::vector<c_vector<double, DIM> >();
-    }
-
-    virtual std::vector<int> GetIndices(const std::vector<boost::shared_ptr<VesselNode<DIM> > >& rNodes)
-    {
-        return std::vector<int>();
-    }
-
 };
 
-#endif /* AbstractMigrationRule_HPP_ */
+#endif /* ABSTRACTMIGRATIONRULE_HPP_ */

@@ -75,7 +75,7 @@ bool AbstractDiscreteContinuumSolver<DIM>::CellPopulationIsSet()
 }
 
 template<unsigned DIM>
-const std::vector<units::quantity<unit::concentration> >& AbstractDiscreteContinuumSolver<DIM>::GetConcentrations()
+std::vector<units::quantity<unit::concentration> > AbstractDiscreteContinuumSolver<DIM>::GetConcentrations()
 {
     return mConcentrations;
 }
@@ -113,7 +113,7 @@ units::quantity<unit::concentration> AbstractDiscreteContinuumSolver<DIM>::GetRe
 }
 
 template<unsigned DIM>
-const std::vector<double>& AbstractDiscreteContinuumSolver<DIM>::GetSolution()
+std::vector<double> AbstractDiscreteContinuumSolver<DIM>::GetSolution()
 {
     return mSolution;
 }

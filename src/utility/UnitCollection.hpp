@@ -134,6 +134,10 @@ namespace unit
     typedef units::unit<diffusivity_dimension, units::si::system> diffusivity;
     BOOST_UNITS_STATIC_CONSTANT(metre_squared_per_second, diffusivity);
 
+    typedef units::derived_dimension<units::length_base_dimension, 5, units::time_base_dimension, -1, units::amount_base_dimension, -1>::type diffusivity_per_concentration_dimension;
+    typedef units::unit<diffusivity_per_concentration_dimension, units::si::system> diffusivity_per_concentration;
+    BOOST_UNITS_STATIC_CONSTANT(metre_pow5_per_second_per_mole, diffusivity_per_concentration);
+
     typedef units::derived_dimension<units::mass_base_dimension, 1, units::time_base_dimension, -1>::type mass_flow_rate_dimension;
     typedef units::unit<mass_flow_rate_dimension, units::si::system> mass_flow_rate;
     BOOST_UNITS_STATIC_CONSTANT(kg_per_second, mass_flow_rate);
@@ -161,6 +165,10 @@ namespace unit
     typedef units::derived_dimension<units::amount_base_dimension, 1, units::length_base_dimension, -3>::type concentration_dimension;
     typedef units::unit<concentration_dimension, units::si::system> concentration;
     BOOST_UNITS_STATIC_CONSTANT(mole_per_metre_cubed, concentration);
+
+    typedef units::derived_dimension<units::amount_base_dimension, 1, units::length_base_dimension, -4>::type concentration_gradient_dimension;
+    typedef units::unit<concentration_gradient_dimension, units::si::system> concentration_gradient;
+    BOOST_UNITS_STATIC_CONSTANT(mole_per_metre_pow_4, concentration_gradient);
 
     typedef units::derived_dimension<units::amount_base_dimension, -1, units::time_base_dimension, -1, units::length_base_dimension, 3>::type rate_per_concentration_dimension;
     typedef units::unit<rate_per_concentration_dimension, units::si::system> rate_per_concentration;

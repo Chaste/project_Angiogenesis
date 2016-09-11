@@ -166,28 +166,28 @@ public:
      * Return the value of the field with ordering determined by child classes
      * @return the value of the field with ordering determined by child classes
      */
-    virtual const std::vector<units::quantity<unit::concentration> >& GetConcentrations();
+    virtual std::vector<units::quantity<unit::concentration> > GetConcentrations();
 
     /**
      * Return the value of the field at all points on the supplied grid
      * @param pGrid the sampling grid
      * @return the value of the field ordered according to grid order
      */
-    virtual const std::vector<units::quantity<unit::concentration> >& GetConcentrations(boost::shared_ptr<RegularGrid<DIM> > pGrid) = 0;
+    virtual std::vector<units::quantity<unit::concentration> > GetConcentrations(boost::shared_ptr<RegularGrid<DIM> > pGrid) = 0;
 
     /**
      * Return the value of the field at the requested points
      * @param rSamplePoints a vector of sample points
      * @return the value of the field ordered according to input point order
      */
-    virtual const std::vector<units::quantity<unit::concentration> >& GetConcentrations(const std::vector<DimensionalChastePoint<DIM> >& rSamplePoints) = 0;
+    virtual std::vector<units::quantity<unit::concentration> > GetConcentrations(const std::vector<DimensionalChastePoint<DIM> >& rSamplePoints) = 0;
 
     /**
      * Return the value of the field on the nodes of the input mesh
      * @param pMesh the mesh from which nodes are sampled
      * @return the value of the field ordered according to mesh node ordering
      */
-    virtual const std::vector<units::quantity<unit::concentration> >& GetConcentrations(boost::shared_ptr<DiscreteContinuumMesh<DIM> > pMesh) = 0;
+    virtual std::vector<units::quantity<unit::concentration> > GetConcentrations(boost::shared_ptr<DiscreteContinuumMesh<DIM> > pMesh) = 0;
 
     /**
      * Return the name of the field being solved for
@@ -217,28 +217,28 @@ public:
      * Return the value of the field with ordering determined by child classes
      * @return the value of the field with ordering determined by child classes
      */
-    virtual const std::vector<double>& GetSolution();
+    virtual std::vector<double> GetSolution();
 
     /**
      * Return the value of the field at the requested points
      * @param rSamplePoints the points for sampling
      * @return the value of the field ordered according to input point order
      */
-    virtual const std::vector<double>& GetSolution(const std::vector<DimensionalChastePoint<DIM> >& rSamplePoints) = 0;
+    virtual std::vector<double> GetSolution(const std::vector<DimensionalChastePoint<DIM> >& rSamplePoints) = 0;
 
     /**
      * Return the value of the field at all points on the supplied grid
      * @param pGrid the grid to be sampled
      * @return the value of the field ordered according to input point order
      */
-    virtual const std::vector<double>& GetSolution(boost::shared_ptr<RegularGrid<DIM> > pGrid) = 0;
+    virtual std::vector<double> GetSolution(boost::shared_ptr<RegularGrid<DIM> > pGrid) = 0;
 
     /**
      * Return the value of the field at all points on the supplied mesh nodes
      * @param pMesh the mesh for point sampling
      * @return the value of the field ordered according to mesh node order
      */
-    virtual const std::vector<double>& GetSolution(boost::shared_ptr<DiscreteContinuumMesh<DIM> > pMesh) = 0;
+    virtual std::vector<double> GetSolution(boost::shared_ptr<DiscreteContinuumMesh<DIM> > pMesh) = 0;
 
     /**
      * Return true if the solver uses a regular grid to store solutions

@@ -101,7 +101,7 @@ void FiniteDifferenceSolver<DIM>::Setup()
         EXCEPTION("This solver needs a PDE to be set before calling Setup.");
     }
 
-    if(this->mCellPopulationIsSet)
+    if(this->CellPopulationIsSet())
     {
         this->mpRegularGrid->SetCellPopulation(*(this->mpCellPopulation));
     }
@@ -285,7 +285,7 @@ void FiniteDifferenceSolver<DIM>::DoLinearSolve()
         this->mConcentrations[row] = soln_repl[row]*this->mReferenceConcentration;
     }
 
-    this->UpdateSolution(this->mConcentrationPointSolution);
+    this->UpdateSolution(this->mConcentrations);
 
     if (this->mWriteSolution)
     {
@@ -319,7 +319,7 @@ void FiniteDifferenceSolver<DIM>::Solve()
         ReplicatableVector soln_repl(answer_petsc);
 
         // Populate the solution vector
-        this->mConcentrationPointSolution = std::vector<units::quantity<unit::concentration> >(number_of_points, 0.0*unit::mole_per_metre_cubed);
+        this->mConcentrations = std::vector<units::quantity<unit::concentration> >(number_of_points, 0.0*unit::mole_per_metre_cubed);
         for (unsigned row = 0; row < number_of_points; row++)
         {
            this->mConcentrations[row] = soln_repl[row]*this->mReferenceConcentration;

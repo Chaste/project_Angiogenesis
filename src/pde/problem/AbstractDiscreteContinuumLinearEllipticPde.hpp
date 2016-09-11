@@ -56,6 +56,7 @@ Copyright (c) 2005-2016, University of Oxford.
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM = ELEMENT_DIM>
 class AbstractDiscreteContinuumLinearEllipticPde : public AbstractLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>
 {
+    using AbstractLinearEllipticPde<ELEMENT_DIM, SPACE_DIM>::ComputeLinearInUCoeffInSourceTerm;
 
 protected:
 
@@ -95,7 +96,7 @@ protected:
     bool mUseRegularGrid;
 
     /**
-     * The constant source strengths for each point on the grid or mesh
+     * The constant source strengths for each point on the grid or element in the mesh
      */
     std::vector<units::quantity<unit::concentration_flow_rate> > mDiscreteConstantSourceStrengths;
 
@@ -143,6 +144,13 @@ public:
      * @return the diffusion constant
      */
     units::quantity<unit::diffusivity> ComputeIsotropicDiffusionTerm();
+
+    /**
+     * Abstract method to return the linear in U contribution to the regular grid solvers
+     * @param gridIndex grid index
+     * @return source strength
+     */
+    virtual units::quantity<unit::rate> ComputeLinearInUCoeffInSourceTerm(unsigned gridIndex=0) = 0;
 
     /**
      * Return the collection of discrete sources
