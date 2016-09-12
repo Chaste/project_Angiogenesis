@@ -50,6 +50,7 @@ tutorials/TestLatticeBasedAngiogenesisLiteratePaper.hpp
 tutorials/TestOffLatticeAngiogenesisLiteratePaper.hpp
 tutorials/TestBuildVesselNetworkLiteratePaper.hpp
 tutorials/TestBloodFlowLiteratePaper.hpp
+tutorials/TestSolvingPdesLiteratePaper.hpp
 utility/TestUnitCollections.hpp
 utility/TestParameterCollection.hpp
 utility/TestAngiogenesisParallelMethods.hpp

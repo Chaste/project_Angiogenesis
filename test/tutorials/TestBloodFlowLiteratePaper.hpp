@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -80,7 +80,16 @@
 #include "VesselImpedanceCalculator.hpp"
 #include "FlowSolver.hpp"
 #include "AlarconHaematocritSolver.hpp"
+#include "ConstantHaematocritSolver.hpp"
 #include "StructuralAdaptationSolver.hpp"
+#include "WallShearStressCalculator.hpp"
+#include "MechanicalStimulusCalculator.hpp"
+/*
+ * The vessel regression solver and a generic solver to collect all the
+ * flow solvers.
+ */
+#include "WallShearStressBasedRegressionSolver.hpp"
+#include "VascularTumourSolver.hpp"
 /*
  * Keep this last.
  */
@@ -258,6 +267,157 @@ public:
          */
         ParameterCollection::Instance()->DumpToFile(p_handler->GetOutputDirectoryFullPath() + "parameter_collection.xml");
         ParameterCollection::Instance()->Destroy();
+    }
+    /*
+     * = Test 3 - Simulating Flow With Structural Adaptation =
+     * [[Image(source:/chaste/projects/Angiogenesis/test/tutorials/images/structural_adaptation.png, 25%, align=center, border=1)]]
+     *
+     * In this test the vessel network will adapt over time as a result of flow conditions.
+     */
+    void TestFlowProblemStucturalAdaptation() throw (Exception)
+    {
+        MAKE_PTR_ARGS(OutputFileHandler, p_handler, ("TestBloodFlowLiteratePaper/TestFlowProblemStucturalAdaptation", false));
+        /*
+         * We will work in microns
+         */
+        units::quantity<unit::length> reference_length(1.0 * unit::microns);
+        BaseUnits::Instance()->SetReferenceLengthScale(reference_length);
+        /*
+         * Set up a hexagonal vessel network
+         */
+        units::quantity<unit::length> target_width(8000*unit::microns);
+        units::quantity<unit::length> target_height(2000*unit::microns);
+        units::quantity<unit::length> vessel_length(300.0*unit::microns);
+        VesselNetworkGenerator<3> network_generator;
+        boost::shared_ptr<VesselNetwork<3> > p_network = network_generator.GenerateHexagonalNetwork(target_width,
+                                                                                                    target_height,
+                                                                                                    vessel_length);
+        /*
+        * We will use a locator to mark the bottom left and top right nodes as respective inlets and outlets as before.
+        */
+        DimensionalChastePoint<3> inlet_locator(0.0, 0.0, 0.0, reference_length);
+        DimensionalChastePoint<3> outlet_locator(target_width/reference_length, target_height/reference_length, 0.0, reference_length);
+        boost::shared_ptr<VesselNode<3> > p_inlet_node = p_network->GetNearestNode(inlet_locator);
+        boost::shared_ptr<VesselNode<3> > p_outlet_node = p_network->GetNearestNode(outlet_locator);
+        p_inlet_node->GetFlowProperties()->SetIsInputNode(true);
+        p_inlet_node->GetFlowProperties()->SetPressure(Owen11Parameters::mpInletPressure->GetValue());
+        p_outlet_node->GetFlowProperties()->SetIsOutputNode(true);
+        p_outlet_node->GetFlowProperties()->SetPressure(Owen11Parameters::mpOutletPressure->GetValue());
+        /*
+         * Set the radius and viscosity and write the initial network to file.
+         */
+        units::quantity<unit::length> vessel_radius(40.0*unit::microns);
+        p_network->SetSegmentRadii(vessel_radius);
+        units::quantity<unit::dynamic_viscosity> viscosity = Owen11Parameters::mpPlasmaViscosity->GetValue();
+        p_network->SetSegmentViscosity(viscosity);
+        p_network->Write(p_handler->GetOutputDirectoryFullPath()+"initial_network.vtp");
+        /*
+         * Set up the timer and time scale. The structural adaptation alrogithm works by calcualting growth or shrinkage stimuli
+         * from several flow derived sources. We can specify how the network adapts as a function of flow by adding a collection
+         * of calculators for wall shear stress, haematocrit etc.
+         */
+        BaseUnits::Instance()->SetReferenceTimeScale(60.0*unit::seconds);
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(30, 1);
+        boost::shared_ptr<VesselImpedanceCalculator<3> > p_impedance_calculator = VesselImpedanceCalculator<3>::Create();
+        boost::shared_ptr<ConstantHaematocritSolver<3> > p_haematocrit_calculator = ConstantHaematocritSolver<3>::Create();
+        p_haematocrit_calculator->SetHaematocrit(0.45);
+        boost::shared_ptr<WallShearStressCalculator<3> > p_wss_calculator = WallShearStressCalculator<3>::Create();
+        boost::shared_ptr<MechanicalStimulusCalculator<3> > p_mech_stimulus_calculator = MechanicalStimulusCalculator<3>::Create();
+        /*
+         * Set up the structural adaptation solver, which manages iterations over a flow solve and executes each calculator in the order it has been added.
+         */
+        StructuralAdaptationSolver<3> structural_adaptation_solver;
+        structural_adaptation_solver.SetVesselNetwork(p_network);
+        structural_adaptation_solver.SetWriteOutput(true);
+        structural_adaptation_solver.SetOutputFileName(p_handler->GetOutputDirectoryFullPath()+"adaptation_data.dat");
+        structural_adaptation_solver.SetTolerance(0.0001);
+        structural_adaptation_solver.SetMaxIterations(10);
+        structural_adaptation_solver.AddPreFlowSolveCalculator(p_impedance_calculator);
+        structural_adaptation_solver.AddPostFlowSolveCalculator(p_haematocrit_calculator);
+        structural_adaptation_solver.AddPostFlowSolveCalculator(p_wss_calculator);
+        structural_adaptation_solver.AddPostFlowSolveCalculator(p_mech_stimulus_calculator);
+        structural_adaptation_solver.SetTimeIncrement(0.01 * unit::seconds);
+        /*
+         * Do the solve and write the network to file.
+         */
+        structural_adaptation_solver.Solve();
+        p_network->Write(p_handler->GetOutputDirectoryFullPath()+"network_initial_sa.vtp");
+    }
+    /*
+     * = Test 4 - Simulating Flow With Regression =
+     *
+     * In this test the vessel network will adapt over time as a result of flow conditions and also vessels will be removed
+     * to regression in low wall shear stress regions.
+     */
+    void TestFlowProblemStucturalAdaptationWithRegression() throw (Exception)
+    {
+        MAKE_PTR_ARGS(OutputFileHandler, p_handler, ("TestBloodFlowLiteratePaper/TestFlowProblemStucturalAdaptationWithRegression", false));
+        /*
+         * Set up the problem as before.
+         */
+        units::quantity<unit::length> reference_length(1.0 * unit::microns);
+        BaseUnits::Instance()->SetReferenceLengthScale(reference_length);
+        units::quantity<unit::length> target_width(8000*unit::microns);
+        units::quantity<unit::length> target_height(2000*unit::microns);
+        units::quantity<unit::length> vessel_length(300.0*unit::microns);
+        VesselNetworkGenerator<3> network_generator;
+        boost::shared_ptr<VesselNetwork<3> > p_network = network_generator.GenerateHexagonalNetwork(target_width,
+                                                                                                    target_height,
+                                                                                                    vessel_length);
+
+        DimensionalChastePoint<3> inlet_locator(0.0, 0.0, 0.0, reference_length);
+        DimensionalChastePoint<3> outlet_locator(target_width/reference_length, target_height/reference_length, 0.0, reference_length);
+        boost::shared_ptr<VesselNode<3> > p_inlet_node = p_network->GetNearestNode(inlet_locator);
+        boost::shared_ptr<VesselNode<3> > p_outlet_node = p_network->GetNearestNode(outlet_locator);
+        p_inlet_node->GetFlowProperties()->SetIsInputNode(true);
+        p_inlet_node->GetFlowProperties()->SetPressure(Owen11Parameters::mpInletPressure->GetValue());
+        p_outlet_node->GetFlowProperties()->SetIsOutputNode(true);
+        p_outlet_node->GetFlowProperties()->SetPressure(Owen11Parameters::mpOutletPressure->GetValue());
+        units::quantity<unit::length> vessel_radius(40.0*unit::microns);
+        p_network->SetSegmentRadii(vessel_radius);
+        units::quantity<unit::dynamic_viscosity> viscosity = Owen11Parameters::mpPlasmaViscosity->GetValue();
+        p_network->SetSegmentViscosity(viscosity);
+        p_network->Write(p_handler->GetOutputDirectoryFullPath()+"initial_network.vtp");
+
+        BaseUnits::Instance()->SetReferenceTimeScale(60.0*unit::seconds);
+        SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(30, 1);
+        boost::shared_ptr<VesselImpedanceCalculator<3> > p_impedance_calculator = VesselImpedanceCalculator<3>::Create();
+        boost::shared_ptr<ConstantHaematocritSolver<3> > p_haematocrit_calculator = ConstantHaematocritSolver<3>::Create();
+        p_haematocrit_calculator->SetHaematocrit(0.45);
+        boost::shared_ptr<WallShearStressCalculator<3> > p_wss_calculator = WallShearStressCalculator<3>::Create();
+        boost::shared_ptr<MechanicalStimulusCalculator<3> > p_mech_stimulus_calculator = MechanicalStimulusCalculator<3>::Create();
+
+        boost::shared_ptr<StructuralAdaptationSolver<3> > p_structural_adaptation_solver = StructuralAdaptationSolver<3>::Create();
+        p_structural_adaptation_solver->SetVesselNetwork(p_network);
+        p_structural_adaptation_solver->SetWriteOutput(true);
+        p_structural_adaptation_solver->SetOutputFileName(p_handler->GetOutputDirectoryFullPath()+"adaptation_data.dat");
+        p_structural_adaptation_solver->SetTolerance(0.0001);
+        p_structural_adaptation_solver->SetMaxIterations(10);
+        p_structural_adaptation_solver->AddPreFlowSolveCalculator(p_impedance_calculator);
+        p_structural_adaptation_solver->AddPostFlowSolveCalculator(p_haematocrit_calculator);
+        p_structural_adaptation_solver->AddPostFlowSolveCalculator(p_wss_calculator);
+        p_structural_adaptation_solver->AddPostFlowSolveCalculator(p_mech_stimulus_calculator);
+        p_structural_adaptation_solver->SetTimeIncrement(0.01 * unit::seconds);
+        /*
+         * Set up a regression solver
+         */
+        boost::shared_ptr<WallShearStressBasedRegressionSolver<3> > p_regression_solver = WallShearStressBasedRegressionSolver<3>::Create();
+        p_regression_solver->SetMaximumTimeWithLowWallShearStress(2.0*3600.0*unit::seconds);
+        p_regression_solver->SetLowWallShearStressThreshold(1.e-06*unit::pascals);
+        p_regression_solver->SetVesselNetwork(p_network);
+        /*
+         * Set up a `VascalarTumourSolver` to manage all solves.
+         */
+        VascularTumourSolver<3> vascular_tumour_solver;
+        vascular_tumour_solver.SetRegressionSolver(p_regression_solver);
+        vascular_tumour_solver.SetStructuralAdaptationSolver(p_structural_adaptation_solver);
+        vascular_tumour_solver.SetVesselNetwork(p_network);
+        vascular_tumour_solver.SetOutputFileHandler(p_handler);
+        vascular_tumour_solver.SetOutputFrequency(1);
+        /*
+         * Run the solver
+         */
+        vascular_tumour_solver.Run();
     }
 };
 #endif /*TESTBLOODFLOWLITERATEPAPER_HPP_*/
