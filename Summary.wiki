@@ -2,7 +2,7 @@
 
 The Angiogenesis project is a Chaste add-on with functionality for modelling blood flow, angiogenesis and nutrient and drug transport in micro-vessels. Click on the images below to see some example applications. Detailed installation instructions are below.
 
-* [[Image(source:/chaste/projects/Angiogenesis/test/tutorials/images/haematocrit.png, 25%, align=center, border=1, link=PaperTutorials/Angiogenesis/BloodFlow)]]
+[[Image(source:/chaste/projects/Angiogenesis/test/tutorials/images/haematocrit.png, 15%, align=left, border=1, link=PaperTutorials/Angiogenesis/BloodFlow)]]
 
 = Installation =
 The project can be used directly as a typical C++ Chaste project or else as a Python package (with some extra dependencies).
