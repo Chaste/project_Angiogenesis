@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2014, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#ifndef TESTANGIOGENESISSOLVER_HPP
-#define TESTANGIOGENESISSOLVER_HPP
+#ifndef TESTVASCULARTUMOURSOLVER_HPP
+#define TESTVASCULARTUMOURSOLVER_HPP
 
 #include <cxxtest/TestSuite.h>
 #include "LatticeBasedMigrationRule.hpp"
@@ -53,9 +53,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "DiscreteContinuumBoundaryCondition.hpp"
 #include "SimulationTime.hpp"
-
 #include "PetscSetupAndFinalize.hpp"
-
 
 class TestVascularTumourSolver : public AbstractCellBasedWithTimingsTestSuite
 {
@@ -90,4 +88,4 @@ public:
     }
 };
 
-#endif //TESTANGIOGENESISSOLVER_HPP
+#endif //TESTVASCULARTUMOURSOLVER_HPP
