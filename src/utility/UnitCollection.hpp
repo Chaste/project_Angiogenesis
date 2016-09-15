@@ -125,10 +125,18 @@ namespace unit
     BOOST_UNITS_STATIC_CONSTANT(pascal_second_per_metre_cubed, flow_impedance);
 
     // Mass Transport
-    typedef units::si::mass mass;
+//    typedef units::si::mass mass;
     typedef units::si::amount amount;
-    BOOST_UNITS_STATIC_CONSTANT(kg, units::si::mass);
+//    BOOST_UNITS_STATIC_CONSTANT(kg, units::si::mass);
     BOOST_UNITS_STATIC_CONSTANT(moles, units::si::amount);
+
+
+    typedef units::derived_dimension<units::mass_base_dimension, 1>::type mass_dimension;
+    typedef units::unit<mass_dimension, units::si::system> mass;
+    BOOST_UNITS_STATIC_CONSTANT(kg, mass);
+
+    typedef mass MassUnit;
+    typedef units::quantity<mass, double> MassQuantity;
 
     typedef units::derived_dimension<units::length_base_dimension, 2, units::time_base_dimension, -1>::type diffusivity_dimension;
     typedef units::unit<diffusivity_dimension, units::si::system> diffusivity;
