@@ -89,7 +89,7 @@ Copyright (c) 2005-2016, University of Oxford.
  * flow solvers.
  */
 #include "WallShearStressBasedRegressionSolver.hpp"
-#include "VascularTumourSolver.hpp"
+#include "MicrovesselSolver.hpp"
 /*
  * Keep this last.
  */
@@ -408,7 +408,7 @@ public:
         /*
          * Set up a `VascalarTumourSolver` to manage all solves.
          */
-        VascularTumourSolver<3> vascular_tumour_solver;
+        MicrovesselSolver<3> vascular_tumour_solver;
         vascular_tumour_solver.SetRegressionSolver(p_regression_solver);
         vascular_tumour_solver.SetStructuralAdaptationSolver(p_structural_adaptation_solver);
         vascular_tumour_solver.SetVesselNetwork(p_network);

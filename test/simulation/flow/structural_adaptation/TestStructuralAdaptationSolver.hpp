@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,11 +33,11 @@
 
  */
 
-#ifndef TestStructuralAdaptationSolver_hpp
-#define TestStructuralAdaptationSolver_hpp
+#ifndef TESTSTRUCTURALADAPTATIONSOLVER_HPP
+#define TESTSTRUCTURALADAPTATIONSOLVER_HPP
 
 #include <cxxtest/TestSuite.h>
-#include "../../../../src/utility/BaseUnits.hpp"
+#include "BaseUnits.hpp"
 #include "StructuralAdaptationSolver.hpp"
 #include "FileFinder.hpp"
 #include "OutputFileHandler.hpp"
@@ -45,10 +45,10 @@
 #include "VesselNetworkGenerator.hpp"
 #include "FlowSolver.hpp"
 #include "AlarconHaematocritSolver.hpp"
-#include "FakePetscSetup.hpp"
 #include "UnitCollection.hpp"
 #include "VesselImpedanceCalculator.hpp"
-#include "Debug.hpp"
+
+#include "FakePetscSetup.hpp"
 
 class TestStructuralAdaptationSolver : public CxxTest::TestSuite
 {
@@ -87,7 +87,6 @@ public:
         boost::shared_ptr<VesselNetwork<2> > p_network = VesselNetwork<2>::Create();
         p_network->AddVessels(vessels);
 
-        DimensionalSimulationTime* p_simulation_time = DimensionalSimulationTime::Instance();
         SimulationTime::Instance()->SetStartTime(0.0);
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(30, 1);
 
@@ -115,7 +114,6 @@ public:
         TS_ASSERT_DELTA(boost::units::fabs(segments[0]->GetFlowProperties()->GetFlowRate())/unit::metre_cubed_per_second,
                         boost::units::fabs(segments[1]->GetFlowProperties()->GetFlowRate())/unit::metre_cubed_per_second, 1e-6);
 
-        p_simulation_time->Destroy();
     }
 
     void TestOneVesselNetwork() throw(Exception)
@@ -140,7 +138,6 @@ public:
         p_segment1->GetFlowProperties()->SetHaematocrit(haematocrit);
         p_network->SetSegmentProperties(p_segment1);
 
-        DimensionalSimulationTime* p_simulation_time = DimensionalSimulationTime::Instance();
         SimulationTime::Instance()->SetStartTime(0.0);
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(30, 1);
 
@@ -159,7 +156,6 @@ public:
 
         // Write the network to file
         p_network->Write(output_filename);
-        p_simulation_time->Destroy();
     }
 
     void TestHexagonalNetwork() throw(Exception)
@@ -191,9 +187,9 @@ public:
         p_segment->GetFlowProperties()->SetHaematocrit(haematocrit);
         vascular_network->SetSegmentProperties(p_segment);
 
-        std::vector<std::pair<double, double> > extents = vascular_network->GetExtents();
-        double y_middle = (extents[1].first + extents[1].second) /2.0;
-        double x_middle = (extents[0].first + extents[0].second) /2.0;
+        std::pair<DimensionalChastePoint<2>, DimensionalChastePoint<2> > network_extents = vascular_network->GetExtents();
+        double y_middle = (network_extents.first[1] + network_extents.second[1]) / 2.0;
+        double x_middle = (network_extents.first[0] + network_extents.second[0]) / 2.0;
 
         std::vector<boost::shared_ptr<Vessel<2> > >::iterator vessel_iterator;
 
@@ -248,7 +244,6 @@ public:
 
         }
 
-        DimensionalSimulationTime* p_simulation_time = DimensionalSimulationTime::Instance();
         SimulationTime::Instance()->SetStartTime(0.0);
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(30, 1);
 
@@ -268,8 +263,7 @@ public:
 
         // Write the network to file
         vascular_network->Write(output_filename);
-        p_simulation_time->Destroy();
 	}
 };
 
-#endif
+#endif /*TESTFLOWSOLVER_HPP_*/

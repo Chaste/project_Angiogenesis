@@ -37,12 +37,12 @@ Copyright (c) 2005-2016, University of Oxford.
 #include "UblasIncludes.hpp"
 #include "VesselSegment.hpp"
 #include "VesselNode.hpp"
-#include "VascularTumourSolver.hpp"
+#include "MicrovesselSolver.hpp"
 #include "VesselNetworkWriter.hpp"
 #include "Debug.hpp"
 
 template<unsigned DIM>
-VascularTumourSolver<DIM>::VascularTumourSolver() :
+MicrovesselSolver<DIM>::MicrovesselSolver() :
         mpNetwork(),
         mOutputFrequency(1),
         mpOutputFileHandler(),
@@ -56,37 +56,37 @@ VascularTumourSolver<DIM>::VascularTumourSolver() :
 }
 
 template<unsigned DIM>
-VascularTumourSolver<DIM>::~VascularTumourSolver()
+MicrovesselSolver<DIM>::~MicrovesselSolver()
 {
 
 }
 
 template<unsigned DIM>
-boost::shared_ptr<VascularTumourSolver<DIM> > VascularTumourSolver<DIM>::Create()
+boost::shared_ptr<MicrovesselSolver<DIM> > MicrovesselSolver<DIM>::Create()
 {
-    MAKE_PTR(VascularTumourSolver<DIM>, pSelf);
+    MAKE_PTR(MicrovesselSolver<DIM>, pSelf);
     return pSelf;
 }
 
 template<unsigned DIM>
-void VascularTumourSolver<DIM>::SetVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pNetwork)
+void MicrovesselSolver<DIM>::SetVesselNetwork(boost::shared_ptr<VesselNetwork<DIM> > pNetwork)
 {
     mpNetwork = pNetwork;
 }
 
 template<unsigned DIM>
-void VascularTumourSolver<DIM>::AddDiscreteContinuumSolver(boost::shared_ptr<AbstractDiscreteContinuumSolver<DIM> > pDiscreteContinuumSolver)
+void MicrovesselSolver<DIM>::AddDiscreteContinuumSolver(boost::shared_ptr<AbstractDiscreteContinuumSolver<DIM> > pDiscreteContinuumSolver)
 {
     mDiscreteContinuumSolvers.push_back(pDiscreteContinuumSolver);
 }
 
 template<unsigned DIM>
-std::vector<boost::shared_ptr<AbstractDiscreteContinuumSolver<DIM> > > VascularTumourSolver<DIM>::GetDiscreteContinuumSolvers()
+std::vector<boost::shared_ptr<AbstractDiscreteContinuumSolver<DIM> > > MicrovesselSolver<DIM>::GetDiscreteContinuumSolvers()
 {
     return mDiscreteContinuumSolvers;
 }
 template<unsigned DIM>
-void VascularTumourSolver<DIM>::Increment()
+void MicrovesselSolver<DIM>::Increment()
 {
     unsigned num_steps = SimulationTime::Instance()->GetTimeStepsElapsed();
 
@@ -167,7 +167,7 @@ void VascularTumourSolver<DIM>::Increment()
 }
 
 template<unsigned DIM>
-void VascularTumourSolver<DIM>::Run()
+void MicrovesselSolver<DIM>::Run()
 {
     if (this->mpNetwork)
     {
@@ -188,25 +188,25 @@ void VascularTumourSolver<DIM>::Run()
 }
 
 template<unsigned DIM>
-void VascularTumourSolver<DIM>::SetAngiogenesisSolver(boost::shared_ptr<AngiogenesisSolver<DIM> > pAngiogenesisSolver)
+void MicrovesselSolver<DIM>::SetAngiogenesisSolver(boost::shared_ptr<AngiogenesisSolver<DIM> > pAngiogenesisSolver)
 {
     mpAngiogenesisSolver = pAngiogenesisSolver;
 }
 
 template<unsigned DIM>
-void VascularTumourSolver<DIM>::SetOutputFileHandler(boost::shared_ptr<OutputFileHandler> pFileHandler)
+void MicrovesselSolver<DIM>::SetOutputFileHandler(boost::shared_ptr<OutputFileHandler> pFileHandler)
 {
     mpOutputFileHandler = pFileHandler;
 }
 
 template<unsigned DIM>
-void VascularTumourSolver<DIM>::SetOutputFrequency(unsigned frequency)
+void MicrovesselSolver<DIM>::SetOutputFrequency(unsigned frequency)
 {
     mOutputFrequency = frequency;
 }
 
 template<unsigned DIM>
-void VascularTumourSolver<DIM>::SetupFromModifier(AbstractCellPopulation<DIM,DIM>& rCellPopulation, const std::string& rDirectory)
+void MicrovesselSolver<DIM>::SetupFromModifier(AbstractCellPopulation<DIM,DIM>& rCellPopulation, const std::string& rDirectory)
 {
     // Set up an output file handler
     mpOutputFileHandler = boost::shared_ptr<OutputFileHandler>(new OutputFileHandler(rDirectory));
@@ -227,13 +227,13 @@ void VascularTumourSolver<DIM>::SetupFromModifier(AbstractCellPopulation<DIM,DIM
 }
 
 template<unsigned DIM>
-void VascularTumourSolver<DIM>::SetDiscreteContinuumSolversHaveCompatibleGridIndexing(bool compatibleIndexing)
+void MicrovesselSolver<DIM>::SetDiscreteContinuumSolversHaveCompatibleGridIndexing(bool compatibleIndexing)
 {
     mDiscreteContinuumSolversHaveCompatibleGridIndexing = compatibleIndexing;
 }
 
 template<unsigned DIM>
-void VascularTumourSolver<DIM>::Setup()
+void MicrovesselSolver<DIM>::Setup()
 {
     // Set up all the DiscreteContinuum solvers
     for(unsigned idx=0; idx<mDiscreteContinuumSolvers.size(); idx++)
@@ -259,13 +259,13 @@ void VascularTumourSolver<DIM>::Setup()
 }
 
 template<unsigned DIM>
-void VascularTumourSolver<DIM>::SetStructuralAdaptationSolver(boost::shared_ptr<StructuralAdaptationSolver<DIM> > pStructuralAdaptationSolver)
+void MicrovesselSolver<DIM>::SetStructuralAdaptationSolver(boost::shared_ptr<StructuralAdaptationSolver<DIM> > pStructuralAdaptationSolver)
 {
     mpStructuralAdaptationSolver = pStructuralAdaptationSolver;
 }
 
 template<unsigned DIM>
-void VascularTumourSolver<DIM>::UpdateCellData(std::vector<std::string> labels)
+void MicrovesselSolver<DIM>::UpdateCellData(std::vector<std::string> labels)
 {
     if(labels.size()==0)
     {
@@ -289,11 +289,11 @@ void VascularTumourSolver<DIM>::UpdateCellData(std::vector<std::string> labels)
 }
 
 template<unsigned DIM>
-void VascularTumourSolver<DIM>::SetRegressionSolver(boost::shared_ptr<RegressionSolver<DIM> > pRegressionSolver)
+void MicrovesselSolver<DIM>::SetRegressionSolver(boost::shared_ptr<RegressionSolver<DIM> > pRegressionSolver)
 {
     mpRegressionSolver = pRegressionSolver;
 }
 
 // Explicit instantiation
-template class VascularTumourSolver<2> ;
-template class VascularTumourSolver<3> ;
+template class MicrovesselSolver<2> ;
+template class MicrovesselSolver<3> ;

@@ -33,8 +33,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#ifndef TESTVASCULARTUMOURSOLVER_HPP
-#define TESTVASCULARTUMOURSOLVER_HPP
+#ifndef TESTMicrovesselSolver_HPP
+#define TESTMicrovesselSolver_HPP
 
 #include <cxxtest/TestSuite.h>
 #include "LatticeBasedMigrationRule.hpp"
@@ -49,13 +49,13 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Part.hpp"
 #include "FiniteDifferenceSolver.hpp"
 #include "AngiogenesisSolver.hpp"
-#include "VascularTumourSolver.hpp"
+#include "MicrovesselSolver.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "DiscreteContinuumBoundaryCondition.hpp"
 #include "SimulationTime.hpp"
 #include "PetscSetupAndFinalize.hpp"
 
-class TestVascularTumourSolver : public AbstractCellBasedWithTimingsTestSuite
+class TestMicrovesselSolver : public AbstractCellBasedWithTimingsTestSuite
 {
 
 public:
@@ -78,14 +78,14 @@ public:
         p_angiogenesis_solver->SetMigrationRule(p_migration_rule);
 
         // Set up a vascular tumour solver
-        VascularTumourSolver<3> vascular_tumour_solver;
+        MicrovesselSolver<3> vascular_tumour_solver;
         vascular_tumour_solver.SetVesselNetwork(p_network);
 
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10.0, 10);
-        MAKE_PTR_ARGS(OutputFileHandler, p_file_handler, ("TestVascularTumourSolver/SingleVesselGrowth/"));
+        MAKE_PTR_ARGS(OutputFileHandler, p_file_handler, ("TestMicrovesselSolver/SingleVesselGrowth/"));
         vascular_tumour_solver.SetOutputFileHandler(p_file_handler);
         vascular_tumour_solver.Run();
     }
 };
 
-#endif //TESTVASCULARTUMOURSOLVER_HPP
+#endif //TESTMicrovesselSolver_HPP

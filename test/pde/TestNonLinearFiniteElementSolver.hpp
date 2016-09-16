@@ -75,7 +75,7 @@ public:
         p_linear_pde->SetIsotropicDiffusionConstant(diffusivity);
         p_linear_pde->SetContinuumLinearInUTerm(-consumption_rate);
 
-        boost::shared_ptr<AbstractDiscreteContinuumNonLinearEllipticPde<3> > p_non_linear_pde = AbstractDiscreteContinuumNonLinearEllipticPde<3>::Create();
+        boost::shared_ptr<MichaelisMentenSteadyStateDiffusionReactionPde<3> > p_non_linear_pde = MichaelisMentenSteadyStateDiffusionReactionPde<3>::Create();
         p_non_linear_pde->SetIsotropicDiffusionConstant(diffusivity);
         p_non_linear_pde->SetContinuumLinearInUTerm(-consumption_rate);
 

@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -37,16 +37,15 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TESTOWEN2011TUMOURSPHEROIDSIMULATIONS_HPP_
 
 #include <cxxtest/TestSuite.h>
-#include "../../src/pde/problem/LinearSteadyStateDiffusionReactionPde.hpp"
+#include "LinearSteadyStateDiffusionReactionPde.hpp"
 #include "OffLatticeMigrationRule.hpp"
 #include "OffLatticeSproutingRule.hpp"
-#include "VascularTumourModifier.hpp"
+#include "MicrovesselSimulationModifier.hpp"
 #include "CheckpointArchiveTypes.hpp"
 #include "AbstractCellBasedTestSuite.hpp"
 #include "PottsMeshGenerator.hpp"
 #include "Cell.hpp"
 #include "CellsGenerator.hpp"
-#include "FixedDurationGenerationBasedCellCycleModel.hpp"
 #include "CaBasedCellPopulation.hpp"
 #include "CellMutationStatesCountWriter.hpp"
 #include "CellProliferativeTypesCountWriter.hpp"
@@ -74,7 +73,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "VesselNode.hpp"
 #include "GeometryTools.hpp"
 #include "RandomNumberGenerator.hpp"
-#include "VascularTumourModifier.hpp"
+#include "MicrovesselSimulationModifier.hpp"
 #include "RegularGrid.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
@@ -123,13 +122,13 @@ public:
             boost::shared_ptr<FiniteDifferenceSolver<3> > p_vegf_solver = GetVegfSolver(p_domain, p_network);
 
             // Create the angiogenesis solver
-            boost::shared_ptr<VascularTumourSolver<3> > p_vascular_tumour_solver = VascularTumourSolver<3>::Create();
+            boost::shared_ptr<MicrovesselSolver<3> > p_vascular_tumour_solver = MicrovesselSolver<3>::Create();
             p_vascular_tumour_solver->SetVesselNetwork(p_network);
             p_vascular_tumour_solver->AddDiscreteContinuumSolver(p_oxygen_solver);
             p_vascular_tumour_solver->AddDiscreteContinuumSolver(p_vegf_solver);
 
-            boost::shared_ptr<VascularTumourModifier<3> > p_simulation_modifier = boost::shared_ptr<VascularTumourModifier<3> >(new VascularTumourModifier<3>);
-            p_simulation_modifier->SetVascularTumourSolver(p_vascular_tumour_solver);
+            boost::shared_ptr<MicrovesselSimulationModifier<3> > p_simulation_modifier = boost::shared_ptr<MicrovesselSimulationModifier<3> >(new MicrovesselSimulationModifier<3>);
+            p_simulation_modifier->SetMicrovesselSolver(p_vascular_tumour_solver);
 
             OffLatticeSimulation<3> simulator(cell_population);
             simulator.SetOutputDirectory("TestAngiogenesisSimulationModifier/NodeBased");

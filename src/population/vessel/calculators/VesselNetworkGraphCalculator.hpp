@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@
 
  */
 
-#ifndef VesselNetworkGraphCalculator_HPP_
-#define VesselNetworkGraphCalculator_HPP_
+#ifndef VESSELNETWORKGRAPHCALCULATOR_HPP_
+#define VESSELNETWORKGRAPHCALCULATOR_HPP_
 
 #include <string>
 #include <vector>
@@ -105,4 +105,4 @@ public:
 
 };
 
-#endif /* VesselNetworkGraphCalculator_HPP_ */
+#endif /* VESSELNETWORKGRAPHCALCULATOR_HPP_ */

@@ -33,22 +33,22 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#ifndef VASCULARTUMOURMODIFIER_HPP_
-#define VASCULARTUMOURMODIFIER_HPP_
+#ifndef MicrovesselSimulationModifier_HPP_
+#define MicrovesselSimulationModifier_HPP_
 
 #include "ChasteSerialization.hpp"
 #include <boost/serialization/base_object.hpp>
 #include "AbstractCellBasedSimulationModifier.hpp"
-#include "VascularTumourSolver.hpp"
+#include "MicrovesselSolver.hpp"
 
 /**
  * A modifier class which at each simulation time step in a cell based simulation increments
- * a VascularTumourSolver. This solver updates a collection of PDEs and the state of
+ * a MicrovesselSolver. This solver updates a collection of PDEs and the state of
  * a vessel network. It also updates the cell data for use in the next time step of the
  * cell based simulation.
  */
 template<unsigned DIM>
-class VascularTumourModifier : public AbstractCellBasedSimulationModifier<DIM,DIM>
+class MicrovesselSimulationModifier : public AbstractCellBasedSimulationModifier<DIM,DIM>
 {
     /** Needed for serialization. */
     friend class boost::serialization::access;
@@ -70,7 +70,7 @@ private:
     /**
      * The vascular tumour solver
      */
-    boost::shared_ptr<VascularTumourSolver<DIM> > mpSolver;
+    boost::shared_ptr<MicrovesselSolver<DIM> > mpSolver;
 
     /**
      * The species labels for cell data updates
@@ -82,17 +82,17 @@ public:
     /**
      * Default constructor.
      */
-    VascularTumourModifier();
+    MicrovesselSimulationModifier();
 
     /**
      * Destructor.
      */
-    virtual ~VascularTumourModifier();
+    virtual ~MicrovesselSimulationModifier();
 
     /**
      * Construct a new instance of the class and return a shared pointer to it.
      */
-    static boost::shared_ptr<VascularTumourModifier<DIM> > Create();
+    static boost::shared_ptr<MicrovesselSimulationModifier<DIM> > Create();
 
     /**
      * Overridden UpdateAtEndOfTimeStep() method.
@@ -120,7 +120,7 @@ public:
      *
      * @param pSolver pointer to the vascular tumour solver
      */
-    void SetVascularTumourSolver(boost::shared_ptr<VascularTumourSolver<DIM> > pSolver);
+    void SetMicrovesselSolver(boost::shared_ptr<MicrovesselSolver<DIM> > pSolver);
 
     /**
      * Helper method to compute the volume of each cell in the population and store these in the CellData.
@@ -139,6 +139,6 @@ public:
 };
 
 #include "SerializationExportWrapper.hpp"
-EXPORT_TEMPLATE_CLASS_SAME_DIMS(VascularTumourModifier)
+EXPORT_TEMPLATE_CLASS_SAME_DIMS(MicrovesselSimulationModifier)
 
-#endif /*VASCULARTUMOURMODIFIER_HPP_*/
+#endif /*MicrovesselSimulationModifier_HPP_*/

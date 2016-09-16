@@ -36,10 +36,10 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "AbstractCellPopulation.hpp"
 #include "boost/lexical_cast.hpp"
 #include "Debug.hpp"
-#include "VascularTumourModifier.hpp"
+#include "MicrovesselSimulationModifier.hpp"
 
 template<unsigned DIM>
-VascularTumourModifier<DIM>::VascularTumourModifier()
+MicrovesselSimulationModifier<DIM>::MicrovesselSimulationModifier()
     : AbstractCellBasedSimulationModifier<DIM>(),
       mpSolver(),
       mUpdateLabels()
@@ -47,19 +47,19 @@ VascularTumourModifier<DIM>::VascularTumourModifier()
 }
 
 template<unsigned DIM>
-VascularTumourModifier<DIM>::~VascularTumourModifier()
+MicrovesselSimulationModifier<DIM>::~MicrovesselSimulationModifier()
 {
 }
 
 template <unsigned DIM>
-boost::shared_ptr<VascularTumourModifier<DIM> > VascularTumourModifier<DIM>::Create()
+boost::shared_ptr<MicrovesselSimulationModifier<DIM> > MicrovesselSimulationModifier<DIM>::Create()
 {
-    MAKE_PTR(VascularTumourModifier<DIM>, pSelf);
+    MAKE_PTR(MicrovesselSimulationModifier<DIM>, pSelf);
     return pSelf;
 }
 
 template<unsigned DIM>
-void VascularTumourModifier<DIM>::SetupSolve(AbstractCellPopulation<DIM,DIM>& rCellPopulation, std::string outputDirectory)
+void MicrovesselSimulationModifier<DIM>::SetupSolve(AbstractCellPopulation<DIM,DIM>& rCellPopulation, std::string outputDirectory)
 {
     // Do set-up on the vascular tumour modifier
     if(mpSolver)
@@ -71,7 +71,7 @@ void VascularTumourModifier<DIM>::SetupSolve(AbstractCellPopulation<DIM,DIM>& rC
     }
     else
     {
-        EXCEPTION("A VascularTumourSolver is required for this modifier.");
+        EXCEPTION("A MicrovesselSolver is required for this modifier.");
     }
 
     rCellPopulation.Update();
@@ -89,19 +89,19 @@ void VascularTumourModifier<DIM>::SetupSolve(AbstractCellPopulation<DIM,DIM>& rC
 }
 
 template<unsigned DIM>
-void VascularTumourModifier<DIM>::SetCellDataUpdateLabels(std::vector<std::string> labels)
+void MicrovesselSimulationModifier<DIM>::SetCellDataUpdateLabels(std::vector<std::string> labels)
 {
     mUpdateLabels = labels;
 }
 
 template<unsigned DIM>
-void VascularTumourModifier<DIM>::SetVascularTumourSolver(boost::shared_ptr<VascularTumourSolver<DIM> > pSolver)
+void MicrovesselSimulationModifier<DIM>::SetMicrovesselSolver(boost::shared_ptr<MicrovesselSolver<DIM> > pSolver)
 {
     mpSolver = pSolver;
 }
 
 template<unsigned DIM>
-void VascularTumourModifier<DIM>::UpdateAtEndOfTimeStep(AbstractCellPopulation<DIM,DIM>& rCellPopulation)
+void MicrovesselSimulationModifier<DIM>::UpdateAtEndOfTimeStep(AbstractCellPopulation<DIM,DIM>& rCellPopulation)
 {
     // Increment the solver
     mpSolver->Increment();
@@ -111,7 +111,7 @@ void VascularTumourModifier<DIM>::UpdateAtEndOfTimeStep(AbstractCellPopulation<D
 }
 
 template<unsigned DIM>
-void VascularTumourModifier<DIM>::UpdateCellData(AbstractCellPopulation<DIM,DIM>& rCellPopulation)
+void MicrovesselSimulationModifier<DIM>::UpdateCellData(AbstractCellPopulation<DIM,DIM>& rCellPopulation)
 {
     // Make sure the cell population is updated
     rCellPopulation.Update();
@@ -121,17 +121,17 @@ void VascularTumourModifier<DIM>::UpdateCellData(AbstractCellPopulation<DIM,DIM>
 }
 
 template<unsigned DIM>
-void VascularTumourModifier<DIM>::OutputSimulationModifierParameters(out_stream& rParamsFile)
+void MicrovesselSimulationModifier<DIM>::OutputSimulationModifierParameters(out_stream& rParamsFile)
 {
     // No parameters to output, so just call method on direct parent class
     AbstractCellBasedSimulationModifier<DIM>::OutputSimulationModifierParameters(rParamsFile);
 }
 
 // Explicit instantiation
-template class VascularTumourModifier<2>;
-template class VascularTumourModifier<3>;
+template class MicrovesselSimulationModifier<2>;
+template class MicrovesselSimulationModifier<3>;
 
 // Serialization for Boost >= 1.36
 #include "SerializationExportWrapperForCpp.hpp"
-EXPORT_TEMPLATE_CLASS1(VascularTumourModifier, 2)
-EXPORT_TEMPLATE_CLASS1(VascularTumourModifier, 3)
+EXPORT_TEMPLATE_CLASS1(MicrovesselSimulationModifier, 2)
+EXPORT_TEMPLATE_CLASS1(MicrovesselSimulationModifier, 3)

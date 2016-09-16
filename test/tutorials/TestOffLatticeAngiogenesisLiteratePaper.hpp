@@ -106,7 +106,7 @@ Copyright (c) 2005-2016, University of Oxford.
 /*
  * Runs the full simulation
  */
-#include "VascularTumourSolver.hpp"
+#include "MicrovesselSolver.hpp"
 /*
  * This should appear last.
  */
@@ -278,10 +278,10 @@ public:
 //        p_angiogenesis_solver->SetVesselNetwork(p_network);
 //        p_angiogenesis_solver->a
         /*
-         * Set up the `VascularTumourSolver` which coordinates all solves. Note that for sequentially
-         * coupled PDE solves, the solution propagates in the order that the PDE solvers are added to the `VascularTumourSolver`.
+         * Set up the `MicrovesselSolver` which coordinates all solves. Note that for sequentially
+         * coupled PDE solves, the solution propagates in the order that the PDE solvers are added to the `MicrovesselSolver`.
          */
-        boost::shared_ptr<VascularTumourSolver<3> > p_vascular_tumour_solver = VascularTumourSolver<3>::Create();
+        boost::shared_ptr<MicrovesselSolver<3> > p_vascular_tumour_solver = MicrovesselSolver<3>::Create();
         p_vascular_tumour_solver->SetVesselNetwork(p_network);
         p_vascular_tumour_solver->AddDiscreteContinuumSolver(p_oxygen_solver);
         p_vascular_tumour_solver->AddDiscreteContinuumSolver(p_vegf_solver);

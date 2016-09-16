@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2014, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#ifndef TestLatticeBasedMigrationRules_hpp
-#define TestLatticeBasedMigrationRules_hpp
+#ifndef TESTLATTICEBASEDMIGRATIONRULES_HPP
+#define TESTLATTICEBASEDMIGRATIONRULES_HPP
 
 #include <cxxtest/TestSuite.h>
 #include "VesselImpedanceCalculator.hpp"
@@ -54,8 +54,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "FunctionMap.hpp"
 #include "Owen2011MigrationRule.hpp"
 #include "FlowSolver.hpp"
-#include "PetscSetupAndFinalize.hpp"
 #include "UnitCollection.hpp"
+
+#include "PetscSetupAndFinalize.hpp"
 
 class TestLatticeBasedMigrationRules : public AbstractCellBasedWithTimingsTestSuite
 {
@@ -253,4 +254,4 @@ public:
     }
 };
 
-#endif // TestLatticeBasedMigrationRules_hpp
+#endif // TESTLATTICEBASEDMIGRATIONRULES_HPP

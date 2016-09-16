@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,14 +33,10 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef TestParameterCollection_hpp
-#define TestParameterCollection_hpp
+#ifndef TESTPARAMETERCOLLECTION_HPP
+#define TESTPARAMETERCOLLECTION_HPP
 
 #include <cxxtest/TestSuite.h>
-#include <boost/units/quantity.hpp>
-#include <boost/units/systems/si/time.hpp>
-#include <boost/units/base_units/metric/hour.hpp>
-
 #include "ParameterInstance.hpp"
 #include "CheckpointArchiveTypes.hpp"
 #include "ArchiveLocationInfo.hpp"
@@ -163,11 +159,11 @@ public:
         my_params->AddParameter(my_time_parameter, "Test");
         my_params->DumpToFile("/home/grogan/test.txt");
 
-        std::cout << "Name:" << my_params->GetTimeParameter("Derived")->GetName() << std::endl;
+        std::cout << "Name:" << my_params->GetParameter("Derived")->GetName() << std::endl;
 
         ParameterCollection::Destroy();
     }
 
 };
 
-#endif // TestParameterCollection_hpp
+#endif // TESTPARAMETERCOLLECTION_HPP

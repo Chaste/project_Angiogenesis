@@ -50,7 +50,7 @@ Copyright (c) 2005-2016, University of Oxford.
 
 /**
  * An abstract solver class for continuum-discrete field problems.
- * The class is used by the VascularTumourSolver to provide a concentration or dimensionless field for a single,
+ * The class is used by the MicrovesselSolver to provide a concentration or dimensionless field for a single,
  * labelled quantity for cells and/or vessels. It contains methods for sampling on structured and unstructured grids.
  * Derived classes are responsible for updating the values of data fields in cells
  * and vessels on each call and optionally writing the solution to file.

@@ -33,8 +33,8 @@ Copyright (c) 2005-2016, University of Oxford.
 
  */
 
-#ifndef VASCULARTUMOURSOLVER_HPP_
-#define VASCULARTUMOURSOLVER_HPP_
+#ifndef MICROVESSELSOLVER_HPP_
+#define MICROVESSELSOLVER_HPP_
 
 #include <vector>
 #include <string>
@@ -53,7 +53,7 @@ Copyright (c) 2005-2016, University of Oxford.
  * with discrete cell models it can be added to a VascularTumourGrowth simulation modifier.
  */
 template<unsigned DIM>
-class VascularTumourSolver
+class MicrovesselSolver
 {
     /**
      * The vessel network
@@ -101,18 +101,18 @@ public:
     /**
      * Constructor.
      */
-    VascularTumourSolver();
+    MicrovesselSolver();
 
     /**
      * Destructor.
      */
-    virtual ~VascularTumourSolver();
+    virtual ~MicrovesselSolver();
 
     /**
      * Factory constructor method
      * @return a shared pointer to a new solver
      */
-    static boost::shared_ptr<VascularTumourSolver> Create();
+    static boost::shared_ptr<MicrovesselSolver> Create();
 
     /**
      * Add a DiscreteContinuum solver to the collection
@@ -161,7 +161,7 @@ public:
     void SetStructuralAdaptationSolver(boost::shared_ptr<StructuralAdaptationSolver<DIM> > pStructuralAdaptationSolver);
 
     /**
-     * This is called by the VascularTumourModifier to set up the simulation
+     * This is called by the MicrovesselSimulationModifier to set up the simulation
      * @param rCellPopulation the cell population
      * @param rDirectory the output directory for writing to
      */
@@ -197,4 +197,4 @@ public:
 
 };
 
-#endif /* VASCULARTUMOURSOLVER_HPP_ */
+#endif /* MICROVESSELSOLVER_HPP_ */

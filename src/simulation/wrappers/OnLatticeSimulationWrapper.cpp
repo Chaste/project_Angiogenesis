@@ -172,7 +172,7 @@ void OnLatticeSimulationWrapper::SetNetwork(boost::shared_ptr<VesselNetwork<3> >
     mpNetwork = pNetwork;
 }
 
-void OnLatticeSimulationWrapper::Solve(boost::shared_ptr<VascularTumourModifier<3> > pVtModifier)
+void OnLatticeSimulationWrapper::Solve(boost::shared_ptr<MicrovesselSimulationModifier<3> > pVtModifier)
 {
     // Create the simulation
     mpInputCellPopulation->SetOutputResultsForChasteVisualizer(false);

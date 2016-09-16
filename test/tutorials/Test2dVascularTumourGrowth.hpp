@@ -63,7 +63,7 @@ Copyright (c) 2005-2016, University of Oxford.
 #include "DiscreteContinuumBoundaryCondition.hpp"
 #include "CellStateDependentDiscreteSource.hpp"
 #include "DiscreteSource.hpp"
-#include "VascularTumourModifier.hpp"
+#include "MicrovesselSimulationModifier.hpp"
 #include "CaBasedCellPopulation.hpp"
 #include "PottsMeshGenerator.hpp"
 #include "PottsMesh.hpp"
@@ -375,7 +375,7 @@ public:
 //        cell_population.AddPdeHandler(p_vegf_solver);
 //
 //        // Create the vascular tumour solver, which manages all pde solves
-//        boost::shared_ptr<VascularTumourSolver<2> > p_vascular_tumour_solver = VascularTumourSolver<2>::Create();
+//        boost::shared_ptr<MicrovesselSolver<2> > p_vascular_tumour_solver = MicrovesselSolver<2>::Create();
 //        p_vascular_tumour_solver->SetVesselNetwork(p_network);
 //        p_vascular_tumour_solver->AddDiscreteContinuumSolver(p_oxygen_solver);
 //        p_vascular_tumour_solver->AddDiscreteContinuumSolver(p_vegf_solver);
@@ -395,8 +395,8 @@ public:
 //        OnLatticeSimulation<2> simulator(*(cell_population));
 //
 //        // Create the vascular tumour modifier which integrates with cell based Chaste
-//        boost::shared_ptr<VascularTumourModifier<2> > p_vascular_tumour_modifier = VascularTumourModifier<2>::Create();
-//        p_vascular_tumour_modifier->SetVascularTumourSolver(p_vascular_tumour_solver);
+//        boost::shared_ptr<MicrovesselSimulationModifier<2> > p_vascular_tumour_modifier = MicrovesselSimulationModifier<2>::Create();
+//        p_vascular_tumour_modifier->SetMicrovesselSolver(p_vascular_tumour_solver);
 //
 //        simulator.AddSimulationModifier(p_vascular_tumour_modifier);
 //

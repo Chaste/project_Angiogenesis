@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,14 +33,15 @@
 
  */
 
-#ifndef TestVesselImpedanceCalculator_HPP_
-#define TestVesselImpedanceCalculator_HPP_
+#ifndef TESTVESSELIMPEDANCECALCULATOR_HPP_
+#define TESTVESSELIMPEDANCECALCULATOR_HPP_
 
 #include <cxxtest/TestSuite.h>
 #include "VesselImpedanceCalculator.hpp"
 #include "SmartPointers.hpp"
 #include "MathsCustomFunctions.hpp"
 #include "UnitCollection.hpp"
+
 #include "FakePetscSetup.hpp"
 
 class TestVesselImpedanceCalculator : public CxxTest::TestSuite
@@ -91,7 +92,6 @@ public:
         TS_ASSERT_DELTA(p_vessel->GetFlowProperties()->GetImpedance(p_vessel->GetSegments())/expected_impedance, 1.0, 1e-6);
         TS_ASSERT_DELTA(p_segment->GetFlowProperties()->GetImpedance()/expected_impedance, 1.0, 1e-6);
     }
-
 };
 
-#endif /*TestVesselImpedanceCalculator_HPP_*/
+#endif /*TESTVESSELIMPEDANCECALCULATOR_HPP_*/

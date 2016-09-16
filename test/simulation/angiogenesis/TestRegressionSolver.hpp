@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2014, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -47,7 +47,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "VesselNetworkGenerator.hpp"
 #include "StructuralAdaptationSolver.hpp"
 #include "FlowSolver.hpp"
-#include "VascularTumourSolver.hpp"
+#include "MicrovesselSolver.hpp"
 #include "OutputFileHandler.hpp"
 #include "UnitCollection.hpp"
 
@@ -132,7 +132,7 @@ public:
         MAKE_PTR_ARGS(OutputFileHandler, p_handler, ("TestRegressionSolver/TestMultiVesselRegression"));
         SimulationTime::Instance()->SetEndTimeAndNumberOfTimeSteps(10, 10);
 
-        VascularTumourSolver<2> vt_solver = VascularTumourSolver<2>();
+        MicrovesselSolver<2> vt_solver = MicrovesselSolver<2>();
         vt_solver.SetOutputFileHandler(p_handler);
         vt_solver.SetStructuralAdaptationSolver(p_adaptation_solver);
         vt_solver.SetVesselNetwork(p_network);

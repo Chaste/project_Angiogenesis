@@ -42,7 +42,7 @@
 #include "SmartPointers.hpp"
 #include "SimpleCellPopulation.hpp"
 #include "CaBasedCellPopulation.hpp"
-#include "VascularTumourModifier.hpp"
+#include "MicrovesselSimulationModifier.hpp"
 #include "LQRadiotherapyCellKiller.hpp"
 #include "VesselNetwork.hpp"
 
@@ -131,7 +131,7 @@ public:
 
     void SetNetwork(boost::shared_ptr<VesselNetwork<3> > pNetwork);
 
-    void Solve(boost::shared_ptr<VascularTumourModifier<3> > pVtModifier);
+    void Solve(boost::shared_ptr<MicrovesselSimulationModifier<3> > pVtModifier);
 
     void SetVesselDistanceTolerance(units::quantity<unit::length> tolerance);
 

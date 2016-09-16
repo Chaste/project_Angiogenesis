@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef TestAngiogenesisParallelMethods_hpp
-#define TestAngiogenesisParallelMethods_hpp
+#ifndef TESTANGIOGENESISPARALLELMETHODS_HPP
+#define TESTANGIOGENESISPARALLELMETHODS_HPP
 
 #include <boost/lexical_cast.hpp>
 #include "PetscTools.hpp"
@@ -76,4 +76,4 @@ public:
 
 };
 
-#endif // TestAngiogenesisParallelMethods_hpp
+#endif // TESTANGIOGENESISPARALLELMETHODS_HPP

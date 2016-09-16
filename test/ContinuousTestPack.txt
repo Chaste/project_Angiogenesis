@@ -19,10 +19,10 @@ pde/TestDiscreteSource.hpp
 population/TestVesselNetworkCellPopulationInteractor.hpp
 population/cell/TestOwen2011OxygenBasedCellCycleModelWithOde.hpp
 population/cell/TestOwen2011OxygenBasedCellCycleOdeSystem.hpp
-population/vessel/TestVascularNode.hpp
+population/vessel/TestVesselNode.hpp
 population/vessel/TestVesselSegment.hpp
 population/vessel/TestVessel.hpp
-population/vessel/TestVascularNetwork.hpp
+population/vessel/TestVesselNetwork.hpp
 population/vessel/calculators/TestVesselNetworkGraphCalculator.hpp
 population/vessel/generators/TestVesselNetworkGenerator.hpp
 population/vessel/properties/TestSegmentFlowProperties.hpp
@@ -41,8 +41,8 @@ simulation/angiogenesis/sprouting_rules/TestSproutingRules.hpp
 simulation/angiogenesis/TestAngiogenesisSolver.hpp
 simulation/angiogenesis/TestRegressionSolver.hpp
 simulation/angiogenesis/TestAngiogenesisWithCaPopulation.hpp
-simulation/TestVascularTumourSimulationModifier.hpp
-simulation/TestVascularTumourSolver.hpp
+simulation/TestMicrovesselSimulationModifier.hpp
+simulation/TestMicrovesselSolver.hpp
 tutorials/Test2dTumourSpheroid.hpp
 tutorials/Test2dVascularTumourGrowth.hpp
 tutorials/Test3dTumourSpheroid.hpp

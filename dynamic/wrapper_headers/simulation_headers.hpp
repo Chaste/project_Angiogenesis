@@ -1,8 +1,8 @@
 #include "OnLatticeSimulationWrapper.hpp"
 #include "NodeBasedSimulationWrapper.hpp"
-#include "VascularTumourSolver.hpp"
-#include "VascularTumourModifier.hpp"
+#include "MicrovesselSolver.hpp"
+#include "MicrovesselSimulationModifier.hpp"
 #include "SimulationManager.hpp"
 
-template class VascularTumourSolver<3>;
-template class VascularTumourModifier<3>;
+template class MicrovesselSolver<3>;
+template class MicrovesselSimulationModifier<3>;

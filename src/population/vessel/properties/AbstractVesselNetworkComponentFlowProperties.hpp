@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@
 
  */
 
-#ifndef AbstractVesselNetworkComponentFlowProperties_HPP_
-#define AbstractVesselNetworkComponentFlowProperties_HPP_
+#ifndef ABSTRACTVESSELNETWORKCOMPONENTFLOWPROPERTIES_HPP_
+#define ABSTRACTVESSELNETWORKCOMPONENTFLOWPROPERTIES_HPP_
 
 #include <string>
 #include <map>
@@ -95,4 +95,4 @@ public:
 
 };
 
-#endif /* AbstractVesselNetworkComponentFlowProperties_HPP_ */
+#endif /* ABSTRACTVESSELNETWORKCOMPONENTFLOWPROPERTIES_HPP_ */

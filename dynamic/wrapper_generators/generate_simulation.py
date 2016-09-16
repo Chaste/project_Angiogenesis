@@ -13,8 +13,8 @@ def update_builder(builder):
     
     include_classes = ["OnLatticeSimulationWrapper",
                        "NodeBasedSimulationWrapper",
-                       "VascularTumourSolver<3>",
-                       "VascularTumourModifier<3>",
+                       "MicrovesselSolver<3>",
+                       "MicrovesselSimulationModifier<3>",
                        "SimulationManager"]
     
     for eachClass in include_classes:

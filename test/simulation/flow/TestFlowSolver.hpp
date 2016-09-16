@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@
 
  */
 
-#ifndef TESTFlowSolver_HPP_
-#define TESTFlowSolver_HPP_
+#ifndef TESTFLOWSOLVER_HPP_
+#define TESTFLOWSOLVER_HPP_
 
 #include <cxxtest/TestSuite.h>
 #include "VesselImpedanceCalculator.hpp"
@@ -43,14 +43,14 @@
 #include "SmartPointers.hpp"
 #include "VesselNetworkGenerator.hpp"
 #include "FlowSolver.hpp"
-#include "FakePetscSetup.hpp"
 #include "FileFinder.hpp"
 #include "VesselNetworkReader.hpp"
 #include "VesselImpedanceCalculator.hpp"
 
+#include "FakePetscSetup.hpp"
+
 class TestFlowSolver : public CxxTest::TestSuite
 {
-
     typedef boost::shared_ptr<VesselNode<2> > NodePtr2;
     typedef boost::shared_ptr<VesselNode<3> > NodePtr3;
     typedef boost::shared_ptr<VesselSegment<2> > SegmentPtr2;
@@ -442,8 +442,8 @@ public:
         p_segment1->GetFlowProperties()->SetImpedance(impedance*unit::pascal_second_per_metre_cubed);
         vascular_network->SetSegmentProperties(p_segment1);
 
-        std::vector<std::pair<double, double> > extents = vascular_network->GetExtents();
-        double y_middle = (extents[1].first + extents[1].second) / 2.0;
+        std::pair<DimensionalChastePoint<2>, DimensionalChastePoint<2> > network_extents = vascular_network->GetExtents();
+        double y_middle = (network_extents.first[1] + network_extents.second[1]) / 2.0;
 
         std::vector<boost::shared_ptr<Vessel<2> > >::iterator vessel_iterator;
         std::vector<boost::shared_ptr<Vessel<2> > > vessels = vascular_network->GetVessels();
@@ -651,4 +651,4 @@ public:
 
 };
 
-#endif /*TESTFlowSolver_HPP_*/
+#endif /*TESTFLOWSOLVER_HPP_*/

@@ -52,7 +52,7 @@ Copyright (c) 2005-2016, University of Oxford.
 #include "AngiogenesisSolver.hpp"
 #include "FunctionMap.hpp"
 #include "FlowSolver.hpp"
-#include "VascularTumourSolver.hpp"
+#include "MicrovesselSolver.hpp"
 #include "UnitCollection.hpp"
 #include "OutputFileHandler.hpp"
 
@@ -276,7 +276,7 @@ public:
 //            segments[idx]->GetFlowProperties()->SetViscosity(1.e-3*unit::poiseuille);
 //        }
 //
-//        boost::shared_ptr<VascularTumourSolver<3> > p_vascular_tumour_solver = VascularTumourSolver<3>::Create();
+//        boost::shared_ptr<MicrovesselSolver<3> > p_vascular_tumour_solver = MicrovesselSolver<3>::Create();
 //        p_vascular_tumour_solver->SetVesselNetwork(p_network);
 //        p_vascular_tumour_solver->SetOutputFrequency(1);
 //        p_vascular_tumour_solver->SetAngiogenesisSolver(p_angiogenesis_solver);

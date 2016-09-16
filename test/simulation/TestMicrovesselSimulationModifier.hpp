@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -37,10 +37,10 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TESTSPHEROIDWITHANGIOGENESIS_HPP_
 
 #include <cxxtest/TestSuite.h>
-#include "../../src/pde/problem/LinearSteadyStateDiffusionReactionPde.hpp"
+#include "LinearSteadyStateDiffusionReactionPde.hpp"
 #include "OffLatticeMigrationRule.hpp"
 #include "OffLatticeSproutingRule.hpp"
-#include "VascularTumourModifier.hpp"
+#include "MicrovesselSimulationModifier.hpp"
 #include "CheckpointArchiveTypes.hpp"
 #include "AbstractCellBasedTestSuite.hpp"
 #include "PottsMeshGenerator.hpp"
@@ -74,7 +74,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "VesselNode.hpp"
 #include "GeometryTools.hpp"
 #include "RandomNumberGenerator.hpp"
-#include "VascularTumourModifier.hpp"
+#include "MicrovesselSimulationModifier.hpp"
 #include "RegularGrid.hpp"
 #include "UnitCollection.hpp"
 
@@ -147,18 +147,17 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
                                                                   boost::shared_ptr<VesselNetwork<3> > p_network)
     {
         boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<3> > p_oxygen_pde = LinearSteadyStateDiffusionReactionPde<3>::Create();
-        p_oxygen_pde->SetIsotropicDiffusionConstant(0.0033);
-        p_oxygen_pde->SetVariableName("oxygen");
+        units::quantity<unit::diffusivity> oxygen_diffusivity(0.0033 * unit::metre_squared_per_second);
+        p_oxygen_pde->SetIsotropicDiffusionConstant(oxygen_diffusivity);
 
         boost::shared_ptr<DiscreteSource<3> > p_cell_oxygen_sink = DiscreteSource<3>::Create();
-        p_cell_oxygen_sink->SetType(SourceType::CELL);
-        p_cell_oxygen_sink->SetSource(SourceStrength::PRESCRIBED);
-        p_cell_oxygen_sink->SetValue(1.e-6);
-        p_cell_oxygen_sink->SetIsLinearInSolution(true);
+//        p_cell_oxygen_sink->SetType(SourceType::CELL);
+//        p_cell_oxygen_sink->SetSource(SourceStrength::PRESCRIBED);
+//        p_cell_oxygen_sink->SetValue(1.e-6 * unit::);
         p_oxygen_pde->AddDiscreteSource(p_cell_oxygen_sink);
 
         boost::shared_ptr<DiscreteContinuumBoundaryCondition<3> > p_vessel_ox_boundary_condition = DiscreteContinuumBoundaryCondition<3>::Create();
-        p_vessel_ox_boundary_condition->SetValue(40.0);
+        p_vessel_ox_boundary_condition->SetValue(40.0 * unit::mole_per_metre_cubed);
         p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_LINE);
         p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
         p_vessel_ox_boundary_condition->SetNetwork(p_network);
@@ -177,15 +176,15 @@ class TestSpheroidWithAngiogenesis : public AbstractCellBasedTestSuite
                                                                   boost::shared_ptr<VesselNetwork<3> > p_network)
     {
         boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<3> > p_vegf_pde = LinearSteadyStateDiffusionReactionPde<3>::Create();
-        p_vegf_pde->SetIsotropicDiffusionConstant(0.0033);
-        p_vegf_pde->SetVariableName("vegf");
-        p_vegf_pde->SetContinuumLinearInUTerm(-1.e-7);
+        units::quantity<unit::diffusivity> oxygen_diffusivity(0.0033 * unit::metre_squared_per_second);
+
+        p_vegf_pde->SetIsotropicDiffusionConstant(oxygen_diffusivity);
+        p_vegf_pde->SetContinuumLinearInUTerm(-1.e-7*unit::per_second);
 
         boost::shared_ptr<DiscreteSource<3> > p_cell_vegf_source = DiscreteSource<3>::Create();
-        p_cell_vegf_source->SetType(SourceType::CELL);
-        p_cell_vegf_source->SetSource(SourceStrength::PRESCRIBED);
-        p_cell_vegf_source->SetValue(-1.e-4);
-        p_cell_vegf_source->SetIsLinearInSolution(false);
+//        p_cell_vegf_source->SetType(SourceType::CELL);
+//        p_cell_vegf_source->SetSource(SourceStrength::PRESCRIBED);
+//        p_cell_vegf_source->SetValue(-1.e-4);
         p_vegf_pde->AddDiscreteSource(p_cell_vegf_source);
 
         boost::shared_ptr<RegularGrid<3> > p_grid = RegularGrid<3>::Create();
@@ -241,13 +240,13 @@ public:
         p_vegf_solver->Setup();
 
         // Create the angiogenesis solver
-        boost::shared_ptr<VascularTumourSolver<3> > p_vascular_tumour_solver = VascularTumourSolver<3>::Create();
+        boost::shared_ptr<MicrovesselSolver<3> > p_vascular_tumour_solver = MicrovesselSolver<3>::Create();
         p_vascular_tumour_solver->SetVesselNetwork(p_network);
         p_vascular_tumour_solver->AddDiscreteContinuumSolver(p_oxygen_solver);
         p_vascular_tumour_solver->AddDiscreteContinuumSolver(p_vegf_solver);
 
-        boost::shared_ptr<VascularTumourModifier<3> > p_simulation_modifier = boost::shared_ptr<VascularTumourModifier<3> >(new VascularTumourModifier<3>);
-        p_simulation_modifier->SetVascularTumourSolver(p_vascular_tumour_solver);
+        boost::shared_ptr<MicrovesselSimulationModifier<3> > p_simulation_modifier = boost::shared_ptr<MicrovesselSimulationModifier<3> >(new MicrovesselSimulationModifier<3>);
+        p_simulation_modifier->SetMicrovesselSolver(p_vascular_tumour_solver);
 
         std::vector<std::string> update_labels = std::vector<std::string>();
         update_labels.push_back("oxygen");
@@ -308,13 +307,13 @@ public:
         p_vegf_solver->Setup();
 
         // Create the angiogenesis solver
-        boost::shared_ptr<VascularTumourSolver<3> > p_vascular_tumour_solver = VascularTumourSolver<3>::Create();
+        boost::shared_ptr<MicrovesselSolver<3> > p_vascular_tumour_solver = MicrovesselSolver<3>::Create();
         p_vascular_tumour_solver->SetVesselNetwork(p_network);
         p_vascular_tumour_solver->AddDiscreteContinuumSolver(p_oxygen_solver);
         p_vascular_tumour_solver->AddDiscreteContinuumSolver(p_vegf_solver);
 
-        boost::shared_ptr<VascularTumourModifier<3> > p_simulation_modifier = boost::shared_ptr<VascularTumourModifier<3> >(new VascularTumourModifier<3>);
-        p_simulation_modifier->SetVascularTumourSolver(p_vascular_tumour_solver);
+        boost::shared_ptr<MicrovesselSimulationModifier<3> > p_simulation_modifier = boost::shared_ptr<MicrovesselSimulationModifier<3> >(new MicrovesselSimulationModifier<3>);
+        p_simulation_modifier->SetMicrovesselSolver(p_vascular_tumour_solver);
 
         std::vector<std::string> update_labels = std::vector<std::string>();
         update_labels.push_back("oxygen");
