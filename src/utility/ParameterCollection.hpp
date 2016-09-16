@@ -36,18 +36,14 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef ParameterCollection_HPP_
 #define ParameterCollection_HPP_
 
+#include <map>
 #include <boost/shared_ptr.hpp>
 #include "ChasteSerialization.hpp"
 #include <boost/serialization/shared_ptr.hpp>
 #include "SerializableSingleton.hpp"
 #include "UnitCollection.hpp"
 #include "BaseParameterInstance.hpp"
-#include <map>
-#include "LengthParameterInstance.hpp"
-#include "TimeParameterInstance.hpp"
-#include "MassParameterInstance.hpp"
-#include "PressureParameterInstance.hpp"
-#include "ViscosityParameterInstance.hpp"
+#include "ParameterInstance.hpp"
 
 /**
  * This singleton holds parameter values used in a simulation. It allows the value of parameters
@@ -89,16 +85,7 @@ public:
      */
     static void Destroy();
 
-    boost::shared_ptr<LengthParameterInstance> GetLengthParameter(const std::string& rName);
-
-    boost::shared_ptr<MassParameterInstance> GetMassParameter(const std::string& rName);
-
-    boost::shared_ptr<TimeParameterInstance> GetTimeParameter(const std::string& rName);
-
-    boost::shared_ptr<PressureParameterInstance> GetPressureParameter(const std::string& rName);
-
-    boost::shared_ptr<ViscosityParameterInstance> GetViscosityParameter(const std::string& rName);
-
+    boost::shared_ptr<BaseParameterInstance> GetParameter(const std::string& rName);
 
 protected:
 

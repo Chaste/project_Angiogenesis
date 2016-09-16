@@ -199,19 +199,21 @@ namespace unit
     BOOST_UNITS_STATIC_CONSTANT(metre_per_second, membrane_permeability);
 };
 
+template<class T>
 class UnitTester
 {
-    units::quantity<unit::mass> mMyMass;
+    units::quantity<T> mMyMass;
 
 public:
+
     UnitTester();
 
     ~UnitTester();
 
 
-    void SetMass(units::quantity<unit::mass> inputMass);
+//    void SetMass(units::quantity<unit::mass> inputMass);
 
-    units::quantity<unit::mass> GetMass();
+    units::quantity<T> GetMass();
 };
 
 #endif /* UNITCOLLECTIONS_HPP */

@@ -12,17 +12,57 @@ def update_builder(builder):
     
 
 #     include_classes = ["UnitTester", 
-#                        "ParameterCollection", 
+# #                       "ParameterCollection", 
 # #                       "BaseParameterInstance", 
 # #                       "DimensionalSimulationTime",
-# #                       "LengthParameterInstance",
+# #                        "LengthParameterInstance",
 # #                       "MassParameterInstance",
 # #                       "TimeParameterInstance",
 # #                       "PressureParameterInstance",
-#                        "ViscosityParameterInstance"]
-#     
+# #                       "ViscosityParameterInstance"
+#                        ]
+#      
 #     for eachClass in include_classes:
 #         builder.class_(eachClass).include()
+
+#     helpers = builder.classes(lambda decl: decl.name.startswith('UnitTester'))
+#     for eachClass in helpers:
+#         eachClass.include()
+#        eachClass.rename(class_name)
+
+#     chaste_ns = builder.global_ns.namespace('chaste')
+#     helpers = chaste_ns.classes()
+    print module_builder.__file__
+    helpers = builder.classes(lambda decl: decl.name.startswith('ParameterInstance'))
+    for eachClass in helpers:
+        eachClass.include()
+        eachClass.rename("SomethingElse")
+        print eachClass.alias
+
+#    builder.variable("kg").include()
+#     helpers = builder.classes(lambda decl: decl.name.startswith('ParameterInstance'))
+#     for var_gen_typedef in helpers:
+#         print "in"
+# #        var_gen_cls = var_gen_typedef.type.declaration
+#         var_gen_cls = var_gen_typedef
+# #        var_gen_cls.rename(var_gen_typedef.name)
+#         var_gen_cls.include()
+    
+#     pypluplus_alias_ns = builder.global_ns.namespace('pyplusplus')
+#     helpers = pypluplus_alias_ns.typedefs(lambda decl: decl.name.startswith('ParameterInstance'))
+#     for var_gen_typedef in helpers:
+#         print var_gen_typedef.name
+# #         print var_gen_typedef.type
+#         eachclass = builder.class_(str(var_gen_typedef.type))
+#         eachclass.include()
+#         eachclass.rename(str(var_gen_typedef.name))
+#        var_gen_cls = var_gen_typedef.type.declaration
+#         var_gen_cls = var_gen_typedef
+#        var_gen_cls.rename(var_gen_typedef.name)
+#         var_gen_cls.include()
+    # #        var_gen_cls.member_operators( symbol='()' ).create_with_signature = True
+
+    # #        var_gen_cls.constructors().exclude()
 
     #builder.class_("kg_instance_t<true>").include()
     #builder.class_("metre_cubed_per_second_instance_t< true >").include()
@@ -31,7 +71,7 @@ def update_builder(builder):
     
     # can we find all the boost units classes 
     # they live in the unit namespace
-    unit_ns = builder.global_ns.namespace( 'unit', recursive=False )
+#    unit_ns = builder.global_ns.namespace( 'unit', recursive=False )
 #    pypluplus_alias_ns = builder.global_ns.namespace('pyplusplus')
 #    pypluplus_alias_ns = pypluplus_ns.namespace( 'alias', recursive=False )
     
@@ -41,42 +81,42 @@ def update_builder(builder):
 #     helpers = unit_ns.classes('kg')
 #     helpers.include()
     
-    class_name = "kg"
-    helpers = unit_ns.classes(lambda decl: decl.name.startswith(class_name+'_instance_t<true>'))
-    for eachClass in helpers:
-        eachClass.include()
-        eachClass.rename(class_name)
-#    builder.variable("kg").include()
-    
+#     class_name = "kg"
+#     helpers = unit_ns.classes(lambda decl: decl.name.startswith(class_name+'_instance_t<true>'))
+#     for eachClass in helpers:
+#         eachClass.include()
+#         eachClass.rename(class_name)
+# #    builder.variable("kg").include()
+#     
+# # #    helpers = unit_ns.typedefs("mass")
+# #     for var_gen_typedef in helpers:
+# #         var_gen_cls = var_gen_typedef.type.declaration
+# # #        var_gen_cls.member_operators( symbol='()' ).create_with_signature = True
+# #         var_gen_cls.include()
+# # #        var_gen_cls.constructors().exclude()
+#     
+# #     
+#     helpers = unit_ns.typedefs(lambda decl: decl.name.startswith('MassQuantity'))
 # #    helpers = unit_ns.typedefs("mass")
 #     for var_gen_typedef in helpers:
 #         var_gen_cls = var_gen_typedef.type.declaration
-# #        var_gen_cls.member_operators( symbol='()' ).create_with_signature = True
 #         var_gen_cls.include()
-# #        var_gen_cls.constructors().exclude()
-    
-#     
-    helpers = unit_ns.typedefs(lambda decl: decl.name.startswith('MassQuantity'))
-#    helpers = unit_ns.typedefs("mass")
-    for var_gen_typedef in helpers:
-        var_gen_cls = var_gen_typedef.type.declaration
-        var_gen_cls.include()
-        var_gen_cls.rename(var_gen_typedef.name)
-        var_gen_cls.constructors().exclude()
-        var_gen_cls.add_registration_code('def(double() * bp::self)')
-        var_gen_cls.add_registration_code('def(bp::self_ns::str(bp::self))')
-        
-#    helpers = unit_ns.typedefs(lambda decl: decl.name.startswith('mass'))
-    helpers = unit_ns.typedefs('mass')
-    for var_gen_typedef in helpers:
-#         print 'found'
-        print var_gen_typedef.name
-        var_gen_cls = var_gen_typedef.type.declaration
-#        var_gen_cls.member_operators( symbol='()' ).create_with_signature = True
-        var_gen_cls.rename(var_gen_typedef.name)
-        var_gen_cls.include()
-        var_gen_cls.add_registration_code('def(double() * bp::self)')
-        var_gen_cls.add_registration_code('def(bp::self_ns::str(bp::self))')
+#         var_gen_cls.rename(var_gen_typedef.name)
+#         var_gen_cls.constructors().exclude()
+#         var_gen_cls.add_registration_code('def(double() * bp::self)')
+#         var_gen_cls.add_registration_code('def(bp::self_ns::str(bp::self))')
+#         
+# #    helpers = unit_ns.typedefs(lambda decl: decl.name.startswith('mass'))
+#     helpers = unit_ns.typedefs('mass')
+#     for var_gen_typedef in helpers:
+# #         print 'found'
+#         print var_gen_typedef.name
+#         var_gen_cls = var_gen_typedef.type.declaration
+# #        var_gen_cls.member_operators( symbol='()' ).create_with_signature = True
+#         var_gen_cls.rename(var_gen_typedef.name)
+#         var_gen_cls.include()
+#         var_gen_cls.add_registration_code('def(double() * bp::self)')
+#         var_gen_cls.add_registration_code('def(bp::self_ns::str(bp::self))')
 #         var_gen_cls.constructors().exclude()
     
 #     helpers = builder.classes(lambda decl: decl.name.startswith('quantity'))

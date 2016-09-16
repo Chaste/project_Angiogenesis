@@ -37,8 +37,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "GenericParameters.hpp"
 
 units::quantity<unit::length> radius(5.0*unit::microns);
-const boost::shared_ptr<LengthParameterInstance> GenericParameters::mpCapillaryRadius =
-        boost::shared_ptr<LengthParameterInstance>(new LengthParameterInstance(radius,
+const boost::shared_ptr<ParameterInstance<unit::length> > GenericParameters::mpCapillaryRadius =
+        boost::shared_ptr<ParameterInstance<unit::length> >(new ParameterInstance<unit::length> (radius,
                                                                                    "Generic_CapillaryRadius",
                                                                                    "Rough Capillary Radius",
                                                                                    "R",

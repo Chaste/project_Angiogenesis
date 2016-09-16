@@ -1,22 +1,28 @@
 #include "UnitCollection.hpp"
 
-UnitTester::UnitTester() :
-    mMyMass(10.0*unit::kg)
+template<class T>
+UnitTester<T>::UnitTester() :
+    mMyMass()
 {
 }
 
-UnitTester::~UnitTester()
+template<class T>
+UnitTester<T>::~UnitTester()
 {
 
 }
 
-void UnitTester::SetMass(units::quantity<unit::mass> inputMass)
-{
-    mMyMass =  3.0 * inputMass;
-}
+//void UnitTester::SetMass(units::quantity<unit::mass> inputMass)
+//{
+//    mMyMass =  3.0 * inputMass;
+//}
 
-units::quantity<unit::mass> UnitTester::GetMass()
+template<class T>
+units::quantity<T> UnitTester<T>::GetMass()
 {
     return mMyMass;
 }
+
+//explicit inst.
+template class UnitTester<unit::mass>;
 

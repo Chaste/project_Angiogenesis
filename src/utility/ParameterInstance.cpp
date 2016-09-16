@@ -33,21 +33,18 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#include "LengthParameterInstance.hpp"
+#include "ParameterInstance.hpp"
 
-LengthParameterInstance::LengthParameterInstance()
+template<class UNIT>
+ParameterInstance<UNIT>::ParameterInstance()
     : BaseParameterInstance(),
       mValue()
 {
 
 }
 
-LengthParameterInstance::~LengthParameterInstance()
-{
-
-}
-
-LengthParameterInstance::LengthParameterInstance(units::quantity<unit::length> value,
+template<class UNIT>
+ParameterInstance<UNIT>::ParameterInstance(units::quantity<UNIT> value,
                                                      const std::string& rName,
                                                      const std::string& rShortDescription,
                                                      const std::string& rSymbol,
@@ -58,21 +55,41 @@ LengthParameterInstance::LengthParameterInstance(units::quantity<unit::length> v
 
 }
 
-std::string LengthParameterInstance::GetValueAsString()
+template<class UNIT>
+ParameterInstance<UNIT>::~ParameterInstance()
+{
+
+}
+
+template<class UNIT>
+units::quantity<UNIT> ParameterInstance<UNIT>::GetValue(const std::string& rCallingClass, bool addToCollection)
+{
+    if(addToCollection)
+    {
+        // Register self with the parameter collection if not already in there.
+        this->RegisterWithCollection(rCallingClass);
+    }
+
+    return mValue;
+}
+
+template<class UNIT>
+std::string ParameterInstance<UNIT>::GetValueAsString()
 {
     std::stringstream ss;
     ss << mValue;
     return ss.str();
 }
 
-void LengthParameterInstance::SetValue(units::quantity<unit::length> value)
+template<class UNIT>
+void ParameterInstance<UNIT>::SetValue(units::quantity<UNIT> value)
 {
     mValue = value;
 }
 
-units::quantity<unit::length> LengthParameterInstance::GetValue(const std::string& rCallingClass)
-{
-    // Register self with the parameter collection if not already in there.
-    RegisterWithCollection(rCallingClass);
-    return mValue;
-}
+// Explicit Instantiation
+template class ParameterInstance<unit::mass>;
+template class ParameterInstance<unit::length>;
+template class ParameterInstance<unit::time>;
+template class ParameterInstance<unit::pressure>;
+template class ParameterInstance<unit::dynamic_viscosity>;

@@ -33,13 +33,12 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#ifndef Owen11Parameters_HPP_
-#define Owen11Parameters_HPP_
+#ifndef OWEN11PARAMETERS_HPP_
+#define OWEN11PARAMETERS_HPP_
 
 #include "SmartPointers.hpp"
 #include "BaseParameterInstance.hpp"
-#include "PressureParameterInstance.hpp"
-#include "ViscosityParameterInstance.hpp"
+#include "ParameterInstance.hpp"
 
 /**
  * This struct stores parameter values used in the paper Owen et al. (2011)
@@ -49,18 +48,18 @@ struct Owen11Parameters
     /**
      * Network Inlet Pressure: P_in
      */
-    static const boost::shared_ptr<PressureParameterInstance> mpInletPressure;
+    static const boost::shared_ptr<ParameterInstance<unit::pressure> > mpInletPressure;
 
     /**
      * Network Outlet Pressure: P_out
      */
-    static const boost::shared_ptr<PressureParameterInstance> mpOutletPressure;
+    static const boost::shared_ptr<ParameterInstance<unit::pressure> > mpOutletPressure;
 
     /**
      * Plasma viscosity \mu_{plasma}
      */
-    static const boost::shared_ptr<ViscosityParameterInstance> mpPlasmaViscosity;
+    static const boost::shared_ptr<ParameterInstance<unit::dynamic_viscosity> > mpPlasmaViscosity;
 
 };
 
-#endif /*Owen11Parameters_HPP_*/
+#endif /*OWEN11PARAMETERS_HPP_*/

@@ -33,12 +33,12 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#ifndef GenericParameters_HPP_
-#define GenericParameters_HPP_
+#ifndef GENERICPARAMETERS_HPP_
+#define GENERICPARAMETERS_HPP_
 
+#include "ParameterInstance.hpp"
 #include "SmartPointers.hpp"
 #include "BaseParameterInstance.hpp"
-#include "LengthParameterInstance.hpp"
 
 /**
  * This struct stores generic parameter values without literature sources
@@ -48,7 +48,7 @@ struct GenericParameters
     /**
      * Capillary Radius: R
      */
-    static const boost::shared_ptr<LengthParameterInstance> mpCapillaryRadius;
+    static const boost::shared_ptr<ParameterInstance<unit::length> > mpCapillaryRadius;
 };
 
-#endif /*GenericParameters_HPP_*/
+#endif /*GENERICPARAMETERS_HPP_*/

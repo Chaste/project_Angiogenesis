@@ -42,16 +42,16 @@ std::string bib_info = "@article{Owen2011, \n author = {Owen, Markus R and Stamp
         "\n volume = {71}, \n year = {2011}}";
 
 units::quantity<unit::pressure> inlet_pressure(25.0 * unit::mmHg);
-const boost::shared_ptr<PressureParameterInstance> Owen11Parameters::mpInletPressure =
-        boost::shared_ptr<PressureParameterInstance>(new PressureParameterInstance(inlet_pressure,
+const boost::shared_ptr<ParameterInstance<unit::pressure> > Owen11Parameters::mpInletPressure =
+        boost::shared_ptr<ParameterInstance<unit::pressure> >(new ParameterInstance<unit::pressure> (inlet_pressure,
                                                                                    "Owen11_InletPressure",
                                                                                    "Vessel network inlet pressure$",
                                                                                    "P_{in}",
                                                                                    bib_info));
 
 units::quantity<unit::pressure> outlet_pressure(15.0 * unit::mmHg);
-const boost::shared_ptr<PressureParameterInstance> Owen11Parameters::mpOutletPressure =
-        boost::shared_ptr<PressureParameterInstance>(new PressureParameterInstance(outlet_pressure,
+const boost::shared_ptr<ParameterInstance<unit::pressure> > Owen11Parameters::mpOutletPressure =
+        boost::shared_ptr<ParameterInstance<unit::pressure> >(new ParameterInstance<unit::pressure> (outlet_pressure,
                                                                                    "Owen11_OutletPressure",
                                                                                    "Vessel network outlet pressure",
                                                                                    "P_{out}",
@@ -60,8 +60,8 @@ units::quantity<unit::length> cm (0.01*unit::metres);
 units::quantity<unit::mass> g(1.e-3 *unit::kg);
 units::quantity<unit::time> min(60.0*unit::seconds);
 units::quantity<unit::dynamic_viscosity> plasma_visocity(0.72*g/(cm*min));
-const boost::shared_ptr<ViscosityParameterInstance> Owen11Parameters::mpPlasmaViscosity =
-        boost::shared_ptr<ViscosityParameterInstance>(new ViscosityParameterInstance(plasma_visocity,
+const boost::shared_ptr<ParameterInstance<unit::dynamic_viscosity> > Owen11Parameters::mpPlasmaViscosity =
+        boost::shared_ptr<ParameterInstance<unit::dynamic_viscosity> >(new ParameterInstance<unit::dynamic_viscosity> (plasma_visocity,
                                                                                    "Owen11_PlasmaViscosity",
                                                                                    "Blood plasma viscosity",
                                                                                    "\\mu_{plasma}",
