@@ -33,8 +33,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#ifndef ParameterCollection_HPP_
-#define ParameterCollection_HPP_
+#ifndef PARAMETERCOLLECTION_HPP_
+#define PARAMETERCOLLECTION_HPP_
 
 #include <map>
 #include <boost/shared_ptr.hpp>
@@ -71,12 +71,9 @@ public:
     static boost::shared_ptr<ParameterCollection> Instance();
 
     /**
-     * Dump the parameters to file
-     */
-    void DumpToFile(const std::string& rFilename);
-
-    /**
      * Add a parameter
+     * @param pParameter the parameter to add, note it is a base class pointer
+     * @param rFirstInstantiated the class where it is first instantiated
      */
     void AddParameter(boost::shared_ptr<BaseParameterInstance> pParameter, const std::string& rFirstInstantiated);
 
@@ -85,6 +82,17 @@ public:
      */
     static void Destroy();
 
+    /**
+     * Dump the parameters to file
+     * @param rFilename the file to dump to
+     */
+    void DumpToFile(const std::string& rFilename);
+
+    /**
+     * Return a parameter, note it is returned as a base class pointer. It may need to be
+     * cast to an expected class type.
+     * @param rName the name of the parameter to return.
+     */
     boost::shared_ptr<BaseParameterInstance> GetParameter(const std::string& rName);
 
 protected:
@@ -95,6 +103,25 @@ protected:
      * Sets up an initial parameter collection on construction
      */
     ParameterCollection();
+
+private:
+
+    /** Needed for serialization. */
+    friend class boost::serialization::access;
+
+    /**
+     * Serialization of a ParameterCollection object must be done with care.
+     * Do not serialize this singleton directly.  Instead, serialize
+     * the object returned by GetSerializationWrapper.
+     *
+     * @param archive the archive
+     * @param version the current version of this class
+     */
+    template<class Archive>
+    void serialize(Archive & archive, const unsigned int version)
+    {
+        archive & mParameters;
+    }
 
 };
 

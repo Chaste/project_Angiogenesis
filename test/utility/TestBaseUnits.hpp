@@ -33,59 +33,66 @@ Copyright (c) 2005-2016, University of Oxford.
 
  */
 
-#ifndef TESTUNITCOLLECTIONS_HPP
-#define TESTUNITCOLLECTIONS_HPP
+#ifndef TESTUNITCOLLECTION_HPP
+#define TESTUNITCOLLECTION_HPP
 
 #include <cxxtest/TestSuite.h>
-#include <boost/units/quantity.hpp>
-#include <boost/units/systems/si/time.hpp>
-#include <boost/units/base_units/metric/hour.hpp>
-#include <boost/units/base_units/metric/micron.hpp>
-#include <boost/units/systems/si/prefixes.hpp>
 #include <SmartPointers.hpp>
 #include "UnitCollection.hpp"
-#include "UblasVectorInclude.hpp"
 
-class TestUnitCollections : public CxxTest::TestSuite
+#include "PetscSetupAndFinalize.hpp"
+
+/**
+ * Check units are instantiated correctly and that they stream out the correct amount.
+ */
+class TestUnitCollection : public CxxTest::TestSuite
 {
 
 public:
 
-    void TestBaseUnits()
+    void TestAllUnits()
     {
         // Time
         units::quantity<unit::time> s1(3.0*unit::seconds);
         units::quantity<unit::time> m1(3.0*unit::minutes);
         units::quantity<unit::time> h1(3.0*unit::hours);
         units::quantity<unit::time> d1(3.0*unit::days);
-        std::cout << s1 << std::endl;
-        std::cout << m1 << std::endl;
-        std::cout << h1 << std::endl;
-        std::cout << d1 << std::endl;
-
-        // Rates
-        units::quantity<unit::rate> rs1 = 3.0*unit::per_second;
-        units::quantity<unit::rate> rm1(3.0*unit::per_minute);
-        units::quantity<unit::rate> rh1(3.0*unit::per_hour);
-        std::cout << rs1 << std::endl;
-        std::cout << rm1 << std::endl;
-        std::cout << rh1 << std::endl;
-
-        // Length
-        units::quantity<unit::length> lm1(3.0*unit::metres);
-        std::cout << lm1 << std::endl;
-
-        // Force
-        units::quantity<unit::force> f1(3.0*unit::newtons);
-        std::cout << f1 << std::endl;
-
-        // Pressure
-        units::quantity<unit::pressure> p1(3.0*unit::pascals);
-        units::quantity<unit::pressure> ph1(3.0*unit::mmHg);
-        std::cout << p1 << std::endl;
-        std::cout << ph1 << std::endl;
+        std::stringstream s1s;
+        s1s << s1;
+        std::stringstream m1s;
+        m1s << m1;
+        std::stringstream h1s;
+        h1s << h1;
+        std::stringstream d1s;
+        d1s << d1;
+        TS_ASSERT_EQUALS(s1s.str(), "3.0 s");
+        TS_ASSERT_EQUALS(m1s.str(), "3.0 min");
+        TS_ASSERT_EQUALS(h1s.str(), "3.0 hr");
+        TS_ASSERT_EQUALS(d1s.str(), "3.0 day");
+//
+//        // Rates
+//        units::quantity<unit::rate> rs1 = 3.0*unit::per_second;
+//        units::quantity<unit::rate> rm1(3.0*unit::per_minute);
+//        units::quantity<unit::rate> rh1(3.0*unit::per_hour);
+//        std::cout << rs1 << std::endl;
+//        std::cout << rm1 << std::endl;
+//        std::cout << rh1 << std::endl;
+//
+//        // Length
+//        units::quantity<unit::length> lm1(3.0*unit::metres);
+//        std::cout << lm1 << std::endl;
+//
+//        // Force
+//        units::quantity<unit::force> f1(3.0*unit::newtons);
+//        std::cout << f1 << std::endl;
+//
+//        // Pressure
+//        units::quantity<unit::pressure> p1(3.0*unit::pascals);
+//        units::quantity<unit::pressure> ph1(3.0*unit::mmHg);
+//        std::cout << p1 << std::endl;
+//        std::cout << ph1 << std::endl;
     }
 
 };
 
-#endif // TESTUNITCOLLECTIONS_HPP
+#endif // TESTUNITCOLLECTION_HPP

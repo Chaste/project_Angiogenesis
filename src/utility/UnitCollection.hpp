@@ -68,11 +68,15 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <boost/units/base_units/metric/mmHg.hpp>
 #include <boost/units/base_units/metric/micron.hpp>
 
-#include "Exception.hpp"
-
+/**
+ * This is a collection of Boost units and quantities of interest for use in the Microvessel project.
+ * The SI system is the base system. A dimension is composed of the base dimensions of time, mass, length
+ * etc raised to a rational power. A unit is a specific amount in a dimension (e.g. length^1) and system (e.g. since using SI it is a metre). It is instantiated as
+ * a static constant with a useful name 'e.g. metres' using BOOST_UNITS_STATIC_CONSTANT for thread safety.
+ * A quantity is an unit and a amount together (e.g. [moles, 2.0] to represent two moles).
+ */
 namespace units = boost::units;
-namespace unit
-{
+namespace unit{
     typedef units::si::dimensionless dimensionless;
 
     // Time
@@ -81,8 +85,6 @@ namespace unit
     BOOST_UNITS_STATIC_CONSTANT(minutes, units::metric::minute_base_unit::unit_type);
     BOOST_UNITS_STATIC_CONSTANT(hours, units::metric::hour_base_unit::unit_type);
     BOOST_UNITS_STATIC_CONSTANT(days, units::metric::day_base_unit::unit_type);
-
-    // Rates
     typedef units::derived_dimension<units::time_base_dimension, -1>::type rate_dimension;
     typedef units::unit<rate_dimension, units::si::system> rate;
     BOOST_UNITS_STATIC_CONSTANT(per_second, rate);
@@ -96,12 +98,57 @@ namespace unit
     typedef units::si::area area;
     typedef units::si::volume volume;
     BOOST_UNITS_STATIC_CONSTANT(metres, units::si::length);
-//    typedef units::make_scaled_unit<units::si::length , units::scale<10, units::static_rational<-6> > >::type micron_type;
     BOOST_UNITS_STATIC_CONSTANT(microns, units::metric::micron_base_unit::unit_type);
-
     typedef units::derived_dimension<units::length_base_dimension, -1>::type per_length_dimension;
     typedef units::unit<per_length_dimension, units::si::system> per_length;
     BOOST_UNITS_STATIC_CONSTANT(per_metre, per_length);
+
+    // Mass
+    typedef units::derived_dimension<units::mass_base_dimension, 1>::type mass_dimension;
+    typedef units::unit<mass_dimension, units::si::system> mass;
+    BOOST_UNITS_STATIC_CONSTANT(kg, mass);
+    typedef mass MassUnit;
+    typedef units::quantity<mass, double> MassQuantity;
+    typedef units::derived_dimension<units::mass_base_dimension, 1, units::time_base_dimension, -1>::type mass_flow_rate_dimension;
+    typedef units::unit<mass_flow_rate_dimension, units::si::system> mass_flow_rate;
+    BOOST_UNITS_STATIC_CONSTANT(kg_per_second, mass_flow_rate);
+    typedef units::derived_dimension<units::mass_base_dimension, 1, units::length_base_dimension, -2, units::time_base_dimension, -1>::type mass_flux_dimension;
+    typedef units::unit<mass_flux_dimension, units::si::system> mass_flux;
+    BOOST_UNITS_STATIC_CONSTANT(kg_per_metre_squared_per_second, mass_flux);
+
+    // Amount
+    typedef units::si::amount amount;
+    BOOST_UNITS_STATIC_CONSTANT(moles, units::si::amount);
+    typedef units::derived_dimension<units::amount_base_dimension, 1, units::time_base_dimension, -1>::type molar_flow_rate_dimension;
+    typedef units::unit<molar_flow_rate_dimension, units::si::system> molar_flow_rate;
+    BOOST_UNITS_STATIC_CONSTANT(mole_per_second, molar_flow_rate);
+    typedef units::derived_dimension<units::amount_base_dimension, 1, units::length_base_dimension, -3, units::time_base_dimension, -1>::type concentration_flow_rate_dimension;
+    typedef units::unit<concentration_flow_rate_dimension, units::si::system> concentration_flow_rate;
+    BOOST_UNITS_STATIC_CONSTANT(mole_per_metre_cubed_per_second, concentration_flow_rate);
+    typedef units::derived_dimension<units::amount_base_dimension, 1, units::length_base_dimension, -2, units::time_base_dimension, -1>::type molar_flux_dimension;
+    typedef units::unit<molar_flux_dimension, units::si::system> molar_flux;
+    BOOST_UNITS_STATIC_CONSTANT(mole_per_metre_squared_per_second, molar_flux);
+    typedef units::derived_dimension<units::amount_base_dimension, 1, units::length_base_dimension, -5, units::time_base_dimension, -1>::type concentration_flux_dimension;
+    typedef units::unit<concentration_flux_dimension, units::si::system> concentration_flux;
+    BOOST_UNITS_STATIC_CONSTANT(mole_per_metre_pow5_per_second, concentration_flux);
+    typedef units::derived_dimension<units::amount_base_dimension, 1, units::length_base_dimension, -3>::type concentration_dimension;
+    typedef units::unit<concentration_dimension, units::si::system> concentration;
+    BOOST_UNITS_STATIC_CONSTANT(mole_per_metre_cubed, concentration);
+    typedef units::derived_dimension<units::amount_base_dimension, 1, units::length_base_dimension, -4>::type concentration_gradient_dimension;
+    typedef units::unit<concentration_gradient_dimension, units::si::system> concentration_gradient;
+    BOOST_UNITS_STATIC_CONSTANT(mole_per_metre_pow_4, concentration_gradient);
+    typedef units::derived_dimension<units::amount_base_dimension, -1, units::time_base_dimension, -1, units::length_base_dimension, 3>::type rate_per_concentration_dimension;
+    typedef units::unit<rate_per_concentration_dimension, units::si::system> rate_per_concentration;
+    BOOST_UNITS_STATIC_CONSTANT(metre_cubed_per_mole_per_second, rate_per_concentration);
+    typedef units::derived_dimension<units::amount_base_dimension, 1, units::mass_base_dimension, -1>::type molar_mass_dimension;
+    typedef units::unit<molar_mass_dimension, units::si::system> molar_mass;
+    BOOST_UNITS_STATIC_CONSTANT(mole_per_kg, molar_mass);
+    typedef units::derived_dimension<units::length_base_dimension, -3>::type number_density_dimension;
+    typedef units::unit<number_density_dimension, units::si::system> number_density;
+    BOOST_UNITS_STATIC_CONSTANT(per_metre_cubed, number_density);
+
+    // Velocity
+    typedef units::si::velocity velocity;
 
     // Force/Pressure/Stress
     typedef units::si::force force;
@@ -113,107 +160,26 @@ namespace unit
     // Flow
     typedef units::si::dynamic_viscosity dynamic_viscosity;
     BOOST_UNITS_STATIC_CONSTANT(poiseuille, dynamic_viscosity);
-
-    typedef units::si::velocity velocity;
-
     typedef units::derived_dimension<units::length_base_dimension, 3, units::time_base_dimension, -1>::type flow_rate_dimension;
     typedef units::unit<flow_rate_dimension, units::si::system> flow_rate;
     BOOST_UNITS_STATIC_CONSTANT(metre_cubed_per_second, flow_rate);
-
     typedef units::derived_dimension<units::mass_base_dimension, 1, units::length_base_dimension, -4, units::time_base_dimension, -1>::type flow_impedance_dimension;
     typedef units::unit<flow_impedance_dimension, units::si::system> flow_impedance;
     BOOST_UNITS_STATIC_CONSTANT(pascal_second_per_metre_cubed, flow_impedance);
 
-    // Mass Transport
-//    typedef units::si::mass mass;
-    typedef units::si::amount amount;
-//    BOOST_UNITS_STATIC_CONSTANT(kg, units::si::mass);
-    BOOST_UNITS_STATIC_CONSTANT(moles, units::si::amount);
-
-
-    typedef units::derived_dimension<units::mass_base_dimension, 1>::type mass_dimension;
-    typedef units::unit<mass_dimension, units::si::system> mass;
-    BOOST_UNITS_STATIC_CONSTANT(kg, mass);
-
-    typedef mass MassUnit;
-    typedef units::quantity<mass, double> MassQuantity;
-
+    // Diffusivity, Solubility, Permeability
     typedef units::derived_dimension<units::length_base_dimension, 2, units::time_base_dimension, -1>::type diffusivity_dimension;
     typedef units::unit<diffusivity_dimension, units::si::system> diffusivity;
     BOOST_UNITS_STATIC_CONSTANT(metre_squared_per_second, diffusivity);
-
     typedef units::derived_dimension<units::length_base_dimension, 5, units::time_base_dimension, -1, units::amount_base_dimension, -1>::type diffusivity_per_concentration_dimension;
     typedef units::unit<diffusivity_per_concentration_dimension, units::si::system> diffusivity_per_concentration;
     BOOST_UNITS_STATIC_CONSTANT(metre_pow5_per_second_per_mole, diffusivity_per_concentration);
-
-    typedef units::derived_dimension<units::mass_base_dimension, 1, units::time_base_dimension, -1>::type mass_flow_rate_dimension;
-    typedef units::unit<mass_flow_rate_dimension, units::si::system> mass_flow_rate;
-    BOOST_UNITS_STATIC_CONSTANT(kg_per_second, mass_flow_rate);
-
-    typedef units::derived_dimension<units::amount_base_dimension, 1, units::time_base_dimension, -1>::type molar_flow_rate_dimension;
-    typedef units::unit<molar_flow_rate_dimension, units::si::system> molar_flow_rate;
-    BOOST_UNITS_STATIC_CONSTANT(mole_per_second, molar_flow_rate);
-
-    typedef units::derived_dimension<units::amount_base_dimension, 1, units::length_base_dimension, -3, units::time_base_dimension, -1>::type concentration_flow_rate_dimension;
-    typedef units::unit<concentration_flow_rate_dimension, units::si::system> concentration_flow_rate;
-    BOOST_UNITS_STATIC_CONSTANT(mole_per_metre_cubed_per_second, concentration_flow_rate);
-
-    typedef units::derived_dimension<units::mass_base_dimension, 1, units::length_base_dimension, -2, units::time_base_dimension, -1>::type mass_flux_dimension;
-    typedef units::unit<mass_flux_dimension, units::si::system> mass_flux;
-    BOOST_UNITS_STATIC_CONSTANT(kg_per_metre_squared_per_second, mass_flux);
-
-    typedef units::derived_dimension<units::amount_base_dimension, 1, units::length_base_dimension, -2, units::time_base_dimension, -1>::type molar_flux_dimension;
-    typedef units::unit<molar_flux_dimension, units::si::system> molar_flux;
-    BOOST_UNITS_STATIC_CONSTANT(mole_per_metre_squared_per_second, molar_flux);
-
-    typedef units::derived_dimension<units::amount_base_dimension, 1, units::length_base_dimension, -5, units::time_base_dimension, -1>::type concentration_flux_dimension;
-    typedef units::unit<concentration_flux_dimension, units::si::system> concentration_flux;
-    BOOST_UNITS_STATIC_CONSTANT(mole_per_metre_pow5_per_second, concentration_flux);
-
-    typedef units::derived_dimension<units::amount_base_dimension, 1, units::length_base_dimension, -3>::type concentration_dimension;
-    typedef units::unit<concentration_dimension, units::si::system> concentration;
-    BOOST_UNITS_STATIC_CONSTANT(mole_per_metre_cubed, concentration);
-
-    typedef units::derived_dimension<units::amount_base_dimension, 1, units::length_base_dimension, -4>::type concentration_gradient_dimension;
-    typedef units::unit<concentration_gradient_dimension, units::si::system> concentration_gradient;
-    BOOST_UNITS_STATIC_CONSTANT(mole_per_metre_pow_4, concentration_gradient);
-
-    typedef units::derived_dimension<units::amount_base_dimension, -1, units::time_base_dimension, -1, units::length_base_dimension, 3>::type rate_per_concentration_dimension;
-    typedef units::unit<rate_per_concentration_dimension, units::si::system> rate_per_concentration;
-    BOOST_UNITS_STATIC_CONSTANT(metre_cubed_per_mole_per_second, rate_per_concentration);
-
-    typedef units::derived_dimension<units::amount_base_dimension, 1, units::mass_base_dimension, -1>::type molar_mass_dimension;
-    typedef units::unit<molar_mass_dimension, units::si::system> molar_mass;
-    BOOST_UNITS_STATIC_CONSTANT(mole_per_kg, molar_mass);
-
-    typedef units::derived_dimension<units::length_base_dimension, -3>::type number_density_dimension;
-    typedef units::unit<number_density_dimension, units::si::system> number_density;
-    BOOST_UNITS_STATIC_CONSTANT(per_metre_cubed, number_density);
-
     typedef units::derived_dimension<units::amount_base_dimension, 1, units::mass_base_dimension, -1, units::length_base_dimension, -2, units::time_base_dimension, 2>::type solubility_dimension;
     typedef units::unit<solubility_dimension, units::si::system> solubility;
     BOOST_UNITS_STATIC_CONSTANT(mole_per_metre_cubed_per_pascal, solubility);
-
     typedef units::derived_dimension<units::length_base_dimension, 1, units::time_base_dimension, -1>::type membrane_permeability_dimension;
     typedef units::unit<membrane_permeability_dimension, units::si::system> membrane_permeability;
     BOOST_UNITS_STATIC_CONSTANT(metre_per_second, membrane_permeability);
-};
-
-template<class T>
-class UnitTester
-{
-    units::quantity<T> mMyMass;
-
-public:
-
-    UnitTester();
-
-    ~UnitTester();
-
-
-//    void SetMass(units::quantity<unit::mass> inputMass);
-
-    units::quantity<T> GetMass();
 };
 
 #endif /* UNITCOLLECTIONS_HPP */

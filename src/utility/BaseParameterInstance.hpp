@@ -33,8 +33,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#ifndef BaseParameterInstance_HPP_
-#define BaseParameterInstance_HPP_
+#ifndef BASEPARAMETERINSTANCE_HPP_
+#define BASEPARAMETERINSTANCE_HPP_
 
 #include <ostream>
 #include <boost/shared_ptr.hpp>
@@ -46,7 +46,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /**
  * This is a class for storing often used parameters and their metadata, such as a short textual description, bib information
  * from a paper and units. It is templated over unit type. Specific parameter values can inherit from this class, with
- * hard-coded metadata.
+ * hard-coded metadata. The main purpose of this class is to allow storage of many derived classes in the same map in
+ * a ParameterCollection.
  */
 class BaseParameterInstance : public boost::enable_shared_from_this<BaseParameterInstance>
 {
@@ -77,8 +78,14 @@ class BaseParameterInstance : public boost::enable_shared_from_this<BaseParamete
      */
     std::string mSourceInformation;
 
+    /**
+     * A symbol, as it might appear with a literature source
+     */
     std::string mSymbol;
 
+    /**
+     * A dimensionless parameter value.
+     */
     units::quantity<unit::dimensionless> mBaseValue;
 
 public:
@@ -90,6 +97,10 @@ public:
 
     /**
      * Constructor
+     * @param rName the named by which it will be keyed in the ParameterCollection
+     * @param rShortDescription a short description of the parameter
+     * @param rSymbol a symbol, as it may appear in the literature
+     * @param rBibliographicInfromation a Bibtex formatted literature source.
      */
     BaseParameterInstance(const std::string& rName,
                           const std::string& rShortDescription,
@@ -100,6 +111,12 @@ public:
      * Destructor
      */
     virtual ~BaseParameterInstance();
+
+    /**
+     * Factory constructor method
+     * @return a shared pointer to a new instance
+     */
+    static boost::shared_ptr<BaseParameterInstance> Create();
 
     /**
      * Return the parameter name
@@ -119,10 +136,22 @@ public:
      */
     std::string GetShortDescription();
 
-    virtual std::string GetValueAsString();
-
+    /**
+     * Return the parameter symbol
+     * @return the parameter symbol
+     */
     std::string GetSymbol();
 
+    /**
+     * Return the value of the parameter as a string, with units
+     * @return the value of the parameter
+     */
+    virtual std::string GetValueAsString();
+
+    /**
+     * Register the parameter with a ParameterCollection
+     * @param rCallingClass the name of the class calling this method.
+     */
     void RegisterWithCollection(const std::string& rCallingClass);
 
     /**
@@ -143,10 +172,20 @@ public:
      */
     void SetShortDescription(const std::string& rShortDescription);
 
+    /**
+     * Set the sybmol for the parameter
+     * @param rSymbol the symbol
+     */
     void SetSymbol(const std::string& rSymbol);
 
+    /**
+     * Override for nicer printing
+     * @param stream the input stream
+     * @param the class instance
+     * @return the output stream
+     */
     friend std::ostream& operator<< (std::ostream& stream, const boost::shared_ptr<BaseParameterInstance>& rParameter);
 
 };
 
-#endif /*BaseParameterInstance_HPP_*/
+#endif /*BASEPARAMETERINSTANCE_HPP_*/

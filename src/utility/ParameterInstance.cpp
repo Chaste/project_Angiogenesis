@@ -62,6 +62,13 @@ ParameterInstance<UNIT>::~ParameterInstance()
 }
 
 template<class UNIT>
+boost::shared_ptr<ParameterInstance<UNIT> > ParameterInstance<UNIT>::Create()
+{
+    MAKE_PTR(ParameterInstance<UNIT>, pSelf);
+    return pSelf;
+}
+
+template<class UNIT>
 units::quantity<UNIT> ParameterInstance<UNIT>::GetValue(const std::string& rCallingClass, bool addToCollection)
 {
     if(addToCollection)
@@ -89,7 +96,55 @@ void ParameterInstance<UNIT>::SetValue(units::quantity<UNIT> value)
 
 // Explicit Instantiation
 template class ParameterInstance<unit::mass>;
-template class ParameterInstance<unit::length>;
+template class ParameterInstance<unit::dimensionless>;
 template class ParameterInstance<unit::time>;
+template class ParameterInstance<unit::rate>;
+template class ParameterInstance<unit::length>;
+template class ParameterInstance<unit::per_length>;
+template class ParameterInstance<unit::area>;
+template class ParameterInstance<unit::volume>;
+template class ParameterInstance<unit::mass>;
+template class ParameterInstance<unit::mass_flux>;
+template class ParameterInstance<unit::mass_flow_rate>;
+template class ParameterInstance<unit::amount>;
+template class ParameterInstance<unit::molar_flux>;
+template class ParameterInstance<unit::molar_flow_rate>;
+template class ParameterInstance<unit::molar_mass>;
+template class ParameterInstance<unit::number_density>;
+template class ParameterInstance<unit::rate_per_concentration>;
+template class ParameterInstance<unit::concentration>;
+template class ParameterInstance<unit::concentration_gradient>;
+template class ParameterInstance<unit::flow_rate>;
+template class ParameterInstance<unit::flow_impedance>;
 template class ParameterInstance<unit::pressure>;
 template class ParameterInstance<unit::dynamic_viscosity>;
+template class ParameterInstance<unit::diffusivity>;
+template class ParameterInstance<unit::solubility>;
+template class ParameterInstance<unit::membrane_permeability>;
+
+#include "SerializationExportWrapperForCpp.hpp"
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::dimensionless)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::time)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::rate)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::length)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::per_length)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::area)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::volume)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::mass)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::mass_flux)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::mass_flow_rate)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::amount)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::molar_flux)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::molar_flow_rate)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::molar_mass)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::number_density)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::rate_per_concentration)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::concentration)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::concentration_gradient)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::flow_rate)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::flow_impedance)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::pressure)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::dynamic_viscosity)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::diffusivity)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::solubility)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::membrane_permeability)

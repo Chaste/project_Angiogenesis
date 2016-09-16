@@ -33,8 +33,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-#ifndef MicrovesselSimulationModifier_HPP_
-#define MicrovesselSimulationModifier_HPP_
+#ifndef MICROVESSELSIMULATIONMODIFIER_HPP_
+#define MICROVESSELSIMULATIONMODIFIER_HPP_
 
 #include "ChasteSerialization.hpp"
 #include <boost/serialization/base_object.hpp>
@@ -95,13 +95,26 @@ public:
     static boost::shared_ptr<MicrovesselSimulationModifier<DIM> > Create();
 
     /**
-     * Overridden UpdateAtEndOfTimeStep() method.
+     * Overridden OutputSimulationModifierParameters() method.
+     * Output any simulation modifier parameters to file.
      *
-     * Specify what to do in the simulation at the end of each time step.
-     *
-     * @param rCellPopulation reference to the cell population
+     * @param rParamsFile the file stream to which the parameters are output
      */
-    virtual void UpdateAtEndOfTimeStep(AbstractCellPopulation<DIM,DIM>& rCellPopulation);
+    void OutputSimulationModifierParameters(out_stream& rParamsFile);s
+
+    /**
+     * Set the labels which will be used to update cell data
+     *
+     * @param the labels which will be used to update cell data
+     */
+    void SetCellDataUpdateLabels(std::vector<std::string> labels);
+
+    /**
+     * Set the vascular tumour solver
+     *
+     * @param pSolver pointer to the vascular tumour solver
+     */
+    void SetMicrovesselSolver(boost::shared_ptr<MicrovesselSolver<DIM> > pSolver);
 
     /**
      * Overridden SetupSolve() method.
@@ -113,14 +126,14 @@ public:
      */
     virtual void SetupSolve(AbstractCellPopulation<DIM,DIM>& rCellPopulation, std::string outputDirectory);
 
-    void SetCellDataUpdateLabels(std::vector<std::string> labels);
-
     /**
-     * Set the vascular tumour solver
+     * Overridden UpdateAtEndOfTimeStep() method.
      *
-     * @param pSolver pointer to the vascular tumour solver
+     * Specify what to do in the simulation at the end of each time step.
+     *
+     * @param rCellPopulation reference to the cell population
      */
-    void SetMicrovesselSolver(boost::shared_ptr<MicrovesselSolver<DIM> > pSolver);
+    virtual void UpdateAtEndOfTimeStep(AbstractCellPopulation<DIM,DIM>& rCellPopulation);
 
     /**
      * Helper method to compute the volume of each cell in the population and store these in the CellData.
@@ -129,13 +142,6 @@ public:
      */
     void UpdateCellData(AbstractCellPopulation<DIM,DIM>& rCellPopulation);
 
-    /**
-     * Overridden OutputSimulationModifierParameters() method.
-     * Output any simulation modifier parameters to file.
-     *
-     * @param rParamsFile the file stream to which the parameters are output
-     */
-    void OutputSimulationModifierParameters(out_stream& rParamsFile);
 };
 
 #include "SerializationExportWrapper.hpp"

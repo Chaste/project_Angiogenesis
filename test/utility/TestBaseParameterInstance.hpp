@@ -33,47 +33,60 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef TESTPARAMETERCOLLECTION_HPP
-#define TESTPARAMETERCOLLECTION_HPP
+#ifndef TESTBASEPARAMETERINSTANCE_HPP
+#define TESTBASEPARAMETERINSTANCE_HPP
 
 #include <cxxtest/TestSuite.h>
-#include "ParameterInstance.hpp"
 #include "CheckpointArchiveTypes.hpp"
 #include "ArchiveLocationInfo.hpp"
 #include "SmartPointers.hpp"
 #include "UnitCollection.hpp"
 #include "OutputFileHandler.hpp"
 #include "BaseParameterInstance.hpp"
-#include "ParameterCollection.hpp"
 
-#include "PetscSetupAndFinalize.hpp"
-
-class TestParameterCollection : public CxxTest::TestSuite
+class TestBaseParameterInstance : public CxxTest::TestSuite
 {
 
 public:
 
-    void TestMixedParameterCollection()
+    void TestBaseInstance()
     {
-        boost::shared_ptr<BaseParameterInstance> my_parameter = BaseParameterInstance::Create();
-        my_parameter->SetShortDescription("My Description");
-        my_parameter->SetName("Base");
+        boost::shared_ptr<BaseParameterInstance> p_my_parameter = BaseParameterInstance::Create();
+        p_my_parameter->SetShortDescription("Base Parameter");
+        p_my_parameter->SetName("Base");
+        p_my_parameter->SetBibliographicInformation("J. Smith et al., (2003).");
 
-        boost::shared_ptr<ParameterInstance<unit::time> > my_time_parameter = ParameterInstance<unit::time>:: Create();
-        units::quantity<unit::time> few_seconds = 5.0*unit::seconds;
-        my_time_parameter->SetShortDescription("My Description For Time Parameter");
-        my_time_parameter->SetValue(few_seconds);
-        my_time_parameter->SetName("Derived");
+        TS_ASSERT_EQUALS("Base Parameter", p_my_parameter->GetShortDescription());
+        TS_ASSERT_EQUALS("Base", p_my_parameter->GetName());
+        TS_ASSERT_EQUALS("J. Smith et al., (2003).", p_my_parameter->GetBibliographicInformation());
 
-        boost::shared_ptr<ParameterCollection> my_params = ParameterCollection::Instance();
-        OutputFileHandler file_handler("TestMixedParameterCollection", true);
-        my_params->AddParameter(my_parameter, "Test");
-        my_params->AddParameter(my_time_parameter, "Test");
-        my_params->DumpToFile(file_handler.GetOutputDirectoryFullPath() + "parameter_dump.dat");
+        // Test Archiving
+        OutputFileHandler handler("archive", false);
+        ArchiveLocationInfo::SetArchiveDirectory(handler.FindFile(""));
+        std::string archive_filename = ArchiveLocationInfo::GetProcessUniqueFilePath("BaseParameterInstance.arch");
 
-        ParameterCollection::Destroy();
+        // Save archive
+        {
+            std::ofstream ofs(archive_filename.c_str());
+            boost::archive::text_oarchive output_arch(ofs);
+            output_arch << p_my_parameter;
+        }
+
+        // Load archive
+        {
+            boost::shared_ptr<BaseParameterInstance> p_my_parameter_from_archive;
+
+            // Read from this input file
+            std::ifstream ifs(archive_filename.c_str(), std::ios::binary);
+            boost::archive::text_iarchive input_arch(ifs);
+
+            // restore from the archive
+            input_arch >> p_my_parameter_from_archive;
+            TS_ASSERT_EQUALS("Base Parameter", p_my_parameter_from_archive->GetShortDescription());
+            TS_ASSERT_EQUALS("Base", p_my_parameter_from_archive->GetName());
+            TS_ASSERT_EQUALS("J. Smith et al., (2003).", p_my_parameter_from_archive->GetBibliographicInformation());
+        }
     }
-
 };
 
 #endif // TESTPARAMETERCOLLECTION_HPP

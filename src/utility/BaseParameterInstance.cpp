@@ -64,6 +64,12 @@ BaseParameterInstance::~BaseParameterInstance()
 
 }
 
+boost::shared_ptr<BaseParameterInstance> BaseParameterInstance::Create()
+{
+    MAKE_PTR(BaseParameterInstance, pSelf);
+    return pSelf;
+}
+
 void BaseParameterInstance::RegisterWithCollection(const std::string& rCallingClass)
 {
     ParameterCollection::Instance()->AddParameter(shared_from_this(), rCallingClass);

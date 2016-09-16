@@ -52,16 +52,16 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 template<class UNIT>
 class ParameterInstance : public BaseParameterInstance
 {
-//    /**
-//     * Archiving
-//     */
-//    friend class boost::serialization::access;
-//    template<class Archive>
-//    void serialize(Archive & ar, const unsigned int version)
-//    {
-//        ar & boost::serialization::base_object<BaseParameterInstance>(*this);
-//        ar & mValue;
-//    }
+    /**
+     * Archiving
+     */
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & boost::serialization::base_object<BaseParameterInstance>(*this);
+        ar & mValue;
+    }
 
     /**
      * The value of the parameter
@@ -95,6 +95,12 @@ public:
     virtual ~ParameterInstance();
 
     /**
+     * Factory constructor method
+     * @return a shared pointer to a new instance
+     */
+    static boost::shared_ptr<ParameterInstance<UNIT> > Create();
+
+    /**
      * Over-ridden method to get the value of the parameter as a "Value Unit" string (e.g. "2.0 kg"). It is used in the
      * ParameterCollection which only stores BaseParameterInstance pointers.
      * @return the values as a string.
@@ -118,5 +124,32 @@ public:
     void SetValue(units::quantity<UNIT> value);
 
 };
+
+#include "SerializationExportWrapper.hpp"
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::dimensionless)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::time)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::rate)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::length)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::per_length)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::area)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::volume)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::mass)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::mass_flux)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::mass_flow_rate)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::amount)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::molar_flux)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::molar_flow_rate)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::molar_mass)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::number_density)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::rate_per_concentration)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::concentration)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::concentration_gradient)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::flow_rate)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::flow_impedance)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::pressure)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::dynamic_viscosity)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::diffusivity)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::solubility)
+EXPORT_TEMPLATE_CLASS1(ParameterInstance, unit::membrane_permeability)
 
 #endif /*PARAMETERINSTANCE_HPP_*/
