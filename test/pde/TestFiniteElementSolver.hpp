@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -40,17 +40,17 @@
 #include <vector>
 #include <string>
 #include <boost/lexical_cast.hpp>
-
-#include "../../src/pde/problem/LinearSteadyStateDiffusionReactionPde.hpp"
+#include "SmartPointers.hpp"
+#include "LinearSteadyStateDiffusionReactionPde.hpp"
 #include "FiniteElementSolver.hpp"
 #include "UblasIncludes.hpp"
 #include "Part.hpp"
 #include "Vertex.hpp"
 #include "VesselNetwork.hpp"
 #include "VesselNetworkGenerator.hpp"
-#include "SmartPointers.hpp"
 #include "DiscreteContinuumBoundaryCondition.hpp"
 #include "DiscreteContinuumMesh.hpp"
+
 #include "PetscSetupAndFinalize.hpp"
 
 class TestFiniteElementSolver : public CxxTest::TestSuite
@@ -78,12 +78,15 @@ public:
 
         // Choose the PDE
         boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<3> > p_pde = LinearSteadyStateDiffusionReactionPde<3>::Create();
-        p_pde->SetIsotropicDiffusionConstant(0.0033);
-        p_pde->SetContinuumLinearInUTerm(-2.e-7);
+        units::quantity<unit::diffusivity> diffusivity(0.0033 * unit::metre_squared_per_second);
+        units::quantity<unit::rate> consumption_rate(-2.e-7 * unit::per_second);
+        p_pde->SetIsotropicDiffusionConstant(diffusivity);
+        p_pde->SetContinuumLinearInUTerm(consumption_rate);
 
         // Choose the Boundary conditions
+        units::quantity<unit::concentration> boundary_concentration(40.0 * unit::mole_per_metre_cubed);
         boost::shared_ptr<DiscreteContinuumBoundaryCondition<3> > p_vessel_ox_boundary_condition = DiscreteContinuumBoundaryCondition<3>::Create();
-        p_vessel_ox_boundary_condition->SetValue(40.0);
+        p_vessel_ox_boundary_condition->SetValue(boundary_concentration);
         p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_LINE);
         p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
         p_vessel_ox_boundary_condition->SetNetwork(p_network);
@@ -119,12 +122,15 @@ public:
 
         // Choose the PDE
         boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<3> > p_pde = LinearSteadyStateDiffusionReactionPde<3>::Create();
-        p_pde->SetIsotropicDiffusionConstant(0.0033);
-        p_pde->SetContinuumLinearInUTerm(-2.e-7);
+        units::quantity<unit::diffusivity> diffusivity(0.0033 * unit::metre_squared_per_second);
+        units::quantity<unit::rate> consumption_rate(-2.e-7 * unit::per_second);
+        p_pde->SetIsotropicDiffusionConstant(diffusivity);
+        p_pde->SetContinuumLinearInUTerm(consumption_rate);
 
         // Choose the Boundary conditions
         boost::shared_ptr<DiscreteContinuumBoundaryCondition<3> > p_vessel_ox_boundary_condition = DiscreteContinuumBoundaryCondition<3>::Create();
-        p_vessel_ox_boundary_condition->SetValue(40.0);
+        units::quantity<unit::concentration> boundary_concentration(40.0 * unit::mole_per_metre_cubed);
+        p_vessel_ox_boundary_condition->SetValue(boundary_concentration);
         p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_VOLUME);
         p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
         p_vessel_ox_boundary_condition->SetNetwork(p_network);

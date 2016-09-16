@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@
 
  */
 
-#ifndef DiscreteContinuumMesh_HPP_
-#define DiscreteContinuumMesh_HPP_
+#ifndef DISCRETECONTINUUMMESH_HPP_
+#define DISCRETECONTINUUMMESH_HPP_
 
 #include <vector>
 #include "SmartPointers.hpp"
@@ -229,4 +229,4 @@ private:
     void FreeTriangulateIo(triangulateio& mesherIo);
 };
 
-#endif /* DiscreteContinuumMesh_HPP_*/
+#endif /* DISCRETECONTINUUMMESH_HPP_*/

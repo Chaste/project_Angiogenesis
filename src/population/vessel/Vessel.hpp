@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@
 
  */
 
-#ifndef Vessel_HPP_
-#define Vessel_HPP_
+#ifndef VESSEL_HPP_
+#define VESSEL_HPP_
 
 #include <vector>
 #include <string>
@@ -146,7 +146,8 @@ public:
      * @param pStartNode the start node
      * @param pEndNode the end node
      */
-    static boost::shared_ptr<Vessel<DIM> > Create(boost::shared_ptr<VesselNode<DIM> > pStartNode, boost::shared_ptr<VesselNode<DIM> > pEndNode);
+    static boost::shared_ptr<Vessel<DIM> > Create(boost::shared_ptr<VesselNode<DIM> > pStartNode,
+                                                  boost::shared_ptr<VesselNode<DIM> > pEndNode);
 
     /**
      * Destructor.
@@ -176,7 +177,8 @@ public:
      * @param rLocation the location of the division
      * @param distanceTolerance how far from a segment should the probe point be
      */
-    boost::shared_ptr<VesselNode<DIM> > DivideSegment(const DimensionalChastePoint<DIM>& rLocation, double distanceTolerance = 1.e-6);
+    boost::shared_ptr<VesselNode<DIM> > DivideSegment(const DimensionalChastePoint<DIM>& rLocation,
+                                                      double distanceTolerance = 1.e-6);
 
     /**
      *  Return the dimensionless distance to the vessel end node closest to the input location
@@ -310,4 +312,4 @@ private:
     boost::shared_ptr<Vessel<DIM> > Shared();
 };
 
-#endif /* Vessel_HPP_ */
+#endif /* VESSEL_HPP_ */

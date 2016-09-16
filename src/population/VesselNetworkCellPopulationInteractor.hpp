@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@
 
  */
 
-#ifndef VesselNetworkCellPopulationInteractor_hpp
-#define VesselNetworkCellPopulationInteractor_hpp
+#ifndef VESSELNETWORKCELLPOPULATIONINTERACTOR_HPP
+#define VESSELNETWORKCELLPOPULATIONINTERACTOR_HPP
 
 #include <vector>
 #include <string>
@@ -111,4 +111,4 @@ public:
 
 };
 
-#endif /* VesselNetworkCellPopulationInteractor_hpp */
+#endif /* VESSELNETWORKCELLPOPULATIONINTERACTOR_HPP */

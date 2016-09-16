@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -40,7 +40,7 @@
 #include <vector>
 #include <string>
 
-#include "../../src/pde/problem/LinearSteadyStateDiffusionReactionPde.hpp"
+#include "LinearSteadyStateDiffusionReactionPde.hpp"
 #include "SmartPointers.hpp"
 #include "Part.hpp"
 #include "FiniteDifferenceSolver.hpp"
@@ -69,12 +69,15 @@ public:
 
         // Choose the PDE
         boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<2> > p_pde = LinearSteadyStateDiffusionReactionPde<2>::Create();
-        p_pde->SetIsotropicDiffusionConstant(1.e-6);
-        p_pde->SetContinuumLinearInUTerm(-2.e-5);
+        units::quantity<unit::diffusivity> diffusivity(1.e-6 * unit::metre_squared_per_second);
+        units::quantity<unit::rate> consumption_rate(-2.e-5 * unit::per_second);
+        p_pde->SetIsotropicDiffusionConstant(diffusivity);
+        p_pde->SetContinuumLinearInUTerm(consumption_rate);
 
         // Prescribe a value on the domain boundaries
         boost::shared_ptr<DiscreteContinuumBoundaryCondition<2> > p_boundary_condition = DiscreteContinuumBoundaryCondition<2>::Create();
-        p_boundary_condition->SetValue(1.0);
+        units::quantity<unit::concentration> boundary_concentration(1.0 * unit::mole_per_metre_cubed);
+        p_boundary_condition->SetValue(boundary_concentration);
 
         // Set up and run the solver
         FiniteDifferenceSolver<2> solver;
@@ -101,12 +104,15 @@ public:
 
         // Choose the PDE
         boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<3> > p_pde = LinearSteadyStateDiffusionReactionPde<3>::Create();
-        p_pde->SetIsotropicDiffusionConstant(1.e-6);
-        p_pde->SetContinuumLinearInUTerm(-2.e-5);
+        units::quantity<unit::diffusivity> diffusivity(1.e-6 * unit::metre_squared_per_second);
+        units::quantity<unit::rate> consumption_rate(-2.e-5 * unit::per_second);
+        p_pde->SetIsotropicDiffusionConstant(diffusivity);
+        p_pde->SetContinuumLinearInUTerm(consumption_rate);
 
         // Prescribe a value on the domain boundaries
         boost::shared_ptr<DiscreteContinuumBoundaryCondition<3> > p_boundary_condition = DiscreteContinuumBoundaryCondition<3>::Create();
-        p_boundary_condition->SetValue(1.0);
+        units::quantity<unit::concentration> boundary_concentration(1.0 * unit::mole_per_metre_cubed);
+        p_boundary_condition->SetValue(boundary_concentration);
 
         // Set up and run the solver
         FiniteDifferenceSolver<3> solver;
@@ -135,12 +141,15 @@ public:
 
         // Choose the PDE
         boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<3> > p_pde = LinearSteadyStateDiffusionReactionPde<3>::Create();
-        p_pde->SetIsotropicDiffusionConstant(0.0033);
-        p_pde->SetContinuumLinearInUTerm(-2.e-7);
+        units::quantity<unit::diffusivity> diffusivity(0.0033 * unit::metre_squared_per_second);
+        units::quantity<unit::rate> consumption_rate(-2.e-7 * unit::per_second);
+        p_pde->SetIsotropicDiffusionConstant(diffusivity);
+        p_pde->SetContinuumLinearInUTerm(consumption_rate);
 
         // Set up the boundary condition
         boost::shared_ptr<DiscreteContinuumBoundaryCondition<3> > p_vessel_boundary_condition = DiscreteContinuumBoundaryCondition<3>::Create();
-        p_vessel_boundary_condition->SetValue(40.0);
+        units::quantity<unit::concentration> boundary_concentration(1.0 * unit::mole_per_metre_cubed);
+        p_vessel_boundary_condition->SetValue(boundary_concentration);
         p_vessel_boundary_condition->SetType(BoundaryConditionType::VESSEL_LINE);
         p_vessel_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
 

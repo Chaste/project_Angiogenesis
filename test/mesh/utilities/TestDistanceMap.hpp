@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@
 
  */
 
-#ifndef TESTDISTANCETRANSFORM_HPP_
-#define TESTDISTANCETRANSFORM_HPP_
+#ifndef TESTDISTANCEMAP_HPP_
+#define TESTDISTANCEMAP_HPP_
 
 #include <cxxtest/TestSuite.h>
 #include <vector>
@@ -74,11 +74,11 @@ public:
         solver.SetVesselNetwork(p_network);
         solver.SetGrid(p_grid);
 
-        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestDistanceMap/Bifurcation3d", false));
+        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestDistanceMap/Test3dBifurcationNetwork", false));
         solver.SetFileHandler(p_output_file_handler);
         solver.Setup();
         solver.Solve();
     }
 };
 
-#endif /*TESTDISTANCETRANSFORM_HPP_*/
+#endif /*TESTDISTANCEMAP_HPP_*/

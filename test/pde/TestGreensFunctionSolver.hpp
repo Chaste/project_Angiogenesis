@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -37,7 +37,7 @@
 #define TESTGREENSFUNCTIONSOLVER_HPP_
 
 #include <cxxtest/TestSuite.h>
-#include "../../src/pde/problem/LinearSteadyStateDiffusionReactionPde.hpp"
+#include "LinearSteadyStateDiffusionReactionPde.hpp"
 #include "GreensFunctionSolver.hpp"
 #include "VesselNetwork.hpp"
 #include "VesselNetworkGenerator.hpp"
@@ -68,15 +68,17 @@ public:
 
         // Choose the PDE
         boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<3> > p_pde = LinearSteadyStateDiffusionReactionPde<3>::Create();
-        p_pde->SetIsotropicDiffusionConstant(1);
-        p_pde->SetContinuumConstantInUTerm(-2.0);
+        units::quantity<unit::diffusivity> diffusivity(0.0033 * unit::metre_squared_per_second);
+        units::quantity<unit::rate> consumption_rate(-2.e-7 * unit::per_second);
+        p_pde->SetIsotropicDiffusionConstant(diffusivity);
+        p_pde->SetContinuumLinearInUTerm(consumption_rate);
 
         GreensFunctionSolver<3> solver;
         solver.SetVesselNetwork(p_network);
         solver.SetGrid(p_grid);
         solver.SetPde(p_pde);
 
-        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestGreensFunctionSolver/KroghCylinder3d", false));
+        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestGreensFunctionSolver/TestSingleVessel3d", false));
         solver.SetFileHandler(p_output_file_handler);
         solver.Setup();
         solver.SetWriteSolution(true);

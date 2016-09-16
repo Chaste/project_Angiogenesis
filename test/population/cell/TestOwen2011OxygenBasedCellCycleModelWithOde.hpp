@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2012, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -37,22 +37,17 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TESTODEBASEDCELLCYCLEMODELS_HPP_
 
 #include <cxxtest/TestSuite.h>
-
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
-
 #include <fstream>
 #include <boost/shared_ptr.hpp>
-
 #include "Owen2011OxygenBasedCellCycleModel.hpp"
-
 #include "AbstractCellMutationState.hpp"
 #include "WildTypeCellMutationState.hpp"
 #include "CancerCellMutationState.hpp"
 #include "StemCellProliferativeType.hpp"
 #include "ApcTwoHitCellMutationState.hpp"
 #include "BetaCateninOneHitCellMutationState.hpp"
-
 #include "OutputFileHandler.hpp"
 #include "CheckReadyToDivideAndPhaseIsUpdated.hpp"
 #include "AbstractCellBasedTestSuite.hpp"

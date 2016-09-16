@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@
 
  */
 
-#ifndef VesselNetwork_HPP_
-#define VesselNetwork_HPP_
+#ifndef VESSELNETWORK_HPP_
+#define VESSELNETWORK_HPP_
 
 #include <vector>
 #include <set>
@@ -163,42 +163,42 @@ public:
     boost::shared_ptr<VesselNode<DIM> > GetNearestNode(const DimensionalChastePoint<DIM>& rLocation);
 
     /**
-     Get the node nearest to the specified node
+     * Get the node nearest to the specified node
      */
     boost::shared_ptr<VesselNode<DIM> > GetNearestNode(boost::shared_ptr<VesselNode<DIM> > pInputNode);
 
     /**
-     Get the segment nearest to the specified segment and the distance to it
+     * Get the segment nearest to the specified segment and the distance to it
      */
     std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> > GetNearestSegment(boost::shared_ptr<VesselSegment<DIM> > pSegment);
 
     /**
-     Get the segment nearest to the specified node and the distance to it
+     * Get the segment nearest to the specified node and the distance to it
      */
     std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> > GetNearestSegment(boost::shared_ptr<VesselNode<DIM> > pNode, bool sameVessel = true);
 
     /**
-     Get the segment nearest to the specified location and the distance to it
+     * Get the segment nearest to the specified location and the distance to it
      */
     std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> > GetNearestSegment(const DimensionalChastePoint<DIM>& location);
 
     /**
-     Get the segment nearest to the specified location
+     * Get the segment nearest to the specified location
      */
     boost::shared_ptr<Vessel<DIM> > GetNearestVessel(const DimensionalChastePoint<DIM>& location);
 
     /**
-     Get index of nearest node
+     * Get index of nearest node
      */
     unsigned GetNodeIndex(boost::shared_ptr<VesselNode<DIM> > node);
 
     /**
-     Get the number of nodes near to a specified point
+     * Get the number of nodes near to a specified point
      */
     unsigned NumberOfNodesNearLocation(const DimensionalChastePoint<DIM>&  rLocation, double tolerance = 0.0);
 
     /**
-     Return the extents of the vessel network in the form ((xmin, xmax), (ymin, ymax), (zmin, zmax))
+     * Return the extents of the vessel network in the form ((xmin, xmax), (ymin, ymax), (zmin, zmax))
      */
     std::pair<DimensionalChastePoint<DIM>, DimensionalChastePoint<DIM> > GetExtents(bool useRadii = false);
 
@@ -209,102 +209,113 @@ public:
     boost::shared_ptr<VesselNode<DIM> > GetNode(unsigned index);
 
     /**
-     Return the nodes in the network
+     * Return the nodes in the network
      */
     std::vector<boost::shared_ptr<VesselNode<DIM> > > GetNodes();
 
     /**
-     Return the number of nodes in the network.
+     * Return the number of nodes in the network.
      */
     unsigned GetNumberOfNodes();
 
     /**
-     Return the number of vessel nodes in the network.
+     *Return the number of vessel nodes in the network.
      */
     unsigned GetNumberOfVesselNodes();
 
     /**
-     Return the number of vessels in the network.
+     * Return the number of vessels in the network.
      */
     unsigned GetNumberOfVessels();
 
     /**
-     Return the number of branches on the most highly connected node
+     * Return the number of branches on the most highly connected node
      */
     unsigned GetMaxBranchesOnNode();
 
     /**
-     Return the only the nodes at the ends of vessels in the network
+     * Return the only the nodes at the ends of vessels in the network
      */
     std::vector<boost::shared_ptr<VesselNode<DIM> > > GetVesselEndNodes();
 
     /**
-     Return the Index of the specified vessel
+     * Return the Index of the specified vessel
      */
     unsigned GetVesselIndex(boost::shared_ptr<Vessel<DIM> > pVessel);
 
     /**
-     Return the Index of the specified vessel segment
+     * Return the Index of the specified vessel segment
      */
     unsigned GetVesselSegmentIndex(boost::shared_ptr<VesselSegment<DIM> > pVesselSegment);
 
     /**
-     Return the vessel segments in the network
+     * Return the vessel segments in the network
      */
     std::vector<boost::shared_ptr<VesselSegment<DIM> > > GetVesselSegments();
 
     /**
-     Return the indexed vessel
+     * Return the indexed vessel
      */
     boost::shared_ptr<Vessel<DIM> > GetVessel(unsigned index);
 
     /**
-     Return the vessels in the network
+     * Return the vessels in the network
      */
     std::vector<boost::shared_ptr<Vessel<DIM> > > GetVessels();
 
     /**
      * Return whether node is in network.
+     * @param pSourceNode the node
+     * @return is the node in the network
      */
     bool NodeIsInNetwork(boost::shared_ptr<VesselNode<DIM> > pSourceNode);
 
     /**
      * Merge short vessels in the network
+     * @param cutoff how short is short
      */
     void MergeShortVessels(units::quantity<unit::length> cutoff = 10.0 * 1.e-6 * unit::metres);
 
     /**
      * Merge nodes with the same spatial location. Useful for
      * tidying up networks read from file.
+     * @param tolerance how close together are nodes for them to be coincident
      */
     void MergeCoincidentNodes(double tolerance = 0.0);
 
     /**
      * Merge nodes with the same spatial location. Useful for
      * tidying up networks read from file.
+     * @param pVessels the vessels for merging
+     * @param tolerance how close together are nodes for them to be coincident
      */
     void MergeCoincidentNodes(std::vector<boost::shared_ptr<Vessel<DIM> > > pVessels, double tolerance = 0.0);
 
     /**
      * Merge nodes with the same spatial location. Useful for
      * tidying up networks read from file.
+     * @param nodes the nodes to merge
+     * @param tolerance how close together are nodes for them to be coincident
      */
     void MergeCoincidentNodes(std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes, double tolerance = 0.0);
 
     /**
      * Removes a vessel from the network
+     * @param pVessel the vessel to remove
      * @param deleteVessel also remove the vessel from its child segments and nodes if true.
      */
     void RemoveVessel(boost::shared_ptr<Vessel<DIM> > pVessel, bool deleteVessel = false);
 
     /**
      * Remove short vessels from the network
-     *
+     * @param cutoff the minumum vessel length
+     * @param endsOnly just remove vessels with connectivity 1
      */
     void RemoveShortVessels(units::quantity<unit::length> cutoff = 10.0* 1.e-6 * unit::metres, bool endsOnly = true);
 
     /**
      * Set the nodal radii to the same value
+     * @param radius the node radius value
      */
     void SetNodeRadii(units::quantity<unit::length> radius);
 
@@ -315,26 +326,32 @@ public:
 
     /**
      * Set the properties of the segments in the network based on those of the prototype
+     * @param prototype a prototype segment from which to copy properties
      */
     void SetSegmentProperties(boost::shared_ptr<VesselSegment<DIM> > prototype);
 
     /**
      * Set the segment radii to the same value
+     * @param radius the segment radius
      */
     void SetSegmentRadii(units::quantity<unit::length> radius);
 
     /**
      * Set the segment viscosity to the same value
+     * @param viscosity the segment viscosity
      */
     void SetSegmentViscosity(units::quantity<unit::dynamic_viscosity> viscosity);
 
     /**
      * Translate the network along the provided vector
+     * @param rTranslationVector the translation vector
      */
     void Translate(DimensionalChastePoint<DIM> rTranslationVector);
 
     /**
      * Translate specific vessels along the provided vector
+     * @param rTranslationVector the translation vector
+     * @param vessels the vessels to translate
      */
     void Translate(DimensionalChastePoint<DIM> rTranslationVector, std::vector<boost::shared_ptr<Vessel<DIM> > > vessels);
 
@@ -359,20 +376,26 @@ public:
     void UpdateVesselIds();
 
     /**
-     * Update all dynamic storage in the vessel network, optionally merge coinciden nodes
+     * Update all dynamic storage in the vessel network, optionally merge coincident nodes
+     * @param merge whether to merge co-incident nodes
      */
     void UpdateAll(bool merge=false);
 
     /**
      * Returns whether a vessel crosses a line segment.
+     * @param rCoord1 the start of the line segment
+     * @param rCoord2 the end of the line segment
+     * @param tolerance how close to crossing is considered crossing
+     * @return
      */
-    bool VesselCrossesLineSegment(DimensionalChastePoint<DIM> coordinate_1, DimensionalChastePoint<DIM> coordinate_2, double tolerance = 1e-6);
+    bool VesselCrossesLineSegment(const DimensionalChastePoint<DIM>& rCoord1, const DimensionalChastePoint<DIM>& rCoord2, double tolerance = 1e-6);
 
     /**
      * Write the network to file
+     * @param rFileName the filename
      */
     void Write(const std::string& rFileName);
 
 };
 
-#endif /* VesselNetwork_HPP_ */
+#endif /* VESSELNETWORK_HPP_ */

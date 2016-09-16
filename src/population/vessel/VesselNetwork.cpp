@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -1086,7 +1086,9 @@ void VesselNetwork<DIM>::UpdateVesselIds()
 }
 
 template<unsigned DIM>
-bool VesselNetwork<DIM>::VesselCrossesLineSegment(DimensionalChastePoint<DIM> coordinate_1, DimensionalChastePoint<DIM> coordinate_2, double tolerance)
+bool VesselNetwork<DIM>::VesselCrossesLineSegment(const DimensionalChastePoint<DIM>& coordinate_1,
+                                                  const DimensionalChastePoint<DIM>& coordinate_2,
+                                                  double tolerance)
 {
     boost::shared_ptr<VesselSegment<DIM> > temp_segment = VesselSegment<DIM>::Create(VesselNode<DIM>::Create(coordinate_1), VesselNode<DIM>::Create(coordinate_2));
     std::pair<boost::shared_ptr<VesselSegment<DIM> >, units::quantity<unit::length> > nearest_segment = GetNearestSegment(temp_segment);

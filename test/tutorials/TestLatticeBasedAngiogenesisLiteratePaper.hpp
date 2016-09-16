@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,16 +33,15 @@
 
  */
 
-#ifndef TESTSNAILTRAILLITERATEPAPER_HPP_
-#define TESTSNAILTRAILLITERATEPAPER_HPP_
+#ifndef TESTLATTICEBASEDANGIOGENESISLITERATEPAPER_HPP_
+#define TESTLATTICEBASEDANGIOGENESISLITERATEPAPER_HPP_
 
 /* = Introduction =
- * This tutorial is designed to introduce
+ * This tutorial is designed to introduce...
  *
  */
 #include <cxxtest/TestSuite.h>
 #include <vector>
-
 #include "Owen2011SproutingRule.hpp"
 #include "Owen2011MigrationRule.hpp"
 #include "SmartPointers.hpp"
@@ -54,10 +53,10 @@
 #include "FunctionMap.hpp"
 #include "FlowSolver.hpp"
 #include "VascularTumourSolver.hpp"
-#include "PetscSetupAndFinalize.hpp"
 #include "UnitCollection.hpp"
 #include "OutputFileHandler.hpp"
-#include "Debug.hpp"
+
+#include "PetscSetupAndFinalize.hpp"
 
 class TestSnailTrailLiteratePaper : public AbstractCellBasedWithTimingsTestSuite
 {
@@ -111,8 +110,8 @@ public:
         boost::shared_ptr<Owen2011MigrationRule<3> > p_migration_rule = Owen2011MigrationRule<3>::Create();
         p_migration_rule->SetGrid(p_grid);
         p_migration_rule->SetDiscreteContinuumSolver(p_funciton_map); // This contains the vegf field
-        p_migration_rule->SetCellMotilityParameter(100.0);
-        p_migration_rule->SetCellChemotacticParameter(80000.0);
+//        p_migration_rule->SetCellMotilityParameter(100.0);
+//        p_migration_rule->SetCellChemotacticParameter(80000.0);
         p_migration_rule->SetNetwork(p_network);
 
         boost::shared_ptr<Owen2011SproutingRule<3> > p_sprouting_rule = Owen2011SproutingRule<3>::Create();
@@ -289,4 +288,4 @@ public:
 //    }
 };
 
-#endif /*TESTSNAILTRAILLITERATEPAPER_HPP_*/
+#endif /*TESTLATTICEBASEDANGIOGENESISLITERATEPAPER_HPP_*/

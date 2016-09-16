@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,17 +33,16 @@
 
  */
 
-#ifndef TESTDiscreteSource_HPP_
-#define TESTDiscreteSource_HPP_
+#ifndef TESTDISCRETESOURCE_HPP_
+#define TESTDISCRETESOURCE_HPP_
 
 #include <cxxtest/TestSuite.h>
 #include <vector>
 #include <string>
-
-#include "../../src/pde/problem/LinearSteadyStateDiffusionReactionPde.hpp"
+#include "LinearSteadyStateDiffusionReactionPde.hpp"
 #include "SmartPointers.hpp"
 #include "Part.hpp"
-#include "AbstractDiscreteContinuumNonLinearEllipticPde.hpp"
+#include "MichaelisMentenSteadyStateDiffusionReactionPde.hpp"
 #include "FiniteDifferenceSolver.hpp"
 #include "VesselNetwork.hpp"
 #include "VesselNetworkGenerator.hpp"
@@ -83,21 +82,21 @@ public:
 
         // Choose the PDE
         boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<3> > p_pde = LinearSteadyStateDiffusionReactionPde<3>::Create();
-        p_pde->SetIsotropicDiffusionConstant(0.0033);
-        p_pde->SetContinuumConstantInUTerm(-2.e-6);
+        units::quantity<unit::diffusivity> diffusivity(0.0033 * unit::metre_squared_per_second);
+        units::quantity<unit::concentration_flow_rate> consumption_rate(-2.e-7 * unit::mole_per_metre_cubed_per_second);
+        p_pde->SetIsotropicDiffusionConstant(diffusivity);
+        p_pde->SetContinuumConstantInUTerm(consumption_rate);
 
         // Set up the discrete source
         boost::shared_ptr<DiscreteSource<3> > p_vessel_source_lin = DiscreteSource<3>::Create();
-        p_vessel_source_lin->SetValue(-1.e3);
-        p_vessel_source_lin->SetType(SourceType::VESSEL);
+//        p_vessel_source_lin->SetValue(-1.e3);
+//        p_vessel_source_lin->SetType(SourceType::VESSEL);
         p_vessel_source_lin->SetSource(SourceStrength::PRESCRIBED);
-        p_vessel_source_lin->SetIsLinearInSolution(true);
 
         boost::shared_ptr<DiscreteSource<3> > p_vessel_source_const = DiscreteSource<3>::Create();
-        p_vessel_source_const->SetValue(40.e3);
-        p_vessel_source_const->SetType(SourceType::VESSEL);
+//        p_vessel_source_const->SetValue(40.e3);
+//        p_vessel_source_const->SetType(SourceType::VESSEL);
         p_vessel_source_const->SetSource(SourceStrength::PRESCRIBED);
-        p_vessel_source_const->SetIsLinearInSolution(false);
 
         p_pde->AddDiscreteSource(p_vessel_source_lin);
         p_pde->AddDiscreteSource(p_vessel_source_const);
@@ -108,7 +107,7 @@ public:
         solver.SetPde(p_pde);
         solver.SetVesselNetwork(p_network);
 
-        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestDiscreteSource/WithVessels", false));
+        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestDiscreteSource/TestWithVessels", false));
         solver.SetFileHandler(p_output_file_handler);
         solver.SetWriteSolution(true);
         solver.Solve();
@@ -135,23 +134,23 @@ public:
         p_grid->GenerateFromPart(p_domain, 10.0 * 1.e-6 * unit::metres);
 
         // Choose the PDE
-        boost::shared_ptr<AbstractDiscreteContinuumNonLinearEllipticPde<3> > p_pde = AbstractDiscreteContinuumNonLinearEllipticPde<3>::Create();
-        p_pde->SetIsotropicDiffusionConstant(0.0033);
-        p_pde->SetContinuumConstantInUTerm(-2.e-6);
-        p_pde->SetThreshold(2.5);
+        boost::shared_ptr<MichaelisMentenSteadyStateDiffusionReactionPde<3> > p_pde = MichaelisMentenSteadyStateDiffusionReactionPde<3>::Create();
+        units::quantity<unit::diffusivity> diffusivity(0.0033 * unit::metre_squared_per_second);
+        units::quantity<unit::concentration_flow_rate> consumption_rate(-2.e-7 * unit::mole_per_metre_cubed_per_second);
+        p_pde->SetIsotropicDiffusionConstant(diffusivity);
+        p_pde->SetContinuumConstantInUTerm(consumption_rate);
+        p_pde->SetMichaelisMentenThreshold(2.0 * unit::mole_per_metre_cubed);
 
         // Set up the discrete source
         boost::shared_ptr<DiscreteSource<3> > p_vessel_source_lin = DiscreteSource<3>::Create();
-        p_vessel_source_lin->SetValue(-1.e3);
-        p_vessel_source_lin->SetType(SourceType::VESSEL);
+//        p_vessel_source_lin->SetValue(-1.e3);
+//        p_vessel_source_lin->SetType(SourceType::VESSEL);
         p_vessel_source_lin->SetSource(SourceStrength::PRESCRIBED);
-        p_vessel_source_lin->SetIsLinearInSolution(true);
 
         boost::shared_ptr<DiscreteSource<3> > p_vessel_source_const = DiscreteSource<3>::Create();
-        p_vessel_source_const->SetValue(40.e3);
-        p_vessel_source_const->SetType(SourceType::VESSEL);
+//        p_vessel_source_const->SetValue(40.e3);
+//        p_vessel_source_const->SetType(SourceType::VESSEL);
         p_vessel_source_const->SetSource(SourceStrength::PRESCRIBED);
-        p_vessel_source_const->SetIsLinearInSolution(false);
 
         p_pde->AddDiscreteSource(p_vessel_source_lin);
         p_pde->AddDiscreteSource(p_vessel_source_const);
@@ -162,11 +161,11 @@ public:
         solver.SetNonLinearPde(p_pde);
         solver.SetVesselNetwork(p_network);
 
-        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestDiscreteSource/NonLinearWithVessels", false));
+        MAKE_PTR_ARGS(OutputFileHandler, p_output_file_handler, ("TestDiscreteSource/TestNonLinearWithVessels", false));
         solver.SetFileHandler(p_output_file_handler);
         solver.SetWriteSolution(true);
         solver.Solve();
     }
 };
 
-#endif /*TESTDiscreteSource_HPP_*/
+#endif /*TESTDISCRETESOURCE_HPP_*/

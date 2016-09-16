@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,20 +33,19 @@
 
  */
 
-#ifndef TESTFINITEELEMENTSOLVER_HPP_
-#define TESTFINITEELEMENTSOLVER_HPP_
+#ifndef TESTNONLINEARFINITEELEMENTSOLVER_HPP_
+#define TESTNONLINEARFINITEELEMENTSOLVER_HPP_
 
 #include <cxxtest/TestSuite.h>
 #include <vector>
 #include <string>
 #include <boost/lexical_cast.hpp>
-
-#include "../../src/pde/problem/LinearSteadyStateDiffusionReactionPde.hpp"
 #include "FiniteElementSolver.hpp"
 #include "UblasIncludes.hpp"
 #include "Part.hpp"
 #include "Vertex.hpp"
-#include "AbstractDiscreteContinuumNonLinearEllipticPde.hpp"
+#include "MichaelisMentenSteadyStateDiffusionReactionPde.hpp"
+#include "LinearSteadyStateDiffusionReactionPde.hpp"
 #include "VesselNetwork.hpp"
 #include "VesselNetworkGenerator.hpp"
 #include "SmartPointers.hpp"
@@ -54,7 +53,6 @@
 #include "DiscreteContinuumMesh.hpp"
 #include "PetscSetupAndFinalize.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
-#include "Debug.hpp"
 
 class TestNonLinearFiniteElementSolver : public AbstractCellBasedWithTimingsTestSuite
 {
@@ -72,16 +70,19 @@ public:
 
         // Choose the PDE
         boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<3> > p_linear_pde = LinearSteadyStateDiffusionReactionPde<3>::Create();
-        p_linear_pde->SetIsotropicDiffusionConstant(1.0);
-        p_linear_pde->SetContinuumLinearInUTerm(-2.0);
+        units::quantity<unit::diffusivity> diffusivity(1.e-6 * unit::metre_squared_per_second);
+        units::quantity<unit::rate> consumption_rate(-2.e-5 * unit::per_second);
+        p_linear_pde->SetIsotropicDiffusionConstant(diffusivity);
+        p_linear_pde->SetContinuumLinearInUTerm(-consumption_rate);
 
         boost::shared_ptr<AbstractDiscreteContinuumNonLinearEllipticPde<3> > p_non_linear_pde = AbstractDiscreteContinuumNonLinearEllipticPde<3>::Create();
-        p_non_linear_pde->SetIsotropicDiffusionConstant(1.0);
-        p_non_linear_pde->SetContinuumConstantInUTerm(-2.0);
+        p_non_linear_pde->SetIsotropicDiffusionConstant(diffusivity);
+        p_non_linear_pde->SetContinuumLinearInUTerm(-consumption_rate);
 
         // Choose the Boundary conditions
         boost::shared_ptr<DiscreteContinuumBoundaryCondition<3> > p_outer_boundary_condition = DiscreteContinuumBoundaryCondition<3>::Create();
-        p_outer_boundary_condition->SetValue(1.0);
+        units::quantity<unit::concentration> boundary_concentration(1.0 * unit::mole_per_metre_cubed);
+        p_outer_boundary_condition->SetValue(boundary_concentration);
 
         FiniteElementSolver<3> solver;
         solver.SetMesh(p_mesh);
@@ -98,4 +99,4 @@ public:
     }
 };
 
-#endif /*TESTFINITEELEMENTSOLVER_HPP_*/
+#endif /*TESTNONLINEARFINITEELEMENTSOLVER_HPP_*/

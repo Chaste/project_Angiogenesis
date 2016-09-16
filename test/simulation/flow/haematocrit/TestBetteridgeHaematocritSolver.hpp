@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@
 
  */
 
-#ifndef TestBetteridgeHaematocritSolver_hpp
-#define TestBetteridgeHaematocritSolver_hpp
+#ifndef TESTBETTERIDGEHAEMATOCRITSOLVER_HPP
+#define TESTBETTERIDGEHAEMATOCRITSOLVER_HPP
 
 #include <cxxtest/TestSuite.h>
 #include "VesselImpedanceCalculator.hpp"
@@ -210,9 +210,9 @@ void TestHexagonalNetworkBetteridgeHaematocrit() throw(Exception)
     p_segment->GetFlowProperties()->SetHaematocrit(haematocrit);
     vascular_network->SetSegmentProperties(p_segment);
 
-    std::vector<std::pair<double, double> > extents = vascular_network->GetExtents();
-    double y_middle = (extents[1].first + extents[1].second) /2.0;
-    double x_middle = (extents[0].first + extents[0].second) /2.0;
+    std::pair<DimensionalChastePoint<2>, DimensionalChastePoint<2> > network_extents = vascular_network->GetExtents();
+    double y_middle = (network_extents.first[1] + network_extents.second[1]) / 2.0;
+    double x_middle = (network_extents.first[0] + network_extents.second[0]) / 2.0;
 
     std::vector<boost::shared_ptr<Vessel<2> > >::iterator vessel_iterator;
 
@@ -293,4 +293,4 @@ void TestHexagonalNetworkBetteridgeHaematocrit() throw(Exception)
 }
 };
 
-#endif // TestBetteridgeHaematocritSolver_hpp
+#endif // TESTBETTERIDGEHAEMATOCRITSOLVER_HPP

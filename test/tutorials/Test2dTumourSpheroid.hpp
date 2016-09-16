@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,13 +33,13 @@
 
  */
 
-#ifndef TESTOWEN2011TUMOURSPHEROIDSIMULATIONS_HPP_
-#define TESTOWEN2011TUMOURSPHEROIDSIMULATIONS_HPP_
+#ifndef TEST2DTUMOURSPHEROID_HPP_
+#define TEST2DTUMOURSPHEROID_HPP_
 
 #include <cxxtest/TestSuite.h>
 #include <vector>
 
-#include "../../src/pde/problem/LinearSteadyStateDiffusionReactionPde.hpp"
+#include "LinearSteadyStateDiffusionReactionPde.hpp"
 #include "SmartPointers.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
 #include "HoneycombMeshGenerator.hpp"
@@ -82,33 +82,30 @@ class Test2dTumourSpheroid : public AbstractCellBasedWithTimingsTestSuite
     boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<2> > GetOxygenPde()
         {
             boost::shared_ptr<LinearSteadyStateDiffusionReactionPde<2> > p_pde = LinearSteadyStateDiffusionReactionPde<2>::Create();
-            p_pde->SetIsotropicDiffusionConstant(8700000 / (400.0)); // assume cell width is 20 microns
+            units::quantity<unit::diffusivity> oxygen_diffusivity(8700000.0/400.0 * unit::metre_squared_per_second);
+            p_pde->SetIsotropicDiffusionConstant(oxygen_diffusivity); // assume cell width is 20 microns
 
             // Add a cell state specific discrete source for cells consuming oxygen
             boost::shared_ptr<CellStateDependentDiscreteSource<2> > p_cell_sink = CellStateDependentDiscreteSource<2>::Create();
-            p_cell_sink->SetIsLinearInSolution(true);
-            std::map<unsigned, double> state_specific_rates;
+            std::map<unsigned, units::quantity<unit::molar_flow_rate> > state_specific_rates;
 
             MAKE_PTR(WildTypeCellMutationState, p_normal_cell_state);
             MAKE_PTR(CancerCellMutationState, p_cancer_state);
             MAKE_PTR(QuiescentCancerCellMutationState, p_quiescent_cancer_state);
             MAKE_PTR(ApoptoticCellProperty, p_apoptotic_property);
 
-            state_specific_rates[p_apoptotic_property->GetColour()] = 0.0;
-            state_specific_rates[p_cancer_state->GetColour()] = -780;
-            state_specific_rates[p_quiescent_cancer_state->GetColour()] = -780;
-            state_specific_rates[p_normal_cell_state->GetColour()] = -500;
+            state_specific_rates[p_apoptotic_property->GetColour()] = 0.0*unit::mole_per_second;
+            state_specific_rates[p_cancer_state->GetColour()] = -780.0*unit::mole_per_second;
+            state_specific_rates[p_quiescent_cancer_state->GetColour()] = -780.0*unit::mole_per_second;
+            state_specific_rates[p_normal_cell_state->GetColour()] = -500.0*unit::mole_per_second;
 
             p_cell_sink->SetStateRateMap(state_specific_rates);
             p_pde->AddDiscreteSource(p_cell_sink);
 
             boost::shared_ptr<CellStateDependentDiscreteSource<2> > p_cell_source = CellStateDependentDiscreteSource<2>::Create();
-            p_cell_source->SetIsLinearInSolution(false); // constant oxygen release rate
-            std::map<unsigned, double> state_specific_rates2;
-
+            std::map<unsigned, units::quantity<unit::molar_flow_rate> > state_specific_rates2;
             p_cell_source->SetStateRateMap(state_specific_rates2);
             p_pde->AddDiscreteSource(p_cell_source);
-            p_pde->SetVariableName("oxygen");
 
             return p_pde;
         }
@@ -197,7 +194,8 @@ public:
         p_grid->SetVesselNetwork(p_network);
 
         boost::shared_ptr<DiscreteContinuumBoundaryCondition<2> > p_vessel_ox_boundary_condition = DiscreteContinuumBoundaryCondition<2>::Create();
-        p_vessel_ox_boundary_condition->SetValue(40.0);
+        units::quantity<unit::concentration> boundary_concentration(40.0 * unit::mole_per_metre_cubed);
+        p_vessel_ox_boundary_condition->SetValue(boundary_concentration);
         p_vessel_ox_boundary_condition->SetType(BoundaryConditionType::VESSEL_LINE);
         p_vessel_ox_boundary_condition->SetSource(BoundaryConditionSource::PRESCRIBED);
 
@@ -241,4 +239,4 @@ public:
     }
 };
 
-#endif /*TESTOWEN2011TUMOURSPHEROIDSIMULATIONS_HPP_*/
+#endif /*TEST2DTUMOURSPHEROID_HPP_*/

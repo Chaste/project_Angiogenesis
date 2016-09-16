@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,8 +33,8 @@
 
  */
 
-#ifndef VesselSegment_HPP_
-#define VesselSegment_HPP_
+#ifndef VESSELSEGMENT_HPP_
+#define VESSELSEGMENT_HPP_
 
 #include <vector>
 #include <string>
@@ -277,4 +277,4 @@ private:
     void RemoveVessel();
 };
 
-#endif /* VesselSegment_HPP_ */
+#endif /* VESSELSEGMENT_HPP_ */

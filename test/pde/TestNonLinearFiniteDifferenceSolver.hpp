@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -40,21 +40,21 @@
 #include <vector>
 #include <string>
 #include <boost/lexical_cast.hpp>
-
-#include "../../src/pde/problem/LinearSteadyStateDiffusionReactionPde.hpp"
-#include "FiniteDifferenceSolver.hpp"
+#include "SmartPointers.hpp"
 #include "UblasIncludes.hpp"
 #include "Part.hpp"
 #include "Vertex.hpp"
-#include "AbstractDiscreteContinuumNonLinearEllipticPde.hpp"
+#include "UnitCollection.hpp"
+#include "LinearSteadyStateDiffusionReactionPde.hpp"
+#include "FiniteDifferenceSolver.hpp"
+#include "MichaelisMentenSteadyStateDiffusionReactionPde.hpp"
 #include "VesselNetwork.hpp"
 #include "VesselNetworkGenerator.hpp"
-#include "SmartPointers.hpp"
 #include "DiscreteContinuumBoundaryCondition.hpp"
 #include "DiscreteContinuumMesh.hpp"
-#include "PetscSetupAndFinalize.hpp"
 #include "AbstractCellBasedWithTimingsTestSuite.hpp"
-#include "Debug.hpp"
+
+#include "PetscSetupAndFinalize.hpp"
 
 class TestNonLinearFiniteDifferenceSolver : public AbstractCellBasedWithTimingsTestSuite
 {
@@ -73,14 +73,19 @@ public:
         p_grid->GenerateFromPart(p_domain, 0.5*1.e-6*unit::metres);
 
         // Choose the PDE
-        boost::shared_ptr<AbstractDiscreteContinuumNonLinearEllipticPde<3> > p_non_linear_pde = AbstractDiscreteContinuumNonLinearEllipticPde<3>::Create();
-        p_non_linear_pde->SetIsotropicDiffusionConstant(1.0);
-        p_non_linear_pde->SetContinuumConstantInUTerm(-2.0);
-        p_non_linear_pde->SetThreshold(0.0625);
+        boost::shared_ptr<MichaelisMentenSteadyStateDiffusionReactionPde<3> > p_non_linear_pde = MichaelisMentenSteadyStateDiffusionReactionPde<3>::Create();
+        units::quantity<unit::diffusivity> diffusivity(1.e-6 * unit::metre_squared_per_second);
+        units::quantity<unit::concentration_flow_rate> consumption_rate(-2.e-5 * unit::mole_per_metre_cubed_per_second);
+        p_non_linear_pde->SetIsotropicDiffusionConstant(diffusivity);
+        p_non_linear_pde->SetContinuumConstantInUTerm(consumption_rate);
+
+        units::quantity<unit::concentration> half_max_concentration(0.0625 * unit::mole_per_metre_cubed);
+        p_non_linear_pde->SetMichaelisMentenThreshold(half_max_concentration);
 
         // Choose the Boundary conditions
         boost::shared_ptr<DiscreteContinuumBoundaryCondition<3> > p_outer_boundary_condition = DiscreteContinuumBoundaryCondition<3>::Create();
-        p_outer_boundary_condition->SetValue(1.0);
+        units::quantity<unit::concentration> boundary_concentration(1.0 * unit::mole_per_metre_cubed);
+        p_outer_boundary_condition->SetValue(boundary_concentration);
 
         FiniteDifferenceSolver<3> solver;
         solver.SetGrid(p_grid);
@@ -95,4 +100,4 @@ public:
     }
 };
 
-#endif /*TESTFINITEELEMENTSOLVER_HPP_*/
+#endif /*TESTFINITEDIFFERENCESOLVER_HPP_*/

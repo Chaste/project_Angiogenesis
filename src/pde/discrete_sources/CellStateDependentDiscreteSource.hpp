@@ -118,7 +118,7 @@ public:
      * If a cell 'color' key is requested from the map that does not have a value assigned then its consumption rate will
      * be 0.0.
      *
-     * @param cellColorSinkRates the label for the source strength value
+     * @param stateRateMap the label for the source strength value
      */
     void SetStateRateMap(std::map<unsigned, units::quantity<unit::molar_flow_rate> > stateRateMap);
 
@@ -127,7 +127,7 @@ public:
      * If a cell 'color' key is requested from the map that does not have a value assigned then its consumption rate threshold will
      * be 0.0.
      *
-     * @param cellColorSinkRates the label for the source strength value
+     * @param stateThresholdMap the label for the source strength value
      */
     void SetStateRateThresholdMap(std::map<unsigned, units::quantity<unit::concentration> > stateThresholdMap);
 };
