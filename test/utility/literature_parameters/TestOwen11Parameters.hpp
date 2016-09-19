@@ -33,46 +33,25 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef TESTMICROVESSELPARALLELMETHODS_HPP
-#define TESTMICROVESSELPARALLELMETHODS_HPP
+#ifndef TESTOWEN11PARAMETERS_HPP
+#define TESTOWEN11PARAMETERS_HPP
 
-#include <boost/lexical_cast.hpp>
-#include "PetscTools.hpp"
-#include "ObjectCommunicator.hpp"
-#include "BaseParameterInstance.hpp"
+#include <cxxtest/TestSuite.h>
+#include "Owen11Parameters.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
 
-class TestMicrovesselParallelMethods : public CxxTest::TestSuite
+class TestOwen11Parameters : public CxxTest::TestSuite
 {
 
 public:
 
-    void TestSendReceiveParameterInstance()
+    void TestAllParameters()
     {
-        // Send and receive a parameter instance
-        boost::shared_ptr<BaseParameterInstance> p_my_parameter = boost::shared_ptr<BaseParameterInstance>(new BaseParameterInstance);
-        p_my_parameter->SetShortDescription("Base Parameter");
-        p_my_parameter->SetName("Base_" + boost::lexical_cast<std::string>(PetscTools::GetMyRank()));
-        p_my_parameter->SetBibliographicInformation("J. Smith et al., (2003).");
-
-        MPI_Status status;
-        ObjectCommunicator<BaseParameterInstance> communicator;
-        unsigned com_tag = 456;
-        boost::shared_ptr<BaseParameterInstance> p_neighour_parameter;
-
-        if (!PetscTools::AmTopMost())
-        {
-            p_neighour_parameter = communicator.SendRecvObject(p_my_parameter, PetscTools::GetMyRank() + 1, com_tag, PetscTools::GetMyRank() + 1, com_tag, status);
-        }
-        if (!PetscTools::AmMaster())
-        {
-            p_neighour_parameter = communicator.SendRecvObject(p_my_parameter, PetscTools::GetMyRank() - 1, com_tag, PetscTools::GetMyRank() - 1, com_tag, status);
-        }
-
-        std::cout << "Proc: " << PetscTools::GetMyRank() << " received param: " << p_neighour_parameter->GetName() << std::endl;
+        TS_ASSERT_DELTA(Owen11Parameters::mpInletPressure->GetValue("TEST").value(), 3333.05, 1.e-6);
+        TS_ASSERT_DELTA(Owen11Parameters::mpOutletPressure->GetValue("TEST").value(), 1999.8, 1.e-6);
+        TS_ASSERT_DELTA(Owen11Parameters::mpPlasmaViscosity->GetValue("TEST").value(), 0.0011, 1.e-6);
     }
-
 };
 
-#endif // TESTMICROVESSELPARALLELMETHODS_HPP
+#endif // TESTOWEN2011PARAMETERS_HPP

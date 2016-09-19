@@ -100,7 +100,7 @@ public:
      *
      * @param rParamsFile the file stream to which the parameters are output
      */
-    void OutputSimulationModifierParameters(out_stream& rParamsFile);s
+    void OutputSimulationModifierParameters(out_stream& rParamsFile);
 
     /**
      * Set the labels which will be used to update cell data
@@ -118,7 +118,6 @@ public:
 
     /**
      * Overridden SetupSolve() method.
-     *
      * Specify what to do in the simulation before the start of the time loop.
      *
      * @param rCellPopulation reference to the cell population
@@ -128,7 +127,6 @@ public:
 
     /**
      * Overridden UpdateAtEndOfTimeStep() method.
-     *
      * Specify what to do in the simulation at the end of each time step.
      *
      * @param rCellPopulation reference to the cell population

@@ -95,7 +95,6 @@ void ParameterInstance<UNIT>::SetValue(units::quantity<UNIT> value)
 }
 
 // Explicit Instantiation
-template class ParameterInstance<unit::mass>;
 template class ParameterInstance<unit::dimensionless>;
 template class ParameterInstance<unit::time>;
 template class ParameterInstance<unit::rate>;

@@ -188,4 +188,7 @@ public:
 
 };
 
+#include "SerializationExportWrapper.hpp"
+CHASTE_CLASS_EXPORT(BaseParameterInstance)
+
 #endif /*BASEPARAMETERINSTANCE_HPP_*/

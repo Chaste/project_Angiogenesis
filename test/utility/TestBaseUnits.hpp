@@ -33,66 +33,39 @@ Copyright (c) 2005-2016, University of Oxford.
 
  */
 
-#ifndef TESTUNITCOLLECTION_HPP
-#define TESTUNITCOLLECTION_HPP
+#ifndef TESTBASEUNITS_HPP
+#define TESTBASEUNITS_HPP
 
 #include <cxxtest/TestSuite.h>
 #include <SmartPointers.hpp>
 #include "UnitCollection.hpp"
+#include "BaseUnits.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
 
 /**
- * Check units are instantiated correctly and that they stream out the correct amount.
+ * Check setting up and destroying the singleton
  */
 class TestUnitCollection : public CxxTest::TestSuite
 {
 
 public:
 
-    void TestAllUnits()
+    void TestSetupAndDestroy()
     {
-        // Time
-        units::quantity<unit::time> s1(3.0*unit::seconds);
-        units::quantity<unit::time> m1(3.0*unit::minutes);
-        units::quantity<unit::time> h1(3.0*unit::hours);
-        units::quantity<unit::time> d1(3.0*unit::days);
-        std::stringstream s1s;
-        s1s << s1;
-        std::stringstream m1s;
-        m1s << m1;
-        std::stringstream h1s;
-        h1s << h1;
-        std::stringstream d1s;
-        d1s << d1;
-        TS_ASSERT_EQUALS(s1s.str(), "3.0 s");
-        TS_ASSERT_EQUALS(m1s.str(), "3.0 min");
-        TS_ASSERT_EQUALS(h1s.str(), "3.0 hr");
-        TS_ASSERT_EQUALS(d1s.str(), "3.0 day");
-//
-//        // Rates
-//        units::quantity<unit::rate> rs1 = 3.0*unit::per_second;
-//        units::quantity<unit::rate> rm1(3.0*unit::per_minute);
-//        units::quantity<unit::rate> rh1(3.0*unit::per_hour);
-//        std::cout << rs1 << std::endl;
-//        std::cout << rm1 << std::endl;
-//        std::cout << rh1 << std::endl;
-//
-//        // Length
-//        units::quantity<unit::length> lm1(3.0*unit::metres);
-//        std::cout << lm1 << std::endl;
-//
-//        // Force
-//        units::quantity<unit::force> f1(3.0*unit::newtons);
-//        std::cout << f1 << std::endl;
-//
-//        // Pressure
-//        units::quantity<unit::pressure> p1(3.0*unit::pascals);
-//        units::quantity<unit::pressure> ph1(3.0*unit::mmHg);
-//        std::cout << p1 << std::endl;
-//        std::cout << ph1 << std::endl;
+        BaseUnits::Instance()->SetReferenceLengthScale(10.0*unit::metres);
+        BaseUnits::Instance()->SetReferenceMassScale(15.0*unit::kg);
+        BaseUnits::Instance()->SetReferenceTimeScale(20.0*unit::seconds);
+        TS_ASSERT_DELTA(BaseUnits::Instance()->GetReferenceLengthScale().value(), 10.0, 1.e-6);
+        TS_ASSERT_DELTA(BaseUnits::Instance()->GetReferenceMassScale().value(), 15.0, 1.e-6);
+        TS_ASSERT_DELTA(BaseUnits::Instance()->GetReferenceTimeScale().value(), 20.0, 1.e-6);
+
+        BaseUnits::Instance()->Destroy();
+        TS_ASSERT_DELTA(BaseUnits::Instance()->GetReferenceLengthScale().value(), 1.e-6, 1.e-8);
+        TS_ASSERT_DELTA(BaseUnits::Instance()->GetReferenceMassScale().value(), 1.0, 1.e-6);
+        TS_ASSERT_DELTA(BaseUnits::Instance()->GetReferenceTimeScale().value(), 60.0, 1.e-6);
     }
 
 };
 
-#endif // TESTUNITCOLLECTION_HPP
+#endif // TESTBASEUNITS_HPP

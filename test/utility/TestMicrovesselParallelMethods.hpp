@@ -33,61 +33,49 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef TESTBASEPARAMETERINSTANCE_HPP
-#define TESTBASEPARAMETERINSTANCE_HPP
+#ifndef TESTMICROVESSELPARALLELMETHODS_HPP
+#define TESTMICROVESSELPARALLELMETHODS_HPP
 
-#include <cxxtest/TestSuite.h>
-#include "CheckpointArchiveTypes.hpp"
-#include "ArchiveLocationInfo.hpp"
-#include <boost/serialization/shared_ptr.hpp>
+#include <boost/lexical_cast.hpp>
 #include "SmartPointers.hpp"
-#include "UnitCollection.hpp"
-#include "OutputFileHandler.hpp"
+#include "PetscTools.hpp"
+#include "ObjectCommunicator.hpp"
 #include "BaseParameterInstance.hpp"
 
-class TestBaseParameterInstance : public CxxTest::TestSuite
+#include "PetscSetupAndFinalize.hpp"
+
+class TestMicrovesselParallelMethods : public CxxTest::TestSuite
 {
 
 public:
 
-    void TestBaseInstance()
+    void TestSendReceiveParameterInstance()
     {
-        boost::shared_ptr<BaseParameterInstance> p_my_parameter = BaseParameterInstance::Create();
+        // Send and receive a parameter instance
+        boost::shared_ptr<BaseParameterInstance> p_my_parameter = boost::shared_ptr<BaseParameterInstance>(new BaseParameterInstance);
         p_my_parameter->SetShortDescription("Base Parameter");
-        p_my_parameter->SetName("Base");
+        p_my_parameter->SetName("Base_" + boost::lexical_cast<std::string>(PetscTools::GetMyRank()));
         p_my_parameter->SetBibliographicInformation("J. Smith et al., (2003).");
 
-        TS_ASSERT_EQUALS("Base Parameter", p_my_parameter->GetShortDescription());
-        TS_ASSERT_EQUALS("Base", p_my_parameter->GetName());
-        TS_ASSERT_EQUALS("J. Smith et al., (2003).", p_my_parameter->GetBibliographicInformation());
-
-        // Test Archiving
-        OutputFileHandler handler("archive", false);
-        ArchiveLocationInfo::SetArchiveDirectory(handler.FindFile(""));
-        std::string archive_filename = ArchiveLocationInfo::GetProcessUniqueFilePath("BaseParameterInstance.arch");
-
-        // Save archive
+        if(PetscTools::GetNumProcs()>1)
         {
-            std::ofstream ofs(archive_filename.c_str());
-            boost::archive::text_oarchive output_arch(ofs);
-            output_arch << p_my_parameter;
-        }
+            MPI_Status status;
+            ObjectCommunicator<BaseParameterInstance> communicator;
+            unsigned com_tag = 456;
+            boost::shared_ptr<BaseParameterInstance> p_neighour_parameter;
 
-        // Load archive
-        {
-            boost::shared_ptr<BaseParameterInstance> p_my_parameter_from_archive;
+            if (!PetscTools::AmTopMost())
+            {
+                p_neighour_parameter = communicator.SendRecvObject(p_my_parameter, PetscTools::GetMyRank() + 1, com_tag, PetscTools::GetMyRank() + 1, com_tag, status);
+            }
+            if (!PetscTools::AmMaster())
+            {
+                p_neighour_parameter = communicator.SendRecvObject(p_my_parameter, PetscTools::GetMyRank() - 1, com_tag, PetscTools::GetMyRank() - 1, com_tag, status);
+            }
 
-            // Read from this input file
-            std::ifstream ifs(archive_filename.c_str(), std::ios::binary);
-            boost::archive::text_iarchive input_arch(ifs);
-
-            // restore from the archive
-            input_arch >> p_my_parameter_from_archive;
-            TS_ASSERT_EQUALS("Base Parameter", p_my_parameter_from_archive->GetShortDescription());
-            TS_ASSERT_EQUALS("Base", p_my_parameter_from_archive->GetName());
-            TS_ASSERT_EQUALS("J. Smith et al., (2003).", p_my_parameter_from_archive->GetBibliographicInformation());
+            std::cout << "Proc: " << PetscTools::GetMyRank() << " received param: " << p_neighour_parameter->GetName() << std::endl;
         }
     }
 };
 
-#endif // TESTBASEPARAMETERINSTANCE_HPP
+#endif // TESTMICROVESSELPARALLELMETHODS_HPP

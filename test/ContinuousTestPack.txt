@@ -3,10 +3,9 @@ utility/TestBaseUnits.hpp
 utility/TestBaseParameterInstance.hpp
 utility/TestParameterInstance.hpp
 utility/TestParameterCollection.hpp
-utility/TestAngiogenesisParallelMethods.hpp
-population/TestVesselNetworkCellPopulationInteractor.hpp
-population/cell/TestOwen2011OxygenBasedCellCycleModelWithOde.hpp
-population/cell/TestOwen2011OxygenBasedCellCycleOdeSystem.hpp
+utility/literature_parameters/TestGenericParameters.hpp
+utility/literature_parameters/TestOwen11Parameters.hpp
+utility/TestMicrovesselParallelMethods.hpp
 population/vessel/TestVesselNode.hpp
 population/vessel/TestVesselSegment.hpp
 population/vessel/TestVessel.hpp
@@ -15,6 +14,9 @@ population/vessel/calculators/TestVesselNetworkGraphCalculator.hpp
 population/vessel/generators/TestVesselNetworkGenerator.hpp
 population/vessel/properties/TestSegmentFlowProperties.hpp
 population/vessel/readers/TestVesselNetworkReader.hpp
+population/TestVesselNetworkCellPopulationInteractor.hpp
+population/cell/TestOwen2011OxygenBasedCellCycleModelWithOde.hpp
+population/cell/TestOwen2011OxygenBasedCellCycleOdeSystem.hpp
 geometry/TestVertex.hpp
 geometry/TestPolygon.hpp
 geometry/TestFacet.hpp

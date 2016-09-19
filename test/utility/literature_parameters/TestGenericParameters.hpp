@@ -33,46 +33,23 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef TESTMICROVESSELPARALLELMETHODS_HPP
-#define TESTMICROVESSELPARALLELMETHODS_HPP
+#ifndef TESTGENERICPARAMETERS_HPP
+#define TESTGENERICPARAMETERS_HPP
 
-#include <boost/lexical_cast.hpp>
-#include "PetscTools.hpp"
-#include "ObjectCommunicator.hpp"
-#include "BaseParameterInstance.hpp"
+#include <cxxtest/TestSuite.h>
+#include "GenericParameters.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
 
-class TestMicrovesselParallelMethods : public CxxTest::TestSuite
+class TestGenericParameters : public CxxTest::TestSuite
 {
 
 public:
 
-    void TestSendReceiveParameterInstance()
+    void TestAllParameters()
     {
-        // Send and receive a parameter instance
-        boost::shared_ptr<BaseParameterInstance> p_my_parameter = boost::shared_ptr<BaseParameterInstance>(new BaseParameterInstance);
-        p_my_parameter->SetShortDescription("Base Parameter");
-        p_my_parameter->SetName("Base_" + boost::lexical_cast<std::string>(PetscTools::GetMyRank()));
-        p_my_parameter->SetBibliographicInformation("J. Smith et al., (2003).");
-
-        MPI_Status status;
-        ObjectCommunicator<BaseParameterInstance> communicator;
-        unsigned com_tag = 456;
-        boost::shared_ptr<BaseParameterInstance> p_neighour_parameter;
-
-        if (!PetscTools::AmTopMost())
-        {
-            p_neighour_parameter = communicator.SendRecvObject(p_my_parameter, PetscTools::GetMyRank() + 1, com_tag, PetscTools::GetMyRank() + 1, com_tag, status);
-        }
-        if (!PetscTools::AmMaster())
-        {
-            p_neighour_parameter = communicator.SendRecvObject(p_my_parameter, PetscTools::GetMyRank() - 1, com_tag, PetscTools::GetMyRank() - 1, com_tag, status);
-        }
-
-        std::cout << "Proc: " << PetscTools::GetMyRank() << " received param: " << p_neighour_parameter->GetName() << std::endl;
+        TS_ASSERT_DELTA(GenericParameters::mpCapillaryRadius->GetValue("TEST").value(), 5e-06, 1.e-8);
     }
-
 };
 
-#endif // TESTMICROVESSELPARALLELMETHODS_HPP
+#endif // TESTGENERICPARAMETERS_HPP

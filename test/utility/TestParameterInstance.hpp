@@ -40,7 +40,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CheckpointArchiveTypes.hpp"
 #include "ArchiveLocationInfo.hpp"
 #include "SmartPointers.hpp"
+#include <boost/serialization/shared_ptr.hpp>
 #include "UnitCollection.hpp"
+#include "OutputFileHandler.hpp"
 #include "ParameterInstance.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
@@ -50,7 +52,7 @@ class TestParameterInstance : public CxxTest::TestSuite
 
 public:
 
-    void TestParameterInstance()
+    void TestInstance()
     {
         boost::shared_ptr<ParameterInstance<unit::time> > p_my_parameter = ParameterInstance<unit::time>::Create();
         units::quantity<unit::time> few_seconds = 5.0*unit::seconds;
@@ -101,6 +103,22 @@ public:
             TS_ASSERT_DELTA(p_my_cast_parameter_from_archive->GetValue()/unit::seconds, 5.0, 1.e-6);
         }
     }
+
+    void TestAlternateConstructor()
+    {
+        units::quantity<unit::time> few_seconds = 5.0*unit::seconds;
+        ParameterInstance<unit::time> my_parameter = ParameterInstance<unit::time>(few_seconds,
+                                                                                     "Derived",
+                                                                                     "My Description For Time Parameter",
+                                                                                     "P",
+                                                                                     "J. Smith et al., (2003).");
+
+        TS_ASSERT_EQUALS("Derived", my_parameter.GetName());
+        TS_ASSERT_EQUALS("My Description For Time Parameter", my_parameter.GetShortDescription());
+        TS_ASSERT_DELTA(my_parameter.GetValue().value(), 5.0, 1.e-6);
+        TS_ASSERT_EQUALS("J. Smith et al., (2003).", my_parameter.GetBibliographicInformation());
+    }
+
 };
 
 #endif // TESTPARAMETERINSTANCE_HPP

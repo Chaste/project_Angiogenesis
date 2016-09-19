@@ -65,10 +65,10 @@ public:
         h1s << h1;
         std::stringstream d1s;
         d1s << d1;
-        TS_ASSERT_EQUALS(s1s.str(), "3.0 s");
-        TS_ASSERT_EQUALS(m1s.str(), "3.0 min");
-        TS_ASSERT_EQUALS(h1s.str(), "3.0 hr");
-        TS_ASSERT_EQUALS(d1s.str(), "3.0 day");
+        TS_ASSERT_EQUALS(s1s.str(), "3 s");
+        TS_ASSERT_EQUALS(m1s.str(), "180 s");
+        TS_ASSERT_EQUALS(h1s.str(), "10800 s");
+        TS_ASSERT_EQUALS(d1s.str(), "259200 s");
 //
 //        // Rates
 //        units::quantity<unit::rate> rs1 = 3.0*unit::per_second;

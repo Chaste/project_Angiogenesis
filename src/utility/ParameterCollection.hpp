@@ -40,6 +40,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <boost/shared_ptr.hpp>
 #include "ChasteSerialization.hpp"
 #include <boost/serialization/shared_ptr.hpp>
+#include <boost/serialization/map.hpp>
 #include "SerializableSingleton.hpp"
 #include "UnitCollection.hpp"
 #include "BaseParameterInstance.hpp"
