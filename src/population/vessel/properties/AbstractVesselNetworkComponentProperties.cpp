@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -38,14 +38,15 @@
 template<unsigned DIM>
 AbstractVesselNetworkComponentProperties<DIM>::AbstractVesselNetworkComponentProperties()
 {
+
 }
 
 template<unsigned DIM>
 AbstractVesselNetworkComponentProperties<DIM>::~AbstractVesselNetworkComponentProperties()
 {
+
 }
 
-
 // Explicit instantiation
-template class AbstractVesselNetworkComponentProperties<2>;
-template class AbstractVesselNetworkComponentProperties<3>;
+template class AbstractVesselNetworkComponentProperties<2> ;
+template class AbstractVesselNetworkComponentProperties<3> ;

@@ -157,7 +157,7 @@ void FlowSolver<DIM>::Update(bool runSetup)
     units::quantity<unit::flow_impedance> min_impedance = DBL_MAX * unit::pascal_second_per_metre_cubed;
     for (unsigned vessel_index = 0; vessel_index < mVessels.size(); vessel_index++)
     {
-        units::quantity<unit::flow_impedance> impedance = mVessels[vessel_index]->GetFlowProperties()->GetImpedance(mVessels[vessel_index]->GetSegments());
+        units::quantity<unit::flow_impedance> impedance = mVessels[vessel_index]->GetFlowProperties()->GetImpedance();
         if (impedance <= 0.0 * unit::pascal_second_per_metre_cubed)
         {
             EXCEPTION("Impedance should be a positive number.");
@@ -211,8 +211,8 @@ void FlowSolver<DIM>::Update(bool runSetup)
         if(mNodes[mBoundaryConditionNodeIndices[bc_index]]->GetFlowProperties()->UseVelocityBoundaryCondition())
         {
             boost::shared_ptr<Vessel<DIM> > p_vessel = mNodes[mBoundaryConditionNodeIndices[bc_index]]->GetSegment(0)->GetVessel();
-            units::quantity<unit::flow_rate> flow_rate = boost::units::fabs(p_vessel->GetFlowProperties()->GetFlowRate(p_vessel->GetSegments()));
-            units::quantity<unit::flow_impedance> impedance = p_vessel->GetFlowProperties()->GetImpedance(p_vessel->GetSegments());
+            units::quantity<unit::flow_rate> flow_rate = boost::units::fabs(p_vessel->GetFlowProperties()->GetFlowRate());
+            units::quantity<unit::flow_impedance> impedance = p_vessel->GetFlowProperties()->GetImpedance();
             double pressure_drop = flow_rate * impedance/ unit::pascals;
             mpLinearSystem->SetRhsVectorElement(mBoundaryConditionNodeIndices[bc_index], pressure_drop);
         }
@@ -250,7 +250,7 @@ void FlowSolver<DIM>::Solve()
     {
         units::quantity<unit::pressure> start_node_pressure = mVessels[vessel_index]->GetStartNode()->GetFlowProperties()->GetPressure();
         units::quantity<unit::pressure> end_node_pressure = mVessels[vessel_index]->GetEndNode()->GetFlowProperties()->GetPressure();
-        units::quantity<unit::flow_rate> flow_rate = (start_node_pressure - end_node_pressure) / mVessels[vessel_index]->GetFlowProperties()->GetImpedance(mVessels[vessel_index]->GetSegments());
+        units::quantity<unit::flow_rate> flow_rate = (start_node_pressure - end_node_pressure) / mVessels[vessel_index]->GetFlowProperties()->GetImpedance();
 
         // Clean up small values as some structural adaptation calculators are sensitive to them.
         if (fabs(flow_rate) < pow(10, -20)*unit::metre_cubed_per_second)

@@ -6,13 +6,14 @@ utility/TestParameterCollection.hpp
 utility/literature_parameters/TestGenericParameters.hpp
 utility/literature_parameters/TestOwen11Parameters.hpp
 utility/TestMicrovesselParallelMethods.hpp
+population/vessel/properties/TestNodeFlowProperties.hpp
 population/vessel/TestVesselNode.hpp
+population/vessel/properties/TestSegmentFlowProperties.hpp
 population/vessel/TestVesselSegment.hpp
 population/vessel/TestVessel.hpp
 population/vessel/TestVesselNetwork.hpp
 population/vessel/calculators/TestVesselNetworkGraphCalculator.hpp
 population/vessel/generators/TestVesselNetworkGenerator.hpp
-population/vessel/properties/TestSegmentFlowProperties.hpp
 population/vessel/readers/TestVesselNetworkReader.hpp
 population/TestVesselNetworkCellPopulationInteractor.hpp
 population/cell/TestOwen2011OxygenBasedCellCycleModelWithOde.hpp

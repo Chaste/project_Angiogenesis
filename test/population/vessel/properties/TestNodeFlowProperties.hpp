@@ -33,8 +33,8 @@ Copyright (c) 2005-2016, University of Oxford.
 
  */
 
-#ifndef TESTSEGMENTFLOWPROPERTIES_HPP_
-#define TESTSEGMENTFLOWPROPERTIES_HPP_
+#ifndef TESTNODEFLOWPROPERTIES_HPP_
+#define TESTNODEFLOWPROPERTIES_HPP_
 
 #include <cxxtest/TestSuite.h>
 #include "CheckpointArchiveTypes.hpp"
@@ -43,33 +43,28 @@ Copyright (c) 2005-2016, University of Oxford.
 #include <boost/serialization/shared_ptr.hpp>
 #include "UnitCollection.hpp"
 #include "AbstractVesselNetworkComponentProperties.hpp"
-#include "SegmentFlowProperties.hpp"
+#include "NodeFlowProperties.hpp"
 #include "OutputFileHandler.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
 
-class TestSegmentFlowProperties : public CxxTest::TestSuite
+class TestNodeFlowProperties : public CxxTest::TestSuite
 {
 public:
 
     void TestSetAndGet() throw (Exception)
     {
-        SegmentFlowProperties<3> properties = SegmentFlowProperties<3>();
-        properties.SetHaematocrit(10.0);
-        properties.SetFlowRate(20.0*unit::metre_cubed_per_second);
-        properties.SetImpedance(30.0*unit::pascal_second_per_metre_cubed);
-        properties.SetViscosity(40.0*unit::poiseuille);
-        properties.SetWallShearStress(50.0*unit::pascals);
-        properties.SetGrowthStimulus(60.0*unit::per_second);
+        NodeFlowProperties<3> properties = NodeFlowProperties<3>();
+        properties.SetIsInputNode(true);
+        properties.SetIsOutputNode(false);
+        properties.SetPressure(20.0*unit::pascals);
+        properties.SetUseVelocityBoundaryCondition(false);
 
-        TS_ASSERT_DELTA(properties.GetHaematocrit().value(), 10.0, 1.e-6);
-        TS_ASSERT_DELTA(properties.GetImpedance().value(), 30.0, 1.e-6);
-        TS_ASSERT_DELTA(properties.GetFlowRate().value(), 20.0, 1.e-6);
-        TS_ASSERT_DELTA(properties.GetViscosity().value(), 40.0, 1.e-6);
-        TS_ASSERT_DELTA(properties.GetWallShearStress().value(), 50.0, 1.e-6);
-        TS_ASSERT_DELTA(properties.GetGrowthStimulus().value(), 60.0, 1.e-6);
-
-        TS_ASSERT_DELTA(properties.GetOutputData()["Segment Flow Rate m^3/s"], 20.0, 1.e-6);
+        TS_ASSERT(properties.IsInputNode());
+        TS_ASSERT(!properties.IsOutputNode());
+        TS_ASSERT(!properties.UseVelocityBoundaryCondition());
+        TS_ASSERT_DELTA(properties.GetPressure().value(), 20.0, 1.e-6);
+        TS_ASSERT_DELTA(properties.GetOutputData()["Node Pressure Pa"], 20.0, 1.e-6);
     }
 
     void TestArchiving() throw (Exception)
@@ -77,22 +72,20 @@ public:
         // Test Archiving
         OutputFileHandler handler("archive", false);
         ArchiveLocationInfo::SetArchiveDirectory(handler.FindFile(""));
-        std::string archive_filename = ArchiveLocationInfo::GetProcessUniqueFilePath("SegmentFlowProperties.arch");
+        std::string archive_filename = ArchiveLocationInfo::GetProcessUniqueFilePath("NodeFlowProperties.arch");
 
         // Save archive
         {
             boost::shared_ptr<AbstractVesselNetworkComponentProperties<3> > p_properties =
-                    boost::shared_ptr<AbstractVesselNetworkComponentProperties<3> >(new SegmentFlowProperties<3>());
+                    boost::shared_ptr<AbstractVesselNetworkComponentProperties<3> >(new NodeFlowProperties<3>());
 
-            boost::shared_ptr<SegmentFlowProperties<3> > p_cast_properties =
-                    boost::dynamic_pointer_cast<SegmentFlowProperties<3> >(p_properties);
+            boost::shared_ptr<NodeFlowProperties<3> > p_cast_properties =
+                    boost::dynamic_pointer_cast<NodeFlowProperties<3> >(p_properties);
 
-            p_cast_properties->SetHaematocrit(10.0);
-            p_cast_properties->SetFlowRate(20.0*unit::metre_cubed_per_second);
-            p_cast_properties->SetImpedance(30.0*unit::pascal_second_per_metre_cubed);
-            p_cast_properties->SetViscosity(40.0*unit::poiseuille);
-            p_cast_properties->SetWallShearStress(50.0*unit::pascals);
-            p_cast_properties->SetGrowthStimulus(60.0*unit::per_second);
+            p_cast_properties->SetIsInputNode(true);
+            p_cast_properties->SetIsOutputNode(false);
+            p_cast_properties->SetPressure(20.0*unit::pascals);
+            p_cast_properties->SetUseVelocityBoundaryCondition(false);
 
             std::ofstream ofs(archive_filename.c_str());
             boost::archive::text_oarchive output_arch(ofs);
@@ -109,19 +102,16 @@ public:
 
             // restore from the archive
             input_arch >> p_properties_from_archive;
-            boost::shared_ptr<SegmentFlowProperties<3> > p_cast_properties =
-                    boost::dynamic_pointer_cast<SegmentFlowProperties<3> >(p_properties_from_archive);
+            boost::shared_ptr<NodeFlowProperties<3> > p_cast_properties =
+                    boost::dynamic_pointer_cast<NodeFlowProperties<3> >(p_properties_from_archive);
 
-            TS_ASSERT_DELTA(p_cast_properties->GetHaematocrit().value(), 10.0, 1.e-6);
-            TS_ASSERT_DELTA(p_cast_properties->GetImpedance().value(), 30.0, 1.e-6);
-            TS_ASSERT_DELTA(p_cast_properties->GetFlowRate().value(), 20.0, 1.e-6);
-            TS_ASSERT_DELTA(p_cast_properties->GetViscosity().value(), 40.0, 1.e-6);
-            TS_ASSERT_DELTA(p_cast_properties->GetWallShearStress().value(), 50.0, 1.e-6);
-            TS_ASSERT_DELTA(p_cast_properties->GetGrowthStimulus().value(), 60.0, 1.e-6);
-
-            TS_ASSERT_DELTA(p_cast_properties->GetOutputData()["Segment Flow Rate m^3/s"], 20.0, 1.e-6);
+            TS_ASSERT(p_cast_properties->IsInputNode());
+            TS_ASSERT(!p_cast_properties->IsOutputNode());
+            TS_ASSERT(!p_cast_properties->UseVelocityBoundaryCondition());
+            TS_ASSERT_DELTA(p_cast_properties->GetPressure().value(), 20.0, 1.e-6);
+            TS_ASSERT_DELTA(p_cast_properties->GetOutputData()["Node Pressure Pa"], 20.0, 1.e-6);
         }
     }
 };
 
-#endif /*TESTSEGMENTFLOWPROPERTIES_HPP_*/
+#endif /*TESTNODEFLOWPROPERTIES_HPP_*/

@@ -40,7 +40,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /** Pointer to the single instance */
 boost::shared_ptr<BaseUnits> BaseUnits::mpInstance = boost::shared_ptr<BaseUnits>();
 
-boost::shared_ptr<BaseUnits> BaseUnits::Instance()
+boost::shared_ptr<BaseUnits> BaseUnits::SharedInstance()
 {
     if (!mpInstance)
     {
@@ -48,6 +48,16 @@ boost::shared_ptr<BaseUnits> BaseUnits::Instance()
         std::atexit(Destroy);
     }
     return mpInstance;
+}
+
+BaseUnits* BaseUnits::Instance()
+{
+    if (!mpInstance)
+    {
+        mpInstance = boost::shared_ptr<BaseUnits>(new BaseUnits);
+        std::atexit(Destroy);
+    }
+    return mpInstance.get();
 }
 
 BaseUnits::BaseUnits()

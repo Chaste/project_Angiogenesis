@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -137,5 +137,9 @@ void SegmentFlowProperties<DIM>::SetGrowthStimulus(units::quantity<unit::rate> v
 }
 
 // Explicit instantiation
-template class SegmentFlowProperties<2> ;
-template class SegmentFlowProperties<3> ;
+template class SegmentFlowProperties<2>;
+template class SegmentFlowProperties<3>;
+
+#include "SerializationExportWrapperForCpp.hpp"
+EXPORT_TEMPLATE_CLASS1(SegmentFlowProperties, 2)
+EXPORT_TEMPLATE_CLASS1(SegmentFlowProperties, 3)

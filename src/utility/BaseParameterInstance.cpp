@@ -131,6 +131,3 @@ std::ostream& operator <<(std::ostream& stream, const boost::shared_ptr<BasePara
     stream<< "<source>" << "\"" <<rParameter->GetBibliographicInformation() << "\"" << "</source>\n";
     return stream;
 }
-
-#include "SerializationExportWrapperForCpp.hpp"
-CHASTE_CLASS_EXPORT(BaseParameterInstance)

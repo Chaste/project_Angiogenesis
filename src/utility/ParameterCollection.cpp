@@ -43,7 +43,17 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /** Pointer to the single instance */
 boost::shared_ptr<ParameterCollection> ParameterCollection::mpInstance = boost::shared_ptr<ParameterCollection>();
 
-boost::shared_ptr<ParameterCollection> ParameterCollection::Instance()
+ParameterCollection* ParameterCollection::Instance()
+{
+    if (!mpInstance)
+    {
+        mpInstance = boost::shared_ptr<ParameterCollection>(new ParameterCollection);
+        std::atexit(Destroy);
+    }
+    return mpInstance.get();
+}
+
+boost::shared_ptr<ParameterCollection> ParameterCollection::SharedInstance()
 {
     if (!mpInstance)
     {

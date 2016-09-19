@@ -82,7 +82,7 @@ void WallShearStressBasedRegressionSolver<DIM>::Increment()
     for(unsigned idx=0;idx<vessels.size(); idx++)
     {
         // if wall shear stress of vessel is below threshold then start regression timer, unless it has already been started
-        if (vessels[idx]->GetFlowProperties()->GetWallShearStress(vessels[idx]->GetSegments()) < mThresholdWss)
+        if (vessels[idx]->GetFlowProperties()->GetWallShearStress() < mThresholdWss)
         {
             if (!(vessels[idx]->GetFlowProperties()->HasRegressionTimerStarted()) && !(vessels[idx]->GetFlowProperties()->HasVesselRegressed(this->mReferenceTime)))
             {

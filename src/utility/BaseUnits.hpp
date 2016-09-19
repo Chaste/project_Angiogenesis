@@ -81,10 +81,17 @@ class BaseUnits : public SerializableSingleton<BaseUnits>
 public:
 
     /**
-     * @return a pointer to the dimensional simulation time object.
-     * The first time this is called the simulation time object is created.
+     * This method is used for compatibility with Chaste serialization. In other cases
+     * it is advised to work with the shared instance.
+     * @return a pointer to the unit collection object.
      */
-    static boost::shared_ptr<BaseUnits> Instance();
+    static BaseUnits* Instance();
+
+    /**
+     * @return a pointer to the unit collection object.
+     * The first time this is called the unit collection object is created.
+     */
+    static boost::shared_ptr<BaseUnits> SharedInstance();
 
     /**
      * @return the reference time scale
@@ -125,9 +132,29 @@ protected:
 
     /**
      * Default  constructor, force instantiation through factory method.
-     *
      */
     BaseUnits();
+
+private:
+
+    /** Needed for serialization. */
+    friend class boost::serialization::access;
+
+    /**
+     * Serialization of a BaseUnits object must be done with care.
+     * Do not serialize this singleton directly.  Instead, serialize
+     * the object returned by GetSerializationWrapper.
+     *
+     * @param archive the archive
+     * @param version the current version of this class
+     */
+    template<class Archive>
+    void serialize(Archive & archive, const unsigned int version)
+    {
+        archive & mTime;
+        archive & mLength;
+        archive & mMass;
+    }
 
 };
 

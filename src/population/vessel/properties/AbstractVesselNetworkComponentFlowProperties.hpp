@@ -39,19 +39,30 @@ Copyright (c) 2005-2016, University of Oxford.
 #include <string>
 #include <map>
 #include <boost/enable_shared_from_this.hpp>
+#include "ChasteSerialization.hpp"
 #include "UnitCollection.hpp"
+#include "ClassIsAbstract.hpp"
 #include "AbstractVesselNetworkComponentProperties.hpp"
 
 /**
  * This class contains common functionality for flow property containers for all vessel network components.
- *
- * Note: It is named 'Abstract' to discourage instantiation, but is not strictly an abstract class.
- * A pure virtual destructor is avoided as it prevents Python wrapping.
  */
 template<unsigned DIM>
 class AbstractVesselNetworkComponentFlowProperties: public boost::enable_shared_from_this<AbstractVesselNetworkComponentFlowProperties<DIM> >,
-public AbstractVesselNetworkComponentProperties<DIM>
+    public AbstractVesselNetworkComponentProperties<DIM>
 {
+private:
+
+    /**
+     * Archiving
+     */
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & boost::serialization::base_object<AbstractVesselNetworkComponentProperties<DIM> >(*this);
+        ar & mPressure;
+    }
 
 protected:
 
@@ -80,13 +91,6 @@ public:
     units::quantity<unit::pressure> GetPressure() const;
 
     /**
-     * Return a map of output data for writing to file
-     *
-     * @return a map of output data for use by writers
-     */
-    virtual std::map<std::string, double> GetOutputData() const;
-
-    /**
      * Set the pressure in the component
      *
      * @param pressure the component pressure
@@ -94,5 +98,7 @@ public:
     virtual void SetPressure(units::quantity<unit::pressure> pressure);
 
 };
+
+TEMPLATED_CLASS_IS_ABSTRACT_1_UNSIGNED(AbstractVesselNetworkComponentFlowProperties);
 
 #endif /* ABSTRACTVESSELNETWORKCOMPONENTFLOWPROPERTIES_HPP_ */

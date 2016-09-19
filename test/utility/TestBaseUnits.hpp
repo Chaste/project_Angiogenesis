@@ -37,16 +37,20 @@ Copyright (c) 2005-2016, University of Oxford.
 #define TESTBASEUNITS_HPP
 
 #include <cxxtest/TestSuite.h>
-#include <SmartPointers.hpp>
+#include "CheckpointArchiveTypes.hpp"
+#include "ArchiveLocationInfo.hpp"
+#include "SmartPointers.hpp"
+#include <boost/serialization/shared_ptr.hpp>
 #include "UnitCollection.hpp"
 #include "BaseUnits.hpp"
+#include "OutputFileHandler.hpp"
 
 #include "PetscSetupAndFinalize.hpp"
 
 /**
  * Check setting up and destroying the singleton
  */
-class TestUnitCollection : public CxxTest::TestSuite
+class TestBaseUnits : public CxxTest::TestSuite
 {
 
 public:
@@ -66,6 +70,42 @@ public:
         TS_ASSERT_DELTA(BaseUnits::Instance()->GetReferenceTimeScale().value(), 60.0, 1.e-6);
     }
 
+    void TestArchiving()
+    {
+        OutputFileHandler handler("archive", false);
+        std::string archive_filename = handler.GetOutputDirectoryFullPath() + "BaseUnits.arch";
+
+        // Create and archive
+        {
+            BaseUnits* p_base_units = BaseUnits::Instance();
+            BaseUnits::Instance()->SetReferenceLengthScale(10.0*unit::metres);
+            BaseUnits::Instance()->SetReferenceMassScale(15.0*unit::kg);
+            BaseUnits::Instance()->SetReferenceTimeScale(20.0*unit::seconds);
+
+            std::ofstream ofs(archive_filename.c_str());
+            boost::archive::text_oarchive output_arch(ofs);
+
+            SerializableSingleton<BaseUnits>* const p_wrapper = p_base_units->GetSerializationWrapper();
+            output_arch << p_wrapper;
+
+            BaseUnits::Destroy();
+        }
+
+        // Restore
+        {
+            boost::shared_ptr<BaseUnits> p_base_units = BaseUnits::SharedInstance();
+
+            std::ifstream ifs(archive_filename.c_str(), std::ios::binary);
+            boost::archive::text_iarchive input_arch(ifs);
+
+            SerializableSingleton<BaseUnits>* p_wrapper;
+            input_arch >> p_wrapper;
+
+            TS_ASSERT_DELTA(BaseUnits::Instance()->GetReferenceLengthScale().value(), 10.0, 1.e-6);
+            TS_ASSERT_DELTA(BaseUnits::Instance()->GetReferenceMassScale().value(), 15.0, 1.e-6);
+            TS_ASSERT_DELTA(BaseUnits::Instance()->GetReferenceTimeScale().value(), 20.0, 1.e-6);
+        }
+    }
 };
 
 #endif // TESTBASEUNITS_HPP

@@ -40,6 +40,8 @@ Copyright (c) 2005-2016, University of Oxford.
 #include <string>
 #include <map>
 #include <boost/enable_shared_from_this.hpp>
+#include "ChasteSerialization.hpp"
+#include "ClassIsAbstract.hpp"
 #include "UblasVectorInclude.hpp"
 #include "UnitCollection.hpp"
 #include "SmartPointers.hpp"
@@ -47,9 +49,6 @@ Copyright (c) 2005-2016, University of Oxford.
 
 /**
  * This class contains functionality common to all components of a vessel network.
- *
- * Note: It is named 'Abstract' to discourage instantiation, but is not strictly an abstract class.
- * A pure virtual destructor is avoided as it prevents Python wrapping.
  */
 template<unsigned DIM>
 class AbstractVesselNetworkComponent
@@ -104,7 +103,7 @@ public:
      * Return a map of output data for writers
      * @return a map of component data for use by the vtk writer
      */
-    virtual std::map<std::string, double> GetOutputData();
+    virtual std::map<std::string, double> GetOutputData() = 0;
 
     /**
      * Return the keys of the output data map

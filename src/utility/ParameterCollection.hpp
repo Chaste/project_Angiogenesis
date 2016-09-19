@@ -66,10 +66,17 @@ class ParameterCollection : public SerializableSingleton<ParameterCollection>
 public:
 
     /**
+     * @return a pointer to the singleton instance. This method is needed for serialization. A SharedInstance
+     * should be used otherwise.
+     * The first time this is called the simulation object is created.
+     */
+    static ParameterCollection* Instance();
+
+    /**
      * @return a pointer to the singleton instance
      * The first time this is called the simulation object is created.
      */
-    static boost::shared_ptr<ParameterCollection> Instance();
+    static boost::shared_ptr<ParameterCollection> SharedInstance();
 
     /**
      * Add a parameter

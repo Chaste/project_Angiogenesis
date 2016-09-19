@@ -37,6 +37,7 @@
 
 template<unsigned DIM>
 VesselFlowProperties<DIM>::VesselFlowProperties() : AbstractVesselNetworkComponentFlowProperties<DIM>(),
+    mSegments(),
     mUndergoingRegression(false),
     mRemoveViaRegression(false),
     mRegressionTime(DBL_MAX*unit::seconds)
@@ -49,82 +50,103 @@ VesselFlowProperties<DIM>::~VesselFlowProperties()
 }
 
 template<unsigned DIM>
-units::quantity<unit::dimensionless> VesselFlowProperties<DIM>::GetHaematocrit(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const
+void VesselFlowProperties<DIM>::CheckSegments() const
 {
+    if(mSegments.size() == 0)
+    {
+        EXCEPTION("No vessel segments have been set for vessel flow property calculation.");
+    }
+}
+
+template<unsigned DIM>
+units::quantity<unit::dimensionless> VesselFlowProperties<DIM>::GetHaematocrit() const
+{
+    this->CheckSegments();
+
     units::quantity<unit::dimensionless> value = 0.0;
-    for (unsigned i = 0; i < segments.size(); i++)
+    for (unsigned i = 0; i < mSegments.size(); i++)
     {
-        value += segments[i]->GetFlowProperties()->GetHaematocrit() / double(segments.size());
+        value += mSegments[i]->GetFlowProperties()->GetHaematocrit() / double(mSegments.size());
     }
     return value;
 }
 
 template<unsigned DIM>
-units::quantity<unit::flow_rate> VesselFlowProperties<DIM>::GetFlowRate(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const
+units::quantity<unit::flow_rate> VesselFlowProperties<DIM>::GetFlowRate() const
 {
+    this->CheckSegments();
+
     units::quantity<unit::flow_rate> value = 0.0 * unit::metre_cubed_per_second;
-    for (unsigned i = 0; i < segments.size(); i++)
+    for (unsigned i = 0; i < mSegments.size(); i++)
     {
-        value += segments[i]->GetFlowProperties()->GetFlowRate() / double(segments.size());
+        value += mSegments[i]->GetFlowProperties()->GetFlowRate() / double(mSegments.size());
     }
     return value;
 }
 
 template<unsigned DIM>
-units::quantity<unit::flow_impedance> VesselFlowProperties<DIM>::GetImpedance(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const
+units::quantity<unit::flow_impedance> VesselFlowProperties<DIM>::GetImpedance() const
 {
+    this->CheckSegments();
+
     units::quantity<unit::flow_impedance> value = 0.0 * unit::pascal_second_per_metre_cubed;
-    for (unsigned i = 0; i < segments.size(); i++)
+    for (unsigned i = 0; i < mSegments.size(); i++)
     {
-        value += segments[i]->GetFlowProperties()->GetImpedance();
+        value += mSegments[i]->GetFlowProperties()->GetImpedance();
     }
     return value;
 }
 
 template<unsigned DIM>
-units::quantity<unit::dynamic_viscosity> VesselFlowProperties<DIM>::GetViscosity(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const
+units::quantity<unit::dynamic_viscosity> VesselFlowProperties<DIM>::GetViscosity() const
 {
+    this->CheckSegments();
+
     units::quantity<unit::dynamic_viscosity> value = 0.0 * unit::poiseuille;
-    for (unsigned i = 0; i < segments.size(); i++)
+    for (unsigned i = 0; i < mSegments.size(); i++)
     {
-        value += segments[i]->GetFlowProperties()->GetViscosity()/ double(segments.size());
+        value += mSegments[i]->GetFlowProperties()->GetViscosity()/ double(mSegments.size());
     }
     return value;
 }
 
 template<unsigned DIM>
-units::quantity<unit::pressure> VesselFlowProperties<DIM>::GetWallShearStress(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const
+units::quantity<unit::pressure> VesselFlowProperties<DIM>::GetWallShearStress() const
 {
+    this->CheckSegments();
+
     units::quantity<unit::pressure> value = 0.0 * unit::pascals;
-    for (unsigned i = 0; i < segments.size(); i++)
+    for (unsigned i = 0; i < mSegments.size(); i++)
     {
-        value += segments[i]->GetFlowProperties()->GetWallShearStress()/ double(segments.size());
+        value += mSegments[i]->GetFlowProperties()->GetWallShearStress()/ double(mSegments.size());
     }
     return value;
 }
 
 template<unsigned DIM>
-units::quantity<unit::rate> VesselFlowProperties<DIM>::GetGrowthStimulus(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const
+units::quantity<unit::rate> VesselFlowProperties<DIM>::GetGrowthStimulus() const
 {
+    this->CheckSegments();
+
     units::quantity<unit::rate> value = 0.0 * unit::per_second;
-    for (unsigned i = 0; i < segments.size(); i++)
+    for (unsigned i = 0; i < mSegments.size(); i++)
     {
-        value += segments[i]->GetFlowProperties()->GetGrowthStimulus()/ double(segments.size());
+        value += mSegments[i]->GetFlowProperties()->GetGrowthStimulus()/ double(mSegments.size());
     }
     return value;
 }
 
 template<unsigned DIM>
-std::map<std::string, double> VesselFlowProperties<DIM>::GetOutputData(const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments) const
+std::map<std::string, double> VesselFlowProperties<DIM>::GetOutputData() const
 {
     std::map<std::string, double> output_data;
-    output_data["Vessel Impedance kg/m^4/s"] = this->GetImpedance(segments) / unit::pascal_second_per_metre_cubed;
-    output_data["Vessel Haematocrit"] = this->GetHaematocrit(segments);
-    output_data["Vessel Flow Rate m^3/s"] = this->GetFlowRate(segments) / unit::metre_cubed_per_second;
-    output_data["Absolute Vessel Flow Rate m^3/s"] = fabs(this->GetFlowRate(segments)) / unit::metre_cubed_per_second;
-    output_data["Vessel Viscosity Pa.s"] = this->GetViscosity(segments) / unit::poiseuille;
-    output_data["Vessel Wall Shear Stress Pa"] = this->GetWallShearStress(segments)  / unit::pascals;
-    output_data["Vessel Growth Stimulus s^-1"] = this->GetGrowthStimulus(segments) / unit::per_second;
+    output_data["Vessel Impedance kg/m^4/s"] = this->GetImpedance() / unit::pascal_second_per_metre_cubed;
+    output_data["Vessel Haematocrit"] = this->GetHaematocrit();
+    output_data["Vessel Flow Rate m^3/s"] = this->GetFlowRate() / unit::metre_cubed_per_second;
+    output_data["Absolute Vessel Flow Rate m^3/s"] = fabs(this->GetFlowRate()) / unit::metre_cubed_per_second;
+    output_data["Vessel Viscosity Pa.s"] = this->GetViscosity() / unit::poiseuille;
+    output_data["Vessel Wall Shear Stress Pa"] = this->GetWallShearStress()  / unit::pascals;
+    output_data["Vessel Growth Stimulus s^-1"] = this->GetGrowthStimulus() / unit::per_second;
     return output_data;
 }
 
@@ -145,57 +167,69 @@ bool VesselFlowProperties<DIM>::HasVesselRegressed(units::quantity<unit::time> s
 }
 
 template<unsigned DIM>
-void VesselFlowProperties<DIM>::SetHaematocrit(units::quantity<unit::dimensionless> haematocrit, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments)
+void VesselFlowProperties<DIM>::SetHaematocrit(units::quantity<unit::dimensionless> haematocrit)
 {
-    for (unsigned i = 0; i < segments.size(); i++)
+    this->CheckSegments();
+
+    for (unsigned i = 0; i < mSegments.size(); i++)
     {
-        segments[i]->GetFlowProperties()->SetHaematocrit(haematocrit);
+        mSegments[i]->GetFlowProperties()->SetHaematocrit(haematocrit);
     }
 }
 
 template<unsigned DIM>
-void VesselFlowProperties<DIM>::SetFlowRate(units::quantity<unit::flow_rate> haematocrit, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments)
+void VesselFlowProperties<DIM>::SetFlowRate(units::quantity<unit::flow_rate> haematocrit)
 {
-    for (unsigned i = 0; i < segments.size(); i++)
+    this->CheckSegments();
+
+    for (unsigned i = 0; i < mSegments.size(); i++)
     {
-        segments[i]->GetFlowProperties()->SetFlowRate(haematocrit);
+        mSegments[i]->GetFlowProperties()->SetFlowRate(haematocrit);
     }
 }
 
 
 template<unsigned DIM>
-void VesselFlowProperties<DIM>::SetImpedance(units::quantity<unit::flow_impedance> value, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments)
+void VesselFlowProperties<DIM>::SetImpedance(units::quantity<unit::flow_impedance> value)
 {
-    for (unsigned i = 0; i < segments.size(); i++)
+    this->CheckSegments();
+
+    for (unsigned i = 0; i < mSegments.size(); i++)
     {
-        segments[i]->GetFlowProperties()->SetImpedance(value/double(segments.size()));
+        mSegments[i]->GetFlowProperties()->SetImpedance(value/double(mSegments.size()));
     }
 }
 
 template<unsigned DIM>
-void VesselFlowProperties<DIM>::SetViscosity(units::quantity<unit::dynamic_viscosity> value, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments)
+void VesselFlowProperties<DIM>::SetViscosity(units::quantity<unit::dynamic_viscosity> value)
 {
-    for (unsigned i = 0; i < segments.size(); i++)
+    this->CheckSegments();
+
+    for (unsigned i = 0; i < mSegments.size(); i++)
     {
-        segments[i]->GetFlowProperties()->SetViscosity(value);
+        mSegments[i]->GetFlowProperties()->SetViscosity(value);
     }
 }
 
 template<unsigned DIM>
-void VesselFlowProperties<DIM>::SetWallShearStress(units::quantity<unit::pressure> value, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments)
+void VesselFlowProperties<DIM>::SetWallShearStress(units::quantity<unit::pressure> value)
 {
-    for (unsigned i = 0; i < segments.size(); i++)
+    this->CheckSegments();
+
+    for (unsigned i = 0; i < mSegments.size(); i++)
     {
-        segments[i]->GetFlowProperties()->SetWallShearStress(value);
+        mSegments[i]->GetFlowProperties()->SetWallShearStress(value);
     }
 }
 
 template<unsigned DIM>
-void VesselFlowProperties<DIM>::SetGrowthStimulus(units::quantity<unit::rate> value, const std::vector<boost::shared_ptr<VesselSegment<DIM> > >& segments)
+void VesselFlowProperties<DIM>::SetGrowthStimulus(units::quantity<unit::rate> value)
 {
-    for (unsigned i = 0; i < segments.size(); i++)
+    this->CheckSegments();
+
+    for (unsigned i = 0; i < mSegments.size(); i++)
     {
-        segments[i]->GetFlowProperties()->SetGrowthStimulus(value);
+        mSegments[i]->GetFlowProperties()->SetGrowthStimulus(value);
     }
 }
 
@@ -225,6 +259,12 @@ void VesselFlowProperties<DIM>::ResetRegressionTimer()
     this->mRegressionTime = DBL_MAX*unit::seconds;
     mUndergoingRegression = false;
     mRemoveViaRegression = false;
+}
+
+template<unsigned DIM>
+void VesselFlowProperties<DIM>::UpdateSegments(std::vector<boost::shared_ptr<VesselSegment<DIM> > > segments)
+{
+    mSegments = segments;
 }
 
 // Explicit instantiation

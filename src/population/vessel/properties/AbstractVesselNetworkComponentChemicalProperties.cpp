@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2016, University of Oxford.
+ Copyright (c) 2005-2015, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,31 +33,32 @@ Copyright (c) 2005-2016, University of Oxford.
 
  */
 
-#include "AbstractVesselNetworkComponentFlowProperties.hpp"
+#include "AbstractVesselNetworkComponentChemicalProperties.hpp"
 
 template<unsigned DIM>
-AbstractVesselNetworkComponentFlowProperties<DIM>::AbstractVesselNetworkComponentFlowProperties() : AbstractVesselNetworkComponentProperties<DIM>(),
-        mPressure(0.0 * unit::pascals)
+AbstractVesselNetworkComponentChemicalProperties<DIM>::AbstractVesselNetworkComponentChemicalProperties() : AbstractVesselNetworkComponentProperties<DIM>(),
+    mPermeability()
 {
 }
 
 template<unsigned DIM>
-AbstractVesselNetworkComponentFlowProperties<DIM>::~AbstractVesselNetworkComponentFlowProperties()
+AbstractVesselNetworkComponentChemicalProperties<DIM>::~AbstractVesselNetworkComponentChemicalProperties()
 {
 }
 
 template<unsigned DIM>
-units::quantity<unit::pressure> AbstractVesselNetworkComponentFlowProperties<DIM>::GetPressure() const
+units::quantity<unit::membrane_permeability> AbstractVesselNetworkComponentChemicalProperties<DIM>::GetPermeability() const
 {
-    return mPressure;
+    return mPermeability;
 }
 
+
 template<unsigned DIM>
-void AbstractVesselNetworkComponentFlowProperties<DIM>::SetPressure(units::quantity<unit::pressure> pressure)
+void AbstractVesselNetworkComponentChemicalProperties<DIM>::SetPermeability(units::quantity<unit::membrane_permeability> pressure)
 {
-    mPressure = pressure;
+    mPermeability = pressure;
 }
 
 // Explicit instantiation
-template class AbstractVesselNetworkComponentFlowProperties<2> ;
-template class AbstractVesselNetworkComponentFlowProperties<3> ;
+template class AbstractVesselNetworkComponentChemicalProperties<2> ;
+template class AbstractVesselNetworkComponentChemicalProperties<3> ;

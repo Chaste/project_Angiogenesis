@@ -99,7 +99,7 @@ public:
             TS_ASSERT_EQUALS("My Description For Time Parameter", p_my_parameter_from_archive->GetShortDescription());
             TS_ASSERT_EQUALS("Derived", p_my_parameter_from_archive->GetName());
 
-            boost::shared_ptr<ParameterInstance<unit::time> > p_my_cast_parameter_from_archive = boost::static_pointer_cast<ParameterInstance<unit::time> >(p_my_parameter_from_archive);
+            boost::shared_ptr<ParameterInstance<unit::time> > p_my_cast_parameter_from_archive = boost::dynamic_pointer_cast<ParameterInstance<unit::time> >(p_my_parameter_from_archive);
             TS_ASSERT_DELTA(p_my_cast_parameter_from_archive->GetValue()/unit::seconds, 5.0, 1.e-6);
         }
     }

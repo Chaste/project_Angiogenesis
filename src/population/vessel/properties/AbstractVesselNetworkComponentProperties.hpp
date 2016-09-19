@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -33,23 +33,32 @@
 
  */
 
-#ifndef AbstractVesselNetworkComponentProperties_HPP_
-#define AbstractVesselNetworkComponentProperties_HPP_
+#ifndef ABSTRACTVESSELNETWORKCOMPONENTPROPERTIES_HPP_
+#define ABSTRACTVESSELNETWORKCOMPONENTPROPERTIES_HPP_
 
 #include <string>
 #include <map>
 #include <boost/enable_shared_from_this.hpp>
+#include "ChasteSerialization.hpp"
+#include "ClassIsAbstract.hpp"
+#include "UnitCollection.hpp"
+
 /**
  * This class contains common functionality for property containers for all vessel network components.
- *
- * Note: It is named 'Abstract' to discourage instantiation, but is not strictly an abstract class.
- * A pure virtual destructor is avoided as it prevents Python wrapping.
+ * It provides a common interface that can be used in VTK writers.
  */
 template<unsigned DIM>
-class AbstractVesselNetworkComponentProperties : public boost::enable_shared_from_this<AbstractVesselNetworkComponentProperties<DIM> >
+class AbstractVesselNetworkComponentProperties: public boost::enable_shared_from_this<AbstractVesselNetworkComponentProperties<DIM> >
 {
+    /**
+     * Archiving
+     */
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
 
-protected:
+    }
 
 public:
 
@@ -63,6 +72,16 @@ public:
      */
     virtual ~AbstractVesselNetworkComponentProperties();
 
+    /**
+     * Return a map of output data for writing to file
+     *
+     * @return a map of output data for use by writers
+     */
+    virtual std::map<std::string, double> GetOutputData() const = 0;
+
 };
 
-#endif /* AbstractVesselNetworkComponentProperties_HPP_ */
+TEMPLATED_CLASS_IS_ABSTRACT_1_UNSIGNED(AbstractVesselNetworkComponentProperties);
+
+#endif /* ABSTRACTVESSELNETWORKCOMPONENTPROPERTIES_HPP_ */
+

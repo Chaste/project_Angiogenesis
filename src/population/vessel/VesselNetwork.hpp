@@ -234,6 +234,12 @@ public:
     unsigned GetMaxBranchesOnNode();
 
     /**
+     * Return a map of vessel network data for use by the vtk writer
+     * @return a map of vessel network  data for use by the vtk writer
+     */
+    std::map<std::string, double> GetOutputData();
+
+    /**
      * Return the only the nodes at the ends of vessels in the network
      */
     std::vector<boost::shared_ptr<VesselNode<DIM> > > GetVesselEndNodes();

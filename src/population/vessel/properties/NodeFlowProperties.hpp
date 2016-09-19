@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -39,6 +39,7 @@
 #include <string>
 #include <map>
 #include <boost/enable_shared_from_this.hpp>
+#include "ChasteSerialization.hpp"
 #include "AbstractVesselNetworkComponentFlowProperties.hpp"
 
 /**
@@ -52,6 +53,19 @@ class NodeFlowProperties : public boost::enable_shared_from_this<NodeFlowPropert
 {
 
 private:
+
+    /**
+     * Archiving
+     */
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & boost::serialization::base_object<AbstractVesselNetworkComponentFlowProperties<DIM> >(*this);
+        ar & mIsInputNode;
+        ar & mIsOutputNode;
+        ar & mUseVelocityBoundaryCondition;
+    }
 
     /**
      *  Is the node an input node
@@ -124,4 +138,7 @@ public:
     bool UseVelocityBoundaryCondition();
 };
 
+#include "SerializationExportWrapper.hpp"
+EXPORT_TEMPLATE_CLASS1(NodeFlowProperties, 2)
+EXPORT_TEMPLATE_CLASS1(NodeFlowProperties, 3)
 #endif /* NODEFLOWPROPERTIES_HPP_ */

@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -71,14 +71,6 @@ double AbstractVesselNetworkComponent<DIM>::GetOutputDataValue(const std::string
     {
         EXCEPTION("Requested output data key not found");
     }
-}
-
-template<unsigned DIM>
-std::map<std::string, double> AbstractVesselNetworkComponent<DIM>::GetOutputData()
-{
-    mOutputData["VN Component Id"] = double(GetId());
-    mOutputData["VN Component Radius: m"] = GetRadius() / unit::metres;
-    return mOutputData;
 }
 
 template<unsigned DIM>

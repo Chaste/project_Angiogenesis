@@ -354,6 +354,13 @@ std::pair<DimensionalChastePoint<DIM>, DimensionalChastePoint<DIM> > VesselNetwo
     return bbox;
 }
 
+template<unsigned DIM>
+std::map<std::string, double> VesselNetwork<DIM>::GetOutputData()
+{
+    this->mOutputData.clear();
+    return this->mOutputData;
+}
+
 template <unsigned DIM>
 units::quantity<unit::length> VesselNetwork<DIM>::GetDistanceToNearestNode(const DimensionalChastePoint<DIM>& rLocation)
 {

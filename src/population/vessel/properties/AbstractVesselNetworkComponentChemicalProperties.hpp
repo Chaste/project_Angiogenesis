@@ -33,31 +33,58 @@ Copyright (c) 2005-2016, University of Oxford.
 
  */
 
-#include "AbstractVesselNetworkComponentFlowProperties.hpp"
+#ifndef ABSTRACTVESSELNETWORKCOMPONENTCHEMICALPROPERTIES_HPP_
+#define ABSTRACTVESSELNETWORKCOMPONENTCHEMICALPROPERTIES_HPP_
 
+#include <string>
+#include <map>
+#include <boost/enable_shared_from_this.hpp>
+#include "ChasteSerialization.hpp"
+#include "ClassIsAbstract.hpp"
+#include "UnitCollection.hpp"
+#include "AbstractVesselNetworkComponentProperties.hpp"
+
+/**
+ * This class contains common functionality for chemical property containers for all vessel network components.
+ */
 template<unsigned DIM>
-AbstractVesselNetworkComponentFlowProperties<DIM>::AbstractVesselNetworkComponentFlowProperties() : AbstractVesselNetworkComponentProperties<DIM>(),
-        mPressure(0.0 * unit::pascals)
+class AbstractVesselNetworkComponentChemicalProperties: public boost::enable_shared_from_this<AbstractVesselNetworkComponentChemicalProperties<DIM> >,
+    public AbstractVesselNetworkComponentProperties<DIM>
 {
-}
 
-template<unsigned DIM>
-AbstractVesselNetworkComponentFlowProperties<DIM>::~AbstractVesselNetworkComponentFlowProperties()
-{
-}
+protected:
 
-template<unsigned DIM>
-units::quantity<unit::pressure> AbstractVesselNetworkComponentFlowProperties<DIM>::GetPressure() const
-{
-    return mPressure;
-}
+    /**
+     * Dimensionless pressure in the component
+     */
+    units::quantity<unit::membrane_permeability> mPermeability;
 
-template<unsigned DIM>
-void AbstractVesselNetworkComponentFlowProperties<DIM>::SetPressure(units::quantity<unit::pressure> pressure)
-{
-    mPressure = pressure;
-}
+public:
 
-// Explicit instantiation
-template class AbstractVesselNetworkComponentFlowProperties<2> ;
-template class AbstractVesselNetworkComponentFlowProperties<3> ;
+    /**
+     * Constructor
+     */
+    AbstractVesselNetworkComponentChemicalProperties();
+
+    /**
+     * Destructor
+     */
+    virtual ~AbstractVesselNetworkComponentChemicalProperties();
+
+    /**
+     * Return the pressure in the component
+     *
+     * @return the pressure in the component
+     */
+    units::quantity<unit::membrane_permeability> GetPermeability() const;
+
+    /**
+     * Set the pressure in the component
+     *
+     * @param pressure the component pressure
+     */
+    virtual void SetPermeability(units::quantity<unit::membrane_permeability> permeability);
+
+};
+
+#endif /* ABSTRACTVESSELNETWORKCOMPONENTCHEMICALPROPERTIES_HPP_ */

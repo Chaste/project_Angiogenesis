@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2005-2015, University of Oxford.
+Copyright (c) 2005-2016, University of Oxford.
  All rights reserved.
 
  University of Oxford means the Chancellor, Masters and Scholars of the
@@ -39,6 +39,7 @@
 #include <string>
 #include <map>
 #include <boost/enable_shared_from_this.hpp>
+#include "ChasteSerialization.hpp"
 #include "UnitCollection.hpp"
 #include "AbstractVesselNetworkComponentFlowProperties.hpp"
 
@@ -53,6 +54,22 @@ class SegmentFlowProperties : public boost::enable_shared_from_this<SegmentFlowP
 {
 
 private:
+
+    /**
+     * Archiving
+     */
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & boost::serialization::base_object<AbstractVesselNetworkComponentFlowProperties<DIM> >(*this);
+        ar & mHaematocrit;
+        ar & mFlowRate;
+        ar & mImpedance;
+        ar & mViscosity;
+        ar & mWallShearStress;
+        ar & mStimulus;
+    }
 
     /**
      * Haematocrit in the vessel at this segment
@@ -182,5 +199,9 @@ public:
     void SetGrowthStimulus(units::quantity<unit::rate> stimulus);
 
 };
+
+#include "SerializationExportWrapper.hpp"
+EXPORT_TEMPLATE_CLASS1(SegmentFlowProperties, 2)
+EXPORT_TEMPLATE_CLASS1(SegmentFlowProperties, 3)
 
 #endif /* SEGMENTFLOWPROPERTIES_HPP_ */

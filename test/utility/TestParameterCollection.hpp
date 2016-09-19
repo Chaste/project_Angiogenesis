@@ -43,6 +43,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <boost/serialization/shared_ptr.hpp>
 #include "UnitCollection.hpp"
 #include "OutputFileHandler.hpp"
+#include "SerializableSingleton.hpp"
 #include "BaseParameterInstance.hpp"
 #include "ParameterInstance.hpp"
 #include "ParameterCollection.hpp"
@@ -66,7 +67,7 @@ public:
         my_time_parameter->SetValue(few_seconds);
         my_time_parameter->SetName("Derived");
 
-        boost::shared_ptr<ParameterCollection> my_params = ParameterCollection::Instance();
+        boost::shared_ptr<ParameterCollection> my_params = ParameterCollection::SharedInstance();
         OutputFileHandler file_handler("TestMixedParameterCollection", true);
         my_params->AddParameter(my_parameter, "Test");
         my_params->AddParameter(my_time_parameter, "Test");
@@ -87,7 +88,7 @@ public:
         my_time_parameter->SetValue(few_seconds);
         my_time_parameter->SetName("Derived");
 
-        boost::shared_ptr<ParameterCollection> p_my_params = ParameterCollection::Instance();
+        boost::shared_ptr<ParameterCollection> p_my_params = ParameterCollection::SharedInstance();
         OutputFileHandler file_handler("TestMixedParameterCollection", true);
         p_my_params->AddParameter(my_parameter, "Test");
         p_my_params->AddParameter(my_time_parameter, "Test");
@@ -102,6 +103,9 @@ public:
             std::ofstream ofs(archive_filename.c_str());
             boost::archive::text_oarchive output_arch(ofs);
             output_arch << p_my_params;
+
+            SerializableSingleton<ParameterCollection>* const p_wrapper = p_my_params->GetSerializationWrapper();
+            output_arch << p_wrapper;
         }
 
         ParameterCollection::Destroy();
@@ -115,11 +119,13 @@ public:
             boost::archive::text_iarchive input_arch(ifs);
 
             // restore from the archive
-            input_arch >> p_my_params_from_archive;
-            TS_ASSERT_EQUALS("My Description", p_my_params_from_archive->GetParameter("Base")->GetShortDescription());
+            SerializableSingleton<ParameterCollection>* p_wrapper;
+            input_arch >> p_wrapper;
+
+            TS_ASSERT_EQUALS("My Description", ParameterCollection::Instance()->GetParameter("Base")->GetShortDescription());
 
             boost::shared_ptr<ParameterInstance<unit::time> > p_derived =
-                    boost::dynamic_pointer_cast<ParameterInstance<unit::time> >(p_my_params_from_archive->GetParameter("Derived"));
+                    boost::dynamic_pointer_cast<ParameterInstance<unit::time> >(ParameterCollection::Instance()->GetParameter("Derived"));
             TS_ASSERT_EQUALS("My Description For Time Parameter", p_derived->GetShortDescription());
             TS_ASSERT_DELTA(5.0, p_derived->GetValue().value(), 1.e-6);
         }

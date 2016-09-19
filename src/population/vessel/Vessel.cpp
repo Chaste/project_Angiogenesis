@@ -47,6 +47,8 @@ Vessel<DIM>::Vessel(boost::shared_ptr<VesselSegment<DIM> > pSegment) : AbstractV
         mpFlowProperties(boost::shared_ptr<VesselFlowProperties<DIM> >(new VesselFlowProperties<DIM>()))
 {
     mSegments.push_back(pSegment);
+    mpFlowProperties->UpdateSegments(mSegments);
+
 }
 
 template<unsigned DIM>
@@ -80,6 +82,8 @@ Vessel<DIM>::Vessel(std::vector<boost::shared_ptr<VesselSegment<DIM> > > segment
             }
         }
     }
+
+    mpFlowProperties->UpdateSegments(mSegments);
 }
 
 template<unsigned DIM>
@@ -101,6 +105,7 @@ Vessel<DIM>::Vessel(std::vector<boost::shared_ptr<VesselNode<DIM> > > nodes) :
             mSegments.push_back(VesselSegment<DIM>::Create(nodes[i-1], nodes[i]));
         }
     }
+    mpFlowProperties->UpdateSegments(mSegments);
 }
 
 template<unsigned DIM>
@@ -111,6 +116,7 @@ Vessel<DIM>::Vessel(boost::shared_ptr<VesselNode<DIM> > pStartNode, boost::share
              mpFlowProperties(boost::shared_ptr<VesselFlowProperties<DIM> >(new VesselFlowProperties<DIM>()))
 {
     mSegments.push_back(VesselSegment<DIM>::Create(pStartNode, pEndNode));
+    mpFlowProperties->UpdateSegments(mSegments);
 }
 
 template<unsigned DIM>
@@ -220,6 +226,7 @@ void Vessel<DIM>::AddSegment(boost::shared_ptr<VesselSegment<DIM> > pSegment)
     }
 
     mNodesUpToDate = false;
+    mpFlowProperties->UpdateSegments(mSegments);
 }
 
 template<unsigned DIM>
@@ -280,7 +287,7 @@ void Vessel<DIM>::AddSegments(std::vector<boost::shared_ptr<VesselSegment<DIM> >
     }
 
     mNodesUpToDate = false;
-
+    mpFlowProperties->UpdateSegments(mSegments);
 }
 
 template<unsigned DIM>
@@ -428,6 +435,7 @@ boost::shared_ptr<VesselNode<DIM> > Vessel<DIM>::DivideSegment(const Dimensional
     }
 
     mNodesUpToDate = false;
+    mpFlowProperties->UpdateSegments(mSegments);
     return p_new_node;
 }
 
@@ -440,7 +448,7 @@ boost::shared_ptr<VesselFlowProperties<DIM> > Vessel<DIM>::GetFlowProperties() c
 template<unsigned DIM>
 std::map<std::string, double> Vessel<DIM>::GetOutputData()
 {
-    std::map<std::string, double> flow_data = this->mpFlowProperties->GetOutputData(GetSegments());
+    std::map<std::string, double> flow_data = this->mpFlowProperties->GetOutputData();
     this->mOutputData.clear();
     this->mOutputData.insert(flow_data.begin(), flow_data.end());
     this->mOutputData["Vessel Id"] = double(this->GetId());
@@ -660,12 +668,14 @@ void Vessel<DIM>::RemoveSegments(SegmentLocation::Value location)
         EXCEPTION("You can only remove segments from the start or end of vessels.");
     }
     mNodesUpToDate = false;
+    mpFlowProperties->UpdateSegments(mSegments);
 }
 
 template<unsigned DIM>
 void Vessel<DIM>::SetFlowProperties(const VesselFlowProperties<DIM> & rFlowProperties)
 {
     this->mpFlowProperties = boost::shared_ptr<VesselFlowProperties<DIM> >(new VesselFlowProperties<DIM> (rFlowProperties));
+    this->mpFlowProperties->UpdateSegments(mSegments);
 }
 
 template<unsigned DIM>

@@ -40,16 +40,16 @@ Copyright (c) 2005-2016, University of Oxford.
 #include <string>
 #include <map>
 #include <boost/enable_shared_from_this.hpp>
+#include "SmartPointers.hpp"
+#include "DimensionalChastePoint.hpp"
 #include "AbstractVesselNetworkComponent.hpp"
 #include "NodeFlowProperties.hpp"
 #include "UblasVectorInclude.hpp"
 #include "UnitCollection.hpp"
 #include "VesselSegment.hpp"
-#include "SmartPointers.hpp"
-#include "DimensionalChastePoint.hpp"
 
 /**
- *  Forward declaration to allow segments to manage adding and removing themselves from nodes.
+ * Forward declaration to allow segments to manage adding and removing themselves from nodes.
  */
 template<unsigned DIM>
 class VesselSegment;
